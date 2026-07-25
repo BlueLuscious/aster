@@ -1,4 +1,4 @@
-name: Lilium Discord Notifications
+name: Aster Discord Notifications
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
   notify-discord:
     runs-on: ubuntu-latest
     env:
-      DISCORD_WEBHOOK: ${{ secrets.LILIUM_DISCORD_WEBHOOK }}
+      DISCORD_WEBHOOK: ${{ secrets.ASTER_DISCORD_WEBHOOK }}
 
     steps:
       ### CONTINUOUS INTEGRATION ###
