@@ -1,0 +1,34 @@
+{
+  "name": "aster",
+  "description": "Framework-agnostic icon definitions, curated collections, and rendering adapters.",
+  "private": true,
+  "type": "module",
+  "author": "BlueLuscious",
+  "license": "ISC",
+  "homepage": "https://github.com/BlueLuscious/aster#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlueLuscious/aster.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BlueLuscious/aster/issues"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@10.28.1",
+  "workspaces": [
+    "packages/*"
+  ],
+  "keywords": [
+    "icons",
+    "svg",
+    "typescript",
+    "framework-agnostic"
+  ],
+  "devDependencies": {
+    "@types/node": "^24.13.3",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
+  }
+}
