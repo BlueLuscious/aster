@@ -11,6 +11,8 @@ define how accepted architecture, packages, collections, and generated artefacts
   deprecation, coordinated releases, and release gates.
 - [Documentation Policy](documentation-policy.md) defines the canonical hierarchy, British
   English, JSDoc, generated documentation, and non-duplication requirements.
+- [Source Assets and Generated Outputs](source-assets-and-generated-outputs.md) defines authored
+  collection evidence, design-tool boundaries, and deterministic derived artefacts.
 - [Workspace and Tooling](workspace-and-tooling.md) defines repository versions, dependency
   classification, compiler baseline, commands, tests, and cleanup safety.
 
