@@ -6,12 +6,7 @@ import { fileURLToPath } from "node:url";
 /**
  * @description Absolute path to the repository root containing the documentation command.
  */
-const workspaceRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
-
-/**
- * @description Absolute path to the canonical English documentation tree.
- */
-const documentationRoot = resolve(workspaceRoot, "docs/en");
+const defaultWorkspaceRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
 /**
  * @description Canonical documentation entries required by repository policy.
@@ -43,10 +38,11 @@ const acceptedDecisionStatuses = new Set(["Proposed", "Accepted", "Rejected", "S
 
 /**
  * @description Converts an absolute repository path into a stable display path.
+ * @param {string} workspaceRoot - Absolute repository root.
  * @param {string} path - Absolute path beneath the repository root.
  * @returns {string} A slash-separated repository-relative path.
  */
-function displayPath(path) {
+function displayPath(workspaceRoot, path) {
   return relative(workspaceRoot, path).split(sep).join("/");
 }
 
@@ -111,26 +107,32 @@ async function readMemberDirectories(root) {
 
 /**
  * @description Verifies that canonical documentation entry points exist.
+ * @param {string} documentationRoot - Absolute canonical documentation root.
+ * @param {string} workspaceRoot - Absolute repository root.
  * @param {string[]} issues - Mutable issue collection populated by the check.
  * @returns {Promise<void>} Completion after every required entry is inspected.
  */
-async function validateRequiredHierarchy(issues) {
+async function validateRequiredHierarchy(documentationRoot, workspaceRoot, issues) {
   for (const entry of requiredDocumentationEntries) {
     const path = resolve(documentationRoot, entry);
 
     if (!(await pathExists(path))) {
-      issues.push(`Missing canonical documentation entry: ${displayPath(path)}`);
+      issues.push(
+        `Missing canonical documentation entry: ${displayPath(workspaceRoot, path)}`,
+      );
     }
   }
 }
 
 /**
  * @description Verifies that package or collection documentation mirrors real members.
+ * @param {string} documentationRoot - Absolute canonical documentation root.
+ * @param {string} workspaceRoot - Absolute repository root.
  * @param {"packages" | "collections"} domain - Repository domain whose members are mirrored.
  * @param {string[]} issues - Mutable issue collection populated by the check.
  * @returns {Promise<void>} Completion after source and documentation members are compared.
  */
-async function validateDomainMirroring(domain, issues) {
+async function validateDomainMirroring(documentationRoot, workspaceRoot, domain, issues) {
   const sourceMembers = await readMemberDirectories(resolve(workspaceRoot, domain));
   const documentedMembers = await readMemberDirectories(resolve(documentationRoot, domain));
 
@@ -149,15 +151,16 @@ async function validateDomainMirroring(domain, issues) {
 
 /**
  * @description Verifies that canonical prose does not depend on local-only references.
+ * @param {string} workspaceRoot - Absolute repository root.
  * @param {string} path - Absolute Markdown file path.
  * @param {string} content - Markdown content to inspect.
  * @param {string[]} issues - Mutable issue collection populated by the check.
  * @returns {void} This validation mutates only the provided issue collection.
  */
-function validateLocalReferences(path, content, issues) {
+function validateLocalReferences(workspaceRoot, path, content, issues) {
   for (const reference of forbiddenLocalReferences) {
     if (reference.pattern.test(content)) {
-      issues.push(`${displayPath(path)} contains ${reference.label}`);
+      issues.push(`${displayPath(workspaceRoot, path)} contains ${reference.label}`);
     }
   }
 }
@@ -186,12 +189,13 @@ function extractLocalLinks(content) {
 
 /**
  * @description Verifies that local Markdown links resolve inside the repository.
+ * @param {string} workspaceRoot - Absolute repository root.
  * @param {string} path - Absolute Markdown file containing the links.
  * @param {string} content - Markdown content to inspect.
  * @param {string[]} issues - Mutable issue collection populated by the check.
  * @returns {Promise<void>} Completion after all local targets are resolved.
  */
-async function validateLocalLinks(path, content, issues) {
+async function validateLocalLinks(workspaceRoot, path, content, issues) {
   for (const target of extractLocalLinks(content)) {
     const targetWithoutFragment = decodeURIComponent(target.split("#", 1)[0]);
     const resolvedTarget = resolve(dirname(path), targetWithoutFragment);
@@ -199,25 +203,31 @@ async function validateLocalLinks(path, content, issues) {
     const escapesWorkspace = relativeTarget === ".." || relativeTarget.startsWith(`..${sep}`);
 
     if (escapesWorkspace) {
-      issues.push(`${displayPath(path)} links outside the repository: ${target}`);
+      issues.push(
+        `${displayPath(workspaceRoot, path)} links outside the repository: ${target}`,
+      );
     } else if (!(await pathExists(resolvedTarget))) {
-      issues.push(`${displayPath(path)} contains a broken local link: ${target}`);
+      issues.push(
+        `${displayPath(workspaceRoot, path)} contains a broken local link: ${target}`,
+      );
     }
   }
 }
 
 /**
  * @description Verifies the stable filename, heading, status, and index entry of each ADR.
+ * @param {string} documentationRoot - Absolute canonical documentation root.
+ * @param {string} workspaceRoot - Absolute repository root.
  * @param {string[]} issues - Mutable issue collection populated by the check.
  * @returns {Promise<void>} Completion after all decision records are inspected.
  */
-async function validateDecisionRecords(issues) {
+async function validateDecisionRecords(documentationRoot, workspaceRoot, issues) {
   const decisionRoot = resolve(documentationRoot, "decisions");
   const decisionFiles = await collectFiles(decisionRoot, ".md");
   const decisionIndex = await readFile(resolve(decisionRoot, "index.md"), "utf8");
 
   for (const path of decisionFiles) {
-    const filename = displayPath(path).split("/").at(-1);
+    const filename = displayPath(workspaceRoot, path).split("/").at(-1);
 
     if (filename === "index.md" || filename === "template.md") {
       continue;
@@ -226,7 +236,9 @@ async function validateDecisionRecords(issues) {
     const filenameMatch = /^(\d{4})-[a-z0-9]+(?:-[a-z0-9]+)*\.md$/u.exec(filename);
 
     if (!filenameMatch) {
-      issues.push(`Decision record has an invalid filename: ${displayPath(path)}`);
+      issues.push(
+        `Decision record has an invalid filename: ${displayPath(workspaceRoot, path)}`,
+      );
       continue;
     }
 
@@ -236,56 +248,73 @@ async function validateDecisionRecords(issues) {
     const statusMatch = /^Status:\s+\*\*([^*]+)\*\*$/mu.exec(content);
 
     if (!headingPattern.test(content)) {
-      issues.push(`${displayPath(path)} has no matching decision heading`);
+      issues.push(`${displayPath(workspaceRoot, path)} has no matching decision heading`);
     }
 
     if (!statusMatch || !acceptedDecisionStatuses.has(statusMatch[1])) {
-      issues.push(`${displayPath(path)} has no accepted decision status`);
+      issues.push(`${displayPath(workspaceRoot, path)} has no accepted decision status`);
     }
 
     if (!content.includes("## Consequences")) {
-      issues.push(`${displayPath(path)} has no consequences section`);
+      issues.push(`${displayPath(workspaceRoot, path)} has no consequences section`);
     }
 
     if (!decisionIndex.includes(`](${filename})`)) {
-      issues.push(`${displayPath(path)} is missing from the decision index`);
+      issues.push(`${displayPath(workspaceRoot, path)} is missing from the decision index`);
     }
   }
 }
 
 /**
- * @description Runs all objective checks owned by the documentation command.
- * @returns {Promise<void>} Completion after diagnostics are printed and exit state is set.
+ * @description Verifies canonical documentation for one explicit workspace.
+ * @param {string} workspaceRoot - Absolute repository root to verify.
+ * @returns {Promise<{ issues: string[], markdownFileCount: number }>} Verification result.
  */
-async function main() {
+export async function verifyDocumentation(workspaceRoot) {
+  const documentationRoot = resolve(workspaceRoot, "docs/en");
   const issues = [];
 
-  await validateRequiredHierarchy(issues);
-  await validateDomainMirroring("packages", issues);
-  await validateDomainMirroring("collections", issues);
+  await validateRequiredHierarchy(documentationRoot, workspaceRoot, issues);
+  await validateDomainMirroring(documentationRoot, workspaceRoot, "packages", issues);
+  await validateDomainMirroring(documentationRoot, workspaceRoot, "collections", issues);
 
   const markdownFiles = await collectFiles(documentationRoot, ".md");
 
   for (const path of markdownFiles) {
     const content = await readFile(path, "utf8");
 
-    validateLocalReferences(path, content, issues);
-    await validateLocalLinks(path, content, issues);
+    validateLocalReferences(workspaceRoot, path, content, issues);
+    await validateLocalLinks(workspaceRoot, path, content, issues);
   }
 
-  await validateDecisionRecords(issues);
+  await validateDecisionRecords(documentationRoot, workspaceRoot, issues);
 
-  if (issues.length > 0) {
+  return { issues, markdownFileCount: markdownFiles.length };
+}
+
+/**
+ * @description Adapts documentation verification to terminal output and process exit state.
+ * @returns {Promise<void>} Completion after diagnostics are printed and exit state is set.
+ */
+async function main() {
+  const result = await verifyDocumentation(defaultWorkspaceRoot);
+
+  if (result.issues.length > 0) {
     process.stderr.write(
-      `Documentation verification failed:\n${issues.map((issue) => `- ${issue}`).join("\n")}\n`,
+      `Documentation verification failed:\n${result.issues.map((issue) => `- ${issue}`).join("\n")}\n`,
     );
     process.exitCode = 1;
     return;
   }
 
   process.stdout.write(
-    `Documentation verification passed for ${markdownFiles.length} canonical files.\n`,
+    `Documentation verification passed for ${result.markdownFileCount} canonical files.\n`,
   );
 }
 
-await main();
+if (
+  process.argv[1] !== undefined &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
+  await main();
+}
