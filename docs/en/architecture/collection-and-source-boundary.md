@@ -140,9 +140,9 @@ Each SVG source:
 - remains unchanged by runtime normalisation;
 - can be validated without access to Illustrator.
 
-For an icon without a separately represented variant, the filename is `<icon-slug>.svg`. The exact
-filename relationship for variants remains Open until the variant representation and packaging
-model is accepted.
+For an icon without a separately represented variant, the filename is `<icon-slug>.svg`. A variant
+uses `<icon-slug>--<variant-slug>.svg`. Collection, icon, and variant slugs cannot contain empty
+segments or consecutive hyphens, so the delimiter is unambiguous.
 
 Normalised SVG or portable node data is generated output. It may simplify source syntax but never
 replaces either the master or canonical exported SVG.

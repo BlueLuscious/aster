@@ -47,12 +47,16 @@ The conceptual collection fields are:
 | `attribution` | Conditional | Attribution text or reference required by the effective licence. |
 | `defaultSize` | Optional | Collection presentation default validated by representative icons. |
 | `minimumSize` | Optional | Smallest curator-approved display size. |
+| `presentationDefaults` | Optional | Portable fill, stroke, and stroke-width defaults used when nodes omit those values. |
+| `presentationOverrides` | Defaults to empty | Closed set of fill, stroke, and stroke-width capabilities callers may override. |
 | `variants` | Optional | Declared controlled variations supported by the collection. |
 | `deprecated` | Derived from status | Indicates retirement intent without deleting identity. |
 | `replacedBy` | Optional | Fully qualified replacement collection identity. |
 
 Detailed grid, stroke, safe-area, construction, and optical rules belong in the collection design
-contract. Runtime metadata retains only presentation defaults needed by renderers.
+contract. Runtime metadata retains only presentation defaults and override policy needed by
+renderers. Resolution precedence is defined by
+[Rendering Contract](rendering-contract.md).
 
 ## Icon metadata draft
 
@@ -97,9 +101,11 @@ This logical identity is independent from:
 - package layout or export path;
 - aliases, tags, and categories.
 
-Whether variants are embedded in one definition, represented as separate definitions, or
-distributed through entry points remains Open. Every model must preserve the same unambiguous
-logical identity.
+Every distributable variant is a separate portable definition with its own canonical identity,
+generated symbol, module, and per-icon subpath. A collection may declare a default variant, but
+distribution and render options cannot silently erase or replace variant identity. The complete
+export relationship is defined by
+[Distribution and Adapters](distribution-and-adapters.md).
 
 Duplicate logical identity within one generation unit is an error. Diagnostic names, display
 names, aliases, and object shape never substitute for canonical identity.

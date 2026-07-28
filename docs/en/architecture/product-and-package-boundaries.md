@@ -28,7 +28,7 @@ Node runtime authority.
 
 | Boundary | Responsibility | Runtime status |
 | --- | --- | --- |
-| Portable Core | Icon definition, node, viewBox, metadata, identity, and immutable construction contracts. | Public and host independent. |
+| Portable Core | Icon definition, node, viewBox, metadata, identity, render options, presentation policy, and immutable construction contracts. | Public and host independent. |
 | Collection sources | Editable masters, canonical SVG, metadata, and collection design contracts. | Authored inputs, never runtime code. |
 | Build pipeline | Source loading boundaries, parsing, diagnostics, validation, normalisation, and generation planning. | Build-time only. |
 | Generated definitions | Typed immutable icon and collection modules produced from canonical sources. | Portable runtime data. |
@@ -46,7 +46,8 @@ tree-shaking, versioning, and release evidence.
 
 Only these implementation boundaries justify an initial package when their code begins:
 
-1. A public portable Core package for host-independent definitions and construction authority.
+1. A public portable Core package for host-independent definitions, options, and construction
+   authority.
 2. One private build-time boundary containing parsing, validation, normalisation, and generation
    features until independent consumers justify extraction.
 3. A public SVG renderer package after its exact output contract is accepted.
@@ -173,6 +174,7 @@ Names describe likely distribution boundaries but are not accepted registry rese
 | Private build-time implementation | `@aster/build` or a private workspace tooling package |
 | Generated collection definitions | `@aster/<collection>` or another collection-oriented boundary |
 | Generic SVG renderer | `@aster/svg` |
+| Generated collection-target integration | `@aster/<collection>-<target>` |
 | Target-independent Lilium adapter | `@aster/lilium` |
 | DOM-specific Lilium mappings | `@aster/lilium-dom` if evidence requires a separate package |
 

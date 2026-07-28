@@ -16,6 +16,12 @@ Aster architecture is defined incrementally from accepted decisions and implemen
   normalisation, construction, and generation boundaries.
 - [Diagnostics and Determinism](diagnostics-and-determinism.md) defines stable diagnostics,
   ordering, and byte-reproducible generation.
+- [Rendering Contract](rendering-contract.md) defines renderer authority, portable options,
+  presentation precedence, and the first SVG result.
+- [Accessibility and Direction](accessibility-and-direction.md) defines decorative and semantic
+  intent, conflict handling, and RTL behaviour.
+- [Distribution and Adapters](distribution-and-adapters.md) defines variants, exports,
+  tree-shaking, named integrations, and target separation.
 
 Documents marked as **Accepted** define current architecture. Draft documents are proposals and
 cannot silently override accepted contracts.
