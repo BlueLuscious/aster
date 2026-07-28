@@ -25,5 +25,16 @@ licensing when publishing artwork.
 Core stores direction policy but never observes ambient direction, transforms geometry, or infers
 semantics from an icon name.
 
+## Runtime
+
+| Class | Responsibility | Relations |
+| --- | --- | --- |
+| `IconMetadataNormaliser` | Validates resolved display, direction, licensing, deprecation, and replacement data before cloning and freezing it. | Composes `IconIdentityNormaliser` and `CollectionPresentationPolicyNormaliser`. |
+
+Attribution requires an effective licence. A replacement requires deprecated metadata and must
+not equal the complete identity of the definition being constructed. Core can compare the owning
+definition with its replacement, but collection-wide replacement availability and cycle checks
+remain generation-boundary responsibilities.
+
 Metadata composition and replacement rules are defined by
 [Metadata and Identity Boundary](../../../architecture/metadata-and-identity-boundary.md).

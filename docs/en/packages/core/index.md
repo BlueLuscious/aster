@@ -30,6 +30,9 @@ DOM, browser, Lilium, Lotus, parser, renderer, or repository-tooling ambient typ
 Consumers depend on Core; Core never depends on a collection, build pipeline, renderer, framework,
 or target.
 
+Generated declarations are host-independent and import only relative package modules. Development
+tools such as TypeScript, `tsx`, and Node type declarations do not enter the package ABI.
+
 ## Public surface
 
 The package root exports:
@@ -41,6 +44,11 @@ The package root exports:
 
 Only the root package export `"."` is approved. Runtime implementation paths and feature subpaths
 are rejected by the package export map.
+
+The package declares `sideEffects: false`, emits native ESM, and performs no registration,
+catalogue mutation, or host initialisation while modules are imported. This structure permits
+consumer tooling to analyse and remove unused modules; Aster does not claim a particular
+tree-shaking result for every bundler.
 
 ## Stable invariants
 
@@ -55,3 +63,17 @@ are rejected by the package export map.
 
 The architecture authority for this model is
 [Portable Icon Model](../../architecture/portable-icon-model.md).
+
+## Deferred boundaries
+
+- Full SVG path parsing, source diagnostics, and canonical path rewriting belong to the ingestion
+  pipeline.
+- Cross-definition identity uniqueness, replacement availability, and replacement-cycle checks
+  require a complete generation unit.
+- Effective licence completion is mandatory at a distributable collection boundary rather than
+  for every experimental Core value.
+- Accessibility combinations and collection override authority are validated when a renderer
+  interprets `IconRenderOptions`.
+
+These requirements remain outside Core until a consumer proves the corresponding boundary. Core
+does not represent them through unused registries, parser contracts, or host abstractions.

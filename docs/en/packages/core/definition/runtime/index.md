@@ -23,6 +23,16 @@ private methods rather than loose module functions. The frozen public
 6. Every retained object and sequence is newly constructed and frozen before the definition is
    returned.
 
+## Runtime responsibilities
+
+| Class | Responsibility | Relations |
+| --- | --- | --- |
+| `IconDefinitionFactory` | Owns the complete validation, normalisation, isolation, and deep-freeze transaction. | Composes all definition, node, and metadata normalisers. |
+| `IconIdentityNormaliser` | Trims and validates complete canonical icon identities. | Reused for owning and replacement identities. |
+| `IconViewBoxNormaliser` | Validates finite minima and positive logical dimensions. | Produces the definition coordinate system. |
+| `IconValueValidator` | Provides plain-object, exact-field, text, number, boolean, opacity, and array assertions. | Shared only by internal Core normalisers. |
+| `IconDefinitionError` | Reports deterministic invalid-definition failures with an Aster code and logical path. | Raised by validators and normalisers; not exported from the package. |
+
 Presentation fields use fixed construction order. Hexadecimal sRGB colours are lowercased,
 three-digit colours expand to six digits, negative zero becomes zero, and override capabilities
 use canonical semantic order.
@@ -43,8 +53,9 @@ generation unit and remain responsibilities of the build pipeline.
 
 ## Path-data scope
 
-Core requires path data to be non-empty canonical text. Full SVG path parsing and source-span
-diagnostics belong to the build pipeline, which validates path syntax before construction.
+Core trims path data and requires non-empty text. Full SVG path parsing, canonical rewriting, and
+source-span diagnostics belong to the build pipeline, which establishes path conformance before
+construction.
 
 ## Isolation
 

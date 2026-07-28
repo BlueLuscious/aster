@@ -27,5 +27,16 @@ Opacity values use the inclusive range from zero to one. Widths and corner radii
 miter limits and declared viewport sizes are positive. These numeric constraints require runtime
 validation.
 
+## Runtime
+
+| Class or value | Responsibility | Relations |
+| --- | --- | --- |
+| `IconPresentationNormaliser` | Validates explicit presentation, canonicalises hexadecimal sRGB colours, and emits fields in stable order. | Produces node presentation and collection defaults. |
+| `CollectionPresentationPolicyNormaliser` | Validates defaults, unique override capabilities, and positive viewport guidance before canonical ordering and deep freezing. | Produces the policy retained by `IconMetadata`. |
+| `iconPresentationFields` | Defines the single closed presentation-field order shared by node and presentation validation. | Prevents geometry nodes from acquiring arbitrary target fields. |
+
+When both viewport hints are present, `minimumSize` cannot exceed `defaultSize`. Override
+capabilities are retained in semantic order regardless of authored order.
+
 Presentation precedence is defined by
 [Rendering Contract](../../../architecture/rendering-contract.md).

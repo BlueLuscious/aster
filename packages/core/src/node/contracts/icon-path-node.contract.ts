@@ -10,7 +10,9 @@ export interface IconPathNode extends IconPresentation {
   readonly kind: "path";
 
   /**
-   * @description Canonical syntax-validated SVG path data.
+   * @description Non-empty SVG path data accepted from an authoritative ingestion boundary.
+   * @remarks Core trims this value but does not parse path syntax; distributable definitions must
+   * be produced through a pipeline that validates and canonicalises the path.
    */
   readonly data: string;
 }

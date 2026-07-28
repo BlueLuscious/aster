@@ -3,6 +3,7 @@
 Portable, render-neutral icon contracts and types for Aster.
 
 The package exposes portable contracts and the immutable `Icon` API object.
+It ships as dependency-free ES2022 ESM with a single approved root export.
 
 ```ts
 import { Icon } from "@aster/core";

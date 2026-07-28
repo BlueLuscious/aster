@@ -20,6 +20,10 @@ owns one private `IconDefinitionFactory` instance and presents it through an imm
 `Icon` is frozen and retains no icon, collection, or catalogue state. Calling `define()` twice
 with equal authored values creates independent equal definitions.
 
+The API provides compile-time guidance through `IconDefinition`, while its internal factory
+accepts an unknown runtime value and validates it before reading the closed shape. TypeScript
+annotations are therefore never treated as runtime evidence.
+
 ## Usage
 
 ```ts
@@ -70,6 +74,10 @@ all documented public contracts and types.
 No feature, runtime, manager, normaliser, error, or shared implementation subpath is public.
 Unsupported subpaths fail through the package resolver rather than becoming compatibility
 contracts accidentally.
+
+The package is native ES2022 ESM and declares its modules free of observable import side effects.
+This makes the export graph compatible with static consumer analysis without promising
+bundler-specific tree-shaking behaviour.
 
 ## Failure
 
