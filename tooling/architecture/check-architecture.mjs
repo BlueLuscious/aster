@@ -237,6 +237,46 @@ async function validateCoreCompilerOptions(packageRoot, issues) {
 }
 
 /**
+ * @description Verifies the exact dependency-free public package boundary proven by portable Core.
+ * @param {Record<string, unknown>} manifest - Parsed Core package manifest.
+ * @param {Record<string, string>} dependencies - Combined production dependency fields.
+ * @param {string[]} issues - Mutable issue collection populated by the check.
+ * @returns {void} This validation mutates only the provided issue collection.
+ */
+function validateCorePackageBoundary(manifest, dependencies, issues) {
+  const dependencyNames = Object.keys(dependencies);
+
+  if (dependencyNames.length > 0) {
+    issues.push(
+      `@aster/core cannot declare production dependencies: ${dependencyNames.sort().join(", ")}`,
+    );
+  }
+
+  if (manifest.sideEffects !== false) {
+    issues.push("@aster/core must declare package.json#sideEffects as false");
+  }
+
+  const exports = manifest.exports;
+  const exportKeys =
+    typeof exports === "object" && exports !== null ? Object.keys(exports) : [];
+  const rootExport =
+    typeof exports === "object" && exports !== null ? exports["."] : undefined;
+
+  if (JSON.stringify(exportKeys) !== JSON.stringify(["."])) {
+    issues.push('@aster/core must expose only the root "." package export');
+  }
+
+  if (
+    typeof rootExport !== "object" ||
+    rootExport === null ||
+    rootExport.import !== "./dist/index.js" ||
+    rootExport.types !== "./dist/index.d.ts"
+  ) {
+    issues.push("@aster/core root export must provide the accepted ESM and declaration entries");
+  }
+}
+
+/**
  * @description Reports cyclic production dependencies between workspace packages.
  * @param {Map<string, Set<string>>} graph - Workspace production dependency graph.
  * @param {string[]} issues - Mutable issue collection populated by the check.
@@ -350,6 +390,7 @@ async function validatePackages(workspaceRoot, issues) {
         }
       }
 
+      validateCorePackageBoundary(manifest, dependencies, issues);
       await validateCoreCompilerOptions(packageRoot, issues);
     }
 

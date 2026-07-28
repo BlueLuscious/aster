@@ -5,8 +5,13 @@ Status: **Accepted**
 This directory documents Aster's real package set and dependency relationships. Package-specific
 documentation is added only when its package exists under `packages/`.
 
-No public Aster package has been implemented yet. Accepted provisional responsibilities and
-dependency direction are defined by
+The current package set is:
+
+| Package | Status | Responsibility |
+| --- | --- | --- |
+| [`@aster/core`](core/index.md) | Pre-release | Portable icon definitions, immutable construction, and render-neutral contracts. |
+
+Accepted responsibilities and dependency direction are defined by
 [Product and Package Boundaries](../architecture/product-and-package-boundaries.md).
 
 Each package document covers:
