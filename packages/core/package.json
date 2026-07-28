@@ -2,7 +2,6 @@
   "name": "@aster/core",
   "version": "0.0.0",
   "description": "Portable icon definitions and render-neutral contracts for Aster.",
-  "private": true,
   "type": "module",
   "author": "BlueLuscious",
   "license": "ISC",
@@ -15,6 +14,17 @@
   "bugs": {
     "url": "https://github.com/BlueLuscious/aster/issues"
   },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "files": [
     "dist"
   ],
@@ -22,7 +32,8 @@
     "build": "pnpm run clean && tsc -p tsconfig.json",
     "check:types": "tsc -p tsconfig.json --noEmit",
     "clean": "node ../../tooling/workspace/clean-package-output.mjs dist",
-    "test": "pnpm run test:types && pnpm run test:runtime",
+    "test": "pnpm run test:types && pnpm run test:runtime && pnpm run test:abi",
+    "test:abi": "pnpm run build && node --test --test-isolation=none tests/abi/*.test.mjs",
     "test:runtime": "tsx --test --test-isolation=none tests/runtime/*.test.ts",
     "test:types": "tsc -p tsconfig.test.json"
   }
