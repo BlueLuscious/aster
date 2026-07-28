@@ -53,3 +53,7 @@ incorporated into the relevant canonical architecture document.
 
 Canonical documents link to one source of truth for each contract and do not repeat another
 document's detailed responsibility.
+
+Decision-record naming, lifecycle, acceptance, and supersession are defined by
+[Decision Records](../decisions/index.md). Contribution authority is defined by
+[Contribution and Review](../governance/contribution-and-review.md).
