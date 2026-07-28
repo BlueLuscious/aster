@@ -29,6 +29,7 @@
   "scripts": {
     "build": "pnpm --recursive --if-present run build",
     "check": "pnpm run check:types && pnpm run lint && pnpm run format:check",
+    "check:docs": "node tooling/documentation/check-documentation.mjs",
     "check:types": "pnpm --recursive --if-present run check:types",
     "clean": "pnpm --recursive --if-present run clean",
     "format": "pnpm --recursive --if-present run format",
