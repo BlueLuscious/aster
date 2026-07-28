@@ -1,0 +1,28 @@
+{
+  "name": "@aster/core",
+  "version": "0.0.0",
+  "description": "Portable icon definitions and render-neutral contracts for Aster.",
+  "private": true,
+  "type": "module",
+  "author": "BlueLuscious",
+  "license": "ISC",
+  "homepage": "https://github.com/BlueLuscious/aster/tree/develop/packages/core#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlueLuscious/aster.git",
+    "directory": "packages/core"
+  },
+  "bugs": {
+    "url": "https://github.com/BlueLuscious/aster/issues"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm run clean && tsc -p tsconfig.json",
+    "check:types": "tsc -p tsconfig.json --noEmit",
+    "clean": "node ../../tooling/workspace/clean-package-output.mjs dist",
+    "test": "pnpm run test:types",
+    "test:types": "tsc -p tsconfig.test.json"
+  }
+}
