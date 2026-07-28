@@ -29,7 +29,7 @@ them.
 | Adapter | An integration layer that exposes portable Aster definitions through another framework or target without changing Core. |
 | Source | A human-authored or exported canonical input consumed by an Aster pipeline. |
 | Master | The editable design document used to revise artwork, such as an Illustrator `.ai` file. |
-| Artifact | A reproducible output created from canonical sources and never edited manually. |
+| Artefact | A reproducible output created from canonical sources and never edited manually. |
 | Metadata | Non-geometric descriptive, lifecycle, search, accessibility, licensing, or directional data associated with an icon or collection. |
 
 The canonical exported SVG is a machine-readable source. It is not the editable master. A
@@ -48,7 +48,7 @@ framework component is a generated or composed view over a definition; it is not
 ## Promotion flow
 
 Proposals gather questions, alternatives, and implementation evidence. A material choice moves
-through an explicit decision record. Once accepted, its stable behavior and consequences are
+through an explicit decision record. Once accepted, its stable behaviour and consequences are
 incorporated into the relevant canonical architecture document.
 
 Canonical documents link to one source of truth for each contract and do not repeat another

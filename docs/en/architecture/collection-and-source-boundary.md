@@ -3,7 +3,7 @@
 Status: **Accepted**
 
 This document defines collection ownership, lifecycle, visual-rule authority, canonical asset
-roles, and the boundary between authored sources and generated artifacts.
+roles, and the boundary between authored sources and generated artefacts.
 
 ## Collection identity and ownership
 
@@ -58,8 +58,8 @@ They include:
 - supported SVG syntax;
 - rejection of executable, external, raster, or unsafe content;
 - portable data and metadata contracts;
-- deterministic diagnostics, normalization, and generation;
-- generated-artifact ownership;
+- deterministic diagnostics, normalisation, and generation;
+- generated-artefact ownership;
 - package and dependency boundaries.
 
 Collection-specific visual rules define personality and construction. They may include:
@@ -97,11 +97,11 @@ The directories have exact responsibilities:
 | `svg/` | Canonical machine-readable exports consumed by the build pipeline. |
 | `metadata/` | Authored collection and icon metadata consumed by the build pipeline. |
 
-No normalized SVG, generated TypeScript, renderer wrapper, preview, contact sheet, search index, or
+No normalised SVG, generated TypeScript, renderer wrapper, preview, contact sheet, search index, or
 package manifest belongs in these source directories. Generated outputs use separately declared
 boundaries and can be deleted without removing canonical sources.
 
-Metadata serialization technology and file extension remain Open until schema and authoring
+Metadata serialisation technology and file extension remain Open until schema and authoring
 experiments provide evidence. Regardless of format, metadata paths must resolve unambiguously to a
 collection or icon identity.
 
@@ -129,7 +129,7 @@ required, remains Open until real file sizes and collaboration needs are measure
 ## Canonical SVG sources
 
 The exported SVG is the only canonical geometry input consumed automatically. It is not the
-editable master and is not a generated distribution artifact.
+editable master and is not a generated distribution artefact.
 
 Each SVG source:
 
@@ -137,14 +137,14 @@ Each SVG source:
 - uses a filename derived from the canonical icon identity;
 - contains the approved export geometry only;
 - is reviewed and corrected through its editable master;
-- remains unchanged by runtime normalization;
+- remains unchanged by runtime normalisation;
 - can be validated without access to Illustrator.
 
 For an icon without a separately represented variant, the filename is `<icon-slug>.svg`. The exact
 filename relationship for variants remains Open until the variant representation and packaging
 model is accepted.
 
-Normalized SVG or portable node data is generated output. It may simplify source syntax but never
+Normalised SVG or portable node data is generated output. It may simplify source syntax but never
 replaces either the master or canonical exported SVG.
 
 ## Metadata source relationship
@@ -161,18 +161,18 @@ the same canonical icon slug as its SVG source. A build request must reject:
 The complete composition and naming contract is defined by
 [Metadata and Identity Boundary](metadata-and-identity-boundary.md).
 
-## Generated artifact ownership
+## Generated artefact ownership
 
 Every generated boundary declares:
 
 - its canonical input set;
 - the generator and stable rebuild command;
 - its allowed output root;
-- stale-output cleanup behavior;
+- stale-output cleanup behaviour;
 - whether outputs are committed, packaged, or ephemeral;
 - the verification proving clean reproducibility.
 
-Generated artifacts are terminal products of source processing. They never become inputs to
+Generated artefacts are terminal products of source processing. They never become inputs to
 another authoring path when a canonical source exists.
 
 A generated boundary must be safely deletable and reproducible from masters only where a manual
@@ -181,11 +181,10 @@ automated build never claims it can recreate SVG exports from `.ai` files.
 
 ## Licensing ownership
 
-Every Active collection resolves one distribution license. Collection metadata may provide the
-default license, author, and attribution policy. Individual icon metadata may override those values
+Every Active collection resolves one distribution licence. Collection metadata may provide the
+default licence, author, and attribution policy. Individual icon metadata may override those values
 only when the collection contract permits it.
 
-An icon cannot be distributed when its effective license or required attribution is unresolved.
+An icon cannot be distributed when its effective licence or required attribution is unresolved.
 Licensing metadata describes distribution authority; it does not replace the repository's own
-software license.
-
+software licence.

@@ -3,7 +3,7 @@
 Status: **Accepted**
 
 This document defines metadata ownership, composition, identity, naming, lifecycle relationships,
-and licensing resolution without selecting a serialization or schema-validation technology.
+and licensing resolution without selecting a serialisation or schema-validation technology.
 
 Geometry is not metadata. Portable geometry originates in canonical SVG and becomes nodes through
 the accepted build pipeline.
@@ -14,9 +14,9 @@ Aster composes metadata from three distinct layers:
 
 | Layer | Ownership | Examples |
 | --- | --- | --- |
-| Collection-authored metadata | Collection curator | Collection identity, status, license defaults, supported variants, and presentation defaults. |
-| Icon-authored metadata | Icon contributor and curator | Display name, aliases, tags, category, author override, license override, RTL policy, and deprecation relationship. |
-| Generated technical metadata | Build pipeline | Computed bounds, primitive counts, source digest, normalized identity, and release-derived fields. |
+| Collection-authored metadata | Collection curator | Collection identity, status, licence defaults, supported variants, and presentation defaults. |
+| Icon-authored metadata | Icon contributor and curator | Display name, aliases, tags, category, author override, licence override, RTL policy, and deprecation relationship. |
+| Generated technical metadata | Build pipeline | Computed bounds, primitive counts, source digest, normalised identity, and release-derived fields. |
 
 Project-wide technical invariants are not metadata defaults and cannot be overridden by a
 collection or icon.
@@ -43,8 +43,8 @@ The conceptual collection fields are:
 | `status` | Required | Experimental, Active, Deprecated, or Archived lifecycle. |
 | `description` | Optional | Concise purpose and visual positioning. |
 | `curator` | Required for Active | Person or group responsible for visual approval. |
-| `license` | Required for distribution | Default effective license identifier. |
-| `attribution` | Conditional | Attribution text or reference required by the effective license. |
+| `licence` | Required for distribution | Default effective licence identifier. |
+| `attribution` | Conditional | Attribution text or reference required by the effective licence. |
 | `defaultSize` | Optional | Collection presentation default validated by representative icons. |
 | `minimumSize` | Optional | Smallest curator-approved display size. |
 | `variants` | Optional | Declared controlled variations supported by the collection. |
@@ -66,10 +66,10 @@ The conceptual icon fields are:
 | `tags` | Defaults to empty | Descriptive search and discovery terms. |
 | `category` | Optional | One accepted taxonomy value when a collection uses categories. |
 | `author` | Optional | Icon-specific author overriding or supplementing collection authorship. |
-| `license` | Optional | Icon-specific distribution license allowed by the collection. |
-| `attribution` | Conditional | Icon-specific attribution required by its effective license. |
+| `licence` | Optional | Icon-specific distribution licence allowed by the collection. |
+| `attribution` | Conditional | Icon-specific attribution required by its effective licence. |
 | `variant` | Optional | Controlled variation identity within the collection. |
-| `rtl` | Defaults to Preserve | Mirror, Preserve, or Manual directional behavior. |
+| `rtl` | Defaults to Preserve | Mirror, Preserve, or Manual directional behaviour. |
 | `deprecated` | Defaults to false | Indicates that consumers should migrate away from this identity. |
 | `replacedBy` | Optional | Fully qualified replacement icon identity. |
 | `introducedIn` | Generated at release | First released collection or package version containing the icon. |
@@ -121,8 +121,8 @@ Generated-name collisions are errors even when canonical slugs differ. Reserved 
 case folding, punctuation removal, and wrapper suffixes must be considered by generation
 validation.
 
-Aliases and tags are normalized for search but do not redirect imports. Category taxonomy remains
-Open until a collection or catalog consumer demonstrates the required hierarchy.
+Aliases and tags are normalised for search but do not redirect imports. Category taxonomy remains
+Open until a collection or catalogue consumer demonstrates the required hierarchy.
 
 ## Deprecation and replacement
 
@@ -143,33 +143,33 @@ contract.
 
 ## RTL metadata
 
-Directional behavior is portable metadata:
+Directional behaviour is portable metadata:
 
 | Value | Meaning |
 | --- | --- |
 | Mirror | A target adapter mirrors the icon in right-to-left context. |
 | Preserve | The icon keeps its original geometry in every text direction. |
-| Manual | The consumer or semantic UI layer selects directional behavior explicitly. |
+| Manual | The consumer or semantic UI layer selects directional behaviour explicitly. |
 
 Core stores the policy but does not read browser direction, apply transforms, or infer semantics
 from the icon name.
 
-## License resolution
+## Licence resolution
 
 Effective icon licensing resolves in this order:
 
-1. An allowed icon-specific license and attribution.
-2. The collection default license and attribution.
+1. An allowed icon-specific licence and attribution.
+2. The collection default licence and attribution.
 
 Project software licensing does not fill missing artwork licensing. Distribution fails when an
-effective artwork license or required attribution cannot be resolved.
+effective artwork licence or required attribution cannot be resolved.
 
-Generated definitions may retain the effective license identifier when runtime or redistribution
+Generated definitions may retain the effective licence identifier when runtime or redistribution
 consumers require it. Full legal text and repository policy remain outside each icon definition.
 
 ## Technology boundary
 
-Metadata serialization format, file extension, schema library, and authoring UI remain Open.
+Metadata serialisation format, file extension, schema library, and authoring UI remain Open.
 Whichever technology is selected must:
 
 - preserve the accepted field meanings and authority layers;
@@ -177,4 +177,3 @@ Whichever technology is selected must:
 - support authored defaults and generated facts without mixing ownership;
 - avoid framework, DOM, browser, and Lotus types;
 - remain replaceable behind Aster-owned metadata contracts.
-

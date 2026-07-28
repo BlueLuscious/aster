@@ -12,7 +12,7 @@ Aster is an independent icon platform. It owns:
 
 - portable immutable icon definitions;
 - curated collection sources and design contracts;
-- source validation and normalization requirements;
+- source validation and normalisation requirements;
 - deterministic definition and wrapper generation;
 - target-specific renderers and framework adapters;
 - icon-specific technical and visual quality evidence.
@@ -30,7 +30,7 @@ Node runtime authority.
 | --- | --- | --- |
 | Portable Core | Icon definition, node, viewBox, metadata, identity, and immutable construction contracts. | Public and host independent. |
 | Collection sources | Editable masters, canonical SVG, metadata, and collection design contracts. | Authored inputs, never runtime code. |
-| Build pipeline | Source loading boundaries, parsing, diagnostics, validation, normalization, and generation planning. | Build-time only. |
+| Build pipeline | Source loading boundaries, parsing, diagnostics, validation, normalisation, and generation planning. | Build-time only. |
 | Generated definitions | Typed immutable icon and collection modules produced from canonical sources. | Portable runtime data. |
 | Renderer | Converts portable definitions and options into one explicit target output. | Public and target specific. |
 | Framework adapter | Exposes definitions through a framework's public component and rendering contracts. | Optional and framework specific. |
@@ -47,7 +47,7 @@ tree-shaking, versioning, and release evidence.
 Only these implementation boundaries justify an initial package when their code begins:
 
 1. A public portable Core package for host-independent definitions and construction authority.
-2. One private build-time boundary containing parsing, validation, normalization, and generation
+2. One private build-time boundary containing parsing, validation, normalisation, and generation
    features until independent consumers justify extraction.
 3. A public SVG renderer package after its exact output contract is accepted.
 
@@ -55,7 +55,7 @@ Experimental collection output may use a private generated test package or fixtu
 does not become a public collection package until the pilot proves its identity, versioning, and
 distribution requirements.
 
-Parser, validator, normalizer, and generator responsibilities remain separate features and test
+Parser, validator, normaliser, and generator responsibilities remain separate features and test
 boundaries inside the initial build-time implementation. They are not separate packages merely
 because their algorithms differ.
 
@@ -101,7 +101,7 @@ No reverse dependency is allowed:
 
 ```text
 portable Core -X-> build pipeline, renderer, framework, target, collection, Lilium, or Lotus
-renderer ------X-> generated collection catalog or framework adapter
+renderer ------X-> generated collection catalogue or framework adapter
 public package -X-> repository-only tooling
 ```
 
