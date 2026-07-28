@@ -82,4 +82,6 @@ Every record is linked from this index in identifier order with title, status, o
 domain. Repository verification rejects duplicate identifiers, invalid transitions, missing
 supersession links, and unindexed records.
 
-No numbered records exist yet. The first material post-foundation proposal uses `0001`.
+| Record | Status | Owners | Domain |
+| --- | --- | --- | --- |
+| [0001: pnpm and TypeScript Workspace Toolchain](0001-pnpm-typescript-workspace-toolchain.md) | Accepted | Technical maintainers | Repository toolchain |

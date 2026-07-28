@@ -108,3 +108,16 @@ without its corresponding canonical documentation.
 Documentation checks protect broken links, forbidden local references, mirroring, required
 headers, and generated cleanliness. Checks enforce objective invariants only; they do not measure
 prose quality ceremonially or duplicate human review.
+
+Run the stable repository documentation check with:
+
+```sh
+pnpm run check:docs
+```
+
+The command validates repository structure, mirroring, local links, decision record shape, and
+forbidden local references without imposing subjective prose rules. Its implementation is
+repository tooling and may be replaced without changing this policy or the command contract.
+
+Source ownership and the separation between authored and generated artefacts are defined by the
+[Source Assets and Generated Outputs](source-assets-and-generated-outputs.md) policy.
