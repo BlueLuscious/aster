@@ -71,12 +71,15 @@ The root exposes:
 | Command | Contract |
 | --- | --- |
 | `pnpm build` | Build every real package in dependency order when it defines `build`. |
-| `pnpm check` | Run package type checks, linting, and non-mutating formatting checks. |
+| `pnpm check` | Run package type checks, repository architecture and documentation checks, linting, and non-mutating formatting checks. |
+| `pnpm check:architecture` | Validate the portable compiler baseline, workspace metadata, package dependency boundaries, and authored collection roots. |
+| `pnpm check:docs` | Validate canonical documentation hierarchy, mirroring, links, local-reference exclusions, and decision records. |
 | `pnpm check:types` | Run every package `check:types` contract. |
 | `pnpm lint` | Run every package `lint` contract. |
 | `pnpm format` | Run every package's explicitly mutating formatter. |
 | `pnpm format:check` | Run every package's non-mutating formatting verification. |
-| `pnpm test` | Run every package `test` contract. |
+| `pnpm test` | Run repository-tooling fixtures and every package `test` contract. |
+| `pnpm test:tooling` | Run fixture-based conformance for repository-owned checkers. |
 | `pnpm verify` | Run checks, tests, and builds through public root commands. |
 | `pnpm clean` | Delegate cleanup to each real package's guarded `clean` contract. |
 
@@ -87,6 +90,25 @@ code, repository verification must ensure that it implements every applicable de
 The accepted package test path uses TypeScript compile-time tests and Node's built-in test runner
 executed through `tsx`. A package may divide those responsibilities into `test:types` and
 `test:runtime`, while its public `test` command remains the complete package test contract.
+
+Repository-owned checkers use Node.js directly and expose their behaviour through the stable
+`check:architecture` and `check:docs` commands. Their fixture tests invoke verification functions
+with explicit temporary workspace roots, while the command-line adapters own terminal output and
+process exit status.
+
+## Replacement boundaries
+
+External development infrastructure remains replaceable behind stable repository commands:
+
+- `tsx` adapts TypeScript tests to Node's built-in runner and does not define test semantics;
+- GitHub Actions adapts immutable installation and `pnpm verify` to hosted CI;
+- action implementations and caches are CI details and do not become local verification steps;
+- a future formatter, linter, browser runner, or bundler must receive an explicit classification
+  and stable command boundary before adoption.
+
+A replacement may change internal invocation or configuration without changing the documented
+command contract. No temporary tool may enter runtime dependencies, portable compiler ambient
+types, product contracts, or generated artefacts.
 
 ## Cleanup safety
 
