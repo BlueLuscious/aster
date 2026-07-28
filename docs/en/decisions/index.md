@@ -1,0 +1,85 @@
+# Decision Records
+
+Status: **Accepted**
+
+Decision records preserve the context, alternatives, choice, and consequences of material Aster
+architecture changes. Current observable contracts remain in canonical architecture and governance
+documents; records explain why those contracts changed.
+
+## Location and naming
+
+Records live in `docs/en/decisions/` and use:
+
+```text
+NNNN-kebab-case-title.md
+```
+
+Identifiers are four-digit, monotonically increasing repository-wide, and never reused. Renaming a
+record after acceptance is prohibited except to correct a broken link without changing its
+identifier.
+
+The editable starting structure is [Decision Record Template](template.md).
+
+## Required records
+
+A decision record is required for a material change to:
+
+- public data, options, renderer results, or generated module contracts;
+- package or dependency boundaries;
+- canonical identity, variant, deprecation, or compatibility policy;
+- security and source-acceptance policy;
+- collection ownership or approval authority;
+- production dependencies with architectural consequences;
+- a previously accepted architecture or governance contract.
+
+Reversible private implementation detail does not require a record unless it creates an observable
+constraint or contradicts accepted documentation.
+
+## Status lifecycle
+
+| Status | Meaning |
+| --- | --- |
+| Proposed | Alternatives and consequences are under review; implementation cannot treat the proposal as accepted. |
+| Accepted | Required owners approved the decision and canonical current-contract documentation was updated. |
+| Rejected | The proposal was considered and declined; it has no implementation authority. |
+| Superseded | A later accepted record replaced the decision; historical context remains immutable. |
+
+Allowed transitions are:
+
+```text
+Proposed -> Accepted
+Proposed -> Rejected
+Accepted -> Superseded
+```
+
+Accepted, Rejected, and Superseded records do not return to Proposed. Reversing an accepted choice
+requires a new Proposed record.
+
+## Acceptance and supersession
+
+A record names its decision owners. Technical contracts require technical-maintainer approval;
+collection rules require curator approval; cross-boundary decisions require both.
+
+Accepting a record requires:
+
+- completed context, options, decision, consequences, and evidence;
+- links to affected canonical documents;
+- compatibility and migration analysis where applicable;
+- implementation or evidence assignments for deferred consequences;
+- required owner approval.
+
+When superseded, the old record adds only its `Superseded` status and `supersededBy` link. The new
+record links back through `supersedes`. Accepted decision prose is otherwise immutable apart from
+typographical or link corrections that do not change meaning.
+
+The current contract is incorporated into the relevant architecture or governance source of truth.
+A record does not force consumers to reconstruct current behaviour from a chain of historical
+decisions.
+
+## Index maintenance
+
+Every record is linked from this index in identifier order with title, status, owners, and affected
+domain. Repository verification rejects duplicate identifiers, invalid transitions, missing
+supersession links, and unindexed records.
+
+No numbered records exist yet. The first material post-foundation proposal uses `0001`.
