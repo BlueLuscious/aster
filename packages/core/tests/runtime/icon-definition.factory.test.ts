@@ -89,6 +89,18 @@ function expectDefinitionError(
   return acceptedError as IconDefinitionError;
 }
 
+function assertDeeplyFrozen(value: unknown): void {
+  if (typeof value !== "object" || value === null) {
+    return;
+  }
+
+  assert.ok(Object.isFrozen(value));
+
+  for (const nested of Object.values(value)) {
+    assertDeeplyFrozen(nested);
+  }
+}
+
 test("normalises all primitives into deterministic canonical data", () => {
   const first = definitionFactory.create(createInput());
   const reordered = createInput();
@@ -119,19 +131,7 @@ test("deeply freezes retained data and isolates caller-owned input", () => {
   assert.equal(accepted.identity.name, "shape-sampler");
   assert.equal(accepted.nodes[5]?.kind === "polyline" ? accepted.nodes[5].points.length : 0, 2);
   assert.equal(accepted.metadata.presentation.defaults.stroke, "#aabbcc");
-  assert.ok(Object.isFrozen(accepted));
-  assert.ok(Object.isFrozen(accepted.identity));
-  assert.ok(Object.isFrozen(accepted.nodes));
-  assert.ok(Object.isFrozen(accepted.nodes[5]));
-  assert.ok(
-    accepted.nodes[5]?.kind === "polyline" &&
-      Object.isFrozen(accepted.nodes[5].points) &&
-      Object.isFrozen(accepted.nodes[5].points[0]),
-  );
-  assert.ok(Object.isFrozen(accepted.metadata));
-  assert.ok(Object.isFrozen(accepted.metadata.presentation));
-  assert.ok(Object.isFrozen(accepted.metadata.presentation.defaults));
-  assert.ok(Object.isFrozen(accepted.metadata.presentation.overrides));
+  assertDeeplyFrozen(accepted);
 });
 
 test("constructs repeated identity without retaining a registry", () => {
@@ -187,4 +187,139 @@ test("rejects malformed metadata and self replacement", () => {
   selfReplacement.metadata.deprecated = true;
   Object.assign(selfReplacement.metadata, { replacedBy: selfReplacement.identity });
   expectDefinitionError(selfReplacement, "definition.metadata.replacedBy");
+});
+
+test("accepts the specified numeric boundaries and canonicalises nested negative zero", () => {
+  const input = createInput();
+  input.viewBox.minX = -Number.MAX_VALUE;
+  input.viewBox.width = Number.MIN_VALUE;
+  Object.assign(input.nodes[1] ?? {}, {
+    cx: -0,
+    opacity: 0,
+    fillOpacity: 1,
+    strokeOpacity: -0,
+  });
+  Object.assign(input.nodes[3] ?? {}, {
+    width: 0,
+    height: -0,
+    radiusX: -0,
+  });
+  Object.assign(input.nodes[5]?.points?.[0] ?? {}, { x: -0 });
+
+  const accepted = definitionFactory.create(input);
+  const circle = accepted.nodes[1];
+  const rectangle = accepted.nodes[3];
+  const polyline = accepted.nodes[5];
+
+  assert.equal(accepted.viewBox.minX, -Number.MAX_VALUE);
+  assert.equal(accepted.viewBox.width, Number.MIN_VALUE);
+  assert.ok(circle?.kind === "circle");
+  assert.equal(Object.is(circle.cx, -0), false);
+  assert.equal(circle.opacity, 0);
+  assert.equal(circle.fillOpacity, 1);
+  assert.equal(Object.is(circle.strokeOpacity, -0), false);
+  assert.ok(rectangle?.kind === "rect");
+  assert.equal(rectangle.width, 0);
+  assert.equal(Object.is(rectangle.height, -0), false);
+  assert.equal(Object.is(rectangle.radiusX, -0), false);
+  assert.ok(polyline?.kind === "polyline");
+  assert.equal(Object.is(polyline.points[0]?.x, -0), false);
+});
+
+test("rejects numbers outside each declared numeric domain", () => {
+  const zeroWidth = createInput();
+  zeroWidth.viewBox.width = 0;
+  expectDefinitionError(zeroWidth, "definition.viewBox.width");
+
+  const infiniteRadius = createInput();
+  Object.assign(infiniteRadius.nodes[1] ?? {}, { radius: Number.POSITIVE_INFINITY });
+  expectDefinitionError(infiniteRadius, "definition.nodes[1].radius");
+
+  const negativeRectangleWidth = createInput();
+  Object.assign(negativeRectangleWidth.nodes[3] ?? {}, { width: -1 });
+  expectDefinitionError(negativeRectangleWidth, "definition.nodes[3].width");
+
+  const zeroMiterLimit = createInput();
+  Object.assign(zeroMiterLimit.nodes[0] ?? {}, { strokeMiterLimit: 0 });
+  expectDefinitionError(zeroMiterLimit, "definition.nodes[0].strokeMiterLimit");
+
+  const negativeOpacity = createInput();
+  Object.assign(negativeOpacity.nodes[0] ?? {}, { opacity: -Number.MIN_VALUE });
+  expectDefinitionError(negativeOpacity, "definition.nodes[0].opacity");
+
+  const excessiveOpacity = createInput();
+  Object.assign(excessiveOpacity.nodes[0] ?? {}, { opacity: 1 + Number.EPSILON });
+  expectDefinitionError(excessiveOpacity, "definition.nodes[0].opacity");
+});
+
+test("normalises valid names and rejects non-canonical identity slugs", () => {
+  const acceptedInput = createInput();
+  acceptedInput.identity = {
+    collection: " minimal-2 ",
+    name: "shape-2",
+    variant: "solid-2",
+  };
+
+  const accepted = definitionFactory.create(acceptedInput);
+
+  assert.deepEqual(accepted.identity, {
+    collection: "minimal-2",
+    name: "shape-2",
+    variant: "solid-2",
+  });
+
+  for (const invalidName of [
+    "Shape",
+    "-shape",
+    "shape-",
+    "shape--sampler",
+    "shapé",
+    "shape_sampler",
+  ]) {
+    const input = createInput();
+    input.identity.name = invalidName;
+    expectDefinitionError(input, "definition.identity.name");
+  }
+
+  const emptyVariant = createInput();
+  emptyVariant.identity.variant = " ";
+  expectDefinitionError(emptyVariant, "definition.identity.variant");
+});
+
+test("accepts complete deprecation metadata and enforces metadata edge relationships", () => {
+  const acceptedInput = createInput();
+  acceptedInput.metadata.deprecated = true;
+  Object.assign(acceptedInput.metadata, {
+    attribution: " Example Author ",
+    replacedBy: {
+      collection: "minimal",
+      name: "shape-sampler",
+      variant: "solid",
+    },
+  });
+
+  const accepted = definitionFactory.create(acceptedInput);
+
+  assert.equal(accepted.metadata.attribution, "Example Author");
+  assert.deepEqual(accepted.metadata.replacedBy, {
+    collection: "minimal",
+    name: "shape-sampler",
+    variant: "solid",
+  });
+  assertDeeplyFrozen(accepted.metadata.replacedBy);
+
+  const invalidRtl = createInput();
+  invalidRtl.metadata.rtl = "automatic";
+  expectDefinitionError(invalidRtl, "definition.metadata.rtl");
+
+  const emptyLicence = createInput();
+  emptyLicence.metadata.licence = " ";
+  expectDefinitionError(emptyLicence, "definition.metadata.licence");
+
+  const invalidSizeRelationship = createInput();
+  invalidSizeRelationship.metadata.presentation.minimumSize = 25;
+  expectDefinitionError(
+    invalidSizeRelationship,
+    "definition.metadata.presentation.minimumSize",
+  );
 });
