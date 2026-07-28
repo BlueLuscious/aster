@@ -12,8 +12,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  bootstrap:
-    name: Validate bootstrap
+  verify:
+    name: Verify repository
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -37,3 +37,6 @@ jobs:
 
       - name: Validate frozen installation
         run: pnpm install --frozen-lockfile
+
+      - name: Verify repository
+        run: pnpm run verify
