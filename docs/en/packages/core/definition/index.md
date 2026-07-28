@@ -5,6 +5,9 @@ Status: **Accepted**
 The definition feature composes identity, coordinate space, ordered nodes, and resolved metadata
 into one render-neutral icon value.
 
+Its implemented [immutable construction flow](runtime/index.md) validates authored objects without
+retaining a catalogue or identity registry.
+
 ## Contracts
 
 | Contract | Responsibility | Relations |

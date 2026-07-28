@@ -8,17 +8,18 @@ without importing SVG parser syntax, DOM objects, framework state, or repository
 
 ## Current boundary
 
-The current package is a type foundation. It exposes contracts and closed value unions but no
-runtime values, constructors, registries, renderers, or global identity authority.
+The current package exposes contracts and closed value unions. It also contains a tested internal
+definition-construction runtime, but no public value API, renderer, registry, or global identity
+authority.
 
-Runtime construction and deep immutability remain outside the observable package until their
-validation behaviour is implemented and tested.
+Runtime construction remains outside the observable package until the public API and package ABI
+are accepted.
 
 ## Features
 
 | Feature | Responsibility |
 | --- | --- |
-| [Definition](definition/index.md) | Complete definition, identity, and viewBox objects. |
+| [Definition](definition/index.md) | Complete definition, identity, viewBox, and immutable construction flow. |
 | [Node](node/index.md) | Closed portable geometry primitives and coordinate pairs. |
 | [Metadata](metadata/index.md) | Resolved runtime metadata and right-to-left policy. |
 | [Presentation](presentation/index.md) | Explicit paint data, node presentation, and collection override policy. |
@@ -47,7 +48,7 @@ only after a built package ABI exists.
 - A variant is a distinct identity and cannot be selected through render options.
 - Public objects and sequences are read-only at the type boundary.
 - Numeric, textual, ordering, cloning, and deep-freeze invariants require runtime validation and
-  are not claimed by the type surface alone.
+  are enforced by internal construction rather than claimed by the type surface alone.
 
 The architecture authority for this model is
 [Portable Icon Model](../../architecture/portable-icon-model.md).
