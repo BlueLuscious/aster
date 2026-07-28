@@ -115,6 +115,47 @@ test("rejects reverse and relative package dependencies", async () => {
   }
 });
 
+test("rejects Core production dependencies and public package boundary drift", async () => {
+  const root = await createFixture();
+
+  try {
+    await writeFixtureJson(root, "packages/core/package.json", {
+      name: "@aster/core",
+      type: "module",
+      sideEffects: true,
+      exports: {
+        ".": {
+          types: "./dist/index.d.ts",
+          import: "./dist/index.js",
+        },
+        "./runtime": "./dist/runtime.js",
+      },
+      dependencies: {
+        "host-library": "^1.0.0",
+      },
+    });
+    await writeFixtureJson(root, "packages/core/tsconfig.json", {
+      compilerOptions: {
+        lib: ["ES2022", "DOM"],
+        types: ["node"],
+      },
+    });
+    await writeFixtureFile(root, "packages/core/src/index.ts", "export {};\n");
+
+    const issues = await verifyArchitecture(root);
+
+    assert.ok(
+      issues.some((issue) => /cannot declare production dependencies/u.test(issue)),
+    );
+    assert.ok(issues.some((issue) => /sideEffects as false/u.test(issue)));
+    assert.ok(issues.some((issue) => /expose only the root/u.test(issue)));
+    assert.ok(issues.some((issue) => /cannot add host libraries/u.test(issue)));
+    assert.ok(issues.some((issue) => /cannot add ambient/u.test(issue)));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("rejects invalid authored collection boundaries", async () => {
   const root = await createFixture();
 
