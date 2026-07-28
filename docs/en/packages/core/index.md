@@ -8,17 +8,14 @@ without importing SVG parser syntax, DOM objects, framework state, or repository
 
 ## Current boundary
 
-The current package exposes contracts and closed value unions. It also contains a tested internal
-definition-construction runtime, but no public value API, renderer, registry, or global identity
-authority.
-
-Runtime construction remains outside the observable package until the public API and package ABI
-are accepted.
+The current package exposes contracts, closed value unions, and the immutable `Icon` API object.
+It contains no renderer, catalogue, registry, or global identity authority.
 
 ## Features
 
 | Feature | Responsibility |
 | --- | --- |
+| [API](api/index.md) | Immutable definition-construction authority and exact package exports. |
 | [Definition](definition/index.md) | Complete definition, identity, viewBox, and immutable construction flow. |
 | [Node](node/index.md) | Closed portable geometry primitives and coordinate pairs. |
 | [Metadata](metadata/index.md) | Resolved runtime metadata and right-to-left policy. |
@@ -33,11 +30,17 @@ DOM, browser, Lilium, Lotus, parser, renderer, or repository-tooling ambient typ
 Consumers depend on Core; Core never depends on a collection, build pipeline, renderer, framework,
 or target.
 
-## Public type surface
+## Public surface
 
-The source root re-exports the public contracts and types documented by each feature. There is no
-public value API yet. Exact distribution exports and implementation-subpath rejection are defined
-only after a built package ABI exists.
+The package root exports:
+
+| Symbol | Kind | Authority |
+| --- | --- | --- |
+| `Icon` | Frozen value object | Validates and constructs definitions through `define()`. |
+| Feature contracts and types | Type-only exports | Describe portable definitions, nodes, metadata, presentation, and options. |
+
+Only the root package export `"."` is approved. Runtime implementation paths and feature subpaths
+are rejected by the package export map.
 
 ## Stable invariants
 

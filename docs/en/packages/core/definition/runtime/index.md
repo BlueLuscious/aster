@@ -7,8 +7,8 @@ deeply frozen `IconDefinition`. It is not yet a public package export.
 
 Concrete runtime responsibilities are implemented as classes. `IconDefinitionFactory` composes
 normaliser instances through native `#` private fields; normalisers keep supporting behaviour in
-private methods rather than loose module functions. A frozen public API object will own the shared
-factory instance only when the package API is declared.
+private methods rather than loose module functions. The frozen public
+[`Icon` API object](../../api/index.md) owns the shared factory instance.
 
 ## Construction flow
 

@@ -9,7 +9,7 @@ The current package set is:
 
 | Package | Status | Responsibility |
 | --- | --- | --- |
-| [`@aster/core`](core/index.md) | Type foundation | Portable icon definitions, geometry, metadata, presentation, and render-neutral options. |
+| [`@aster/core`](core/index.md) | Pre-release | Portable icon definitions, immutable construction, and render-neutral contracts. |
 
 Accepted responsibilities and dependency direction are defined by
 [Product and Package Boundaries](../architecture/product-and-package-boundaries.md).

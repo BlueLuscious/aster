@@ -2,11 +2,29 @@
 
 Portable, render-neutral icon contracts and types for Aster.
 
-The package currently exposes type-level definitions only. Its internal construction runtime is
-implemented and tested, but no public value API or distribution export is declared yet.
+The package exposes portable contracts and the immutable `Icon` API object.
 
-See the [canonical package documentation](../../docs/en/packages/core/index.md) for responsibilities,
-features, and model relationships.
+```ts
+import { Icon } from "@aster/core";
+
+const Camera = Icon.define({
+  identity: { collection: "minimal", name: "camera" },
+  viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
+  nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],
+  metadata: {
+    displayName: "Camera",
+    rtl: "preserve",
+    presentation: {
+      defaults: { fill: "none", stroke: "currentColor" },
+      overrides: ["stroke"],
+    },
+    deprecated: false,
+  },
+});
+```
+
+See the [canonical package documentation](../../docs/en/packages/core/index.md) for
+responsibilities, features, exports, and model relationships.
 
 ## Licence
 
