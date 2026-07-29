@@ -22,5 +22,8 @@
     "test": "pnpm run test:types && pnpm run test:runtime",
     "test:runtime": "tsx --test --test-isolation=none tests/runtime/*.test.ts",
     "test:types": "tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "xmlsax-typescript": "1.0.0"
   }
 }

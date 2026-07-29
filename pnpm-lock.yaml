@@ -18,7 +18,11 @@ importers:
         specifier: 5.9.3
         version: 5.9.3
 
-  packages/build: {}
+  packages/build:
+    dependencies:
+      xmlsax-typescript:
+        specifier: 1.0.0
+        version: 1.0.0
 
   packages/core: {}
 
@@ -206,6 +210,10 @@ packages:
   undici-types@7.18.2:
     resolution: {integrity: sha512-AsuCzffGHJybSaRrmr5eHr81mwJU3kjw6M+uprWvCXiNeN9SOGwQ3Jn8jb8m3Z6izVgknn1R0FTCEAP2QrLY/w==}
 
+  xmlsax-typescript@1.0.0:
+    resolution: {integrity: sha512-ekWO9zwNTxR697YuczP2LRGijmmtilwmTahUPNQtepqw81ACCG45Haq9TRUfLRRaqdIWLTtmdR0HdYk/xD8rFA==}
+    engines: {node: '>=20'}
+
 snapshots:
 
   '@esbuild/aix-ppc64@0.28.1':
@@ -331,3 +339,5 @@ snapshots:
   typescript@5.9.3: {}
 
   undici-types@7.18.2: {}
+
+  xmlsax-typescript@1.0.0: {}
