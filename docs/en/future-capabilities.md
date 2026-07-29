@@ -41,8 +41,9 @@ Current feature responsibilities are defined by the
 ## Public portable vocabularies
 
 Core and Build intentionally own different boundaries, but some source vocabularies currently
-contain the same values as the portable model. Examples include paint keywords, presentation
-enumerations, primitive discriminators, and the default right-to-left policy.
+contain the same values as the portable model. Examples include canonical identity-slug grammar,
+paint keywords, presentation enumerations, primitive discriminators, and the default
+right-to-left policy.
 
 Before Core enters its first compatibility-bearing release, decide whether consumers need
 immutable runtime authorities for those portable vocabularies. If accepted, Core should expose

@@ -3,7 +3,7 @@
 Status: **Accepted**
 
 The internal definition runtime converts one authored object into an isolated, deterministic, and
-deeply frozen `IconDefinition`. It is not yet a public package export.
+deeply frozen `IconDefinition`. It is not a public package export.
 
 Concrete runtime responsibilities are implemented as classes. `IconDefinitionFactory` composes
 normaliser instances through native `#` private fields; normalisers keep supporting behaviour in
@@ -30,8 +30,9 @@ private methods rather than loose module functions. The frozen public
 | `IconDefinitionFactory` | Owns the complete validation, normalisation, isolation, and deep-freeze transaction. | Composes all definition, node, and metadata normalisers. |
 | `IconIdentityNormaliser` | Trims and validates complete canonical icon identities. | Reused for owning and replacement identities. |
 | `IconViewBoxNormaliser` | Validates finite minima and positive logical dimensions. | Produces the definition coordinate system. |
-| `IconValueValidator` | Provides plain-object, exact-field, text, number, boolean, opacity, and array assertions. | Shared only by internal Core normalisers. |
-| `IconDefinitionError` | Reports deterministic invalid-definition failures with an Aster code and logical path. | Raised by validators and normalisers; not exported from the package. |
+
+Primitive assertions and deterministic contract failures are documented by the
+[Core shared runtime](../../shared/index.md).
 
 Presentation fields use fixed construction order. Hexadecimal sRGB colours are lowercased,
 three-digit colours expand to six digits, negative zero becomes zero, and override capabilities
@@ -39,9 +40,9 @@ use canonical semantic order.
 
 ## Error boundary
 
-Invalid authored data raises `IconDefinitionError`, a deterministic `TypeError` with code
-`ASTER-CORE-001` and a logical object `path`. Messages use stable British English and contain no
-host paths, parser failures, or environment state.
+Invalid authored data raises the deterministic `IconDefinitionError` documented by the
+[Core shared runtime](../../shared/index.md). The complete construction transaction terminates
+without returning partial data.
 
 ## Identity scope
 

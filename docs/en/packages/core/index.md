@@ -21,6 +21,7 @@ It contains no renderer, catalogue, registry, or global identity authority.
 | [Metadata](metadata/index.md) | Resolved runtime metadata and right-to-left policy. |
 | [Presentation](presentation/index.md) | Explicit paint data, node presentation, and collection override policy. |
 | [Render](render/index.md) | Target-independent options passed with a definition. |
+| [Shared](shared/index.md) | Internal primitive authored-value assertions and deterministic Core failures. |
 
 ## Dependency boundary
 

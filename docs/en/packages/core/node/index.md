@@ -28,6 +28,16 @@ geometry narrowing uses the literal `kind` discriminator.
 | --- | --- | --- |
 | `IconNodeType` | Closed union of all seven supported node contracts. | Used by the ordered `IconDefinition.nodes` sequence. |
 
+## Feature-owned authorities
+
+| Authority | Responsibility |
+| --- | --- |
+| `iconNodeKinds` | Defines the exact discriminator for each supported portable geometry node. |
+
+Every node contract derives its `kind` property from `iconNodeKinds`, and `IconNodeNormaliser`
+uses the same authority for runtime dispatch and canonical output. The authority remains internal
+and does not add a public runtime export.
+
 Readonly arrays prevent mutation through the type surface. Runtime construction must clone and
 deeply freeze node and point sequences before the package claims immutable accepted values.
 
