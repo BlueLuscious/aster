@@ -10,9 +10,9 @@ package, not a published runtime dependency.
 
 The implemented boundary accepts exact textual source descriptors, parses the accepted SVG syntax
 subset behind an internal trust boundary, validates universal technical invariants and
-collection-owned visual rules, and produces stable diagnostic-bearing results. It has no
-filesystem adapter, metadata serialiser, normaliser, generator, command-line adapter, or generated
-output authority yet.
+collection-owned visual rules, and normalises successful evidence plus decoded metadata into Core
+definitions. It has no filesystem adapter, metadata serialiser, metadata decoder, generator,
+command-line adapter, or generated output authority yet.
 
 ## Features
 
@@ -22,12 +22,15 @@ output authority yet.
 | [Diagnostic](diagnostic/index.md) | Stable diagnostics, deterministic aggregation, and success or failure results. |
 | [Parser](parser/index.md) | Internal parser-neutral SVG syntax, source spans, subset behaviour, and blocking safety policy. |
 | [Validation](validation/index.md) | Internal identity, technical, geometry, presentation, and collection-rule validation. |
+| [Normalisation](normalisation/index.md) | Internal deterministic conversion of accepted evidence and decoded metadata into Core definitions. |
 
 ## Dependency boundary
 
 The package depends directionally on public `@aster/core` contracts for stable portable domain
-concepts. Source acquisition reuses `IconIdentity`; validation reuses `IconViewBox`. Build does not
-import Core runtime implementation paths or grant untrusted source values portable authority.
+concepts. Source acquisition reuses `IconIdentity`; validation reuses `IconViewBox`; normalisation
+produces definitions through the public `Icon.define()` API. Build does not import Core
+implementation paths, including `core/src/shared/`, or grant untrusted source values portable
+authority.
 
 The package also pins `xmlsax-typescript` version `1.0.0`. That dependency has no transitive
 production packages and is confined to the internal `SvgParser` adapter. Production compilation
@@ -50,9 +53,9 @@ The private root export provides:
 | `DiagnosticResultFactory` | Class | Creates explicit successes and failures without host process authority. |
 
 Only the package root is an approved workspace import. Runtime implementation paths remain
-internal. Parser and validation classes, service contracts, syntax and evidence contracts,
-collection rule configuration, and parser-library values are deliberately absent from the root
-surface.
+internal. Parser, validation, and normalisation classes, service contracts, syntax and evidence
+contracts, collection rule configuration, and parser-library values are deliberately absent from
+the root surface.
 
 ## Domain flow
 
@@ -65,9 +68,13 @@ surface.
    checks with accepted collection-owned rules.
 5. Technical validation produces metrics only from trustworthy parsed values; collection rules
    cannot weaken safety or technical constraints.
-6. Domain stages create Aster-owned reports through `SourceDiagnosticFactory`.
-7. `SourceDiagnosticAggregator` deduplicates and orders independent reports deterministically.
-8. `DiagnosticResultFactory` returns complete output with warnings or failure with blocking
+6. A replaceable metadata decoder supplies structured collection and icon values without exposing
+   its serialisation technology to later stages.
+7. `SvgNormaliser` links those values to successful evidence, resolves inherited source
+   representation, composes metadata authority, and constructs each result through `Icon.define()`.
+8. Domain stages create Aster-owned reports through `SourceDiagnosticFactory`.
+9. `SourceDiagnosticAggregator` deduplicates and orders independent reports deterministically.
+10. `DiagnosticResultFactory` returns complete output with warnings or failure with blocking
    diagnostics and no partial output.
 
 Filesystem discovery, terminal formatting, and process exit status stay outside this flow.

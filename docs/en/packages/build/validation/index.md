@@ -59,7 +59,7 @@ metadata.
 | `TSvgGeometryValidation` | Carries hierarchy-wide geometry diagnostics and metrics. | Output of `SvgGeometryValidator`. |
 | `TSvgPrimitiveValidation` | Carries one primitive family's diagnostics and metrics. | Shared by concrete primitive validators. |
 | `TSvgPresentationValidation` | Carries presentation diagnostics and valid explicit stroke widths. | Output of `SvgPresentationValidator`. |
-| `TSvgPathInspection` | Carries path grammar validity, drawing evidence, command count, and grid values. | Output of `SvgPathDataInspector`. |
+| `TSvgPathInspection` | Carries path grammar validity, drawing evidence, command count, grid values, and valid canonical token spelling. | Output of `SvgPathDataInspector`; canonical spelling is consumed by later normalisation. |
 
 ## Universal validation
 
@@ -74,12 +74,16 @@ Universal checks are not configurable by collections:
 | Numbers | Geometry values use the strict finite SVG number grammar and their declared positive or non-negative domain. |
 | Points | Polyline and polygon sequences contain complete finite pairs and their required minimum point count. |
 | Path data | Commands and repeated parameter groups follow the accepted path grammar; arc radii and flags are valid; a drawing operation exists. |
-| Presentation | Paint, fill rule, stroke geometry, and opacity use the closed portable value sets. |
+| Presentation | Paint, fill rule, stroke geometry, and opacity use the closed portable value sets; overall opacity is forbidden on structural roots and groups. |
 | Geometry | At least one supported non-empty primitive exists. |
 | Transforms | Remain unsupported technical errors at the parser boundary; collection configuration cannot weaken this rule. |
 
 Technical invalidity always blocks evidence and later normalisation. Independent safe checks
 continue so callers receive all trustworthy diagnostics rather than only the first failure.
+
+Overall opacity on a structural `svg` or `g` element is blocking because group compositing cannot
+be preserved by flattening opacity onto individual overlapping primitives. Other accepted
+inherited presentation fields remain structurally resolvable.
 
 ## Collection validation
 
