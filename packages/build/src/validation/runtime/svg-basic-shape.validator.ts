@@ -1,8 +1,13 @@
 import type { SourceDiagnostic } from "../../diagnostic/contracts/index.js";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
+import { svgNumericDomains } from "../../shared/constants/svg-numeric-domains.constant.js";
+import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
+import { svgSourceElementNames } from "../../shared/constants/svg-source-element-names.constant.js";
+import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
 import type { TLocatedBounds } from "../types/internal/located-bounds.type.js";
 import type { TLocatedNumber } from "../types/internal/located-number.type.js";
 import type { TSvgPrimitiveValidation } from "../types/internal/svg-primitive-validation.type.js";
+import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgGeometryNumberReader } from "./svg-geometry-number.reader.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
@@ -35,7 +40,7 @@ export class SvgBasicShapeValidator {
     const bounds: TLocatedBounds[] = [];
 
     switch (element.localName) {
-      case "circle":
+      case svgSourceElementNames.circle:
         this.#circle(
           sourceId,
           element,
@@ -44,7 +49,7 @@ export class SvgBasicShapeValidator {
           bounds,
         );
         break;
-      case "ellipse":
+      case svgSourceElementNames.ellipse:
         this.#ellipse(
           sourceId,
           element,
@@ -53,7 +58,7 @@ export class SvgBasicShapeValidator {
           bounds,
         );
         break;
-      case "rect":
+      case svgSourceElementNames.rectangle:
         this.#rectangle(
           sourceId,
           element,
@@ -62,7 +67,7 @@ export class SvgBasicShapeValidator {
           bounds,
         );
         break;
-      case "line":
+      case svgSourceElementNames.line:
         this.#line(
           sourceId,
           element,
@@ -102,8 +107,8 @@ export class SvgBasicShapeValidator {
     const cx = this.#numberReader.read(
       sourceId,
       element,
-      "cx",
-      "finite",
+      svgSourceAttributeNames.centreX,
+      svgNumericDomains.finite,
       false,
       diagnostics,
       gridValues,
@@ -111,8 +116,8 @@ export class SvgBasicShapeValidator {
     const cy = this.#numberReader.read(
       sourceId,
       element,
-      "cy",
-      "finite",
+      svgSourceAttributeNames.centreY,
+      svgNumericDomains.finite,
       false,
       diagnostics,
       gridValues,
@@ -120,14 +125,24 @@ export class SvgBasicShapeValidator {
     const radius = this.#numberReader.read(
       sourceId,
       element,
-      "r",
-      "positive",
+      svgSourceAttributeNames.radius,
+      svgNumericDomains.positive,
       true,
       diagnostics,
       gridValues,
     );
-    const centreX = this.#resolved(element, "cx", cx, 0);
-    const centreY = this.#resolved(element, "cy", cy, 0);
+    const centreX = this.#resolved(
+      element,
+      svgSourceAttributeNames.centreX,
+      cx,
+      0,
+    );
+    const centreY = this.#resolved(
+      element,
+      svgSourceAttributeNames.centreY,
+      cy,
+      0,
+    );
 
     if (
       radius !== undefined &&
@@ -163,8 +178,8 @@ export class SvgBasicShapeValidator {
     const cx = this.#numberReader.read(
       sourceId,
       element,
-      "cx",
-      "finite",
+      svgSourceAttributeNames.centreX,
+      svgNumericDomains.finite,
       false,
       diagnostics,
       gridValues,
@@ -172,8 +187,8 @@ export class SvgBasicShapeValidator {
     const cy = this.#numberReader.read(
       sourceId,
       element,
-      "cy",
-      "finite",
+      svgSourceAttributeNames.centreY,
+      svgNumericDomains.finite,
       false,
       diagnostics,
       gridValues,
@@ -181,8 +196,8 @@ export class SvgBasicShapeValidator {
     const radiusX = this.#numberReader.read(
       sourceId,
       element,
-      "rx",
-      "positive",
+      svgSourceAttributeNames.radiusX,
+      svgNumericDomains.positive,
       true,
       diagnostics,
       gridValues,
@@ -190,14 +205,24 @@ export class SvgBasicShapeValidator {
     const radiusY = this.#numberReader.read(
       sourceId,
       element,
-      "ry",
-      "positive",
+      svgSourceAttributeNames.radiusY,
+      svgNumericDomains.positive,
       true,
       diagnostics,
       gridValues,
     );
-    const centreX = this.#resolved(element, "cx", cx, 0);
-    const centreY = this.#resolved(element, "cy", cy, 0);
+    const centreX = this.#resolved(
+      element,
+      svgSourceAttributeNames.centreX,
+      cx,
+      0,
+    );
+    const centreY = this.#resolved(
+      element,
+      svgSourceAttributeNames.centreY,
+      cy,
+      0,
+    );
 
     if (
       radiusX !== undefined &&
@@ -234,8 +259,8 @@ export class SvgBasicShapeValidator {
     const x = this.#numberReader.read(
       sourceId,
       element,
-      "x",
-      "finite",
+      svgSourceAttributeNames.x,
+      svgNumericDomains.finite,
       false,
       diagnostics,
       gridValues,
@@ -243,8 +268,8 @@ export class SvgBasicShapeValidator {
     const y = this.#numberReader.read(
       sourceId,
       element,
-      "y",
-      "finite",
+      svgSourceAttributeNames.y,
+      svgNumericDomains.finite,
       false,
       diagnostics,
       gridValues,
@@ -252,8 +277,8 @@ export class SvgBasicShapeValidator {
     const width = this.#numberReader.read(
       sourceId,
       element,
-      "width",
-      "positive",
+      svgSourceAttributeNames.width,
+      svgNumericDomains.positive,
       true,
       diagnostics,
       gridValues,
@@ -261,8 +286,8 @@ export class SvgBasicShapeValidator {
     const height = this.#numberReader.read(
       sourceId,
       element,
-      "height",
-      "positive",
+      svgSourceAttributeNames.height,
+      svgNumericDomains.positive,
       true,
       diagnostics,
       gridValues,
@@ -270,8 +295,8 @@ export class SvgBasicShapeValidator {
     this.#numberReader.read(
       sourceId,
       element,
-      "rx",
-      "non-negative",
+      svgSourceAttributeNames.radiusX,
+      svgNumericDomains.nonNegative,
       false,
       diagnostics,
       gridValues,
@@ -279,14 +304,24 @@ export class SvgBasicShapeValidator {
     this.#numberReader.read(
       sourceId,
       element,
-      "ry",
-      "non-negative",
+      svgSourceAttributeNames.radiusY,
+      svgNumericDomains.nonNegative,
       false,
       diagnostics,
       gridValues,
     );
-    const minimumX = this.#resolved(element, "x", x, 0);
-    const minimumY = this.#resolved(element, "y", y, 0);
+    const minimumX = this.#resolved(
+      element,
+      svgSourceAttributeNames.x,
+      x,
+      0,
+    );
+    const minimumY = this.#resolved(
+      element,
+      svgSourceAttributeNames.y,
+      y,
+      0,
+    );
 
     if (
       width !== undefined &&
@@ -320,13 +355,14 @@ export class SvgBasicShapeValidator {
     gridValues: TLocatedNumber[],
     bounds: TLocatedBounds[],
   ): void {
-    const names = ["x1", "y1", "x2", "y2"] as const;
+    const names =
+      svgSourceElementSchema[svgSourceElementNames.line].attributes;
     const located = names.map((name) =>
       this.#numberReader.read(
         sourceId,
         element,
         name,
-        "finite",
+        svgNumericDomains.finite,
         false,
         diagnostics,
         gridValues,
@@ -349,7 +385,7 @@ export class SvgBasicShapeValidator {
     if (x1 === x2 && y1 === y2) {
       diagnostics.push(
         this.#diagnosticFactory.create({
-          kind: "invalid-geometry",
+          kind: svgValidationIssueKinds.invalidGeometry,
           sourceId,
           span: element.span,
         }),

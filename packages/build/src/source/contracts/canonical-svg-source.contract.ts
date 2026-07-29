@@ -1,4 +1,5 @@
 import type { IconIdentity } from "@aster/core";
+import type { ingestionSourceKinds } from "../constants/ingestion-source-kinds.constant.js";
 import type { CanonicalTextSource } from "./canonical-text-source.contract.js";
 
 /**
@@ -8,7 +9,7 @@ export interface CanonicalSvgSource extends CanonicalTextSource {
   /**
    * @description Discriminator for canonical SVG artwork.
    */
-  readonly kind: "svg";
+  readonly kind: typeof ingestionSourceKinds.svg;
 
   /**
    * @description Identity established independently from SVG document contents.

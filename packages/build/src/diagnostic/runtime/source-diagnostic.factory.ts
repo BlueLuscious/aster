@@ -107,15 +107,17 @@ export class SourceDiagnosticFactory {
   ): DiagnosticCategoryType {
     if (
       typeof value !== "string" ||
-      !diagnosticCategories.includes(value as DiagnosticCategoryType)
+      !Object.hasOwn(diagnosticCategories, value)
     ) {
       throw new BuildContractError(
         path,
-        `expected one of ${diagnosticCategories.join(", ")}`,
+        `expected one of ${Object.values(diagnosticCategories).join(", ")}`,
       );
     }
 
-    return value as DiagnosticCategoryType;
+    return diagnosticCategories[
+      value as keyof typeof diagnosticCategories
+    ];
   }
 
   /**
@@ -157,14 +159,16 @@ export class SourceDiagnosticFactory {
   ): DiagnosticSeverityType {
     if (
       typeof value !== "string" ||
-      !diagnosticSeverities.includes(value as DiagnosticSeverityType)
+      !Object.hasOwn(diagnosticSeverities, value)
     ) {
       throw new BuildContractError(
         path,
-        `expected one of ${diagnosticSeverities.join(", ")}`,
+        `expected one of ${Object.values(diagnosticSeverities).join(", ")}`,
       );
     }
 
-    return value as DiagnosticSeverityType;
+    return diagnosticSeverities[
+      value as keyof typeof diagnosticSeverities
+    ];
   }
 }

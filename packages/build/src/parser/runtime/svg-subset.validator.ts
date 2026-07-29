@@ -1,6 +1,9 @@
 import type { TSvgElementInput } from "../types/internal/svg-element-input.type.js";
 import type { TSvgParsingIssue } from "../types/internal/svg-parsing-issue.type.js";
+import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
 import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
+import { svgSourceElementRoles } from "../../shared/constants/svg-source-element-roles.constant.js";
+import { svgParsingIssueKinds } from "../constants/svg-parsing-issue-kinds.constant.js";
 
 /**
  * @description Enforces parser-stage structural behaviour for the accepted SVG source subset.
@@ -17,12 +20,12 @@ export class SvgSubsetValidator {
     const supported =
       schema !== undefined &&
       (element.depth === 1
-        ? schema.role === "root"
-        : schema.role !== "root");
+        ? schema.role === svgSourceElementRoles.root
+        : schema.role !== svgSourceElementRoles.root);
 
     if (!supported) {
       issues.push({
-        kind: "unsupported-element",
+        kind: svgParsingIssueKinds.unsupportedElement,
         startOffset: element.nameSpan.start.offset,
         endOffset: element.nameSpan.end.offset,
         subject: element.name,
@@ -30,9 +33,11 @@ export class SvgSubsetValidator {
     }
 
     for (const attribute of element.attributes) {
-      if (attribute.localName === "transform") {
+      if (
+        attribute.localName === svgSourceAttributeNames.transform
+      ) {
         issues.push({
-          kind: "unsupported-transform",
+          kind: svgParsingIssueKinds.unsupportedTransform,
           startOffset: attribute.span.start.offset,
           endOffset: attribute.span.end.offset,
         });
@@ -80,7 +85,9 @@ export class SvgSubsetValidator {
     }
 
     return {
-      kind: insideRoot ? "unsupported-text" : "malformed-document",
+      kind: insideRoot
+        ? svgParsingIssueKinds.unsupportedText
+        : svgParsingIssueKinds.malformedDocument,
       startOffset,
       endOffset,
     };

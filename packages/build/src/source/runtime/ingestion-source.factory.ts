@@ -6,6 +6,7 @@ import type {
 import type { IngestionSourceType } from "../types/index.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { BuildValueValidator } from "../../shared/runtime/build-value.validator.js";
+import { ingestionSourceKinds } from "../constants/ingestion-source-kinds.constant.js";
 import { SourceIdNormaliser } from "./source-id.normaliser.js";
 import { SourceIdentityNormaliser } from "./source-identity.normaliser.js";
 
@@ -43,11 +44,11 @@ export class IngestionSourceFactory {
     const content = this.#acceptContent(record.content, `${path}.content`);
 
     switch (record.kind) {
-      case "svg":
+      case ingestionSourceKinds.svg:
         return this.#createSvg(record, sourceId, content, path);
-      case "collection-metadata":
+      case ingestionSourceKinds.collectionMetadata:
         return this.#createCollectionMetadata(record, sourceId, content, path);
-      case "icon-metadata":
+      case ingestionSourceKinds.iconMetadata:
         return this.#createIconMetadata(record, sourceId, content, path);
       default:
         throw new BuildContractError(`${path}.kind`, "unsupported source kind");
@@ -75,7 +76,7 @@ export class IngestionSourceFactory {
     );
 
     return Object.freeze({
-      kind: "svg",
+      kind: ingestionSourceKinds.svg,
       sourceId,
       content,
       identity: this.#identityNormaliser.normalise(
@@ -106,7 +107,7 @@ export class IngestionSourceFactory {
     );
 
     return Object.freeze({
-      kind: "collection-metadata",
+      kind: ingestionSourceKinds.collectionMetadata,
       sourceId,
       content,
       collection: this.#identityNormaliser.normaliseCollection(
@@ -137,7 +138,7 @@ export class IngestionSourceFactory {
     );
 
     return Object.freeze({
-      kind: "icon-metadata",
+      kind: ingestionSourceKinds.iconMetadata,
       sourceId,
       content,
       identity: this.#identityNormaliser.normalise(

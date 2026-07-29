@@ -10,6 +10,7 @@ import type { ISvgNormalisationRequest } from "../contracts/internal/svg-normali
 import type { ISvgNormaliser } from "../contracts/internal/svg-normaliser.contract.js";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
 import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
+import { svgSourceElementRoles } from "../../shared/constants/svg-source-element-roles.constant.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { IconMetadataComposer } from "./icon-metadata.composer.js";
 import { SvgPresentationNormaliser } from "./svg-presentation.normaliser.js";
@@ -174,7 +175,7 @@ export class SvgNormaliser implements ISvgNormaliser {
         );
       }
 
-      if (schema.role === "primitive") {
+      if (schema.role === svgSourceElementRoles.primitive) {
         nodes.push(
           this.#primitiveNormaliser.normalise(element, presentation),
         );

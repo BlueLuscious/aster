@@ -1,15 +1,17 @@
+import { svgPathCommands } from "./svg-path-commands.constant.js";
+
 /**
  * @description Immutable parameter-group arity for every accepted SVG path command.
  */
 export const svgPathCommandParameterCounts = Object.freeze({
-  a: 7,
-  c: 6,
-  h: 1,
-  l: 2,
-  m: 2,
-  q: 4,
-  s: 4,
-  t: 2,
-  v: 1,
-  z: 0,
+  [svgPathCommands.arc]: 7,
+  [svgPathCommands.cubicBezier]: 6,
+  [svgPathCommands.horizontalLine]: 1,
+  [svgPathCommands.line]: 2,
+  [svgPathCommands.move]: 2,
+  [svgPathCommands.quadraticBezier]: 4,
+  [svgPathCommands.smoothCubicBezier]: 4,
+  [svgPathCommands.smoothQuadraticBezier]: 2,
+  [svgPathCommands.verticalLine]: 1,
+  [svgPathCommands.close]: 0,
 }) satisfies Readonly<Record<string, number>>;

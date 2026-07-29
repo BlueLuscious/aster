@@ -4,6 +4,8 @@ import type {
   IconPresentation,
 } from "@aster/core";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
+import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
+import { svgSourceElementNames } from "../../shared/constants/svg-source-element-names.constant.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { SvgNumberParser } from "../../validation/runtime/svg-number.parser.js";
 import { SvgPathDataNormaliser } from "./svg-path-data.normaliser.js";
@@ -33,44 +35,44 @@ export class SvgPrimitiveNormaliser {
     presentation: IconPresentation,
   ): IconNodeType {
     switch (element.localName) {
-      case "path":
+      case svgSourceElementNames.path:
         return {
-          kind: "path",
+          kind: svgSourceElementNames.path,
           data: this.#pathNormaliser.normalise(
-            this.#required(element, "d"),
+            this.#required(element, svgSourceAttributeNames.pathData),
           ),
           ...presentation,
         };
-      case "circle":
+      case svgSourceElementNames.circle:
         return {
-          kind: "circle",
-          cx: this.#number(element, "cx", 0),
-          cy: this.#number(element, "cy", 0),
-          radius: this.#number(element, "r"),
+          kind: svgSourceElementNames.circle,
+          cx: this.#number(element, svgSourceAttributeNames.centreX, 0),
+          cy: this.#number(element, svgSourceAttributeNames.centreY, 0),
+          radius: this.#number(element, svgSourceAttributeNames.radius),
           ...presentation,
         };
-      case "ellipse":
+      case svgSourceElementNames.ellipse:
         return {
-          kind: "ellipse",
-          cx: this.#number(element, "cx", 0),
-          cy: this.#number(element, "cy", 0),
-          radiusX: this.#number(element, "rx"),
-          radiusY: this.#number(element, "ry"),
+          kind: svgSourceElementNames.ellipse,
+          cx: this.#number(element, svgSourceAttributeNames.centreX, 0),
+          cy: this.#number(element, svgSourceAttributeNames.centreY, 0),
+          radiusX: this.#number(element, svgSourceAttributeNames.radiusX),
+          radiusY: this.#number(element, svgSourceAttributeNames.radiusY),
           ...presentation,
         };
-      case "rect":
+      case svgSourceElementNames.rectangle:
         return this.#rect(element, presentation);
-      case "line":
+      case svgSourceElementNames.line:
         return {
-          kind: "line",
-          x1: this.#number(element, "x1", 0),
-          y1: this.#number(element, "y1", 0),
-          x2: this.#number(element, "x2", 0),
-          y2: this.#number(element, "y2", 0),
+          kind: svgSourceElementNames.line,
+          x1: this.#number(element, svgSourceAttributeNames.x1, 0),
+          y1: this.#number(element, svgSourceAttributeNames.y1, 0),
+          x2: this.#number(element, svgSourceAttributeNames.x2, 0),
+          y2: this.#number(element, svgSourceAttributeNames.y2, 0),
           ...presentation,
         };
-      case "polyline":
-      case "polygon":
+      case svgSourceElementNames.polyline:
+      case svgSourceElementNames.polygon:
         return {
           kind: element.localName,
           points: this.#points(element),
@@ -94,17 +96,23 @@ export class SvgPrimitiveNormaliser {
     element: ISvgSyntaxElement,
     presentation: IconPresentation,
   ): IconNodeType {
-    const authoredRadiusX = this.#optionalNumber(element, "rx");
-    const authoredRadiusY = this.#optionalNumber(element, "ry");
+    const authoredRadiusX = this.#optionalNumber(
+      element,
+      svgSourceAttributeNames.radiusX,
+    );
+    const authoredRadiusY = this.#optionalNumber(
+      element,
+      svgSourceAttributeNames.radiusY,
+    );
     const radiusX = authoredRadiusX ?? authoredRadiusY;
     const radiusY = authoredRadiusY ?? authoredRadiusX;
 
     return {
-      kind: "rect",
-      x: this.#number(element, "x", 0),
-      y: this.#number(element, "y", 0),
-      width: this.#number(element, "width"),
-      height: this.#number(element, "height"),
+      kind: svgSourceElementNames.rectangle,
+      x: this.#number(element, svgSourceAttributeNames.x, 0),
+      y: this.#number(element, svgSourceAttributeNames.y, 0),
+      width: this.#number(element, svgSourceAttributeNames.width),
+      height: this.#number(element, svgSourceAttributeNames.height),
       ...(radiusX === undefined ? {} : { radiusX }),
       ...(radiusY === undefined ? {} : { radiusY }),
       ...presentation,
@@ -118,7 +126,7 @@ export class SvgPrimitiveNormaliser {
    */
   #points(element: ISvgSyntaxElement): readonly IconPoint[] {
     const values = this.#numberParser.parseSequence(
-      this.#required(element, "points"),
+      this.#required(element, svgSourceAttributeNames.points),
     );
 
     if (values === undefined || values.length % 2 !== 0) {

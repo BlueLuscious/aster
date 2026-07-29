@@ -37,7 +37,7 @@ export class SvgEntityReferenceDetector {
    * @returns Exclusive inert-section end, or `undefined` when ordinary XML begins at the offset.
    */
   #inertEnd(content: string, offset: number): number | undefined {
-    for (const section of xmlInertSections) {
+    for (const section of Object.values(xmlInertSections)) {
       if (content.startsWith(section.opening, offset)) {
         const closingOffset = content.indexOf(
           section.closing,

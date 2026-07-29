@@ -1,6 +1,9 @@
 import type { SourceDiagnostic } from "../../diagnostic/contracts/index.js";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
+import { svgNumericDomains } from "../../shared/constants/svg-numeric-domains.constant.js";
+import type { TSvgGeometryNumericDomain } from "../types/internal/svg-geometry-numeric-domain.type.js";
 import type { TLocatedNumber } from "../types/internal/located-number.type.js";
+import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgNumberParser } from "./svg-number.parser.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
@@ -33,7 +36,7 @@ export class SvgGeometryNumberReader {
     sourceId: string,
     element: ISvgSyntaxElement,
     name: string,
-    domain: "finite" | "positive" | "non-negative",
+    domain: TSvgGeometryNumericDomain,
     required: boolean,
     diagnostics: SourceDiagnostic[],
     gridValues: TLocatedNumber[],
@@ -55,9 +58,9 @@ export class SvgGeometryNumberReader {
     const value = this.#numberParser.parse(attribute.value);
     const valid =
       value !== undefined &&
-      (domain === "finite" ||
-        (domain === "positive" && value > 0) ||
-        (domain === "non-negative" && value >= 0));
+      (domain === svgNumericDomains.finite ||
+        (domain === svgNumericDomains.positive && value > 0) ||
+        (domain === svgNumericDomains.nonNegative && value >= 0));
 
     if (!valid || value === undefined) {
       diagnostics.push(this.#invalid(sourceId, attribute.valueSpan));
@@ -80,7 +83,7 @@ export class SvgGeometryNumberReader {
     span: ISvgSyntaxElement["span"],
   ): SourceDiagnostic {
     return this.#diagnosticFactory.create({
-      kind: "invalid-geometry",
+      kind: svgValidationIssueKinds.invalidGeometry,
       sourceId,
       span,
     });

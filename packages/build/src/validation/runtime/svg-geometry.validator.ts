@@ -1,10 +1,13 @@
 import type { SourceDiagnostic } from "../../diagnostic/contracts/index.js";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
+import { svgSourceElementNames } from "../../shared/constants/svg-source-element-names.constant.js";
+import { svgSourceElementRoles } from "../../shared/constants/svg-source-element-roles.constant.js";
+import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
 import type { TLocatedBounds } from "../types/internal/located-bounds.type.js";
 import type { TLocatedNumber } from "../types/internal/located-number.type.js";
 import type { TSvgGeometryValidation } from "../types/internal/svg-geometry-validation.type.js";
 import type { TSvgPrimitiveValidation } from "../types/internal/svg-primitive-validation.type.js";
-import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
+import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgBasicShapeValidator } from "./svg-basic-shape.validator.js";
 import { SvgPathValidator } from "./svg-path.validator.js";
 import { SvgPointSequenceValidator } from "./svg-point-sequence.validator.js";
@@ -73,7 +76,7 @@ export class SvgGeometryValidator {
 
       const schema = this.#schema(element.localName);
 
-      if (schema?.role === "primitive") {
+      if (schema?.role === svgSourceElementRoles.primitive) {
         primitiveCount += 1;
         const primitive = this.#inspectPrimitive(sourceId, element);
         diagnostics.push(...primitive.diagnostics);
@@ -92,7 +95,7 @@ export class SvgGeometryValidator {
     if (primitiveCount === 0) {
       diagnostics.push(
         this.#diagnosticFactory.create({
-          kind: "empty-geometry",
+          kind: svgValidationIssueKinds.emptyGeometry,
           sourceId,
           span: root.span,
         }),
@@ -133,7 +136,7 @@ export class SvgGeometryValidator {
       )
       .map((attribute) =>
         this.#diagnosticFactory.create({
-          kind: "unsupported-attribute",
+          kind: svgValidationIssueKinds.unsupportedAttribute,
           sourceId,
           span: attribute.nameSpan,
         }),
@@ -170,10 +173,10 @@ export class SvgGeometryValidator {
     element: ISvgSyntaxElement,
   ): TSvgPrimitiveValidation {
     switch (element.localName) {
-      case "path":
+      case svgSourceElementNames.path:
         return this.#pathValidator.inspect(sourceId, element);
-      case "polyline":
-      case "polygon":
+      case svgSourceElementNames.polyline:
+      case svgSourceElementNames.polygon:
         return this.#pointSequenceValidator.inspect(sourceId, element);
       default:
         return this.#basicShapeValidator.inspect(sourceId, element);

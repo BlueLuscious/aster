@@ -3,6 +3,7 @@ import type { SourceDiagnostic } from "../../diagnostic/contracts/index.js";
 import type { ICollectionValidationContract } from "../contracts/internal/collection-validation-contract.contract.js";
 import type { ISvgValidationEntry } from "../contracts/internal/svg-validation-entry.contract.js";
 import type { TSvgValidationMetrics } from "../types/internal/svg-validation-metrics.type.js";
+import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
 /**
@@ -39,7 +40,7 @@ export class SvgCollectionValidator {
     ) {
       diagnostics.push(
         this.#diagnosticFactory.create({
-          kind: "collection-view-box",
+          kind: svgValidationIssueKinds.collectionViewBox,
           severity: contract.viewBox.severity,
           sourceId,
           span: metrics.viewBox.span,
@@ -52,7 +53,7 @@ export class SvgCollectionValidator {
         if (!contract.stroke.acceptedWidths.includes(stroke.value)) {
           diagnostics.push(
             this.#diagnosticFactory.create({
-              kind: "collection-stroke",
+              kind: svgValidationIssueKinds.collectionStroke,
               severity: contract.stroke.severity,
               sourceId,
               span: stroke.span,
@@ -67,7 +68,7 @@ export class SvgCollectionValidator {
         if (!this.#onGrid(located.value, contract.grid.step)) {
           diagnostics.push(
             this.#diagnosticFactory.create({
-              kind: "collection-grid",
+              kind: svgValidationIssueKinds.collectionGrid,
               severity: contract.grid.severity,
               sourceId,
               span: located.span,
@@ -97,7 +98,7 @@ export class SvgCollectionValidator {
         ) {
           diagnostics.push(
             this.#diagnosticFactory.create({
-              kind: "collection-bounds",
+              kind: svgValidationIssueKinds.collectionBounds,
               severity: contract.bounds.severity,
               sourceId,
               span: measured.span,
@@ -115,7 +116,7 @@ export class SvgCollectionValidator {
     ) {
       diagnostics.push(
         this.#diagnosticFactory.create({
-          kind: "collection-complexity",
+          kind: svgValidationIssueKinds.collectionComplexity,
           severity: contract.complexity.severity,
           sourceId,
           span: entry.document.root.span,

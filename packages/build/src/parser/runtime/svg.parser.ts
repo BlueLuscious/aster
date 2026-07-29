@@ -18,7 +18,9 @@ import type { DiagnosticResultType } from "../../diagnostic/types/index.js";
 import type { CanonicalSvgSource } from "../../source/contracts/index.js";
 import { DiagnosticResultFactory } from "../../diagnostic/runtime/diagnostic-result.factory.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
+import { svgParsingIssueKinds } from "../constants/svg-parsing-issue-kinds.constant.js";
 import { svgParserLimits } from "../constants/svg-parser-limits.constant.js";
+import { xmlInertSections } from "../constants/xml-inert-sections.constant.js";
 import { SvgEntityReferenceDetector } from "./svg-entity-reference.detector.js";
 import { SvgParsingDiagnosticFactory } from "./svg-parsing-diagnostic.factory.js";
 import { SvgSafetyValidator } from "./svg-safety.validator.js";
@@ -77,7 +79,7 @@ export class SvgParser implements ISvgParser {
     if (source.content.length > svgParserLimits.maxSourceLength) {
       return this.#failure(source, [
         {
-          kind: "source-limit",
+          kind: svgParsingIssueKinds.sourceLimit,
           startOffset: 0,
           endOffset: source.content.length,
         },
@@ -90,7 +92,7 @@ export class SvgParser implements ISvgParser {
     if (invalidCharacterOffset !== undefined) {
       return this.#failure(source, [
         {
-          kind: "malformed-document",
+          kind: svgParsingIssueKinds.malformedDocument,
           startOffset: invalidCharacterOffset,
           endOffset: invalidCharacterOffset + 1,
         },
@@ -101,7 +103,7 @@ export class SvgParser implements ISvgParser {
 
     for (const offset of this.#entityDetector.detect(source.content)) {
       issues.push({
-        kind: "entity-reference",
+        kind: svgParsingIssueKinds.entityReference,
         startOffset: offset,
         endOffset: offset + 1,
       });
@@ -163,7 +165,7 @@ export class SvgParser implements ISvgParser {
 
             if (rootCount > 1) {
               issues.push({
-                kind: "malformed-document",
+                kind: svgParsingIssueKinds.malformedDocument,
                 startOffset: location.span.start.offset,
                 endOffset: location.span.end.offset,
               });
@@ -176,7 +178,7 @@ export class SvgParser implements ISvgParser {
           ) {
             reportedElementLimit = true;
             issues.push({
-              kind: "element-limit",
+              kind: svgParsingIssueKinds.elementLimit,
               startOffset: location.span.start.offset,
               endOffset: location.span.end.offset,
             });
@@ -188,7 +190,7 @@ export class SvgParser implements ISvgParser {
           ) {
             reportedDepthLimit = true;
             issues.push({
-              kind: "element-depth-limit",
+              kind: svgParsingIssueKinds.elementDepthLimit,
               startOffset: location.span.start.offset,
               endOffset: location.span.end.offset,
             });
@@ -199,7 +201,7 @@ export class SvgParser implements ISvgParser {
             svgParserLimits.maxAttributesPerElement
           ) {
             issues.push({
-              kind: "attribute-limit",
+              kind: svgParsingIssueKinds.attributeLimit,
               startOffset: location.span.start.offset,
               endOffset: location.span.end.offset,
             });
@@ -207,7 +209,7 @@ export class SvgParser implements ISvgParser {
 
           if (location.duplicateAttributeName !== undefined) {
             issues.push({
-              kind: "malformed-document",
+              kind: svgParsingIssueKinds.malformedDocument,
               startOffset: location.span.start.offset,
               endOffset: location.span.end.offset,
             });
@@ -274,29 +276,29 @@ export class SvgParser implements ISvgParser {
         }
         case "cdata":
           issues.push({
-            kind: "unsupported-cdata",
+            kind: svgParsingIssueKinds.unsupportedCdata,
             startOffset,
             endOffset: this.#sectionEnd(
               source.content,
               startOffset,
-              "]]>",
+              xmlInertSections.cdata.closing,
             ),
           });
           break;
         case "processing-instruction":
           issues.push({
-            kind: "processing-instruction",
+            kind: svgParsingIssueKinds.processingInstruction,
             startOffset,
             endOffset: this.#sectionEnd(
               source.content,
               startOffset,
-              "?>",
+              xmlInertSections.processingInstruction.closing,
             ),
           });
           break;
         case "doctype":
           issues.push({
-            kind: "doctype",
+            kind: svgParsingIssueKinds.doctype,
             startOffset,
             endOffset: this.#sectionEnd(
               source.content,
@@ -313,12 +315,12 @@ export class SvgParser implements ISvgParser {
             commentToken.text.endsWith("-")
           ) {
             issues.push({
-              kind: "malformed-document",
+              kind: svgParsingIssueKinds.malformedDocument,
               startOffset,
               endOffset: this.#sectionEnd(
                 source.content,
                 startOffset,
-                "-->",
+                xmlInertSections.comment.closing,
               ),
             });
           }
@@ -332,7 +334,7 @@ export class SvgParser implements ISvgParser {
 
     if (rootCount === 0) {
       issues.push({
-        kind: "malformed-document",
+        kind: svgParsingIssueKinds.malformedDocument,
         startOffset: 0,
         endOffset: source.content.length,
       });
@@ -425,8 +427,8 @@ export class SvgParser implements ISvgParser {
 
     return {
       kind: source.content.startsWith("<!DOCTYPE", startOffset)
-        ? "doctype"
-        : "malformed-document",
+        ? svgParsingIssueKinds.doctype
+        : svgParsingIssueKinds.malformedDocument,
       startOffset,
       endOffset: Math.min(startOffset + 1, source.content.length),
     };

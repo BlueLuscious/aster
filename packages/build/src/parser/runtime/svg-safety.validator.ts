@@ -1,12 +1,31 @@
 import type { TSvgElementInput } from "../types/internal/svg-element-input.type.js";
 import type { TSvgParsingIssue } from "../types/internal/svg-parsing-issue.type.js";
+import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
 import { svgNamespaces } from "../constants/svg-namespaces.constant.js";
+import { svgParsingIssueKinds } from "../constants/svg-parsing-issue-kinds.constant.js";
+import { svgSafetyAttributePolicy } from "../constants/svg-safety-attribute-policy.constant.js";
 import { svgSafetyElements } from "../constants/svg-safety-elements.constant.js";
 
 /**
  * @description Identifies blocking executable, embedded, external, and foreign SVG source risks.
  */
 export class SvgSafetyValidator {
+  /**
+   * @description Attribute-name grammar for executable event handlers.
+   */
+  readonly #eventHandlerPattern = new RegExp(
+    svgSafetyAttributePolicy.eventHandlerPatternSource,
+    "iu",
+  );
+
+  /**
+   * @description Attribute-value grammar for resource-bearing CSS references.
+   */
+  readonly #valueReferencePattern = new RegExp(
+    svgSafetyAttributePolicy.valueReferencePatternSource,
+    "iu",
+  );
+
   /**
    * @description Inspects one located element without granting trust to its syntax.
    * @param element - Parser-neutral located element input.
@@ -17,7 +36,7 @@ export class SvgSafetyValidator {
 
     if (element.namespaceUri !== svgNamespaces.element) {
       issues.push({
-        kind: "foreign-namespace",
+        kind: svgParsingIssueKinds.foreignNamespace,
         startOffset: element.nameSpan.start.offset,
         endOffset: element.nameSpan.end.offset,
       });
@@ -25,14 +44,14 @@ export class SvgSafetyValidator {
 
     if (svgSafetyElements.executable.includes(element.localName)) {
       issues.push({
-        kind: "executable-element",
+        kind: svgParsingIssueKinds.executableElement,
         startOffset: element.nameSpan.start.offset,
         endOffset: element.nameSpan.end.offset,
         subject: element.name,
       });
     } else if (svgSafetyElements.embedded.includes(element.localName)) {
       issues.push({
-        kind: "raster-or-embedded-element",
+        kind: svgParsingIssueKinds.rasterOrEmbeddedElement,
         startOffset: element.nameSpan.start.offset,
         endOffset: element.nameSpan.end.offset,
         subject: element.name,
@@ -45,7 +64,7 @@ export class SvgSafetyValidator {
         attribute.namespaceUri !== svgNamespaces.declaration
       ) {
         issues.push({
-          kind: "foreign-namespace",
+          kind: svgParsingIssueKinds.foreignNamespace,
           startOffset: attribute.nameSpan.start.offset,
           endOffset: attribute.nameSpan.end.offset,
         });
@@ -54,20 +73,21 @@ export class SvgSafetyValidator {
       if (
         attribute.namespaceUri === svgNamespaces.declaration &&
         !(
-          attribute.name === "xmlns" &&
+          attribute.name ===
+            svgSourceAttributeNames.namespaceDeclaration &&
           attribute.value === svgNamespaces.element
         )
       ) {
         issues.push({
-          kind: "foreign-namespace",
+          kind: svgParsingIssueKinds.foreignNamespace,
           startOffset: attribute.span.start.offset,
           endOffset: attribute.span.end.offset,
         });
       }
 
-      if (/^on/iu.test(attribute.localName)) {
+      if (this.#eventHandlerPattern.test(attribute.localName)) {
         issues.push({
-          kind: "event-handler",
+          kind: svgParsingIssueKinds.eventHandler,
           startOffset: attribute.nameSpan.start.offset,
           endOffset: attribute.nameSpan.end.offset,
           subject: attribute.name,
@@ -75,12 +95,13 @@ export class SvgSafetyValidator {
       }
 
       if (
-        attribute.localName === "href" ||
-        attribute.localName === "src" ||
-        /url\s*\(/iu.test(attribute.value)
+        (svgSafetyAttributePolicy.resourceNames as readonly string[]).includes(
+          attribute.localName,
+        ) ||
+        this.#valueReferencePattern.test(attribute.value)
       ) {
         issues.push({
-          kind: "resource-reference",
+          kind: svgParsingIssueKinds.resourceReference,
           startOffset: attribute.span.start.offset,
           endOffset: attribute.span.end.offset,
           subject: attribute.name,

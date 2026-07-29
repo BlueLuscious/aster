@@ -3,6 +3,7 @@ import type {
   SourceSpan,
 } from "../../../diagnostic/contracts/index.js";
 import type { TCollectionRuleSeverity } from "./collection-rule-severity.type.js";
+import type { svgValidationIssueKinds } from "../../constants/svg-validation-issue-kinds.constant.js";
 
 /**
  * @description Internal semantic evidence mapped to one stable validation diagnostic.
@@ -23,14 +24,14 @@ export type TSvgValidationIssue = {
        * @description Universal syntax or technical issue family.
        */
       readonly kind:
-        | "duplicate-identity"
-        | "empty-geometry"
-        | "identity-disagreement"
-        | "invalid-geometry"
-        | "invalid-path-data"
-        | "invalid-presentation"
-        | "invalid-view-box"
-        | "unsupported-attribute";
+        | typeof svgValidationIssueKinds.duplicateIdentity
+        | typeof svgValidationIssueKinds.emptyGeometry
+        | typeof svgValidationIssueKinds.identityDisagreement
+        | typeof svgValidationIssueKinds.invalidGeometry
+        | typeof svgValidationIssueKinds.invalidPathData
+        | typeof svgValidationIssueKinds.invalidPresentation
+        | typeof svgValidationIssueKinds.invalidViewBox
+        | typeof svgValidationIssueKinds.unsupportedAttribute;
 
       /**
        * @description Additional deterministic collision evidence when required.
@@ -42,11 +43,11 @@ export type TSvgValidationIssue = {
        * @description Collection-owned visual issue family.
        */
       readonly kind:
-        | "collection-bounds"
-        | "collection-complexity"
-        | "collection-grid"
-        | "collection-stroke"
-        | "collection-view-box";
+        | typeof svgValidationIssueKinds.collectionBounds
+        | typeof svgValidationIssueKinds.collectionComplexity
+        | typeof svgValidationIssueKinds.collectionGrid
+        | typeof svgValidationIssueKinds.collectionStroke
+        | typeof svgValidationIssueKinds.collectionViewBox;
 
       /**
        * @description Accepted collection authority over this occurrence.

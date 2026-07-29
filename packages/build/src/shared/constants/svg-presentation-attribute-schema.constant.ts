@@ -1,74 +1,78 @@
 import type { IconPresentation } from "@aster/core";
+import type { TSvgPresentationNumericDomain } from "../types/internal/svg-presentation-numeric-domain.type.js";
+import { svgNumericDomains } from "./svg-numeric-domains.constant.js";
+import { svgPresentationValueKinds } from "./svg-presentation-value-kinds.constant.js";
+import { svgSourceAttributeNames } from "./svg-source-attribute-names.constant.js";
 
 /**
  * @description Immutable source-to-portable schema for every accepted SVG presentation attribute.
  */
 export const svgPresentationAttributeSchema = Object.freeze({
-  fill: Object.freeze({
+  [svgSourceAttributeNames.fill]: Object.freeze({
     field: "fill",
-    valueKind: "paint",
+    valueKind: svgPresentationValueKinds.paint,
     inherited: true,
     collectStrokeWidth: false,
   }),
-  "fill-rule": Object.freeze({
+  [svgSourceAttributeNames.fillRule]: Object.freeze({
     field: "fillRule",
-    valueKind: "enumeration",
+    valueKind: svgPresentationValueKinds.enumeration,
     acceptedValues: Object.freeze(["nonzero", "evenodd"] as const),
     inherited: true,
     collectStrokeWidth: false,
   }),
-  stroke: Object.freeze({
+  [svgSourceAttributeNames.stroke]: Object.freeze({
     field: "stroke",
-    valueKind: "paint",
+    valueKind: svgPresentationValueKinds.paint,
     inherited: true,
     collectStrokeWidth: false,
   }),
-  "stroke-width": Object.freeze({
+  [svgSourceAttributeNames.strokeWidth]: Object.freeze({
     field: "strokeWidth",
-    valueKind: "number",
-    numericDomain: "non-negative",
+    valueKind: svgPresentationValueKinds.number,
+    numericDomain: svgNumericDomains.nonNegative,
     inherited: true,
     collectStrokeWidth: true,
   }),
-  "stroke-linecap": Object.freeze({
+  [svgSourceAttributeNames.strokeLineCap]: Object.freeze({
     field: "strokeLineCap",
-    valueKind: "enumeration",
+    valueKind: svgPresentationValueKinds.enumeration,
     acceptedValues: Object.freeze(["butt", "round", "square"] as const),
     inherited: true,
     collectStrokeWidth: false,
   }),
-  "stroke-linejoin": Object.freeze({
+  [svgSourceAttributeNames.strokeLineJoin]: Object.freeze({
     field: "strokeLineJoin",
-    valueKind: "enumeration",
+    valueKind: svgPresentationValueKinds.enumeration,
     acceptedValues: Object.freeze(["miter", "round", "bevel"] as const),
     inherited: true,
     collectStrokeWidth: false,
   }),
-  "stroke-miterlimit": Object.freeze({
+  [svgSourceAttributeNames.strokeMiterLimit]: Object.freeze({
     field: "strokeMiterLimit",
-    valueKind: "number",
-    numericDomain: "positive",
+    valueKind: svgPresentationValueKinds.number,
+    numericDomain: svgNumericDomains.positive,
     inherited: true,
     collectStrokeWidth: false,
   }),
-  opacity: Object.freeze({
+  [svgSourceAttributeNames.opacity]: Object.freeze({
     field: "opacity",
-    valueKind: "number",
-    numericDomain: "opacity",
+    valueKind: svgPresentationValueKinds.number,
+    numericDomain: svgNumericDomains.opacity,
     inherited: false,
     collectStrokeWidth: false,
   }),
-  "fill-opacity": Object.freeze({
+  [svgSourceAttributeNames.fillOpacity]: Object.freeze({
     field: "fillOpacity",
-    valueKind: "number",
-    numericDomain: "opacity",
+    valueKind: svgPresentationValueKinds.number,
+    numericDomain: svgNumericDomains.opacity,
     inherited: true,
     collectStrokeWidth: false,
   }),
-  "stroke-opacity": Object.freeze({
+  [svgSourceAttributeNames.strokeOpacity]: Object.freeze({
     field: "strokeOpacity",
-    valueKind: "number",
-    numericDomain: "opacity",
+    valueKind: svgPresentationValueKinds.number,
+    numericDomain: svgNumericDomains.opacity,
     inherited: true,
     collectStrokeWidth: false,
   }),
@@ -82,18 +86,15 @@ export const svgPresentationAttributeSchema = Object.freeze({
         readonly collectStrokeWidth: boolean;
       } & (
         | {
-            readonly valueKind: "paint";
+            readonly valueKind: typeof svgPresentationValueKinds.paint;
           }
         | {
-            readonly valueKind: "enumeration";
+            readonly valueKind: typeof svgPresentationValueKinds.enumeration;
             readonly acceptedValues: readonly string[];
           }
         | {
-            readonly valueKind: "number";
-            readonly numericDomain:
-              | "non-negative"
-              | "opacity"
-              | "positive";
+            readonly valueKind: typeof svgPresentationValueKinds.number;
+            readonly numericDomain: TSvgPresentationNumericDomain;
           }
       )
     >

@@ -1,5 +1,8 @@
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
+import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
+import { svgSourceElementNames } from "../../shared/constants/svg-source-element-names.constant.js";
 import type { TSvgPrimitiveValidation } from "../types/internal/svg-primitive-validation.type.js";
+import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgNumberParser } from "./svg-number.parser.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
@@ -28,13 +31,15 @@ export class SvgPointSequenceValidator {
     element: ISvgSyntaxElement,
   ): TSvgPrimitiveValidation {
     const attribute = element.attributes.find(
-      (candidate) => candidate.localName === "points",
+      (candidate) =>
+        candidate.localName === svgSourceAttributeNames.points,
     );
     const values =
       attribute === undefined
         ? undefined
         : this.#numberParser.parseSequence(attribute.value);
-    const minimumPoints = element.localName === "polygon" ? 3 : 2;
+    const minimumPoints =
+      element.localName === svgSourceElementNames.polygon ? 3 : 2;
 
     if (
       attribute === undefined ||
@@ -45,7 +50,7 @@ export class SvgPointSequenceValidator {
       return Object.freeze({
         diagnostics: Object.freeze([
           this.#diagnosticFactory.create({
-            kind: "invalid-geometry",
+            kind: svgValidationIssueKinds.invalidGeometry,
             sourceId,
             span: attribute?.valueSpan ?? element.nameSpan,
           }),

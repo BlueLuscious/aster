@@ -1,5 +1,7 @@
 import type { ISvgValidationEntry } from "../contracts/internal/svg-validation-entry.contract.js";
+import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
 import type { TSvgTechnicalValidation } from "../types/internal/svg-technical-validation.type.js";
+import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgGeometryValidator } from "./svg-geometry.validator.js";
 import { SvgNumberParser } from "./svg-number.parser.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
@@ -32,7 +34,8 @@ export class SvgTechnicalValidator {
     const sourceId = entry.source.sourceId;
     const root = entry.document.root;
     const attribute = root.attributes.find(
-      (candidate) => candidate.localName === "viewBox",
+      (candidate) =>
+        candidate.localName === svgSourceAttributeNames.viewBox,
     );
     const sequence =
       attribute === undefined
@@ -48,7 +51,7 @@ export class SvgTechnicalValidator {
     if (!validViewBox) {
       diagnostics.push(
         this.#diagnosticFactory.create({
-          kind: "invalid-view-box",
+          kind: svgValidationIssueKinds.invalidViewBox,
           sourceId,
           span: attribute?.valueSpan ?? root.nameSpan,
         }),

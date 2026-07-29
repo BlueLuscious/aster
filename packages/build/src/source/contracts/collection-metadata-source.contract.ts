@@ -1,3 +1,4 @@
+import type { ingestionSourceKinds } from "../constants/ingestion-source-kinds.constant.js";
 import type { CanonicalTextSource } from "./canonical-text-source.contract.js";
 
 /**
@@ -7,7 +8,7 @@ export interface CollectionMetadataSource extends CanonicalTextSource {
   /**
    * @description Discriminator for collection-level metadata.
    */
-  readonly kind: "collection-metadata";
+  readonly kind: typeof ingestionSourceKinds.collectionMetadata;
 
   /**
    * @description Canonical collection slug owning the metadata.

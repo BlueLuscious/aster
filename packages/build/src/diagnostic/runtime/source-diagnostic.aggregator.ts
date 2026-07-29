@@ -1,4 +1,5 @@
 import type { SourceDiagnostic } from "../contracts/index.js";
+import { diagnosticSeverities } from "../constants/diagnostic-severities.constant.js";
 import { SourceDiagnosticFactory } from "./source-diagnostic.factory.js";
 
 /**
@@ -89,7 +90,7 @@ export class SourceDiagnosticAggregator {
    * @returns Zero for errors and one for warnings.
    */
   #severityRank(diagnostic: SourceDiagnostic): number {
-    return diagnostic.severity === "error" ? 0 : 1;
+    return diagnostic.severity === diagnosticSeverities.error ? 0 : 1;
   }
 
   /**

@@ -1,3 +1,4 @@
+import { svgLexicalPatternSources } from "../constants/svg-lexical-pattern-sources.constant.js";
 import { svgNumberPatternSource } from "../constants/svg-number-pattern.constant.js";
 
 /**
@@ -7,15 +8,27 @@ export class SvgNumberParser {
   /**
    * @description Complete accepted SVG number grammar.
    */
-  readonly #completePattern = new RegExp(
-    `^(?:${svgNumberPatternSource})$`,
-    "u",
-  );
+  readonly #completePattern = new RegExp(`^(?:${svgNumberPatternSource})$`, "u");
 
   /**
    * @description Repeated accepted SVG number grammar.
    */
   readonly #sequencePattern = new RegExp(svgNumberPatternSource, "gu");
+
+  /**
+   * @description Optional SVG whitespace grammar.
+   */
+  readonly #whitespaceOnlyPattern = new RegExp(svgLexicalPatternSources.whitespaceOnly, "u");
+
+  /**
+   * @description Required SVG whitespace separator grammar.
+   */
+  readonly #requiredWhitespacePattern = new RegExp(svgLexicalPatternSources.requiredWhitespace, "u");
+
+  /**
+   * @description Comma separator with optional surrounding SVG whitespace.
+   */
+  readonly #commaSeparatorPattern = new RegExp(svgLexicalPatternSources.commaSeparator, "u");
 
   /**
    * @description Parses one complete finite SVG number.
@@ -72,7 +85,7 @@ export class SvgNumberParser {
 
     if (
       numbers.length === 0 ||
-      !/^\s*$/u.test(value.slice(cursor))
+      !this.#whitespaceOnlyPattern.test(value.slice(cursor))
     ) {
       return undefined;
     }
@@ -88,13 +101,13 @@ export class SvgNumberParser {
    */
   #validGap(value: string, beforeFirst: boolean): boolean {
     if (beforeFirst) {
-      return /^\s*$/u.test(value);
+      return this.#whitespaceOnlyPattern.test(value);
     }
 
     return (
       value.length === 0 ||
-      /^\s+$/u.test(value) ||
-      /^\s*,\s*$/u.test(value)
+      this.#requiredWhitespacePattern.test(value) ||
+      this.#commaSeparatorPattern.test(value)
     );
   }
 }

@@ -2,6 +2,7 @@ import type { IconPaintType, IconPresentation } from "@aster/core";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
 import { svgPaintSchema } from "../../shared/constants/svg-paint-schema.constant.js";
 import { svgPresentationAttributeSchema } from "../../shared/constants/svg-presentation-attribute-schema.constant.js";
+import { svgPresentationValueKinds } from "../../shared/constants/svg-presentation-value-kinds.constant.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { SvgNumberParser } from "../../validation/runtime/svg-number.parser.js";
 
@@ -50,13 +51,13 @@ export class SvgPresentationNormaliser {
       }
 
       switch (schema.valueKind) {
-        case "paint":
+        case svgPresentationValueKinds.paint:
           presentation[schema.field] = this.#paint(attribute.value);
           break;
-        case "enumeration":
+        case svgPresentationValueKinds.enumeration:
           presentation[schema.field] = attribute.value;
           break;
-        case "number":
+        case svgPresentationValueKinds.number:
           presentation[schema.field] = this.#number(attribute.value);
           break;
       }

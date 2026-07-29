@@ -1,6 +1,10 @@
 import type { TSvgPathInspection } from "../types/internal/svg-path-inspection.type.js";
+import type { TSvgPathCommand } from "../types/internal/svg-path-command.type.js";
+import type { TSvgPathSegment } from "../types/internal/svg-path-segment.type.js";
+import { svgLexicalPatternSources } from "../constants/svg-lexical-pattern-sources.constant.js";
 import { svgNumberPatternSource } from "../constants/svg-number-pattern.constant.js";
 import { svgPathCommandParameterCounts } from "../constants/svg-path-command-parameter-counts.constant.js";
+import { svgPathCommands } from "../constants/svg-path-commands.constant.js";
 
 /**
  * @description Validates the accepted SVG path grammar and extracts deterministic advisory facts.
@@ -9,10 +13,27 @@ export class SvgPathDataInspector {
   /**
    * @description Repeated command-or-number token grammar.
    */
-  readonly #tokenPattern = new RegExp(
-    `[A-Za-z]|${svgNumberPatternSource}`,
-    "gu",
-  );
+  readonly #tokenPattern = new RegExp(`[A-Za-z]|${svgNumberPatternSource}`, "gu");
+
+  /**
+   * @description Complete SVG command-token grammar.
+   */
+  readonly #commandPattern = new RegExp(svgLexicalPatternSources.command, "u");
+
+  /**
+   * @description Optional SVG whitespace grammar.
+   */
+  readonly #whitespaceOnlyPattern = new RegExp(svgLexicalPatternSources.whitespaceOnly, "u");
+
+  /**
+   * @description Required SVG whitespace separator grammar.
+   */
+  readonly #requiredWhitespacePattern = new RegExp(svgLexicalPatternSources.requiredWhitespace, "u");
+
+  /**
+   * @description Comma separator with optional surrounding SVG whitespace.
+   */
+  readonly #commaSeparatorPattern = new RegExp(svgLexicalPatternSources.commaSeparator, "u");
 
   /**
    * @description Inspects one complete authored path-data value.
@@ -26,18 +47,8 @@ export class SvgPathDataInspector {
       return this.#invalid();
     }
 
-    const segments: {
-      readonly authoredCommand: string;
-      readonly command: string;
-      readonly values: number[];
-    }[] = [];
-    let current:
-      | {
-          readonly authoredCommand: string;
-          readonly command: string;
-          readonly values: number[];
-        }
-      | undefined;
+    const segments: TSvgPathSegment[] = [];
+    let current: TSvgPathSegment | undefined;
 
     for (const token of tokens) {
       if (typeof token === "string") {
@@ -49,7 +60,7 @@ export class SvgPathDataInspector {
 
         current = {
           authoredCommand: token,
-          command,
+          command: command as TSvgPathCommand,
           values: [],
         };
         segments.push(current);
@@ -62,7 +73,7 @@ export class SvgPathDataInspector {
       }
     }
 
-    if (segments[0]?.command !== "m") {
+    if (segments[0]?.command !== svgPathCommands.move) {
       return this.#invalid();
     }
 
@@ -79,7 +90,6 @@ export class SvgPathDataInspector {
       const parameterCount = this.#parameterCount(segment.command);
 
       if (
-        parameterCount === undefined ||
         (parameterCount === 0 && segment.values.length !== 0) ||
         (parameterCount > 0 &&
           (segment.values.length < parameterCount ||
@@ -90,22 +100,24 @@ export class SvgPathDataInspector {
 
       if (
         index > 0 &&
-        segments[index - 1]?.command === "z" &&
-        segment.command !== "m"
+        segments[index - 1]?.command === svgPathCommands.close &&
+        segment.command !== svgPathCommands.move
       ) {
         return this.#invalid();
       }
 
       if (
-        segment.command === "a" &&
+        segment.command === svgPathCommands.arc &&
         !this.#validArcParameters(segment.values)
       ) {
         return this.#invalid();
       }
 
       if (
-        !["m", "z"].includes(segment.command) ||
-        (segment.command === "m" && segment.values.length > 2)
+        (segment.command !== svgPathCommands.move &&
+          segment.command !== svgPathCommands.close) ||
+        (segment.command === svgPathCommands.move &&
+          segment.values.length > 2)
       ) {
         hasDrawingOperation = true;
       }
@@ -131,16 +143,10 @@ export class SvgPathDataInspector {
   /**
    * @description Resolves the accepted repeated parameter-group arity for one path command.
    * @param command - Lowercase SVG path command.
-   * @returns Accepted parameter count, or `undefined` when unsupported.
+   * @returns Accepted repeated parameter-group arity.
    */
-  #parameterCount(command: string): number | undefined {
-    if (!Object.hasOwn(svgPathCommandParameterCounts, command)) {
-      return undefined;
-    }
-
-    return svgPathCommandParameterCounts[
-      command as keyof typeof svgPathCommandParameterCounts
-    ];
+  #parameterCount(command: TSvgPathCommand): number {
+    return svgPathCommandParameterCounts[command];
   }
 
   /**
@@ -157,7 +163,7 @@ export class SvgPathDataInspector {
     while ((match = this.#tokenPattern.exec(value)) !== null) {
       const raw = match[0];
       const token =
-        /^[A-Za-z]$/u.test(raw)
+        this.#commandPattern.test(raw)
           ? raw
           : Number(raw);
       const gap = value.slice(cursor, match.index);
@@ -181,7 +187,7 @@ export class SvgPathDataInspector {
       cursor = match.index + raw.length;
     }
 
-    if (!/^\s*$/u.test(value.slice(cursor))) {
+    if (!this.#whitespaceOnlyPattern.test(value.slice(cursor))) {
       return undefined;
     }
 
@@ -203,18 +209,21 @@ export class SvgPathDataInspector {
     beforeNumber: boolean,
   ): boolean {
     if (beforeFirst) {
-      return /^\s*$/u.test(value);
+      return this.#whitespaceOnlyPattern.test(value);
     }
 
     if (value.includes(",")) {
       return (
         afterNumber &&
         beforeNumber &&
-        /^\s*,\s*$/u.test(value)
+        this.#commaSeparatorPattern.test(value)
       );
     }
 
-    return value.length === 0 || /^\s+$/u.test(value);
+    return (
+      value.length === 0 ||
+      this.#requiredWhitespacePattern.test(value)
+    );
   }
 
   /**
@@ -250,8 +259,11 @@ export class SvgPathDataInspector {
    * @param values - Complete repeated command parameter values.
    * @returns Selected finite values in source order.
    */
-  #gridValues(command: string, values: readonly number[]): readonly number[] {
-    if (command !== "a") {
+  #gridValues(
+    command: TSvgPathCommand,
+    values: readonly number[],
+  ): readonly number[] {
+    if (command !== svgPathCommands.arc) {
       return values;
     }
 

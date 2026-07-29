@@ -6,6 +6,7 @@ import type {
 import type { IPairedSvgValidationEntry } from "../contracts/internal/paired-svg-validation-entry.contract.js";
 import type { ISvgValidationUnit } from "../contracts/internal/svg-validation-unit.contract.js";
 import type { TSvgIdentityValidation } from "../types/internal/svg-identity-validation.type.js";
+import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
 /**
@@ -44,7 +45,7 @@ export class SvgIdentityValidator {
     if (unit.entries.length === 0) {
       diagnostics.push(
         this.#diagnosticFactory.create({
-          kind: "empty-geometry",
+          kind: svgValidationIssueKinds.emptyGeometry,
           sourceId: unit.collectionMetadata.sourceId,
         }),
       );
@@ -150,7 +151,7 @@ export class SvgIdentityValidator {
     span?: SourceSpan,
   ): SourceDiagnostic {
     return this.#diagnosticFactory.create({
-      kind: "identity-disagreement",
+      kind: svgValidationIssueKinds.identityDisagreement,
       sourceId,
       ...(span === undefined ? {} : { span }),
     });
@@ -171,7 +172,7 @@ export class SvgIdentityValidator {
     firstSpan: SourceSpan | undefined,
   ): SourceDiagnostic {
     return this.#diagnosticFactory.create({
-      kind: "duplicate-identity",
+      kind: svgValidationIssueKinds.duplicateIdentity,
       sourceId,
       ...(span === undefined ? {} : { span }),
       related: [

@@ -282,14 +282,16 @@ export class CollectionValidationContractFactory {
   #severity(value: unknown, path: string): TCollectionRuleSeverity {
     if (
       typeof value !== "string" ||
-      !diagnosticSeverities.includes(value as TCollectionRuleSeverity)
+      !Object.hasOwn(diagnosticSeverities, value)
     ) {
       throw new BuildContractError(
         path,
-        `expected one of ${diagnosticSeverities.join(", ")}`,
+        `expected one of ${Object.values(diagnosticSeverities).join(", ")}`,
       );
     }
 
-    return value as TCollectionRuleSeverity;
+    return diagnosticSeverities[
+      value as keyof typeof diagnosticSeverities
+    ];
   }
 }

@@ -1,12 +1,10 @@
-import type { DiagnosticCategoryType } from "../types/diagnostic-category.type.js";
-
 /**
  * @description Immutable diagnostic responsibility categories accepted by the build boundary.
  */
-export const diagnosticCategories = Object.freeze([
-  "syntax",
-  "safety",
-  "technical",
-  "collection",
-  "generation",
-] as const satisfies readonly DiagnosticCategoryType[]);
+export const diagnosticCategories = Object.freeze({
+  syntax: "syntax",
+  safety: "safety",
+  technical: "technical",
+  collection: "collection",
+  generation: "generation",
+} as const);

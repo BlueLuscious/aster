@@ -1,4 +1,5 @@
 import type { DiagnosticResultType } from "../types/index.js";
+import { diagnosticSeverities } from "../constants/diagnostic-severities.constant.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { SourceDiagnosticAggregator } from "./source-diagnostic.aggregator.js";
 
@@ -24,7 +25,11 @@ export class DiagnosticResultFactory {
   ): DiagnosticResultType<Value> {
     const canonical = this.#aggregator.aggregate(diagnostics);
 
-    if (canonical.some((diagnostic) => diagnostic.severity === "error")) {
+    if (
+      canonical.some(
+        (diagnostic) => diagnostic.severity === diagnosticSeverities.error,
+      )
+    ) {
       throw new BuildContractError(
         "diagnostics",
         "successful results cannot contain errors",
@@ -49,7 +54,11 @@ export class DiagnosticResultFactory {
   ): DiagnosticResultType<Value> {
     const canonical = this.#aggregator.aggregate(diagnostics);
 
-    if (!canonical.some((diagnostic) => diagnostic.severity === "error")) {
+    if (
+      !canonical.some(
+        (diagnostic) => diagnostic.severity === diagnosticSeverities.error,
+      )
+    ) {
       throw new BuildContractError(
         "diagnostics",
         "failed results require at least one error",

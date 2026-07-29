@@ -1,8 +1,13 @@
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
+import { svgNumericDomains } from "../../shared/constants/svg-numeric-domains.constant.js";
 import { svgPaintSchema } from "../../shared/constants/svg-paint-schema.constant.js";
 import { svgPresentationAttributeSchema } from "../../shared/constants/svg-presentation-attribute-schema.constant.js";
+import { svgPresentationValueKinds } from "../../shared/constants/svg-presentation-value-kinds.constant.js";
 import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
+import { svgSourceElementRoles } from "../../shared/constants/svg-source-element-roles.constant.js";
+import type { TSvgPresentationNumericDomain } from "../../shared/types/internal/svg-presentation-numeric-domain.type.js";
 import type { TSvgPresentationValidation } from "../types/internal/svg-presentation-validation.type.js";
+import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgNumberParser } from "./svg-number.parser.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
@@ -23,18 +28,12 @@ export class SvgPresentationValidator {
   /**
    * @description Accepted short hexadecimal paint grammar.
    */
-  readonly #shortHexPattern = new RegExp(
-    svgPaintSchema.shortHexPatternSource,
-    "iu",
-  );
+  readonly #shortHexPattern = new RegExp(svgPaintSchema.shortHexPatternSource, "iu");
 
   /**
    * @description Accepted long hexadecimal paint grammar.
    */
-  readonly #longHexPattern = new RegExp(
-    svgPaintSchema.longHexPatternSource,
-    "iu",
-  );
+  readonly #longHexPattern = new RegExp(svgPaintSchema.longHexPatternSource, "iu");
 
   /**
    * @description Determines whether one attribute belongs to portable presentation.
@@ -69,15 +68,15 @@ export class SvgPresentationValidator {
       let valid: boolean;
 
       switch (schema.valueKind) {
-        case "paint":
+        case svgPresentationValueKinds.paint:
           valid = this.#validPaint(attribute.value);
           break;
-        case "enumeration":
+        case svgPresentationValueKinds.enumeration:
           valid = (schema.acceptedValues as readonly string[]).includes(
             attribute.value,
           );
           break;
-        case "number":
+        case svgPresentationValueKinds.number:
           valid =
             numeric !== undefined &&
             this.#validNumber(numeric, schema.numericDomain);
@@ -87,7 +86,8 @@ export class SvgPresentationValidator {
       if (
         valid &&
         !schema.inherited &&
-        this.#elementSchema(element.localName)?.role !== "primitive"
+        this.#elementSchema(element.localName)?.role !==
+          svgSourceElementRoles.primitive
       ) {
         valid = false;
       }
@@ -106,7 +106,7 @@ export class SvgPresentationValidator {
       if (!valid) {
         diagnostics.push(
           this.#diagnosticFactory.create({
-            kind: "invalid-presentation",
+            kind: svgValidationIssueKinds.invalidPresentation,
             sourceId,
             span: attribute.valueSpan,
           }),
@@ -168,14 +168,14 @@ export class SvgPresentationValidator {
    */
   #validNumber(
     value: number,
-    domain: "non-negative" | "opacity" | "positive",
+    domain: TSvgPresentationNumericDomain,
   ): boolean {
     switch (domain) {
-      case "non-negative":
+      case svgNumericDomains.nonNegative:
         return value >= 0;
-      case "opacity":
+      case svgNumericDomains.opacity:
         return value >= 0 && value <= 1;
-      case "positive":
+      case svgNumericDomains.positive:
         return value > 0;
     }
   }
