@@ -8,10 +8,11 @@ package, not a published runtime dependency.
 
 ## Current boundary
 
-The implemented boundary accepts exact textual source descriptors, parses the accepted SVG
-syntax subset behind an internal trust boundary, and produces stable diagnostic-bearing results.
-It has no filesystem adapter, semantic validator, normaliser, generator, command-line adapter, or
-generated output authority yet.
+The implemented boundary accepts exact textual source descriptors, parses the accepted SVG syntax
+subset behind an internal trust boundary, validates universal technical invariants and
+collection-owned visual rules, and produces stable diagnostic-bearing results. It has no
+filesystem adapter, metadata serialiser, normaliser, generator, command-line adapter, or generated
+output authority yet.
 
 ## Features
 
@@ -20,17 +21,20 @@ generated output authority yet.
 | [Source](source/index.md) | Canonical textual source descriptors and exact UTF-16 locations. |
 | [Diagnostic](diagnostic/index.md) | Stable diagnostics, deterministic aggregation, and success or failure results. |
 | [Parser](parser/index.md) | Internal parser-neutral SVG syntax, source spans, subset behaviour, and blocking safety policy. |
+| [Validation](validation/index.md) | Internal identity, technical, geometry, presentation, and collection-rule validation. |
 
 ## Dependency boundary
 
-The package pins `xmlsax-typescript` version `1.0.0` as its sole production dependency. The
-dependency has no transitive production packages and is confined to the internal `SvgParser`
-adapter. Production compilation uses ES2022 without Node, DOM, browser, Lilium, Lotus, or
-repository-tooling ambient types.
+The package depends directionally on public `@aster/core` contracts for stable portable domain
+concepts. Source acquisition reuses `IconIdentity`; validation reuses `IconViewBox`. Build does not
+import Core runtime implementation paths or grant untrusted source values portable authority.
 
-Future ingestion stages may depend on public `@aster/core` contracts when those contracts own real
-behaviour. The package cannot depend on a renderer, framework adapter, generated collection, host
-ecosystem, or repository tooling.
+The package also pins `xmlsax-typescript` version `1.0.0`. That dependency has no transitive
+production packages and is confined to the internal `SvgParser` adapter. Production compilation
+uses ES2022 without Node, DOM, browser, Lilium, Lotus, or repository-tooling ambient types.
+
+The package cannot depend on a renderer, framework adapter, generated collection, host ecosystem,
+or repository tooling.
 
 ## Workspace surface
 
@@ -46,8 +50,9 @@ The private root export provides:
 | `DiagnosticResultFactory` | Class | Creates explicit successes and failures without host process authority. |
 
 Only the package root is an approved workspace import. Runtime implementation paths remain
-internal. Parser classes, service contracts, syntax contracts, and parser-library values are
-deliberately absent from the root surface.
+internal. Parser and validation classes, service contracts, syntax and evidence contracts,
+collection rule configuration, and parser-library values are deliberately absent from the root
+surface.
 
 ## Domain flow
 
@@ -56,11 +61,13 @@ deliberately absent from the root surface.
    content.
 3. `SvgParser` converts library tokens immediately into an internal Aster-owned syntax model,
    while independently enforcing document shape, source spans, subset behaviour, and safety.
-4. Parser and validator stages use `SourceLocator` to derive trustworthy positions from exact
-   offsets.
-5. Domain stages create Aster-owned reports through `SourceDiagnosticFactory`.
-6. `SourceDiagnosticAggregator` deduplicates and orders independent reports deterministically.
-7. `DiagnosticResultFactory` returns complete output with warnings or failure with blocking
+4. `SvgValidator` verifies identity and metadata pairing before composing universal technical
+   checks with accepted collection-owned rules.
+5. Technical validation produces metrics only from trustworthy parsed values; collection rules
+   cannot weaken safety or technical constraints.
+6. Domain stages create Aster-owned reports through `SourceDiagnosticFactory`.
+7. `SourceDiagnosticAggregator` deduplicates and orders independent reports deterministically.
+8. `DiagnosticResultFactory` returns complete output with warnings or failure with blocking
    diagnostics and no partial output.
 
 Filesystem discovery, terminal formatting, and process exit status stay outside this flow.

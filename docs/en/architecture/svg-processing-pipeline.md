@@ -91,6 +91,11 @@ Collection quality advice that does not threaten safety, identity, or technical 
 reported separately as a warning. A collection may promote an evidenced visual rule to a blocking
 requirement through its accepted design contract.
 
+The implemented internal validation boundary and the deliberate limits of its geometric evidence
+are documented by [Build SVG Validation](../packages/build/validation/index.md). Metadata
+serialisation remains separate: validation can establish required source pairing and acquired
+identity without treating opaque textual metadata as a resolved portable value.
+
 ## Normalisation authority
 
 The normaliser owns representation, not artwork. It may:
