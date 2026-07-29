@@ -13,6 +13,7 @@ material public or dependency decision is accepted separately.
 | Before the first generation adapter or command-line host | Separate reusable lexical authority from validation orchestration. |
 | Before the first compatibility-bearing Core release | Decide whether portable runtime vocabularies belong in the public Core API. |
 | Before the first public release or externally supported contribution workflow | Activate linting and non-mutating formatting verification. |
+| After the first end-to-end product flow is implemented and package documentation is self-contained | Consolidate transversal documentation around a concise project-level summary. |
 | After parser conformance provides sufficient replacement evidence | Consider an Aster-owned XML tokeniser and parser adapter. |
 
 ## Reusable Build lexical authority
@@ -71,6 +72,36 @@ development-only dependency behind the existing root commands.
 
 The accepted replacement boundary is defined by
 [Workspace and Tooling](governance/workspace-and-tooling.md).
+
+## Project-centred documentation consolidation
+
+Architecture, collection, decision, and governance documents remain useful while Aster is
+establishing package boundaries and product guarantees. Package documentation should continue to
+be written as the detailed source of truth for what each package does independently, how its
+features work, and how packages compose without duplicating related material.
+
+After Aster has one complete flow from source ingestion to portable definition and at least one
+distribution or rendering adapter, audit the transversal documentation. Consolidation should
+begin only when package documentation is self-contained and stable enough to support that audit.
+
+At that point:
+
+- create either `docs/en/project.md` or a small `docs/en/project/` composition;
+- summarise the product manifest, architecture, package relationships, and most important
+  guarantees at project level;
+- retain specialised architecture, collection, decision, or governance documents only when
+  their detail remains materially useful;
+- migrate unique active guarantees before removing a document;
+- replace repeated explanations with links to package or project authorities;
+- preserve significant decision rationale when losing it would make future maintenance or
+  compatibility choices harder.
+
+The result should make project-level documentation concise while allowing package documentation
+to speak for the implementation. Consolidation must not erase collection provenance, licensing,
+accepted compatibility guarantees, or rationale that still governs observable behaviour.
+
+The current hierarchy and non-duplication rules remain defined by the
+[Documentation Policy](governance/documentation-policy.md) until consolidation is accepted.
 
 ## Aster-owned XML tokeniser
 
