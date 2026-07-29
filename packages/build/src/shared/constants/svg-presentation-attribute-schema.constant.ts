@@ -81,19 +81,47 @@ export const svgPresentationAttributeSchema = Object.freeze({
     string,
     Readonly<
       {
+        /**
+         * @description Portable presentation field produced from the source attribute.
+         */
         readonly field: keyof IconPresentation;
+
+        /**
+         * @description Whether structural ancestors may provide the attribute value.
+         */
         readonly inherited: boolean;
+
+        /**
+         * @description Whether accepted values contribute explicit collection stroke evidence.
+         */
         readonly collectStrokeWidth: boolean;
       } & (
         | {
+            /**
+             * @description Discriminator selecting closed portable paint validation.
+             */
             readonly valueKind: typeof svgPresentationValueKinds.paint;
           }
         | {
+            /**
+             * @description Discriminator selecting closed enumeration validation.
+             */
             readonly valueKind: typeof svgPresentationValueKinds.enumeration;
+
+            /**
+             * @description Exact authored values accepted for the portable field.
+             */
             readonly acceptedValues: readonly string[];
           }
         | {
+            /**
+             * @description Discriminator selecting finite numeric validation.
+             */
             readonly valueKind: typeof svgPresentationValueKinds.number;
+
+            /**
+             * @description Numeric domain enforced for the portable field.
+             */
             readonly numericDomain: TSvgPresentationNumericDomain;
           }
       )

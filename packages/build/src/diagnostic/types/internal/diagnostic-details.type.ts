@@ -7,7 +7,18 @@ import type { DiagnosticCodeType } from "../diagnostic-code.type.js";
  * supplied separately when constructing the complete diagnostic.
  */
 export type TDiagnosticDetails = {
+  /**
+   * @description Stable machine-readable identifier for the diagnostic family.
+   */
   readonly code: DiagnosticCodeType;
+
+  /**
+   * @description Domain authority responsible for the diagnostic.
+   */
   readonly category: DiagnosticCategoryType;
+
+  /**
+   * @description Stable human-readable explanation of the diagnostic.
+   */
   readonly message: string;
 };

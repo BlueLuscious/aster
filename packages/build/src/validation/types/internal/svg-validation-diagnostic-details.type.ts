@@ -7,5 +7,8 @@ import type { DiagnosticSeverityType } from "../../../diagnostic/types/index.js"
  * its observable severity independently for each occurrence.
  */
 export type TSvgValidationDiagnosticDetails = TDiagnosticDetails & {
+  /**
+   * @description Observable authority level selected for the validation issue.
+   */
   readonly severity: DiagnosticSeverityType;
 };

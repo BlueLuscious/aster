@@ -72,7 +72,14 @@ export const svgSourceElementSchema = Object.freeze({
   Record<
     TSvgSourceElementName,
     Readonly<{
+      /**
+       * @description Structural responsibility assigned to the recognised source element.
+       */
       readonly role: TSvgSourceElementRole;
+
+      /**
+       * @description Non-presentation attributes accepted for the source element.
+       */
       readonly attributes: readonly string[];
     }>
   >

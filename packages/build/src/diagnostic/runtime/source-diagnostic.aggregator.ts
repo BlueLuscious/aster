@@ -1,4 +1,5 @@
 import type { SourceDiagnostic } from "../contracts/index.js";
+import type { TIndexedDiagnostic } from "../types/internal/indexed-diagnostic.type.js";
 import { diagnosticSeverities } from "../constants/diagnostic-severities.constant.js";
 import { SourceDiagnosticFactory } from "./source-diagnostic.factory.js";
 
@@ -17,7 +18,7 @@ export class SourceDiagnosticAggregator {
    * @returns Frozen canonical diagnostic sequence.
    */
   aggregate(values: readonly unknown[]): readonly SourceDiagnostic[] {
-    const entries = values.map((value, index) => ({
+    const entries: TIndexedDiagnostic[] = values.map((value, index) => ({
       diagnostic: this.#factory.create(value),
       index,
     }));
@@ -45,8 +46,8 @@ export class SourceDiagnosticAggregator {
    * @returns Negative, zero, or positive ordering value.
    */
   #compareEntries(
-    left: { readonly diagnostic: SourceDiagnostic; readonly index: number },
-    right: { readonly diagnostic: SourceDiagnostic; readonly index: number },
+    left: TIndexedDiagnostic,
+    right: TIndexedDiagnostic,
   ): number {
     return (
       this.#compareText(
