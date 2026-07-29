@@ -2,6 +2,8 @@ import type { IconPresentation } from "../contracts/index.js";
 import type { IconPaintType } from "../types/index.js";
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
+import { iconPaintSchema } from "../constants/icon-paint-schema.constant.js";
+import { iconPresentationEnumerations } from "../constants/icon-presentation-enumerations.constant.js";
 import { iconPresentationFields } from "../constants/icon-presentation-fields.constant.js";
 
 /**
@@ -12,6 +14,22 @@ export class IconPresentationNormaliser {
    * @description Primitive authored-value validator.
    */
   readonly #validator = new IconValueValidator();
+
+  /**
+   * @description Accepted short hexadecimal paint grammar.
+   */
+  readonly #shortHexPattern = new RegExp(
+    iconPaintSchema.shortHexPatternSource,
+    "iu",
+  );
+
+  /**
+   * @description Accepted long hexadecimal paint grammar.
+   */
+  readonly #longHexPattern = new RegExp(
+    iconPaintSchema.longHexPatternSource,
+    "iu",
+  );
 
   /**
    * @description Produces one frozen presentation object in canonical field order.
@@ -29,7 +47,7 @@ export class IconPresentationNormaliser {
       "fillRule" in record
         ? this.#normaliseEnumeration(
             record.fillRule,
-            ["nonzero", "evenodd"],
+            iconPresentationEnumerations.fillRule,
             `${path}.fillRule`,
           )
         : undefined;
@@ -45,7 +63,7 @@ export class IconPresentationNormaliser {
       "strokeLineCap" in record
         ? this.#normaliseEnumeration(
             record.strokeLineCap,
-            ["butt", "round", "square"],
+            iconPresentationEnumerations.strokeLineCap,
             `${path}.strokeLineCap`,
           )
         : undefined;
@@ -53,7 +71,7 @@ export class IconPresentationNormaliser {
       "strokeLineJoin" in record
         ? this.#normaliseEnumeration(
             record.strokeLineJoin,
-            ["miter", "round", "bevel"],
+            iconPresentationEnumerations.strokeLineJoin,
             `${path}.strokeLineJoin`,
           )
         : undefined;
@@ -98,16 +116,19 @@ export class IconPresentationNormaliser {
    * @returns Canonical portable paint.
    */
   #normalisePaint(value: unknown, path: string): IconPaintType {
-    if (value === "none" || value === "currentColor") {
-      return value;
+    if (
+      typeof value === "string" &&
+      (iconPaintSchema.keywords as readonly string[]).includes(value)
+    ) {
+      return value as IconPaintType;
     }
 
-    if (typeof value === "string" && /^#[0-9a-f]{3}$/iu.test(value)) {
+    if (typeof value === "string" && this.#shortHexPattern.test(value)) {
       const [red, green, blue] = value.slice(1).toLowerCase();
       return `#${red}${red}${green}${green}${blue}${blue}`;
     }
 
-    if (typeof value === "string" && /^#[0-9a-f]{6}$/iu.test(value)) {
+    if (typeof value === "string" && this.#longHexPattern.test(value)) {
       return value.toLowerCase() as IconPaintType;
     }
 

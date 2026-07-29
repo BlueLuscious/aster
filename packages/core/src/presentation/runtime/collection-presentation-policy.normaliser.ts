@@ -2,6 +2,7 @@ import type { CollectionPresentationPolicy } from "../contracts/index.js";
 import type { IconPresentationOverrideType } from "../types/index.js";
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
+import { iconPresentationOverrideOrder } from "../constants/icon-presentation-override-order.constant.js";
 import { IconPresentationNormaliser } from "./icon-presentation.normaliser.js";
 
 /**
@@ -17,11 +18,6 @@ export class CollectionPresentationPolicyNormaliser {
    * @description Presentation object normaliser.
    */
   readonly #presentationNormaliser = new IconPresentationNormaliser();
-
-  /**
-   * @description Canonical semantic order for caller presentation capabilities.
-   */
-  readonly #overrideOrder = Object.freeze(["fill", "stroke", "strokeWidth"] as const);
 
   /**
    * @description Produces one deeply frozen policy.
@@ -45,11 +41,13 @@ export class CollectionPresentationPolicyNormaliser {
     const overrides = overridesInput.map((entry, index) => {
       if (
         typeof entry !== "string" ||
-        !this.#overrideOrder.includes(entry as IconPresentationOverrideType)
+        !iconPresentationOverrideOrder.includes(
+          entry as IconPresentationOverrideType,
+        )
       ) {
         throw new IconDefinitionError(
           `${path}.overrides[${index}]`,
-          `expected one of ${this.#overrideOrder.join(", ")}`,
+          `expected one of ${iconPresentationOverrideOrder.join(", ")}`,
         );
       }
 
@@ -61,7 +59,9 @@ export class CollectionPresentationPolicyNormaliser {
     }
 
     const canonicalOverrides = Object.freeze(
-      this.#overrideOrder.filter((capability) => overrides.includes(capability)),
+      iconPresentationOverrideOrder.filter((capability) =>
+        overrides.includes(capability),
+      ),
     );
     const defaultSize =
       "defaultSize" in record

@@ -212,12 +212,17 @@ async function validateWorkspaceMetadata(workspaceRoot, issues) {
 }
 
 /**
- * @description Verifies one portable Core package compiler override when present.
+ * @description Verifies compiler overrides for one host-independent production package.
  * @param {string} packageRoot - Absolute package directory.
+ * @param {string} packageName - Package name used in deterministic issues.
  * @param {string[]} issues - Mutable issue collection populated by the check.
  * @returns {Promise<void>} Completion after optional package compiler settings are inspected.
  */
-async function validateCoreCompilerOptions(packageRoot, issues) {
+async function validatePortableCompilerOptions(
+  packageRoot,
+  packageName,
+  issues,
+) {
   const configurationPath = resolve(packageRoot, "tsconfig.json");
 
   if (!(await pathExists(configurationPath))) {
@@ -228,11 +233,11 @@ async function validateCoreCompilerOptions(packageRoot, issues) {
   const options = configuration.compilerOptions ?? {};
 
   if (Array.isArray(options.lib) && options.lib.some((entry) => entry !== "ES2022")) {
-    issues.push("@aster/core cannot add host libraries to compilerOptions.lib");
+    issues.push(`${packageName} cannot add host libraries to compilerOptions.lib`);
   }
 
   if (Array.isArray(options.types) && options.types.length > 0) {
-    issues.push("@aster/core cannot add ambient compilerOptions.types");
+    issues.push(`${packageName} cannot add ambient compilerOptions.types`);
   }
 }
 
@@ -273,6 +278,50 @@ function validateCorePackageBoundary(manifest, dependencies, issues) {
     rootExport.types !== "./dist/index.d.ts"
   ) {
     issues.push("@aster/core root export must provide the accepted ESM and declaration entries");
+  }
+}
+
+/**
+ * @description Verifies the private root-only Build package and its pinned parser dependency.
+ * @param {Record<string, unknown>} manifest - Parsed Build package manifest.
+ * @param {Record<string, string>} dependencies - Combined production dependency fields.
+ * @param {string[]} issues - Mutable issue collection populated by the check.
+ * @returns {void} This validation mutates only the provided issue collection.
+ */
+function validateBuildPackageBoundary(manifest, dependencies, issues) {
+  const allowedDependencies = new Set(["@aster/core", "xmlsax-typescript"]);
+
+  for (const name of Object.keys(dependencies)) {
+    if (!allowedDependencies.has(name)) {
+      issues.push(`@aster/build cannot declare unaccepted production dependency ${name}`);
+    }
+  }
+
+  if (dependencies["xmlsax-typescript"] !== "1.0.0") {
+    issues.push("@aster/build must pin the accepted xmlsax-typescript parser at 1.0.0");
+  }
+
+  if (manifest.sideEffects !== false) {
+    issues.push("@aster/build must declare package.json#sideEffects as false");
+  }
+
+  const exports = manifest.exports;
+  const exportKeys =
+    typeof exports === "object" && exports !== null ? Object.keys(exports) : [];
+  const rootExport =
+    typeof exports === "object" && exports !== null ? exports["."] : undefined;
+
+  if (JSON.stringify(exportKeys) !== JSON.stringify(["."])) {
+    issues.push('@aster/build must expose only the root "." package export');
+  }
+
+  if (
+    typeof rootExport !== "object" ||
+    rootExport === null ||
+    rootExport.import !== "./dist/index.js" ||
+    rootExport.types !== "./dist/index.d.ts"
+  ) {
+    issues.push("@aster/build root export must provide the accepted ESM and declaration entries");
   }
 }
 
@@ -391,7 +440,28 @@ async function validatePackages(workspaceRoot, issues) {
       }
 
       validateCorePackageBoundary(manifest, dependencies, issues);
-      await validateCoreCompilerOptions(packageRoot, issues);
+      await validatePortableCompilerOptions(packageRoot, manifest.name, issues);
+    }
+
+    if (manifest.name === "@aster/build") {
+      if (manifest.private !== true) {
+        issues.push("@aster/build must remain a private build-time package");
+      }
+
+      for (const name of workspaceDependencies) {
+        if (name !== "@aster/core") {
+          issues.push(`@aster/build cannot depend on workspace package ${name}`);
+        }
+      }
+
+      for (const name of Object.keys(dependencies)) {
+        if (/(?:^|[/@-])(?:lilium|lotus)(?:$|[/@-])/iu.test(name)) {
+          issues.push(`@aster/build cannot depend on host ecosystem package ${name}`);
+        }
+      }
+
+      validateBuildPackageBoundary(manifest, dependencies, issues);
+      await validatePortableCompilerOptions(packageRoot, manifest.name, issues);
     }
 
     const modules = await collectModules(resolve(packageRoot, "src"));
@@ -409,7 +479,58 @@ async function validatePackages(workspaceRoot, issues) {
             );
           }
 
+          if (
+            manifest.name === "@aster/build" &&
+            isWithin(resolve(workspaceRoot, "tooling"), target)
+          ) {
+            issues.push(
+              `${relative(workspaceRoot, modulePath)} imports repository tooling into @aster/build`,
+            );
+          }
+
+          if (
+            manifest.name === "@aster/build" &&
+            resolve(modulePath) === resolve(packageRoot, "src/index.ts") &&
+            isWithin(resolve(packageRoot, "src/parser"), target)
+          ) {
+            issues.push(
+              "@aster/build cannot expose its untrusted parser feature from the package root",
+            );
+          }
+
+          if (
+            manifest.name === "@aster/build" &&
+            resolve(modulePath) === resolve(packageRoot, "src/index.ts") &&
+            isWithin(resolve(packageRoot, "src/validation"), target)
+          ) {
+            issues.push(
+              "@aster/build cannot expose its internal validation feature from the package root",
+            );
+          }
+
           continue;
+        }
+
+        if (manifest.name === "@aster/build" && specifier.startsWith("node:")) {
+          issues.push(
+            `${relative(workspaceRoot, modulePath)} imports a Node adapter into @aster/build`,
+          );
+        }
+
+        if (specifier === "xmlsax-typescript") {
+          const implementationPath = resolve(
+            packageRoot,
+            "src/parser/runtime/svg.parser.ts",
+          );
+
+          if (
+            manifest.name !== "@aster/build" ||
+            resolve(modulePath) !== implementationPath
+          ) {
+            issues.push(
+              `${relative(workspaceRoot, modulePath)} imports the XML parser outside its accepted private adapter`,
+            );
+          }
         }
 
         const workspaceDependency = [...names]

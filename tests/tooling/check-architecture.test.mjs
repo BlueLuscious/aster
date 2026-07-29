@@ -156,6 +156,109 @@ test("rejects Core production dependencies and public package boundary drift", a
   }
 });
 
+test("rejects host adapters and reverse dependencies in the private build domain", async () => {
+  const root = await createFixture();
+
+  try {
+    await writeFixtureJson(root, "packages/build/package.json", {
+      name: "@aster/build",
+      private: false,
+      type: "module",
+      dependencies: {
+        "@aster/svg": "workspace:*",
+        lilium: "^1.0.0",
+      },
+    });
+    await writeFixtureJson(root, "packages/build/tsconfig.json", {
+      compilerOptions: {
+        lib: ["ES2022", "DOM"],
+        types: ["node"],
+      },
+    });
+    await writeFixtureFile(
+      root,
+      "packages/build/src/index.ts",
+      'import "node:fs";\nimport "../../../tooling/adapter.js";\n',
+    );
+    await writeFixtureJson(root, "packages/svg/package.json", {
+      name: "@aster/svg",
+      type: "module",
+    });
+    await writeFixtureFile(root, "packages/svg/src/index.ts", "export {};\n");
+
+    const issues = await verifyArchitecture(root);
+
+    assert.ok(issues.some((issue) => /must remain a private/u.test(issue)));
+    assert.ok(
+      issues.some((issue) => /cannot depend on workspace package @aster\/svg/u.test(issue)),
+    );
+    assert.ok(issues.some((issue) => /host ecosystem package lilium/u.test(issue)));
+    assert.ok(issues.some((issue) => /cannot add host libraries/u.test(issue)));
+    assert.ok(issues.some((issue) => /cannot add ambient/u.test(issue)));
+    assert.ok(issues.some((issue) => /imports a Node adapter/u.test(issue)));
+    assert.ok(issues.some((issue) => /imports repository tooling/u.test(issue)));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects private parser dependency and adapter boundary drift", async () => {
+  const root = await createFixture();
+
+  try {
+    await writeFixtureJson(root, "packages/build/package.json", {
+      name: "@aster/build",
+      private: true,
+      type: "module",
+      sideEffects: false,
+      exports: {
+        ".": {
+          types: "./dist/index.d.ts",
+          import: "./dist/index.js",
+        },
+      },
+      dependencies: {
+        "xmlsax-typescript": "^1.0.0",
+        "another-parser": "1.0.0",
+      },
+    });
+    await writeFixtureFile(
+      root,
+      "packages/build/src/source/runtime/source.ts",
+      'import { tokenizeXml } from "xmlsax-typescript";\nvoid tokenizeXml;\n',
+    );
+    await writeFixtureFile(
+      root,
+      "packages/build/src/index.ts",
+      [
+        'export * from "./parser/runtime/svg.parser.js";',
+        'export * from "./validation/runtime/svg.validator.js";',
+        "",
+      ].join("\n"),
+    );
+
+    const issues = await verifyArchitecture(root);
+
+    assert.ok(
+      issues.some((issue) => /unaccepted production dependency another-parser/u.test(issue)),
+    );
+    assert.ok(
+      issues.some((issue) => /must pin the accepted xmlsax-typescript parser/u.test(issue)),
+    );
+    assert.ok(
+      issues.some((issue) => /imports the XML parser outside its accepted private adapter/u.test(issue)),
+    );
+    assert.ok(
+      issues.some((issue) => /cannot expose its untrusted parser feature/u.test(issue)),
+    );
+    assert.ok(
+      issues.some((issue) => /cannot expose its internal validation feature/u.test(issue)),
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("rejects invalid authored collection boundaries", async () => {
   const root = await createFixture();
 

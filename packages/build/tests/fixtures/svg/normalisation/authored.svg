@@ -1,0 +1,11 @@
+<svg fill-opacity="1.0" viewBox="+0 -0 2.4e1 24.0" xmlns="http://www.w3.org/2000/svg">
+  <g stroke-width="1e0" stroke="currentColor" fill="none">
+    <path d="M02,+12 h2e1"/>
+    <circle r="4.0" cy="+12" cx="12" fill="#ABC"/>
+    <ellipse ry="4" rx="8.0" cy="12" cx="12"/>
+    <rect height="18" width="18.0" y="3" x="3" rx="2"/>
+    <line y2="22" x2="22.0" y1="2" x1="2"/>
+    <polyline points="2,12 8,18 22,4"/>
+    <polygon points="12,2 22,22 2,22"/>
+  </g>
+</svg>

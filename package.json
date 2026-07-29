@@ -31,7 +31,7 @@
     "check": "pnpm run check:types && pnpm run check:architecture && pnpm run check:docs && pnpm run lint && pnpm run format:check",
     "check:architecture": "node tooling/architecture/check-architecture.mjs",
     "check:docs": "node tooling/documentation/check-documentation.mjs",
-    "check:types": "pnpm --recursive --if-present run check:types",
+    "check:types": "pnpm --filter @aster/core run build && pnpm --recursive --if-present run check:types",
     "clean": "pnpm --recursive --if-present run clean",
     "format": "pnpm --recursive --if-present run format",
     "format:check": "pnpm --recursive --if-present run format:check",

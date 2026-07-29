@@ -49,6 +49,7 @@ The conceptual collection fields are:
 | `minimumSize` | Optional | Smallest curator-approved display size. |
 | `presentationDefaults` | Optional | Portable fill, stroke, and stroke-width defaults used when nodes omit those values. |
 | `presentationOverrides` | Defaults to empty | Closed set of fill, stroke, and stroke-width capabilities callers may override. |
+| `allowIconLicenceOverride` | Defaults to false | Explicit authority allowing an icon to replace the collection artwork licence. |
 | `variants` | Optional | Declared controlled variations supported by the collection. |
 | `deprecated` | Derived from status | Indicates retirement intent without deleting identity. |
 | `replacedBy` | Optional | Fully qualified replacement collection identity. |
@@ -80,6 +81,17 @@ The conceptual icon fields are:
 
 Metadata may gain fields when a real build, renderer, search, documentation, licensing, or
 governance consumer exists. Fields are not added solely because they might be useful eventually.
+
+## Structured build boundary
+
+Textual metadata remains an acquired source until a replaceable decoder produces Aster-owned
+structured collection and icon values. Those values retain the canonical source identity and
+logical icon identity required to link them to successful SVG validation evidence.
+
+The decoder owns textual syntax and field diagnostics. The normaliser owns authority composition:
+collection defaults apply first, and an icon-specific artwork licence applies only when the
+collection explicitly grants that override. This split keeps serialisation replaceable while
+preventing opaque text or parser-library values from entering portable definitions.
 
 ## Canonical identity
 

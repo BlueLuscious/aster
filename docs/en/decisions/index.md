@@ -85,3 +85,5 @@ supersession links, and unindexed records.
 | Record | Status | Owners | Domain |
 | --- | --- | --- | --- |
 | [0001: pnpm and TypeScript Workspace Toolchain](0001-pnpm-typescript-workspace-toolchain.md) | Accepted | Technical maintainers | Repository toolchain |
+| [0002: Private Build-time Domain Package](0002-private-build-time-domain-package.md) | Accepted | Technical maintainers | Build-time product domain |
+| [0003: Private XML Parser Boundary](0003-private-xml-parser-boundary.md) | Accepted | Technical maintainers | SVG ingestion safety |

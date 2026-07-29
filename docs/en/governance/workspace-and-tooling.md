@@ -71,21 +71,24 @@ The root exposes:
 | Command | Contract |
 | --- | --- |
 | `pnpm build` | Build every real package in dependency order when it defines `build`. |
-| `pnpm check` | Run package type checks, repository architecture and documentation checks, linting, and non-mutating formatting checks. |
+| `pnpm check` | Run package type checks, repository architecture and documentation checks, and any delegated linting or non-mutating formatting contracts that packages define. |
 | `pnpm check:architecture` | Validate the portable compiler baseline, workspace metadata, package dependency boundaries, and authored collection roots. |
 | `pnpm check:docs` | Validate canonical documentation hierarchy, mirroring, links, local-reference exclusions, and decision records. |
 | `pnpm check:types` | Run every package `check:types` contract. |
-| `pnpm lint` | Run every package `lint` contract. |
-| `pnpm format` | Run every package's explicitly mutating formatter. |
-| `pnpm format:check` | Run every package's non-mutating formatting verification. |
+| `pnpm lint` | Delegate to every package that defines a `lint` contract. |
+| `pnpm format` | Delegate to every package that defines an explicitly mutating `format` contract. |
+| `pnpm format:check` | Delegate to every package that defines a non-mutating `format:check` contract. |
 | `pnpm test` | Run repository-tooling fixtures and every package `test` contract. |
 | `pnpm test:tooling` | Run fixture-based conformance for repository-owned checkers. |
 | `pnpm verify` | Run checks, tests, and builds through public root commands. |
 | `pnpm clean` | Delegate cleanup to each real package's guarded `clean` contract. |
 
 These commands are stable orchestration boundaries and do not name internal scripts. The empty
-workspace legitimately has no matching package operations. Before a package contains production
-code, repository verification must ensure that it implements every applicable delegated command.
+workspace legitimately has no matching package operations. Core and Build do not yet define
+linting or formatting scripts, so those reserved root delegators currently succeed without
+inspecting source. This is a known tooling gap rather than evidence of linting or formatting
+conformance. Automated style enforcement requires either a repository-owned checker or an
+explicitly classified external tool behind the existing command boundaries.
 
 The accepted package test path uses TypeScript compile-time tests and Node's built-in test runner
 executed through `tsx`. A package may divide those responsibilities into `test:types` and
@@ -123,8 +126,10 @@ A package cleaner must:
 - tolerate an absent output directory;
 - have fixture-based safety tests before generated output is introduced.
 
-No package currently owns distribution output, so no filesystem cleaner exists yet. A package
-cleaner is added with its first real output boundary, never as an empty speculative utility.
+Core and Build own direct `dist` distribution roots. Their package commands delegate cleanup to
+the guarded workspace cleaner, which accepts only the direct `dist` child of a directory
+containing a package manifest and is covered by fixture-based safety tests. Future packages add
+cleanup only with their first real output boundary, never as an empty speculative utility.
 
 ## Dependency installation
 
