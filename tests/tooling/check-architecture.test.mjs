@@ -230,7 +230,11 @@ test("rejects private parser dependency and adapter boundary drift", async () =>
     await writeFixtureFile(
       root,
       "packages/build/src/index.ts",
-      'export * from "./parser/runtime/svg.parser.js";\n',
+      [
+        'export * from "./parser/runtime/svg.parser.js";',
+        'export * from "./validation/runtime/svg.validator.js";',
+        "",
+      ].join("\n"),
     );
 
     const issues = await verifyArchitecture(root);
@@ -246,6 +250,9 @@ test("rejects private parser dependency and adapter boundary drift", async () =>
     );
     assert.ok(
       issues.some((issue) => /cannot expose its untrusted parser feature/u.test(issue)),
+    );
+    assert.ok(
+      issues.some((issue) => /cannot expose its internal validation feature/u.test(issue)),
     );
   } finally {
     await rm(root, { recursive: true, force: true });

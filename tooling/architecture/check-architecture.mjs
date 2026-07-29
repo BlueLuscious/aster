@@ -498,6 +498,16 @@ async function validatePackages(workspaceRoot, issues) {
             );
           }
 
+          if (
+            manifest.name === "@aster/build" &&
+            resolve(modulePath) === resolve(packageRoot, "src/index.ts") &&
+            isWithin(resolve(packageRoot, "src/validation"), target)
+          ) {
+            issues.push(
+              "@aster/build cannot expose its internal validation feature from the package root",
+            );
+          }
+
           continue;
         }
 
