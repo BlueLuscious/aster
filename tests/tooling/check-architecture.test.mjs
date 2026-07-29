@@ -202,6 +202,56 @@ test("rejects host adapters and reverse dependencies in the private build domain
   }
 });
 
+test("rejects private parser dependency and adapter boundary drift", async () => {
+  const root = await createFixture();
+
+  try {
+    await writeFixtureJson(root, "packages/build/package.json", {
+      name: "@aster/build",
+      private: true,
+      type: "module",
+      sideEffects: false,
+      exports: {
+        ".": {
+          types: "./dist/index.d.ts",
+          import: "./dist/index.js",
+        },
+      },
+      dependencies: {
+        "xmlsax-typescript": "^1.0.0",
+        "another-parser": "1.0.0",
+      },
+    });
+    await writeFixtureFile(
+      root,
+      "packages/build/src/source/runtime/source.ts",
+      'import { tokenizeXml } from "xmlsax-typescript";\nvoid tokenizeXml;\n',
+    );
+    await writeFixtureFile(
+      root,
+      "packages/build/src/index.ts",
+      'export * from "./parser/runtime/svg.parser.js";\n',
+    );
+
+    const issues = await verifyArchitecture(root);
+
+    assert.ok(
+      issues.some((issue) => /unaccepted production dependency another-parser/u.test(issue)),
+    );
+    assert.ok(
+      issues.some((issue) => /must pin the accepted xmlsax-typescript parser/u.test(issue)),
+    );
+    assert.ok(
+      issues.some((issue) => /imports the XML parser outside its accepted private adapter/u.test(issue)),
+    );
+    assert.ok(
+      issues.some((issue) => /cannot expose its untrusted parser feature/u.test(issue)),
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("rejects invalid authored collection boundaries", async () => {
   const root = await createFixture();
 
