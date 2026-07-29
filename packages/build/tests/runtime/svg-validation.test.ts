@@ -170,6 +170,17 @@ test("rejects source without supported non-empty geometry", () => {
   );
 });
 
+test("rejects structural opacity that cannot survive group flattening", () => {
+  const result = validate([entry("technical/structural-opacity.svg")]);
+
+  assert.equal(result.successful, false);
+  assert.equal("value" in result, false);
+  assert.deepEqual(
+    result.diagnostics.map((diagnostic) => diagnostic.code),
+    ["ASTER-SYNTAX-005"],
+  );
+});
+
 test("reports collection hypotheses as deterministic warnings", () => {
   const configured = contract({
     collection: "minimal",

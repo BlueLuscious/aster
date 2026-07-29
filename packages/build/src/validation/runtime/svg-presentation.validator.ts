@@ -1,4 +1,5 @@
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
+import { svgPresentationAttributeSchema } from "../../shared/constants/svg-presentation-attribute-schema.constant.js";
 import type { TSvgPresentationValidation } from "../types/internal/svg-presentation-validation.type.js";
 import { SvgNumberParser } from "./svg-number.parser.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
@@ -18,28 +19,12 @@ export class SvgPresentationValidator {
   readonly #numberParser = new SvgNumberParser();
 
   /**
-   * @description Closed accepted SVG presentation attribute names.
-   */
-  readonly #attributes = new Set([
-    "fill",
-    "fill-rule",
-    "stroke",
-    "stroke-width",
-    "stroke-linecap",
-    "stroke-linejoin",
-    "stroke-miterlimit",
-    "opacity",
-    "fill-opacity",
-    "stroke-opacity",
-  ]);
-
-  /**
    * @description Determines whether one attribute belongs to portable presentation.
    * @param localName - Namespace-free attribute name.
    * @returns Whether the presentation validator owns the attribute.
    */
   supportsAttribute(localName: string): boolean {
-    return this.#attributes.has(localName);
+    return Object.hasOwn(svgPresentationAttributeSchema, localName);
   }
 
   /**
@@ -56,45 +41,48 @@ export class SvgPresentationValidator {
     const strokeWidths = [];
 
     for (const attribute of element.attributes) {
-      if (!this.supportsAttribute(attribute.localName)) {
+      const schema = this.#schema(attribute.localName);
+
+      if (schema === undefined) {
         continue;
       }
 
       const numeric = this.#numberParser.parse(attribute.value);
-      let valid = true;
+      let valid: boolean;
 
-      switch (attribute.localName) {
-        case "fill":
-        case "stroke":
+      switch (schema.valueKind) {
+        case "paint":
           valid = this.#validPaint(attribute.value);
           break;
-        case "fill-rule":
-          valid = ["nonzero", "evenodd"].includes(attribute.value);
+        case "enumeration":
+          valid = (schema.acceptedValues as readonly string[]).includes(
+            attribute.value,
+          );
           break;
-        case "stroke-linecap":
-          valid = ["butt", "round", "square"].includes(attribute.value);
+        case "number":
+          valid =
+            numeric !== undefined &&
+            this.#validNumber(numeric, schema.numericDomain);
           break;
-        case "stroke-linejoin":
-          valid = ["miter", "round", "bevel"].includes(attribute.value);
-          break;
-        case "stroke-width":
-          valid = numeric !== undefined && numeric >= 0;
+      }
 
-          if (valid && numeric !== undefined) {
-            strokeWidths.push({
-              value: numeric,
-              span: attribute.valueSpan,
-            });
-          }
-          break;
-        case "stroke-miterlimit":
-          valid = numeric !== undefined && numeric > 0;
-          break;
-        case "opacity":
-        case "fill-opacity":
-        case "stroke-opacity":
-          valid = numeric !== undefined && numeric >= 0 && numeric <= 1;
-          break;
+      if (
+        valid &&
+        !schema.inherited &&
+        (element.localName === "svg" || element.localName === "g")
+      ) {
+        valid = false;
+      }
+
+      if (
+        valid &&
+        schema.collectStrokeWidth &&
+        numeric !== undefined
+      ) {
+        strokeWidths.push({
+          value: numeric,
+          span: attribute.valueSpan,
+        });
       }
 
       if (!valid) {
@@ -114,6 +102,45 @@ export class SvgPresentationValidator {
         strokeWidths.map((entry) => Object.freeze(entry)),
       ),
     });
+  }
+
+  /**
+   * @description Resolves one accepted presentation schema entry without widening its field types.
+   * @param localName - Namespace-free SVG attribute name.
+   * @returns Matching immutable schema entry, or `undefined` when unsupported.
+   */
+  #schema(
+    localName: string,
+  ):
+    | (typeof svgPresentationAttributeSchema)[keyof typeof svgPresentationAttributeSchema]
+    | undefined {
+    if (!Object.hasOwn(svgPresentationAttributeSchema, localName)) {
+      return undefined;
+    }
+
+    return svgPresentationAttributeSchema[
+      localName as keyof typeof svgPresentationAttributeSchema
+    ];
+  }
+
+  /**
+   * @description Validates one parsed number against its schema-owned numeric domain.
+   * @param value - Parsed finite SVG number.
+   * @param domain - Closed numeric domain declared by the presentation schema.
+   * @returns Whether the number belongs to the declared domain.
+   */
+  #validNumber(
+    value: number,
+    domain: "non-negative" | "opacity" | "positive",
+  ): boolean {
+    switch (domain) {
+      case "non-negative":
+        return value >= 0;
+      case "opacity":
+        return value >= 0 && value <= 1;
+      case "positive":
+        return value > 0;
+    }
   }
 
   /**

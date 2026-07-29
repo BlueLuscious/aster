@@ -38,10 +38,17 @@ export class SvgPathDataInspector {
       return this.#invalid();
     }
 
-    const segments: { readonly command: string; readonly values: number[] }[] =
-      [];
+    const segments: {
+      readonly authoredCommand: string;
+      readonly command: string;
+      readonly values: number[];
+    }[] = [];
     let current:
-      | { readonly command: string; readonly values: number[] }
+      | {
+          readonly authoredCommand: string;
+          readonly command: string;
+          readonly values: number[];
+        }
       | undefined;
 
     for (const token of tokens) {
@@ -52,7 +59,11 @@ export class SvgPathDataInspector {
           return this.#invalid();
         }
 
-        current = { command, values: [] };
+        current = {
+          authoredCommand: token,
+          command,
+          values: [],
+        };
         segments.push(current);
       } else {
         if (current === undefined) {
@@ -119,6 +130,13 @@ export class SvgPathDataInspector {
       commandCount: segments.length,
       hasDrawingOperation,
       gridValues: Object.freeze(gridValues),
+      canonicalData: segments
+        .map((segment) =>
+          segment.values.length === 0
+            ? segment.authoredCommand
+            : `${segment.authoredCommand} ${segment.values.join(" ")}`,
+        )
+        .join(" "),
     });
   }
 

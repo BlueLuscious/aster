@@ -21,4 +21,9 @@ export type TSvgPathInspection = {
    * @description Finite coordinate and size values suitable for provisional grid inspection.
    */
   readonly gridValues: readonly number[];
+
+  /**
+   * @description Deterministic path spelling when the complete value is valid.
+   */
+  readonly canonicalData?: string;
 };
