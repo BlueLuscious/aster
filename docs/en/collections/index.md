@@ -9,6 +9,12 @@ No release-quality collection exists yet. Collection identity, source ownership,
 defined by
 [Collection and Source Boundary](../architecture/collection-and-source-boundary.md).
 
+## Current collections
+
+| Collection | Status | Purpose |
+| --- | --- | --- |
+| [Aster Experimental](experimental/index.md) | Experimental | Prove the canonical source-to-package workflow. |
+
 Each collection document covers:
 
 - identity, status, curator, purpose, and licence;
