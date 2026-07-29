@@ -187,11 +187,18 @@ consumers require it. Full legal text and repository policy remain outside each 
 
 ## Technology boundary
 
-Metadata serialisation format, file extension, schema library, and authoring UI remain Open.
-Whichever technology is selected must:
+Canonical authored metadata uses strict UTF-8 JSON with `schemaVersion: 1`, as defined by
+[Canonical JSON Metadata Sources](../decisions/0004-canonical-json-metadata-sources.md). JSON
+decoding remains a private Build responsibility and cannot leak mutable parser values or native
+exception messages into diagnostics or portable definitions.
+
+The decoder and any future schema or authoring UI must:
 
 - preserve the accepted field meanings and authority layers;
 - produce deterministic validation diagnostics;
 - support authored defaults and generated facts without mixing ownership;
 - avoid framework, DOM, browser, and Lotus types;
 - remain replaceable behind Aster-owned metadata contracts.
+
+No JSON Schema library or authoring UI is selected. Those tools require concrete editor or
+collection-workflow evidence and cannot become runtime Core dependencies.

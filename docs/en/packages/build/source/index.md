@@ -24,8 +24,10 @@ The immutable `ingestionSourceKinds` object is the runtime authority for source-
 discriminators. Each source contract derives its `kind` property from that authority so runtime
 dispatch and compile-time narrowing cannot drift independently.
 
-The metadata format is deliberately unspecified. Source services transport exact text and do not
-choose JSON, YAML, TypeScript, or another schema representation.
+Canonical metadata currently uses versioned JSON, but Source services transport exact text and do
+not parse JSON or select schema behaviour. Decoding remains a separate private Build stage behind
+Aster-owned structured contracts. The accepted source format is defined by
+[Canonical JSON Metadata Sources](../../../decisions/0004-canonical-json-metadata-sources.md).
 
 `IconIdentity` belongs to `@aster/core` because collection, icon, and optional variant identity
 have the same stable meaning throughout acquisition, generation, distribution, and rendering.

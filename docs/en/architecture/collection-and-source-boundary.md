@@ -101,9 +101,14 @@ No normalised SVG, generated TypeScript, renderer wrapper, preview, contact shee
 package manifest belongs in these source directories. Generated outputs use separately declared
 boundaries and can be deleted without removing canonical sources.
 
-Metadata serialisation technology and file extension remain Open until schema and authoring
-experiments provide evidence. Regardless of format, metadata paths must resolve unambiguously to a
-collection or icon identity.
+Metadata uses strict UTF-8 JSON with `schemaVersion: 1`. One collection owns
+`metadata/collection.json`; each icon owns `metadata/<icon-slug>.json`; and a separately
+represented variant owns `metadata/<icon-slug>--<variant-slug>.json`. Metadata and SVG base
+filenames must agree.
+
+Decoding remains separate from source acquisition and domain authority. The accepted format,
+alternatives, duplicate-key requirement, and migration boundary are recorded by
+[Canonical JSON Metadata Sources](../decisions/0004-canonical-json-metadata-sources.md).
 
 ## Editable masters
 
