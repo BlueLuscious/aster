@@ -1,10 +1,12 @@
 # @aster/build
 
 Private build-time domain services for transforming canonical Aster sources into deterministic
-portable definitions and generated artefacts.
+portable definitions.
 
 The current boundary owns exact textual source descriptors, source locations, diagnostics,
-aggregation, and diagnostic-bearing results. It contains no filesystem adapter or SVG parser yet.
+parser-neutral SVG syntax, safety and technical validation, collection advisories, deterministic
+normalisation, aggregation, and diagnostic-bearing results. It contains no filesystem,
+metadata-decoding, command-line, or generation adapter.
 
 See the [canonical package documentation](../../docs/en/packages/build/index.md).
 

@@ -18,6 +18,7 @@ command-line adapter, or generated output authority yet.
 
 | Feature | Responsibility |
 | --- | --- |
+| [Shared](shared/index.md) | Cross-feature immutable SVG vocabularies and primitive build-service assertions. |
 | [Source](source/index.md) | Canonical textual source descriptors and exact UTF-16 locations. |
 | [Diagnostic](diagnostic/index.md) | Stable diagnostics, deterministic aggregation, and success or failure results. |
 | [Parser](parser/index.md) | Internal parser-neutral SVG syntax, source spans, subset behaviour, and blocking safety policy. |

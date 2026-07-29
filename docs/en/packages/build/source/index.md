@@ -20,6 +20,10 @@ bytes but before parser or semantic validation authority exists.
 | --- | --- | --- |
 | `IngestionSourceType` | Forms the closed union of SVG, collection metadata, and icon metadata descriptors. | Accepted by pure ingestion stages. |
 
+The immutable `ingestionSourceKinds` object is the runtime authority for source-family
+discriminators. Each source contract derives its `kind` property from that authority so runtime
+dispatch and compile-time narrowing cannot drift independently.
+
 The metadata format is deliberately unspecified. Source services transport exact text and do not
 choose JSON, YAML, TypeScript, or another schema representation.
 

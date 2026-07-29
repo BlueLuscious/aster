@@ -23,6 +23,16 @@ filesystem paths, stack traces, or host process authority.
 | `DiagnosticCodeType` | `ASTER-<CATEGORY>-<NNN>` | Represents the Aster-owned diagnostic code family; runtime enforces category agreement and three digits. |
 | `DiagnosticResultType<Value>` | Discriminated success or failure | Carries complete output with warnings, or blocking diagnostics with no partial value. Its envelope and diagnostics are frozen; the producing stage owns output immutability. |
 
+The immutable `diagnosticCategories` and `diagnosticSeverities` objects are the runtime
+authorities from which their public unions are derived.
+
+## Internal types
+
+| Type | Responsibility | Relations |
+| --- | --- | --- |
+| `TDiagnosticDetails` | Carries the stable code, category, and message resolved for one internal diagnostic family. | Extended when an owning feature resolves additional observable metadata. |
+| `TIndexedDiagnostic` | Associates one canonical diagnostic with its semantic encounter order. | Internal sorting value used by `SourceDiagnosticAggregator`. |
+
 ## Runtime
 
 | Class | Responsibility | Relations |

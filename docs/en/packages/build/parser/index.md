@@ -29,6 +29,32 @@ diagnostics before returning syntax.
 Internal interfaces use the `I` prefix because they are implementation boundaries rather than the
 private package root workspace surface.
 
+## Internal types
+
+| Type | Responsibility | Relations |
+| --- | --- | --- |
+| `TSvgAttributeInput` | Carries one located parser-neutral attribute before syntax construction. | Converted immediately from parser-library namespace metadata and Aster-owned locations. |
+| `TSvgAttributeLocation` | Carries exact authored qualified-name, value, and complete attribute spans. | Produced by `SvgTagLocator`; combined with parser metadata by `SvgParser`. |
+| `TSvgElementInput` | Carries one located parser-neutral opening element before syntax construction. | Submitted to `SvgSyntaxTreeBuilder`. |
+| `TSvgParsingIssue` | Represents parser-neutral evidence for one stable diagnostic family. | Produced by parser policies and mapped by `SvgParsingDiagnosticFactory`. |
+| `TSvgSyntaxElementBuilder` | Retains mutable construction-only element state. | Deeply isolated into `ISvgSyntaxElement` by `SvgSyntaxTreeBuilder`. |
+| `TSvgTagLocation` | Groups an opening-tag span, qualified-name span, ordered attribute locations, and optional duplicate name. | Output of `SvgTagLocator`. |
+
+## Feature-owned authorities
+
+| Authority | Responsibility |
+| --- | --- |
+| `svgParsingIssueKinds` | Defines every parser-neutral issue discriminator. |
+| `svgNamespaces` | Defines the SVG element and XML namespace declaration authorities. |
+| `svgParserLimits` | Defines fixed source length, depth, element, and attribute safety limits. |
+| `svgSafetyAttributePolicy` | Defines rejected event-handler and resource-bearing attribute grammar. |
+| `svgSafetyElements` | Classifies rejected executable and embedded SVG elements. |
+| `xmlInertSections` | Defines comment, CDATA, and processing-instruction lexical boundaries. |
+
+These immutable values remain separate because they represent different parser responsibilities.
+Token discriminators from `xmlsax-typescript` remain part of the private external adapter ABI and
+are not copied into Aster-owned issue vocabularies.
+
 ## Runtime responsibilities
 
 | Class | Responsibility |

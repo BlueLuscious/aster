@@ -60,6 +60,23 @@ metadata.
 | `TSvgPrimitiveValidation` | Carries one primitive family's diagnostics and metrics. | Shared by concrete primitive validators. |
 | `TSvgPresentationValidation` | Carries presentation diagnostics and valid explicit stroke widths. | Output of `SvgPresentationValidator`. |
 | `TSvgPathInspection` | Carries path grammar validity, drawing evidence, command count, grid values, and valid canonical token spelling. | Output of `SvgPathDataInspector`; canonical spelling is consumed by later normalisation. |
+| `TSvgGeometryNumericDomain` | Restricts geometry attributes to finite, positive, or non-negative numeric domains. | Used by `SvgGeometryNumberReader`. |
+| `TSvgPathCommand` | Derives the accepted lowercase path-command union from `svgPathCommands`. | Keys path arity and path-segment processing. |
+| `TSvgPathSegment` | Associates an authored command, its canonical lowercase discriminator, and parsed finite parameters. | Construction value internal to `SvgPathDataInspector`. |
+| `TSvgValidationDiagnosticDetails` | Extends common diagnostic details with occurrence-specific severity. | Internal return type of `SvgValidationDiagnosticFactory`. |
+
+## Feature-owned authorities
+
+| Authority | Responsibility |
+| --- | --- |
+| `svgValidationIssueKinds` | Defines every internal validation evidence discriminator. |
+| `svgPathCommands` | Defines the accepted lowercase SVG path-command vocabulary. |
+| `svgPathCommandParameterCounts` | Associates each accepted path command with its repeated parameter-group arity. |
+| `svgNumberPatternSource` | Defines the finite-form SVG number token grammar. |
+| `svgLexicalPatternSources` | Defines shared command and separator lexical grammar. |
+
+These values remain feature-specific because they describe technical validation rather than
+general source acquisition or portable Core data.
 
 ## Universal validation
 
