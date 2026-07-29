@@ -259,6 +259,44 @@ test("rejects private parser dependency and adapter boundary drift", async () =>
   }
 });
 
+test("rejects Validation runtime imports from Build Normalisation", async () => {
+  const root = await createFixture();
+
+  try {
+    await writeFixtureJson(root, "packages/build/package.json", {
+      name: "@aster/build",
+      private: true,
+      type: "module",
+      sideEffects: false,
+      exports: {
+        ".": {
+          types: "./dist/index.d.ts",
+          import: "./dist/index.js",
+        },
+      },
+      dependencies: {
+        "@aster/core": "workspace:*",
+        "xmlsax-typescript": "1.0.0",
+      },
+    });
+    await writeFixtureFile(
+      root,
+      "packages/build/src/normalisation/runtime/svg.normaliser.ts",
+      'import "../../validation/runtime/svg-number.parser.js";\n',
+    );
+
+    const issues = await verifyArchitecture(root);
+
+    assert.ok(
+      issues.some((issue) =>
+        /cannot import Validation runtime implementations/u.test(issue),
+      ),
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("rejects invalid authored collection boundaries", async () => {
   const root = await createFixture();
 

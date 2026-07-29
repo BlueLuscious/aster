@@ -78,6 +78,17 @@ Schema validation establishes the supported source subset:
 Unsupported technical syntax is an error rather than a quality warning. Source input never gains
 authority merely because a browser happens to render it.
 
+## Shared lexical authority
+
+Strict finite SVG numbers, sequence separators, path commands, command arity, arc parameters, and
+canonical path token spelling are owned by an internal shared Build composition. Validation uses
+that composition to establish trustworthy evidence and remains authoritative for blocking
+diagnostics. Normalisation uses the same stateless composition to canonicalise accepted values
+without importing Validation runtime implementations or defining a competing grammar.
+
+The concrete authorities, internal types, and runtime services are documented by
+[Build Shared Authorities](../packages/build/shared/index.md).
+
 ## Semantic validation
 
 Semantic validation composes project, collection, and icon authority. It verifies:

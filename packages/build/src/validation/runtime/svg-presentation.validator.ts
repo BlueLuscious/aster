@@ -5,10 +5,10 @@ import { svgPresentationAttributeSchema } from "../../shared/constants/svg-prese
 import { svgPresentationValueKinds } from "../../shared/constants/svg-presentation-value-kinds.constant.js";
 import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
 import { svgSourceElementRoles } from "../../shared/constants/svg-source-element-roles.constant.js";
+import { SvgNumberParser } from "../../shared/runtime/svg-number.parser.js";
 import type { TSvgPresentationNumericDomain } from "../../shared/types/internal/svg-presentation-numeric-domain.type.js";
 import type { TSvgPresentationValidation } from "../types/internal/svg-presentation-validation.type.js";
 import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
-import { SvgNumberParser } from "./svg-number.parser.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
 /**

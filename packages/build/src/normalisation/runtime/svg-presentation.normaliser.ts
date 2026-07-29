@@ -4,7 +4,7 @@ import { svgPaintSchema } from "../../shared/constants/svg-paint-schema.constant
 import { svgPresentationAttributeSchema } from "../../shared/constants/svg-presentation-attribute-schema.constant.js";
 import { svgPresentationValueKinds } from "../../shared/constants/svg-presentation-value-kinds.constant.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
-import { SvgNumberParser } from "../../validation/runtime/svg-number.parser.js";
+import { SvgNumberParser } from "../../shared/runtime/svg-number.parser.js";
 
 /**
  * @description Resolves accepted inherited SVG presentation into portable node fields.

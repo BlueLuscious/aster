@@ -7,7 +7,7 @@ import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-synt
 import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
 import { svgSourceElementNames } from "../../shared/constants/svg-source-element-names.constant.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
-import { SvgNumberParser } from "../../validation/runtime/svg-number.parser.js";
+import { SvgNumberParser } from "../../shared/runtime/svg-number.parser.js";
 import { SvgPathDataNormaliser } from "./svg-path-data.normaliser.js";
 
 /**

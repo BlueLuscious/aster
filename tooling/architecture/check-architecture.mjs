@@ -508,6 +508,16 @@ async function validatePackages(workspaceRoot, issues) {
             );
           }
 
+          if (
+            manifest.name === "@aster/build" &&
+            isWithin(resolve(packageRoot, "src/normalisation"), modulePath) &&
+            isWithin(resolve(packageRoot, "src/validation/runtime"), target)
+          ) {
+            issues.push(
+              `${relative(workspaceRoot, modulePath)} cannot import Validation runtime implementations`,
+            );
+          }
+
           continue;
         }
 

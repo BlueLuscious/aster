@@ -10,33 +10,10 @@ material public or dependency decision is accepted separately.
 
 | Window | Capability |
 | --- | --- |
-| Before the first generation adapter or command-line host | Separate reusable lexical authority from validation orchestration. |
 | Before the first compatibility-bearing Core release | Decide whether portable runtime vocabularies belong in the public Core API. |
 | Before the first public release or externally supported contribution workflow | Activate linting and non-mutating formatting verification. |
 | After the first end-to-end product flow is implemented and package documentation is self-contained | Consolidate transversal documentation around a concise project-level summary. |
 | After parser conformance provides sufficient replacement evidence | Consider an Aster-owned XML tokeniser and parser adapter. |
-
-## Reusable Build lexical authority
-
-Normalisation currently reuses `SvgNumberParser` and `SvgPathDataInspector` from Validation.
-This preserves one implementation of each grammar, but it also makes Normalisation depend on
-Validation runtime services.
-
-Before a generation adapter, filesystem host, or command-line host depends on normalised output,
-evaluate one of these designs:
-
-- move parser-neutral number and path lexical services to a shared internal Build composition;
-- retain parsed canonical number and path evidence during validation so Normalisation does not
-  parse accepted source again.
-
-The selected design should preserve one grammar authority, keep diagnostics owned by Validation,
-and remove direct imports from Normalisation into `validation/runtime/`. Existing golden and
-idempotence tests should remain the conformance boundary.
-
-Current feature responsibilities are defined by the
-[SVG processing pipeline](architecture/svg-processing-pipeline.md), the
-[Build shared authorities](packages/build/shared/index.md), and the
-[normalisation feature](packages/build/normalisation/index.md).
 
 ## Public portable vocabularies
 
