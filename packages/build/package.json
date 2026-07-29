@@ -24,6 +24,7 @@
     "test:types": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
+    "@aster/core": "workspace:*",
     "xmlsax-typescript": "1.0.0"
   }
 }

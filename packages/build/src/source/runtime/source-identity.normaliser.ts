@@ -1,4 +1,4 @@
-import type { SourceIdentity } from "../contracts/index.js";
+import type { IconIdentity } from "@aster/core";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { BuildValueValidator } from "../../shared/runtime/build-value.validator.js";
 
@@ -22,7 +22,7 @@ export class SourceIdentityNormaliser {
    * @param path - Logical identity path.
    * @returns Frozen canonical identity.
    */
-  normalise(value: unknown, path: string): SourceIdentity {
+  normalise(value: unknown, path: string): IconIdentity {
     const record = this.#validator.record(value, path);
     this.#validator.exactFields(record, ["collection", "name", "variant"], path);
     const collection = this.normaliseCollection(

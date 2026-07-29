@@ -1,5 +1,5 @@
+import type { IconIdentity } from "@aster/core";
 import type { CanonicalTextSource } from "./canonical-text-source.contract.js";
-import type { SourceIdentity } from "./source-identity.contract.js";
 
 /**
  * @description Canonical exported SVG associated with one accepted logical icon identity.
@@ -13,5 +13,5 @@ export interface CanonicalSvgSource extends CanonicalTextSource {
   /**
    * @description Identity established independently from SVG document contents.
    */
-  readonly identity: SourceIdentity;
+  readonly identity: IconIdentity;
 }

@@ -20,6 +20,9 @@ importers:
 
   packages/build:
     dependencies:
+      '@aster/core':
+        specifier: workspace:*
+        version: link:../core
       xmlsax-typescript:
         specifier: 1.0.0
         version: 1.0.0

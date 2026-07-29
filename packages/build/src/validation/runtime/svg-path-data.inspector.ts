@@ -1,0 +1,263 @@
+import type { TSvgPathInspection } from "../types/internal/svg-path-inspection.type.js";
+
+/**
+ * @description Validates the accepted SVG path grammar and extracts deterministic advisory facts.
+ */
+export class SvgPathDataInspector {
+  /**
+   * @description Accepted parameter count for each explicit path command.
+   */
+  readonly #parameterCounts = new Map<string, number>([
+    ["m", 2],
+    ["l", 2],
+    ["h", 1],
+    ["v", 1],
+    ["c", 6],
+    ["s", 4],
+    ["q", 4],
+    ["t", 2],
+    ["a", 7],
+    ["z", 0],
+  ]);
+
+  /**
+   * @description Repeated command-or-number token grammar.
+   */
+  readonly #tokenPattern =
+    /[A-Za-z]|[+-]?(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?/gu;
+
+  /**
+   * @description Inspects one complete authored path-data value.
+   * @param value - Exact authored `d` attribute value.
+   * @returns Frozen technical inspection result.
+   */
+  inspect(value: string): TSvgPathInspection {
+    const tokens = this.#tokenise(value);
+
+    if (tokens === undefined || tokens.length === 0) {
+      return this.#invalid();
+    }
+
+    const segments: { readonly command: string; readonly values: number[] }[] =
+      [];
+    let current:
+      | { readonly command: string; readonly values: number[] }
+      | undefined;
+
+    for (const token of tokens) {
+      if (typeof token === "string") {
+        const command = token.toLowerCase();
+
+        if (!this.#parameterCounts.has(command)) {
+          return this.#invalid();
+        }
+
+        current = { command, values: [] };
+        segments.push(current);
+      } else {
+        if (current === undefined) {
+          return this.#invalid();
+        }
+
+        current.values.push(token);
+      }
+    }
+
+    if (segments[0]?.command !== "m") {
+      return this.#invalid();
+    }
+
+    const gridValues: number[] = [];
+    let hasDrawingOperation = false;
+
+    for (let index = 0; index < segments.length; index += 1) {
+      const segment = segments[index];
+
+      if (segment === undefined) {
+        return this.#invalid();
+      }
+
+      const parameterCount = this.#parameterCounts.get(segment.command);
+
+      if (
+        parameterCount === undefined ||
+        (parameterCount === 0 && segment.values.length !== 0) ||
+        (parameterCount > 0 &&
+          (segment.values.length < parameterCount ||
+            segment.values.length % parameterCount !== 0))
+      ) {
+        return this.#invalid();
+      }
+
+      if (
+        index > 0 &&
+        segments[index - 1]?.command === "z" &&
+        segment.command !== "m"
+      ) {
+        return this.#invalid();
+      }
+
+      if (
+        segment.command === "a" &&
+        !this.#validArcParameters(segment.values)
+      ) {
+        return this.#invalid();
+      }
+
+      if (
+        !["m", "z"].includes(segment.command) ||
+        (segment.command === "m" && segment.values.length > 2)
+      ) {
+        hasDrawingOperation = true;
+      }
+
+      gridValues.push(...this.#gridValues(segment.command, segment.values));
+    }
+
+    return Object.freeze({
+      valid: true,
+      commandCount: segments.length,
+      hasDrawingOperation,
+      gridValues: Object.freeze(gridValues),
+    });
+  }
+
+  /**
+   * @description Tokenises path data while rejecting unsupported characters and comma placement.
+   * @param value - Exact authored path value.
+   * @returns Command and finite-number tokens, or `undefined` for malformed text.
+   */
+  #tokenise(value: string): readonly (string | number)[] | undefined {
+    const tokens: (string | number)[] = [];
+    let cursor = 0;
+    let match: RegExpExecArray | null;
+    this.#tokenPattern.lastIndex = 0;
+
+    while ((match = this.#tokenPattern.exec(value)) !== null) {
+      const raw = match[0];
+      const token =
+        /^[A-Za-z]$/u.test(raw)
+          ? raw
+          : Number(raw);
+      const gap = value.slice(cursor, match.index);
+      const previous = tokens[tokens.length - 1];
+
+      if (
+        !this.#validGap(
+          gap,
+          tokens.length === 0,
+          typeof previous === "number",
+          typeof token === "number",
+        ) ||
+        (typeof token === "number" && !Number.isFinite(token))
+      ) {
+        return undefined;
+      }
+
+      tokens.push(
+        typeof token === "number" && Object.is(token, -0) ? 0 : token,
+      );
+      cursor = match.index + raw.length;
+    }
+
+    if (!/^\s*$/u.test(value.slice(cursor))) {
+      return undefined;
+    }
+
+    return Object.freeze(tokens);
+  }
+
+  /**
+   * @description Determines whether one token gap follows accepted path separator rules.
+   * @param value - Exact text between tokens.
+   * @param beforeFirst - Whether the gap precedes the first token.
+   * @param afterNumber - Whether the previous token is numeric.
+   * @param beforeNumber - Whether the next token is numeric.
+   * @returns Whether the gap is accepted.
+   */
+  #validGap(
+    value: string,
+    beforeFirst: boolean,
+    afterNumber: boolean,
+    beforeNumber: boolean,
+  ): boolean {
+    if (beforeFirst) {
+      return /^\s*$/u.test(value);
+    }
+
+    if (value.includes(",")) {
+      return (
+        afterNumber &&
+        beforeNumber &&
+        /^\s*,\s*$/u.test(value)
+      );
+    }
+
+    return value.length === 0 || /^\s+$/u.test(value);
+  }
+
+  /**
+   * @description Validates radii and binary flags for repeated arc parameter groups.
+   * @param values - Complete repeated arc parameter values.
+   * @returns Whether every arc group is valid.
+   */
+  #validArcParameters(values: readonly number[]): boolean {
+    for (let index = 0; index < values.length; index += 7) {
+      const radiusX = values[index];
+      const radiusY = values[index + 1];
+      const largeArc = values[index + 3];
+      const sweep = values[index + 4];
+
+      if (
+        radiusX === undefined ||
+        radiusY === undefined ||
+        radiusX < 0 ||
+        radiusY < 0 ||
+        ![0, 1].includes(largeArc ?? -1) ||
+        ![0, 1].includes(sweep ?? -1)
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * @description Selects coordinate and size parameters appropriate for provisional grid checks.
+   * @param command - Lowercase supported path command.
+   * @param values - Complete repeated command parameter values.
+   * @returns Selected finite values in source order.
+   */
+  #gridValues(command: string, values: readonly number[]): readonly number[] {
+    if (command !== "a") {
+      return values;
+    }
+
+    const selected: number[] = [];
+
+    for (let index = 0; index < values.length; index += 7) {
+      selected.push(
+        values[index] ?? 0,
+        values[index + 1] ?? 0,
+        values[index + 5] ?? 0,
+        values[index + 6] ?? 0,
+      );
+    }
+
+    return selected;
+  }
+
+  /**
+   * @description Creates the canonical malformed path inspection result.
+   * @returns Frozen invalid inspection with no advisory facts.
+   */
+  #invalid(): TSvgPathInspection {
+    return Object.freeze({
+      valid: false,
+      commandCount: 0,
+      hasDrawingOperation: false,
+      gridValues: Object.freeze([]),
+    });
+  }
+}

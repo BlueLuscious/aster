@@ -94,4 +94,50 @@ export class BuildValueValidator {
 
     return value;
   }
+
+  /**
+   * @description Accepts one finite numeric value.
+   * @param value - Unknown value to inspect.
+   * @param path - Logical value path.
+   * @returns Accepted finite number with negative zero canonicalised.
+   */
+  finiteNumber(value: unknown, path: string): number {
+    if (typeof value !== "number" || !Number.isFinite(value)) {
+      throw new BuildContractError(path, "expected a finite number");
+    }
+
+    return Object.is(value, -0) ? 0 : value;
+  }
+
+  /**
+   * @description Accepts one positive finite numeric value.
+   * @param value - Unknown value to inspect.
+   * @param path - Logical value path.
+   * @returns Accepted positive finite number.
+   */
+  positiveNumber(value: unknown, path: string): number {
+    const accepted = this.finiteNumber(value, path);
+
+    if (accepted <= 0) {
+      throw new BuildContractError(path, "expected a positive finite number");
+    }
+
+    return accepted;
+  }
+
+  /**
+   * @description Accepts one non-negative finite numeric value.
+   * @param value - Unknown value to inspect.
+   * @param path - Logical value path.
+   * @returns Accepted non-negative finite number.
+   */
+  nonNegativeNumber(value: unknown, path: string): number {
+    const accepted = this.finiteNumber(value, path);
+
+    if (accepted < 0) {
+      throw new BuildContractError(path, "expected a non-negative finite number");
+    }
+
+    return accepted;
+  }
 }

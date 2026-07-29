@@ -1,3 +1,4 @@
+import type { IconIdentity } from "@aster/core";
 import {
   DiagnosticResultFactory,
   IngestionSourceFactory,
@@ -5,6 +6,7 @@ import {
   SourceDiagnosticFactory,
   SourceLocator,
 } from "../../src/index.js";
+import type * as BuildRoot from "../../src/index.js";
 import type {
   CanonicalSvgSource,
   CollectionMetadataSource,
@@ -16,14 +18,16 @@ import type {
   SourceSpan,
 } from "../../src/index.js";
 
+const identity: IconIdentity = {
+  collection: "minimal",
+  name: "camera",
+};
+
 const svgSource: CanonicalSvgSource = {
   kind: "svg",
   sourceId: "collections/minimal/svg/camera.svg",
   content: "<svg />\r\n",
-  identity: {
-    collection: "minimal",
-    name: "camera",
-  },
+  identity,
 };
 
 const collectionMetadata: CollectionMetadataSource = {
@@ -37,10 +41,7 @@ const iconMetadata: IconMetadataSource = {
   kind: "icon-metadata",
   sourceId: "collections/minimal/metadata/camera.json",
   content: "{}\n",
-  identity: {
-    collection: "minimal",
-    name: "camera",
-  },
+  identity,
 };
 
 const span: SourceSpan = {
@@ -97,9 +98,16 @@ consumeResult(failed);
 // @ts-expect-error Diagnostic codes use an Aster-owned category family.
 const externalCode: DiagnosticCodeType = "XML-PARSER-001";
 
+type BuildRootExportsSourceIdentity =
+  "SourceIdentity" extends keyof typeof BuildRoot ? true : false;
+
+// @ts-expect-error Core IconIdentity is the sole canonical icon identity contract.
+const rootExportsSourceIdentity: BuildRootExportsSourceIdentity = true;
+
 void sources;
 void successful;
 void externalCode;
+void rootExportsSourceIdentity;
 void new IngestionSourceFactory();
 void new SourceLocator();
 void new SourceDiagnosticFactory();
