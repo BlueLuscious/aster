@@ -1,10 +1,10 @@
 import type { SourceDiagnostic } from "../../diagnostic/contracts/index.js";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
 import { svgNumericDomains } from "../../shared/constants/svg-numeric-domains.constant.js";
+import { SvgNumberParser } from "../../shared/runtime/svg-number.parser.js";
 import type { TSvgGeometryNumericDomain } from "../types/internal/svg-geometry-numeric-domain.type.js";
 import type { TLocatedNumber } from "../types/internal/located-number.type.js";
 import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
-import { SvgNumberParser } from "./svg-number.parser.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
 /**

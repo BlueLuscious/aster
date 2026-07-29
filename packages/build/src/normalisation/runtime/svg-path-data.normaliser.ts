@@ -1,5 +1,5 @@
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
-import { SvgPathDataInspector } from "../../validation/runtime/svg-path-data.inspector.js";
+import { SvgPathDataInspector } from "../../shared/runtime/svg-path-data.inspector.js";
 
 /**
  * @description Converts validated SVG path text into its deterministic portable spelling.

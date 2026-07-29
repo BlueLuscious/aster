@@ -1,9 +1,9 @@
 import type { ISvgValidationEntry } from "../contracts/internal/svg-validation-entry.contract.js";
 import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
+import { SvgNumberParser } from "../../shared/runtime/svg-number.parser.js";
 import type { TSvgTechnicalValidation } from "../types/internal/svg-technical-validation.type.js";
 import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgGeometryValidator } from "./svg-geometry.validator.js";
-import { SvgNumberParser } from "./svg-number.parser.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
 /**
