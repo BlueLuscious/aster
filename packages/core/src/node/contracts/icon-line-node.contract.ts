@@ -1,4 +1,5 @@
 import type { IconPresentation } from "../../presentation/contracts/index.js";
+import type { iconNodeKinds } from "../constants/icon-node-kinds.constant.js";
 
 /**
  * @description Portable line geometry and its explicit presentation.
@@ -7,7 +8,7 @@ export interface IconLineNode extends IconPresentation {
   /**
    * @description Discriminator identifying line geometry.
    */
-  readonly kind: "line";
+  readonly kind: typeof iconNodeKinds.line;
 
   /**
    * @description Finite horizontal start coordinate.

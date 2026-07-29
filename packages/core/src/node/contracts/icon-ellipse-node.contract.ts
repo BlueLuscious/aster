@@ -1,4 +1,5 @@
 import type { IconPresentation } from "../../presentation/contracts/index.js";
+import type { iconNodeKinds } from "../constants/icon-node-kinds.constant.js";
 
 /**
  * @description Portable ellipse geometry and its explicit presentation.
@@ -7,7 +8,7 @@ export interface IconEllipseNode extends IconPresentation {
   /**
    * @description Discriminator identifying ellipse geometry.
    */
-  readonly kind: "ellipse";
+  readonly kind: typeof iconNodeKinds.ellipse;
 
   /**
    * @description Finite horizontal centre coordinate.

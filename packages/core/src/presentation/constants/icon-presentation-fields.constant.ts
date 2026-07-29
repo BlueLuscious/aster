@@ -12,4 +12,4 @@ export const iconPresentationFields = Object.freeze([
   "opacity",
   "fillOpacity",
   "strokeOpacity",
-]);
+] as const);

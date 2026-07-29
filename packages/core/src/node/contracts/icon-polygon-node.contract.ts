@@ -1,4 +1,5 @@
 import type { IconPresentation } from "../../presentation/contracts/index.js";
+import type { iconNodeKinds } from "../constants/icon-node-kinds.constant.js";
 import type { IconPoint } from "./icon-point.contract.js";
 
 /**
@@ -8,7 +9,7 @@ export interface IconPolygonNode extends IconPresentation {
   /**
    * @description Discriminator identifying polygon geometry.
    */
-  readonly kind: "polygon";
+  readonly kind: typeof iconNodeKinds.polygon;
 
   /**
    * @description Ordered sequence containing at least three finite coordinate pairs.

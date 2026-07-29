@@ -3,6 +3,7 @@ import { iconPresentationFields } from "../../presentation/constants/icon-presen
 import { IconPresentationNormaliser } from "../../presentation/runtime/icon-presentation.normaliser.js";
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
+import { iconNodeKinds } from "../constants/icon-node-kinds.constant.js";
 import { IconPointSequenceNormaliser } from "./icon-point-sequence.normaliser.js";
 
 /**
@@ -54,57 +55,57 @@ export class IconNodeNormaliser {
     const presentation = this.#normaliseNodePresentation(record, path);
 
     switch (record.kind) {
-      case "path":
+      case iconNodeKinds.path:
         this.#acceptNodeFields(record, ["kind", "data"], path);
         return Object.freeze({
-          kind: "path",
+          kind: iconNodeKinds.path,
           data: this.#validator.text(record.data, `${path}.data`),
           ...presentation,
         });
-      case "circle":
+      case iconNodeKinds.circle:
         this.#acceptNodeFields(record, ["kind", "cx", "cy", "radius"], path);
         return Object.freeze({
-          kind: "circle",
+          kind: iconNodeKinds.circle,
           cx: this.#validator.finiteNumber(record.cx, `${path}.cx`),
           cy: this.#validator.finiteNumber(record.cy, `${path}.cy`),
           radius: this.#validator.positiveNumber(record.radius, `${path}.radius`),
           ...presentation,
         });
-      case "ellipse":
+      case iconNodeKinds.ellipse:
         this.#acceptNodeFields(
           record,
           ["kind", "cx", "cy", "radiusX", "radiusY"],
           path,
         );
         return Object.freeze({
-          kind: "ellipse",
+          kind: iconNodeKinds.ellipse,
           cx: this.#validator.finiteNumber(record.cx, `${path}.cx`),
           cy: this.#validator.finiteNumber(record.cy, `${path}.cy`),
           radiusX: this.#validator.positiveNumber(record.radiusX, `${path}.radiusX`),
           radiusY: this.#validator.positiveNumber(record.radiusY, `${path}.radiusY`),
           ...presentation,
         });
-      case "rect":
+      case iconNodeKinds.rectangle:
         this.#acceptNodeFields(
           record,
           ["kind", "x", "y", "width", "height", "radiusX", "radiusY"],
           path,
         );
         return this.#normaliseRect(record, presentation, path);
-      case "line":
+      case iconNodeKinds.line:
         this.#acceptNodeFields(record, ["kind", "x1", "y1", "x2", "y2"], path);
         return Object.freeze({
-          kind: "line",
+          kind: iconNodeKinds.line,
           x1: this.#validator.finiteNumber(record.x1, `${path}.x1`),
           y1: this.#validator.finiteNumber(record.y1, `${path}.y1`),
           x2: this.#validator.finiteNumber(record.x2, `${path}.x2`),
           y2: this.#validator.finiteNumber(record.y2, `${path}.y2`),
           ...presentation,
         });
-      case "polyline":
+      case iconNodeKinds.polyline:
         this.#acceptNodeFields(record, ["kind", "points"], path);
         return Object.freeze({
-          kind: "polyline",
+          kind: iconNodeKinds.polyline,
           points: this.#pointSequenceNormaliser.normalise(
             record.points,
             2,
@@ -112,10 +113,10 @@ export class IconNodeNormaliser {
           ),
           ...presentation,
         });
-      case "polygon":
+      case iconNodeKinds.polygon:
         this.#acceptNodeFields(record, ["kind", "points"], path);
         return Object.freeze({
-          kind: "polygon",
+          kind: iconNodeKinds.polygon,
           points: this.#pointSequenceNormaliser.normalise(
             record.points,
             3,
@@ -150,7 +151,7 @@ export class IconNodeNormaliser {
         : undefined;
 
     return Object.freeze({
-      kind: "rect",
+      kind: iconNodeKinds.rectangle,
       x: this.#validator.finiteNumber(record.x, `${path}.x`),
       y: this.#validator.finiteNumber(record.y, `${path}.y`),
       width: this.#validator.nonNegativeNumber(record.width, `${path}.width`),

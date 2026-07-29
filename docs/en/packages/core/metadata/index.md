@@ -22,6 +22,11 @@ licensing when publishing artwork.
 | --- | --- | --- |
 | `IconRtlPolicyType` | `mirror`, `preserve`, `manual` | Declares target-independent geometry behaviour for right-to-left output. |
 
+The immutable `iconRtlPolicies` sequence is the feature-owned runtime authority for those values.
+`IconRtlPolicyType` derives its union from that sequence so compile-time narrowing and runtime
+validation cannot drift independently. The authority remains internal and does not add a public
+runtime export.
+
 Core stores direction policy but never observes ambient direction, transforms geometry, or infers
 semantics from an icon name.
 
