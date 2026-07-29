@@ -7,6 +7,8 @@ import type {
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { BuildValueValidator } from "../../shared/runtime/build-value.validator.js";
 import { SourceIdNormaliser } from "../../source/runtime/source-id.normaliser.js";
+import { diagnosticCategories } from "../constants/diagnostic-categories.constant.js";
+import { diagnosticSeverities } from "../constants/diagnostic-severities.constant.js";
 import { DiagnosticMessageNormaliser } from "./diagnostic-message.normaliser.js";
 import { DiagnosticRelatedContextFactory } from "./diagnostic-related-context.factory.js";
 import { SourceSpanFactory } from "./source-span.factory.js";
@@ -39,17 +41,6 @@ export class SourceDiagnosticFactory {
    * @description Stable diagnostic-message normaliser.
    */
   readonly #messageNormaliser = new DiagnosticMessageNormaliser();
-
-  /**
-   * @description Closed diagnostic categories.
-   */
-  readonly #categories = Object.freeze([
-    "syntax",
-    "safety",
-    "technical",
-    "collection",
-    "generation",
-  ] as const);
 
   /**
    * @description Creates one canonical immutable diagnostic.
@@ -116,11 +107,11 @@ export class SourceDiagnosticFactory {
   ): DiagnosticCategoryType {
     if (
       typeof value !== "string" ||
-      !this.#categories.includes(value as DiagnosticCategoryType)
+      !diagnosticCategories.includes(value as DiagnosticCategoryType)
     ) {
       throw new BuildContractError(
         path,
-        `expected one of ${this.#categories.join(", ")}`,
+        `expected one of ${diagnosticCategories.join(", ")}`,
       );
     }
 
@@ -164,10 +155,16 @@ export class SourceDiagnosticFactory {
     value: unknown,
     path: string,
   ): DiagnosticSeverityType {
-    if (value !== "error" && value !== "warning") {
-      throw new BuildContractError(path, "expected one of error, warning");
+    if (
+      typeof value !== "string" ||
+      !diagnosticSeverities.includes(value as DiagnosticSeverityType)
+    ) {
+      throw new BuildContractError(
+        path,
+        `expected one of ${diagnosticSeverities.join(", ")}`,
+      );
     }
 
-    return value;
+    return value as DiagnosticSeverityType;
   }
 }

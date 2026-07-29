@@ -1,3 +1,5 @@
+import { xmlInertSections } from "../constants/xml-inert-sections.constant.js";
+
 /**
  * @description Finds entity-reference markers that would be expanded while ignoring inert comments and CDATA.
  */
@@ -35,13 +37,7 @@ export class SvgEntityReferenceDetector {
    * @returns Exclusive inert-section end, or `undefined` when ordinary XML begins at the offset.
    */
   #inertEnd(content: string, offset: number): number | undefined {
-    const sections = [
-      { opening: "<!--", closing: "-->" },
-      { opening: "<![CDATA[", closing: "]]>" },
-      { opening: "<?", closing: "?>" },
-    ];
-
-    for (const section of sections) {
+    for (const section of xmlInertSections) {
       if (content.startsWith(section.opening, offset)) {
         const closingOffset = content.indexOf(
           section.closing,

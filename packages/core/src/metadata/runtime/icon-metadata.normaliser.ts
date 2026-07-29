@@ -5,6 +5,7 @@ import { IconIdentityNormaliser } from "../../definition/runtime/icon-identity.n
 import { CollectionPresentationPolicyNormaliser } from "../../presentation/runtime/collection-presentation-policy.normaliser.js";
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
+import { iconRtlPolicies } from "../constants/icon-rtl-policies.constant.js";
 
 /**
  * @description Validates, clones, and freezes resolved portable icon metadata.
@@ -104,11 +105,17 @@ export class IconMetadataNormaliser {
    * @returns Accepted policy.
    */
   #normaliseRtl(value: unknown, path: string): IconRtlPolicyType {
-    if (value !== "mirror" && value !== "preserve" && value !== "manual") {
-      throw new IconDefinitionError(path, "expected one of mirror, preserve, manual");
+    if (
+      typeof value !== "string" ||
+      !iconRtlPolicies.includes(value as IconRtlPolicyType)
+    ) {
+      throw new IconDefinitionError(
+        path,
+        `expected one of ${iconRtlPolicies.join(", ")}`,
+      );
     }
 
-    return value;
+    return value as IconRtlPolicyType;
   }
 
   /**

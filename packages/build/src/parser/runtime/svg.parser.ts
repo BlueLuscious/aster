@@ -18,8 +18,8 @@ import type { DiagnosticResultType } from "../../diagnostic/types/index.js";
 import type { CanonicalSvgSource } from "../../source/contracts/index.js";
 import { DiagnosticResultFactory } from "../../diagnostic/runtime/diagnostic-result.factory.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
+import { svgParserLimits } from "../constants/svg-parser-limits.constant.js";
 import { SvgEntityReferenceDetector } from "./svg-entity-reference.detector.js";
-import { SVG_PARSER_LIMITS } from "./svg-parser-limits.js";
 import { SvgParsingDiagnosticFactory } from "./svg-parsing-diagnostic.factory.js";
 import { SvgSafetyValidator } from "./svg-safety.validator.js";
 import { SvgSubsetValidator } from "./svg-subset.validator.js";
@@ -74,7 +74,7 @@ export class SvgParser implements ISvgParser {
    * @returns Complete untrusted syntax or blocking Aster-owned diagnostics without a value.
    */
   parse(source: CanonicalSvgSource): DiagnosticResultType<ISvgSyntaxDocument> {
-    if (source.content.length > SVG_PARSER_LIMITS.maxSourceLength) {
+    if (source.content.length > svgParserLimits.maxSourceLength) {
       return this.#failure(source, [
         {
           kind: "source-limit",
@@ -171,7 +171,7 @@ export class SvgParser implements ISvgParser {
           }
 
           if (
-            elementCount > SVG_PARSER_LIMITS.maxElements &&
+            elementCount > svgParserLimits.maxElements &&
             !reportedElementLimit
           ) {
             reportedElementLimit = true;
@@ -183,7 +183,7 @@ export class SvgParser implements ISvgParser {
           }
 
           if (
-            openToken.depth > SVG_PARSER_LIMITS.maxElementDepth &&
+            openToken.depth > svgParserLimits.maxElementDepth &&
             !reportedDepthLimit
           ) {
             reportedDepthLimit = true;
@@ -196,7 +196,7 @@ export class SvgParser implements ISvgParser {
 
           if (
             element.attributes.length >
-            SVG_PARSER_LIMITS.maxAttributesPerElement
+            svgParserLimits.maxAttributesPerElement
           ) {
             issues.push({
               kind: "attribute-limit",

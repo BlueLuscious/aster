@@ -1,5 +1,6 @@
 import type { IconPaintType, IconPresentation } from "@aster/core";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
+import { svgPaintSchema } from "../../shared/constants/svg-paint-schema.constant.js";
 import { svgPresentationAttributeSchema } from "../../shared/constants/svg-presentation-attribute-schema.constant.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { SvgNumberParser } from "../../validation/runtime/svg-number.parser.js";
@@ -12,6 +13,22 @@ export class SvgPresentationNormaliser {
    * @description Strict finite SVG number parser.
    */
   readonly #numberParser = new SvgNumberParser();
+
+  /**
+   * @description Accepted short hexadecimal paint grammar.
+   */
+  readonly #shortHexPattern = new RegExp(
+    svgPaintSchema.shortHexPatternSource,
+    "iu",
+  );
+
+  /**
+   * @description Accepted long hexadecimal paint grammar.
+   */
+  readonly #longHexPattern = new RegExp(
+    svgPaintSchema.longHexPatternSource,
+    "iu",
+  );
 
   /**
    * @description Resolves one element's accepted presentation over its inherited values.
@@ -73,16 +90,23 @@ export class SvgPresentationNormaliser {
    * @returns Canonical portable paint.
    */
   #paint(value: string): IconPaintType {
-    if (value === "none" || value === "currentColor") {
-      return value;
+    if ((svgPaintSchema.keywords as readonly string[]).includes(value)) {
+      return value as IconPaintType;
     }
 
-    if (/^#[0-9a-f]{3}$/iu.test(value)) {
+    if (this.#shortHexPattern.test(value)) {
       const [red, green, blue] = value.slice(1).toLowerCase();
       return `#${red}${red}${green}${green}${blue}${blue}`;
     }
 
-    return value.toLowerCase() as IconPaintType;
+    if (this.#longHexPattern.test(value)) {
+      return value.toLowerCase() as IconPaintType;
+    }
+
+    throw new BuildContractError(
+      "validatedPresentation",
+      "paint is not valid normalisation input",
+    );
   }
 
   /**

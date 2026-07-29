@@ -4,6 +4,7 @@ import type { TLocatedBounds } from "../types/internal/located-bounds.type.js";
 import type { TLocatedNumber } from "../types/internal/located-number.type.js";
 import type { TSvgGeometryValidation } from "../types/internal/svg-geometry-validation.type.js";
 import type { TSvgPrimitiveValidation } from "../types/internal/svg-primitive-validation.type.js";
+import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
 import { SvgBasicShapeValidator } from "./svg-basic-shape.validator.js";
 import { SvgPathValidator } from "./svg-path.validator.js";
 import { SvgPointSequenceValidator } from "./svg-point-sequence.validator.js";
@@ -40,19 +41,6 @@ export class SvgGeometryValidator {
   readonly #pointSequenceValidator = new SvgPointSequenceValidator();
 
   /**
-   * @description Geometry attributes accepted for each supported primitive.
-   */
-  readonly #geometryAttributes = new Map<string, readonly string[]>([
-    ["path", ["d"]],
-    ["circle", ["cx", "cy", "r"]],
-    ["ellipse", ["cx", "cy", "rx", "ry"]],
-    ["rect", ["x", "y", "width", "height", "rx", "ry"]],
-    ["line", ["x1", "y1", "x2", "y2"]],
-    ["polyline", ["points"]],
-    ["polygon", ["points"]],
-  ]);
-
-  /**
    * @description Validates one complete safe parser document hierarchy.
    * @param sourceId - Canonical logical SVG source identifier.
    * @param root - Sole safe SVG syntax root.
@@ -83,7 +71,9 @@ export class SvgGeometryValidator {
       strokeWidths.push(...presentation.strokeWidths);
       diagnostics.push(...this.#unsupportedAttributes(sourceId, element));
 
-      if (element.localName !== "svg" && element.localName !== "g") {
+      const schema = this.#schema(element.localName);
+
+      if (schema?.role === "primitive") {
         primitiveCount += 1;
         const primitive = this.#inspectPrimitive(sourceId, element);
         diagnostics.push(...primitive.diagnostics);
@@ -129,13 +119,9 @@ export class SvgGeometryValidator {
     sourceId: string,
     element: ISvgSyntaxElement,
   ): readonly SourceDiagnostic[] {
-    const geometry = this.#geometryAttributes.get(element.localName) ?? [];
-    const accepted = new Set(geometry);
-
-    if (element.localName === "svg") {
-      accepted.add("viewBox");
-      accepted.add("xmlns");
-    }
+    const accepted = new Set<string>(
+      this.#schema(element.localName)?.attributes ?? [],
+    );
 
     return element.attributes
       .filter(
@@ -152,6 +138,25 @@ export class SvgGeometryValidator {
           span: attribute.nameSpan,
         }),
       );
+  }
+
+  /**
+   * @description Resolves one accepted source-element schema entry.
+   * @param localName - Namespace-free SVG element name.
+   * @returns Matching immutable schema entry, or `undefined` when unsupported.
+   */
+  #schema(
+    localName: string,
+  ):
+    | (typeof svgSourceElementSchema)[keyof typeof svgSourceElementSchema]
+    | undefined {
+    if (!Object.hasOwn(svgSourceElementSchema, localName)) {
+      return undefined;
+    }
+
+    return svgSourceElementSchema[
+      localName as keyof typeof svgSourceElementSchema
+    ];
   }
 
   /**

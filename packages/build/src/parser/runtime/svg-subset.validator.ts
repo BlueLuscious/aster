@@ -1,24 +1,11 @@
 import type { TSvgElementInput } from "../types/internal/svg-element-input.type.js";
 import type { TSvgParsingIssue } from "../types/internal/svg-parsing-issue.type.js";
+import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
 
 /**
  * @description Enforces parser-stage structural behaviour for the accepted SVG source subset.
  */
 export class SvgSubsetValidator {
-  /**
-   * @description Supported geometry and structural element names.
-   */
-  readonly #supportedElements = new Set([
-    "circle",
-    "ellipse",
-    "g",
-    "line",
-    "path",
-    "polygon",
-    "polyline",
-    "rect",
-  ]);
-
   /**
    * @description Inspects one safe element for parser-stage subset violations.
    * @param element - Parser-neutral located element input.
@@ -26,10 +13,12 @@ export class SvgSubsetValidator {
    */
   inspectElement(element: TSvgElementInput): readonly TSvgParsingIssue[] {
     const issues: TSvgParsingIssue[] = [];
+    const schema = this.#schema(element.localName);
     const supported =
-      element.depth === 1
-        ? element.localName === "svg"
-        : this.#supportedElements.has(element.localName);
+      schema !== undefined &&
+      (element.depth === 1
+        ? schema.role === "root"
+        : schema.role !== "root");
 
     if (!supported) {
       issues.push({
@@ -51,6 +40,25 @@ export class SvgSubsetValidator {
     }
 
     return Object.freeze(issues);
+  }
+
+  /**
+   * @description Resolves one accepted source-element schema entry.
+   * @param localName - Namespace-free SVG element name.
+   * @returns Matching immutable schema entry, or `undefined` when unsupported.
+   */
+  #schema(
+    localName: string,
+  ):
+    | (typeof svgSourceElementSchema)[keyof typeof svgSourceElementSchema]
+    | undefined {
+    if (!Object.hasOwn(svgSourceElementSchema, localName)) {
+      return undefined;
+    }
+
+    return svgSourceElementSchema[
+      localName as keyof typeof svgSourceElementSchema
+    ];
   }
 
   /**

@@ -1,5 +1,7 @@
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
+import { svgPaintSchema } from "../../shared/constants/svg-paint-schema.constant.js";
 import { svgPresentationAttributeSchema } from "../../shared/constants/svg-presentation-attribute-schema.constant.js";
+import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
 import type { TSvgPresentationValidation } from "../types/internal/svg-presentation-validation.type.js";
 import { SvgNumberParser } from "./svg-number.parser.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
@@ -17,6 +19,22 @@ export class SvgPresentationValidator {
    * @description Strict finite SVG number parser.
    */
   readonly #numberParser = new SvgNumberParser();
+
+  /**
+   * @description Accepted short hexadecimal paint grammar.
+   */
+  readonly #shortHexPattern = new RegExp(
+    svgPaintSchema.shortHexPatternSource,
+    "iu",
+  );
+
+  /**
+   * @description Accepted long hexadecimal paint grammar.
+   */
+  readonly #longHexPattern = new RegExp(
+    svgPaintSchema.longHexPatternSource,
+    "iu",
+  );
 
   /**
    * @description Determines whether one attribute belongs to portable presentation.
@@ -69,7 +87,7 @@ export class SvgPresentationValidator {
       if (
         valid &&
         !schema.inherited &&
-        (element.localName === "svg" || element.localName === "g")
+        this.#elementSchema(element.localName)?.role !== "primitive"
       ) {
         valid = false;
       }
@@ -102,6 +120,25 @@ export class SvgPresentationValidator {
         strokeWidths.map((entry) => Object.freeze(entry)),
       ),
     });
+  }
+
+  /**
+   * @description Resolves one accepted source-element schema entry.
+   * @param localName - Namespace-free SVG element name.
+   * @returns Matching immutable schema entry, or `undefined` when unsupported.
+   */
+  #elementSchema(
+    localName: string,
+  ):
+    | (typeof svgSourceElementSchema)[keyof typeof svgSourceElementSchema]
+    | undefined {
+    if (!Object.hasOwn(svgSourceElementSchema, localName)) {
+      return undefined;
+    }
+
+    return svgSourceElementSchema[
+      localName as keyof typeof svgSourceElementSchema
+    ];
   }
 
   /**
@@ -150,9 +187,9 @@ export class SvgPresentationValidator {
    */
   #validPaint(value: string): boolean {
     return (
-      value === "none" ||
-      value === "currentColor" ||
-      /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/iu.test(value)
+      (svgPaintSchema.keywords as readonly string[]).includes(value) ||
+      this.#shortHexPattern.test(value) ||
+      this.#longHexPattern.test(value)
     );
   }
 }

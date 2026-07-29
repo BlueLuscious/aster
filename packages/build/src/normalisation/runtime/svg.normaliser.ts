@@ -9,6 +9,7 @@ import type { IIconMetadataValue } from "../contracts/internal/icon-metadata-val
 import type { ISvgNormalisationRequest } from "../contracts/internal/svg-normalisation-request.contract.js";
 import type { ISvgNormaliser } from "../contracts/internal/svg-normaliser.contract.js";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
+import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { IconMetadataComposer } from "./icon-metadata.composer.js";
 import { SvgPresentationNormaliser } from "./svg-presentation.normaliser.js";
@@ -164,7 +165,16 @@ export class SvgNormaliser implements ISvgNormaliser {
         inherited,
       );
 
-      if (element.localName !== "svg" && element.localName !== "g") {
+      const schema = this.#sourceElementSchema(element.localName);
+
+      if (schema === undefined) {
+        throw new BuildContractError(
+          "request.evidence.entries.document",
+          "validated source element is unsupported",
+        );
+      }
+
+      if (schema.role === "primitive") {
         nodes.push(
           this.#primitiveNormaliser.normalise(element, presentation),
         );
@@ -177,6 +187,25 @@ export class SvgNormaliser implements ISvgNormaliser {
 
     visit(root, Object.freeze({}));
     return Object.freeze(nodes);
+  }
+
+  /**
+   * @description Resolves one accepted source-element schema entry.
+   * @param localName - Namespace-free SVG element name.
+   * @returns Matching immutable schema entry, or `undefined` when unsupported.
+   */
+  #sourceElementSchema(
+    localName: string,
+  ):
+    | (typeof svgSourceElementSchema)[keyof typeof svgSourceElementSchema]
+    | undefined {
+    if (!Object.hasOwn(svgSourceElementSchema, localName)) {
+      return undefined;
+    }
+
+    return svgSourceElementSchema[
+      localName as keyof typeof svgSourceElementSchema
+    ];
   }
 
   /**

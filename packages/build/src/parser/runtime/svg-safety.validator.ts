@@ -1,50 +1,12 @@
 import type { TSvgElementInput } from "../types/internal/svg-element-input.type.js";
 import type { TSvgParsingIssue } from "../types/internal/svg-parsing-issue.type.js";
+import { svgNamespaces } from "../constants/svg-namespaces.constant.js";
+import { svgSafetyElements } from "../constants/svg-safety-elements.constant.js";
 
 /**
  * @description Identifies blocking executable, embedded, external, and foreign SVG source risks.
  */
 export class SvgSafetyValidator {
-  /**
-   * @description Sole namespace accepted for SVG elements.
-   */
-  readonly #svgNamespace = "http://www.w3.org/2000/svg";
-
-  /**
-   * @description Namespace declaration URI accepted only for namespace attributes.
-   */
-  readonly #namespaceDeclarationUri = "http://www.w3.org/2000/xmlns/";
-
-  /**
-   * @description Executable or host-interactive element names.
-   */
-  readonly #executableElements = new Set([
-    "a",
-    "script",
-    "set",
-    "style",
-    "animate",
-    "animateMotion",
-    "animateTransform",
-  ]);
-
-  /**
-   * @description Raster, embedded-document, or externally resolved element names.
-   */
-  readonly #embeddedElements = new Set([
-    "audio",
-    "canvas",
-    "embed",
-    "feImage",
-    "foreignObject",
-    "iframe",
-    "image",
-    "link",
-    "object",
-    "use",
-    "video",
-  ]);
-
   /**
    * @description Inspects one located element without granting trust to its syntax.
    * @param element - Parser-neutral located element input.
@@ -53,7 +15,7 @@ export class SvgSafetyValidator {
   inspect(element: TSvgElementInput): readonly TSvgParsingIssue[] {
     const issues: TSvgParsingIssue[] = [];
 
-    if (element.namespaceUri !== this.#svgNamespace) {
+    if (element.namespaceUri !== svgNamespaces.element) {
       issues.push({
         kind: "foreign-namespace",
         startOffset: element.nameSpan.start.offset,
@@ -61,14 +23,14 @@ export class SvgSafetyValidator {
       });
     }
 
-    if (this.#executableElements.has(element.localName)) {
+    if (svgSafetyElements.executable.includes(element.localName)) {
       issues.push({
         kind: "executable-element",
         startOffset: element.nameSpan.start.offset,
         endOffset: element.nameSpan.end.offset,
         subject: element.name,
       });
-    } else if (this.#embeddedElements.has(element.localName)) {
+    } else if (svgSafetyElements.embedded.includes(element.localName)) {
       issues.push({
         kind: "raster-or-embedded-element",
         startOffset: element.nameSpan.start.offset,
@@ -80,7 +42,7 @@ export class SvgSafetyValidator {
     for (const attribute of element.attributes) {
       if (
         attribute.namespaceUri !== "" &&
-        attribute.namespaceUri !== this.#namespaceDeclarationUri
+        attribute.namespaceUri !== svgNamespaces.declaration
       ) {
         issues.push({
           kind: "foreign-namespace",
@@ -90,10 +52,10 @@ export class SvgSafetyValidator {
       }
 
       if (
-        attribute.namespaceUri === this.#namespaceDeclarationUri &&
+        attribute.namespaceUri === svgNamespaces.declaration &&
         !(
           attribute.name === "xmlns" &&
-          attribute.value === this.#svgNamespace
+          attribute.value === svgNamespaces.element
         )
       ) {
         issues.push({
@@ -136,8 +98,8 @@ export class SvgSafetyValidator {
    */
   rejectsElement(localName: string): boolean {
     return (
-      this.#executableElements.has(localName) ||
-      this.#embeddedElements.has(localName)
+      svgSafetyElements.executable.includes(localName) ||
+      svgSafetyElements.embedded.includes(localName)
     );
   }
 }

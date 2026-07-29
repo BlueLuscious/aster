@@ -1,30 +1,18 @@
 import type { TSvgPathInspection } from "../types/internal/svg-path-inspection.type.js";
+import { svgNumberPatternSource } from "../constants/svg-number-pattern.constant.js";
+import { svgPathCommandParameterCounts } from "../constants/svg-path-command-parameter-counts.constant.js";
 
 /**
  * @description Validates the accepted SVG path grammar and extracts deterministic advisory facts.
  */
 export class SvgPathDataInspector {
   /**
-   * @description Accepted parameter count for each explicit path command.
-   */
-  readonly #parameterCounts = new Map<string, number>([
-    ["m", 2],
-    ["l", 2],
-    ["h", 1],
-    ["v", 1],
-    ["c", 6],
-    ["s", 4],
-    ["q", 4],
-    ["t", 2],
-    ["a", 7],
-    ["z", 0],
-  ]);
-
-  /**
    * @description Repeated command-or-number token grammar.
    */
-  readonly #tokenPattern =
-    /[A-Za-z]|[+-]?(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?/gu;
+  readonly #tokenPattern = new RegExp(
+    `[A-Za-z]|${svgNumberPatternSource}`,
+    "gu",
+  );
 
   /**
    * @description Inspects one complete authored path-data value.
@@ -55,7 +43,7 @@ export class SvgPathDataInspector {
       if (typeof token === "string") {
         const command = token.toLowerCase();
 
-        if (!this.#parameterCounts.has(command)) {
+        if (!Object.hasOwn(svgPathCommandParameterCounts, command)) {
           return this.#invalid();
         }
 
@@ -88,7 +76,7 @@ export class SvgPathDataInspector {
         return this.#invalid();
       }
 
-      const parameterCount = this.#parameterCounts.get(segment.command);
+      const parameterCount = this.#parameterCount(segment.command);
 
       if (
         parameterCount === undefined ||
@@ -138,6 +126,21 @@ export class SvgPathDataInspector {
         )
         .join(" "),
     });
+  }
+
+  /**
+   * @description Resolves the accepted repeated parameter-group arity for one path command.
+   * @param command - Lowercase SVG path command.
+   * @returns Accepted parameter count, or `undefined` when unsupported.
+   */
+  #parameterCount(command: string): number | undefined {
+    if (!Object.hasOwn(svgPathCommandParameterCounts, command)) {
+      return undefined;
+    }
+
+    return svgPathCommandParameterCounts[
+      command as keyof typeof svgPathCommandParameterCounts
+    ];
   }
 
   /**

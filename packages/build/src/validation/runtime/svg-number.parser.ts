@@ -1,3 +1,5 @@
+import { svgNumberPatternSource } from "../constants/svg-number-pattern.constant.js";
+
 /**
  * @description Parses finite SVG numbers and number sequences without browser coercion.
  */
@@ -5,14 +7,15 @@ export class SvgNumberParser {
   /**
    * @description Complete accepted SVG number grammar.
    */
-  readonly #completePattern =
-    /^[+-]?(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?$/u;
+  readonly #completePattern = new RegExp(
+    `^(?:${svgNumberPatternSource})$`,
+    "u",
+  );
 
   /**
    * @description Repeated accepted SVG number grammar.
    */
-  readonly #sequencePattern =
-    /[+-]?(?:\d+\.\d*|\.\d+|\d+)(?:[eE][+-]?\d+)?/gu;
+  readonly #sequencePattern = new RegExp(svgNumberPatternSource, "gu");
 
   /**
    * @description Parses one complete finite SVG number.

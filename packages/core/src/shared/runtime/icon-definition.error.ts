@@ -15,7 +15,7 @@ export class IconDefinitionError extends TypeError {
   /**
    * @description Creates one deterministic definition validation error.
    * @param path - Logical path to the invalid value.
-   * @param reason - Stable British English explanation of the violated invariant.
+   * @param reason - Stable explanation of the violated invariant.
    */
   constructor(path: string, reason: string) {
     super(`ASTER-CORE-001 at ${path}: ${reason}.`);

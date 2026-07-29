@@ -5,6 +5,7 @@ import type { ICollectionStrokeRule } from "../contracts/internal/collection-str
 import type { ICollectionValidationContract } from "../contracts/internal/collection-validation-contract.contract.js";
 import type { ICollectionViewBoxRule } from "../contracts/internal/collection-view-box-rule.contract.js";
 import type { TCollectionRuleSeverity } from "../types/internal/collection-rule-severity.type.js";
+import { diagnosticSeverities } from "../../diagnostic/constants/diagnostic-severities.constant.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { BuildValueValidator } from "../../shared/runtime/build-value.validator.js";
 import { SourceIdentityNormaliser } from "../../source/runtime/source-identity.normaliser.js";
@@ -279,10 +280,16 @@ export class CollectionValidationContractFactory {
    * @returns Accepted warning or error authority.
    */
   #severity(value: unknown, path: string): TCollectionRuleSeverity {
-    if (value !== "warning" && value !== "error") {
-      throw new BuildContractError(path, "expected one of warning, error");
+    if (
+      typeof value !== "string" ||
+      !diagnosticSeverities.includes(value as TCollectionRuleSeverity)
+    ) {
+      throw new BuildContractError(
+        path,
+        `expected one of ${diagnosticSeverities.join(", ")}`,
+      );
     }
 
-    return value;
+    return value as TCollectionRuleSeverity;
   }
 }
