@@ -59,10 +59,7 @@ metadata.
 | `TSvgGeometryValidation` | Carries hierarchy-wide geometry diagnostics and metrics. | Output of `SvgGeometryValidator`. |
 | `TSvgPrimitiveValidation` | Carries one primitive family's diagnostics and metrics. | Shared by concrete primitive validators. |
 | `TSvgPresentationValidation` | Carries presentation diagnostics and valid explicit stroke widths. | Output of `SvgPresentationValidator`. |
-| `TSvgPathInspection` | Carries path grammar validity, drawing evidence, command count, grid values, and valid canonical token spelling. | Output of `SvgPathDataInspector`; canonical spelling is consumed by later normalisation. |
 | `TSvgGeometryNumericDomain` | Restricts geometry attributes to finite, positive, or non-negative numeric domains. | Used by `SvgGeometryNumberReader`. |
-| `TSvgPathCommand` | Derives the accepted lowercase path-command union from `svgPathCommands`. | Keys path arity and path-segment processing. |
-| `TSvgPathSegment` | Associates an authored command, its canonical lowercase discriminator, and parsed finite parameters. | Construction value internal to `SvgPathDataInspector`. |
 | `TSvgValidationDiagnosticDetails` | Extends common diagnostic details with occurrence-specific severity. | Internal return type of `SvgValidationDiagnosticFactory`. |
 
 ## Feature-owned authorities
@@ -70,13 +67,10 @@ metadata.
 | Authority | Responsibility |
 | --- | --- |
 | `svgValidationIssueKinds` | Defines every internal validation evidence discriminator. |
-| `svgPathCommands` | Defines the accepted lowercase SVG path-command vocabulary. |
-| `svgPathCommandParameterCounts` | Associates each accepted path command with its repeated parameter-group arity. |
-| `svgNumberPatternSource` | Defines the finite-form SVG number token grammar. |
-| `svgLexicalPatternSources` | Defines shared command and separator lexical grammar. |
 
-These values remain feature-specific because they describe technical validation rather than
-general source acquisition or portable Core data.
+This authority remains feature-specific because it describes technical validation evidence rather
+than general source acquisition or portable Core data. Number and path grammar are transversal
+Build authorities documented by [Build Shared Authorities](../shared/index.md).
 
 ## Universal validation
 
@@ -157,10 +151,8 @@ use the canonical ordering and deduplication owned by
 | `SvgBasicShapeValidator` | Validates circles, ellipses, rectangles, and lines and computes exact bounds. |
 | `SvgPointSequenceValidator` | Validates polyline and polygon point pairs and computes exact bounds. |
 | `SvgPathValidator` | Validates one path and exposes path advisory facts without rewriting data. |
-| `SvgPathDataInspector` | Applies the accepted path command, parameter, arc, and separator grammar. |
 | `SvgPresentationValidator` | Applies the closed portable presentation schema. |
 | `SvgGeometryNumberReader` | Applies shared numeric domains without masking malformed authored values as defaults. |
-| `SvgNumberParser` | Parses strict finite SVG numbers and number sequences. |
 | `SvgCollectionValidator` | Applies only rules present in the accepted collection contract. |
 | `CollectionValidationContractFactory` | Creates deeply immutable collection rule authority from unknown input. |
 | `SvgValidationDiagnosticFactory` | Maps internal validation evidence to stable Aster diagnostics. |

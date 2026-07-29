@@ -58,6 +58,12 @@ normalises negative zero, expands short hexadecimal paint, and canonicalises pat
 Rectangle radii apply SVG's missing-counterpart rule: an authored `rx` supplies an absent `ry` and
 vice versa.
 
+Strict finite numbers, number sequences, path commands, parameter arity, separators, and canonical
+path token spelling come from [Build Shared Authorities](../shared/index.md). Validation decides
+whether lexical failures block evidence; Normalisation reuses the same stateless services only
+after successful evidence exists. This keeps one grammar authority without coupling
+Normalisation to Validation runtime implementations.
+
 Overall `opacity` on `svg` or `g` is rejected by validation. Flattening it onto each child would
 change compositing semantics when geometry overlaps. Fill opacity, stroke opacity, and the other
 accepted inheritable presentation fields can be resolved without that loss.
