@@ -1,4 +1,5 @@
 import type { IconPresentation } from "../../presentation/contracts/index.js";
+import type { iconNodeKinds } from "../constants/icon-node-kinds.constant.js";
 
 /**
  * @description Portable rectangle geometry and its explicit presentation.
@@ -7,7 +8,7 @@ export interface IconRectNode extends IconPresentation {
   /**
    * @description Discriminator identifying rectangle geometry.
    */
-  readonly kind: "rect";
+  readonly kind: typeof iconNodeKinds.rectangle;
 
   /**
    * @description Finite horizontal origin coordinate.

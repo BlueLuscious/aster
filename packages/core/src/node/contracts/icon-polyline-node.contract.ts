@@ -1,4 +1,5 @@
 import type { IconPresentation } from "../../presentation/contracts/index.js";
+import type { iconNodeKinds } from "../constants/icon-node-kinds.constant.js";
 import type { IconPoint } from "./icon-point.contract.js";
 
 /**
@@ -8,7 +9,7 @@ export interface IconPolylineNode extends IconPresentation {
   /**
    * @description Discriminator identifying polyline geometry.
    */
-  readonly kind: "polyline";
+  readonly kind: typeof iconNodeKinds.polyline;
 
   /**
    * @description Ordered sequence containing at least two finite coordinate pairs.

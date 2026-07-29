@@ -3,9 +3,14 @@
  */
 export class IconDefinitionError extends TypeError {
   /**
+   * @description Canonical Aster-owned code used to construct invalid Core definition errors.
+   */
+  static readonly #code = "ASTER-CORE-001";
+
+  /**
    * @description Stable Aster-owned code for invalid authored Core data.
    */
-  readonly code = "ASTER-CORE-001";
+  readonly code = IconDefinitionError.#code;
 
   /**
    * @description Logical object path at which validation failed.
@@ -18,7 +23,7 @@ export class IconDefinitionError extends TypeError {
    * @param reason - Stable explanation of the violated invariant.
    */
   constructor(path: string, reason: string) {
-    super(`ASTER-CORE-001 at ${path}: ${reason}.`);
+    super(`${IconDefinitionError.#code} at ${path}: ${reason}.`);
     this.name = "IconDefinitionError";
     this.path = path;
   }
