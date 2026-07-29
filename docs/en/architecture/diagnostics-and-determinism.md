@@ -77,6 +77,10 @@ observable sequence.
 Duplicate diagnostics with the same code, source, span, and semantic cause are reported once.
 Distinct occurrences remain distinct.
 
+A diagnostic without a span identifies the complete source and sorts with start and end offset
+`-1`, before located diagnostics for the same `sourceId`. Text comparison uses Unicode code-unit
+order rather than locale-sensitive collation.
+
 ## Deterministic generation
 
 Identical canonical SVG bytes, metadata values, collection rules, generator version, and explicit

@@ -48,8 +48,8 @@ Only these implementation boundaries justify an initial package when their code 
 
 1. A public portable Core package for host-independent definitions, options, and construction
    authority.
-2. One private build-time boundary containing parsing, validation, normalisation, and generation
-   features until independent consumers justify extraction.
+2. The private `@aster/build` boundary containing parsing, validation, normalisation, and
+   generation features until independent consumers justify extraction.
 3. A public SVG renderer package after its exact output contract is accepted.
 
 Experimental collection output may use a private generated test package or fixture boundary. It
@@ -126,9 +126,10 @@ Repository tooling is contributor infrastructure. It may locate workspace files,
 results to terminal output, enforce repository-only policies, and set process exit status. Public
 runtime packages never depend on it.
 
-A build-time boundary may begin private without implying that its contracts are repository
-specific. It becomes a public package only after an independent consumer and versioning boundary
-exist.
+The accepted `@aster/build` boundary is private without implying that its contracts are repository
+specific. It becomes public only after an independent consumer and versioning boundary exist.
+Filesystem discovery, terminal presentation, and process exit remain repository adapters outside
+the package.
 
 ## External ecosystem boundaries
 
@@ -164,18 +165,22 @@ A Lilium adapter requires:
 The adapter cannot add Lilium or DOM types to Core, generated portable definitions, or collection
 sources.
 
-## Provisional names
+## Package names
 
-Names describe likely distribution boundaries but are not accepted registry reservations:
+Implemented names are accepted by their package decision record. Remaining names describe likely
+distribution boundaries and are not registry reservations:
 
-| Responsibility | Provisional name |
-| --- | --- |
-| Portable Core | `@aster/core` |
-| Private build-time implementation | `@aster/build` or a private workspace tooling package |
-| Generated collection definitions | `@aster/<collection>` or another collection-oriented boundary |
-| Generic SVG renderer | `@aster/svg` |
-| Generated collection-target integration | `@aster/<collection>-<target>` |
-| Target-independent Lilium adapter | `@aster/lilium` |
-| DOM-specific Lilium mappings | `@aster/lilium-dom` if evidence requires a separate package |
+| Responsibility | Name | Status |
+| --- | --- | --- |
+| Portable Core | `@aster/core` | Implemented |
+| Private build-time implementation | `@aster/build` | Implemented and accepted |
+| Generated collection definitions | `@aster/<collection>` or another collection-oriented boundary | Provisional |
+| Generic SVG renderer | `@aster/svg` | Provisional |
+| Generated collection-target integration | `@aster/<collection>-<target>` | Provisional |
+| Target-independent Lilium adapter | `@aster/lilium` | Provisional |
+| DOM-specific Lilium mappings | `@aster/lilium-dom` if evidence requires a separate package | Provisional |
 
 Changing a provisional name does not change the accepted responsibility or dependency direction.
+
+The build-time name and ownership decision is recorded by
+[Private Build-time Domain Package](../decisions/0002-private-build-time-domain-package.md).
