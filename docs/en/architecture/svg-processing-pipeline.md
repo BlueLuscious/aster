@@ -143,3 +143,17 @@ Any candidate must be evaluated for:
 
 A dependency may accelerate implementation, but conformance tests and Aster-owned contracts remain
 the authority.
+
+## Accepted parser boundary
+
+The private `@aster/build` package pins `xmlsax-typescript` version `1.0.0` as its initial token
+parser. The dependency is confined to the internal `SvgParser` adapter and has no authority beyond
+XML tokenisation, namespace metadata, and token offsets.
+
+Aster-owned code independently enforces accepted XML characters, comment and attribute structure,
+a sole document root, fixed resource limits, exact canonical spans, safety policy, accepted
+parser-stage subset behaviour, and all-or-nothing results. Parser types, messages, diagnostics,
+recovery values, and classes are absent from package root exports and portable packages.
+
+The accepted dependency and replacement constraints are recorded by
+[Private XML Parser Boundary](../decisions/0003-private-xml-parser-boundary.md).
