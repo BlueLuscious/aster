@@ -12,6 +12,7 @@ Canonical English documentation lives under `docs/en/`:
 | Path | Responsibility |
 | --- | --- |
 | `docs/en/index.md` | Entry point for the complete canonical documentation set. |
+| `docs/en/future-capabilities.md` | Deferred capabilities, evaluation triggers, and recommended implementation windows. |
 | `docs/en/architecture/` | Current accepted product contracts and boundaries. |
 | `docs/en/decisions/` | Material decision rationale, alternatives, and consequences. |
 | `docs/en/governance/` | Contribution, review, versioning, release, and documentation policy. |

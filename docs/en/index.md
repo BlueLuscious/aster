@@ -10,6 +10,8 @@ Canonical documentation is written in British English and organised by responsib
   documentation policy.
 - [Decision Records](decisions/index.md) define how material choices are proposed, accepted, and
   superseded.
+- [Future Capabilities](future-capabilities.md) record deferred improvements and the evidence or
+  product boundary that should trigger their evaluation.
 - [Packages](packages/index.md) document packages that exist in the repository.
 - [Collections](collections/index.md) document collections that exist in the repository.
 
