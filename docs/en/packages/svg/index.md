@@ -43,6 +43,23 @@ The approved package export is the root `"."`. It exposes:
 
 No implementation subpath is public.
 
+## Package conformance
+
+The compiled-package ABI suite verifies:
+
+- the exact `Svg` and `SvgRenderError` root value surface;
+- import through the approved `@aster/svg` root and rejection of implementation subpaths;
+- the exact root declaration and manifest export;
+- dependency on the public `@aster/core` root only;
+- host-independent declarations without DOM, Node, framework, Build, or tooling references;
+- side-effect-free ESM without CommonJS compatibility output;
+- deterministic representative markup from an explicitly supplied definition.
+
+Runtime tests separately cover every supported primitive, presentation precedence, accessibility,
+direction, escaping, invalid target values, and definition immutability. Detailed semantics
+remain canonical in [Render](render/index.md) and
+[Accessibility and Direction](../../architecture/accessibility-and-direction.md).
+
 The stable semantics are defined by the
 [Rendering Contract](../../architecture/rendering-contract.md) and
 [Accessibility and Direction](../../architecture/accessibility-and-direction.md). The package
