@@ -12,7 +12,10 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
-import * as pilotIcons from "@aster/icons";
+import {
+  ArrowLeft,
+  AsterCollection,
+} from "@aster/icons";
 import { Svg } from "@aster/svg";
 
 const pipeline = new CollectionBuildPipeline();
@@ -21,7 +24,7 @@ const sourceFactory = new IngestionSourceFactory();
 function authorArrowLeft(shaftStartX = 4): IconDefinition {
   return Icon.define({
     identity: {
-      collection: "aster",
+      namespace: "aster",
       name: "arrow-left",
     },
     viewBox: {
@@ -49,6 +52,13 @@ function authorArrowLeft(shaftStartX = 4): IconDefinition {
     ],
     metadata: {
       displayName: "Arrow Left",
+      tags: [
+        "arrow",
+        "back",
+        "left",
+        "navigation",
+        "previous",
+      ],
       rtl: "mirror",
       presentation: {
         defaults: {
@@ -139,7 +149,7 @@ function collectionMetadata(): CollectionMetadataSource {
 
 function importedArrowLeftEntry(): CollectionBuildEntry {
   const identity = {
-    collection: "aster",
+    namespace: "aster",
     name: "arrow-left",
   };
   const svg = sourceFactory.create({
@@ -157,6 +167,13 @@ function importedArrowLeftEntry(): CollectionBuildEntry {
       schemaVersion: 1,
       name: "arrow-left",
       displayName: "Arrow Left",
+      tags: [
+        "arrow",
+        "back",
+        "left",
+        "navigation",
+        "previous",
+      ],
       rtl: "mirror",
       deprecated: false,
     }),
@@ -236,9 +253,9 @@ test("corrects an off-grid review finding in canonical TypeScript source", () =>
 });
 
 test("adopts the workflow evidence and renders the complete pilot distinctly", () => {
-  assert.deepEqual(pilotIcons.ArrowLeft, authorArrowLeft());
+  assert.deepEqual(ArrowLeft, authorArrowLeft());
 
-  const definitions = Object.values(pilotIcons);
+  const definitions = AsterCollection.icons;
   const minimumSizeMarkup = definitions.map((definition) =>
     Svg.render(definition, { size: 16 }),
   );
