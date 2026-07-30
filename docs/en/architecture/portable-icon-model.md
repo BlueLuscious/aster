@@ -76,6 +76,27 @@ inline style text, and event attributes cannot enter the model.
 Omitted presentation fields retain the model's documented defaults. A normaliser must not encode
 the same effective presentation through multiple equivalent shapes.
 
+### Technical presentation defaults
+
+The following portable defaults apply before collection and node presentation:
+
+| Field | Default |
+| --- | --- |
+| `fill` | `#000000` |
+| `fillRule` | `nonzero` |
+| `stroke` | `none` |
+| `strokeWidth` | `1` |
+| `strokeLineCap` | `butt` |
+| `strokeLineJoin` | `miter` |
+| `strokeMiterLimit` | `4` |
+| `opacity` | `1` |
+| `fillOpacity` | `1` |
+| `strokeOpacity` | `1` |
+
+These values describe presentation semantics rather than collection personality. A renderer
+resolves them before collection defaults and emits the resulting per-node presentation without
+rewriting the portable definition.
+
 ## Numeric and textual values
 
 Geometry numbers are finite ECMAScript numbers. Units, percentages, `calc()`, `NaN`, infinities,

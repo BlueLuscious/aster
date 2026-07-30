@@ -21,8 +21,8 @@ provide events, or carry DOM or framework objects.
 | `IconDirectionType` | `ltr`, `rtl` | Explicit target-independent rendering direction. |
 
 The immutable `iconDirections` sequence is the feature-owned authority from which
-`IconDirectionType` derives. It remains internal until a separate API decision proves that
-consumers require a public runtime vocabulary.
+`IconDirectionType` derives. The frozen sequence is exported from the package root so target
+renderers can validate options and apply direction without declaring a competing vocabulary.
 
 Accessibility combinations, positive and non-negative numeric constraints, non-empty labels, and
 collection override authority are validated by the target renderer before output.

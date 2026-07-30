@@ -8,8 +8,9 @@ without importing SVG parser syntax, DOM objects, framework state, or repository
 
 ## Current boundary
 
-The current package exposes contracts, closed value unions, and the immutable `Icon` API object.
-It contains no renderer, catalogue, registry, or global identity authority.
+The current package exposes contracts, closed value unions, immutable portable runtime
+authorities, and the `Icon` API object. It contains no renderer, catalogue, registry, or global
+identity authority.
 
 ## Features
 
@@ -41,6 +42,7 @@ The package root exports:
 | Symbol | Kind | Authority |
 | --- | --- | --- |
 | `Icon` | Frozen value object | Validates and constructs definitions through `define()`. |
+| Portable runtime authorities | Frozen values | Define node, presentation, metadata, and render-option vocabularies required by consumers. |
 | Feature contracts and types | Type-only exports | Describe portable definitions, nodes, metadata, presentation, and options. |
 
 Only the root package export `"."` is approved. Runtime implementation paths and feature subpaths

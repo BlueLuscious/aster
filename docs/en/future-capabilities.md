@@ -10,33 +10,10 @@ material public or dependency decision is accepted separately.
 
 | Window | Capability |
 | --- | --- |
-| Before the first compatibility-bearing Core release | Decide whether portable runtime vocabularies belong in the public Core API. |
 | Before populating `@aster/icons` | Compare TypeScript-first authoring with SVG-first importing and select the canonical authority. |
 | Before the first public release or externally supported contribution workflow | Activate linting and non-mutating formatting verification. |
 | After the first end-to-end product flow is implemented and package documentation is self-contained | Consolidate transversal documentation around a concise project-level summary. |
 | After parser conformance provides sufficient replacement evidence | Consider an Aster-owned XML tokeniser and parser adapter. |
-
-## Public portable vocabularies
-
-Core and Build intentionally own different boundaries, but some source vocabularies currently
-contain the same values as the portable model. Examples include canonical identity-slug grammar,
-paint keywords, presentation enumerations, primitive discriminators, and the default
-right-to-left policy.
-
-Before Core enters its first compatibility-bearing release, decide whether consumers need
-immutable runtime authorities for those portable vocabularies. If accepted, Core should expose
-the narrowest stable values, derive matching public unions from them, and protect the new value
-surface with ABI tests. Build may then consume those public authorities where source and portable
-semantics are exactly equivalent.
-
-No private Core constant should be imported by Build, and textual equality alone is insufficient
-to move source grammar into Core. This capability requires an explicit public API and versioning
-decision because it expands Core's observable runtime surface.
-
-The current ownership rules remain defined by
-[Authority and Vocabulary](architecture/authority-and-vocabulary.md), the
-[portable icon model](architecture/portable-icon-model.md), and the
-[Build shared authorities](packages/build/shared/index.md).
 
 ## Active linting and formatting verification
 

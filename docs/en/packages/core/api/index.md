@@ -68,12 +68,23 @@ The accepted value is plain readonly data. Consumers inspect `identity`, `viewBo
 
 ## Package exports
 
-`@aster/core` approves only its root `"."` export. The root provides the runtime value `Icon` and
-all documented public contracts and types.
+`@aster/core` approves only its root `"."` export. The root provides `Icon`, documented frozen
+portable runtime authorities, and all public contracts and types.
 
 No feature, runtime, manager, normaliser, error, or shared implementation subpath is public.
 Unsupported subpaths fail through the package resolver rather than becoming compatibility
 contracts accidentally.
+
+The exact runtime value surface is:
+
+- `Icon`;
+- `iconDirections`;
+- `iconNodeKinds`;
+- `iconPaintSchema`;
+- `iconPresentationEnumerations`;
+- `iconPresentationOverrideOrder`;
+- `iconRtlPolicies`;
+- `iconTechnicalPresentation`.
 
 The package is native ES2022 ESM and declares its modules free of observable import side effects.
 This makes the export graph compatible with static consumer analysis without promising

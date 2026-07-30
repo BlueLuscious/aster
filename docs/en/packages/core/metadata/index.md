@@ -24,8 +24,8 @@ licensing when publishing artwork.
 
 The immutable `iconRtlPolicies` sequence is the feature-owned runtime authority for those values.
 `IconRtlPolicyType` derives its union from that sequence so compile-time narrowing and runtime
-validation cannot drift independently. The authority remains internal and does not add a public
-runtime export.
+validation cannot drift independently. The frozen sequence is exported from the package root for
+target consumers that implement direction behaviour.
 
 Core stores direction policy but never observes ambient direction, transforms geometry, or infers
 semantics from an icon name.
