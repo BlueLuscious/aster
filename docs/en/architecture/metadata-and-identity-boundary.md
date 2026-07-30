@@ -5,8 +5,9 @@ Status: **Accepted**
 This document defines metadata ownership, composition, identity, naming, lifecycle relationships,
 and licensing resolution without selecting a serialisation or schema-validation technology.
 
-Geometry is not metadata. Portable geometry originates in canonical SVG and becomes nodes through
-the accepted build pipeline.
+Geometry is not metadata. Portable geometry may be authored directly as a Core definition or
+imported from SVG through Build. The product authoring authority remains open until both workflows
+have representative evidence.
 
 ## Metadata layers
 
@@ -129,7 +130,7 @@ Naming has separate audiences:
 | Name | Form | Authority |
 | --- | --- | --- |
 | Collection slug | `minimal` | Stable collection identity and directory name. |
-| Icon slug | `arrow-left` | Stable icon identity and canonical SVG base filename. |
+| Icon slug | `arrow-left` | Stable icon identity and optional SVG import base filename. |
 | Display name | `Arrow Left` | Human-readable documentation and search label. |
 | Generated symbol | `ArrowLeft` | Deterministically derived TypeScript definition symbol. |
 | Generated named wrapper | `ArrowLeftIcon` | Deterministically derived target-renderer symbol. |
@@ -188,7 +189,7 @@ consumers require it. Full legal text and repository policy remain outside each 
 ## Technology boundary
 
 Canonical authored metadata uses strict UTF-8 JSON with `schemaVersion: 1`, as defined by
-[Canonical JSON Metadata Sources](../decisions/0004-canonical-json-metadata-sources.md). JSON
+[JSON Metadata for SVG Imports](../decisions/0004-canonical-json-metadata-sources.md). JSON
 decoding remains a private Build responsibility and cannot leak mutable parser values or native
 exception messages into diagnostics or portable definitions.
 
@@ -202,3 +203,8 @@ The decoder and any future schema or authoring UI must:
 
 No JSON Schema library or authoring UI is selected. Those tools require concrete editor or
 collection-workflow evidence and cannot become runtime Core dependencies.
+
+The implemented version-one subset, accepted fields, immutable values, and stable diagnostic
+families are documented by [Build Metadata](../packages/build/metadata/index.md). The broader
+collection and icon drafts above remain capability direction rather than permission for unknown
+fields in version-one sources.

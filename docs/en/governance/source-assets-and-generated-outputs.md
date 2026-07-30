@@ -10,12 +10,16 @@ ownership.
 
 ## Canonical source
 
-A committed collection owns its canonical source beneath `collections/<collection>/`. Its source
-must be sufficient to reproduce every derived artefact that the repository elects to distribute.
+A committed icon must declare one canonical authoring authority sufficient to reproduce every
+derived artefact that the repository elects to distribute. A TypeScript-first collection may own
+that authority in `@aster/icons`; an SVG-first collection may declare an explicit import source
+root. The project will select a default only after representative authoring and export evidence.
 
-Canonical source may include:
+Canonical authoring evidence may include:
 
+- portable TypeScript definitions;
 - reviewed vector masters;
+- reviewed SVG import sources;
 - collection metadata and licensing evidence;
 - deterministic aliases and semantic classification;
 - explicit exceptions required by collection policy.
@@ -47,7 +51,7 @@ repository must not accept it until cleanup, regeneration, and verification beha
 
 Documentation and generated output must not create a fictional collection.
 `docs/en/collections/<collection>/` and any collection-specific distribution artefacts are valid
-only when `collections/<collection>/` exists.
+only when the collection has accepted canonical authoring authority.
 
 Shared schemas, workflows, and policies belong to the collection root or package that owns them
 rather than to a placeholder collection.

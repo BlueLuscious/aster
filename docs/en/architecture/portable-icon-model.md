@@ -2,7 +2,8 @@
 
 Status: **Accepted**
 
-This document defines the target-independent geometry model produced from canonical SVG sources.
+This document defines the target-independent geometry model authored directly or imported from
+SVG sources.
 It does not define parser syntax, renderer handles, framework components, or generated module
 layout.
 

@@ -11,6 +11,7 @@ material public or dependency decision is accepted separately.
 | Window | Capability |
 | --- | --- |
 | Before the first compatibility-bearing Core release | Decide whether portable runtime vocabularies belong in the public Core API. |
+| Before populating `@aster/icons` | Compare TypeScript-first authoring with SVG-first importing and select the canonical authority. |
 | Before the first public release or externally supported contribution workflow | Activate linting and non-mutating formatting verification. |
 | After the first end-to-end product flow is implemented and package documentation is self-contained | Consolidate transversal documentation around a concise project-level summary. |
 | After parser conformance provides sufficient replacement evidence | Consider an Aster-owned XML tokeniser and parser adapter. |
@@ -95,3 +96,29 @@ unchanged.
 
 The current replaceable dependency boundary is defined by
 [0003: Private XML Parser Boundary](decisions/0003-private-xml-parser-boundary.md).
+
+## Minimal Aster CLI
+
+No production host currently discovers SVG import sources or commits generated package output.
+Introduce `@aster/cli` only if a real `@aster/icons` SVG-import workflow is accepted. The initial
+CLI should remain a small Node adapter over `@aster/build`: select an explicit source root and
+output root, strictly decode source bytes, run `CollectionBuildPipeline`, present diagnostics, and
+commit only complete successful output.
+
+Keep parser, metadata, validation, normalisation, and generator responsibilities in private
+`@aster/build`. Review further package extraction only after an independent host or authoring
+consumer demonstrates distinct versioning, dependencies, lifecycle, or consumers.
+
+## TypeScript-first authoring and SVG export
+
+Core already permits an icon to be authored directly as an immutable TypeScript definition, while
+Build permits SVG and JSON to be imported into the same portable model. Before populating
+`@aster/icons`, implement the generic SVG renderer and compare a small representative set in both
+directions.
+
+The decision should measure visual editing cost, reviewability, source diffs, metadata ergonomics,
+round-trip loss, deterministic output, and whether generated SVG remains suitable for design-tool
+interchange. If TypeScript-first authoring is accepted, `@aster/icons` should own the definitions
+and SVG should be derived through the renderer or a narrow exporter. If SVG-first authoring is
+accepted for a collection, its source root should keep collection metadata separate from
+`metadata/icons/`, and editable masters should remain optional evidence outside Build.

@@ -18,7 +18,7 @@ Superseded by: **None**
 
 ## Context
 
-Aster must interpret untrusted canonical SVG without coupling portable runtime packages to XML,
+Aster must interpret untrusted SVG imports without coupling portable runtime packages to XML,
 DOM, browser, or parser-library contracts. Implementing a conforming XML and namespace parser
 inside the initial ingestion spike would add substantial syntax and security responsibility that
 is unrelated to the icon domain.

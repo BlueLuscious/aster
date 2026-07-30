@@ -19,7 +19,7 @@ filesystem paths, stack traces, or host process authority.
 | Type | Values or form | Responsibility |
 | --- | --- | --- |
 | `DiagnosticSeverityType` | `error`, `warning` | Distinguishes blocking failures from observable advice. |
-| `DiagnosticCategoryType` | `syntax`, `safety`, `technical`, `collection`, `generation` | Assigns diagnostic meaning to a stable domain responsibility. |
+| `DiagnosticCategoryType` | `syntax`, `safety`, `technical`, `metadata`, `collection`, `generation` | Assigns diagnostic meaning to a stable domain responsibility. |
 | `DiagnosticCodeType` | `ASTER-<CATEGORY>-<NNN>` | Represents the Aster-owned diagnostic code family; runtime enforces category agreement and three digits. |
 | `DiagnosticResultType<Value>` | Discriminated success or failure | Carries complete output with warnings, or blocking diagnostics with no partial value. Its envelope and diagnostics are frozen; the producing stage owns output immutability. |
 

@@ -32,7 +32,7 @@ them.
 | Artefact | A reproducible output created from canonical sources and never edited manually. |
 | Metadata | Non-geometric descriptive, lifecycle, search, accessibility, licensing, or directional data associated with an icon or collection. |
 
-The canonical exported SVG is a machine-readable source. It is not the editable master. A
+An acquired SVG import is a machine-readable source. It is not necessarily the editable master. A
 framework component is a generated or composed view over a definition; it is not the icon itself.
 
 ## Decision states

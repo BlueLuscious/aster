@@ -1,4 +1,4 @@
-# 0004: Canonical JSON Metadata Sources
+# 0004: JSON Metadata for SVG Imports
 
 Status: **Accepted**
 
@@ -18,14 +18,12 @@ Superseded by: **None**
 
 ## Context
 
-Aster needs authored collection and icon metadata that can enter deterministic builds without
-coupling portable Core values to a parser technology. The initial ingestion pipeline deliberately
-kept serialisation open until a real collection exercised source naming, decoding, diagnostics,
-and authority composition.
+Aster's SVG importer needs authored collection and icon metadata that can enter deterministic
+builds without coupling portable Core values to a parser technology. This decision does not
+require JSON or external metadata for TypeScript definitions authored directly against Core.
 
-The experimental collection now requires committed metadata sources. Their representation must be
-human-editable, dependency-light, strict enough for deterministic diagnostics, and replaceable
-behind Aster-owned structured contracts.
+The SVG import boundary requires metadata that is human-editable, dependency-light, strict enough
+for deterministic diagnostics, and replaceable behind Aster-owned structured contracts.
 
 ## Decision drivers
 
@@ -34,7 +32,7 @@ behind Aster-owned structured contracts.
 - Explicit schema evolution.
 - Familiar authored syntax with broad editor support.
 - Separation between textual decoding and domain authority.
-- Stable collection, icon, and variant path relationships.
+- Stable collection, icon, and variant counterpart relationships.
 
 ## Options
 
@@ -44,11 +42,11 @@ JSON is available in ES2022, has one strict data model, needs no parser dependen
 plain immutable structured values. It does not support comments and requires Aster-owned
 validation for useful field diagnostics.
 
-### TypeScript modules
+### TypeScript metadata modules
 
-TypeScript would provide expressive authoring and static types, but loading it would execute code
-or require compiler tooling. It would weaken the untrusted textual-source boundary and couple
-collection assets to Aster's development toolchain.
+TypeScript metadata modules would provide expressive authoring and static types, but loading them
+inside the SVG importer would execute code or require compiler tooling. This does not preclude
+direct TypeScript-first icon definitions, which are a separate trusted authoring path.
 
 ### YAML
 
@@ -57,11 +55,12 @@ syntax surface with implicit scalar and schema behaviour that Aster does not cur
 
 ## Decision
 
-Canonical collection and icon metadata use strict UTF-8 JSON with `schemaVersion: 1`.
+Collection and icon metadata acquired by the SVG importer use strict UTF-8 JSON with
+`schemaVersion: 1`.
 
-One collection owns `metadata/collection.json`. Each icon owns
-`metadata/<icon-slug>.json`; a separately represented variant owns
-`metadata/<icon-slug>--<variant-slug>.json`. The base filename must match its canonical SVG
+Within one explicitly selected source root, a collection owns `metadata/collection.json`. Each
+icon owns `metadata/icons/<icon-slug>.json`; a separately represented variant owns
+`metadata/icons/<icon-slug>--<variant-slug>.json`. The base filename must match its SVG import
 counterpart.
 
 JSON syntax is decoded behind an Aster-owned private Build service. Decoding produces Aster-owned
@@ -92,14 +91,14 @@ being embedded as unstructured JSON prose.
 
 ### Deferred
 
-- Implement the private source-aware JSON decoder before the end-to-end generator command.
 - Define whether generated JSON Schema files provide useful editor assistance.
 - Evaluate a dedicated authoring UI only after collection workflows provide demand.
 
 ## Compatibility and migration
 
-This is the first canonical metadata serialisation and affects no released collection or public
-runtime package. Experimental metadata may change through an explicit schema-version migration.
+This is the first accepted SVG-import metadata serialisation and affects no released collection or
+public runtime package. Version-one metadata may change through an explicit schema-version
+migration before a compatibility-bearing importer release.
 
 Replacing JSON for future sources or changing version-one field meanings requires a superseding
 decision. Internal structured Build contracts may evolve independently when textual decoders adapt
@@ -107,6 +106,7 @@ without changing canonical metadata semantics.
 
 ## Evidence
 
-- [Aster Experimental](../collections/experimental/index.md)
+- [Build Metadata](../packages/build/metadata/index.md)
+- [Build Pipeline](../packages/build/pipeline/index.md)
 - [Build SVG Normalisation](../packages/build/normalisation/index.md)
 - [SVG Processing Pipeline](../architecture/svg-processing-pipeline.md)

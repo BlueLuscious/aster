@@ -28,7 +28,7 @@ Changes require approval from the authority that owns their observable consequen
 | Change | Required approval |
 | --- | --- |
 | Portable contracts, security, generator, renderer, package exports, or tooling policy | Technical maintainer. |
-| Collection design rules, masters, canonical SVG, visual metadata, or accepted exceptions | Collection curator. |
+| Collection design rules, masters, SVG imports, visual metadata, or accepted exceptions | Collection curator. |
 | A change affecting both software and collection output | Technical maintainer and collection curator. |
 | Artwork licence, attribution, provenance, or distribution authority | Technical maintainer and collection curator after evidence is supplied. |
 | Package publication and compatibility classification | Release maintainer plus every applicable owner above. |

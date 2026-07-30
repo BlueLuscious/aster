@@ -14,7 +14,7 @@ evidence are absent from the package root export.
 One `ISvgValidationUnit` contains:
 
 - one required `CollectionMetadataSource` establishing collection identity;
-- one or more `ISvgValidationEntry` values pairing canonical SVG with parsed syntax;
+- one or more `ISvgValidationEntry` values pairing acquired SVG with parsed syntax;
 - independently acquired `IconMetadataSource` values awaiting counterpart resolution;
 - one immutable `ICollectionValidationContract` created through
   `CollectionValidationContractFactory`.
@@ -22,10 +22,9 @@ One `ISvgValidationUnit` contains:
 Acquisition order has no semantic authority. Successful evidence orders entries by collection,
 icon, and optional variant identity.
 
-Metadata content remains exact opaque text because metadata serialisation is still an independent
-open technology decision. This stage validates required source presence, acquired identity, and
-pairing. It does not invent a metadata schema or treat unparsed content as accepted runtime
-metadata.
+Metadata content remains exact opaque text at this stage. Validation establishes required source
+presence, acquired identity, and pairing; the independent JSON decoder later establishes
+structured metadata authority without coupling validation to serialisation.
 
 ## Internal contracts
 
@@ -33,7 +32,7 @@ metadata.
 | --- | --- | --- |
 | `ISvgValidator` | Applies universal and collection-owned validation to one complete unit. | Implemented by `SvgValidator`; returns `DiagnosticResultType<ISvgValidationEvidence>`. |
 | `ISvgValidationUnit` | Groups collection metadata, acquired entries, and accepted collection authority. | Input to `ISvgValidator`. |
-| `ISvgValidationEntry` | Pairs one canonical SVG with its parser-safe syntax document. | Validated technically while metadata counterparts are resolved independently. |
+| `ISvgValidationEntry` | Pairs one acquired SVG with its parser-safe syntax document. | Validated technically while metadata counterparts are resolved independently. |
 | `IPairedSvgValidationEntry` | Resolves one SVG entry to exactly one metadata source with the same identity. | Exists internally when counterpart resolution is unambiguous. |
 | `ISvgValidationEvidence` | Carries collection authority and canonically ordered accepted entries. | Exists only when no blocking diagnostic occurs. |
 | `IValidatedSvgEntry` | Adds deterministic technical metrics to an accepted source pair. | Entry of `ISvgValidationEvidence`; input to later normalisation. |
@@ -78,7 +77,7 @@ Universal checks are not configurable by collections:
 
 | Responsibility | Accepted behaviour |
 | --- | --- |
-| Identity | Collection metadata, collection contract, SVG identity, icon metadata identity, syntax source, and canonical SVG path agree. |
+| Identity | Collection metadata, collection contract, SVG identity, icon metadata identity, and syntax source agree. |
 | Duplicate identity | A logical collection, icon, and optional variant occurs once per generation unit. |
 | `viewBox` | Exactly four finite numbers are required; width and height are positive. |
 | Attributes | Only accepted root, group, primitive, and portable presentation attributes are admitted. |

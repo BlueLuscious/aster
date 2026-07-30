@@ -2,8 +2,9 @@
 
 Status: **Accepted**
 
-This document defines collection ownership, lifecycle, visual-rule authority, canonical asset
-roles, and the boundary between authored sources and generated artefacts.
+This document defines collection ownership, lifecycle, visual-rule authority, authoring roles, and
+the boundary between authored sources and generated artefacts. The canonical authoring format is
+deliberately unresolved.
 
 ## Collection identity and ownership
 
@@ -12,9 +13,9 @@ A collection is a curated visual family identified by one stable canonical slug.
 - a human-readable name and purpose;
 - one curator or explicitly named curatorial group;
 - a design contract;
-- editable artwork masters;
-- canonical exported SVG sources;
-- collection-level and icon-level metadata;
+- portable icon definitions;
+- optional editable artwork masters and SVG import sources;
+- collection-level and icon-level metadata represented by the chosen authoring path;
 - lifecycle and licensing information;
 - evidence for visual-rule changes and approved exceptions.
 
@@ -79,21 +80,22 @@ promote one collection's defaults into universal rules without cross-collection 
 
 ## Source directory model
 
-Canonical collection sources use separate ownership boundaries:
+An SVG import source root may use separate ownership boundaries:
 
 ```text
-collections/
-  <collection-slug>/
-    masters/
-    svg/
-    metadata/
+<source-root>/
+  masters/
+  svg/
+  metadata/
+    collection.json
+    icons/
 ```
 
 The directories have exact responsibilities:
 
 | Directory | Authority |
 | --- | --- |
-| `masters/` | Editable design documents used to revise artwork. |
+| `masters/` | Optional editable design documents used to revise artwork. |
 | `svg/` | Canonical machine-readable exports consumed by the build pipeline. |
 | `metadata/` | Authored collection and icon metadata consumed by the build pipeline. |
 
@@ -101,19 +103,24 @@ No normalised SVG, generated TypeScript, renderer wrapper, preview, contact shee
 package manifest belongs in these source directories. Generated outputs use separately declared
 boundaries and can be deleted without removing canonical sources.
 
-Metadata uses strict UTF-8 JSON with `schemaVersion: 1`. One collection owns
-`metadata/collection.json`; each icon owns `metadata/<icon-slug>.json`; and a separately
-represented variant owns `metadata/<icon-slug>--<variant-slug>.json`. Metadata and SVG base
+Metadata uses strict UTF-8 JSON with `schemaVersion: 1`. One source root owns
+`metadata/collection.json`; each icon owns `metadata/icons/<icon-slug>.json`; and a separately
+represented variant owns `metadata/icons/<icon-slug>--<variant-slug>.json`. Metadata and SVG base
 filenames must agree.
+
+Build itself does not discover this layout or require a repository-relative storage location. A
+future CLI may adopt it as a default convention while still supplying explicit source descriptors
+to Build. Hand-authored TypeScript definitions require none of these directories.
 
 Decoding remains separate from source acquisition and domain authority. The accepted format,
 alternatives, duplicate-key requirement, and migration boundary are recorded by
-[Canonical JSON Metadata Sources](../decisions/0004-canonical-json-metadata-sources.md).
+[JSON Metadata for SVG Imports](../decisions/0004-canonical-json-metadata-sources.md).
 
-## Editable masters
+## Optional editable masters
 
-An editable master is the source of truth for revising visual geometry. Adobe Illustrator `.ai`
-documents are supported as masters, but Aster's runtime and automated build do not parse them.
+An SVG-first collection may designate an editable master as the visual source of truth. Adobe
+Illustrator `.ai` documents are one possible master format, but Aster's runtime and automated
+Build pipeline do not parse them.
 
 Masters preserve the information needed for future visual work:
 
@@ -131,17 +138,17 @@ identity to canonical icon identity.
 The storage transport for large binary masters, including whether version-control extensions are
 required, remains Open until real file sizes and collaboration needs are measured.
 
-## Canonical SVG sources
+## SVG import sources
 
-The exported SVG is the only canonical geometry input consumed automatically. It is not the
-editable master and is not a generated distribution artefact.
+An exported SVG is the geometry input consumed by the optional Build importer. It is neither
+required by Core nor automatically authoritative for a TypeScript-first collection.
 
 Each SVG source:
 
 - resolves to one collection, icon, and optional variant identity;
 - uses a filename derived from the canonical icon identity;
 - contains the approved export geometry only;
-- is reviewed and corrected through its editable master;
+- is reviewed and corrected through the authority selected by its collection;
 - remains unchanged by runtime normalisation;
 - can be validated without access to Illustrator.
 
@@ -149,19 +156,25 @@ For an icon without a separately represented variant, the filename is `<icon-slu
 uses `<icon-slug>--<variant-slug>.svg`. Collection, icon, and variant slugs cannot contain empty
 segments or consecutive hyphens, so the delimiter is unambiguous.
 
-Normalised SVG or portable node data is generated output. It may simplify source syntax but never
-replaces either the master or canonical exported SVG.
+Normalised portable node data is generated output in an SVG-first workflow. In a TypeScript-first
+workflow, the portable definition may instead be canonical and SVG may become a derived review or
+distribution artefact. Aster will select a default only after both directions have implementation
+and visual-review evidence.
 
 ## Metadata source relationship
 
 Collection metadata identifies the collection and provides allowed defaults. Icon metadata uses
-the same canonical icon slug as its SVG source. A build request must reject:
+the same canonical icon slug as its SVG source. An SVG import request must reject:
 
 - an SVG without required icon metadata;
 - icon metadata without a corresponding SVG where geometry is required;
 - ambiguous identity mappings;
 - duplicate canonical identities;
-- filename, metadata, and collection-path disagreement.
+- disagreement between the explicitly acquired SVG, metadata, and collection identities.
+
+Build does not derive these identities from filenames or repository paths. A future CLI may apply
+one source-layout convention during acquisition, but that convention remains outside the
+host-independent import pipeline.
 
 The complete composition and naming contract is defined by
 [Metadata and Identity Boundary](metadata-and-identity-boundary.md).
@@ -180,9 +193,8 @@ Every generated boundary declares:
 Generated artefacts are terminal products of source processing. They never become inputs to
 another authoring path when a canonical source exists.
 
-A generated boundary must be safely deletable and reproducible from masters only where a manual
-SVG export is not required, and from canonical SVG plus metadata for all automated outputs. The
-automated build never claims it can recreate SVG exports from `.ai` files.
+A generated boundary must be safely deletable and reproducible from its declared canonical input.
+The automated Build importer never claims it can recreate SVG exports from `.ai` files.
 
 ## Licensing ownership
 

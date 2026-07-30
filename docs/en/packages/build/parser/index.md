@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-The parser feature converts exact canonical SVG text into a deeply immutable, parser-neutral
+The parser feature converts exact acquired SVG text into a deeply immutable, parser-neutral
 syntax model. Its successful output is still untrusted and remains internal to `@aster/build`;
 later validators must establish schema and semantic authority before Core data can be created.
 

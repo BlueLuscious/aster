@@ -2,19 +2,20 @@
 
 Status: **Accepted**
 
-`@aster/build` owns reusable build-time domain services that transform canonical collection
-sources into deterministic portable inputs and generation plans. It is a private workspace
-package, not a published runtime dependency.
+`@aster/build` owns reusable build-time domain services that import explicitly acquired SVG and
+JSON metadata into deterministic portable definitions and generation plans. It is a private
+workspace package, not a published runtime dependency and not a requirement for directly authored
+Core definitions.
 
 ## Current boundary
 
-The implemented boundary accepts exact textual source descriptors, parses the accepted SVG syntax
-subset behind an internal trust boundary, validates universal technical invariants and
-collection-owned visual rules, and normalises successful evidence plus decoded metadata into Core
-definitions. It also plans deterministic collection TypeScript modules, package configuration,
-public package subpaths, and safe stale-file candidates without host effects. The resulting shape
-has isolated built-package conformance evidence. Build has no filesystem adapter, metadata
-serialiser, metadata decoder, command-line adapter, or committed generated output authority yet.
+The implemented boundary accepts exact textual source descriptors, decodes closed version-one JSON
+metadata, parses the accepted SVG syntax subset behind an internal trust boundary, validates
+universal technical invariants and collection-owned visual rules, and normalises successful
+evidence into Core definitions. It plans deterministic collection TypeScript modules, package
+configuration, public package subpaths, and safe stale-file candidates. `CollectionBuildPipeline`
+composes that complete pure flow and returns output only after every blocking stage succeeds.
+Filesystem and process authority remain outside Build.
 
 ## Features
 
@@ -27,6 +28,8 @@ serialiser, metadata decoder, command-line adapter, or committed generated outpu
 | [Validation](validation/index.md) | Internal identity, technical, geometry, presentation, and collection-rule validation. |
 | [Normalisation](normalisation/index.md) | Internal deterministic conversion of accepted evidence and decoded metadata into Core definitions. |
 | [Generator](generator/index.md) | Internal deterministic module, package, export, diagnostic, and cleanup planning without filesystem authority. |
+| [Metadata](metadata/index.md) | Internal strict version-one JSON decoding and stable source rejection diagnostics. |
+| [Pipeline](pipeline/index.md) | Public host-independent composition of canonical sources into complete generated package text. |
 
 ## Dependency boundary
 
@@ -40,7 +43,7 @@ The package also pins `xmlsax-typescript` version `1.0.0`. That dependency has n
 production packages and is confined to the internal `SvgParser` adapter. Production compilation
 uses ES2022 without Node, DOM, browser, Lilium, Lotus, or repository-tooling ambient types.
 
-The package cannot depend on a renderer, framework adapter, generated collection, host ecosystem,
+The package cannot depend on a renderer, framework adapter, collection package, host ecosystem,
 or repository tooling.
 
 ## Workspace surface
@@ -55,15 +58,19 @@ The private root export provides:
 | `SourceDiagnosticFactory` | Class | Validates and deeply freezes Aster-owned diagnostics. |
 | `SourceDiagnosticAggregator` | Class | Deduplicates and orders diagnostics canonically. |
 | `DiagnosticResultFactory` | Class | Creates explicit successes and failures without host process authority. |
+| Pipeline contracts | Type-only exports | Describe acquired source pairs, existing text, and complete successful output. |
+| `CollectionBuildPipeline` | Class | Composes metadata, SVG, validation, normalisation, and generation without effects. |
 
 Only the package root is an approved workspace import. Runtime implementation paths remain
-internal. Parser, validation, normalisation, and generator classes, service contracts, syntax and
-evidence contracts, collection rule configuration, generation plans, templates, and parser-library
-values are deliberately absent from the root surface.
+internal. Parser, metadata implementation, validation, normalisation, and generator classes,
+internal service contracts, syntax and evidence contracts, collection rule configuration,
+generation plans, templates, and parser-library values are deliberately absent from the root
+surface.
 
 ## Domain flow
 
-1. A host adapter strictly decodes canonical bytes and supplies a source descriptor explicitly.
+1. A host adapter strictly decodes selected import bytes and supplies a source descriptor
+   explicitly.
 2. `IngestionSourceFactory` validates logical identity, path, and text invariants without changing
    content.
 3. `SvgParser` converts library tokens immediately into an internal Aster-owned syntax model,
@@ -72,16 +79,17 @@ values are deliberately absent from the root surface.
    checks with accepted collection-owned rules.
 5. Technical validation produces metrics only from trustworthy parsed values; collection rules
    cannot weaken safety or technical constraints.
-6. A replaceable metadata decoder supplies structured collection and icon values without exposing
-   its serialisation technology to later stages.
+6. `JsonMetadataDecoder` supplies structured collection and icon values behind a replaceable
+   decoder contract without exposing serialisation technology to later stages.
 7. `SvgNormaliser` links those values to successful evidence, resolves inherited source
    representation, composes metadata authority, and constructs each result through `Icon.define()`.
 8. `GenerationPlanner` derives stable names, renders isolated modules, package configuration and
    aggregate exports, detects generation conflicts, and analyses stale owned files without
    committing output.
-9. Domain stages create Aster-owned reports through `SourceDiagnosticFactory`.
-10. `SourceDiagnosticAggregator` deduplicates and orders independent reports deterministically.
-11. `DiagnosticResultFactory` returns complete output with warnings or failure with blocking
+9. `CollectionBuildPipeline` composes those stages into complete generated text and stale paths.
+10. Domain stages create Aster-owned reports through `SourceDiagnosticFactory`.
+11. `SourceDiagnosticAggregator` deduplicates and orders independent reports deterministically.
+12. `DiagnosticResultFactory` returns complete output with warnings or failure with blocking
    diagnostics and no partial output.
 
 Filesystem discovery, terminal formatting, and process exit status stay outside this flow.
