@@ -2,9 +2,11 @@ import type {
   IconDefinition,
   IconRenderOptions,
 } from "@aster/core";
-import type {
-  SvgApi,
-  SvgMarkupType,
+import {
+  Svg,
+  SvgRenderError,
+  type SvgApi,
+  type SvgMarkupType,
 } from "../../src/index.js";
 
 declare const definition: IconDefinition;
@@ -28,6 +30,11 @@ const semanticMarkup: SvgMarkupType = api.render(definition, {
   decorative: false,
   direction: "rtl",
 });
+const publicMarkup: SvgMarkupType = Svg.render(definition);
+const publicError: TypeError = new SvgRenderError(
+  "options.size",
+  "expected a positive finite number",
+);
 
 api.render(definition, {
   // @ts-expect-error Arbitrary SVG attributes are not portable renderer options.
@@ -47,4 +54,6 @@ const hostElement: SVGElement = defaultMarkup;
 
 void defaultMarkup;
 void semanticMarkup;
+void publicMarkup;
+void publicError;
 void hostElement;
