@@ -12,6 +12,7 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
+import * as pilotIcons from "@aster/icons";
 import { Svg } from "@aster/svg";
 
 const pipeline = new CollectionBuildPipeline();
@@ -214,7 +215,7 @@ test("imports equivalent SVG and JSON into the same portable definition", () => 
   assert.deepEqual(result.diagnostics, []);
 
   const iconModule = result.value.files.find(
-    (file) => file.path === "src/icons/arrow-left.ts",
+    (file) => file.path === "src/icons/arrow-left.icon.ts",
   );
 
   assert.ok(iconModule !== undefined);
@@ -232,4 +233,28 @@ test("corrects an off-grid review finding in canonical TypeScript source", () =>
   assert.match(draft, /x2="3\.75"/u);
   assert.doesNotMatch(corrected, /3\.75/u);
   assert.match(corrected, /x2="4"/u);
+});
+
+test("adopts the workflow evidence and renders the complete pilot distinctly", () => {
+  assert.deepEqual(pilotIcons.ArrowLeft, authorArrowLeft());
+
+  const definitions = Object.values(pilotIcons);
+  const minimumSizeMarkup = definitions.map((definition) =>
+    Svg.render(definition, { size: 16 }),
+  );
+  const defaultSizeMarkup = definitions.map((definition) =>
+    Svg.render(definition),
+  );
+
+  assert.equal(definitions.length, 16);
+  assert.equal(new Set(minimumSizeMarkup).size, definitions.length);
+  assert.equal(new Set(defaultSizeMarkup).size, definitions.length);
+
+  for (const markup of minimumSizeMarkup) {
+    assert.match(markup, /width="16" height="16"/u);
+  }
+
+  for (const markup of defaultSizeMarkup) {
+    assert.match(markup, /width="24" height="24"/u);
+  }
 });
