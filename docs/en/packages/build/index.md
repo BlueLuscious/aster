@@ -11,8 +11,10 @@ package, not a published runtime dependency.
 The implemented boundary accepts exact textual source descriptors, parses the accepted SVG syntax
 subset behind an internal trust boundary, validates universal technical invariants and
 collection-owned visual rules, and normalises successful evidence plus decoded metadata into Core
-definitions. It has no filesystem adapter, metadata serialiser, metadata decoder, generator,
-command-line adapter, or generated output authority yet.
+definitions. It also plans deterministic collection TypeScript modules, public package subpaths,
+and safe stale-file candidates without host effects. It has no filesystem adapter, metadata
+serialiser, metadata decoder, command-line adapter, compiled generated package, or committed
+generated output authority yet.
 
 ## Features
 
@@ -24,6 +26,7 @@ command-line adapter, or generated output authority yet.
 | [Parser](parser/index.md) | Internal parser-neutral SVG syntax, source spans, subset behaviour, and blocking safety policy. |
 | [Validation](validation/index.md) | Internal identity, technical, geometry, presentation, and collection-rule validation. |
 | [Normalisation](normalisation/index.md) | Internal deterministic conversion of accepted evidence and decoded metadata into Core definitions. |
+| [Generator](generator/index.md) | Internal deterministic module, export, diagnostic, and cleanup planning without filesystem authority. |
 
 ## Dependency boundary
 
@@ -54,9 +57,9 @@ The private root export provides:
 | `DiagnosticResultFactory` | Class | Creates explicit successes and failures without host process authority. |
 
 Only the package root is an approved workspace import. Runtime implementation paths remain
-internal. Parser, validation, and normalisation classes, service contracts, syntax and evidence
-contracts, collection rule configuration, and parser-library values are deliberately absent from
-the root surface.
+internal. Parser, validation, normalisation, and generator classes, service contracts, syntax and
+evidence contracts, collection rule configuration, generation plans, templates, and parser-library
+values are deliberately absent from the root surface.
 
 ## Domain flow
 
@@ -73,9 +76,11 @@ the root surface.
    its serialisation technology to later stages.
 7. `SvgNormaliser` links those values to successful evidence, resolves inherited source
    representation, composes metadata authority, and constructs each result through `Icon.define()`.
-8. Domain stages create Aster-owned reports through `SourceDiagnosticFactory`.
-9. `SourceDiagnosticAggregator` deduplicates and orders independent reports deterministically.
-10. `DiagnosticResultFactory` returns complete output with warnings or failure with blocking
+8. `GenerationPlanner` derives stable names, renders isolated modules and aggregate exports,
+   detects generation conflicts, and analyses stale owned files without committing output.
+9. Domain stages create Aster-owned reports through `SourceDiagnosticFactory`.
+10. `SourceDiagnosticAggregator` deduplicates and orders independent reports deterministically.
+11. `DiagnosticResultFactory` returns complete output with warnings or failure with blocking
    diagnostics and no partial output.
 
 Filesystem discovery, terminal formatting, and process exit status stay outside this flow.

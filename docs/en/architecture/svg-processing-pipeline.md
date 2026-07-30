@@ -148,6 +148,10 @@ cleanup boundary that cannot leave accepted generated files mixed with rejected 
 Generated artefacts identify their canonical input set and rebuild authority. They are terminal
 outputs and never replace authored SVG or metadata.
 
+The implemented pure module, export, collision, and stale-file planning boundary is documented by
+[Build Generator](../packages/build/generator/index.md). Filesystem discovery, atomic commit,
+cleanup execution, package compilation, and process status remain outside that domain boundary.
+
 ## Parser-library criteria
 
 Selecting an XML or SVG parser is an implementation decision, not an architectural dependency.
