@@ -285,7 +285,7 @@ test("keeps a built per-icon module isolated from aggregate modules", async () =
     compilePackage(resolve(packageRoot, "tsconfig.json"));
 
     const frameModule = await readFile(
-      resolve(packageRoot, "dist/icons/frame.js"),
+      resolve(packageRoot, "dist/icons/frame.icon.js"),
       "utf8",
     );
     const packageSpecifiers = [

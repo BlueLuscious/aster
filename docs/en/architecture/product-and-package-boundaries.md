@@ -3,7 +3,7 @@
 Status: **Accepted**
 
 This document defines Aster's product responsibility, dependency direction, and package-creation
-rules. Package names remain provisional until their implementation and distribution boundaries are
+rules. Unimplemented package names remain provisional until their distribution boundaries are
 proven.
 
 ## Product boundary
@@ -52,9 +52,11 @@ Only these implementation boundaries justify an initial package when their code 
 2. The private `@aster/build` boundary containing parsing, validation, normalisation, and
    generation features until independent consumers justify extraction.
 3. A public SVG renderer package after its exact output contract is accepted.
+4. A public collection package after canonical authoring authority and representative definitions
+   exist.
 
-Generated package conformance uses an isolated temporary package. Test output does not establish a
-published collection or permanent workspace package.
+Build generator conformance uses an isolated temporary package. Its output does not mutate
+`@aster/icons`, replace authored collection authority, or establish a published collection.
 
 Parser, validator, normaliser, and generator responsibilities remain separate features and test
 boundaries inside the initial build-time implementation. They are not separate packages merely
@@ -170,7 +172,7 @@ distribution boundaries and are not registry reservations:
 | --- | --- | --- |
 | Portable Core | `@aster/core` | Implemented |
 | Private build-time implementation | `@aster/build` | Implemented and accepted |
-| Release-quality collection definitions | `@aster/icons` | Provisional |
+| Aster collection definitions | `@aster/icons` | Implemented and Experimental |
 | Generic SVG renderer | `@aster/svg` | Implemented contract foundation |
 | Generated icon-target integration | Target package or generated exports, pending evidence | Provisional |
 | Target-independent Lilium adapter | `@aster/lilium` | Provisional |
@@ -180,3 +182,5 @@ Changing a provisional name does not change the accepted responsibility or depen
 
 The build-time name and ownership decision is recorded by
 [Private Build-time Domain Package](../decisions/0002-private-build-time-domain-package.md).
+The collection package and authoring decision is recorded by
+[TypeScript-first Aster Collection Package](../decisions/0007-typescript-first-aster-collection-package.md).

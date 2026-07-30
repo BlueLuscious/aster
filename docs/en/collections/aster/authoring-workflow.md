@@ -2,8 +2,8 @@
 
 Status: **Accepted**
 
-The Experimental `aster` collection uses TypeScript-first authoring. Each distributable icon will
-own one portable `Icon.define(...)` module in `@aster/icons`; SVG is a derived target and SVG+JSON
+The Experimental `aster` collection uses TypeScript-first authoring. Each distributable icon owns
+one portable `Icon.define(...)` module in `@aster/icons`; SVG is a derived target and SVG+JSON
 remains an optional import path for external artwork.
 
 The workflow selection applies to this collection. It does not remove Build, prohibit SVG-first
@@ -47,7 +47,7 @@ is regenerated from exactly that accepted value.
 
 ## Canonical Module Rules
 
-When `@aster/icons` is introduced:
+In `@aster/icons`:
 
 - `src/icons/<icon-slug>.ts` owns an unqualified icon;
 - `src/icons/<icon-slug>/<variant-slug>.ts` owns an explicit variant;

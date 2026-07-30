@@ -117,7 +117,7 @@ test("builds one complete headless definition package deterministically", () => 
     first.value.files.map((file) => file.path),
     [
       "package.json",
-      "src/icons/sample.ts",
+      "src/icons/sample.icon.ts",
       "src/index.ts",
       "src/manifest.ts",
       "tsconfig.json",

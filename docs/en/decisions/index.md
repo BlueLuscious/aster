@@ -90,3 +90,4 @@ supersession links, and unindexed records.
 | [0004: JSON Metadata for SVG Imports](0004-canonical-json-metadata-sources.md) | Accepted | Technical maintainers | SVG-import metadata serialisation |
 | [0005: Public SVG Renderer Boundary](0005-public-svg-renderer-boundary.md) | Accepted | Technical maintainers | Public SVG target and package API |
 | [0006: Public Portable Runtime Authorities](0006-public-portable-runtime-authorities.md) | Accepted | Technical maintainers | Core runtime value API |
+| [0007: TypeScript-first Aster Collection Package](0007-typescript-first-aster-collection-package.md) | Accepted | Technical maintainers and Aster collection curator | Collection authoring and distribution |

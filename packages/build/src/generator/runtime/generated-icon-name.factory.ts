@@ -31,8 +31,8 @@ export class GeneratedIconNameFactory {
       : baseSymbol;
     const modulePath =
       identity.variant === undefined
-        ? `${generatorModulePaths.iconRoot}/${identity.name}.ts`
-        : `${generatorModulePaths.iconRoot}/${identity.name}/${identity.variant}.ts`;
+        ? `${generatorModulePaths.iconRoot}/${identity.name}.icon.ts`
+        : `${generatorModulePaths.iconRoot}/${identity.name}/${identity.variant}.icon.ts`;
 
     return Object.freeze({
       identityKey: `${identity.collection}/${manifestKey}`,

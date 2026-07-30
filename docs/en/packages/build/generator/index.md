@@ -60,13 +60,13 @@ symbols use PascalCase segments:
 
 | Identity | Symbol | Module | Public subpath |
 | --- | --- | --- | --- |
-| `camera` | `Camera` | `src/icons/camera.ts` | `./camera` |
-| `camera/filled` | `CameraFilled` | `src/icons/camera/filled.ts` | `./camera/filled` |
-| `3d-axis` | `Icon3dAxis` | `src/icons/3d-axis.ts` | `./3d-axis` |
+| `camera` | `Camera` | `src/icons/camera.icon.ts` | `./camera` |
+| `camera/filled` | `CameraFilled` | `src/icons/camera/filled.icon.ts` | `./camera/filled` |
+| `3d-axis` | `Icon3dAxis` | `src/icons/3d-axis.icon.ts` | `./3d-axis` |
 
-Using `<name>.ts` for a base icon allows variant modules to coexist beneath a same-named directory
-without reserving `index` as a variant. A symbol beginning with a number receives the semantic
-`Icon` prefix. PascalCase makes JavaScript reserved words such as `class` valid exported
+Using `<name>.icon.ts` for a base icon allows variant modules to coexist beneath a same-named
+directory without reserving `index` as a variant. A symbol beginning with a number receives the
+semantic `Icon` prefix. PascalCase makes JavaScript reserved words such as `class` valid exported
 identifiers, while collisions after transformation remain blocking diagnostics. Generated module
 bindings use a `$` prefix, which canonical portable identity cannot derive, so authored symbols
 cannot collide with Core or manifest internals.
@@ -112,8 +112,8 @@ package.json
 tsconfig.json
 src/index.ts
 src/manifest.ts
-src/icons/<name>.ts
-src/icons/<name>/<variant>.ts
+src/icons/<name>.icon.ts
+src/icons/<name>/<variant>.icon.ts
 ```
 
 `package.json` is strict JSON and therefore cannot carry the line-comment banner. Its top-level
