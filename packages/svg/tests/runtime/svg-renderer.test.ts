@@ -14,7 +14,7 @@ import {
 function createDefinition(): IconDefinition {
   return Icon.define({
     identity: {
-      collection: "testing",
+      namespace: "testing",
       name: "precedence",
     },
     viewBox: {
@@ -94,7 +94,7 @@ test("renders exact golden markup with accepted presentation precedence", () => 
 test("serialises every portable primitive in paint and attribute order", () => {
   const definition = Icon.define({
     identity: {
-      collection: "testing",
+      namespace: "testing",
       name: "primitives",
     },
     viewBox: {
