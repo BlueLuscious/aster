@@ -9,9 +9,9 @@ The current package set is:
 
 | Package | Status | Responsibility |
 | --- | --- | --- |
-| [`@aster/core`](core/index.md) | Pre-release | Portable icon definitions, immutable construction, and render-neutral contracts. |
+| [`@aster/core`](core/index.md) | Pre-release | Independent portable icon and collection definitions, immutable construction, and render-neutral contracts. |
 | [`@aster/build`](build/index.md) | Private | Build-time source, diagnostic, parsing, validation, normalisation, and generation domain services. |
-| [`@aster/icons`](icons/index.md) | Experimental | Canonical portable definitions for the Aster pilot collection. |
+| [`@aster/icons`](icons/index.md) | Experimental | Canonical portable icons and opt-in collection aggregates for the Aster pilot. |
 | [`@aster/svg`](svg/index.md) | Experimental | Framework-independent standalone SVG rendering contracts. |
 
 Accepted responsibilities and dependency direction are defined by

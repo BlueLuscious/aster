@@ -49,15 +49,16 @@ is regenerated from exactly that accepted value.
 
 In `@aster/icons`:
 
-- `src/icons/<icon-slug>.ts` owns an unqualified icon;
-- `src/icons/<icon-slug>/<variant-slug>.ts` owns an explicit variant;
+- `src/icons/<icon-slug>.icon.ts` owns an unqualified icon;
+- `src/icons/<icon-slug>/<variant-slug>.icon.ts` owns an explicit variant;
 - each module contains one named immutable definition created through public `@aster/core`
   authority;
-- each module imports only `@aster/core`;
+- each module imports only public `@aster/core` and package-owned icon-authoring defaults;
 - a per-icon public subpath maps to `@aster/icons/<icon-slug>`;
 - variant subpaths map to `@aster/icons/<icon-slug>/<variant-slug>`;
 - the package root may provide convenience re-exports without becoming a registry dependency;
-- manifests remain explicit opt-in modules and never enter a per-icon graph;
+- collection definitions and manifests remain explicit opt-in modules and never enter a per-icon
+  graph;
 - renderers, frameworks, DOM APIs, Build, filesystem APIs, and repository tooling are forbidden
   dependencies.
 
@@ -66,12 +67,16 @@ modules.
 
 ## Metadata Rules
 
-The canonical module owns the runtime metadata accepted by Core, including display name, RTL
-policy, effective artwork licence, deprecation relationships, and collection presentation policy.
+The canonical module owns the runtime metadata accepted by Core, including display name,
+intrinsic tags, RTL policy, effective artwork licence, deprecation relationships, and icon
+presentation policy.
 
-Search aliases, tags, categories, provenance, review evidence, and computed metrics remain outside
-the portable runtime definition until a concrete consumer establishes their owned representation.
-They cannot be hidden in generated SVG or inferred from filenames.
+Search aliases, collection-specific categories, provenance, review evidence, computed metrics, and
+indexes remain outside the portable runtime definition until a concrete consumer establishes
+their owned representation. They cannot be hidden in generated SVG or inferred from filenames.
+
+The canonical `AsterCollection` retains accepted icon values separately. An icon remains valid
+without that membership and can be retained by additional collections without mutation.
 
 ## Derived SVG Rules
 

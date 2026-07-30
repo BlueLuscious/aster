@@ -1,34 +1,43 @@
-# Collection Authorities
+# Canonical Collections
 
 Status: **Experimental**
 
-The `collections/constants` feature owns the internal immutable authoring authorities shared by
-icon modules. It currently contains only `asterCollection`.
+The `collections` feature owns independently identified immutable collection definitions. It
+currently exports `AsterCollection`.
 
-Canonical collection modules use `<collection-slug>.collection.ts`. The current authority is
-declared by `aster.collection.ts`.
+Canonical modules use `<collection-slug>.collection.ts`. Public imports omit the role and retain
+`@aster/icons/collections/<collection-slug>`.
 
-## `asterCollection`
+## `AsterCollection`
 
-The current authority centralises:
+`AsterCollection` is constructed through public `Collection.define(...)` and retains the complete
+representative pilot:
 
-| Field | Value | Consumer |
+| Field | Value |
 | --- | --- | --- |
-| Collection slug | `aster` | Every `IconIdentity`. |
-| Artwork licence | ISC | Every portable `IconMetadata`. |
-| Attribution | BlueLuscious | Every portable `IconMetadata`. |
-| ViewBox | `0 0 24 24` | Every `IconDefinition`. |
-| Presentation defaults | Outline using SVG `currentColor`, `1.5` stroke, round caps and joins. | Every collection presentation policy. |
-| Presentation overrides | Empty | Renderers reject fill, stroke, or stroke-width overrides. |
-| Default size | `24` | Renderers when no explicit size is supplied. |
-| Minimum size | `16` | Render-option validation and curatorial review. |
+| Identity | `aster` |
+| Display name | Aster |
+| Description | Geometric outline interface icons. |
+| Tags | `interface-icons`, `outline-icons` |
+| Artwork licence | ISC |
+| Attribution | BlueLuscious |
+| Members | The sixteen canonical pilot icon objects |
 
-The object and its nested retained values are immutable. Core still clones and deeply freezes
-each accepted definition, so no icon shares mutable caller-owned state.
+The collection does not own member geometry, presentation, licence, attribution, tags, RTL
+behaviour, or lifecycle. Those values remain intrinsic to each icon. Membership neither changes
+an icon nor appears in `IconIdentity`.
 
-Collection authorities are implementation-only and are not exported through `@aster/icons`.
-Consumers receive resolved values through each portable definition rather than depending on
-collection authoring internals.
+The same canonical icon may be retained by another collection with identical object identity.
+Core rejects duplicate logical identity only within one collection.
+
+## Imports
+
+```ts
+import { AsterCollection } from "@aster/icons/collections/aster";
+```
+
+The package root also provides the collection as a convenience. Isolated per-icon imports never
+load it or any sibling icon.
 
 Visual rationale and enforcement severity remain canonical in the
 [Aster Collection Design Contract](../../../collections/aster/design-contract.md).

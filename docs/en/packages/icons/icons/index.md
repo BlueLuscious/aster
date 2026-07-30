@@ -31,7 +31,7 @@ source layout: public imports omit it and retain `@aster/icons/<icon-slug>`.
 
 Every icon:
 
-- uses the shared `asterCollection` viewBox and presentation policy;
+- uses the shared internal `asterIconAuthoring` viewBox and presentation policy;
 - contains no node-specific paint or stroke exceptions;
 - uses geometry values on the provisional half-unit grid;
 - resolves ISC licence and BlueLuscious attribution;
@@ -45,16 +45,17 @@ RTL because their metaphors are not directional.
 ## Metadata Scope
 
 The pilot retains display name, RTL policy, presentation policy, licence, attribution,
-deprecation state, and replacement relationship semantics supported by Core.
+deprecation state, replacement relationship semantics, and intrinsic search tags supported by
+Core.
 
-Aliases, tags, categories, review notes, and computed metrics are not embedded because no accepted
-runtime search or catalogue consumer owns them. The collection may add an opt-in manifest after a
-real discovery consumer defines that boundary.
+Aliases, collection-specific categories, review notes, computed metrics, and search indexes are
+not embedded. They require an opt-in catalogue consumer and must not become dependencies of an
+isolated icon module.
 
 ## Isolation
 
-An icon module imports only public `@aster/core` authority and the internal collection constant.
-It does not import another icon, the root index, a manifest, a renderer, or Build.
+An icon module imports only public `@aster/core` authority and the internal authoring constant. It
+does not import a collection, another icon, the root index, a manifest, a renderer, or Build.
 
 Package ABI tests verify that direct and root imports preserve the same object identity, internal
 subpaths are rejected, and emitted ESM and declarations remain host independent.

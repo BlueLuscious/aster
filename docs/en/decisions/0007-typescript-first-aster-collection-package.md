@@ -36,6 +36,7 @@ formatting.
 - Preserve Build as a reusable optional importer rather than a mandatory authoring dependency.
 - Keep collection definitions portable and independent from renderers and frameworks.
 - Provide isolated per-icon imports and exact export-map protection.
+- Keep icon identity and values independent from collection membership.
 - Avoid committing derived SVG or provisional source trees without generated ownership.
 
 ## Options
@@ -66,11 +67,13 @@ The package:
 - contains one canonical portable module per icon or explicit variant;
 - delegates immutable construction to public `@aster/core`;
 - depends only on `@aster/core` in production;
-- exports a convenience root and one explicit subpath per icon;
+- exports a convenience root, one explicit subpath per icon, and one explicit collection subpath;
 - keeps per-icon modules independent from siblings, manifests, renderers, frameworks, Build, host
   APIs, and repository tooling;
-- centralises collection-owned viewBox, presentation, licence, attribution, and size values in one
-  internal immutable authority;
+- centralises repeated icon-authoring viewBox, presentation, licence, attribution, and size values
+  in one internal immutable authority;
+- defines `AsterCollection` separately through `Collection.define(...)` and retains canonical icon
+  values without changing their identities;
 - treats SVG rendered through `@aster/svg` as derived and non-canonical;
 - permits external SVG+JSON artwork to pass through Build only as an optional adoption path.
 
@@ -97,14 +100,15 @@ collection.
 
 - Persistent generated SVG needs its own output root, cleanup owner, rebuild command, and
   verification.
-- Search or catalogue manifests require a real discovery consumer.
+- Search aliases, collection-specific taxonomy, or catalogue manifests require a real discovery
+  consumer.
 - A CLI remains conditional on a real user-facing SVG-import workflow.
 - Variant subpaths remain absent until the collection accepts a variant.
 
 ## Compatibility and migration
 
 The package begins at `0.0.0` and has no stable external compatibility promise. Its canonical
-collection and icon identities still follow the project identity contract.
+collection and icon identities remain independent and follow the project identity contract.
 
 Changing the package name, canonical authoring authority, dependency direction, or per-icon
 subpath model requires a superseding decision. Adding an icon is additive; removing or renaming a
@@ -113,7 +117,8 @@ released icon follows collection versioning and deprecation policy.
 ## Evidence
 
 - [Canonical icon modules](../../../packages/icons/src/icons/index.ts)
-- [Shared collection authority](../../../packages/icons/src/collections/constants/aster.collection.ts)
+- [Canonical Aster collection](../../../packages/icons/src/collections/aster.collection.ts)
+- [Shared icon-authoring authority](../../../packages/icons/src/shared/constants/aster-icon-authoring.constant.ts)
 - [Package ABI conformance](../../../packages/icons/tests/abi/package-abi.test.mjs)
 - [Cross-package authoring workflow](../../../tests/workflow/pilot-authoring-workflow.test.ts)
 - [Pilot reference set](../collections/aster/reference-set.md)

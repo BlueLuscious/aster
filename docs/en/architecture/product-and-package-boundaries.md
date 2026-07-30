@@ -29,19 +29,19 @@ Node runtime authority.
 
 | Boundary | Responsibility | Runtime status |
 | --- | --- | --- |
-| Portable Core | Icon definition, node, viewBox, metadata, identity, render options, presentation policy, and immutable construction contracts. | Public and host independent. |
+| Portable Core | Independent icon and collection definitions, node, viewBox, metadata, identity, render options, presentation policy, and immutable construction contracts. | Public and host independent. |
 | Import sources | Optional SVG, collection metadata, and icon metadata supplied explicitly to Build. | Build-time inputs, never runtime code. |
 | Build pipeline | Acquired-source boundaries, parsing, diagnostics, validation, normalisation, and generation planning. | Build-time only. |
-| Collection definitions | Typed immutable icon modules authored directly or produced by an accepted importer. | Portable runtime data. |
+| Icon and collection definitions | Typed immutable icon modules plus independent collection values retaining direct membership. | Portable runtime data. |
 | Renderer | Converts portable definitions and options into one explicit target output. | Public and target specific. |
 | Framework adapter | Exposes definitions through a framework's public component and rendering contracts. | Optional and framework specific. |
 | Target adapter | Maps framework-independent or framework-specific declarations to a concrete platform such as DOM. | Optional and target specific. |
 | Repository tooling | Workspace checks, safe cleanup, CI adapters, and contributor-only operations. | Private development infrastructure. |
 
-Collection definitions are conceptually separate from Core. Core defines the data contract;
-collections own icon data; and either direct authoring or an importer produces distribution
-modules. Their final package layout must be validated by import, tree-shaking, versioning, and
-release evidence.
+Collection values and icon artwork are conceptually separate from Core. Core defines both portable
+contracts; icon modules own icon data; collection modules own membership; and either direct
+authoring or an importer produces distribution modules. Their final package layout must be
+validated by import, tree-shaking, versioning, and release evidence.
 
 ## Initial package strategy
 

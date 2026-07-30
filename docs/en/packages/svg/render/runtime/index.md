@@ -28,9 +28,9 @@ private Core paths.
 3. A Core rejection becomes `SvgRenderError` at the same logical path without exposing the Core
    message.
 4. `SvgRenderOptionsNormaliser` rejects unsupported fields and malformed values.
-5. It enforces collection override authority, viewport minimums, accessibility conflicts, and
+5. It enforces icon override authority, viewport minimums, accessibility conflicts, and
    explicit direction.
-6. `SvgMarkupSerialiser` resolves technical defaults, collection defaults, node values, and
+6. `SvgMarkupSerialiser` resolves technical defaults, icon defaults, node values, and
    authorised caller overrides for each node.
 7. It emits geometry in paint order, places optional title content first, and wraps mirror-policy
    RTL geometry exactly once.

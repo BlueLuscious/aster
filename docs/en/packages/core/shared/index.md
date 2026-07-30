@@ -10,6 +10,7 @@ host authority, parser behaviour, registry, or mutable global state.
 
 | Class | Responsibility | Relations |
 | --- | --- | --- |
+| `CanonicalSlugNormaliser` | Validates stable ASCII lowercase `kebab-case` domain slugs. | Shared by icon, collection, and intrinsic-tag normalisers. |
 | `IconValueValidator` | Provides plain-object, exact-field, text, number, boolean, opacity, and array assertions. | Used only by internal Core normalisers. |
 | `IconDefinitionError` | Represents deterministic invalid-definition failures with code `ASTER-CORE-001` and a logical object path. | Raised by validators and normalisers; not exported from the package. |
 

@@ -13,7 +13,7 @@ A collection is a curated visual family identified by one stable canonical slug.
 - a human-readable name and purpose;
 - one curator or explicitly named curatorial group;
 - a design contract;
-- portable icon definitions;
+- direct membership references to portable icon definitions;
 - optional editable artwork masters and SVG import sources;
 - collection-level and icon-level metadata represented by the chosen authoring path;
 - lifecycle and licensing information;
@@ -26,6 +26,10 @@ deprecation decision.
 One collection cannot silently inherit the visual personality of another. Shared technical
 constraints may be project wide, but visual rules belong to the collection that provides evidence
 for them.
+
+A portable collection may be empty while drafted. One portable icon may be retained by zero, one,
+or multiple collections. Membership is never part of icon identity and does not alter the member
+definition.
 
 ## Collection lifecycle
 
@@ -145,7 +149,9 @@ required by Core nor automatically authoritative for a TypeScript-first collecti
 
 Each SVG source:
 
-- resolves to one collection, icon, and optional variant identity;
+- resolves to one namespace, icon, and optional variant identity;
+- enters a selected collection import request as explicit request context rather than intrinsic
+  icon membership;
 - uses a filename derived from the canonical icon identity;
 - contains the approved export geometry only;
 - is reviewed and corrected through the authority selected by its collection;
@@ -170,7 +176,8 @@ the same canonical icon slug as its SVG source. An SVG import request must rejec
 - icon metadata without a corresponding SVG where geometry is required;
 - ambiguous identity mappings;
 - duplicate canonical identities;
-- disagreement between the explicitly acquired SVG, metadata, and collection identities.
+- disagreement between the explicitly acquired SVG and icon metadata identities;
+- disagreement between collection metadata and the selected collection import context.
 
 Build does not derive these identities from filenames or repository paths. A future CLI may apply
 one source-layout convention during acquisition, but that convention remains outside the

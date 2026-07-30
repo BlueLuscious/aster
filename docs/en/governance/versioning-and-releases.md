@@ -14,9 +14,9 @@ move in lockstep merely because they share a repository.
 One coordinated release may publish several compatible package versions. Unchanged packages are
 not republished.
 
-Icons do not have independent package versions. Their release history is derived from the
-collection definition package that exports them, with stable metadata such as `introducedIn`,
-deprecation, and replacement identity where required.
+Icons do not have independent package versions. Their release history is derived from the package
+that exports them rather than from membership in any collection, with stable metadata such as
+`introducedIn`, deprecation, and replacement identity where required.
 
 ## Semantic Versioning
 
@@ -40,7 +40,7 @@ The following changes are breaking:
 
 - removing, renaming, or reinterpreting a public symbol, field, option, diagnostic code, or export
   subpath;
-- changing canonical collection, icon, or variant identity;
+- changing canonical collection identity or an icon's namespace, name, or variant identity;
 - removing a released icon or variant;
 - adding a portable node kind to a public discriminated union without an accepted capability
   mechanism;
@@ -58,8 +58,8 @@ least minor and may be breaking.
 
 ## Collection releases
 
-One collection definition package version describes the complete released state of that
-collection.
+A package version describes the complete released state of every collection definition and icon
+export it owns. Collection membership remains explicit data and does not own member identity.
 
 | Collection change | Minimum classification |
 | --- | --- |

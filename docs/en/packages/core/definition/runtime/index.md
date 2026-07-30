@@ -14,12 +14,12 @@ private methods rather than loose module functions. The frozen public
 
 1. `IconDefinitionFactory` accepts an unknown value and rejects fields outside the closed
    definition shape.
-2. `IconIdentityNormaliser` trims and validates canonical collection, icon, and variant slugs.
+2. `IconIdentityNormaliser` trims and validates optional namespace, icon, and variant slugs.
 3. `IconViewBoxNormaliser` validates finite coordinates and positive dimensions.
 4. `IconNodeNormaliser` validates the discriminator, geometry, presentation, cardinality, and
    original paint order of every node.
-5. `IconMetadataNormaliser` validates resolved metadata, presentation policy, licensing
-   relationships, deprecation, and self replacement.
+5. `IconMetadataNormaliser` validates resolved metadata, intrinsic tags, presentation policy,
+   licensing relationships, deprecation, and self replacement.
 6. Every retained object and sequence is newly constructed and frozen before the definition is
    returned.
 
