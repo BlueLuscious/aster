@@ -1,4 +1,5 @@
 import {
+  Collection,
   Icon,
   iconDirections,
   iconNodeKinds,
@@ -8,11 +9,14 @@ import {
   iconRtlPolicies,
   iconTechnicalPresentation,
 } from "../../src/index.js";
-import type { IconDefinition } from "../../src/index.js";
+import type {
+  CollectionDefinition,
+  IconDefinition,
+} from "../../src/index.js";
 
 const camera = Icon.define({
   identity: {
-    collection: "minimal",
+    namespace: "minimal",
     name: "camera",
   },
   viewBox: {
@@ -44,6 +48,17 @@ const camera = Icon.define({
 });
 
 const acceptedDefinition: IconDefinition = camera;
+const collection = Collection.define({
+  identity: {
+    name: "minimal",
+  },
+  icons: [camera],
+  metadata: {
+    displayName: "Minimal",
+    tags: ["interface-icons"],
+  },
+});
+const acceptedCollection: CollectionDefinition = collection;
 const pathKind: typeof iconNodeKinds.path = "path";
 const direction: (typeof iconDirections)[number] = "rtl";
 const rtlPolicy: (typeof iconRtlPolicies)[number] = "mirror";
@@ -59,6 +74,7 @@ Icon.define({
 });
 
 void acceptedDefinition;
+void acceptedCollection;
 void pathKind;
 void direction;
 void rtlPolicy;

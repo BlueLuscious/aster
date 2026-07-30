@@ -44,7 +44,7 @@ const catalogueMetadata: IconDefinition["metadata"] = {
 
 // @ts-expect-error Exact optional fields do not accept explicit undefined.
 const invalidOptionalIdentity: IconDefinition["identity"] = {
-  collection: "minimal",
+  namespace: "minimal",
   name: "camera",
   variant: undefined,
 };

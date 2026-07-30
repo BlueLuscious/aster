@@ -1,5 +1,5 @@
 import type {
-  CollectionPresentationPolicy,
+  IconPresentationPolicy,
   IconDefinition,
   IconNodeType,
   IconPresentation,
@@ -14,7 +14,7 @@ const presentationDefaults: IconPresentation = {
   strokeLineJoin: "round",
 };
 
-const presentationPolicy: CollectionPresentationPolicy = {
+const presentationPolicy: IconPresentationPolicy = {
   defaults: presentationDefaults,
   overrides: ["stroke", "strokeWidth"],
   defaultSize: 24,
@@ -78,7 +78,7 @@ const nodes: readonly IconNodeType[] = [
 
 const definition: IconDefinition = {
   identity: {
-    collection: "minimal",
+    namespace: "minimal",
     name: "shape-sampler",
     variant: "outline",
   },
@@ -113,7 +113,7 @@ const options: IconRenderOptions = {
 const replacement: IconDefinition = {
   ...definition,
   identity: {
-    collection: "minimal",
+    namespace: "minimal",
     name: "shape-sampler-new",
   },
   metadata: {

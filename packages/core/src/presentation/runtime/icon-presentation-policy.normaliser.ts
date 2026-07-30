@@ -1,4 +1,4 @@
-import type { CollectionPresentationPolicy } from "../contracts/index.js";
+import type { IconPresentationPolicy } from "../contracts/index.js";
 import type { IconPresentationOverrideType } from "../types/index.js";
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
@@ -6,9 +6,9 @@ import { iconPresentationOverrideOrder } from "../constants/icon-presentation-ov
 import { IconPresentationNormaliser } from "./icon-presentation.normaliser.js";
 
 /**
- * @description Validates and canonicalises resolved collection presentation policy.
+ * @description Validates and canonicalises resolved icon presentation policy.
  */
-export class CollectionPresentationPolicyNormaliser {
+export class IconPresentationPolicyNormaliser {
   /**
    * @description Primitive authored-value validator.
    */
@@ -24,7 +24,7 @@ export class CollectionPresentationPolicyNormaliser {
    * @param value - Unknown authored policy.
    * @returns Deeply frozen canonical policy.
    */
-  normalise(value: unknown): CollectionPresentationPolicy {
+  normalise(value: unknown): IconPresentationPolicy {
     const path = "definition.metadata.presentation";
     const record = this.#validator.record(value, path);
     this.#validator.exactFields(

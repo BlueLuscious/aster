@@ -16,12 +16,12 @@ export interface IconRenderOptions {
   readonly colour?: IconPaintType;
 
   /**
-   * @description Optional fill override subject to collection presentation policy.
+   * @description Optional fill override subject to the icon presentation policy.
    */
   readonly fill?: IconPaintType;
 
   /**
-   * @description Optional stroke override subject to collection presentation policy.
+   * @description Optional stroke override subject to the icon presentation policy.
    */
   readonly stroke?: IconPaintType;
 

@@ -1,5 +1,5 @@
 import type { IconIdentity } from "../../definition/contracts/icon-identity.contract.js";
-import type { CollectionPresentationPolicy } from "../../presentation/contracts/index.js";
+import type { IconPresentationPolicy } from "../../presentation/contracts/index.js";
 import type { IconRtlPolicyType } from "../types/index.js";
 
 /**
@@ -13,14 +13,19 @@ export interface IconMetadata {
   readonly displayName: string;
 
   /**
+   * @description Optional canonical intrinsic terms for search and discovery.
+   */
+  readonly tags?: readonly string[];
+
+  /**
    * @description Policy controlling geometry in right-to-left rendering.
    */
   readonly rtl: IconRtlPolicyType;
 
   /**
-   * @description Resolved collection presentation defaults and override authority.
+   * @description Resolved icon presentation defaults and override authority.
    */
-  readonly presentation: CollectionPresentationPolicy;
+  readonly presentation: IconPresentationPolicy;
 
   /**
    * @description Effective artwork licence identifier when distribution requires one.
