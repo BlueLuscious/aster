@@ -16,5 +16,6 @@ Canonical documentation is written in British English and organised by responsib
 - [Collections](collections/index.md) document accepted curated collection identities.
 
 Package documentation is created only when its corresponding repository structure exists.
-Collection-specific documentation is created only when canonical authoring authority and
-ownership are accepted.
+Collection-specific identity and design documentation is created when its curatorial ownership
+is accepted. Canonical source and workflow documentation is added only after the collection
+selects its authoring authority.

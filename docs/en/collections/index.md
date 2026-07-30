@@ -3,10 +3,16 @@
 Status: **Accepted**
 
 This directory documents Aster's real curated collection set. Collection-specific documentation
-is added only when its source ownership and distribution boundary are accepted.
+is keyed by accepted curatorial identity and does not require one repository-level source root.
 
-No release-quality collection exists yet. SVG import behaviour is exercised only through Build
-test fixtures. Collection identity, authoring authority, and lifecycle are defined by
+The current collection set is:
+
+- [Aster](aster/index.md) is the Experimental pilot collection used to validate its provisional
+  geometric outline language.
+
+No release-quality collection exists yet. A documented Experimental identity does not imply that
+canonical icon sources, distribution, or Active lifecycle requirements have been accepted.
+Collection identity, authoring authority, and lifecycle are defined by
 [Collection and Source Boundary](../architecture/collection-and-source-boundary.md).
 
 Each collection document covers:
