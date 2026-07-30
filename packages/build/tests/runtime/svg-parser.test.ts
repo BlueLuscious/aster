@@ -20,7 +20,7 @@ function source(content: string) {
     sourceId: "collections/minimal/svg/camera.svg",
     content,
     identity: {
-      collection: "minimal",
+      namespace: "minimal",
       name: "camera",
     },
   });

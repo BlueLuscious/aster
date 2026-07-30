@@ -35,7 +35,7 @@ export class GeneratedIconNameFactory {
         : `${generatorModulePaths.iconRoot}/${identity.name}/${identity.variant}.icon.ts`;
 
     return Object.freeze({
-      identityKey: `${identity.collection}/${manifestKey}`,
+      identityKey: `${identity.namespace ?? ""}/${manifestKey}`,
       symbol,
       modulePath,
       publicSubpath: `./${manifestKey}`,

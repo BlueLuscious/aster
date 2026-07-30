@@ -78,7 +78,6 @@ export class GenerationRequestNormaliser {
       .map((entry, index) =>
         this.#normaliseEntry(
           entry,
-          collection,
           `${path}.entries[${index}]`,
         ),
       );
@@ -184,13 +183,11 @@ export class GenerationRequestNormaliser {
   /**
    * @description Validates one generation entry and re-establishes Core authority.
    * @param value - Unknown generation entry.
-   * @param collection - Canonical collection owning the request.
    * @param path - Logical entry path.
    * @returns Frozen accepted entry.
    */
   #normaliseEntry(
     value: unknown,
-    collection: string,
     path: string,
   ): IGenerationEntry {
     const record = this.#validator.record(value, path);
@@ -220,13 +217,6 @@ export class GenerationRequestNormaliser {
     }
 
     const definition = Icon.define(record.definition as IconDefinition);
-
-    if (definition.identity.collection !== collection) {
-      throw new BuildContractError(
-        `${path}.definition.identity.collection`,
-        "expected the request collection",
-      );
-    }
 
     return Object.freeze({
       sourceIds: Object.freeze(sourceIds) as readonly [

@@ -1,6 +1,6 @@
 {
   "identity": {
-    "collection": "minimal",
+    "namespace": "minimal",
     "name": "camera"
   },
   "viewBox": {

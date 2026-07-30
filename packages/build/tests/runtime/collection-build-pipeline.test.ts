@@ -59,7 +59,7 @@ function collectionMetadata(
 }
 
 function entry(name: string, svgContent: string): CollectionBuildEntry {
-  const identity = { collection: "fixture", name };
+  const identity = { namespace: "fixture", name };
   const svg = sourceFactory.create({
     kind: "svg",
     sourceId: `fixtures/svg/${name}.svg`,

@@ -19,7 +19,7 @@ function definition(
 ): IconDefinition {
   return Icon.define({
     identity: {
-      collection: "experimental",
+      namespace: "experimental",
       name,
       ...(variant === undefined ? {} : { variant }),
     },

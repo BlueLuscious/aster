@@ -1,4 +1,4 @@
-import type { CollectionPresentationPolicy } from "@aster/core";
+import type { IconPresentationPolicy } from "@aster/core";
 
 /**
  * @description Structured collection-authored metadata accepted from a replaceable metadata decoder.
@@ -17,7 +17,7 @@ export interface ICollectionMetadataValue {
   /**
    * @description Resolved portable collection presentation policy.
    */
-  readonly presentation: CollectionPresentationPolicy;
+  readonly presentation: IconPresentationPolicy;
 
   /**
    * @description Default effective artwork licence identifier.

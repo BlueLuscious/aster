@@ -38,7 +38,7 @@ async function generationPlan(): Promise<IGenerationPlan> {
   const definitions = ["frame", "orbit"].map((name) =>
     Icon.define({
       identity: {
-        collection: "fixture",
+        namespace: "fixture",
         name,
       },
       viewBox: {

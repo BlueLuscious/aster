@@ -128,7 +128,7 @@ export class SvgValidator implements ISvgValidator {
    */
   #compareIdentity(left: IconIdentity, right: IconIdentity): number {
     return (
-      this.#compareText(left.collection, right.collection) ||
+      this.#compareText(left.namespace ?? "", right.namespace ?? "") ||
       this.#compareText(left.name, right.name) ||
       this.#compareText(left.variant ?? "", right.variant ?? "")
     );

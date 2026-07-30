@@ -19,7 +19,7 @@ import type {
 } from "../../src/index.js";
 
 const identity: IconIdentity = {
-  collection: "minimal",
+  namespace: "minimal",
   name: "camera",
 };
 

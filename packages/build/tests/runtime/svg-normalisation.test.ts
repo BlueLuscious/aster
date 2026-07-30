@@ -31,7 +31,7 @@ function evidence(path: string): ISvgValidationEvidence {
     sourceId: "collections/minimal/svg/camera.svg",
     content: fixture(path),
     identity: {
-      collection: "minimal",
+      namespace: "minimal",
       name: "camera",
     },
   });
@@ -55,7 +55,7 @@ function evidence(path: string): ISvgValidationEvidence {
     sourceId: "collections/minimal/metadata/camera.json",
     content: "{}",
     identity: {
-      collection: "minimal",
+      namespace: "minimal",
       name: "camera",
     },
   });
@@ -92,7 +92,7 @@ function metadata(
   return {
     sourceId: "collections/minimal/metadata/camera.json",
     identity: {
-      collection: "minimal",
+      namespace: "minimal",
       name: "camera",
     },
     displayName: "Camera",

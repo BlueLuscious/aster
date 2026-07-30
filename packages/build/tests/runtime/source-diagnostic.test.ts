@@ -22,7 +22,7 @@ function createSvgSource(content = "<svg />\r\n") {
     sourceId: "collections/minimal/svg/camera.svg",
     content,
     identity: {
-      collection: "minimal",
+      namespace: "minimal",
       name: "camera",
     },
   };
@@ -79,7 +79,7 @@ test("isolates source descriptors without changing canonical content", () => {
   assert.equal(accepted.kind, "svg");
   assert.equal(accepted.content, "<svg>\r\n  <path />\n</svg>");
   assert.deepEqual(accepted.identity, {
-    collection: "minimal",
+    namespace: "minimal",
     name: "camera",
   });
   assertDeeplyFrozen(accepted);
