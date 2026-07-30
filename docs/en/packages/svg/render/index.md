@@ -3,6 +3,7 @@
 Status: **Experimental**
 
 The render feature defines the output produced by successful framework-independent SVG rendering.
+Its [runtime composition](runtime/index.md) validates the complete input before returning markup.
 
 ## Type
 
@@ -69,10 +70,11 @@ Presentation follows geometry attributes in this order:
 9. `fill-opacity`;
 10. `stroke-opacity`.
 
-The renderer resolves technical defaults, collection defaults, node presentation, and authorised
-caller overrides before serialising each node. Caller overrides therefore remain authoritative
-even when a node contains an explicit value. The root does not rely on inherited fill or stroke
-to approximate this precedence.
+The renderer resolves the model's
+[technical presentation defaults](../../../architecture/portable-icon-model.md#technical-presentation-defaults),
+collection defaults, node presentation, and authorised caller overrides before serialising each
+node. Caller overrides therefore remain authoritative even when a node contains an explicit
+value. The root does not rely on inherited fill or stroke to approximate this precedence.
 
 ## Numeric and text form
 

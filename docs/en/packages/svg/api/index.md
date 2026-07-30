@@ -2,7 +2,7 @@
 
 Status: **Experimental**
 
-The API feature declares the immutable public target authority that will be exposed as `Svg`.
+The API feature exposes the immutable public target authority `Svg`.
 
 ## Contract
 
@@ -14,7 +14,7 @@ The API feature declares the immutable public target authority that will be expo
 events, DOM nodes, framework controllers, lifecycle values, and variant selection remain outside
 the accepted operation.
 
-The runtime value will use the object API:
+The runtime value uses the object API:
 
 ```ts
 const markup = Svg.render(Camera, {
@@ -27,9 +27,8 @@ const markup = Svg.render(Camera, {
 
 ## Failure boundary
 
-Invalid definitions, options, policy overrides, or target representations raise
-`SvgRenderError`, a public `TypeError` subclass implemented with the runtime. Its stable observable
-members are:
+Invalid definitions, options, policy overrides, or target representations raise the public
+[`SvgRenderError`](../error/index.md) programming error. Its stable observable members are:
 
 | Member | Value or meaning |
 | --- | --- |

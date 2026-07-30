@@ -8,36 +8,40 @@ Lilium, or Lotus authority.
 
 ## Current boundary
 
-The package currently declares its public API and markup result contracts. Runtime rendering is
-not implemented yet.
+The package implements deterministic definition-to-markup rendering through its public `Svg`
+object. Each call revalidates and isolates the supplied definition through Core, accepts the
+closed render options, resolves effective presentation, and returns complete markup atomically.
 
 ## Features
 
 | Feature | Responsibility |
 | --- | --- |
-| [API](api/index.md) | Declares the immutable `Svg` rendering authority. |
-| [Render](render/index.md) | Defines the atomic standalone SVG markup result. |
+| [API](api/index.md) | Exposes the immutable `Svg` rendering authority. |
+| [Error](error/index.md) | Defines deterministic programming failures at the target boundary. |
+| [Render](render/index.md) | Defines and implements the atomic standalone SVG markup result. |
 
 ## Dependency boundary
 
-The package depends only on the public root of `@aster/core`. It consumes `IconDefinition` and
-`IconRenderOptions`; it cannot import Core implementation paths, Build, a collection catalogue, a
-framework, or a platform host.
+The package depends only on the public root of `@aster/core`. It consumes `IconDefinition`,
+`IconRenderOptions`, and the frozen portable runtime authorities required to interpret them. It
+cannot import Core implementation paths, Build, a collection catalogue, a framework, or a
+platform host.
 
 The target remains native ES2022 ESM. Production compilation excludes DOM, browser, Node, and
 framework ambient types.
 
 ## Package surface
 
-The approved package export is the root `"."`. The contract foundation exposes:
+The approved package export is the root `"."`. It exposes:
 
 | Symbol | Kind | Responsibility |
 | --- | --- | --- |
+| `Svg` | Public immutable object | Renders one explicitly supplied definition and options. |
 | `SvgApi` | Public interface | Declares explicit definition-to-markup rendering. |
 | `SvgMarkupType` | Public type | Represents complete standalone SVG markup as a plain string. |
+| `SvgRenderError` | Public class | Reports deterministic definition, option, and representation failures. |
 
-The runtime `Svg` object and its option-error boundary will join this root during runtime
-implementation. No implementation subpath is public.
+No implementation subpath is public.
 
 The stable semantics are defined by the
 [Rendering Contract](../../architecture/rendering-contract.md) and
