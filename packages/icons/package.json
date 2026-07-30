@@ -1,0 +1,108 @@
+{
+  "name": "@aster/icons",
+  "version": "0.0.0",
+  "description": "Canonical portable definitions for the Experimental Aster icon collection.",
+  "type": "module",
+  "author": "BlueLuscious",
+  "license": "ISC",
+  "homepage": "https://github.com/BlueLuscious/aster/tree/develop/packages/icons#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlueLuscious/aster.git",
+    "directory": "packages/icons"
+  },
+  "bugs": {
+    "url": "https://github.com/BlueLuscious/aster/issues"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./arrow-left": {
+      "types": "./dist/icons/arrow-left.icon.d.ts",
+      "import": "./dist/icons/arrow-left.icon.js"
+    },
+    "./bell": {
+      "types": "./dist/icons/bell.icon.d.ts",
+      "import": "./dist/icons/bell.icon.js"
+    },
+    "./camera": {
+      "types": "./dist/icons/camera.icon.d.ts",
+      "import": "./dist/icons/camera.icon.js"
+    },
+    "./check": {
+      "types": "./dist/icons/check.icon.d.ts",
+      "import": "./dist/icons/check.icon.js"
+    },
+    "./close": {
+      "types": "./dist/icons/close.icon.d.ts",
+      "import": "./dist/icons/close.icon.js"
+    },
+    "./cloud": {
+      "types": "./dist/icons/cloud.icon.d.ts",
+      "import": "./dist/icons/cloud.icon.js"
+    },
+    "./folder": {
+      "types": "./dist/icons/folder.icon.d.ts",
+      "import": "./dist/icons/folder.icon.js"
+    },
+    "./heart": {
+      "types": "./dist/icons/heart.icon.d.ts",
+      "import": "./dist/icons/heart.icon.js"
+    },
+    "./home": {
+      "types": "./dist/icons/home.icon.d.ts",
+      "import": "./dist/icons/home.icon.js"
+    },
+    "./leaf": {
+      "types": "./dist/icons/leaf.icon.d.ts",
+      "import": "./dist/icons/leaf.icon.js"
+    },
+    "./lock": {
+      "types": "./dist/icons/lock.icon.d.ts",
+      "import": "./dist/icons/lock.icon.js"
+    },
+    "./plus": {
+      "types": "./dist/icons/plus.icon.d.ts",
+      "import": "./dist/icons/plus.icon.js"
+    },
+    "./search": {
+      "types": "./dist/icons/search.icon.d.ts",
+      "import": "./dist/icons/search.icon.js"
+    },
+    "./settings": {
+      "types": "./dist/icons/settings.icon.d.ts",
+      "import": "./dist/icons/settings.icon.js"
+    },
+    "./star": {
+      "types": "./dist/icons/star.icon.d.ts",
+      "import": "./dist/icons/star.icon.js"
+    },
+    "./user": {
+      "types": "./dist/icons/user.icon.d.ts",
+      "import": "./dist/icons/user.icon.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm run clean && tsc -p tsconfig.json",
+    "check:types": "tsc -p tsconfig.json --noEmit",
+    "clean": "node ../../tooling/workspace/clean-package-output.mjs dist",
+    "test": "pnpm run test:types && pnpm run test:runtime && pnpm run test:abi",
+    "test:abi": "pnpm run build && node --test --test-isolation=none tests/abi/*.test.mjs",
+    "test:runtime": "tsx --test --test-isolation=none tests/runtime/*.test.ts",
+    "test:types": "tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@aster/core": "workspace:*"
+  }
+}
