@@ -88,3 +88,4 @@ supersession links, and unindexed records.
 | [0002: Private Build-time Domain Package](0002-private-build-time-domain-package.md) | Accepted | Technical maintainers | Build-time product domain |
 | [0003: Private XML Parser Boundary](0003-private-xml-parser-boundary.md) | Accepted | Technical maintainers | SVG ingestion safety |
 | [0004: JSON Metadata for SVG Imports](0004-canonical-json-metadata-sources.md) | Accepted | Technical maintainers | SVG-import metadata serialisation |
+| [0005: Public SVG Renderer Boundary](0005-public-svg-renderer-boundary.md) | Accepted | Technical maintainers | Public SVG target and package API |

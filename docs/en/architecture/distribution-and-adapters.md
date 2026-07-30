@@ -55,7 +55,8 @@ A generic target package exposes its generic API from its root, for example:
 @aster/lilium
 ```
 
-Generated named wrappers use a separate collection-target integration boundary, provisionally:
+Generated named wrappers are deferred. If consumer evidence later justifies them, they use a
+separate collection-target integration boundary, provisionally:
 
 ```text
 @aster/minimal-svg
@@ -109,7 +110,7 @@ CameraIcon.render(options);
 is semantically equivalent to:
 
 ```ts
-Icon.render(Camera, options);
+Svg.render(Camera, options);
 ```
 
 Framework integrations use their native component invocation while preserving the same delegation
