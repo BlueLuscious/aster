@@ -1,15 +1,15 @@
 import { Icon } from "@aster/core";
-import { asterCollection } from "../collections/constants/aster.collection.js";
+import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
  * @description Canonical portable definition for the Aster heart icon.
  */
 export const Heart = Icon.define({
   identity: {
-    collection: asterCollection.slug,
+    namespace: asterIconAuthoring.namespace,
     name: "heart",
   },
-  viewBox: asterCollection.viewBox,
+  viewBox: asterIconAuthoring.viewBox,
   nodes: [
     {
       kind: "path",
@@ -18,10 +18,11 @@ export const Heart = Icon.define({
   ],
   metadata: {
     displayName: "Heart",
+    tags: ["favourite", "heart", "like"],
     rtl: "preserve",
-    presentation: asterCollection.presentation,
-    licence: asterCollection.licence,
-    attribution: asterCollection.attribution,
+    presentation: asterIconAuthoring.presentation,
+    licence: asterIconAuthoring.licence,
+    attribution: asterIconAuthoring.attribution,
     deprecated: false,
   },
 });

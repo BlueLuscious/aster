@@ -1,15 +1,15 @@
 import { Icon } from "@aster/core";
-import { asterCollection } from "../collections/constants/aster.collection.js";
+import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
  * @description Canonical portable definition for the Aster home icon.
  */
 export const Home = Icon.define({
   identity: {
-    collection: asterCollection.slug,
+    namespace: asterIconAuthoring.namespace,
     name: "home",
   },
-  viewBox: asterCollection.viewBox,
+  viewBox: asterIconAuthoring.viewBox,
   nodes: [
     {
       kind: "polyline",
@@ -26,10 +26,11 @@ export const Home = Icon.define({
   ],
   metadata: {
     displayName: "Home",
+    tags: ["home", "house", "navigation"],
     rtl: "preserve",
-    presentation: asterCollection.presentation,
-    licence: asterCollection.licence,
-    attribution: asterCollection.attribution,
+    presentation: asterIconAuthoring.presentation,
+    licence: asterIconAuthoring.licence,
+    attribution: asterIconAuthoring.attribution,
     deprecated: false,
   },
 });

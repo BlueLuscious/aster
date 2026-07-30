@@ -45,7 +45,7 @@ test("exposes the exact documented root and per-icon values", async () => {
 
   assert.deepEqual(
     Object.keys(root).sort(),
-    Object.values(iconSubpaths).sort(),
+    ["AsterCollection", ...Object.values(iconSubpaths)].sort(),
   );
 
   for (const [subpath, symbol] of Object.entries(iconSubpaths)) {
@@ -55,15 +55,24 @@ test("exposes the exact documented root and per-icon values", async () => {
     assert.equal(direct[symbol], root[symbol]);
     assert.equal(direct[symbol].identity.name, subpath);
   }
+
+  const { AsterCollection } = await import(
+    "@aster/icons/collections/aster"
+  );
+
+  assert.equal(AsterCollection, root.AsterCollection);
+  assert.deepEqual(AsterCollection.icons, Object.values(iconSubpaths).map(
+    (symbol) => root[symbol],
+  ));
 });
 
-test("rejects implementation and undeclared collection subpaths", async () => {
+test("rejects implementation and undeclared internal subpaths", async () => {
   await assert.rejects(
     import("@aster/icons/icons/arrow-left.icon.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
   await assert.rejects(
-    import("@aster/icons/manifest"),
+    import("@aster/icons/collections/aster.collection.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
 });
@@ -74,12 +83,17 @@ test("publishes only root and isolated per-icon exports", async () => {
   );
   const expectedExportKeys = [
     ".",
+    "./collections/aster",
     ...Object.keys(iconSubpaths).map((subpath) => `./${subpath}`),
   ];
 
   assert.deepEqual(Object.keys(manifest.exports), expectedExportKeys);
   assert.equal(manifest.exports["."].import, "./dist/index.js");
   assert.equal(manifest.exports["."].types, "./dist/index.d.ts");
+  assert.deepEqual(manifest.exports["./collections/aster"], {
+    types: "./dist/collections/aster.collection.d.ts",
+    import: "./dist/collections/aster.collection.js",
+  });
   assert.deepEqual(manifest.dependencies, {
     "@aster/core": "workspace:*",
   });
@@ -102,7 +116,7 @@ test("keeps every per-icon module isolated from sibling definitions", async () =
     const specifiers = extractModuleSpecifiers(source);
 
     assert.deepEqual(specifiers.sort(), [
-      "../collections/constants/aster.collection.js",
+      "../shared/constants/aster-icon-authoring.constant.js",
       "@aster/core",
     ]);
     assert.doesNotMatch(source, /(?:icons\/index|manifest|catalogue|registry)/gu);

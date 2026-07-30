@@ -1,15 +1,15 @@
 import { Icon } from "@aster/core";
-import { asterCollection } from "../collections/constants/aster.collection.js";
+import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
  * @description Canonical portable definition for the Aster arrow-left icon.
  */
 export const ArrowLeft = Icon.define({
   identity: {
-    collection: asterCollection.slug,
+    namespace: asterIconAuthoring.namespace,
     name: "arrow-left",
   },
-  viewBox: asterCollection.viewBox,
+  viewBox: asterIconAuthoring.viewBox,
   nodes: [
     {
       kind: "line",
@@ -29,10 +29,11 @@ export const ArrowLeft = Icon.define({
   ],
   metadata: {
     displayName: "Arrow Left",
+    tags: ["arrow", "back", "left", "navigation", "previous"],
     rtl: "mirror",
-    presentation: asterCollection.presentation,
-    licence: asterCollection.licence,
-    attribution: asterCollection.attribution,
+    presentation: asterIconAuthoring.presentation,
+    licence: asterIconAuthoring.licence,
+    attribution: asterIconAuthoring.attribution,
     deprecated: false,
   },
 });

@@ -1,5 +1,9 @@
-import type { IconDefinition } from "@aster/core";
+import type {
+  CollectionDefinition,
+  IconDefinition,
+} from "@aster/core";
 import {
+  AsterCollection,
   ArrowLeft,
   Bell,
   Camera,
@@ -38,6 +42,7 @@ const definitions = [
 ] satisfies readonly IconDefinition[];
 
 const directDefinition: IconDefinition = ArrowLeft;
+const directCollection: CollectionDefinition = AsterCollection;
 
 // @ts-expect-error Canonical definitions are immutable.
 directDefinition.identity.name = "changed";
@@ -50,5 +55,6 @@ const markup = Search.svg;
 
 void definitions;
 void directDefinition;
+void directCollection;
 void component;
 void markup;

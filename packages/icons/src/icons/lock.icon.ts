@@ -1,15 +1,15 @@
 import { Icon } from "@aster/core";
-import { asterCollection } from "../collections/constants/aster.collection.js";
+import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
  * @description Canonical portable definition for the Aster lock icon.
  */
 export const Lock = Icon.define({
   identity: {
-    collection: asterCollection.slug,
+    namespace: asterIconAuthoring.namespace,
     name: "lock",
   },
-  viewBox: asterCollection.viewBox,
+  viewBox: asterIconAuthoring.viewBox,
   nodes: [
     {
       kind: "rect",
@@ -27,10 +27,11 @@ export const Lock = Icon.define({
   ],
   metadata: {
     displayName: "Lock",
+    tags: ["lock", "privacy", "security"],
     rtl: "preserve",
-    presentation: asterCollection.presentation,
-    licence: asterCollection.licence,
-    attribution: asterCollection.attribution,
+    presentation: asterIconAuthoring.presentation,
+    licence: asterIconAuthoring.licence,
+    attribution: asterIconAuthoring.attribution,
     deprecated: false,
   },
 });

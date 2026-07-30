@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import type { IconDefinition } from "@aster/core";
-import * as icons from "../../src/index.js";
+import { AsterCollection } from "../../src/collections/index.js";
+import * as icons from "../../src/icons/index.js";
 
 const expectedSymbols = [
   "ArrowLeft",
@@ -79,12 +80,12 @@ test("exports the exact representative pilot set", () => {
   assert.equal(Object.keys(icons).length, 16);
 });
 
-test("keeps every definition inside the shared collection authority", () => {
+test("keeps every definition aligned with shared authoring defaults", () => {
   const definitions = Object.values(icons);
   const identities = new Set<string>();
 
   for (const definition of definitions) {
-    assert.equal(definition.identity.collection, "aster");
+    assert.equal(definition.identity.namespace, "aster");
     assert.equal(identities.has(definition.identity.name), false);
     identities.add(definition.identity.name);
     assert.deepEqual(definition.viewBox, {
@@ -135,4 +136,15 @@ test("keeps every definition inside the shared collection authority", () => {
       assert.equal(definition.metadata.rtl, "preserve");
     }
   }
+});
+
+test("retains the complete pilot through independent collection membership", () => {
+  assert.equal(AsterCollection.identity.name, "aster");
+  assert.deepEqual(AsterCollection.icons, Object.values(icons));
+
+  for (const definition of Object.values(icons)) {
+    assert.ok(AsterCollection.icons.includes(definition));
+  }
+
+  assertDeeplyFrozen(AsterCollection);
 });

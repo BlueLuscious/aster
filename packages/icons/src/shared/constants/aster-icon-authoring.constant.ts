@@ -1,13 +1,13 @@
 import type {
-  CollectionPresentationPolicy,
+  IconPresentationPolicy,
   IconViewBox,
 } from "@aster/core";
 
 /**
- * @description Immutable authoring authority shared by every definition in the Aster collection.
+ * @description Immutable authoring defaults shared by canonical Aster icon definitions.
  */
-export const asterCollection = Object.freeze({
-  slug: "aster",
+export const asterIconAuthoring = Object.freeze({
+  namespace: "aster",
   licence: "ISC",
   attribution: "BlueLuscious",
   viewBox: Object.freeze({
@@ -27,5 +27,5 @@ export const asterCollection = Object.freeze({
     overrides: Object.freeze([]),
     defaultSize: 24,
     minimumSize: 16,
-  }) satisfies CollectionPresentationPolicy,
+  }) satisfies IconPresentationPolicy,
 });

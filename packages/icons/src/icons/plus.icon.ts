@@ -1,15 +1,15 @@
 import { Icon } from "@aster/core";
-import { asterCollection } from "../collections/constants/aster.collection.js";
+import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
  * @description Canonical portable definition for the Aster plus icon.
  */
 export const Plus = Icon.define({
   identity: {
-    collection: asterCollection.slug,
+    namespace: asterIconAuthoring.namespace,
     name: "plus",
   },
-  viewBox: asterCollection.viewBox,
+  viewBox: asterIconAuthoring.viewBox,
   nodes: [
     {
       kind: "line",
@@ -28,10 +28,11 @@ export const Plus = Icon.define({
   ],
   metadata: {
     displayName: "Plus",
+    tags: ["add", "create", "plus"],
     rtl: "preserve",
-    presentation: asterCollection.presentation,
-    licence: asterCollection.licence,
-    attribution: asterCollection.attribution,
+    presentation: asterIconAuthoring.presentation,
+    licence: asterIconAuthoring.licence,
+    attribution: asterIconAuthoring.attribution,
     deprecated: false,
   },
 });

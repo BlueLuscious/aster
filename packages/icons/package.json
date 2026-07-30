@@ -22,6 +22,10 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
+    "./collections/aster": {
+      "types": "./dist/collections/aster.collection.d.ts",
+      "import": "./dist/collections/aster.collection.js"
+    },
     "./arrow-left": {
       "types": "./dist/icons/arrow-left.icon.d.ts",
       "import": "./dist/icons/arrow-left.icon.js"
