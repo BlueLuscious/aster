@@ -35,9 +35,13 @@ validation.
 | `iconPresentationEnumerations` | Defines accepted fill-rule, stroke-line-cap, and stroke-line-join values. |
 | `iconPresentationFields` | Defines the single closed presentation-field order shared by node and presentation validation. |
 | `iconPresentationOverrideOrder` | Defines accepted caller override capabilities in canonical semantic order. |
+| `iconTechnicalPresentation` | Defines the complete lowest-precedence presentation of the portable model. |
 
 Public presentation unions derive from these immutable authorities wherever both represent the
-same closed set. The authorities remain internal and do not add public runtime exports.
+same closed set. Core exports `iconPaintSchema`, `iconPresentationEnumerations`,
+`iconPresentationOverrideOrder`, and `iconTechnicalPresentation` as frozen root values because
+target consumers require them. `iconPresentationFields` remains internal because it owns Core
+validation order rather than portable consumer behaviour.
 
 ## Runtime
 

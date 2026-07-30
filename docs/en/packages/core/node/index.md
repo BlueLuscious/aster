@@ -35,8 +35,9 @@ geometry narrowing uses the literal `kind` discriminator.
 | `iconNodeKinds` | Defines the exact discriminator for each supported portable geometry node. |
 
 Every node contract derives its `kind` property from `iconNodeKinds`, and `IconNodeNormaliser`
-uses the same authority for runtime dispatch and canonical output. The authority remains internal
-and does not add a public runtime export.
+uses the same authority for runtime dispatch and canonical output. The frozen authority is
+exported from the package root so renderers and adapters can dispatch without replicating Core
+discriminators.
 
 Readonly arrays prevent mutation through the type surface. Runtime construction must clone and
 deeply freeze node and point sequences before the package claims immutable accepted values.

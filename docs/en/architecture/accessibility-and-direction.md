@@ -98,7 +98,8 @@ Every target adapter must prove:
 - semantic output has exactly one effective accessible name;
 - invalid intent combinations fail consistently;
 - Preserve, Mirror, and Manual policies match portable semantics;
-- generic and named APIs produce equivalent accessibility and direction results;
+- generic renderers and any future target integrations produce equivalent accessibility and
+  direction results;
 - rendering never mutates the definition.
 
 A target that cannot represent an accepted semantic must reject the operation explicitly rather

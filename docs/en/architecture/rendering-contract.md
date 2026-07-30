@@ -22,27 +22,22 @@ traverse a global registry, or reinterpret collection policy.
 
 ## Public object API
 
-The framework-independent SVG package exposes one immutable `Icon` API object:
+The framework-independent SVG package exposes one immutable `Svg` API object:
 
 ```ts
-const markup = Icon.render(Camera, options);
+const markup = Svg.render(Camera, options);
 ```
 
-`Icon.render()` receives the definition explicitly and returns one complete SVG markup string. It
+`Svg.render()` receives the definition explicitly and returns one complete SVG markup string. It
 does not mount content or retain lifecycle state.
 
-A generated named SVG API closes over exactly one definition:
+The initial package exposes no generated named wrapper. A future target integration may close over
+one definition, but it must delegate to `Svg.render()` and requires independent package and
+consumer evidence.
 
-```ts
-const markup = CameraIcon.render(options);
-```
-
-Its operation delegates to `Icon.render(Camera, options)`. It contains no geometry, traversal,
-presentation, accessibility, or escaping implementation of its own.
-
-Framework adapters may express the same relationship through their native component syntax. The
-equivalence invariant is semantic rather than syntactic: given the same definition, options, and
-target, generic and named APIs produce the same result and failures.
+Framework adapters may express rendering through their native component syntax. Given the same
+definition, options, and target semantics, an adapter must preserve the accepted presentation,
+accessibility, direction, and failure behaviour.
 
 ## Target-independent options
 
@@ -106,12 +101,16 @@ Effective viewport dimensions resolve as follows:
 2. otherwise, collection `defaultSize` sets equal width and height;
 3. otherwise, viewBox width and height become viewport width and height respectively.
 
+An explicit size below collection `minimumSize` is an option error. The renderer does not describe
+output below that threshold as curator approved.
+
 The viewBox itself cannot be overridden. The SVG renderer always emits explicit numeric width and
 height and never relies on a browser's implicit SVG viewport.
 
 When `colour` is omitted, the SVG target emits no external `color` attribute and allows the exact
 SVG token `currentColor` to inherit from its host. A supplied `colour` maps to a validated external
-`color` value without replacing literal node paint.
+`color` value without replacing literal node paint. Portable paint `none` remains valid for fill
+and stroke but is an option error when supplied as the external colour context.
 
 Stroke widths use viewBox units and scale with geometry when `size` changes. Constant device-pixel
 strokes are target-specific behaviour and are not part of the initial portable options.

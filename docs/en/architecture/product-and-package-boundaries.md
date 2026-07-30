@@ -171,7 +171,7 @@ distribution boundaries and are not registry reservations:
 | Portable Core | `@aster/core` | Implemented |
 | Private build-time implementation | `@aster/build` | Implemented and accepted |
 | Release-quality collection definitions | `@aster/icons` | Provisional |
-| Generic SVG renderer | `@aster/svg` | Provisional |
+| Generic SVG renderer | `@aster/svg` | Implemented contract foundation |
 | Generated icon-target integration | Target package or generated exports, pending evidence | Provisional |
 | Target-independent Lilium adapter | `@aster/lilium` | Provisional |
 | DOM-specific Lilium mappings | `@aster/lilium-dom` if evidence requires a separate package | Provisional |
