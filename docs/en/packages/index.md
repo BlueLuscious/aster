@@ -11,6 +11,7 @@ The current package set is:
 | --- | --- | --- |
 | [`@aster/core`](core/index.md) | Pre-release | Portable icon definitions, immutable construction, and render-neutral contracts. |
 | [`@aster/build`](build/index.md) | Private | Build-time source, diagnostic, parsing, validation, normalisation, and generation domain services. |
+| [`@aster/svg`](svg/index.md) | Experimental | Framework-independent standalone SVG rendering contracts. |
 
 Accepted responsibilities and dependency direction are defined by
 [Product and Package Boundaries](../architecture/product-and-package-boundaries.md).
