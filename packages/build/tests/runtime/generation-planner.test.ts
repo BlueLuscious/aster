@@ -61,8 +61,8 @@ function entry(
 
   return {
     sourceIds: [
-      `collections/experimental/metadata/${suffix}.json`,
-      `collections/experimental/svg/${suffix}.svg`,
+      `fixtures/metadata/icons/${suffix}.json`,
+      `fixtures/svg/${suffix}.svg`,
     ],
     definition: definition(name, variant, displayName),
   };
@@ -74,10 +74,10 @@ function request(
 ): IGenerationRequest {
   return {
     collectionSourceId:
-      "collections/experimental/metadata/collection.json",
+      "fixtures/metadata/collection.json",
     collection: "experimental",
     package: {
-      name: "@aster/experimental",
+      name: "@aster/fixture",
       version: "0.0.0",
       description:
         "Experimental portable icon definitions for Aster.",
@@ -206,7 +206,7 @@ test("returns stable diagnostics for identity, symbol, and reserved-subpath coll
       {
         ...entry("camera"),
         sourceIds: [
-          "collections/experimental/metadata/camera-copy.json",
+          "fixtures/metadata/icons/camera-copy.json",
         ],
       },
     ]),
@@ -339,7 +339,7 @@ test("isolates generated bindings and source identifiers from authored names", (
   const separatedSourceEntry = {
     ...entry("separator"),
     sourceIds: [
-      "collections/experimental/metadata/separator\u2028source.json",
+      "fixtures/metadata/icons/separator\u2028source.json",
     ] as const,
   };
   const plan = successfulPlan([
@@ -407,8 +407,8 @@ test("rejects malformed package metadata and definition provenance", () => {
           {
             ...entry("frame"),
             sourceIds: [
-              "collections/experimental/svg/frame.svg",
-              "collections/experimental/svg/frame.svg",
+              "fixtures/svg/frame.svg",
+              "fixtures/svg/frame.svg",
             ],
           },
         ]),
