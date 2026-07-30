@@ -64,6 +64,25 @@ test("rejects documentation for a missing package", async () => {
   }
 });
 
+test("accepts collection documentation without a prescribed source root", async () => {
+  const root = await createFixture();
+
+  try {
+    await writeDocument(
+      root,
+      "docs/en/collections/aster/index.md",
+      "# Aster Collection\n",
+    );
+
+    const result = await verifyDocumentation(root);
+
+    assert.deepEqual(result.issues, []);
+    assert.equal(result.markdownFileCount, 8);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("rejects broken links and local-only references", async () => {
   const root = await createFixture();
 
