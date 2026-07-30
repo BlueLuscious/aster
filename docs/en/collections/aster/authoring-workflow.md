@@ -86,11 +86,12 @@ without that membership and can be retained by additional collections without mu
 - does not replace the TypeScript module as identity or metadata authority;
 - is byte-deterministic for the same definition and options;
 - may be inspected in a browser or vector tool without becoming a Build dependency;
-- remains ephemeral until a generated output root, cleanup owner, rebuild command, and
-  verification are implemented.
+- remains disposable review evidence outside package distribution.
 
-No derived collection SVG is committed by the current workflow. Persistent SVG export is accepted
-only with a package-owned generated boundary that can be deleted and rebuilt safely.
+The repository-level `pnpm run review:pilot` host supplies the accepted disposable boundary,
+cleanup ownership, rebuild command, and deterministic report for the pilot. No derived collection
+SVG is committed by the current workflow. Persistent SVG distribution export remains separate and
+requires an explicit CLI output boundary that can be deleted and rebuilt safely.
 
 ## Optional SVG Import
 

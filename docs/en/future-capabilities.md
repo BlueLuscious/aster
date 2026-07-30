@@ -76,10 +76,18 @@ The current replaceable dependency boundary is defined by
 ## Minimal Aster CLI
 
 No production host currently discovers SVG import sources or commits generated package output.
-Introduce `@aster/cli` only if a real SVG-import workflow needs a user-facing host. The initial CLI
-should remain a small Node adapter over `@aster/build`: select an explicit source root and output
-root, strictly decode source bytes, run `CollectionBuildPipeline`, present diagnostics, and commit
-only complete successful output.
+Introduce `@aster/cli` when a real SVG-import or persistent TypeScript-to-target export workflow
+needs a user-facing host.
+
+For SVG import, the initial CLI should remain a small Node adapter over `@aster/build`: select an
+explicit source root and output root, strictly decode source bytes, run
+`CollectionBuildPipeline`, present diagnostics, and commit only complete successful output.
+
+For TypeScript-first export, the CLI should accept one explicit `IconDefinition`, an explicit
+selected set, or one `CollectionDefinition`; delegate target conversion to an installed renderer;
+derive collision-safe filenames from portable identity; and atomically commit only the complete
+result below an explicit output root. A renderer must not acquire filesystem or process authority,
+and collection membership must remain optional for single-icon export.
 
 Keep parser, metadata, validation, normalisation, and generator responsibilities in private
 `@aster/build`. Review further package extraction only after an independent host or authoring

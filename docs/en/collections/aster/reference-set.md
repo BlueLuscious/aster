@@ -41,8 +41,10 @@ Initial visual review moved the `bell` clapper guide from `y = 21` to `y = 20` a
 gap made the detail read as an unrelated dash. The correction was made in the canonical
 TypeScript module and retained the half-unit grid and nominal safe area.
 
-These findings support retaining the provisional values for curatorial review. They do not yet
-promote safe-area, optical, curve-quality, or minimum-size hypotheses to stable rules.
+The reproducible [pilot review evidence](review-evidence.md) confirms zero blocking or advisory
+findings against the currently defined technical thresholds. These findings support retaining the
+provisional values for curatorial review. They do not yet promote safe-area, occupied-area,
+optical, curve-quality, or minimum-size hypotheses to stable rules.
 
 ## Semantic Adjacency
 
@@ -66,5 +68,4 @@ effective artwork licence is ISC. No third-party source, Illustrator master, imp
 generated definition is canonical for this set.
 
 The authoritative source for each icon is its TypeScript module in `@aster/icons`. SVG rendered
-through `@aster/svg` is ephemeral review evidence until a persistent generated boundary is
-accepted.
+through `@aster/svg` is disposable review evidence and is not persistent distribution output.

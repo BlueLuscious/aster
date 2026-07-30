@@ -36,6 +36,8 @@ remains derived review or distribution output and Build remains an optional impo
 the same definitions remain directly usable without importing or consulting that collection.
 
 The [pilot reference set](reference-set.md) contains sixteen canonical Experimental definitions.
+Its [review evidence](review-evidence.md) records reproducible technical reports, visual
+comparisons, residual risks, and the pending curatorial decision.
 The package is not release quality and must not be presented as an Active collection before
 curatorial and release evidence is accepted.
 
