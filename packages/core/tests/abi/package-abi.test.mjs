@@ -61,9 +61,29 @@ function createDefinitionInput() {
 test("exposes the exact immutable root value surface", async () => {
   const packageModule = await import("@aster/core");
 
-  assert.deepEqual(Object.keys(packageModule).sort(), ["Icon"]);
+  assert.deepEqual(Object.keys(packageModule).sort(), [
+    "Icon",
+    "iconDirections",
+    "iconNodeKinds",
+    "iconPaintSchema",
+    "iconPresentationEnumerations",
+    "iconPresentationOverrideOrder",
+    "iconRtlPolicies",
+    "iconTechnicalPresentation",
+  ]);
   assert.deepEqual(Object.keys(packageModule.Icon), ["define"]);
   assert.ok(Object.isFrozen(packageModule.Icon));
+  assert.ok(Object.isFrozen(packageModule.iconDirections));
+  assert.ok(Object.isFrozen(packageModule.iconNodeKinds));
+  assert.ok(Object.isFrozen(packageModule.iconPaintSchema));
+  assert.ok(Object.isFrozen(packageModule.iconPaintSchema.keywords));
+  assert.ok(Object.isFrozen(packageModule.iconPresentationEnumerations));
+  assert.ok(Object.isFrozen(packageModule.iconPresentationEnumerations.fillRule));
+  assert.ok(Object.isFrozen(packageModule.iconPresentationEnumerations.strokeLineCap));
+  assert.ok(Object.isFrozen(packageModule.iconPresentationEnumerations.strokeLineJoin));
+  assert.ok(Object.isFrozen(packageModule.iconPresentationOverrideOrder));
+  assert.ok(Object.isFrozen(packageModule.iconRtlPolicies));
+  assert.ok(Object.isFrozen(packageModule.iconTechnicalPresentation));
 });
 
 test("constructs isolated definitions without a catalogue registry", async () => {

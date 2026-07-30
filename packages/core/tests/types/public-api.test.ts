@@ -1,4 +1,13 @@
-import { Icon } from "../../src/index.js";
+import {
+  Icon,
+  iconDirections,
+  iconNodeKinds,
+  iconPaintSchema,
+  iconPresentationEnumerations,
+  iconPresentationOverrideOrder,
+  iconRtlPolicies,
+  iconTechnicalPresentation,
+} from "../../src/index.js";
 import type { IconDefinition } from "../../src/index.js";
 
 const camera = Icon.define({
@@ -35,6 +44,13 @@ const camera = Icon.define({
 });
 
 const acceptedDefinition: IconDefinition = camera;
+const pathKind: typeof iconNodeKinds.path = "path";
+const direction: (typeof iconDirections)[number] = "rtl";
+const rtlPolicy: (typeof iconRtlPolicies)[number] = "mirror";
+const paintKeyword: (typeof iconPaintSchema.keywords)[number] = "currentColor";
+const fillRule: (typeof iconPresentationEnumerations.fillRule)[number] = "evenodd";
+const override: (typeof iconPresentationOverrideOrder)[number] = "strokeWidth";
+const technicalFill = iconTechnicalPresentation.fill;
 
 Icon.define({
   ...camera,
@@ -43,3 +59,10 @@ Icon.define({
 });
 
 void acceptedDefinition;
+void pathKind;
+void direction;
+void rtlPolicy;
+void paintKeyword;
+void fillRule;
+void override;
+void technicalFill;
