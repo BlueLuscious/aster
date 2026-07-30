@@ -36,11 +36,15 @@
     "format": "pnpm --recursive --if-present run format",
     "format:check": "pnpm --recursive --if-present run format:check",
     "lint": "pnpm --recursive --if-present run lint",
-    "test": "pnpm run test:tooling && pnpm --recursive --if-present run test",
+    "test": "pnpm run test:tooling && pnpm --recursive --if-present run test && pnpm run test:workflow",
+    "test:workflow": "pnpm run build && tsx --test --test-isolation=none tests/workflow/*.test.ts",
     "test:tooling": "node --test --test-isolation=none tests/tooling/*.test.mjs",
     "verify": "pnpm run check && pnpm run test && pnpm run build"
   },
   "devDependencies": {
+    "@aster/build": "workspace:*",
+    "@aster/core": "workspace:*",
+    "@aster/svg": "workspace:*",
     "@types/node": "24.13.3",
     "tsx": "4.23.1",
     "typescript": "5.9.3"

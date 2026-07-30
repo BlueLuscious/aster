@@ -8,6 +8,15 @@ importers:
 
   .:
     devDependencies:
+      '@aster/build':
+        specifier: workspace:*
+        version: link:packages/build
+      '@aster/core':
+        specifier: workspace:*
+        version: link:packages/core
+      '@aster/svg':
+        specifier: workspace:*
+        version: link:packages/svg
       '@types/node':
         specifier: 24.13.3
         version: 24.13.3
