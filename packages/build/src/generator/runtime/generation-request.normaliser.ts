@@ -3,6 +3,7 @@ import {
   type IconDefinition,
 } from "@aster/core";
 import type { IExistingGeneratedFile } from "../contracts/internal/existing-generated-file.contract.js";
+import type { IGeneratedPackageMetadata } from "../contracts/internal/generated-package-metadata.contract.js";
 import type { IGenerationEntry } from "../contracts/internal/generation-entry.contract.js";
 import type { IGenerationRequest } from "../contracts/internal/generation-request.contract.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
@@ -36,6 +37,12 @@ export class GenerationRequestNormaliser {
     /^(?:@[a-z0-9][a-z0-9._-]*\/)?[a-z0-9][a-z0-9._-]*$/u;
 
   /**
+   * @description Accepted canonical semantic-version grammar.
+   */
+  readonly #packageVersionPattern =
+    /^(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-(?:(?:0|[1-9][0-9]*)|(?:[A-Za-z-][0-9A-Za-z-]*))(?:\.(?:(?:0|[1-9][0-9]*)|(?:[A-Za-z-][0-9A-Za-z-]*)))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/u;
+
+  /**
    * @description Produces one accepted immutable generation request.
    * @param value - Unknown generation-planning input.
    * @returns Deeply isolated request with Core-revalidated definitions.
@@ -48,7 +55,7 @@ export class GenerationRequestNormaliser {
       [
         "collectionSourceId",
         "collection",
-        "packageName",
+        "package",
         "entries",
         "existingFiles",
       ],
@@ -62,9 +69,9 @@ export class GenerationRequestNormaliser {
       record.collection,
       `${path}.collection`,
     );
-    const packageName = this.#normalisePackageName(
-      record.packageName,
-      `${path}.packageName`,
+    const packageMetadata = this.#normalisePackageMetadata(
+      record.package,
+      `${path}.package`,
     );
     const entries = this.#validator
       .array(record.entries, `${path}.entries`)
@@ -110,10 +117,51 @@ export class GenerationRequestNormaliser {
     return Object.freeze({
       collectionSourceId,
       collection,
-      packageName,
+      package: packageMetadata,
       entries: Object.freeze(entries),
       existingFiles: Object.freeze(existingFiles),
     });
+  }
+
+  /**
+   * @description Validates and isolates generated package publication metadata.
+   * @param value - Unknown generated package metadata.
+   * @param path - Logical package metadata path.
+   * @returns Frozen canonical generated package metadata.
+   */
+  #normalisePackageMetadata(
+    value: unknown,
+    path: string,
+  ): IGeneratedPackageMetadata {
+    const record = this.#validator.record(value, path);
+    this.#validator.exactFields(
+      record,
+      ["name", "version", "description", "licence"],
+      path,
+    );
+    const name = this.#normalisePackageName(record.name, `${path}.name`);
+    const version = this.#validator.nonEmptyString(
+      record.version,
+      `${path}.version`,
+    );
+
+    if (!this.#packageVersionPattern.test(version)) {
+      throw new BuildContractError(
+        `${path}.version`,
+        "expected a canonical semantic version",
+      );
+    }
+
+    const description = this.#normaliseCanonicalText(
+      record.description,
+      `${path}.description`,
+    );
+    const licence = this.#normaliseCanonicalText(
+      record.licence,
+      `${path}.licence`,
+    );
+
+    return Object.freeze({ name, version, description, licence });
   }
 
   /**
@@ -146,11 +194,31 @@ export class GenerationRequestNormaliser {
     path: string,
   ): IGenerationEntry {
     const record = this.#validator.record(value, path);
-    this.#validator.exactFields(record, ["sourceId", "definition"], path);
-    const sourceId = this.#sourceIdNormaliser.normalise(
-      record.sourceId,
-      `${path}.sourceId`,
-    );
+    this.#validator.exactFields(record, ["sourceIds", "definition"], path);
+    const sourceIds = this.#validator
+      .array(record.sourceIds, `${path}.sourceIds`)
+      .map((sourceId, index) =>
+        this.#sourceIdNormaliser.normalise(
+          sourceId,
+          `${path}.sourceIds[${index}]`,
+        ),
+      )
+      .sort((left, right) => this.#compareText(left, right));
+
+    if (sourceIds.length === 0) {
+      throw new BuildContractError(
+        `${path}.sourceIds`,
+        "expected at least one canonical source identifier",
+      );
+    }
+
+    if (new Set(sourceIds).size !== sourceIds.length) {
+      throw new BuildContractError(
+        `${path}.sourceIds`,
+        "expected unique canonical source identifiers",
+      );
+    }
+
     const definition = Icon.define(record.definition as IconDefinition);
 
     if (definition.identity.collection !== collection) {
@@ -160,7 +228,13 @@ export class GenerationRequestNormaliser {
       );
     }
 
-    return Object.freeze({ sourceId, definition });
+    return Object.freeze({
+      sourceIds: Object.freeze(sourceIds) as readonly [
+        string,
+        ...string[],
+      ],
+      definition,
+    });
   }
 
   /**
@@ -185,5 +259,31 @@ export class GenerationRequestNormaliser {
     }
 
     return Object.freeze({ path: filePath, content: record.content });
+  }
+
+  /**
+   * @description Accepts trimmed non-empty metadata text without modification.
+   * @param value - Unknown textual metadata.
+   * @param path - Logical metadata path.
+   * @returns Canonical accepted text.
+   */
+  #normaliseCanonicalText(value: unknown, path: string): string {
+    const accepted = this.#validator.nonEmptyString(value, path);
+
+    if (accepted !== accepted.trim()) {
+      throw new BuildContractError(path, "expected canonical trimmed text");
+    }
+
+    return accepted;
+  }
+
+  /**
+   * @description Compares text by Unicode code-unit order.
+   * @param left - First text value.
+   * @param right - Second text value.
+   * @returns Negative, zero, or positive ordering value.
+   */
+  #compareText(left: string, right: string): number {
+    return left < right ? -1 : left > right ? 1 : 0;
   }
 }

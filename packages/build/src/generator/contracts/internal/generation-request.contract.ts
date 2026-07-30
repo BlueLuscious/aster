@@ -1,4 +1,5 @@
 import type { IExistingGeneratedFile } from "./existing-generated-file.contract.js";
+import type { IGeneratedPackageMetadata } from "./generated-package-metadata.contract.js";
 import type { IGenerationEntry } from "./generation-entry.contract.js";
 
 /**
@@ -16,9 +17,9 @@ export interface IGenerationRequest {
   readonly collection: string;
 
   /**
-   * @description Intended generated collection package name.
+   * @description Canonical generated package publication metadata.
    */
-  readonly packageName: string;
+  readonly package: IGeneratedPackageMetadata;
 
   /**
    * @description Portable definitions and their canonical metadata provenance.

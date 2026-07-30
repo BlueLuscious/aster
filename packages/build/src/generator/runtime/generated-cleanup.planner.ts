@@ -1,12 +1,17 @@
 import type { IExistingGeneratedFile } from "../contracts/internal/existing-generated-file.contract.js";
 import type { IPlannedFile } from "../contracts/internal/planned-file.contract.js";
 import type { TGeneratedCleanupPlan } from "../types/internal/generated-cleanup-plan.type.js";
-import { generatedFileMarker } from "../constants/generated-file-marker.constant.js";
+import { GeneratedFileOwnershipInspector } from "./generated-file-ownership.inspector.js";
 
 /**
  * @description Finds stale owned files and protects unowned planned output paths.
  */
 export class GeneratedCleanupPlanner {
+  /**
+   * @description Generated text-format ownership authority.
+   */
+  readonly #ownershipInspector = new GeneratedFileOwnershipInspector();
+
   /**
    * @description Analyses an existing generated-root snapshot without performing cleanup.
    * @param existingFiles - Canonical existing text-file snapshot.
@@ -22,7 +27,7 @@ export class GeneratedCleanupPlanner {
       .filter(
         (file) =>
           !plannedPaths.has(file.path) &&
-          this.#isOwned(file.content),
+          this.#ownershipInspector.isOwned(file),
       )
       .map((file) => file.path)
       .sort((left, right) => this.#compareText(left, right));
@@ -30,7 +35,7 @@ export class GeneratedCleanupPlanner {
       .filter(
         (file) =>
           plannedPaths.has(file.path) &&
-          !this.#isOwned(file.content),
+          !this.#ownershipInspector.isOwned(file),
       )
       .map((file) => file.path)
       .sort((left, right) => this.#compareText(left, right));
@@ -39,15 +44,6 @@ export class GeneratedCleanupPlanner {
       stalePaths: Object.freeze(stalePaths),
       conflictingPaths: Object.freeze(conflictingPaths),
     });
-  }
-
-  /**
-   * @description Determines whether exact first-line evidence assigns a text file to Aster.
-   * @param content - Existing text-file content.
-   * @returns Whether the first logical line equals the generated ownership marker.
-   */
-  #isOwned(content: string): boolean {
-    return content.split(/\r?\n/u, 1)[0] === generatedFileMarker;
   }
 
   /**

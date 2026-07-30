@@ -23,7 +23,7 @@ export class IconModuleTemplate {
    */
   render(candidate: TGenerationCandidate): string {
     return [
-      this.#bannerFactory.create([candidate.entry.sourceId]).trimEnd(),
+      this.#bannerFactory.create(candidate.entry.sourceIds).trimEnd(),
       "",
       'import { Icon as $Icon } from "@aster/core";',
       "",

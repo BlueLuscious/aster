@@ -1,3 +1,4 @@
+import type { IGeneratedPackageMetadata } from "./generated-package-metadata.contract.js";
 import type { IPlannedFile } from "./planned-file.contract.js";
 import type { IPlannedPackageExport } from "./planned-package-export.contract.js";
 
@@ -11,9 +12,9 @@ export interface IGenerationPlan {
   readonly collection: string;
 
   /**
-   * @description Intended generated collection package name.
+   * @description Canonical generated package publication metadata.
    */
-  readonly packageName: string;
+  readonly package: IGeneratedPackageMetadata;
 
   /**
    * @description Complete canonically ordered generated text files.

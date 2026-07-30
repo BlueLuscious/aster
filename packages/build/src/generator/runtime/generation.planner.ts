@@ -17,6 +17,8 @@ import { GeneratedIconNameFactory } from "./generated-icon-name.factory.js";
 import { GenerationDiagnosticFactory } from "./generation-diagnostic.factory.js";
 import { GenerationRequestNormaliser } from "./generation-request.normaliser.js";
 import { IconModuleTemplate } from "./icon-module.template.js";
+import { PackageManifestTemplate } from "./package-manifest.template.js";
+import { TypeScriptConfigurationTemplate } from "./typescript-configuration.template.js";
 
 /**
  * @description Plans complete deterministic collection modules without filesystem authority.
@@ -46,6 +48,16 @@ export class GenerationPlanner implements IGenerationPlanner {
    * @description Opt-in collection manifest template.
    */
   readonly #manifestTemplate = new CollectionManifestTemplate();
+
+  /**
+   * @description Generated collection package-manifest template.
+   */
+  readonly #packageManifestTemplate = new PackageManifestTemplate();
+
+  /**
+   * @description Generated collection compiler-configuration template.
+   */
+  readonly #typescriptConfigurationTemplate = new TypeScriptConfigurationTemplate();
 
   /**
    * @description Existing generated-file cleanup analysis.
@@ -82,9 +94,12 @@ export class GenerationPlanner implements IGenerationPlanner {
         this.#compareText(left.name.identityKey, right.name.identityKey),
       );
     const issues = this.#collectIssues(candidates);
+    const exports = this.#createExports(candidates);
     const files = this.#createFiles(
       candidates,
       accepted.collectionSourceId,
+      accepted.package,
+      exports,
     );
     const cleanup = this.#cleanupPlanner.plan(
       accepted.existingFiles ?? [],
@@ -107,9 +122,9 @@ export class GenerationPlanner implements IGenerationPlanner {
 
     const plan = Object.freeze({
       collection: accepted.collection,
-      packageName: accepted.packageName,
+      package: accepted.package,
       files,
-      exports: this.#createExports(candidates),
+      exports,
       stalePaths: cleanup.stalePaths,
     });
 
@@ -134,7 +149,7 @@ export class GenerationPlanner implements IGenerationPlanner {
       if (previousIdentity !== undefined) {
         issues.push({
           kind: generationIssueKinds.duplicateIdentity,
-          sourceId: candidate.entry.sourceId,
+          sourceId: candidate.entry.sourceIds[0],
           identityKey: candidate.name.identityKey,
           relatedSourceId: previousIdentity,
         });
@@ -143,7 +158,7 @@ export class GenerationPlanner implements IGenerationPlanner {
 
       identitySources.set(
         candidate.name.identityKey,
-        candidate.entry.sourceId,
+        candidate.entry.sourceIds[0],
       );
       const firstSubpath = candidate.name.manifestKey.split("/")[0];
 
@@ -153,7 +168,7 @@ export class GenerationPlanner implements IGenerationPlanner {
       ) {
         issues.push({
           kind: generationIssueKinds.reservedSubpath,
-          sourceId: candidate.entry.sourceId,
+          sourceId: candidate.entry.sourceIds[0],
           subpath: `./${firstSubpath}`,
         });
       }
@@ -161,11 +176,11 @@ export class GenerationPlanner implements IGenerationPlanner {
       const previousSymbol = symbolSources.get(candidate.name.symbol);
 
       if (previousSymbol === undefined) {
-        symbolSources.set(candidate.name.symbol, candidate.entry.sourceId);
+        symbolSources.set(candidate.name.symbol, candidate.entry.sourceIds[0]);
       } else {
         issues.push({
           kind: generationIssueKinds.symbolCollision,
-          sourceId: candidate.entry.sourceId,
+          sourceId: candidate.entry.sourceIds[0],
           symbol: candidate.name.symbol,
           relatedSourceId: previousSymbol,
         });
@@ -179,15 +194,19 @@ export class GenerationPlanner implements IGenerationPlanner {
    * @description Renders and orders the complete generated TypeScript file set.
    * @param candidates - Canonically ordered generation candidates.
    * @param collectionSourceId - Canonical collection metadata provenance.
+   * @param packageMetadata - Canonical generated package publication metadata.
+   * @param exports - Complete canonically ordered public package exports.
    * @returns Frozen generated file collection ordered by path.
    */
   #createFiles(
     candidates: readonly TGenerationCandidate[],
     collectionSourceId: string,
+    packageMetadata: IGenerationRequest["package"],
+    exports: readonly IPlannedPackageExport[],
   ): readonly IPlannedFile[] {
     const sourceIds = [
       collectionSourceId,
-      ...candidates.map((candidate) => candidate.entry.sourceId),
+      ...candidates.flatMap((candidate) => candidate.entry.sourceIds),
     ];
     const files: IPlannedFile[] = [
       ...candidates.map((candidate) =>
@@ -203,6 +222,18 @@ export class GenerationPlanner implements IGenerationPlanner {
       Object.freeze({
         path: generatorModulePaths.manifest,
         content: this.#manifestTemplate.render(candidates, sourceIds),
+      }),
+      Object.freeze({
+        path: generatorModulePaths.packageManifest,
+        content: this.#packageManifestTemplate.render(
+          packageMetadata,
+          exports,
+          sourceIds,
+        ),
+      }),
+      Object.freeze({
+        path: generatorModulePaths.typescriptConfiguration,
+        content: this.#typescriptConfigurationTemplate.render(sourceIds),
       }),
     ];
 
