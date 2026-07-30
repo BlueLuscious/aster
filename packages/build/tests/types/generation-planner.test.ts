@@ -9,6 +9,12 @@ const request = {} as IGenerationRequest;
 const result: DiagnosticResultType<IGenerationPlan> = planner.plan(request);
 
 if (result.successful) {
+  const packageName: string = result.value.package.name;
+  void packageName;
+
+  // @ts-expect-error Generated package metadata is immutable.
+  result.value.package.name = "@aster/changed";
+
   const firstFile = result.value.files[0];
 
   if (firstFile !== undefined) {

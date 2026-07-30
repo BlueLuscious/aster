@@ -60,7 +60,10 @@ function entry(
   const suffix = variant === undefined ? name : `${name}--${variant}`;
 
   return {
-    sourceId: `collections/experimental/metadata/${suffix}.json`,
+    sourceIds: [
+      `collections/experimental/metadata/${suffix}.json`,
+      `collections/experimental/svg/${suffix}.svg`,
+    ],
     definition: definition(name, variant, displayName),
   };
 }
@@ -73,7 +76,13 @@ function request(
     collectionSourceId:
       "collections/experimental/metadata/collection.json",
     collection: "experimental",
-    packageName: "@aster/experimental",
+    package: {
+      name: "@aster/experimental",
+      version: "0.0.0",
+      description:
+        "Experimental portable icon definitions for Aster.",
+      licence: "CC-BY-4.0",
+    },
     entries,
     existingFiles,
   };
@@ -101,10 +110,12 @@ test("plans deterministic isolated modules independently from input order", () =
   assert.deepEqual(
     first.files.map((file) => file.path),
     [
+      "package.json",
       "src/icons/frame.ts",
       "src/icons/orbit.ts",
       "src/index.ts",
       "src/manifest.ts",
+      "tsconfig.json",
     ],
   );
   assert.deepEqual(
@@ -113,9 +124,16 @@ test("plans deterministic isolated modules independently from input order", () =
   );
   assert.ok(first.files.every((file) => file.content.endsWith("\n")));
   assert.ok(
-    first.files.every((file) =>
-      file.content.startsWith(generatedFileMarker),
-    ),
+    first.files
+      .filter((file) => file.path !== "package.json")
+      .every((file) =>
+        file.content.startsWith(generatedFileMarker),
+      ),
+  );
+  assert.ok(
+    first.files
+      .find((file) => file.path === "package.json")
+      ?.content.includes('"generatedBy": "@aster/build"'),
   );
   assert.ok(Object.isFrozen(first));
   assert.ok(Object.isFrozen(first.files));
@@ -145,12 +163,14 @@ test("plans base, variant, and numeric-leading symbols without path conflicts", 
   assert.deepEqual(
     plan.files.map((file) => file.path),
     [
+      "package.json",
       "src/icons/3d-axis.ts",
       "src/icons/camera.ts",
       "src/icons/camera/filled.ts",
       "src/icons/camera/index.ts",
       "src/index.ts",
       "src/manifest.ts",
+      "tsconfig.json",
     ],
   );
   assert.match(
@@ -185,8 +205,9 @@ test("returns stable diagnostics for identity, symbol, and reserved-subpath coll
       entry("camera"),
       {
         ...entry("camera"),
-        sourceId:
+        sourceIds: [
           "collections/experimental/metadata/camera-copy.json",
+        ],
       },
     ]),
   );
@@ -275,13 +296,51 @@ test("does not accept ownership-marker prefixes as generated evidence", () => {
   );
 });
 
+test("recognises only canonical package-manifest ownership authority", () => {
+  const initial = successfulPlan([entry("frame")]);
+  const packageManifest = initial.files.find(
+    (file) => file.path === "package.json",
+  )?.content;
+
+  assert.notEqual(packageManifest, undefined);
+
+  const accepted = planner.plan(
+    request(
+      [entry("frame")],
+      [{ path: "package.json", content: packageManifest ?? "" }],
+    ),
+  );
+  const rejected = planner.plan(
+    request(
+      [entry("frame")],
+      [
+        {
+          path: "package.json",
+          content: (packageManifest ?? "").replace(
+            '"generatedBy": "@aster/build"',
+            '"generatedBy": "human"',
+          ),
+        },
+      ],
+    ),
+  );
+
+  assert.equal(accepted.successful, true);
+  assert.equal(rejected.successful, false);
+  assert.deepEqual(
+    rejected.diagnostics.map((diagnostic) => diagnostic.code),
+    ["ASTER-GENERATION-004"],
+  );
+});
+
 test("isolates generated bindings and source identifiers from authored names", () => {
   const iconEntry = entry("icon");
   const manifestEntry = entry("icon-manifest");
   const separatedSourceEntry = {
     ...entry("separator"),
-    sourceId:
+    sourceIds: [
       "collections/experimental/metadata/separator\u2028source.json",
+    ] as const,
   };
   const plan = successfulPlan([
     iconEntry,
@@ -309,6 +368,56 @@ test("isolates generated bindings and source identifiers from authored names", (
     /\u2028/u,
   );
   assert.match(manifestModule ?? "", /separator\\u2028source\.json/u);
+});
+
+test("rejects malformed package metadata and definition provenance", () => {
+  assert.throws(
+    () =>
+      planner.plan({
+        ...request([entry("frame")]),
+        package: {
+          ...request([entry("frame")]).package,
+          version: "01.0.0",
+        },
+      }),
+    {
+      name: "BuildContractError",
+      path: "generationRequest.package.version",
+    },
+  );
+  assert.throws(
+    () =>
+      planner.plan(
+        request([
+          {
+            ...entry("frame"),
+            sourceIds: [],
+          } as unknown as IGenerationEntry,
+        ]),
+      ),
+    {
+      name: "BuildContractError",
+      path: "generationRequest.entries[0].sourceIds",
+    },
+  );
+  assert.throws(
+    () =>
+      planner.plan(
+        request([
+          {
+            ...entry("frame"),
+            sourceIds: [
+              "collections/experimental/svg/frame.svg",
+              "collections/experimental/svg/frame.svg",
+            ],
+          },
+        ]),
+      ),
+    {
+      name: "BuildContractError",
+      path: "generationRequest.entries[0].sourceIds",
+    },
+  );
 });
 
 test("rejects existing paths outside the generated-root-relative boundary", () => {
