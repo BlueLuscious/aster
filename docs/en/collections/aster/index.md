@@ -29,9 +29,13 @@ provenance and licensing evidence.
 The collection identity, curator, Experimental lifecycle, licence, and
 [provisional design contract](design-contract.md) are accepted.
 
-No icon source or generated collection package is authoritative yet. Portable TypeScript
-authoring and SVG importing remain candidate workflows. The selected workflow must identify one
-canonical source per icon before the collection can distribute definitions.
+The collection has selected [TypeScript-first authoring](authoring-workflow.md). Each accepted
+icon will own one portable definition module in `@aster/icons`, while SVG remains derived review
+or distribution output and Build remains an optional importer.
+
+No distributable icon source or collection package exists yet. Workflow selection does not make
+test evidence a product source or authorise distribution before real definition modules are
+reviewed and accepted.
 
 The project-wide distinction between an Experimental identity and an Active collection is defined
 by [Collection and Source Boundary](../../architecture/collection-and-source-boundary.md).
