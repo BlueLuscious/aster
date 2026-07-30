@@ -85,7 +85,7 @@ matrix(-1 0 0 1 (2 * minX + width) 0)
 ```
 
 The generated transformation belongs to the render result. It does not mutate nodes and does not
-relax the prohibition on transforms in canonical SVG input.
+relax the prohibition on transforms in SVG import input.
 
 Accessibility title content remains outside the mirrored geometry group. Mirroring preserves node
 order, fill, stroke width, opacity, and canonical identity.

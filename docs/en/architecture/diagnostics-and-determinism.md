@@ -83,7 +83,7 @@ order rather than locale-sensitive collation.
 
 ## Deterministic generation
 
-Identical canonical SVG bytes, metadata values, collection rules, generator version, and explicit
+Identical acquired SVG bytes, metadata values, collection rules, generator version, and explicit
 generation options must produce byte-identical output.
 
 Generated output uses:

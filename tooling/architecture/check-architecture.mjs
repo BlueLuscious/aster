@@ -510,6 +510,16 @@ async function validatePackages(workspaceRoot, issues) {
 
           if (
             manifest.name === "@aster/build" &&
+            resolve(modulePath) === resolve(packageRoot, "src/index.ts") &&
+            isWithin(resolve(packageRoot, "src/generator"), target)
+          ) {
+            issues.push(
+              "@aster/build cannot expose its internal generator feature from the package root",
+            );
+          }
+
+          if (
+            manifest.name === "@aster/build" &&
             isWithin(resolve(packageRoot, "src/normalisation"), modulePath) &&
             isWithin(resolve(packageRoot, "src/validation/runtime"), target)
           ) {

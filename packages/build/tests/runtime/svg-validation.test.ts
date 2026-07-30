@@ -37,7 +37,7 @@ function svgSource(
 ): CanonicalSvgSource {
   const accepted = sourceFactory.create({
     kind: "svg",
-    sourceId: `collections/minimal/svg/${name}.svg`,
+    sourceId: `fixtures/svg/${name}.svg`,
     content,
     identity: identity(name),
   });
@@ -73,7 +73,7 @@ function entry(
 function metadata(name = "camera"): IconMetadataSource {
   const accepted = sourceFactory.create({
     kind: "icon-metadata",
-    sourceId: `collections/minimal/metadata/${name}.json`,
+    sourceId: `fixtures/metadata/icons/${name}.json`,
     content: "{}",
     identity: identity(name),
   });
@@ -85,7 +85,7 @@ function metadata(name = "camera"): IconMetadataSource {
 function collectionMetadata() {
   const accepted = sourceFactory.create({
     kind: "collection-metadata",
-    sourceId: "collections/minimal/metadata/collection.json",
+    sourceId: "fixtures/metadata/collection.json",
     content: "{}",
     collection: "minimal",
   });

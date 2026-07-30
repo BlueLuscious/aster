@@ -5,6 +5,7 @@ export const diagnosticCategories = Object.freeze({
   syntax: "syntax",
   safety: "safety",
   technical: "technical",
+  metadata: "metadata",
   collection: "collection",
   generation: "generation",
 } as const);

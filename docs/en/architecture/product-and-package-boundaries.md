@@ -11,7 +11,8 @@ proven.
 Aster is an independent icon platform. It owns:
 
 - portable immutable icon definitions;
-- curated collection sources and design contracts;
+- curated collection definitions and design contracts;
+- optional SVG and metadata import services;
 - source validation and normalisation requirements;
 - deterministic definition and wrapper generation;
 - target-specific renderers and framework adapters;
@@ -29,18 +30,18 @@ Node runtime authority.
 | Boundary | Responsibility | Runtime status |
 | --- | --- | --- |
 | Portable Core | Icon definition, node, viewBox, metadata, identity, render options, presentation policy, and immutable construction contracts. | Public and host independent. |
-| Collection sources | Editable masters, canonical SVG, metadata, and collection design contracts. | Authored inputs, never runtime code. |
-| Build pipeline | Source loading boundaries, parsing, diagnostics, validation, normalisation, and generation planning. | Build-time only. |
-| Generated definitions | Typed immutable icon and collection modules produced from canonical sources. | Portable runtime data. |
+| Import sources | Optional SVG, collection metadata, and icon metadata supplied explicitly to Build. | Build-time inputs, never runtime code. |
+| Build pipeline | Acquired-source boundaries, parsing, diagnostics, validation, normalisation, and generation planning. | Build-time only. |
+| Collection definitions | Typed immutable icon modules authored directly or produced by an accepted importer. | Portable runtime data. |
 | Renderer | Converts portable definitions and options into one explicit target output. | Public and target specific. |
 | Framework adapter | Exposes definitions through a framework's public component and rendering contracts. | Optional and framework specific. |
 | Target adapter | Maps framework-independent or framework-specific declarations to a concrete platform such as DOM. | Optional and target specific. |
 | Repository tooling | Workspace checks, safe cleanup, CI adapters, and contributor-only operations. | Private development infrastructure. |
 
-Generated definitions are conceptually separate from Core even if early evidence places them in
-the same physical package. Core defines the data contract; collections own icon data; generators
-produce its distribution modules. Their final package layout must be validated by import,
-tree-shaking, versioning, and release evidence.
+Collection definitions are conceptually separate from Core. Core defines the data contract;
+collections own icon data; and either direct authoring or an importer produces distribution
+modules. Their final package layout must be validated by import, tree-shaking, versioning, and
+release evidence.
 
 ## Initial package strategy
 
@@ -52,9 +53,8 @@ Only these implementation boundaries justify an initial package when their code 
    generation features until independent consumers justify extraction.
 3. A public SVG renderer package after its exact output contract is accepted.
 
-Experimental collection output may use a private generated test package or fixture boundary. It
-does not become a public collection package until the pilot proves its identity, versioning, and
-distribution requirements.
+Generated package conformance uses an isolated temporary package. Test output does not establish a
+published collection or permanent workspace package.
 
 Parser, validator, normaliser, and generator responsibilities remain separate features and test
 boundaries inside the initial build-time implementation. They are not separate packages merely
@@ -65,23 +65,18 @@ and an end-to-end integration can be tested. Empty adapter shells are prohibited
 
 ## Data flow
 
-Canonical source moves through build-time services into generated portable definitions. A
-consumer then passes those definitions to a generic renderer or framework adapter:
+Portable definitions may be authored directly or imported through build-time services. A consumer
+then passes those same Core values to a generic renderer or framework adapter:
 
 ```text
-canonical collection sources
-            |
-            v
-private build-time boundary
-            |
-            v
-generated definition modules
-            |
-            v
-consumer composition
-            |
-            +--> generic target renderer
-            +--> optional framework adapter
+TypeScript authoring --------+
+                             +--> portable definition modules
+SVG + JSON --> Build --------+             |
+                                           v
+                                  consumer composition
+                                           |
+                                           +--> generic target renderer
+                                           +--> optional framework adapter
 ```
 
 ## Dependency direction
@@ -90,7 +85,7 @@ Arrows mean "depends on":
 
 ```text
 private build-time boundary ------> portable Core
-generated definition modules -----> portable Core
+collection definition modules ----> portable Core
 target renderer -------------------> portable Core
 framework adapter -----------------> portable Core + framework public APIs
 target adapter --------------------> corresponding adapter + target public APIs
@@ -128,8 +123,9 @@ runtime packages never depend on it.
 
 The accepted `@aster/build` boundary is private without implying that its contracts are repository
 specific. It becomes public only after an independent consumer and versioning boundary exist.
-Filesystem discovery, terminal presentation, and process exit remain repository adapters outside
-the package.
+Filesystem discovery, terminal presentation, and process exit remain responsibilities of an
+effectful host outside the package. A product CLI should own them when a real import workflow
+exists; repository tooling should not become the permanent user-facing host.
 
 ## External ecosystem boundaries
 
@@ -174,9 +170,9 @@ distribution boundaries and are not registry reservations:
 | --- | --- | --- |
 | Portable Core | `@aster/core` | Implemented |
 | Private build-time implementation | `@aster/build` | Implemented and accepted |
-| Generated collection definitions | `@aster/<collection>` or another collection-oriented boundary | Provisional |
+| Release-quality collection definitions | `@aster/icons` | Provisional |
 | Generic SVG renderer | `@aster/svg` | Provisional |
-| Generated collection-target integration | `@aster/<collection>-<target>` | Provisional |
+| Generated icon-target integration | Target package or generated exports, pending evidence | Provisional |
 | Target-independent Lilium adapter | `@aster/lilium` | Provisional |
 | DOM-specific Lilium mappings | `@aster/lilium-dom` if evidence requires a separate package | Provisional |
 

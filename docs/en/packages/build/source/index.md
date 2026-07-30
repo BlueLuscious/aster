@@ -10,7 +10,7 @@ bytes but before parser or semantic validation authority exists.
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
 | `CanonicalTextSource` | Carries an exact decoded string and canonical logical `sourceId`. | Base of every accepted textual source descriptor. |
-| `CanonicalSvgSource` | Associates one canonical exported SVG string with an acquired icon identity. | Extends `CanonicalTextSource`; reuses Core `IconIdentity`. |
+| `CanonicalSvgSource` | Associates one selected SVG import string with an acquired icon identity. | Extends `CanonicalTextSource`; reuses Core `IconIdentity`. |
 | `CollectionMetadataSource` | Associates textual collection metadata with its collection slug. | Extends `CanonicalTextSource`. |
 | `IconMetadataSource` | Associates textual icon metadata with a complete acquired identity. | Extends `CanonicalTextSource`; reuses Core `IconIdentity`. |
 
@@ -24,8 +24,10 @@ The immutable `ingestionSourceKinds` object is the runtime authority for source-
 discriminators. Each source contract derives its `kind` property from that authority so runtime
 dispatch and compile-time narrowing cannot drift independently.
 
-The metadata format is deliberately unspecified. Source services transport exact text and do not
-choose JSON, YAML, TypeScript, or another schema representation.
+Canonical metadata currently uses versioned JSON, but Source services transport exact text and do
+not parse JSON or select schema behaviour. Decoding remains a separate private Build stage behind
+Aster-owned structured contracts. The accepted source format is defined by
+[JSON Metadata for SVG Imports](../../../decisions/0004-canonical-json-metadata-sources.md).
 
 `IconIdentity` belongs to `@aster/core` because collection, icon, and optional variant identity
 have the same stable meaning throughout acquisition, generation, distribution, and rendering.

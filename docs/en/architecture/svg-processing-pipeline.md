@@ -2,22 +2,22 @@
 
 Status: **Accepted**
 
-This document defines the build-time boundary that converts canonical SVG and metadata into
-portable icon definitions. It keeps untrusted syntax, accepted domain data, and generated
+This document defines the optional build-time boundary that imports acquired SVG and JSON metadata
+into portable icon definitions. It keeps untrusted syntax, accepted domain data, and generated
 artefacts separate.
 
 ## Processing stages
 
 One build request proceeds through ordered responsibilities:
 
-1. **Acquire sources.** Resolve canonical SVG and metadata to one canonical identity.
+1. **Acquire sources.** Resolve selected SVG and metadata to one canonical identity.
 2. **Parse syntax.** Convert XML text into an internal, untrusted syntax representation with source
    locations.
 3. **Validate safety and schema.** Reject unsafe, foreign, malformed, or unsupported syntax.
 4. **Validate semantics.** Apply project invariants, collection rules, and source identity rules.
 5. **Decode metadata.** Convert textual metadata through a replaceable decoder into Aster-owned
    structured values linked to their canonical sources.
-6. **Normalise.** Compose metadata authority and produce one canonical portable representation
+6. **Normalise.** Compose metadata authority and produce one portable representation
    without mutating authored sources.
 7. **Construct definitions.** Create deeply immutable portable icon definitions.
 8. **Plan generation.** Compute the complete deterministic output set before committing files.
@@ -32,14 +32,16 @@ Source acquisition follows
 [Collection and Source Boundary](collection-and-source-boundary.md). It must establish an
 unambiguous relationship among:
 
-- collection directory;
-- canonical SVG filename;
+- acquired collection identity;
+- acquired SVG identity;
 - collection metadata;
 - icon metadata;
 - optional variant identity.
 
-Missing counterparts, duplicate identities, path disagreement, and generated-name collisions are
-diagnostic errors. Filesystem traversal order cannot determine semantic or output order.
+Missing counterparts, duplicate identities, acquired identity disagreement, and generated-name
+collisions are diagnostic errors. Filesystem traversal order cannot determine semantic or output
+order. Build does not infer identity from a filesystem layout; an effectful host may enforce a
+storage convention before constructing the source descriptors.
 
 ## Internal parser output
 
@@ -105,9 +107,9 @@ reported separately as a warning. A collection may promote an evidenced visual r
 requirement through its accepted design contract.
 
 The implemented internal validation boundary and the deliberate limits of its geometric evidence
-are documented by [Build SVG Validation](../packages/build/validation/index.md). Metadata
-serialisation remains separate: validation can establish required source pairing and acquired
-identity without treating opaque textual metadata as a resolved portable value.
+are documented by [Build SVG Validation](../packages/build/validation/index.md). Metadata decoding
+remains a separate stage: validation establishes required source pairing and acquired identity,
+while the decoder establishes structured metadata authority.
 
 ## Normalisation authority
 
@@ -122,7 +124,7 @@ The normaliser owns representation, not artwork. It may:
 
 It must not:
 
-- mutate masters or canonical SVG;
+- mutate masters or acquired SVG;
 - reorder, merge, split, simplify, round, or optimise geometry;
 - infer missing design intent;
 - convert strokes to outlines;
@@ -139,14 +141,18 @@ construction boundary are documented by
 ## Generation boundary
 
 Generation consumes only validated portable definitions and resolved distribution metadata. It
-does not read parser nodes or canonical SVG directly.
+does not read parser nodes or acquired SVG directly.
 
 The generator first computes and validates a complete generation plan. Source errors prevent any
 new output from being committed. The implementation must define a staging, replacement, and
 cleanup boundary that cannot leave accepted generated files mixed with rejected data.
 
-Generated artefacts identify their canonical input set and rebuild authority. They are terminal
-outputs and never replace authored SVG or metadata.
+Generated artefacts identify their declared input set and rebuild authority. They are terminal
+outputs and never replace their accepted authoring authority.
+
+The implemented pure module, export, collision, and stale-file planning boundary is documented by
+[Build Generator](../packages/build/generator/index.md). Filesystem discovery, atomic commit,
+cleanup execution, package compilation, and process status remain outside that domain boundary.
 
 ## Parser-library criteria
 

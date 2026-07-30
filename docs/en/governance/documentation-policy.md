@@ -46,9 +46,11 @@ The documentation path may omit implementation-only `src`, layer directories, or
 domain feature remains unambiguous. It does not invent a package, feature, or service before the
 corresponding product boundary exists.
 
-`docs/en/collections/` mirrors `collections/`. Each real collection documents identity, curator,
-lifecycle, visual contract, source workflow, licensing, reference set, exceptions, and review
-evidence at its matching path.
+`docs/en/collections/` is keyed by accepted collection identity rather than by one prescribed
+source root. Each real collection documents identity, curator, lifecycle, visual contract,
+authoring workflow, licensing, reference set, exceptions, and review evidence at its matching
+identity path. If an accepted source root exists, documentation and source collection identities
+must agree.
 
 The package and collection indices document the sets generally and may exist before their first
 member. Member directories are created only with real repository structure.

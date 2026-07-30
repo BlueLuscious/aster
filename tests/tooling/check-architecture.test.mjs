@@ -233,6 +233,7 @@ test("rejects private parser dependency and adapter boundary drift", async () =>
       [
         'export * from "./parser/runtime/svg.parser.js";',
         'export * from "./validation/runtime/svg.validator.js";',
+        'export * from "./generator/runtime/generation.planner.js";',
         "",
       ].join("\n"),
     );
@@ -253,6 +254,9 @@ test("rejects private parser dependency and adapter boundary drift", async () =>
     );
     assert.ok(
       issues.some((issue) => /cannot expose its internal validation feature/u.test(issue)),
+    );
+    assert.ok(
+      issues.some((issue) => /cannot expose its internal generator feature/u.test(issue)),
     );
   } finally {
     await rm(root, { recursive: true, force: true });
