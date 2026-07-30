@@ -72,6 +72,11 @@ Export maps list every public root and supported subpath and reject implementati
 Generated modules import public package subpaths rather than filesystem-relative implementation
 files.
 
+Generated collection manifests declare `@aster/core` as their only production dependency and map
+each supported subpath independently to its ESM implementation and declaration. The canonical
+package shape and ownership model are documented by
+[Build Generator](../packages/build/generator/index.md).
+
 ## Definition re-exports
 
 A generic renderer or framework adapter does not own a collection and therefore does not re-export

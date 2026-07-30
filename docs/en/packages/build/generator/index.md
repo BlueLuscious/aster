@@ -2,25 +2,26 @@
 
 Status: **Accepted**
 
-The generator feature converts complete portable definitions into a deterministic collection
-module plan. It is internal to `@aster/build`: its contracts, types, authorities, templates, and
-runtime classes are absent from the package root.
+The generator feature converts complete portable definitions and publication metadata into a
+deterministic collection package plan. It is internal to `@aster/build`: its contracts, types,
+authorities, templates, and runtime classes are absent from the package root.
 
 Generation planning is pure. It accepts explicit values and an optional snapshot of existing text
-files, then returns complete planned content, public package subpaths, and safe stale paths. It
-does not inspect directories, read or write files, resolve absolute output roots, terminate a
-process, compile modules, or commit partial output.
+files, then returns complete source modules, package configuration, public package subpaths, and
+safe stale paths. It does not inspect directories, read or write files, resolve absolute output
+roots, terminate a process, compile modules, or commit partial output.
 
 ## Internal contracts
 
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
 | `IExistingGeneratedFile` | Carries one existing generated-root-relative path and its exact text content. | Supplied by a future filesystem host; analysed by `GeneratedCleanupPlanner`. |
-| `IGenerationEntry` | Associates one portable `IconDefinition` with its canonical metadata provenance. | Accepted as part of `IGenerationRequest`; converted to `TGenerationCandidate`. |
-| `IGenerationRequest` | Carries collection provenance, collection slug, intended package name, definitions, and an optional existing-file snapshot. | Input to `IGenerationPlanner`; normalised by `GenerationRequestNormaliser`. |
+| `IGeneratedPackageMetadata` | Carries canonical name, semantic version, description, and licence for one generated package. | Accepted by `IGenerationRequest`; rendered by `PackageManifestTemplate`; retained by `IGenerationPlan`. |
+| `IGenerationEntry` | Associates one portable `IconDefinition` with its complete non-empty canonical source set. | Accepted as part of `IGenerationRequest`; converted to `TGenerationCandidate`. |
+| `IGenerationRequest` | Carries collection provenance, collection slug, publication metadata, definitions, and an optional existing-file snapshot. | Input to `IGenerationPlanner`; normalised by `GenerationRequestNormaliser`. |
 | `IPlannedFile` | Carries one complete generated-root-relative path and LF-terminated UTF-8 text content. | Retained by `IGenerationPlan`; consumed by a future filesystem host. |
 | `IPlannedPackageExport` | Associates one public collection-package subpath with its generated TypeScript source module. | Retained by `IGenerationPlan`; used by later package emission. |
-| `IGenerationPlan` | Carries the complete ordered file, export, and stale-path plan for one collection package. | Successful output of `IGenerationPlanner`. |
+| `IGenerationPlan` | Carries publication metadata and the complete ordered file, export, and stale-path plan for one collection package. | Successful output of `IGenerationPlanner`. |
 | `IGenerationPlanner` | Defines pure diagnostic-bearing collection-package planning. | Implemented by `GenerationPlanner`; returns `DiagnosticResultType<IGenerationPlan>`. |
 
 All paths in requests and plans are relative to an externally configured generated root and use
@@ -33,6 +34,7 @@ symlink-safe resolution and atomic commit.
 
 | Type | Responsibility | Relations |
 | --- | --- | --- |
+| `TGeneratedDistributionPath` | Carries published JavaScript and declaration paths derived from one source module. | Created by `GeneratedDistributionPathFactory`; used by `PackageManifestTemplate`. |
 | `TGeneratedIconName` | Carries one stable identity key, TypeScript symbol, module path, public subpath, and manifest key. | Created by `GeneratedIconNameFactory`. |
 | `TGenerationCandidate` | Pairs an accepted `IGenerationEntry` with its `TGeneratedIconName`. | Canonical planning value used by templates and collision detection. |
 | `TGeneratedCleanupPlan` | Separates stale owned paths from planned paths occupied by unowned files. | Output of `GeneratedCleanupPlanner`. |
@@ -43,8 +45,9 @@ symlink-safe resolution and atomic commit.
 | Authority | Responsibility |
 | --- | --- |
 | `generatedFileMarker` | Defines the exact first line proving Aster ownership of generated text files. |
+| `generatedPackageAuthority` | Defines package-manifest ownership, schema, rebuild, editing policy, and Core dependency values. |
 | `generationIssueKinds` | Defines every blocking generation-planning evidence discriminator. |
-| `generatorModulePaths` | Defines the generated icon root, collection root module, and manifest module paths. |
+| `generatorModulePaths` | Defines generated package, compiler, icon, root, and manifest paths. |
 | `generatorReservedSubpaths` | Reserves `./manifest` for the opt-in collection registry. |
 
 These authorities are internal implementation values. Generated banners and output modules are
@@ -81,7 +84,10 @@ collection root never import that manifest.
 | `IconModuleTemplate` | Emits one isolated definition module importing only `@aster/core`. |
 | `CollectionIndexTemplate` | Emits canonically ordered convenience re-exports without importing the manifest. |
 | `CollectionManifestTemplate` | Emits the explicit opt-in immutable registry and its complete imports. |
+| `PackageManifestTemplate` | Emits publication metadata, exact export maps, scripts, Core dependency, and structured ownership evidence. |
+| `TypeScriptConfigurationTemplate` | Emits JSONC configuration extending the repository ES2022 production baseline. |
 | `GeneratedModuleSpecifierFactory` | Converts generated `src/**/*.ts` paths into relative `.js` ESM specifiers. |
+| `GeneratedDistributionPathFactory` | Converts generated source paths into published ESM and declaration paths. |
 
 Generated text uses UTF-8-compatible source, LF line endings, stable two-space literal
 indentation, semicolons, and one terminal newline. Each module begins with:
@@ -94,15 +100,49 @@ indentation, semicolons, and one terminal newline. Each module begins with:
 ```
 
 Source identifiers are represented as JSON strings so authored text cannot inject generated
-comment lines.
+comment lines. Each per-icon banner carries every canonical source that contributes to that
+definition; aggregate modules and package configuration carry the complete package source set.
+
+## Generated package shape
+
+The generated package contains:
+
+```text
+package.json
+tsconfig.json
+src/index.ts
+src/manifest.ts
+src/icons/<name>.ts
+src/icons/<name>/<variant>.ts
+```
+
+`package.json` is strict JSON and therefore cannot carry the line-comment banner. Its top-level
+`aster` field records `generatedBy`, ownership schema version, canonical sources, rebuild
+authority, and editing policy. The manifest declares ESM, `sideEffects: false`, `dist` as the
+publishable boundary, public access, and `@aster/core` as its only production dependency.
+
+Its exact export map contains:
+
+- `.` for the collection convenience barrel;
+- one subpath for every icon and variant;
+- `./manifest` for the explicit opt-in registry.
+
+Every export maps independently to its `dist` ESM implementation and declaration. Source,
+implementation, parser, and unplanned directory paths are absent and therefore rejected by Node
+package resolution.
+
+`tsconfig.json` extends the repository production baseline and only selects generated `src`
+modules, `src` as `rootDir`, and `dist` as `outDir`. The effective compilation remains ES2022 ESM
+without DOM or ambient Node types.
 
 ## Planning composition
 
 | Class | Responsibility |
 | --- | --- |
-| `GenerationRequestNormaliser` | Validates exact request fields, canonical paths, collection identity, package name, existing files, and non-empty entries; re-establishes definition authority through `Icon.define()`. |
+| `GenerationRequestNormaliser` | Validates exact request fields, canonical paths, collection identity, publication metadata, complete source sets, existing files, and non-empty entries; re-establishes definition authority through `Icon.define()`. |
 | `GeneratedIconNameFactory` | Derives all stable names from canonical portable identity. |
-| `GeneratedCleanupPlanner` | Finds obsolete files carrying the exact ownership marker and detects planned overwrites of unowned files. |
+| `GeneratedFileOwnershipInspector` | Recognises exact first-line markers and structured package-manifest ownership. |
+| `GeneratedCleanupPlanner` | Finds obsolete explicitly owned files and detects planned overwrites of unowned files. |
 | `GenerationDiagnosticFactory` | Maps internal issue evidence to stable blocking Generation diagnostics. |
 | `GenerationPlanner` | Orchestrates validation, canonical ordering, collision detection, templates, exports, cleanup analysis, and diagnostic-bearing results. |
 
@@ -131,7 +171,8 @@ diagnostic results with no partial plan.
 An existing file is stale only when:
 
 - its path is canonical and relative to the generated root;
-- its exact first line is `generatedFileMarker`;
+- its exact first line is `generatedFileMarker`, or it is `package.json` carrying the accepted
+  structured ownership authority;
 - its path is absent from the complete new plan.
 
 Human-owned files absent from the plan are ignored. A human-owned file occupying a planned path
@@ -141,10 +182,14 @@ protection, replacement, and interruption recovery remain filesystem-host respon
 ## Implemented boundary
 
 The implemented feature plans TypeScript definition modules, collection convenience exports, an
-opt-in manifest, public package subpaths, and stale owned text files. It does not yet emit a
-package manifest or compiler configuration, create a generated package, or write output. Those
-responsibilities require built-package evidence and belong to the generated-module and
-end-to-end host boundaries.
+opt-in manifest, exact package metadata and exports, compiler configuration, public package
+subpaths, and stale owned text files. Conformance materialises that plan in an isolated workspace,
+compiles it, consumes it through Node package resolution, rejects unsupported subpaths, proves
+per-icon isolation, and recreates byte-identical source after deletion.
+
+The production feature still does not discover canonical source, decode metadata text, create
+directories, write or delete output, invoke compilation, or commit a generated package. Those
+effectful responsibilities belong to the end-to-end host boundary.
 
 The repository-wide determinism contract is
 [Diagnostics and Determinism](../../../architecture/diagnostics-and-determinism.md). Package
