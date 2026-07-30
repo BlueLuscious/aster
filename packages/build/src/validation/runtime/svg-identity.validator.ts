@@ -10,7 +10,7 @@ import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
 /**
- * @description Resolves required metadata counterparts and validates every acquired identity boundary.
+ * @description Resolves required metadata counterparts and validates acquired identity relationships.
  */
 export class SvgIdentityValidator {
   /**
@@ -19,7 +19,7 @@ export class SvgIdentityValidator {
   readonly #diagnosticFactory = new SvgValidationDiagnosticFactory();
 
   /**
-   * @description Applies collection, path, counterpart, and duplicate identity invariants.
+   * @description Applies collection, counterpart, and duplicate identity invariants.
    * @param unit - Complete independently acquired validation unit.
    * @returns Blocking identity diagnostics and all unambiguous source pairs.
    */
@@ -55,12 +55,7 @@ export class SvgIdentityValidator {
       const key = this.#identityKey(metadata.identity);
       const first = metadataByIdentity.get(key);
 
-      if (
-        metadata.identity.collection !== collection ||
-        !metadata.sourceId.startsWith(
-          `collections/${collection}/metadata/`,
-        )
-      ) {
+      if (metadata.identity.collection !== collection) {
         diagnostics.push(this.#disagreement(metadata.sourceId));
       }
 
@@ -85,9 +80,7 @@ export class SvgIdentityValidator {
 
       if (
         entry.source.identity.collection !== collection ||
-        entry.document.sourceId !== entry.source.sourceId ||
-        entry.source.sourceId !==
-          this.#expectedSourceId(entry.source.identity)
+        entry.document.sourceId !== entry.source.sourceId
       ) {
         diagnostics.push(
           this.#disagreement(
@@ -192,16 +185,5 @@ export class SvgIdentityValidator {
    */
   #identityKey(identity: IconIdentity): string {
     return `${identity.collection}/${identity.name}/${identity.variant ?? ""}`;
-  }
-
-  /**
-   * @description Derives the exact accepted canonical SVG source identifier.
-   * @param identity - Independently acquired canonical identity.
-   * @returns Repository-relative canonical SVG source identifier.
-   */
-  #expectedSourceId(identity: IconIdentity): string {
-    const variant =
-      identity.variant === undefined ? "" : `--${identity.variant}`;
-    return `collections/${identity.collection}/svg/${identity.name}${variant}.svg`;
   }
 }

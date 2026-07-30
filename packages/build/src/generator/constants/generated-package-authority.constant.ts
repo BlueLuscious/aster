@@ -7,6 +7,6 @@ export const generatedPackageAuthority = Object.freeze({
   editingPolicy: "generated",
   field: "aster",
   generatedBy: "@aster/build",
-  rebuildCommand: "pnpm aster:build",
+  rebuildCommand: "aster build",
   schemaVersion: 1,
 } as const);

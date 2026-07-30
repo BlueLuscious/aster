@@ -99,7 +99,7 @@ export class SvgValidationDiagnosticFactory {
           severity: diagnosticSeverities.error,
           category: diagnosticCategories.technical,
           message:
-            "The collection, source path, SVG, and metadata identities must agree.",
+            "The collection, SVG source, and metadata identities must agree.",
         };
       case svgValidationIssueKinds.duplicateIdentity:
         return {

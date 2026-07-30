@@ -1,4 +1,5 @@
 import { generatedFileMarker } from "../constants/generated-file-marker.constant.js";
+import { generatedPackageAuthority } from "../constants/generated-package-authority.constant.js";
 
 /**
  * @description Creates stable ownership and rebuild instructions for generated text modules.
@@ -17,7 +18,7 @@ export class GeneratedFileBannerFactory {
     return [
       generatedFileMarker,
       `// Sources: ${this.#serialise(canonical)}`,
-      "// Rebuild: pnpm aster:build",
+      `// Rebuild: ${generatedPackageAuthority.rebuildCommand}`,
       "// Do not edit manually.",
       "",
     ].join("\n");
