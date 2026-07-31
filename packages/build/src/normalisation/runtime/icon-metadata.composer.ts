@@ -17,13 +17,6 @@ export class IconMetadataComposer {
     collection: ICollectionMetadataValue,
     icon: IIconMetadataValue,
   ): IconMetadata {
-    if (icon.identity.collection !== collection.collection) {
-      throw new BuildContractError(
-        "request.iconMetadata.identity.collection",
-        "must match collection metadata",
-      );
-    }
-
     if (
       icon.licence !== undefined &&
       !collection.allowIconLicenceOverride
@@ -41,6 +34,7 @@ export class IconMetadataComposer {
 
     return {
       displayName: icon.displayName,
+      ...(icon.tags === undefined ? {} : { tags: icon.tags }),
       rtl: icon.rtl ?? "preserve",
       presentation: collection.presentation,
       ...(licence === undefined ? {} : { licence }),

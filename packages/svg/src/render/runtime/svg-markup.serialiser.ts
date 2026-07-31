@@ -112,7 +112,7 @@ export class SvgMarkupSerialiser {
 
   /**
    * @description Resolves complete node presentation according to accepted precedence.
-   * @param context - Accepted render context owning collection defaults.
+   * @param context - Accepted render context owning resolved icon defaults.
    * @param node - Canonical node carrying optional explicit presentation.
    * @returns Complete effective presentation.
    */

@@ -2,9 +2,9 @@ import type { IconPresentationOverrideType } from "../types/index.js";
 import type { IconPresentation } from "./icon-presentation.contract.js";
 
 /**
- * @description Resolved collection defaults and caller override authority retained by an icon.
+ * @description Resolved presentation defaults and caller override authority owned by an icon.
  */
-export interface CollectionPresentationPolicy {
+export interface IconPresentationPolicy {
   /**
    * @description Portable presentation applied before node-specific values.
    */

@@ -25,7 +25,7 @@ function extractModuleSpecifiers(source) {
 function createDefinitionInput() {
   return {
     identity: {
-      collection: "conformance",
+      namespace: "conformance",
       name: "circle",
     },
     viewBox: {

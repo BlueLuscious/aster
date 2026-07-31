@@ -35,6 +35,12 @@ Run the standalone documentation validation with:
 pnpm run check:docs
 ```
 
+Generate disposable Aster pilot review SVGs and technical evidence with:
+
+```sh
+pnpm run review:pilot
+```
+
 ## Licence
 
 Aster is licensed under the terms in [LICENSE](LICENSE).

@@ -20,6 +20,11 @@ export interface IIconMetadataValue {
   readonly displayName: string;
 
   /**
+   * @description Optional canonical intrinsic icon tags.
+   */
+  readonly tags?: readonly string[];
+
+  /**
    * @description Optional explicit right-to-left policy, defaulting to preserve.
    */
   readonly rtl?: IconRtlPolicyType;

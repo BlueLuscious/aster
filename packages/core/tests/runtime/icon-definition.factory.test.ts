@@ -9,7 +9,7 @@ const definitionFactory = new IconDefinitionFactory();
 function createInput() {
   return {
     identity: {
-      collection: "minimal",
+      namespace: "minimal",
       name: "shape-sampler",
       variant: "outline",
     },
@@ -255,7 +255,7 @@ test("rejects numbers outside each declared numeric domain", () => {
 test("normalises valid names and rejects non-canonical identity slugs", () => {
   const acceptedInput = createInput();
   acceptedInput.identity = {
-    collection: " minimal-2 ",
+    namespace: " minimal-2 ",
     name: "shape-2",
     variant: "solid-2",
   };
@@ -263,7 +263,7 @@ test("normalises valid names and rejects non-canonical identity slugs", () => {
   const accepted = definitionFactory.create(acceptedInput);
 
   assert.deepEqual(accepted.identity, {
-    collection: "minimal-2",
+    namespace: "minimal-2",
     name: "shape-2",
     variant: "solid-2",
   });
@@ -292,7 +292,7 @@ test("accepts complete deprecation metadata and enforces metadata edge relations
   Object.assign(acceptedInput.metadata, {
     attribution: " Example Author ",
     replacedBy: {
-      collection: "minimal",
+      namespace: "minimal",
       name: "shape-sampler",
       variant: "solid",
     },
@@ -302,7 +302,7 @@ test("accepts complete deprecation metadata and enforces metadata edge relations
 
   assert.equal(accepted.metadata.attribution, "Example Author");
   assert.deepEqual(accepted.metadata.replacedBy, {
-    collection: "minimal",
+    namespace: "minimal",
     name: "shape-sampler",
     variant: "solid",
   });

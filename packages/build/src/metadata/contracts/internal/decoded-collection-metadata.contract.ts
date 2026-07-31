@@ -1,4 +1,4 @@
-import type { CollectionPresentationPolicy } from "@aster/core";
+import type { IconPresentationPolicy } from "@aster/core";
 
 /**
  * @description Accepted version-one collection metadata required by downstream build stages.
@@ -47,7 +47,7 @@ export interface IDecodedCollectionMetadata {
   /**
    * @description Resolved portable collection presentation policy.
    */
-  readonly presentation: CollectionPresentationPolicy;
+  readonly presentation: IconPresentationPolicy;
 
   /**
    * @description Raw version-one visual validation configuration.

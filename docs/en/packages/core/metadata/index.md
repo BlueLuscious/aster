@@ -2,15 +2,16 @@
 
 Status: **Accepted**
 
-The metadata feature retains only values required by runtime, redistribution, or target consumers.
-Search indexes, tags, aliases, source provenance, review notes, generated technical facts without
-a runtime consumer, and repository state remain outside a definition.
+The metadata feature retains only values required by runtime, redistribution, discovery, or target
+consumers. Optional intrinsic icon tags are portable; aliases, collection-specific taxonomy,
+search indexes, source provenance, review notes, generated technical facts, and repository state
+remain outside a definition.
 
 ## Contracts
 
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
-| `IconMetadata` | Carries display name, RTL policy, resolved presentation policy, effective licensing, deprecation, and optional replacement identity. | Composes `IconRtlPolicyType`, `CollectionPresentationPolicy`, and optional `IconIdentity`. |
+| `IconMetadata` | Carries display name, optional intrinsic tags, RTL policy, resolved presentation policy, effective licensing, deprecation, and optional replacement identity. | Composes `IconRtlPolicyType`, `IconPresentationPolicy`, and optional `IconIdentity`. |
 
 `licence` and `attribution` are optional at the general construction boundary because experimental
 values may not be distributable. A distribution boundary must reject unresolved effective
@@ -34,7 +35,7 @@ semantics from an icon name.
 
 | Class | Responsibility | Relations |
 | --- | --- | --- |
-| `IconMetadataNormaliser` | Validates resolved display, direction, licensing, deprecation, and replacement data before cloning and freezing it. | Composes `IconIdentityNormaliser` and `CollectionPresentationPolicyNormaliser`. |
+| `IconMetadataNormaliser` | Validates resolved display, unique canonical tags, direction, licensing, deprecation, and replacement data before cloning and freezing it. | Composes `IconIdentityNormaliser` and `IconPresentationPolicyNormaliser`. |
 
 Attribution requires an effective licence. A replacement requires deprecated metadata and must
 not equal the complete identity of the definition being constructed. Core can compare the owning

@@ -26,7 +26,7 @@ One portable icon definition contains:
 
 | Field | Meaning |
 | --- | --- |
-| `identity` | The canonical collection, icon, and optional variant identity. |
+| `identity` | The optional namespace, canonical icon name, and optional variant identity. |
 | `viewBox` | Four finite numbers: minimum x, minimum y, width, and height. |
 | `nodes` | A non-empty, ordered, read-only sequence of portable geometry nodes. |
 | `metadata` | Only resolved metadata required by runtime, redistribution, or target adapters. |
@@ -78,7 +78,7 @@ the same effective presentation through multiple equivalent shapes.
 
 ### Technical presentation defaults
 
-The following portable defaults apply before collection and node presentation:
+The following portable defaults apply before icon-policy and node presentation:
 
 | Field | Default |
 | --- | --- |
@@ -93,8 +93,8 @@ The following portable defaults apply before collection and node presentation:
 | `fillOpacity` | `1` |
 | `strokeOpacity` | `1` |
 
-These values describe presentation semantics rather than collection personality. A renderer
-resolves them before collection defaults and emits the resulting per-node presentation without
+These values describe presentation semantics rather than a visual personality. A renderer
+resolves them before icon-owned defaults and emits the resulting per-node presentation without
 rewriting the portable definition.
 
 ## Numeric and textual values

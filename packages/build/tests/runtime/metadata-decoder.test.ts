@@ -34,7 +34,7 @@ function iconSource(content: string): IconMetadataSource {
     sourceId: "fixtures/metadata/icons/frame.json",
     content,
     identity: {
-      collection: "fixture",
+      namespace: "fixture",
       name: "frame",
     },
   });
@@ -101,7 +101,7 @@ test("decodes immutable version-one collection and icon metadata", () => {
 
   assert.equal(collection.value.packageName, "@aster/fixture");
   assert.deepEqual(icon.value.identity, {
-    collection: "fixture",
+    namespace: "fixture",
     name: "frame",
   });
   assert.ok(Object.isFrozen(collection.value));

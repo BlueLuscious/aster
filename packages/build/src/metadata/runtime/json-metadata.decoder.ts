@@ -1,5 +1,5 @@
 import type {
-  CollectionPresentationPolicy,
+  IconPresentationPolicy,
   IconIdentity,
   IconPresentation,
   IconPresentationOverrideType,
@@ -17,6 +17,7 @@ import type { TMetadataIssue } from "../types/internal/metadata-issue.type.js";
 import { DiagnosticResultFactory } from "../../diagnostic/runtime/diagnostic-result.factory.js";
 import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { BuildValueValidator } from "../../shared/runtime/build-value.validator.js";
+import { CanonicalSlugNormaliser } from "../../shared/runtime/canonical-slug.normaliser.js";
 import { svgPresentationAttributeSchema } from "../../shared/constants/svg-presentation-attribute-schema.constant.js";
 import { SourceIdentityNormaliser } from "../../source/runtime/source-identity.normaliser.js";
 import { metadataIssueKinds } from "../constants/metadata-issue-kinds.constant.js";
@@ -43,6 +44,11 @@ export class JsonMetadataDecoder implements IMetadataDecoder {
    * @description Canonical icon identity normalisation authority.
    */
   readonly #identityNormaliser = new SourceIdentityNormaliser();
+
+  /**
+   * @description Canonical intrinsic tag authority.
+   */
+  readonly #slugNormaliser = new CanonicalSlugNormaliser();
 
   /**
    * @description Stable metadata diagnostic construction authority.
@@ -135,7 +141,11 @@ export class JsonMetadataDecoder implements IMetadataDecoder {
       this.#version(record.schemaVersion, `${path}.schemaVersion`);
       const identity = this.#identityNormaliser.normalise(
         {
-          collection: source.identity.collection,
+          ...(
+            source.identity.namespace === undefined
+              ? {}
+              : { namespace: source.identity.namespace }
+          ),
           name: record.name,
           ...("variant" in record ? { variant: record.variant } : {}),
         },
@@ -165,6 +175,10 @@ export class JsonMetadataDecoder implements IMetadataDecoder {
               `${path}.rtl`,
             )
           : undefined;
+      const tags =
+        "tags" in record
+          ? this.#tags(record.tags, `${path}.tags`)
+          : undefined;
       const replacedBy =
         "replacedBy" in record
           ? this.#identity(record.replacedBy, `${path}.replacedBy`)
@@ -177,6 +191,7 @@ export class JsonMetadataDecoder implements IMetadataDecoder {
           record.displayName,
           `${path}.displayName`,
         ),
+        ...(tags === undefined ? {} : { tags }),
         ...(rtl === undefined ? {} : { rtl: rtl as IconRtlPolicyType }),
         ...this.#optionalText(record, "licence", path),
         ...this.#optionalText(record, "attribution", path),
@@ -366,7 +381,7 @@ export class JsonMetadataDecoder implements IMetadataDecoder {
   #presentation(
     record: Record<string, unknown>,
     path: string,
-  ): CollectionPresentationPolicy {
+  ): IconPresentationPolicy {
     const presentationFields = Object.freeze(
       Object.values(svgPresentationAttributeSchema).map(
         (schema) => schema.field,
@@ -432,6 +447,24 @@ export class JsonMetadataDecoder implements IMetadataDecoder {
     return field in record
       ? { [field]: this.#text(record[field], `${path}.${field}`) }
       : {};
+  }
+
+  /**
+   * @description Decodes unique canonical intrinsic icon tags.
+   * @param value - Unknown metadata tag collection.
+   * @param path - Logical tag collection path.
+   * @returns Frozen canonical tags preserving source order.
+   */
+  #tags(value: unknown, path: string): readonly string[] {
+    const tags = this.#validator.array(value, path).map((tag, index) =>
+      this.#slugNormaliser.normalise(tag, `${path}[${index}]`),
+    );
+
+    if (new Set(tags).size !== tags.length) {
+      throw new BuildContractError(path, "expected unique tags");
+    }
+
+    return Object.freeze(tags);
   }
 
   /**

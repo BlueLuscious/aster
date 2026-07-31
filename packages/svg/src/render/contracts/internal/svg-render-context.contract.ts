@@ -30,7 +30,7 @@ export interface ISvgRenderContext {
   readonly colour?: IconPaintType;
 
   /**
-   * @description Canonical caller presentation values authorised by collection policy.
+   * @description Canonical caller presentation values authorised by the icon policy.
    */
   readonly presentationOverrides: IconPresentation;
 

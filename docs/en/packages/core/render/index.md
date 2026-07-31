@@ -9,7 +9,7 @@ target output, mount state, callback, framework controller, or platform extensio
 
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
-| `IconRenderOptions` | Carries optional viewport size, colour context, allowed presentation overrides, accessibility intent, and explicit direction. | Uses `IconPaintType` and `IconDirectionType`; interpreted with `CollectionPresentationPolicy`. |
+| `IconRenderOptions` | Carries optional viewport size, colour context, allowed presentation overrides, accessibility intent, and explicit direction. | Uses `IconPaintType` and `IconDirectionType`; interpreted with `IconPresentationPolicy`. |
 
 The object is closed. It cannot select a variant, replace a viewBox, inject target attributes,
 provide events, or carry DOM or framework objects.

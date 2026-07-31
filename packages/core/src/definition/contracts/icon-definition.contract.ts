@@ -8,7 +8,7 @@ import type { IconViewBox } from "./icon-view-box.contract.js";
  */
 export interface IconDefinition {
   /**
-   * @description Stable collection, icon, and optional variant identity.
+   * @description Stable namespace, icon, and optional variant identity.
    */
   readonly identity: IconIdentity;
 

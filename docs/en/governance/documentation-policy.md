@@ -46,14 +46,16 @@ The documentation path may omit implementation-only `src`, layer directories, or
 domain feature remains unambiguous. It does not invent a package, feature, or service before the
 corresponding product boundary exists.
 
-`docs/en/collections/` is keyed by accepted collection identity rather than by one prescribed
-source root. Each real collection documents identity, curator, lifecycle, visual contract,
-authoring workflow, licensing, reference set, exceptions, and review evidence at its matching
-identity path. If an accepted source root exists, documentation and source collection identities
-must agree.
+`docs/en/collections/` is keyed by accepted curatorial identity rather than by one prescribed
+source root. An Experimental collection may document its identity, curator, lifecycle, licence,
+and provisional visual contract before selecting canonical icon authoring authority. It must
+state that no icon source or distribution is accepted yet. Authoring workflow, source-relative
+exceptions, and generated-output documentation are added only when their ownership is real. If an
+accepted source root exists, documentation and source collection identities must agree.
 
 The package and collection indices document the sets generally and may exist before their first
-member. Member directories are created only with real repository structure.
+member. Package member directories mirror real package structure. Collection member directories
+represent accepted curatorial identities and do not imply a repository root named `collections/`.
 
 ## Contracts, types, and flows
 

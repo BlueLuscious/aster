@@ -29,9 +29,10 @@ Composition follows this authority:
 3. Icon metadata supplies only fields that the collection allows icons to override.
 4. Generated technical facts are authoritative for computed fields and cannot be authored.
 
-The resulting portable definition retains only metadata required by runtime consumers. Build,
-review, source-provenance, and repository-only fields remain outside the runtime definition unless
-a concrete public consumer requires them.
+The resulting portable definition retains only metadata required by runtime, redistribution,
+discovery, or target consumers. Optional intrinsic tags are retained; aliases, collection-specific
+taxonomy, search indexes, Build review, source provenance, and repository-only fields remain
+outside the runtime definition unless a concrete public consumer requires them.
 
 ## Collection metadata draft
 
@@ -66,7 +67,8 @@ The conceptual icon fields are:
 
 | Field | Requirement | Meaning |
 | --- | --- | --- |
-| `name` | Required | Stable canonical icon slug within its collection and optional variant. |
+| `namespace` | Optional | Stable producer or collision-domain slug independent of collection membership. |
+| `name` | Required | Stable canonical icon slug. |
 | `displayName` | Required | Human-readable name for documentation and search. |
 | `aliases` | Defaults to empty | Alternative search terms that do not create export identity. |
 | `tags` | Defaults to empty | Descriptive search and discovery terms. |
@@ -74,7 +76,7 @@ The conceptual icon fields are:
 | `author` | Optional | Icon-specific author overriding or supplementing collection authorship. |
 | `licence` | Optional | Icon-specific distribution licence allowed by the collection. |
 | `attribution` | Conditional | Icon-specific attribution required by its effective licence. |
-| `variant` | Optional | Controlled variation identity within the collection. |
+| `variant` | Optional | Controlled variation identity of the icon. |
 | `rtl` | Defaults to Preserve | Mirror, Preserve, or Manual directional behaviour. |
 | `deprecated` | Defaults to false | Indicates that consumers should migrate away from this identity. |
 | `replacedBy` | Optional | Fully qualified replacement icon identity. |
@@ -89,21 +91,24 @@ Textual metadata remains an acquired source until a replaceable decoder produces
 structured collection and icon values. Those values retain the canonical source identity and
 logical icon identity required to link them to successful SVG validation evidence.
 
-The decoder owns textual syntax and field diagnostics. The normaliser owns authority composition:
-collection defaults apply first, and an icon-specific artwork licence applies only when the
-collection explicitly grants that override. This split keeps serialisation replaceable while
-preventing opaque text or parser-library values from entering portable definitions.
+The decoder owns textual syntax and field diagnostics. During SVG import, the normaliser owns
+authority composition: selected-collection defaults apply first, and an icon-specific artwork
+licence applies only when that import context explicitly grants the override. The resulting
+portable definition retains its resolved metadata independently of later collection membership.
+This split keeps serialisation replaceable while preventing opaque text or parser-library values
+from entering portable definitions.
 
 ## Canonical identity
 
 One logical icon identity is:
 
 ```text
-collection-slug / icon-slug / optional-variant-slug
+optional-namespace / icon-slug / optional-variant-slug
 ```
 
-Collection and icon slugs are stable ASCII lowercase `kebab-case`. Variant slugs follow the same
-rule when variants have separate logical identity.
+Namespace and icon slugs are stable ASCII lowercase `kebab-case`. Variant slugs follow the same
+rule when variants have separate logical identity. Namespace prevents producer collisions but does
+not imply collection membership.
 
 This logical identity is independent from:
 
@@ -114,8 +119,12 @@ This logical identity is independent from:
 - package layout or export path;
 - aliases, tags, and categories.
 
+Collection membership is intentionally absent. One icon can be standalone or retained directly by
+multiple collections without changing its logical identity, metadata, or rendering. Membership is
+owned only by each `CollectionDefinition`.
+
 Every distributable variant is a separate portable definition with its own canonical identity,
-generated symbol, module, and per-icon subpath. A collection may declare a default variant, but
+generated symbol, module, and per-icon subpath. Documentation may recommend a default variant, but
 distribution and render options cannot silently erase or replace variant identity. The complete
 export relationship is defined by
 [Distribution and Adapters](distribution-and-adapters.md).
@@ -129,7 +138,8 @@ Naming has separate audiences:
 
 | Name | Form | Authority |
 | --- | --- | --- |
-| Collection slug | `minimal` | Stable collection identity and directory name. |
+| Namespace | `minimal` | Optional stable icon producer or collision domain. |
+| Collection slug | `interface-icons` | Independent collection identity and optional source grouping. |
 | Icon slug | `arrow-left` | Stable icon identity and optional SVG import base filename. |
 | Display name | `Arrow Left` | Human-readable documentation and search label. |
 | Generated symbol | `ArrowLeft` | Deterministically derived TypeScript definition symbol. |
@@ -154,7 +164,7 @@ A replacement:
 - cannot point to itself;
 - cannot create a replacement cycle;
 - must preserve a diagnostic when its target is unavailable in the current generation unit;
-- may cross collections only through an explicit curatorial decision.
+- may cross namespaces only through an explicit ownership decision.
 
 `replacedBy` remains optional because some deprecated symbols have no direct replacement.
 Generated documentation and declarations expose deprecation according to the accepted distribution

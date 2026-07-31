@@ -213,11 +213,11 @@ export class SvgNormaliser implements ISvgNormaliser {
    * @description Compares complete logical icon identities.
    * @param left - First canonical identity.
    * @param right - Second canonical identity.
-   * @returns Whether collection, name, and optional variant match.
+   * @returns Whether namespace, name, and optional variant match.
    */
   #identitiesMatch(left: IconIdentity, right: IconIdentity): boolean {
     return (
-      left.collection === right.collection &&
+      left.namespace === right.namespace &&
       left.name === right.name &&
       left.variant === right.variant
     );

@@ -27,6 +27,7 @@ export const metadataSchema = Object.freeze({
     "name",
     "variant",
     "displayName",
+    "tags",
     "rtl",
     "licence",
     "attribution",
@@ -34,7 +35,7 @@ export const metadataSchema = Object.freeze({
     "replacedBy",
   ] as const),
   identityFields: Object.freeze([
-    "collection",
+    "namespace",
     "name",
     "variant",
   ] as const),

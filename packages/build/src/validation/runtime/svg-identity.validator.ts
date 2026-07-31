@@ -19,7 +19,7 @@ export class SvgIdentityValidator {
   readonly #diagnosticFactory = new SvgValidationDiagnosticFactory();
 
   /**
-   * @description Applies collection, counterpart, and duplicate identity invariants.
+   * @description Applies collection-context, counterpart, and duplicate identity invariants.
    * @param unit - Complete independently acquired validation unit.
    * @returns Blocking identity diagnostics and all unambiguous source pairs.
    */
@@ -55,10 +55,6 @@ export class SvgIdentityValidator {
       const key = this.#identityKey(metadata.identity);
       const first = metadataByIdentity.get(key);
 
-      if (metadata.identity.collection !== collection) {
-        diagnostics.push(this.#disagreement(metadata.sourceId));
-      }
-
       if (first !== undefined) {
         diagnostics.push(
           this.#duplicate(
@@ -79,7 +75,6 @@ export class SvgIdentityValidator {
       const metadata = metadataByIdentity.get(key);
 
       if (
-        entry.source.identity.collection !== collection ||
         entry.document.sourceId !== entry.source.sourceId
       ) {
         diagnostics.push(
@@ -181,9 +176,9 @@ export class SvgIdentityValidator {
   /**
    * @description Creates one unambiguous key for counterpart and duplicate resolution.
    * @param identity - Canonical source identity.
-   * @returns Stable collection, icon, and variant key.
+   * @returns Stable namespace, icon, and variant key.
    */
   #identityKey(identity: IconIdentity): string {
-    return `${identity.collection}/${identity.name}/${identity.variant ?? ""}`;
+    return `${identity.namespace ?? ""}/${identity.name}/${identity.variant ?? ""}`;
   }
 }

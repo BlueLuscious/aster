@@ -295,10 +295,10 @@ export class SvgRenderOptionsNormaliser {
   }
 
   /**
-   * @description Ensures a supplied presentation override is allowed by collection policy.
+   * @description Ensures a supplied presentation override is allowed by the icon policy.
    * @param capability - Closed presentation capability.
    * @param value - Optional supplied override value.
-   * @param allowed - Canonical capabilities authorised by collection policy.
+   * @param allowed - Canonical capabilities authorised by the icon policy.
    * @returns Nothing.
    */
   #authoriseOverride(
@@ -309,7 +309,7 @@ export class SvgRenderOptionsNormaliser {
     if (value !== undefined && !allowed.includes(capability)) {
       throw new SvgRenderError(
         `options.${capability}`,
-        "collection policy does not permit this override",
+        "icon policy does not permit this override",
       );
     }
   }

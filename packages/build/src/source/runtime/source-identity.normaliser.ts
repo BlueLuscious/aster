@@ -1,6 +1,6 @@
 import type { IconIdentity } from "@aster/core";
-import { BuildContractError } from "../../shared/runtime/build-contract.error.js";
 import { BuildValueValidator } from "../../shared/runtime/build-value.validator.js";
+import { CanonicalSlugNormaliser } from "../../shared/runtime/canonical-slug.normaliser.js";
 
 /**
  * @description Validates and clones canonical source identity claims.
@@ -12,9 +12,9 @@ export class SourceIdentityNormaliser {
   readonly #validator = new BuildValueValidator();
 
   /**
-   * @description Canonical collection, icon, and variant slug grammar.
+   * @description Canonical namespace, icon, variant, and collection slug authority.
    */
-  readonly #slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+  readonly #slugNormaliser = new CanonicalSlugNormaliser();
 
   /**
    * @description Produces one frozen complete icon identity.
@@ -24,19 +24,22 @@ export class SourceIdentityNormaliser {
    */
   normalise(value: unknown, path: string): IconIdentity {
     const record = this.#validator.record(value, path);
-    this.#validator.exactFields(record, ["collection", "name", "variant"], path);
-    const collection = this.normaliseCollection(
-      record.collection,
-      `${path}.collection`,
-    );
-    const name = this.#normaliseSlug(record.name, `${path}.name`);
+    this.#validator.exactFields(record, ["namespace", "name", "variant"], path);
+    const namespace =
+      "namespace" in record
+        ? this.#slugNormaliser.normalise(
+            record.namespace,
+            `${path}.namespace`,
+          )
+        : undefined;
+    const name = this.#slugNormaliser.normalise(record.name, `${path}.name`);
     const variant =
       "variant" in record
-        ? this.#normaliseSlug(record.variant, `${path}.variant`)
+        ? this.#slugNormaliser.normalise(record.variant, `${path}.variant`)
         : undefined;
 
     return Object.freeze({
-      collection,
+      ...(namespace === undefined ? {} : { namespace }),
       name,
       ...(variant === undefined ? {} : { variant }),
     });
@@ -49,23 +52,6 @@ export class SourceIdentityNormaliser {
    * @returns Accepted collection slug.
    */
   normaliseCollection(value: unknown, path: string): string {
-    return this.#normaliseSlug(value, path);
-  }
-
-  /**
-   * @description Accepts one exact ASCII lowercase kebab-case slug.
-   * @param value - Unknown slug candidate.
-   * @param path - Logical slug path.
-   * @returns Accepted canonical slug.
-   */
-  #normaliseSlug(value: unknown, path: string): string {
-    if (typeof value !== "string" || !this.#slugPattern.test(value)) {
-      throw new BuildContractError(
-        path,
-        "expected an ASCII lowercase kebab-case slug",
-      );
-    }
-
-    return value;
+    return this.#slugNormaliser.normalise(value, path);
   }
 }

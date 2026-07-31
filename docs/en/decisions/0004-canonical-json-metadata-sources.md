@@ -32,7 +32,7 @@ for deterministic diagnostics, and replaceable behind Aster-owned structured con
 - Explicit schema evolution.
 - Familiar authored syntax with broad editor support.
 - Separation between textual decoding and domain authority.
-- Stable collection, icon, and variant counterpart relationships.
+- Stable selected-collection context and namespace, icon, and variant counterpart relationships.
 
 ## Options
 

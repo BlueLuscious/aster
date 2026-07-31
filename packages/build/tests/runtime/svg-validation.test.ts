@@ -26,7 +26,7 @@ function fixture(path: string): string {
 
 function identity(name = "camera") {
   return {
-    collection: "minimal",
+    namespace: "minimal",
     name,
   };
 }

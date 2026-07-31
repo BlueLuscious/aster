@@ -2,7 +2,8 @@ import type { IconIdentity } from "../../definition/contracts/index.js";
 import type { IconMetadata } from "../contracts/index.js";
 import type { IconRtlPolicyType } from "../types/index.js";
 import { IconIdentityNormaliser } from "../../definition/runtime/icon-identity.normaliser.js";
-import { CollectionPresentationPolicyNormaliser } from "../../presentation/runtime/collection-presentation-policy.normaliser.js";
+import { IconPresentationPolicyNormaliser } from "../../presentation/runtime/icon-presentation-policy.normaliser.js";
+import { CanonicalSlugNormaliser } from "../../shared/runtime/canonical-slug.normaliser.js";
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
 import { iconRtlPolicies } from "../constants/icon-rtl-policies.constant.js";
@@ -22,10 +23,15 @@ export class IconMetadataNormaliser {
   readonly #identityNormaliser = new IconIdentityNormaliser();
 
   /**
-   * @description Resolved collection policy normaliser.
+   * @description Canonical intrinsic tag authority.
+   */
+  readonly #slugNormaliser = new CanonicalSlugNormaliser();
+
+  /**
+   * @description Resolved icon presentation policy normaliser.
    */
   readonly #presentationPolicyNormaliser =
-    new CollectionPresentationPolicyNormaliser();
+    new IconPresentationPolicyNormaliser();
 
   /**
    * @description Produces one deeply frozen canonical metadata value.
@@ -40,6 +46,7 @@ export class IconMetadataNormaliser {
       record,
       [
         "displayName",
+        "tags",
         "rtl",
         "presentation",
         "licence",
@@ -51,6 +58,10 @@ export class IconMetadataNormaliser {
     );
 
     const displayName = this.#validator.text(record.displayName, `${path}.displayName`);
+    const tags =
+      "tags" in record
+        ? this.#normaliseTags(record.tags, `${path}.tags`)
+        : undefined;
     const rtl = this.#normaliseRtl(record.rtl, `${path}.rtl`);
     const presentation = this.#presentationPolicyNormaliser.normalise(
       record.presentation,
@@ -89,6 +100,7 @@ export class IconMetadataNormaliser {
 
     return Object.freeze({
       displayName,
+      ...(tags === undefined ? {} : { tags }),
       rtl,
       presentation,
       ...(licence === undefined ? {} : { licence }),
@@ -122,13 +134,35 @@ export class IconMetadataNormaliser {
    * @description Compares complete logical icon identities.
    * @param left - First canonical identity.
    * @param right - Second canonical identity.
-   * @returns Whether collection, name, and optional variant match.
+   * @returns Whether namespace, name, and optional variant match.
    */
   #identitiesMatch(left: IconIdentity, right: IconIdentity): boolean {
     return (
-      left.collection === right.collection &&
+      left.namespace === right.namespace &&
       left.name === right.name &&
       left.variant === right.variant
     );
+  }
+
+  /**
+   * @description Validates, deduplicates, and freezes intrinsic icon tags.
+   * @param value - Unknown authored tag collection.
+   * @param path - Logical tag collection path.
+   * @returns Frozen tags preserving authored order.
+   */
+  #normaliseTags(value: unknown, path: string): readonly string[] {
+    const tags = this.#validator.array(value, path).map((tag, index) => {
+      const tagPath = `${path}[${index}]`;
+      return this.#slugNormaliser.normalise(
+        this.#validator.text(tag, tagPath),
+        tagPath,
+      );
+    });
+
+    if (new Set(tags).size !== tags.length) {
+      throw new IconDefinitionError(path, "expected unique tags");
+    }
+
+    return Object.freeze(tags);
   }
 }

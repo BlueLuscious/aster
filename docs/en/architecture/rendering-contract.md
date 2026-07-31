@@ -18,7 +18,7 @@ target-specific result. It may:
 - reject options that cannot be represented safely.
 
 A renderer cannot mutate a definition, infer application semantics, repair invalid geometry,
-traverse a global registry, or reinterpret collection policy.
+traverse a global registry, or reinterpret icon presentation policy.
 
 ## Public object API
 
@@ -47,9 +47,9 @@ The portable `IconRenderOptions` value is a read-only closed object:
 | --- | --- |
 | `size` | Optional positive finite square viewport size in target-independent logical units. |
 | `colour` | Optional portable paint value used to resolve `currentColor`. |
-| `fill` | Optional fill override when permitted by collection policy. |
-| `stroke` | Optional stroke override when permitted by collection policy. |
-| `strokeWidth` | Optional non-negative finite width override in viewBox units when permitted by collection policy. |
+| `fill` | Optional fill override when permitted by the icon's presentation policy. |
+| `stroke` | Optional stroke override when permitted by the icon's presentation policy. |
+| `strokeWidth` | Optional non-negative finite width override in viewBox units when permitted by the icon's presentation policy. |
 | `label` | Optional non-empty accessible name. |
 | `title` | Optional non-empty target-native title and fallback accessible name. |
 | `decorative` | Optional explicit accessibility intent. |
@@ -71,7 +71,7 @@ meaning. An extension must:
 - remain in the target package;
 - use a closed allow-list;
 - preserve portable field meanings and precedence;
-- avoid changing identity, geometry, node order, or collection policy;
+- avoid changing identity, geometry, node order, or icon presentation policy;
 - preserve the accepted accessibility and direction contract;
 - validate and escape every accepted target value.
 
@@ -84,25 +84,26 @@ DOM-specific contract and are not part of the first SVG markup renderer.
 Effective presentation is resolved in this ascending order:
 
 1. documented portable technical defaults;
-2. resolved collection presentation defaults;
+2. presentation defaults stored by the icon;
 3. explicit presentation stored on each portable node;
-4. explicit caller overrides allowed by the collection's presentation policy.
+4. explicit caller overrides allowed by the icon's presentation policy.
 
 Later values override earlier values only for the same capability. The `colour` option supplies
 the rendering context for `currentColor`; it does not replace literal node fill or stroke paint.
 
-Collection metadata declares which of `fill`, `stroke`, and `strokeWidth` callers may override. A
-disallowed override is an option error, not a value to ignore. This preserves collection identity
-without forcing one collection's policy onto another.
+Icon metadata declares which of `fill`, `stroke`, and `strokeWidth` callers may override. A
+disallowed override is an option error, not a value to ignore. Collection-authored defaults may
+enter an icon during an explicit import flow, but the resulting portable definition owns its
+resolved policy independently of collection membership.
 
 Effective viewport dimensions resolve as follows:
 
 1. explicit `size` sets equal width and height;
-2. otherwise, collection `defaultSize` sets equal width and height;
+2. otherwise, icon `defaultSize` sets equal width and height;
 3. otherwise, viewBox width and height become viewport width and height respectively.
 
-An explicit size below collection `minimumSize` is an option error. The renderer does not describe
-output below that threshold as curator approved.
+An explicit size below icon `minimumSize` is an option error. The renderer does not describe
+output below that threshold as author-approved.
 
 The viewBox itself cannot be overridden. The SVG renderer always emits explicit numeric width and
 height and never relies on a browser's implicit SVG viewport.

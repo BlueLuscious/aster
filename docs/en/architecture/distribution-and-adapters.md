@@ -13,7 +13,7 @@ Aster keeps these independently installable responsibilities:
 | Boundary | Contents | Dependencies |
 | --- | --- | --- |
 | Portable Core | Contracts, immutable construction, portable options, and validation authority. | No collection, renderer, framework, DOM, Lotus, or Lilium dependency. |
-| Collection definitions | One generated portable module per icon or variant plus optional manifests. | Portable Core only. |
+| Icon and collection definitions | Independent authored or generated icon modules, collection membership values, and optional manifests. | Portable Core only. |
 | Generic target renderer | One target implementation such as SVG markup or Lilium component composition. | Portable Core and its explicit target APIs only. |
 | Generated collection-target integration | Named wrappers for one collection and one target, with optional exact definition re-exports. | Corresponding collection definitions and generic target renderer. |
 | DOM target mapping | DOM implementations required by a target-independent framework adapter. | Corresponding framework adapter and public DOM renderer APIs. |
@@ -26,27 +26,26 @@ Installing a generic renderer does not install any collection.
 Every distributable variant is a separate portable definition with its own canonical identity,
 generated symbol, module, and per-icon subpath.
 
-A collection may declare a default variant for authoring or documentation, but distribution cannot
-silently erase variant identity. Passing a different variant means passing a different immutable
-definition; render options never change geometry variant.
+Documentation may recommend a default variant, but distribution cannot silently erase variant
+identity. Passing a different variant means passing a different immutable definition; render
+options never change geometry variant.
 
 Optional collection manifests may group related definitions for search or dynamic interfaces.
 Those opt-in manifests do not become dependencies of per-icon modules.
 
 ## Export capabilities
 
-Using `minimal` and `camera` as examples, a collection package provides:
+The implemented Aster collection package currently provides:
 
 ```text
-@aster/minimal
-@aster/minimal/camera
-@aster/minimal/camera/filled
-@aster/minimal/manifest
+@aster/icons
+@aster/icons/camera
+@aster/icons/collections/aster
 ```
 
 The package root may expose documented convenience exports. Per-icon and per-variant subpaths are
-the authoritative minimal imports. A manifest is an explicit opt-in registry and cannot enter
-their transitive module graphs.
+the authoritative minimal imports. Collection definitions and manifests are explicit opt-in
+aggregates and cannot enter their transitive module graphs.
 
 A generic target package exposes its generic API from its root, for example:
 
@@ -59,11 +58,10 @@ Generated named wrappers are deferred. If consumer evidence later justifies them
 separate collection-target integration boundary, provisionally:
 
 ```text
-@aster/minimal-svg
-@aster/minimal-svg/camera
-@aster/minimal-svg/camera/filled
-@aster/minimal-lilium
-@aster/minimal-lilium/camera
+@aster/icons-svg
+@aster/icons-svg/camera
+@aster/icons-lilium
+@aster/icons-lilium/camera
 ```
 
 Exact registry names may change after pilot release evidence. The separation of definitions,
@@ -73,9 +71,10 @@ Export maps list every public root and supported subpath and reject implementati
 Generated modules import public package subpaths rather than filesystem-relative implementation
 files.
 
-Generated collection manifests declare `@aster/core` as their only production dependency and map
+Collection definition packages declare `@aster/core` as their only production dependency and map
 each supported subpath independently to its ESM implementation and declaration. The canonical
-package shape and ownership model are documented by
+authored package is [`@aster/icons`](../packages/icons/index.md). Build's corresponding generated
+shape and ownership model are documented by
 [Build Generator](../packages/build/generator/index.md).
 
 ## Definition re-exports

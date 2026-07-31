@@ -50,8 +50,14 @@ repository must not accept it until cleanup, regeneration, and verification beha
 ## Collection boundary
 
 Documentation and generated output must not create a fictional collection.
-`docs/en/collections/<collection>/` and any collection-specific distribution artefacts are valid
-only when the collection has accepted canonical authoring authority.
+`docs/en/collections/<collection>/` is valid when the collection has an accepted canonical slug,
+curator, lifecycle, licence, and provisional design contract. Before canonical icon authoring
+authority is selected, that documentation must state that no icon source or distribution is
+accepted.
+
+Collection-specific source workflow, exception storage, and distribution artefacts are valid only
+when their canonical authoring authority is accepted. An Experimental identity alone cannot
+authorise publication or make temporary artwork canonical.
 
 Shared schemas, workflows, and policies belong to the collection root or package that owns them
 rather than to a placeholder collection.

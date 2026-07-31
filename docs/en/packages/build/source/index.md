@@ -29,7 +29,7 @@ not parse JSON or select schema behaviour. Decoding remains a separate private B
 Aster-owned structured contracts. The accepted source format is defined by
 [JSON Metadata for SVG Imports](../../../decisions/0004-canonical-json-metadata-sources.md).
 
-`IconIdentity` belongs to `@aster/core` because collection, icon, and optional variant identity
+`IconIdentity` belongs to `@aster/core` because namespace, icon, and optional variant identity
 have the same stable meaning throughout acquisition, generation, distribution, and rendering.
 Source descriptors carry an acquired claim; their provenance does not require a structurally
 duplicated contract.

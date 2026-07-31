@@ -78,7 +78,7 @@ Universal checks are not configurable by collections:
 | Responsibility | Accepted behaviour |
 | --- | --- |
 | Identity | Collection metadata, collection contract, SVG identity, icon metadata identity, and syntax source agree. |
-| Duplicate identity | A logical collection, icon, and optional variant occurs once per generation unit. |
+| Duplicate identity | A logical namespace, icon, and optional variant occurs once per generation unit. |
 | `viewBox` | Exactly four finite numbers are required; width and height are positive. |
 | Attributes | Only accepted root, group, primitive, and portable presentation attributes are admitted. |
 | Numbers | Geometry values use the strict finite SVG number grammar and their declared positive or non-negative domain. |

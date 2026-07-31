@@ -125,26 +125,27 @@ async function validateRequiredHierarchy(documentationRoot, workspaceRoot, issue
 }
 
 /**
- * @description Verifies that package or collection documentation mirrors real members.
+ * @description Verifies that package documentation mirrors real workspace packages.
  * @param {string} documentationRoot - Absolute canonical documentation root.
  * @param {string} workspaceRoot - Absolute repository root.
- * @param {"packages" | "collections"} domain - Repository domain whose members are mirrored.
  * @param {string[]} issues - Mutable issue collection populated by the check.
  * @returns {Promise<void>} Completion after source and documentation members are compared.
  */
-async function validateDomainMirroring(documentationRoot, workspaceRoot, domain, issues) {
-  const sourceMembers = await readMemberDirectories(resolve(workspaceRoot, domain));
-  const documentedMembers = await readMemberDirectories(resolve(documentationRoot, domain));
+async function validatePackageMirroring(documentationRoot, workspaceRoot, issues) {
+  const sourceMembers = await readMemberDirectories(resolve(workspaceRoot, "packages"));
+  const documentedMembers = await readMemberDirectories(
+    resolve(documentationRoot, "packages"),
+  );
 
   for (const member of sourceMembers) {
     if (!documentedMembers.includes(member)) {
-      issues.push(`Missing ${domain} documentation for repository member: ${member}`);
+      issues.push(`Missing packages documentation for repository member: ${member}`);
     }
   }
 
   for (const member of documentedMembers) {
     if (!sourceMembers.includes(member)) {
-      issues.push(`Documentation describes a missing ${domain} member: ${member}`);
+      issues.push(`Documentation describes a missing packages member: ${member}`);
     }
   }
 }
@@ -275,8 +276,7 @@ export async function verifyDocumentation(workspaceRoot) {
   const issues = [];
 
   await validateRequiredHierarchy(documentationRoot, workspaceRoot, issues);
-  await validateDomainMirroring(documentationRoot, workspaceRoot, "packages", issues);
-  await validateDomainMirroring(documentationRoot, workspaceRoot, "collections", issues);
+  await validatePackageMirroring(documentationRoot, workspaceRoot, issues);
 
   const markdownFiles = await collectFiles(documentationRoot, ".md");
 

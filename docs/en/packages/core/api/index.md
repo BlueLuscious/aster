@@ -2,23 +2,25 @@
 
 Status: **Accepted**
 
-The API feature exposes the smallest public construction authority for portable icon values. It
-owns one private `IconDefinitionFactory` instance and presents it through an immutable object.
+The API feature exposes the smallest public construction authorities for portable icons and
+collections. Each frozen API object owns one private factory instance.
 
 ## Contract
 
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
 | `IconApi` | Declares `define()` as the complete public value authority. | Accepts and returns `IconDefinition`. |
+| `CollectionApi` | Declares `define()` as the complete public collection authority. | Accepts and returns `CollectionDefinition`. |
 
 ## Value
 
 | Value | Members | Responsibility |
 | --- | --- | --- |
 | `Icon` | `define()` | Validates authored data and returns an isolated deeply frozen definition. |
+| `Collection` | `define()` | Validates authored data and returns a deeply frozen independent collection. |
 
-`Icon` is frozen and retains no icon, collection, or catalogue state. Calling `define()` twice
-with equal authored values creates independent equal definitions.
+Both APIs are frozen and retain no icon, collection, or catalogue registry. Calling `define()`
+twice with equal authored values creates independent equal definitions.
 
 The API provides compile-time guidance through `IconDefinition`, while its internal factory
 accepts an unknown runtime value and validates it before reading the closed shape. TypeScript
@@ -27,11 +29,11 @@ annotations are therefore never treated as runtime evidence.
 ## Usage
 
 ```ts
-import { Icon } from "@aster/core";
+import { Collection, Icon } from "@aster/core";
 
 const Camera = Icon.define({
   identity: {
-    collection: "minimal",
+    namespace: "example",
     name: "camera",
   },
   viewBox: {
@@ -61,6 +63,16 @@ const Camera = Icon.define({
     deprecated: false,
   },
 });
+
+const InterfaceIcons = Collection.define({
+  identity: {
+    name: "interface-icons",
+  },
+  icons: [Camera],
+  metadata: {
+    displayName: "Interface Icons",
+  },
+});
 ```
 
 The accepted value is plain readonly data. Consumers inspect `identity`, `viewBox`, `nodes`, and
@@ -68,8 +80,8 @@ The accepted value is plain readonly data. Consumers inspect `identity`, `viewBo
 
 ## Package exports
 
-`@aster/core` approves only its root `"."` export. The root provides `Icon`, documented frozen
-portable runtime authorities, and all public contracts and types.
+`@aster/core` approves only its root `"."` export. The root provides `Icon`, `Collection`,
+documented frozen portable runtime authorities, and all public contracts and types.
 
 No feature, runtime, manager, normaliser, error, or shared implementation subpath is public.
 Unsupported subpaths fail through the package resolver rather than becoming compatibility
@@ -77,6 +89,7 @@ contracts accidentally.
 
 The exact runtime value surface is:
 
+- `Collection`;
 - `Icon`;
 - `iconDirections`;
 - `iconNodeKinds`;

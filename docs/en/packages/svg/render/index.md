@@ -72,7 +72,7 @@ Presentation follows geometry attributes in this order:
 
 The renderer resolves the model's
 [technical presentation defaults](../../../architecture/portable-icon-model.md#technical-presentation-defaults),
-collection defaults, node presentation, and authorised caller overrides before serialising each
+icon defaults, node presentation, and authorised caller overrides before serialising each
 node. Caller overrides therefore remain authoritative even when a node contains an explicit
 value. The root does not rely on inherited fill or stroke to approximate this precedence.
 
@@ -88,9 +88,9 @@ option text fail before any markup is returned.
 
 ## Viewport and colour
 
-Viewport size resolves from explicit `size`, collection `defaultSize`, or viewBox dimensions in
-that order. An explicit size below collection `minimumSize` is rejected rather than presented as
-curator-approved output.
+Viewport size resolves from explicit `size`, icon `defaultSize`, or viewBox dimensions in that
+order. An explicit size below icon `minimumSize` is rejected rather than presented as
+author-approved output.
 
 The portable `colour` option maps to the root SVG `color` attribute. SVG paint `none` cannot
 represent a colour context and is rejected when supplied as `colour`; it remains valid for fill

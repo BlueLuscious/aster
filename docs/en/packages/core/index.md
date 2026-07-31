@@ -9,14 +9,15 @@ without importing SVG parser syntax, DOM objects, framework state, or repository
 ## Current boundary
 
 The current package exposes contracts, closed value unions, immutable portable runtime
-authorities, and the `Icon` API object. It contains no renderer, catalogue, registry, or global
-identity authority.
+authorities, and the `Icon` and `Collection` API objects. It contains no renderer, catalogue,
+registry, or global identity authority.
 
 ## Features
 
 | Feature | Responsibility |
 | --- | --- |
-| [API](api/index.md) | Immutable definition-construction authority and exact package exports. |
+| [API](api/index.md) | Immutable icon and collection construction authorities and exact package exports. |
+| [Collection](collection/index.md) | Independent collection identity, metadata, direct membership, and immutable construction. |
 | [Definition](definition/index.md) | Complete definition, identity, viewBox, and immutable construction flow. |
 | [Node](node/index.md) | Closed portable geometry primitives and coordinate pairs. |
 | [Metadata](metadata/index.md) | Resolved runtime metadata and right-to-left policy. |
@@ -42,6 +43,7 @@ The package root exports:
 | Symbol | Kind | Authority |
 | --- | --- | --- |
 | `Icon` | Frozen value object | Validates and constructs definitions through `define()`. |
+| `Collection` | Frozen value object | Validates and constructs independent collections through `define()`. |
 | Portable runtime authorities | Frozen values | Define node, presentation, metadata, and render-option vocabularies required by consumers. |
 | Feature contracts and types | Type-only exports | Describe portable definitions, nodes, metadata, presentation, and options. |
 
@@ -57,6 +59,9 @@ tree-shaking result for every bundler.
 
 - A definition has one identity, one positive viewBox, non-empty ordered nodes, and resolved
   metadata.
+- An icon identity never carries collection membership.
+- A collection may be empty and retains unique icon definitions directly.
+- The same icon value may be retained by multiple collections without mutation.
 - Node discriminators form a closed union.
 - Presentation uses explicit fields rather than an arbitrary attribute map.
 - A variant is a distinct identity and cannot be selected through render options.

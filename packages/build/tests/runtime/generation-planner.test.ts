@@ -19,7 +19,7 @@ function definition(
 ): IconDefinition {
   return Icon.define({
     identity: {
-      collection: "experimental",
+      namespace: "experimental",
       name,
       ...(variant === undefined ? {} : { variant }),
     },
@@ -111,8 +111,8 @@ test("plans deterministic isolated modules independently from input order", () =
     first.files.map((file) => file.path),
     [
       "package.json",
-      "src/icons/frame.ts",
-      "src/icons/orbit.ts",
+      "src/icons/frame.icon.ts",
+      "src/icons/orbit.icon.ts",
       "src/index.ts",
       "src/manifest.ts",
       "tsconfig.json",
@@ -140,7 +140,7 @@ test("plans deterministic isolated modules independently from input order", () =
   assert.ok(Object.isFrozen(first.exports));
 
   const frameModule = first.files.find(
-    (file) => file.path === "src/icons/frame.ts",
+    (file) => file.path === "src/icons/frame.icon.ts",
   )?.content;
   const rootModule = first.files.find(
     (file) => file.path === "src/index.ts",
@@ -164,10 +164,10 @@ test("plans base, variant, and numeric-leading symbols without path conflicts", 
     plan.files.map((file) => file.path),
     [
       "package.json",
-      "src/icons/3d-axis.ts",
-      "src/icons/camera.ts",
-      "src/icons/camera/filled.ts",
-      "src/icons/camera/index.ts",
+      "src/icons/3d-axis.icon.ts",
+      "src/icons/camera.icon.ts",
+      "src/icons/camera/filled.icon.ts",
+      "src/icons/camera/index.icon.ts",
       "src/index.ts",
       "src/manifest.ts",
       "tsconfig.json",
@@ -175,13 +175,13 @@ test("plans base, variant, and numeric-leading symbols without path conflicts", 
   );
   assert.match(
     plan.files.find(
-      (file) => file.path === "src/icons/3d-axis.ts",
+      (file) => file.path === "src/icons/3d-axis.icon.ts",
     )?.content ?? "",
     /export const Icon3dAxis/u,
   );
   assert.match(
     plan.files.find(
-      (file) => file.path === "src/icons/camera/filled.ts",
+      (file) => file.path === "src/icons/camera/filled.icon.ts",
     )?.content ?? "",
     /export const CameraFilled/u,
   );
@@ -192,7 +192,7 @@ test("escapes authored strings and JavaScript line separators deterministically"
     entry("quoted", undefined, "Quoted \"name\"\nNext\u2028Line"),
   ]);
   const content = plan.files.find(
-    (file) => file.path === "src/icons/quoted.ts",
+    (file) => file.path === "src/icons/quoted.icon.ts",
   )?.content;
 
   assert.match(content ?? "", /Quoted \\"name\\"\\nNext\\u2028Line/u);
@@ -234,7 +234,7 @@ test("returns stable diagnostics for identity, symbol, and reserved-subpath coll
 });
 
 test("finds only stale owned files and protects unowned planned output", () => {
-  const plannedPath = "src/icons/frame.ts";
+  const plannedPath = "src/icons/frame.icon.ts";
   const successful = planner.plan(
     request(
       [entry("frame")],
@@ -276,7 +276,7 @@ test("finds only stale owned files and protects unowned planned output", () => {
 });
 
 test("does not accept ownership-marker prefixes as generated evidence", () => {
-  const plannedPath = "src/icons/frame.ts";
+  const plannedPath = "src/icons/frame.icon.ts";
   const result = planner.plan(
     request(
       [entry("frame")],
@@ -348,7 +348,7 @@ test("isolates generated bindings and source identifiers from authored names", (
     separatedSourceEntry,
   ]);
   const iconModule = plan.files.find(
-    (file) => file.path === "src/icons/icon.ts",
+    (file) => file.path === "src/icons/icon.icon.ts",
   )?.content;
   const manifestModule = plan.files.find(
     (file) => file.path === "src/manifest.ts",

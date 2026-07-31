@@ -3,12 +3,12 @@
  */
 export interface IconIdentity {
   /**
-   * @description Canonical ASCII lowercase kebab-case collection slug.
+   * @description Optional canonical namespace owned independently of collection membership.
    */
-  readonly collection: string;
+  readonly namespace?: string;
 
   /**
-   * @description Canonical ASCII lowercase kebab-case icon slug within the collection.
+   * @description Canonical ASCII lowercase kebab-case icon slug.
    */
   readonly name: string;
 

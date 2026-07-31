@@ -33,7 +33,7 @@ created.
 | --- | --- | --- |
 | `ISvgNormaliser` | Converts one complete accepted request into canonically ordered portable definitions. | Implemented by `SvgNormaliser`; returns Core `IconDefinition` values. |
 | `ISvgNormalisationRequest` | Groups successful validation evidence with linked structured metadata. | Input to `ISvgNormaliser`. |
-| `ICollectionMetadataValue` | Carries collection presentation, licensing defaults, and icon licence override authority. | Linked to `CollectionMetadataSource`; consumed by `IconMetadataComposer`. |
+| `ICollectionMetadataValue` | Carries selected-collection import defaults and icon licence override authority. | Linked to `CollectionMetadataSource`; consumed by `IconMetadataComposer`. |
 | `IIconMetadataValue` | Carries runtime-relevant icon-authored metadata and complete identity. | Linked to `IconMetadataSource`; consumed by `IconMetadataComposer`. |
 
 ## Runtime responsibilities
@@ -44,7 +44,7 @@ created.
 | `SvgPresentationNormaliser` | Resolves accepted root and group inheritance and canonicalises portable presentation fields. |
 | `SvgPrimitiveNormaliser` | Maps every accepted primitive to the corresponding explicit Core node without converting it to a path. |
 | `SvgPathDataNormaliser` | Produces deterministic command and number spacing while preserving command case and geometry. |
-| `IconMetadataComposer` | Applies collection defaults and permitted icon-authored licensing overrides. |
+| `IconMetadataComposer` | Resolves selected-collection import defaults and permitted icon-authored licensing overrides into icon-owned metadata. |
 
 ## Geometry and presentation
 

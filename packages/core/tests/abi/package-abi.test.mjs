@@ -26,7 +26,7 @@ async function collectFiles(root, extension) {
 function createDefinitionInput() {
   return {
     identity: {
-      collection: "minimal",
+      namespace: "minimal",
       name: "camera",
     },
     viewBox: {
@@ -62,6 +62,7 @@ test("exposes the exact immutable root value surface", async () => {
   const packageModule = await import("@aster/core");
 
   assert.deepEqual(Object.keys(packageModule).sort(), [
+    "Collection",
     "Icon",
     "iconDirections",
     "iconNodeKinds",
@@ -71,7 +72,9 @@ test("exposes the exact immutable root value surface", async () => {
     "iconRtlPolicies",
     "iconTechnicalPresentation",
   ]);
+  assert.deepEqual(Object.keys(packageModule.Collection), ["define"]);
   assert.deepEqual(Object.keys(packageModule.Icon), ["define"]);
+  assert.ok(Object.isFrozen(packageModule.Collection));
   assert.ok(Object.isFrozen(packageModule.Icon));
   assert.ok(Object.isFrozen(packageModule.iconDirections));
   assert.ok(Object.isFrozen(packageModule.iconNodeKinds));
