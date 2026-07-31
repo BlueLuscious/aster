@@ -1,10 +1,10 @@
 # Aster Pilot Review Evidence
 
-Status: **In Review**
+Status: **Accepted**
 
-This document records reproducible automated evidence, preliminary visual observations, accepted
-exceptions, and the remaining curatorial decision for the Experimental Aster pilot. It does not
-promote the collection to Active or claim that automation measures artistic quality.
+This document records reproducible automated evidence, accepted visual observations, exceptions,
+and the curatorial decision for the Experimental Aster pilot. It does not promote the collection
+to Active or claim that automation measures artistic quality.
 
 ## Reproduction
 
@@ -63,13 +63,14 @@ The generated reference sheet compares:
 | Organic | `heart`, `cloud`, `leaf` |
 | Detailed | `settings`, `camera`, `star` |
 
-Preliminary visual inspection found no clipping, sheet-composition failure, colour-inheritance
+Curatorial visual inspection found no clipping, sheet-composition failure, colour-inheritance
 failure, or loss of a complete geometry node. The semantic-adjacency pairs remain structurally
 distinct on the generated sheets.
 
 The relatively small occupied envelopes of `cloud` and `bell` compared with `star` and `settings`
-still require curatorial judgement at minimum size. Recognisability, optical balance, negative
-space, curve tension, and artistic cleanliness are not resolved by the technical report.
+are accepted for the Experimental pilot baseline. They remain review evidence rather than a new
+family-wide rule. Recognisability, optical balance, negative space, curve tension, and artistic
+cleanliness are not resolved by the technical report alone.
 
 ## Exceptions And Rule Discovery
 
@@ -81,21 +82,21 @@ The earlier `bell` clapper correction remains rule-discovery evidence: moving th
 spread is evidence for review, but does not yet justify a new automated threshold or collection
 rule.
 
-No blocking automated finding remains unresolved. The design contract stays Provisional until
-the named curator accepts the visual result or records corrections and explicit exceptions.
+No blocking automated finding remains unresolved. The design contract stays Provisional because
+approval of this pilot does not yet establish stable thresholds for a larger catalogue.
 
 ## Curatorial Decision
 
 | Authority | State |
 | --- | --- |
 | Automated technical evidence | Passed |
-| Preliminary visual inspection | No technical blocker observed |
-| Named curator approval | Pending |
+| Curatorial visual inspection | No blocking visual defect observed |
+| Named curator approval | Approved by BlueLuscious for the Experimental pilot baseline |
 | Active collection promotion | Not requested |
 
-The collection curator must explicitly accept or reject the pilot after reviewing the generated
-default, minimum, dark, light, contour, and reference comparisons. Any correction returns to the
-canonical `*.icon.ts` module and regenerates this evidence.
+The curator accepted the generated default, minimum, dark, light, contour, and reference
+comparisons. Future corrections return to the canonical `*.icon.ts` module and regenerate this
+evidence.
 
 ## Residual Risks
 

@@ -37,7 +37,7 @@ the same definitions remain directly usable without importing or consulting that
 
 The [pilot reference set](reference-set.md) contains sixteen canonical Experimental definitions.
 Its [review evidence](review-evidence.md) records reproducible technical reports, visual
-comparisons, residual risks, and the pending curatorial decision.
+comparisons, residual risks, and the accepted Experimental pilot decision.
 The package is not release quality and must not be presented as an Active collection before
 curatorial and release evidence is accepted.
 
