@@ -8,7 +8,7 @@ composition, the explicit built-in `AsterCatalogue` provider, and the `aster` ex
 
 ## Current boundary
 
-The package root exposes public command and catalogue contracts, types, and two frozen values.
+The package root exposes public command and catalogue contracts, types, and three frozen values.
 `AsterCommands` validates structured invocations and explicit contexts, dispatches `list`,
 `search`, `show`, `help`, and `version`, and returns sanitised structured failures. It never
 selects an ambient catalogue. Hosts pass providers explicitly in `AsterCommandContext`.
@@ -24,6 +24,9 @@ help metadata does not eagerly evaluate the built-in catalogue.
 | [Command](command/index.md) | Defines and executes host-neutral invocation, context, metadata, result, and diagnostic contracts. |
 | [Catalogue](catalogue/index.md) | Loads explicit providers and performs deterministic provider, collection, and icon discovery. |
 | [Shell](shell/index.md) | Adapts Node argv, presents human or JSON output, and commits documented process effects. |
+
+[CLI Compatibility and Conformance](compatibility.md) defines the package ABI, supported runtime,
+programmatic-host guarantees, and release evidence across these features.
 
 ## Dependency boundary
 
@@ -55,7 +58,7 @@ The package exposes only its root `"."`. It exports these types:
 
 The root also exports the frozen `AsterCommands`, `AsterCatalogue`, and `catalogueResultKinds`
 values. The package manifest maps the `aster` binary to its private built shell entrypoint. No
-implementation subpath is public. The accepted surface and dependency direction remain defined by the
+implementation subpath is public. The accepted surface and dependency direction are defined by the
 [Command-line Boundary](../../architecture/command-line-boundary.md).
 
 ## Current verification
@@ -76,5 +79,6 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
 - mixed search fields, cross-provider ambiguity, snapshot conflicts, and unavailable providers.
 
 Built-executable integration tests additionally verify human and JSON presentation, exact stream
-selection, exit status, argument rejection, and silent public-root imports. Published-package ABI
-conformance remains pending final package verification.
+selection, exit status, argument rejection, and silent public-root imports. Package conformance
+also verifies exact exports and declarations, rejected subpaths, dependency direction, exclusive
+Node process authority, and execution from a temporary consumer containing no source files.

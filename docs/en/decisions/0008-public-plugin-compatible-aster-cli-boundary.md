@@ -101,9 +101,9 @@ Initial commands are `list`, `search`, `show`, help, and version. Effectful `add
 
 ## Compatibility and migration
 
-This is the first CLI boundary and affects no released consumer. Before a compatibility-bearing
-release, package conformance will freeze root exports, the binary entry, declarations, invocation
-and result discriminators, deterministic output, and standalone versus programmatic equivalence.
+This is the first CLI boundary and affects no released consumer. Package conformance freezes root
+exports, the binary entry, declarations, invocation and result discriminators, deterministic
+output, and standalone versus programmatic equivalence before a compatibility-bearing release.
 
 A later extraction of the host-neutral command set must preserve the `@aster/cli` root API or
 provide an explicit migration. The generic host cannot become a dependency of Core, Icons, SVG,
@@ -112,5 +112,6 @@ Build, or adapters.
 ## Evidence
 
 - [Command-line Boundary](../architecture/command-line-boundary.md)
+- [CLI Compatibility and Conformance](../packages/cli/compatibility.md)
 - [Product and Package Boundaries](../architecture/product-and-package-boundaries.md)
 - [Plugin-compatible Aster CLI](../future-capabilities.md#plugin-compatible-aster-cli)

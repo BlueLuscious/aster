@@ -77,9 +77,9 @@ behaviour.
 | `NodeShell` | Delegates parsed invocations to `AsterCommands` with explicit product and catalogue context. |
 
 The executable entrypoint is the only module that imports `node:process`. The host-neutral
-compiler excludes the complete shell tree, while the shell compiler admits Node types and emits
-the private binary modules. Importing `@aster/cli` resolves only the side-effect-free programmatic
-root and never evaluates the entrypoint.
+compiler excludes the complete shell tree. The referenced shell project consumes host-neutral
+declarations, admits Node types, and emits only the private binary modules. Importing `@aster/cli`
+resolves only the side-effect-free programmatic root and never evaluates the entrypoint.
 
 The authoritative command and output semantics are defined by the
 [Command-line Boundary](../../../architecture/command-line-boundary.md).

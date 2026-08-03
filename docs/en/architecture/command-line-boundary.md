@@ -7,7 +7,7 @@ shell, deterministic query semantics, and future plugin-host compatibility.
 
 ## Product boundary
 
-`@aster/cli` will provide two compositions from one package:
+`@aster/cli` provides two compositions from one package:
 
 - a host-neutral Aster command set available through the package root;
 - a thin Node executable named `aster`.
@@ -52,6 +52,7 @@ The root surface contains these public responsibilities:
 | --- | --- | --- |
 | `AsterCommands` | Frozen command-set object | Describes and executes the Aster command family through explicit context. |
 | `AsterCatalogue` | Frozen catalogue provider | Supplies the built-in Aster icons and collection as an explicit provider. |
+| `catalogueResultKinds` | Frozen discriminator authority | Supplies runtime identities for mixed catalogue results. |
 | `AsterCommandSet` | Interface | Declares command-set identity, immutable descriptors, and asynchronous execution. |
 | `AsterCommandDescriptor` | Interface | Describes one stable command and its usage without a terminal representation. |
 | `AsterCommandContext` | Interface | Supplies the complete capability set for one execution. |
@@ -62,6 +63,7 @@ The root surface contains these public responsibilities:
 | `AsterCommandInvocationType` | Type | Represents the closed structured invocation union. |
 | `AsterCommandResultType` | Type | Represents serialisable success and failure results. |
 | `AsterCommandDiagnosticType` | Type | Represents stable expected command failures. |
+| `CatalogueResultKindType` | Type | Represents the closed icon and collection result discriminator union. |
 
 Minor supporting public types may be introduced only when these contracts cannot express their
 closed discriminators without duplication. No generic plugin registration ABI is declared by
@@ -213,5 +215,7 @@ An accepted future command may add a narrow explicit effect capability. `import`
 conditional on the separate Build viability decision. No deferred command can change Core values,
 catalogue membership, or this package's dependency direction implicitly.
 
-The package and public-boundary rationale are recorded by
+Package compatibility and evidence are defined by
+[CLI Compatibility and Conformance](../packages/cli/compatibility.md). The public-boundary
+rationale is recorded by
 [0008: Public Plugin-compatible Aster CLI Boundary](../decisions/0008-public-plugin-compatible-aster-cli-boundary.md).

@@ -1,0 +1,94 @@
+# CLI Compatibility and Conformance
+
+Status: **Experimental**
+
+This document defines the compatibility-bearing surface and release evidence for `@aster/cli`.
+Detailed command, catalogue, and executable semantics remain owned by their respective package
+feature documents.
+
+## Runtime compatibility
+
+The package distributes native ESM targeting ES2022 and provides no CommonJS, legacy, or alternate
+build. The programmatic root has no Node or DOM ambient dependency. The standalone `aster`
+executable supports the repository Node range, currently `>=24.10.0 <25`.
+
+The Node shell is a referenced TypeScript project. It consumes host-neutral declarations and emits
+only private shell modules, so Node ambient types cannot alter the host-neutral implementation or
+its public declarations.
+
+## Supported ABI
+
+The first supported ABI consists of:
+
+- the root package export and private `aster` binary mapping;
+- the frozen `AsterCommands`, `AsterCatalogue`, and `catalogueResultKinds` values;
+- every public command and catalogue contract and type exported through the root;
+- the `aster` command-set identity;
+- the `list`, `search`, `show`, `help`, and `version` invocation variants;
+- current payload and catalogue-result discriminators;
+- current diagnostic codes and categories;
+- deterministic ordering, canonicalisation, and expected-failure semantics.
+
+Implementation modules and the executable module are not exportable package subpaths. The package
+declares no generic plugin registration ABI and performs no automatic plugin discovery.
+
+Changes to this surface follow the accepted
+[Versioning and Releases](../../governance/versioning-and-releases.md) policy. In particular,
+removing, renaming, or reinterpreting an accepted command, discriminator, field, diagnostic, or
+observable semantic requires explicit breaking-change classification. Deferred commands are not
+part of the current ABI.
+
+## Programmatic and standalone equivalence
+
+An independent host can mount `AsterCommands` under its stable identity and invoke it with an
+explicit `AsterCommandContext`. It does not import the shell or emulate argv. Given the same
+structured invocation, product metadata, and catalogue providers, it receives the same structured
+result that the standalone executable serialises in JSON mode.
+
+Importing the root produces no terminal output, process mutation, catalogue load, filesystem
+access, network access, or package-manager action. `AsterCatalogue` is never ambient:
+`AsterCommands` observes it only when a host explicitly includes that provider in the context.
+
+## Machine and process guarantees
+
+The stable structured result is the machine boundary. JSON mode emits exactly one compact result
+document and one trailing newline without ANSI styling. Object property order is deterministic for
+the current implementation, but consumers must use named fields and discriminators rather than
+treating serialised property order as semantic.
+
+Only the private executable entrypoint reads argv, writes process streams, and assigns process
+exit status. Exact human and JSON stream selection and exit statuses are owned by the
+[CLI Shell](shell/index.md). Command result and diagnostic semantics are owned by the
+[CLI Command](command/index.md).
+
+## Catalogue isolation
+
+Catalogue providers are supplied explicitly and invoked once per command execution. Provider
+registration order cannot change accepted ordering or selected results. Snapshots and retained
+portable values are validated, copied where required, and frozen before query behaviour becomes
+observable. No result relies on source files, a mutable global registry, or catalogue object
+insertion order.
+
+Provider and membership guarantees are owned by the
+[CLI Catalogue](catalogue/index.md).
+
+## Conformance evidence
+
+Package conformance builds the distribution and verifies:
+
+- exact runtime values, export map, binary mapping, declarations, and rejected subpaths;
+- host-neutral declaration imports and dependency direction;
+- exclusive Node process authority in the executable entrypoint;
+- import behaviour in a temporary consumer containing only package manifests and distributions;
+- standalone and independent programmatic-host result equivalence;
+- explicit catalogue registration and registration-order independence;
+- executable human, JSON, stream, diagnostic, and exit-status behaviour.
+
+Run the package evidence with:
+
+```sh
+pnpm --dir packages/cli run test:conformance
+```
+
+The broader product and dependency contract is defined by the
+[Command-line Boundary](../../architecture/command-line-boundary.md).

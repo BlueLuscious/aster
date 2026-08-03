@@ -35,4 +35,5 @@ sequence is ordered lexically by command identity. Reading descriptors executes 
 provider.
 
 The runtime imports no Node module and writes no output. The public frozen `AsterCommands`
-composition delegates to this kernel; a future Node shell will adapt the same object.
+composition delegates to this kernel; the standalone Node shell and independent programmatic
+hosts adapt the same object.

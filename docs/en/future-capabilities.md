@@ -39,7 +39,7 @@ Importance: **P0 - Required**
 
 The initial command and host separation is accepted by the
 [Command-line Boundary](architecture/command-line-boundary.md). The command kernel and explicit
-catalogue composition and standalone shell now exist; package conformance remains pending.
+catalogue composition, standalone shell, and package conformance now exist.
 
 `@aster/cli` should provide a useful standalone `aster` executable without embedding command
 behaviour directly into argument parsing, terminal output, process exit state, or filesystem
