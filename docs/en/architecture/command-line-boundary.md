@@ -190,6 +190,7 @@ The initial failure categories are:
 | `ambiguous` | Exact identity lookup resolves to multiple providers. |
 | `catalogue-conflict` | Provider or snapshot identities violate uniqueness. |
 | `catalogue-unavailable` | A provider cannot supply a valid snapshot. |
+| `execution-failure` | An unexpected command-definition fault was sanitised by the kernel. |
 
 Expected command failures do not throw. Unexpected implementation faults may be caught at the
 shell boundary, but their native text is never exposed as a stable diagnostic.
