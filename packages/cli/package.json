@@ -36,7 +36,9 @@
     "build": "pnpm run clean && tsc -b tsconfig.shell.json --force",
     "check:types": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.shell.check.json",
     "clean": "node ../../tooling/workspace/clean-package-output.mjs dist",
-    "test": "pnpm run test:types && pnpm run test:runtime && pnpm run test:executable",
+    "test": "pnpm run test:types && pnpm run test:runtime && pnpm run test:conformance",
+    "test:abi": "pnpm run build && node --test --test-isolation=none tests/abi/*.test.mjs",
+    "test:conformance": "pnpm run build && node --test --test-isolation=none tests/abi/*.test.mjs tests/executable/*.test.mjs",
     "test:executable": "pnpm run build && node --test --test-isolation=none tests/executable/*.test.mjs",
     "test:runtime": "tsx --test --test-isolation=none tests/runtime/*.test.ts",
     "test:types": "tsc -p tsconfig.test.json"
