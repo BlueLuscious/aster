@@ -38,6 +38,7 @@
     "test:types": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@aster/core": "workspace:*"
+    "@aster/core": "workspace:*",
+    "@aster/icons": "workspace:*"
   }
 }

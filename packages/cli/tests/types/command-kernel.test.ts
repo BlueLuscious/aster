@@ -7,12 +7,18 @@ import type {
   AsterCommandInvocationType,
   AsterCommandListSubjectType,
   AsterCommandNameType,
+  AsterCommandPayloadKindType,
+  AsterCommandPayloadType,
   AsterCommandResultType,
   AsterCommandSet,
   AsterCommandShowSubjectType,
   CatalogueProvider,
+  CatalogueProviderResult,
+  CatalogueIconResult,
+  CatalogueCollectionResult,
   CatalogueSnapshot,
 } from "../../src/index.js";
+import { AsterCatalogue, AsterCommands } from "../../src/index.js";
 
 const snapshot: CatalogueSnapshot = {
   icons: [],
@@ -43,6 +49,7 @@ const listSubject: AsterCommandListSubjectType = "icons";
 const showSubject: AsterCommandShowSubjectType = "icon";
 const diagnosticCode: AsterCommandDiagnosticCodeType = "ASTER-CLI-004";
 const diagnosticCategory: AsterCommandDiagnosticCategoryType = "not-found";
+const payloadKind: AsterCommandPayloadKindType = "icon-list";
 const invocation: AsterCommandInvocationType = {
   command: "search",
   query: "camera",
@@ -67,6 +74,15 @@ const execution: Promise<AsterCommandResultType> = commands.execute(
   invocation,
   context,
 );
+const publicExecution: Promise<AsterCommandResultType> = AsterCommands.execute(
+  invocation,
+  context,
+);
+const publicProvider: CatalogueProvider = AsterCatalogue;
+declare const commandPayload: AsterCommandPayloadType;
+declare const iconResult: CatalogueIconResult;
+declare const collectionResult: CatalogueCollectionResult;
+declare const providerResult: CatalogueProviderResult;
 
 // @ts-expect-error Unknown command identities are outside the accepted invocation union.
 const unknownInvocation: AsterCommandInvocationType = { command: "remove" };
@@ -85,8 +101,15 @@ void commandName;
 void diagnosticCategory;
 void diagnosticCode;
 void execution;
+void publicExecution;
+void publicProvider;
+void commandPayload;
+void iconResult;
+void collectionResult;
+void providerResult;
 void failure;
 void listSubject;
+void payloadKind;
 void provider;
 void showSubject;
 void terminalElement;

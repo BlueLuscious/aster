@@ -87,7 +87,11 @@ test("isolates descriptors and exposes deterministic help metadata", () => {
       async () => Object.freeze({
         ok: true,
         command: "version",
-        payload: Object.freeze({ version: "0.0.0" }),
+        payload: Object.freeze({
+          kind: "version",
+          productName: "Aster",
+          productVersion: "0.0.0",
+        }),
       }),
     ),
     new FixtureCommand(
@@ -99,7 +103,10 @@ test("isolates descriptors and exposes deterministic help metadata", () => {
       async () => Object.freeze({
         ok: true,
         command: "help",
-        payload: Object.freeze({ commands: Object.freeze([]) }),
+        payload: Object.freeze({
+          kind: "help",
+          descriptors: Object.freeze([]),
+        }),
       }),
     ),
   ]);
@@ -118,20 +125,25 @@ test("isolates descriptors and exposes deterministic help metadata", () => {
 });
 
 test("normalises equivalent invocations through an independent host", async () => {
+  const acceptedInvocations: AsterCommandInvocationType[] = [];
   const command = new FixtureCommand(
     {
       name: "search",
       summary: "Search catalogues.",
       usage: ["search <query>"],
     },
-    async (invocation, context) => Object.freeze({
-      ok: true,
-      command: "search",
-      payload: Object.freeze({
-        invocation,
-        catalogueCount: context.catalogues.length,
-      }),
-    }),
+    async (invocation, context) => {
+      acceptedInvocations.push(invocation);
+      assert.equal(context.catalogues.length, 1);
+      return Object.freeze({
+        ok: true,
+        command: "search",
+        payload: Object.freeze({
+          kind: "search",
+          results: Object.freeze([]),
+        }),
+      });
+    },
   );
   const host = new IndependentProgrammaticHost(
     new CommandKernel([command]),
@@ -151,18 +163,14 @@ test("normalises equivalent invocations through an independent host", async () =
 
   assert.deepEqual(first, second);
   assert.equal(first.ok, true);
-
-  if (first.ok) {
-    const payload = first.payload as {
-      readonly invocation: AsterCommandInvocationType;
-    };
-    assert.ok(Object.isFrozen(payload.invocation));
-    assert.ok(
-      payload.invocation.command !== "search" ||
-      payload.invocation.tags === undefined ||
-      Object.isFrozen(payload.invocation.tags),
-    );
-  }
+  assert.equal(acceptedInvocations.length, 2);
+  assert.deepEqual(acceptedInvocations[0], acceptedInvocations[1]);
+  assert.ok(Object.isFrozen(acceptedInvocations[0]));
+  assert.ok(
+    acceptedInvocations[0]?.command !== "search" ||
+    acceptedInvocations[0].tags === undefined ||
+    Object.isFrozen(acceptedInvocations[0].tags),
+  );
 });
 
 test("returns usage failures for malformed invocations", async () => {

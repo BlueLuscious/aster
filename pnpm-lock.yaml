@@ -47,6 +47,9 @@ importers:
       '@aster/core':
         specifier: workspace:*
         version: link:../core
+      '@aster/icons':
+        specifier: workspace:*
+        version: link:../icons
 
   packages/core: {}
 

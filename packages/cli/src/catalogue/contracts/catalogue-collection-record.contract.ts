@@ -5,7 +5,7 @@ import type { CollectionDefinition } from "@aster/core";
  */
 export interface CatalogueCollectionRecord {
   /**
-   * @description Portable collection value retained without reconstruction or decoration.
+   * @description Portable collection candidate supplied for validation and isolation by the loader.
    */
   readonly definition: CollectionDefinition;
 

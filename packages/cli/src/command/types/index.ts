@@ -4,5 +4,7 @@ export type { AsterCommandDiagnosticType } from "./aster-command-diagnostic.type
 export type { AsterCommandInvocationType } from "./aster-command-invocation.type.js";
 export type { AsterCommandListSubjectType } from "./aster-command-list-subject.type.js";
 export type { AsterCommandNameType } from "./aster-command-name.type.js";
+export type { AsterCommandPayloadKindType } from "./aster-command-payload-kind.type.js";
+export type { AsterCommandPayloadType } from "./aster-command-payload.type.js";
 export type { AsterCommandResultType } from "./aster-command-result.type.js";
 export type { AsterCommandShowSubjectType } from "./aster-command-show-subject.type.js";

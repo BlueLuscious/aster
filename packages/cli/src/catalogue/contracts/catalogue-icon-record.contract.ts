@@ -8,7 +8,7 @@ import type {
  */
 export interface CatalogueIconRecord {
   /**
-   * @description Portable icon value retained without reconstruction or decoration.
+   * @description Portable icon candidate supplied for validation and isolation by the loader.
    */
   readonly definition: IconDefinition;
 

@@ -1,11 +1,12 @@
 import type { AsterCommandDiagnosticType } from "./aster-command-diagnostic.type.js";
 import type { AsterCommandNameType } from "./aster-command-name.type.js";
+import type { AsterCommandPayloadType } from "./aster-command-payload.type.js";
 
 /**
  * @description Immutable structured outcome returned by host-neutral command execution.
  * @typeParam Payload - Serialisable command-specific success payload.
  */
-export type AsterCommandResultType<Payload extends object = Readonly<Record<string, unknown>>> =
+export type AsterCommandResultType<Payload extends object = AsterCommandPayloadType> =
   | Readonly<{
       /**
        * @description Discriminator for successful execution.

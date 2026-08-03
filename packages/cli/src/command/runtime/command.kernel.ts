@@ -6,13 +6,13 @@ import type {
   AsterCommandSet,
 } from "../contracts/index.js";
 import type {
-  AsterCommandDiagnosticType,
   AsterCommandNameType,
   AsterCommandResultType,
 } from "../types/index.js";
 import { CommandContextNormaliser } from "./command-context.normaliser.js";
 import { CommandDiagnosticFactory } from "./command-diagnostic.factory.js";
 import { CommandInvocationNormaliser } from "./command-invocation.normaliser.js";
+import { CommandResultFactory } from "./command-result.factory.js";
 
 /**
  * @description Coordinates immutable invocation acceptance, capability acceptance, and dispatch.
@@ -47,6 +47,11 @@ export class CommandKernel implements AsterCommandSet {
    * @description Immutable diagnostic constructor for dispatch failures.
    */
   readonly #diagnostics = new CommandDiagnosticFactory();
+
+  /**
+   * @description Immutable structured command outcome constructor.
+   */
+  readonly #results = new CommandResultFactory();
 
   /**
    * @description Creates one isolated command composition from explicit definitions.
@@ -95,7 +100,7 @@ export class CommandKernel implements AsterCommandSet {
     const acceptedInvocation = this.#invocations.normalise(invocation);
 
     if (!acceptedInvocation.accepted) {
-      return this.#failure(
+      return this.#results.failure(
         this.#identifyCommand(invocation),
         acceptedInvocation.diagnostic,
       );
@@ -104,7 +109,7 @@ export class CommandKernel implements AsterCommandSet {
     const acceptedContext = this.#contexts.normalise(context);
 
     if (!acceptedContext.accepted) {
-      return this.#failure(
+      return this.#results.failure(
         acceptedInvocation.value.command,
         acceptedContext.diagnostic,
       );
@@ -113,7 +118,7 @@ export class CommandKernel implements AsterCommandSet {
     const definition = this.#definitions.get(acceptedInvocation.value.command);
 
     if (definition === undefined) {
-      return this.#failure(
+      return this.#results.failure(
         acceptedInvocation.value.command,
         this.#diagnostics.create(
           commandDiagnosticSchema.categories.usage,
@@ -129,7 +134,7 @@ export class CommandKernel implements AsterCommandSet {
         acceptedContext.value,
       );
     } catch {
-      return this.#failure(
+      return this.#results.failure(
         acceptedInvocation.value.command,
         this.#diagnostics.create(
           commandDiagnosticSchema.categories.executionFailure,
@@ -172,23 +177,6 @@ export class CommandKernel implements AsterCommandSet {
       name: descriptor.name,
       summary: descriptor.summary,
       usage: Object.freeze([...descriptor.usage]),
-    });
-  }
-
-  /**
-   * @description Creates one immutable failed command result.
-   * @param command - Identified command when available.
-   * @param diagnostic - Stable structured rejection evidence.
-   * @returns Immutable structured failure.
-   */
-  #failure(
-    command: AsterCommandNameType | undefined,
-    diagnostic: AsterCommandDiagnosticType,
-  ): AsterCommandResultType {
-    return Object.freeze({
-      ok: false,
-      ...(command === undefined ? {} : { command }),
-      diagnostic,
     });
   }
 
