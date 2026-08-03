@@ -3,6 +3,7 @@ import type {
   IconIdentity,
   IconMetadata,
 } from "@aster/core";
+import type { catalogueResultKinds } from "../constants/catalogue-result-kinds.constant.js";
 
 /**
  * @description Immutable catalogue result for one portable icon identity and its evidence.
@@ -11,7 +12,7 @@ export interface CatalogueIconResult {
   /**
    * @description Discriminator for a portable icon result.
    */
-  readonly kind: "icon";
+  readonly kind: typeof catalogueResultKinds.icon;
 
   /**
    * @description Provider that supplied the accepted icon record.

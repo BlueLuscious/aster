@@ -1,3 +1,10 @@
+import { catalogueResultKinds } from "../../catalogue/constants/catalogue-result-kinds.constant.js";
+import type {
+  CatalogueCollectionResult,
+  CatalogueIconResult,
+} from "../../catalogue/contracts/index.js";
+import { asterCommandPayloadKinds } from "../../command/constants/aster-command-payload-kinds.constant.js";
+import type { AsterCommandDescriptor } from "../../command/contracts/index.js";
 import type { AsterCommandResultType } from "../../command/types/index.js";
 import { ShellIdentityFormatter } from "./shell-identity.formatter.js";
 
@@ -19,41 +26,41 @@ export class HumanOutputPresenter {
     const payload = result.payload;
 
     switch (payload.kind) {
-      case "catalogue-list":
+      case asterCommandPayloadKinds.catalogueList:
         return this.#sequence(
           "Catalogues",
           payload.catalogues.map((catalogue) =>
             `${catalogue.identity} (${this.#count(catalogue.iconCount, "icon")}, ${this.#count(catalogue.collectionCount, "collection")})`,
           ),
         );
-      case "collection-list":
+      case asterCommandPayloadKinds.collectionList:
         return this.#sequence(
           "Collections",
           payload.collections.map((collection) =>
             `${this.#identities.format(collection.identity)} [${collection.catalogue}] - ${collection.metadata.displayName} (${this.#count(collection.icons.length, "icon")})`,
           ),
         );
-      case "icon-list":
+      case asterCommandPayloadKinds.iconList:
         return this.#sequence(
           "Icons",
           payload.icons.map((icon) => this.#iconSummary(icon)),
         );
-      case "search":
+      case asterCommandPayloadKinds.search:
         return this.#sequence(
           "Results",
           payload.results.map((entry) =>
-            entry.kind === "icon"
+            entry.kind === catalogueResultKinds.icon
               ? `icon: ${this.#iconSummary(entry)}`
               : `collection: ${this.#identities.format(entry.identity)} [${entry.catalogue}] - ${entry.metadata.displayName}`,
           ),
         );
-      case "icon-show":
+      case asterCommandPayloadKinds.iconShow:
         return this.#iconDetails(payload.icon);
-      case "collection-show":
+      case asterCommandPayloadKinds.collectionShow:
         return this.#collectionDetails(payload.collection);
-      case "help":
+      case asterCommandPayloadKinds.help:
         return this.#help(payload.descriptors);
-      case "version":
+      case asterCommandPayloadKinds.version:
         return `${payload.productName} ${payload.productVersion}`;
     }
   }
@@ -78,12 +85,7 @@ export class HumanOutputPresenter {
    * @param icon - Structured catalogue icon result.
    * @returns One deterministic icon summary line.
    */
-  #iconSummary(
-    icon: Extract<
-      Extract<AsterCommandResultType, { ok: true }>["payload"],
-      { kind: "icon-list" }
-    >["icons"][number],
-  ): string {
+  #iconSummary(icon: CatalogueIconResult): string {
     const memberships = icon.memberships.length === 0
       ? "none"
       : icon.memberships.map((identity) =>
@@ -97,12 +99,7 @@ export class HumanOutputPresenter {
    * @param icon - Exact structured catalogue icon result.
    * @returns Deterministic multi-line icon details.
    */
-  #iconDetails(
-    icon: Extract<
-      Extract<AsterCommandResultType, { ok: true }>["payload"],
-      { kind: "icon-show" }
-    >["icon"],
-  ): string {
+  #iconDetails(icon: CatalogueIconResult): string {
     const tags = icon.metadata.tags?.join(", ") ?? "none";
     const memberships = icon.memberships.length === 0
       ? "none"
@@ -124,12 +121,7 @@ export class HumanOutputPresenter {
    * @param collection - Exact structured catalogue collection result.
    * @returns Deterministic multi-line collection details.
    */
-  #collectionDetails(
-    collection: Extract<
-      Extract<AsterCommandResultType, { ok: true }>["payload"],
-      { kind: "collection-show" }
-    >["collection"],
-  ): string {
+  #collectionDetails(collection: CatalogueCollectionResult): string {
     const tags = collection.metadata.tags?.join(", ") ?? "none";
     const icons = collection.icons.length === 0
       ? "none"
@@ -150,12 +142,7 @@ export class HumanOutputPresenter {
    * @param descriptors - Canonically ordered help metadata.
    * @returns Deterministic multi-line usage text.
    */
-  #help(
-    descriptors: Extract<
-      Extract<AsterCommandResultType, { ok: true }>["payload"],
-      { kind: "help" }
-    >["descriptors"],
-  ): string {
+  #help(descriptors: readonly AsterCommandDescriptor[]): string {
     const lines = ["Aster commands:"];
 
     for (const descriptor of descriptors) {

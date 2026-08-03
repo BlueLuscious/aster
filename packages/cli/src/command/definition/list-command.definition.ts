@@ -40,9 +40,10 @@ export class ListCommandDefinition implements ICommandDefinition {
     invocation: AsterCommandInvocationType,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
-    return this.#query.execute(
-      invocation as Extract<AsterCommandInvocationType, { command: typeof asterCommandNames.list }>,
-      context,
-    );
+    if (invocation.command !== asterCommandNames.list) {
+      throw new TypeError("Invalid list command invocation");
+    }
+
+    return this.#query.execute(invocation, context);
   }
 }

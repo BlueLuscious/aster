@@ -1,8 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "src/shell",
-    "outDir": "dist/shell",
+    "rootDir": "src",
+    "noEmit": true,
     "declaration": false,
     "types": [
       "node"
@@ -10,10 +10,5 @@
   },
   "include": [
     "src/shell/**/*.ts"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.json"
-    }
   ]
 }

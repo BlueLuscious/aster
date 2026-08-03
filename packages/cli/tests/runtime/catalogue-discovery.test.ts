@@ -7,7 +7,11 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
-import { AsterCatalogue, AsterCommands } from "../../src/index.js";
+import {
+  AsterCatalogue,
+  AsterCommands,
+  catalogueResultKinds,
+} from "../../src/index.js";
 import type {
   CatalogueProvider,
   CatalogueSnapshot,
@@ -21,6 +25,14 @@ const presentation = Object.freeze({
     strokeWidth: 1.5,
   }),
   overrides: Object.freeze([]),
+});
+
+test("exposes immutable catalogue result discriminators", () => {
+  assert.deepEqual(catalogueResultKinds, {
+    icon: "icon",
+    collection: "collection",
+  });
+  assert.ok(Object.isFrozen(catalogueResultKinds));
 });
 
 function createIcon(

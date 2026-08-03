@@ -1,3 +1,4 @@
+import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import type { AsterCommandResultType } from "../../command/types/index.js";
 import type { TShellExecution } from "../types/internal/shell-execution.type.js";
 import { HumanOutputPresenter } from "./human-output.presenter.js";
@@ -26,7 +27,7 @@ export class CommandOutputPresenter {
   present(result: AsterCommandResultType, json: boolean): TShellExecution {
     const exitCode = result.ok
       ? 0
-      : result.diagnostic.category === "usage"
+      : result.diagnostic.category === commandDiagnosticSchema.categories.usage
         ? 2
         : 1;
 

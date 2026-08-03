@@ -40,9 +40,10 @@ export class ShowCommandDefinition implements ICommandDefinition {
     invocation: AsterCommandInvocationType,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
-    return this.#query.execute(
-      invocation as Extract<AsterCommandInvocationType, { command: typeof asterCommandNames.show }>,
-      context,
-    );
+    if (invocation.command !== asterCommandNames.show) {
+      throw new TypeError("Invalid show command invocation");
+    }
+
+    return this.#query.execute(invocation, context);
   }
 }

@@ -33,7 +33,10 @@ export class VersionCommandDefinition implements ICommandDefinition {
     invocation: AsterCommandInvocationType,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
-    void invocation;
+    if (invocation.command !== asterCommandNames.version) {
+      throw new TypeError("Invalid version command invocation");
+    }
+
     return this.#results.success(asterCommandNames.version, Object.freeze({
       kind: asterCommandPayloadKinds.version,
       productName: context.productName,

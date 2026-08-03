@@ -16,9 +16,14 @@ import type {
   CatalogueProviderResult,
   CatalogueIconResult,
   CatalogueCollectionResult,
+  CatalogueResultKindType,
   CatalogueSnapshot,
 } from "../../src/index.js";
-import { AsterCatalogue, AsterCommands } from "../../src/index.js";
+import {
+  AsterCatalogue,
+  AsterCommands,
+  catalogueResultKinds,
+} from "../../src/index.js";
 
 const snapshot: CatalogueSnapshot = {
   icons: [],
@@ -50,6 +55,7 @@ const showSubject: AsterCommandShowSubjectType = "icon";
 const diagnosticCode: AsterCommandDiagnosticCodeType = "ASTER-CLI-004";
 const diagnosticCategory: AsterCommandDiagnosticCategoryType = "not-found";
 const payloadKind: AsterCommandPayloadKindType = "icon-list";
+const catalogueResultKind: CatalogueResultKindType = catalogueResultKinds.icon;
 const invocation: AsterCommandInvocationType = {
   command: "search",
   query: "camera",
@@ -104,6 +110,7 @@ void execution;
 void publicExecution;
 void publicProvider;
 void commandPayload;
+void catalogueResultKind;
 void iconResult;
 void collectionResult;
 void providerResult;

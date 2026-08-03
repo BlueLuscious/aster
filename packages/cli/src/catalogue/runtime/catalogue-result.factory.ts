@@ -1,5 +1,5 @@
 import type { CollectionDefinition } from "@aster/core";
-import { asterCommandSubjects } from "../../command/constants/aster-command-subjects.constant.js";
+import { catalogueResultKinds } from "../constants/catalogue-result-kinds.constant.js";
 import type {
   CatalogueCollectionResult,
   CatalogueIconRecord,
@@ -33,7 +33,7 @@ export class CatalogueResultFactory {
    */
   icon(catalogue: string, record: CatalogueIconRecord): CatalogueIconResult {
     return Object.freeze({
-      kind: asterCommandSubjects.show.icon,
+      kind: catalogueResultKinds.icon,
       catalogue,
       identity: record.definition.identity,
       metadata: record.definition.metadata,
@@ -52,7 +52,7 @@ export class CatalogueResultFactory {
     definition: CollectionDefinition,
   ): CatalogueCollectionResult {
     return Object.freeze({
-      kind: asterCommandSubjects.show.collection,
+      kind: catalogueResultKinds.collection,
       catalogue,
       identity: definition.identity,
       metadata: definition.metadata,

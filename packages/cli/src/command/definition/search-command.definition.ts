@@ -40,9 +40,10 @@ export class SearchCommandDefinition implements ICommandDefinition {
     invocation: AsterCommandInvocationType,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
-    return this.#query.execute(
-      invocation as Extract<AsterCommandInvocationType, { command: typeof asterCommandNames.search }>,
-      context,
-    );
+    if (invocation.command !== asterCommandNames.search) {
+      throw new TypeError("Invalid search command invocation");
+    }
+
+    return this.#query.execute(invocation, context);
   }
 }

@@ -52,9 +52,12 @@ export class HelpCommandDefinition implements ICommandDefinition {
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
     void context;
-    const commandName = invocation.command === asterCommandNames.help
-      ? invocation.commandName
-      : undefined;
+
+    if (invocation.command !== asterCommandNames.help) {
+      throw new TypeError("Invalid help command invocation");
+    }
+
+    const commandName = invocation.commandName;
     const descriptors = commandName === undefined
       ? this.#descriptors
       : this.#descriptors.filter((descriptor) => descriptor.name === commandName);
