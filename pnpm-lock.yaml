@@ -11,6 +11,9 @@ importers:
       '@aster/build':
         specifier: workspace:*
         version: link:packages/build
+      '@aster/cli':
+        specifier: workspace:*
+        version: link:packages/cli
       '@aster/core':
         specifier: workspace:*
         version: link:packages/core
@@ -38,6 +41,15 @@ importers:
       xmlsax-typescript:
         specifier: 1.0.0
         version: 1.0.0
+
+  packages/cli:
+    dependencies:
+      '@aster/core':
+        specifier: workspace:*
+        version: link:../core
+      '@aster/icons':
+        specifier: workspace:*
+        version: link:../icons
 
   packages/core: {}
 

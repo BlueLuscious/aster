@@ -44,6 +44,7 @@
   },
   "devDependencies": {
     "@aster/build": "workspace:*",
+    "@aster/cli": "workspace:*",
     "@aster/core": "workspace:*",
     "@aster/icons": "workspace:*",
     "@aster/svg": "workspace:*",

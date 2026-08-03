@@ -326,6 +326,50 @@ function validateBuildPackageBoundary(manifest, dependencies, issues) {
 }
 
 /**
+ * @description Verifies the public root-only CLI package and its accepted dependency direction.
+ * @param {Record<string, unknown>} manifest - Parsed CLI package manifest.
+ * @param {Record<string, string>} dependencies - Combined production dependency fields.
+ * @param {string[]} issues - Mutable issue collection populated by the check.
+ * @returns {void} This validation mutates only the provided issue collection.
+ */
+function validateCliPackageBoundary(manifest, dependencies, issues) {
+  const allowedDependencies = new Set(["@aster/core", "@aster/icons"]);
+
+  for (const name of Object.keys(dependencies)) {
+    if (!allowedDependencies.has(name)) {
+      issues.push(`@aster/cli cannot declare unaccepted production dependency ${name}`);
+    }
+  }
+
+  if (manifest.private === true) {
+    issues.push("@aster/cli must remain a public package");
+  }
+
+  if (manifest.sideEffects !== false) {
+    issues.push("@aster/cli must declare package.json#sideEffects as false");
+  }
+
+  const exports = manifest.exports;
+  const exportKeys =
+    typeof exports === "object" && exports !== null ? Object.keys(exports) : [];
+  const rootExport =
+    typeof exports === "object" && exports !== null ? exports["."] : undefined;
+
+  if (JSON.stringify(exportKeys) !== JSON.stringify(["."])) {
+    issues.push('@aster/cli must expose only the root "." package export');
+  }
+
+  if (
+    typeof rootExport !== "object" ||
+    rootExport === null ||
+    rootExport.import !== "./dist/index.js" ||
+    rootExport.types !== "./dist/index.d.ts"
+  ) {
+    issues.push("@aster/cli root export must provide the accepted ESM and declaration entries");
+  }
+}
+
+/**
  * @description Reports cyclic production dependencies between workspace packages.
  * @param {Map<string, Set<string>>} graph - Workspace production dependency graph.
  * @param {string[]} issues - Mutable issue collection populated by the check.
@@ -464,6 +508,17 @@ async function validatePackages(workspaceRoot, issues) {
       await validatePortableCompilerOptions(packageRoot, manifest.name, issues);
     }
 
+    if (manifest.name === "@aster/cli") {
+      for (const name of workspaceDependencies) {
+        if (name !== "@aster/core" && name !== "@aster/icons") {
+          issues.push(`@aster/cli cannot depend on workspace package ${name}`);
+        }
+      }
+
+      validateCliPackageBoundary(manifest, dependencies, issues);
+      await validatePortableCompilerOptions(packageRoot, manifest.name, issues);
+    }
+
     const modules = await collectModules(resolve(packageRoot, "src"));
 
     for (const modulePath of modules) {
@@ -534,6 +589,16 @@ async function validatePackages(workspaceRoot, issues) {
         if (manifest.name === "@aster/build" && specifier.startsWith("node:")) {
           issues.push(
             `${relative(workspaceRoot, modulePath)} imports a Node adapter into @aster/build`,
+          );
+        }
+
+        if (
+          manifest.name === "@aster/cli" &&
+          specifier.startsWith("node:") &&
+          !isWithin(resolve(packageRoot, "src/shell"), modulePath)
+        ) {
+          issues.push(
+            `${relative(workspaceRoot, modulePath)} imports Node authority outside the CLI shell`,
           );
         }
 

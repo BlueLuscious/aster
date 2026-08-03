@@ -1,0 +1,50 @@
+{
+  "name": "@aster/cli",
+  "version": "0.0.0",
+  "description": "Host-neutral Aster commands and their standalone command-line host.",
+  "type": "module",
+  "author": "BlueLuscious",
+  "license": "ISC",
+  "homepage": "https://github.com/BlueLuscious/aster/tree/develop/packages/cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlueLuscious/aster.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/BlueLuscious/aster/issues"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "aster": "./dist/shell/aster.js"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm run clean && tsc -b tsconfig.shell.json --force",
+    "check:types": "tsc -p tsconfig.json --noEmit && tsc -p tsconfig.shell.check.json",
+    "clean": "node ../../tooling/workspace/clean-package-output.mjs dist",
+    "test": "pnpm run test:types && pnpm run test:runtime && pnpm run test:conformance",
+    "test:abi": "pnpm run build && node --test --test-isolation=none tests/abi/*.test.mjs",
+    "test:conformance": "pnpm run build && node --test --test-isolation=none tests/abi/*.test.mjs tests/executable/*.test.mjs",
+    "test:executable": "pnpm run build && node --test --test-isolation=none tests/executable/*.test.mjs",
+    "test:runtime": "tsx --test --test-isolation=none tests/runtime/*.test.ts",
+    "test:types": "tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@aster/core": "workspace:*",
+    "@aster/icons": "workspace:*"
+  }
+}

@@ -202,6 +202,60 @@ test("rejects host adapters and reverse dependencies in the private build domain
   }
 });
 
+test("rejects CLI dependency, package-surface, and Node-authority drift", async () => {
+  const root = await createFixture();
+
+  try {
+    await writeFixtureJson(root, "packages/cli/package.json", {
+      name: "@aster/cli",
+      private: true,
+      type: "module",
+      sideEffects: true,
+      exports: {
+        ".": {
+          types: "./dist/index.d.ts",
+          import: "./dist/index.js",
+        },
+        "./runtime": "./dist/runtime.js",
+      },
+      dependencies: {
+        "@aster/svg": "workspace:*",
+      },
+    });
+    await writeFixtureJson(root, "packages/cli/tsconfig.json", {
+      compilerOptions: {
+        lib: ["ES2022", "DOM"],
+        types: ["node"],
+      },
+    });
+    await writeFixtureFile(
+      root,
+      "packages/cli/src/command/runtime/command.ts",
+      'import "node:process";\n',
+    );
+    await writeFixtureJson(root, "packages/svg/package.json", {
+      name: "@aster/svg",
+      type: "module",
+    });
+    await writeFixtureFile(root, "packages/svg/src/index.ts", "export {};\n");
+
+    const issues = await verifyArchitecture(root);
+
+    assert.ok(
+      issues.some((issue) => /cannot depend on workspace package @aster\/svg/u.test(issue)),
+    );
+    assert.ok(issues.some((issue) => /unaccepted production dependency @aster\/svg/u.test(issue)));
+    assert.ok(issues.some((issue) => /must remain a public package/u.test(issue)));
+    assert.ok(issues.some((issue) => /sideEffects as false/u.test(issue)));
+    assert.ok(issues.some((issue) => /expose only the root/u.test(issue)));
+    assert.ok(issues.some((issue) => /cannot add host libraries/u.test(issue)));
+    assert.ok(issues.some((issue) => /cannot add ambient/u.test(issue)));
+    assert.ok(issues.some((issue) => /Node authority outside the CLI shell/u.test(issue)));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("rejects private parser dependency and adapter boundary drift", async () => {
   const root = await createFixture();
 
