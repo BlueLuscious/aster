@@ -22,6 +22,8 @@ Aster architecture is defined incrementally from accepted decisions and implemen
   intent, conflict handling, and RTL behaviour.
 - [Distribution and Adapters](distribution-and-adapters.md) defines variants, exports,
   tree-shaking, named integrations, and target separation.
+- [Command-line Boundary](command-line-boundary.md) defines the host-neutral Aster command set,
+  explicit catalogue discovery, standalone Node shell, and plugin-host compatibility.
 
 Documents marked as **Accepted** define current architecture. Draft documents are proposals and
 cannot silently override accepted contracts.

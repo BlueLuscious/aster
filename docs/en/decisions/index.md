@@ -91,3 +91,4 @@ supersession links, and unindexed records.
 | [0005: Public SVG Renderer Boundary](0005-public-svg-renderer-boundary.md) | Accepted | Technical maintainers | Public SVG target and package API |
 | [0006: Public Portable Runtime Authorities](0006-public-portable-runtime-authorities.md) | Accepted | Technical maintainers | Core runtime value API |
 | [0007: TypeScript-first Aster Collection Package](0007-typescript-first-aster-collection-package.md) | Accepted | Technical maintainers and Aster collection curator | Collection authoring and distribution |
+| [0008: Public Plugin-compatible Aster CLI Boundary](0008-public-plugin-compatible-aster-cli-boundary.md) | Accepted | Technical maintainers | CLI package and command-host boundary |

@@ -37,6 +37,10 @@ may still wait for an earlier prerequisite in the recommended sequence.
 
 Importance: **P0 - Required**
 
+The initial command and host separation is accepted by the
+[Command-line Boundary](architecture/command-line-boundary.md). Implementation and conformance
+remain pending until the package exists.
+
 `@aster/cli` should provide a useful standalone `aster` executable without embedding command
 behaviour directly into argument parsing, terminal output, process exit state, or filesystem
 globals. Command definitions and handlers should receive explicit host capabilities so the same
