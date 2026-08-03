@@ -3,9 +3,8 @@
 Status: **Experimental**
 
 `@aster/cli` owns Aster's host-neutral command contracts, deterministic catalogue discovery, and
-their future standalone Node host. The current implementation provides the frozen programmatic
-`AsterCommands` composition and the explicit built-in `AsterCatalogue` provider. The `aster`
-executable is not implemented yet.
+the standalone Node host. The implementation provides the frozen programmatic `AsterCommands`
+composition, the explicit built-in `AsterCatalogue` provider, and the `aster` executable.
 
 ## Current boundary
 
@@ -24,6 +23,7 @@ help metadata does not eagerly evaluate the built-in catalogue.
 | --- | --- |
 | [Command](command/index.md) | Defines and executes host-neutral invocation, context, metadata, result, and diagnostic contracts. |
 | [Catalogue](catalogue/index.md) | Loads explicit providers and performs deterministic provider, collection, and icon discovery. |
+| [Shell](shell/index.md) | Adapts Node argv, presents human or JSON output, and commits documented process effects. |
 
 ## Dependency boundary
 
@@ -31,9 +31,11 @@ The command and catalogue domains depend on the public root of `@aster/core`, wh
 isolates portable icon and collection values. The built-in provider depends on `@aster/icons` and
 adapts `AsterCollection` without assigning catalogue ownership to Core.
 
-Production compilation uses ES2022 ESM without Node or DOM ambient types. The source has no argv,
-process, terminal, filesystem, network, renderer, package-manager, Build, framework, or
-repository-tooling authority.
+The host-neutral production compilation uses ES2022 ESM without Node or DOM ambient types. A
+separate shell compiler admits Node types only beneath `src/shell/`. The initial shell acquires
+argv, writes stdout or stderr, and sets process exit status; it has no filesystem mutation,
+network, package-manager, renderer, Build, framework, plugin-loader, or repository-tooling
+authority.
 
 ## Current package surface
 
@@ -49,9 +51,10 @@ The package exposes only its root `"."`. It exports these types:
   `CatalogueCollectionRecord`;
 - `CatalogueProviderResult`, `CatalogueIconResult`, and `CatalogueCollectionResult`.
 
-The root also exports the frozen `AsterCommands` and `AsterCatalogue` values. No executable or
-implementation subpath is currently public. The accepted surface and dependency direction remain
-defined by the [Command-line Boundary](../../architecture/command-line-boundary.md).
+The root also exports the frozen `AsterCommands` and `AsterCatalogue` values. The package manifest
+maps the `aster` binary to its private built shell entrypoint. No implementation subpath is public.
+The accepted surface and dependency direction remain defined by the
+[Command-line Boundary](../../architecture/command-line-boundary.md).
 
 ## Current verification
 
@@ -70,4 +73,6 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
 - many-to-many membership without duplicated icon identity;
 - mixed search fields, cross-provider ambiguity, snapshot conflicts, and unavailable providers.
 
-Published-package ABI and executable conformance remain pending final package verification.
+Built-executable integration tests additionally verify human and JSON presentation, exact stream
+selection, exit status, argument rejection, and silent public-root imports. Published-package ABI
+conformance remains pending final package verification.
