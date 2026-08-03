@@ -179,7 +179,7 @@ distribution boundaries and are not registry reservations:
 | Private build-time implementation | `@aster/build` | Implemented and accepted |
 | Aster collection definitions | `@aster/icons` | Implemented and Experimental |
 | Generic SVG renderer | `@aster/svg` | Implemented contract foundation |
-| Standalone and programmatic CLI | `@aster/cli` | Implemented command-kernel foundation; executable pending |
+| Standalone and programmatic CLI | `@aster/cli` | Implemented programmatic catalogue discovery; executable pending |
 | Generated icon-target integration | Target package or generated exports, pending evidence | Provisional |
 | Target-independent Lilium adapter | `@aster/lilium` | Provisional |
 | DOM-specific Lilium mappings | `@aster/lilium-dom` if evidence requires a separate package | Provisional |

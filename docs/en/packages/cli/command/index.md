@@ -25,7 +25,9 @@ provided explicitly to the kernel and never registered globally.
 | `AsterCommandListSubjectType` | Closed subject union for `catalogues`, `collections`, and `icons`. | Derived from the list branch of the immutable command-subject authority. |
 | `AsterCommandShowSubjectType` | Closed subject union for `icon` and `collection`. | Derived from the show branch of the immutable command-subject authority. |
 | `AsterCommandInvocationType` | Discriminated structured request union with command-specific subjects and filters. | Validated and isolated by `CommandInvocationNormaliser`. |
-| `AsterCommandResultType` | Generic structured success or failure outcome. | Success retains an immutable payload; failure retains `AsterCommandDiagnosticType`. |
+| `AsterCommandPayloadKindType` | Closed discriminator union for every current success payload. | Derived from the immutable payload-kind authority. |
+| `AsterCommandPayloadType` | Closed union of list, search, show, help, and version payloads. | Retains public catalogue results or command descriptors according to its kind. |
+| `AsterCommandResultType` | Generic structured success or failure outcome. | Success defaults to `AsterCommandPayloadType`; failure retains `AsterCommandDiagnosticType`. |
 | `AsterCommandDiagnosticType` | Stable code, category, message, and optional related-value evidence. | Its categories and codes derive from one immutable runtime schema. |
 | `AsterCommandDiagnosticCodeType` | Closed stable diagnostic-code union. | Derived from the code branch of the immutable diagnostic schema. |
 | `AsterCommandDiagnosticCategoryType` | Closed stable diagnostic-category union. | Derived from the category branch of the immutable diagnostic schema. |
@@ -35,7 +37,7 @@ structured rejection without throwing an expected command error.
 
 ## Invocation semantics
 
-The current normaliser validates the complete accepted invocation union. It rejects unknown own
+The normaliser validates the complete accepted invocation union. It rejects unknown own
 fields, unknown commands, missing values, invalid subjects, non-canonical filters and identities,
 and duplicate tags. It copies and freezes every retained sequence.
 
@@ -43,7 +45,7 @@ Search queries are trimmed and lowercased. Provider identities and tags use cano
 lowercase kebab-case. Collection identities use `[namespace/]name`; icon identities additionally
 permit `@variant`.
 
-The exact standalone grammar remains canonical in the
+The exact future standalone grammar remains canonical in the
 [Command-line Boundary](../../../architecture/command-line-boundary.md). Node token parsing is not
 part of the current kernel.
 

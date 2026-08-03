@@ -2,7 +2,7 @@
 
 Status: **Experimental**
 
-The internal runtime composes four concrete responsibilities without exposing an implementation
+The internal runtime composes concrete responsibilities without exposing an implementation
 subpath.
 
 | Class | Responsibility |
@@ -11,6 +11,8 @@ subpath.
 | `CommandContextNormaliser` | Validates explicit providers and product metadata, rejects duplicate provider identities, and freezes the context container. |
 | `CommandKernel` | Isolates descriptors, orders definitions, coordinates both normalisers, dispatches explicitly, and sanitises thrown definition failures. |
 | `CommandDiagnosticFactory` | Constructs isolated deeply frozen command diagnostics. |
+| `CommandResultFactory` | Constructs immutable closed success payloads and structured failures. |
+| Command definitions | Bind immutable descriptors to the list, search, show, help, and version behaviours. |
 
 ## Execution flow
 
@@ -32,5 +34,5 @@ Descriptors are copied from definitions, their usage sequences are frozen, and t
 sequence is ordered lexically by command identity. Reading descriptors executes no command or
 provider.
 
-The runtime imports no Node module and writes no output. A later public frozen composition will
-delegate to the same kernel.
+The runtime imports no Node module and writes no output. The public frozen `AsterCommands`
+composition delegates to this kernel; a future Node shell will adapt the same object.
