@@ -32,7 +32,8 @@ isolates portable icon and collection values. The built-in provider depends on `
 adapts `AsterCollection` without assigning catalogue ownership to Core.
 
 The host-neutral production compilation uses ES2022 ESM without Node or DOM ambient types. A
-separate shell compiler admits Node types only beneath `src/shell/`. The initial shell acquires
+referenced shell project consumes its emitted declarations and admits Node types only beneath
+`src/shell/`; it does not re-emit the host-neutral implementation. The initial shell acquires
 argv, writes stdout or stderr, and sets process exit status; it has no filesystem mutation,
 network, package-manager, renderer, Build, framework, plugin-loader, or repository-tooling
 authority.
@@ -49,11 +50,12 @@ The package exposes only its root `"."`. It exports these types:
   `AsterCommandDiagnosticCategoryType`;
 - `CatalogueProvider`, `CatalogueSnapshot`, `CatalogueIconRecord`, and
   `CatalogueCollectionRecord`;
-- `CatalogueProviderResult`, `CatalogueIconResult`, and `CatalogueCollectionResult`.
+- `CatalogueProviderResult`, `CatalogueIconResult`, and `CatalogueCollectionResult`;
+- `CatalogueResultKindType`.
 
-The root also exports the frozen `AsterCommands` and `AsterCatalogue` values. The package manifest
-maps the `aster` binary to its private built shell entrypoint. No implementation subpath is public.
-The accepted surface and dependency direction remain defined by the
+The root also exports the frozen `AsterCommands`, `AsterCatalogue`, and `catalogueResultKinds`
+values. The package manifest maps the `aster` binary to its private built shell entrypoint. No
+implementation subpath is public. The accepted surface and dependency direction remain defined by the
 [Command-line Boundary](../../architecture/command-line-boundary.md).
 
 ## Current verification

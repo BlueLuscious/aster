@@ -17,6 +17,13 @@ and performs host-neutral discovery. It has no ambient provider registry.
 | `CatalogueIconResult` | Reports one icon identity, metadata, provider, and independent memberships. | Returned by icon list, search, and exact show. |
 | `CatalogueCollectionResult` | Reports one collection identity, metadata, provider, and member identities. | Returned by collection list, search, and exact show. |
 
+## Public types and authorities
+
+| Symbol | Responsibility | Relations |
+| --- | --- | --- |
+| `CatalogueResultKindType` | Identifies an icon or collection discovery result. | Derived from `catalogueResultKinds`. |
+| `catalogueResultKinds` | Provides the immutable runtime discriminators for public catalogue results. | Used by result contracts, projectors, and consumers that narrow mixed search results. |
+
 Provider provenance, computed search terms, and many-to-many catalogue membership remain outside
 portable Core metadata. Equal portable identities from different providers remain distinct
 catalogue results until explicit lookup rules resolve or reject them.

@@ -57,6 +57,13 @@ ambient mutable registry, and a thin Node shell. If independent consumers later 
 host-neutral command set may move to a separate package such as `@aster/commands`, while
 `@aster/cli` remains the executable adapter.
 
+The closed initial command family deliberately uses exhaustive invocation, argument, and human
+presentation dispatch. When the next substantial command family such as `add`, `export`, or
+`generate` is accepted, reassess that pressure and extract vertical command adapters or explicit
+registrations if doing so localises validation, shell parsing, and presentation changes. Do not
+introduce inheritance hierarchies, automatic command discovery, or a generic registry merely to
+remove small exhaustive switches.
+
 Plugin compatibility must work in both directions without dependency inversion. A generic host
 may load Aster commands as one plugin alongside commands from other ecosystems. The standalone
 Aster CLI may eventually load explicitly compatible catalogue or target plugins, but Aster Core,
@@ -89,6 +96,12 @@ CLI discovery must not introduce a runtime global registry. Catalogue providers 
 explicit manifests or indexes outside `IconDefinition`; collections continue to own only their
 explicit membership. Search aliases, collection-specific categories, package provenance, and
 computed indexes remain catalogue concerns rather than portable icon metadata.
+
+The pilot built-in provider currently adapts the one canonical collection and its members. Before
+the first canonical standalone icon or second canonical collection is published, `@aster/icons`
+should expose independent immutable icon and collection indexes and the built-in provider should
+adapt both. This preserves discovery of icons with no collection and collections with no members
+without assigning catalogue concerns to portable definitions.
 
 The initial CLI should support deterministic machine-readable output in addition to human terminal
 formatting. Command failures should return structured Aster-owned results; only the executable
