@@ -1,12 +1,44 @@
-import { readdir, readFile, stat } from "node:fs/promises";
-import { dirname, relative, resolve, sep } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+
+import { NodeRepositoryFileSystem } from "../shared/runtime/node-repository-file-system.mjs";
+import { RepositoryDirectoryReader } from "../shared/runtime/repository-directory.reader.mjs";
+import { RepositoryFileWalker } from "../shared/runtime/repository-file.walker.mjs";
+import { RepositoryJsonReader } from "../shared/runtime/repository-json.reader.mjs";
+import { RepositoryPathResolver } from "../shared/runtime/repository-path.resolver.mjs";
+
+/**
+ * @description Node filesystem capability composed for architecture verification.
+ */
+const repositoryFileSystem = new NodeRepositoryFileSystem();
+
+/**
+ * @description Repository path capability composed for architecture verification.
+ */
+const repositoryPaths = new RepositoryPathResolver();
+
+/**
+ * @description Optional directory membership reader used by architecture discovery.
+ */
+const repositoryDirectories = new RepositoryDirectoryReader(repositoryFileSystem);
+
+/**
+ * @description Deterministic source file walker used by architecture inspection.
+ */
+const repositoryFiles = new RepositoryFileWalker(repositoryFileSystem, repositoryPaths);
+
+/**
+ * @description Strict JSON reader used for repository and package manifests.
+ */
+const repositoryJson = new RepositoryJsonReader(repositoryFileSystem);
 
 /**
  * @description Absolute path to the repository root containing the architecture command.
  */
-const defaultWorkspaceRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const defaultWorkspaceRoot = repositoryPaths.resolve(
+  repositoryPaths.dirname(fileURLToPath(import.meta.url)),
+  "../..",
+);
 
 /**
  * @description Dependency fields that may provide production package imports.
@@ -33,89 +65,6 @@ const forbiddenCollectionDirectories = new Set([
   "previews",
   "search-indexes",
 ]);
-
-/**
- * @description Determines whether a filesystem path exists and is accessible.
- * @param {string} path - Absolute filesystem path to inspect.
- * @returns {Promise<boolean>} Whether the path exists.
- */
-async function pathExists(path) {
-  try {
-    await stat(path);
-    return true;
-  } catch (error) {
-    if (error?.code === "ENOENT") {
-      return false;
-    }
-
-    throw error;
-  }
-}
-
-/**
- * @description Reads and parses a JSON file without accepting non-standard syntax.
- * @param {string} path - Absolute JSON file path.
- * @returns {Promise<Record<string, unknown>>} Parsed JSON object.
- */
-async function readJson(path) {
-  return JSON.parse(await readFile(path, "utf8"));
-}
-
-/**
- * @description Reads immediate child directories from an optional repository boundary.
- * @param {string} root - Absolute directory whose direct children are requested.
- * @returns {Promise<string[]>} Sorted child directory names, or an empty list when absent.
- */
-async function readDirectories(root) {
-  if (!(await pathExists(root))) {
-    return [];
-  }
-
-  const entries = await readdir(root, { withFileTypes: true });
-
-  return entries
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .sort((left, right) => left.localeCompare(right));
-}
-
-/**
- * @description Collects TypeScript and JavaScript modules beneath an optional source root.
- * @param {string} root - Absolute source directory from which traversal starts.
- * @returns {Promise<string[]>} Deterministically ordered absolute module paths.
- */
-async function collectModules(root) {
-  if (!(await pathExists(root))) {
-    return [];
-  }
-
-  const entries = await readdir(root, { withFileTypes: true });
-  const modules = [];
-
-  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-    const path = resolve(root, entry.name);
-
-    if (entry.isDirectory()) {
-      modules.push(...(await collectModules(path)));
-    } else if (entry.isFile() && /\.[cm]?[jt]sx?$/u.test(entry.name)) {
-      modules.push(path);
-    }
-  }
-
-  return modules;
-}
-
-/**
- * @description Determines whether one absolute path is contained by another.
- * @param {string} root - Candidate ancestor path.
- * @param {string} target - Candidate descendant path.
- * @returns {boolean} Whether the target is inside or equal to the root.
- */
-function isWithin(root, target) {
-  const relation = relative(root, target);
-
-  return relation === "" || (relation !== ".." && !relation.startsWith(`..${sep}`));
-}
 
 /**
  * @description Extracts statically recognisable module specifiers from source text.
@@ -168,7 +117,7 @@ function readPnpmWorkspacePatterns(source) {
  * @returns {Promise<void>} Completion after the compiler baseline is inspected.
  */
 async function validateCompilerBaseline(workspaceRoot, issues) {
-  const configuration = await readJson(resolve(workspaceRoot, "tsconfig.base.json"));
+  const configuration = await repositoryJson.read(repositoryPaths.resolve(workspaceRoot, "tsconfig.base.json"));
   const options = configuration.compilerOptions ?? {};
   const expectedOptions = {
     target: "ES2022",
@@ -198,12 +147,16 @@ async function validateCompilerBaseline(workspaceRoot, issues) {
  * @returns {Promise<void>} Completion after both workspace manifests are compared.
  */
 async function validateWorkspaceMetadata(workspaceRoot, issues) {
-  const manifest = await readJson(resolve(workspaceRoot, "package.json"));
+  const manifest = await repositoryJson.read(
+    repositoryPaths.resolve(workspaceRoot, "package.json"),
+  );
   const manifestPatterns = [...(manifest.workspaces ?? [])].sort((left, right) =>
     left.localeCompare(right),
   );
   const pnpmPatterns = readPnpmWorkspacePatterns(
-    await readFile(resolve(workspaceRoot, "pnpm-workspace.yaml"), "utf8"),
+    await repositoryFileSystem.readText(
+      repositoryPaths.resolve(workspaceRoot, "pnpm-workspace.yaml"),
+    ),
   );
 
   if (JSON.stringify(manifestPatterns) !== JSON.stringify(pnpmPatterns)) {
@@ -223,13 +176,13 @@ async function validatePortableCompilerOptions(
   packageName,
   issues,
 ) {
-  const configurationPath = resolve(packageRoot, "tsconfig.json");
+  const configurationPath = repositoryPaths.resolve(packageRoot, "tsconfig.json");
 
-  if (!(await pathExists(configurationPath))) {
+  if (!(await repositoryFileSystem.exists(configurationPath))) {
     return;
   }
 
-  const configuration = await readJson(configurationPath);
+  const configuration = await repositoryJson.read(configurationPath);
   const options = configuration.compilerOptions ?? {};
 
   if (Array.isArray(options.lib) && options.lib.some((entry) => entry !== "ES2022")) {
@@ -417,21 +370,21 @@ function validateDependencyCycles(graph, issues) {
  * @returns {Promise<void>} Completion after every real package is inspected.
  */
 async function validatePackages(workspaceRoot, issues) {
-  const packagesRoot = resolve(workspaceRoot, "packages");
-  const packageDirectories = await readDirectories(packagesRoot);
+  const packagesRoot = repositoryPaths.resolve(workspaceRoot, "packages");
+  const packageDirectories = await repositoryDirectories.read(packagesRoot);
   const packages = [];
   const names = new Set();
 
   for (const directory of packageDirectories) {
-    const packageRoot = resolve(packagesRoot, directory);
-    const manifestPath = resolve(packageRoot, "package.json");
+    const packageRoot = repositoryPaths.resolve(packagesRoot, directory);
+    const manifestPath = repositoryPaths.resolve(packageRoot, "package.json");
 
-    if (!(await pathExists(manifestPath))) {
+    if (!(await repositoryFileSystem.exists(manifestPath))) {
       issues.push(`packages/${directory} must contain package.json`);
       continue;
     }
 
-    const manifest = await readJson(manifestPath);
+    const manifest = await repositoryJson.read(manifestPath);
 
     if (typeof manifest.name !== "string" || manifest.name.length === 0) {
       issues.push(`packages/${directory}/package.json must declare a package name`);
@@ -519,34 +472,37 @@ async function validatePackages(workspaceRoot, issues) {
       await validatePortableCompilerOptions(packageRoot, manifest.name, issues);
     }
 
-    const modules = await collectModules(resolve(packageRoot, "src"));
+    const modules = await repositoryFiles.collect(
+      repositoryPaths.resolve(packageRoot, "src"),
+      (path) => /\.[cm]?[jt]sx?$/u.test(path),
+    );
 
     for (const modulePath of modules) {
-      const source = await readFile(modulePath, "utf8");
+      const source = await repositoryFileSystem.readText(modulePath);
 
       for (const specifier of extractModuleSpecifiers(source)) {
         if (specifier.startsWith(".")) {
-          const target = resolve(dirname(modulePath), specifier);
+          const target = repositoryPaths.resolve(repositoryPaths.dirname(modulePath), specifier);
 
-          if (isWithin(packagesRoot, target) && !isWithin(packageRoot, target)) {
+          if (repositoryPaths.contains(packagesRoot, target) && !repositoryPaths.contains(packageRoot, target)) {
             issues.push(
-              `${relative(workspaceRoot, modulePath)} imports another package through a relative path`,
+              `${repositoryPaths.relative(workspaceRoot, modulePath)} imports another package through a relative path`,
             );
           }
 
           if (
             manifest.name === "@aster/build" &&
-            isWithin(resolve(workspaceRoot, "tooling"), target)
+            repositoryPaths.contains(repositoryPaths.resolve(workspaceRoot, "tooling"), target)
           ) {
             issues.push(
-              `${relative(workspaceRoot, modulePath)} imports repository tooling into @aster/build`,
+              `${repositoryPaths.relative(workspaceRoot, modulePath)} imports repository tooling into @aster/build`,
             );
           }
 
           if (
             manifest.name === "@aster/build" &&
-            resolve(modulePath) === resolve(packageRoot, "src/index.ts") &&
-            isWithin(resolve(packageRoot, "src/parser"), target)
+            repositoryPaths.resolve(modulePath) === repositoryPaths.resolve(packageRoot, "src/index.ts") &&
+            repositoryPaths.contains(repositoryPaths.resolve(packageRoot, "src/parser"), target)
           ) {
             issues.push(
               "@aster/build cannot expose its untrusted parser feature from the package root",
@@ -555,8 +511,8 @@ async function validatePackages(workspaceRoot, issues) {
 
           if (
             manifest.name === "@aster/build" &&
-            resolve(modulePath) === resolve(packageRoot, "src/index.ts") &&
-            isWithin(resolve(packageRoot, "src/validation"), target)
+            repositoryPaths.resolve(modulePath) === repositoryPaths.resolve(packageRoot, "src/index.ts") &&
+            repositoryPaths.contains(repositoryPaths.resolve(packageRoot, "src/validation"), target)
           ) {
             issues.push(
               "@aster/build cannot expose its internal validation feature from the package root",
@@ -565,8 +521,8 @@ async function validatePackages(workspaceRoot, issues) {
 
           if (
             manifest.name === "@aster/build" &&
-            resolve(modulePath) === resolve(packageRoot, "src/index.ts") &&
-            isWithin(resolve(packageRoot, "src/generator"), target)
+            repositoryPaths.resolve(modulePath) === repositoryPaths.resolve(packageRoot, "src/index.ts") &&
+            repositoryPaths.contains(repositoryPaths.resolve(packageRoot, "src/generator"), target)
           ) {
             issues.push(
               "@aster/build cannot expose its internal generator feature from the package root",
@@ -575,11 +531,11 @@ async function validatePackages(workspaceRoot, issues) {
 
           if (
             manifest.name === "@aster/build" &&
-            isWithin(resolve(packageRoot, "src/normalisation"), modulePath) &&
-            isWithin(resolve(packageRoot, "src/validation/runtime"), target)
+            repositoryPaths.contains(repositoryPaths.resolve(packageRoot, "src/normalisation"), modulePath) &&
+            repositoryPaths.contains(repositoryPaths.resolve(packageRoot, "src/validation/runtime"), target)
           ) {
             issues.push(
-              `${relative(workspaceRoot, modulePath)} cannot import Validation runtime implementations`,
+              `${repositoryPaths.relative(workspaceRoot, modulePath)} cannot import Validation runtime implementations`,
             );
           }
 
@@ -588,32 +544,32 @@ async function validatePackages(workspaceRoot, issues) {
 
         if (manifest.name === "@aster/build" && specifier.startsWith("node:")) {
           issues.push(
-            `${relative(workspaceRoot, modulePath)} imports a Node adapter into @aster/build`,
+            `${repositoryPaths.relative(workspaceRoot, modulePath)} imports a Node adapter into @aster/build`,
           );
         }
 
         if (
           manifest.name === "@aster/cli" &&
           specifier.startsWith("node:") &&
-          !isWithin(resolve(packageRoot, "src/shell"), modulePath)
+          !repositoryPaths.contains(repositoryPaths.resolve(packageRoot, "src/shell"), modulePath)
         ) {
           issues.push(
-            `${relative(workspaceRoot, modulePath)} imports Node authority outside the CLI shell`,
+            `${repositoryPaths.relative(workspaceRoot, modulePath)} imports Node authority outside the CLI shell`,
           );
         }
 
         if (specifier === "xmlsax-typescript") {
-          const implementationPath = resolve(
+          const implementationPath = repositoryPaths.resolve(
             packageRoot,
             "src/parser/runtime/svg.parser.ts",
           );
 
           if (
             manifest.name !== "@aster/build" ||
-            resolve(modulePath) !== implementationPath
+            repositoryPaths.resolve(modulePath) !== implementationPath
           ) {
             issues.push(
-              `${relative(workspaceRoot, modulePath)} imports the XML parser outside its accepted private adapter`,
+              `${repositoryPaths.relative(workspaceRoot, modulePath)} imports the XML parser outside its accepted private adapter`,
             );
           }
         }
@@ -645,17 +601,17 @@ async function validatePackages(workspaceRoot, issues) {
  * @returns {Promise<void>} Completion after every real collection is inspected.
  */
 async function validateCollections(workspaceRoot, issues) {
-  const collectionsRoot = resolve(workspaceRoot, "collections");
-  const collections = await readDirectories(collectionsRoot);
+  const collectionsRoot = repositoryPaths.resolve(workspaceRoot, "collections");
+  const collections = await repositoryDirectories.read(collectionsRoot);
 
   for (const collection of collections) {
-    const collectionRoot = resolve(collectionsRoot, collection);
+    const collectionRoot = repositoryPaths.resolve(collectionsRoot, collection);
 
     if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/u.test(collection)) {
       issues.push(`Collection directory must use a canonical kebab-case slug: ${collection}`);
     }
 
-    const directories = await readDirectories(collectionRoot);
+    const directories = await repositoryDirectories.read(collectionRoot);
 
     for (const required of requiredCollectionDirectories) {
       if (!directories.includes(required)) {
@@ -709,7 +665,7 @@ async function main() {
 
 if (
   process.argv[1] !== undefined &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  repositoryPaths.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
   await main();
 }

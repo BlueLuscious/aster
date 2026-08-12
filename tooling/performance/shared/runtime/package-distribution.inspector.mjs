@@ -1,21 +1,58 @@
-import { readdir, readFile, stat } from "node:fs/promises";
-import { resolve } from "node:path";
+import { NodeRepositoryFileSystem } from "../../../shared/runtime/node-repository-file-system.mjs";
+import { RepositoryFileWalker } from "../../../shared/runtime/repository-file.walker.mjs";
+import { RepositoryJsonReader } from "../../../shared/runtime/repository-json.reader.mjs";
+import { RepositoryPathResolver } from "../../../shared/runtime/repository-path.resolver.mjs";
 
 /**
  * @description Inspects emitted package shape without assigning bundler-specific meaning.
  */
 export class PackageDistributionInspector {
+  /** @type {NodeRepositoryFileSystem} */
+  #fileSystem;
+
+  /** @type {RepositoryJsonReader} */
+  #json;
+
+  /** @type {RepositoryPathResolver} */
+  #paths;
+
+  /** @type {RepositoryFileWalker} */
+  #files;
+
+  /**
+   * @description Creates an emitted-package inspector from repository filesystem capabilities.
+   * @param {NodeRepositoryFileSystem} fileSystem - Repository file acquisition capability.
+   * @param {RepositoryPathResolver} paths - Repository path capability.
+   */
+  constructor(
+    fileSystem = new NodeRepositoryFileSystem(),
+    paths = new RepositoryPathResolver(),
+  ) {
+    this.#fileSystem = fileSystem;
+    this.#json = new RepositoryJsonReader(fileSystem);
+    this.#paths = paths;
+    this.#files = new RepositoryFileWalker(fileSystem, paths);
+  }
+
   /**
    * @description Reads modules, declarations, exports, and side-effect metadata for one package.
    * @param {string} packagePath - Workspace-relative or absolute package root.
    * @returns {Promise<{ moduleFiles: number, moduleBytes: number, declarationFiles: number, declarationBytes: number, exports: readonly string[], sideEffects: unknown }>} Distribution summary.
    */
   async inspect(packagePath) {
-    const packageRoot = resolve(packagePath);
-    const manifest = JSON.parse(
-      await readFile(resolve(packageRoot, "package.json"), "utf8"),
+    const packageRoot = this.#paths.resolve(packagePath);
+    const manifest = await this.#json.read(
+      this.#paths.resolve(packageRoot, "package.json"),
     );
-    const files = await this.#files(resolve(packageRoot, "dist"));
+    const paths = await this.#files.collect(
+      this.#paths.resolve(packageRoot, "dist"),
+      () => true,
+    );
+    const files = await Promise.all(
+      paths.map(async (path) =>
+        Object.freeze({ path, bytes: await this.#fileSystem.fileSize(path) }),
+      ),
+    );
     const modules = files.filter((file) => file.path.endsWith(".js"));
     const declarations = files.filter((file) => file.path.endsWith(".d.ts"));
 
@@ -32,28 +69,4 @@ export class PackageDistributionInspector {
     });
   }
 
-  /**
-   * @description Recursively gathers emitted distribution files and byte sizes.
-   * @param {string} directory - Absolute distribution directory to inspect.
-   * @returns {Promise<readonly { path: string, bytes: number }[]>} Ordered emitted-file records.
-   */
-  async #files(directory) {
-    const entries = await readdir(directory, { withFileTypes: true });
-    const files = [];
-
-    for (const entry of entries) {
-      const path = resolve(directory, entry.name);
-
-      if (entry.isDirectory()) {
-        files.push(...(await this.#files(path)));
-      } else if (entry.isFile()) {
-        const information = await stat(path);
-        files.push(Object.freeze({ path, bytes: information.size }));
-      }
-    }
-
-    return Object.freeze(
-      files.sort((left, right) => left.path.localeCompare(right.path)),
-    );
-  }
 }

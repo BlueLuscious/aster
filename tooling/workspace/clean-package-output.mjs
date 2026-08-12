@@ -1,7 +1,13 @@
 import { rm, stat } from "node:fs/promises";
-import { relative, resolve, sep } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+
+import { RepositoryPathResolver } from "../shared/runtime/repository-path.resolver.mjs";
+
+/**
+ * @description Repository path capability composed for guarded package cleanup.
+ */
+const repositoryPaths = new RepositoryPathResolver();
 
 /**
  * @description Only generated directory name accepted by the initial package cleaner.
@@ -15,7 +21,7 @@ const acceptedOutputDirectory = "dist";
  */
 async function isPackageRoot(packageRoot) {
   try {
-    const manifest = await stat(resolve(packageRoot, "package.json"));
+    const manifest = await stat(repositoryPaths.resolve(packageRoot, "package.json"));
 
     return manifest.isFile();
   } catch (error) {
@@ -35,11 +41,10 @@ async function isPackageRoot(packageRoot) {
  * @returns {Promise<void>} Completion after the output is absent.
  */
 export async function cleanPackageOutput(packageRoot, outputDirectory) {
-  const resolvedPackageRoot = resolve(packageRoot);
-  const resolvedOutput = resolve(resolvedPackageRoot, outputDirectory);
-  const relation = relative(resolvedPackageRoot, resolvedOutput);
-  const escapesPackage =
-    relation === ".." || relation.startsWith(`..${sep}`) || relation.includes(sep);
+  const resolvedPackageRoot = repositoryPaths.resolve(packageRoot);
+  const resolvedOutput = repositoryPaths.resolve(resolvedPackageRoot, outputDirectory);
+  const relation = repositoryPaths.relative(resolvedPackageRoot, resolvedOutput);
+  const escapesPackage = !repositoryPaths.contains(resolvedPackageRoot, resolvedOutput);
 
   if (!(await isPackageRoot(resolvedPackageRoot))) {
     throw new Error(`Refusing to clean a directory without package.json: ${resolvedPackageRoot}`);
@@ -79,7 +84,7 @@ async function main() {
 
 if (
   process.argv[1] !== undefined &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  repositoryPaths.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
   await main();
 }

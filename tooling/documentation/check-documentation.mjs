@@ -1,12 +1,38 @@
-import { readdir, readFile, stat } from "node:fs/promises";
-import { dirname, relative, resolve, sep } from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+
+import { NodeRepositoryFileSystem } from "../shared/runtime/node-repository-file-system.mjs";
+import { RepositoryDirectoryReader } from "../shared/runtime/repository-directory.reader.mjs";
+import { RepositoryFileWalker } from "../shared/runtime/repository-file.walker.mjs";
+import { RepositoryPathResolver } from "../shared/runtime/repository-path.resolver.mjs";
+
+/**
+ * @description Node filesystem capability composed for documentation verification.
+ */
+const repositoryFileSystem = new NodeRepositoryFileSystem();
+
+/**
+ * @description Repository path capability composed for documentation verification.
+ */
+const repositoryPaths = new RepositoryPathResolver();
+
+/**
+ * @description Optional directory membership reader used by documentation mirroring.
+ */
+const repositoryDirectories = new RepositoryDirectoryReader(repositoryFileSystem);
+
+/**
+ * @description Deterministic Markdown file walker used by documentation inspection.
+ */
+const repositoryFiles = new RepositoryFileWalker(repositoryFileSystem, repositoryPaths);
 
 /**
  * @description Absolute path to the repository root containing the documentation command.
  */
-const defaultWorkspaceRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
+const defaultWorkspaceRoot = repositoryPaths.resolve(
+  repositoryPaths.dirname(fileURLToPath(import.meta.url)),
+  "../..",
+);
 
 /**
  * @description Canonical documentation entries required by repository policy.
@@ -38,75 +64,6 @@ const forbiddenLocalReferences = Object.freeze([
 const acceptedDecisionStatuses = new Set(["Proposed", "Accepted", "Rejected", "Superseded"]);
 
 /**
- * @description Converts an absolute repository path into a stable display path.
- * @param {string} workspaceRoot - Absolute repository root.
- * @param {string} path - Absolute path beneath the repository root.
- * @returns {string} A slash-separated repository-relative path.
- */
-function displayPath(workspaceRoot, path) {
-  return relative(workspaceRoot, path).split(sep).join("/");
-}
-
-/**
- * @description Determines whether a filesystem path exists and is accessible.
- * @param {string} path - Absolute filesystem path to inspect.
- * @returns {Promise<boolean>} Whether the path exists.
- */
-async function pathExists(path) {
-  try {
-    await stat(path);
-    return true;
-  } catch (error) {
-    if (error?.code === "ENOENT") {
-      return false;
-    }
-
-    throw error;
-  }
-}
-
-/**
- * @description Collects files with a requested extension in deterministic order.
- * @param {string} root - Directory from which traversal starts.
- * @param {string} extension - File extension to retain.
- * @returns {Promise<string[]>} Absolute matching file paths.
- */
-async function collectFiles(root, extension) {
-  const entries = await readdir(root, { withFileTypes: true });
-  const files = [];
-
-  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-    const path = resolve(root, entry.name);
-
-    if (entry.isDirectory()) {
-      files.push(...(await collectFiles(path, extension)));
-    } else if (entry.isFile() && entry.name.endsWith(extension)) {
-      files.push(path);
-    }
-  }
-
-  return files;
-}
-
-/**
- * @description Reads immediate child directory names from an optional root.
- * @param {string} root - Absolute directory whose children represent domain members.
- * @returns {Promise<string[]>} Sorted child directory names, or an empty list when absent.
- */
-async function readMemberDirectories(root) {
-  if (!(await pathExists(root))) {
-    return [];
-  }
-
-  const entries = await readdir(root, { withFileTypes: true });
-
-  return entries
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .sort((left, right) => left.localeCompare(right));
-}
-
-/**
  * @description Verifies that canonical documentation entry points exist.
  * @param {string} documentationRoot - Absolute canonical documentation root.
  * @param {string} workspaceRoot - Absolute repository root.
@@ -115,11 +72,11 @@ async function readMemberDirectories(root) {
  */
 async function validateRequiredHierarchy(documentationRoot, workspaceRoot, issues) {
   for (const entry of requiredDocumentationEntries) {
-    const path = resolve(documentationRoot, entry);
+    const path = repositoryPaths.resolve(documentationRoot, entry);
 
-    if (!(await pathExists(path))) {
+    if (!(await repositoryFileSystem.exists(path))) {
       issues.push(
-        `Missing canonical documentation entry: ${displayPath(workspaceRoot, path)}`,
+        `Missing canonical documentation entry: ${repositoryPaths.display(workspaceRoot, path)}`,
       );
     }
   }
@@ -133,9 +90,11 @@ async function validateRequiredHierarchy(documentationRoot, workspaceRoot, issue
  * @returns {Promise<void>} Completion after source and documentation members are compared.
  */
 async function validatePackageMirroring(documentationRoot, workspaceRoot, issues) {
-  const sourceMembers = await readMemberDirectories(resolve(workspaceRoot, "packages"));
-  const documentedMembers = await readMemberDirectories(
-    resolve(documentationRoot, "packages"),
+  const sourceMembers = await repositoryDirectories.read(
+    repositoryPaths.resolve(workspaceRoot, "packages"),
+  );
+  const documentedMembers = await repositoryDirectories.read(
+    repositoryPaths.resolve(documentationRoot, "packages"),
   );
 
   for (const member of sourceMembers) {
@@ -162,7 +121,7 @@ async function validatePackageMirroring(documentationRoot, workspaceRoot, issues
 function validateLocalReferences(workspaceRoot, path, content, issues) {
   for (const reference of forbiddenLocalReferences) {
     if (reference.pattern.test(content)) {
-      issues.push(`${displayPath(workspaceRoot, path)} contains ${reference.label}`);
+      issues.push(`${repositoryPaths.display(workspaceRoot, path)} contains ${reference.label}`);
     }
   }
 }
@@ -200,17 +159,19 @@ function extractLocalLinks(content) {
 async function validateLocalLinks(workspaceRoot, path, content, issues) {
   for (const target of extractLocalLinks(content)) {
     const targetWithoutFragment = decodeURIComponent(target.split("#", 1)[0]);
-    const resolvedTarget = resolve(dirname(path), targetWithoutFragment);
-    const relativeTarget = relative(workspaceRoot, resolvedTarget);
-    const escapesWorkspace = relativeTarget === ".." || relativeTarget.startsWith(`..${sep}`);
+    const resolvedTarget = repositoryPaths.resolve(
+      repositoryPaths.dirname(path),
+      targetWithoutFragment,
+    );
+    const escapesWorkspace = !repositoryPaths.contains(workspaceRoot, resolvedTarget);
 
     if (escapesWorkspace) {
       issues.push(
-        `${displayPath(workspaceRoot, path)} links outside the repository: ${target}`,
+        `${repositoryPaths.display(workspaceRoot, path)} links outside the repository: ${target}`,
       );
-    } else if (!(await pathExists(resolvedTarget))) {
+    } else if (!(await repositoryFileSystem.exists(resolvedTarget))) {
       issues.push(
-        `${displayPath(workspaceRoot, path)} contains a broken local link: ${target}`,
+        `${repositoryPaths.display(workspaceRoot, path)} contains a broken local link: ${target}`,
       );
     }
   }
@@ -224,12 +185,16 @@ async function validateLocalLinks(workspaceRoot, path, content, issues) {
  * @returns {Promise<void>} Completion after all decision records are inspected.
  */
 async function validateDecisionRecords(documentationRoot, workspaceRoot, issues) {
-  const decisionRoot = resolve(documentationRoot, "decisions");
-  const decisionFiles = await collectFiles(decisionRoot, ".md");
-  const decisionIndex = await readFile(resolve(decisionRoot, "index.md"), "utf8");
+  const decisionRoot = repositoryPaths.resolve(documentationRoot, "decisions");
+  const decisionFiles = await repositoryFiles.collect(decisionRoot, (path) =>
+    path.endsWith(".md"),
+  );
+  const decisionIndex = await repositoryFileSystem.readText(
+    repositoryPaths.resolve(decisionRoot, "index.md"),
+  );
 
   for (const path of decisionFiles) {
-    const filename = displayPath(workspaceRoot, path).split("/").at(-1);
+    const filename = repositoryPaths.display(workspaceRoot, path).split("/").at(-1);
 
     if (filename === "index.md" || filename === "template.md") {
       continue;
@@ -239,30 +204,30 @@ async function validateDecisionRecords(documentationRoot, workspaceRoot, issues)
 
     if (!filenameMatch) {
       issues.push(
-        `Decision record has an invalid filename: ${displayPath(workspaceRoot, path)}`,
+        `Decision record has an invalid filename: ${repositoryPaths.display(workspaceRoot, path)}`,
       );
       continue;
     }
 
-    const content = await readFile(path, "utf8");
+    const content = await repositoryFileSystem.readText(path);
     const identifier = filenameMatch[1];
     const headingPattern = new RegExp(`^# ${identifier}:\\s+\\S`, "mu");
     const statusMatch = /^Status:\s+\*\*([^*]+)\*\*$/mu.exec(content);
 
     if (!headingPattern.test(content)) {
-      issues.push(`${displayPath(workspaceRoot, path)} has no matching decision heading`);
+      issues.push(`${repositoryPaths.display(workspaceRoot, path)} has no matching decision heading`);
     }
 
     if (!statusMatch || !acceptedDecisionStatuses.has(statusMatch[1])) {
-      issues.push(`${displayPath(workspaceRoot, path)} has no accepted decision status`);
+      issues.push(`${repositoryPaths.display(workspaceRoot, path)} has no accepted decision status`);
     }
 
     if (!content.includes("## Consequences")) {
-      issues.push(`${displayPath(workspaceRoot, path)} has no consequences section`);
+      issues.push(`${repositoryPaths.display(workspaceRoot, path)} has no consequences section`);
     }
 
     if (!decisionIndex.includes(`](${filename})`)) {
-      issues.push(`${displayPath(workspaceRoot, path)} is missing from the decision index`);
+      issues.push(`${repositoryPaths.display(workspaceRoot, path)} is missing from the decision index`);
     }
   }
 }
@@ -273,16 +238,18 @@ async function validateDecisionRecords(documentationRoot, workspaceRoot, issues)
  * @returns {Promise<{ issues: string[], markdownFileCount: number }>} Verification result.
  */
 export async function verifyDocumentation(workspaceRoot) {
-  const documentationRoot = resolve(workspaceRoot, "docs/en");
+  const documentationRoot = repositoryPaths.resolve(workspaceRoot, "docs/en");
   const issues = [];
 
   await validateRequiredHierarchy(documentationRoot, workspaceRoot, issues);
   await validatePackageMirroring(documentationRoot, workspaceRoot, issues);
 
-  const markdownFiles = await collectFiles(documentationRoot, ".md");
+  const markdownFiles = await repositoryFiles.collect(documentationRoot, (path) =>
+    path.endsWith(".md"),
+  );
 
   for (const path of markdownFiles) {
-    const content = await readFile(path, "utf8");
+    const content = await repositoryFileSystem.readText(path);
 
     validateLocalReferences(workspaceRoot, path, content, issues);
     await validateLocalLinks(workspaceRoot, path, content, issues);
@@ -315,7 +282,7 @@ async function main() {
 
 if (
   process.argv[1] !== undefined &&
-  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+  repositoryPaths.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 ) {
   await main();
 }
