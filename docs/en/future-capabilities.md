@@ -32,8 +32,9 @@ may still wait for an earlier prerequisite in the recommended sequence.
 | 7 | `P1` | Harden the retained Build boundary, if any. | A real import workflow validates its parser, diagnostics, normalisation, generation, and host split. |
 | 8 | `P2` | Consider an Aster-owned XML tokeniser. | Build is retained and parser conformance and maintenance evidence justify replacement. |
 | 9 | `P2` | Activate objective linting and formatting verification. | The first supported release or external contribution workflow requires enforceable source checks. |
-| 10 | `P3` | Consolidate project documentation. | Package documentation is self-contained and all preceding package decisions are stable. |
-| 11 | `P4` | Begin the Lilium adapter. | Core and renderer contracts are stable and documentation consolidation is complete. |
+| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels and can supply independent policies. |
+| 11 | `P3` | Consolidate project documentation. | Package documentation is self-contained and all preceding package decisions are stable. |
+| 12 | `P4` | Begin the Lilium adapter. | Core and renderer contracts are stable and documentation consolidation is complete. |
 
 ## Plugin-compatible Aster CLI
 
@@ -112,7 +113,7 @@ shell maps them to stderr and process exit status.
 
 ## Repository tooling hardening
 
-Importance: **P0 - Required**
+Status: **Completed**
 
 Remove obsolete repository-only product experiments and harden the private tools behind stable
 root commands before package performance work depends on them. Architecture, documentation,
@@ -123,6 +124,32 @@ Tooling may coordinate public built packages but no package may import tooling. 
 measurement infrastructure may be shared across package baselines, while every package retains an
 independent scenario runner and command. Future user-facing export or review behaviour belongs to
 `@aster/cli`, not to permanent repository-only hosts.
+
+The final audit retained only checks with current objective evidence. It removed the inactive
+canonical collection-source-root policy, removed ecosystem-name checks duplicated by exact
+dependency allowlists, and excluded empty lint and format delegators from the repository check.
+Production package imports into private tooling are now rejected uniformly. ABI tests remain
+necessary because they inspect emitted public artefacts rather than authored repository structure.
+
+## Headless repository-tooling extraction
+
+Importance: **P2 - Conditional**
+
+The hardened tooling structure permits a future independent headless project, but Aster should not
+extract it without a second real repository consumer. Candidate portable capabilities are verifier
+orchestration, issue collection, filesystem and path contracts, deterministic traversal, strict
+JSON acquisition, benchmark execution, and sample aggregation.
+
+Repository policy is not automatically portable. Aster-specific package identities, dependency
+allowlists, compiler requirements, documentation hierarchy, decision-record rules, parser
+ownership, cleanup boundaries, and Core performance scenarios must remain Aster-owned policies or
+explicit adapters.
+
+If extraction becomes justified, the independent project should expose host-neutral kernels and a
+small explicit policy composition boundary. Aster would consume it only as development tooling and
+retain its own thin process entrypoints. Do not extract by copying every current verifier, creating
+automatic rule discovery, embedding mutable global registries, or combining contributor tooling
+with the future user-facing multi-ecosystem CLI.
 
 ## Core hardening
 

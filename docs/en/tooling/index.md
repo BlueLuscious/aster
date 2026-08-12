@@ -60,7 +60,7 @@ The private root exposes stable orchestration contracts:
 | Command | Contract |
 | --- | --- |
 | `pnpm build` | Build every real package in dependency order when it defines `build`. |
-| `pnpm check` | Run type, architecture, documentation, lint, and non-mutating format checks. |
+| `pnpm check` | Run the implemented type, architecture, and documentation checks. |
 | `pnpm check:architecture` | Run the [architecture verifier](architecture/index.md). |
 | `pnpm check:docs` | Run the [documentation verifier](documentation/index.md). |
 | `pnpm check:types` | Build and type-check every applicable package. |
@@ -74,9 +74,47 @@ The private root exposes stable orchestration contracts:
 | `pnpm clean` | Delegate to each package's guarded cleanup contract. |
 | `pnpm verify` | Run checks, tests, and builds as the complete repository gate. |
 
-Root commands remain stable while internal implementations can be replaced. Empty delegated lint
-or format matches are not evidence that source has been inspected; objective linting and formatting
-remain deferred until an accepted implementation exists.
+Root commands remain stable while internal implementations can be replaced. `pnpm lint`,
+`pnpm format`, and `pnpm format:check` remain reserved delegators, but they are excluded from
+`pnpm check` while no package implements them. Empty delegated matches are not repository evidence;
+objective linting and formatting remain deferred until an accepted implementation exists.
+
+## Retention audit
+
+Every retained feature protects a current boundary:
+
+| Feature | Retained evidence |
+| --- | --- |
+| Architecture | Detects source, manifest, dependency, compiler, host-authority, and private-tooling boundary drift before publication. |
+| Documentation | Detects broken local links, stale package mirroring, contributor-local references, malformed decision records, and missing current entry points. |
+| Workspace | Deletes only a verified package's direct generated distribution through an explicit destructive policy. |
+| Performance | Produces reproducible package-specific comparison reports without CI thresholds or production dependencies. |
+| Shared | Serves multiple retained tooling features with filesystem, path, JSON, directory, and traversal capabilities. |
+
+Package ABI tests remain separate from architecture inspection. Architecture evaluates authored
+sources and manifests before build; ABI tests evaluate emitted declarations, modules, exports, and
+observable package loading after build.
+
+The following checks are intentionally absent:
+
+- no mandatory repository collection source root;
+- no special Lilium or Lotus dependency rejection in addition to exact package allowlists;
+- no successful lint or format signal when no implementation ran;
+- no prose scoring, external-link crawling, generic Markdown parsing, or performance thresholds;
+- no generic deletion, task-runner, plugin-framework, or automatic policy-discovery API.
+
+## Extraction boundary
+
+A headless repository-tooling project is technically possible, but extraction is conditional on a
+second real repository consumer. Generic candidates include explicit verifier orchestration,
+immutable issue collection, filesystem and path contracts, deterministic traversal, strict JSON
+acquisition, benchmark execution, and numeric aggregation.
+
+Aster package policies, documentation hierarchy, dependency allowlists, parser ownership, Core
+scenarios, and cleanup containment remain Aster-owned inputs or adapters. A separate project should
+provide host-neutral kernels and explicit extension contracts, while each repository supplies its
+own policies and process entrypoints. It must not be conflated with the future multi-ecosystem CLI:
+one executes contributor verification, while the other hosts user-facing product commands.
 
 ## Structural rules
 
