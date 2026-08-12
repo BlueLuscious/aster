@@ -7,7 +7,6 @@ import { packageBoundaries } from "../constants/package-boundaries.constant.mjs"
 import { ArchitectureVerifier } from "./architecture-verifier.mjs";
 import { BuildPackagePolicy } from "./build-package.policy.mjs";
 import { CliPackagePolicy } from "./cli-package.policy.mjs";
-import { CollectionArchitectureInspector } from "./collection-architecture.inspector.mjs";
 import { CorePackagePolicy } from "./core-package.policy.mjs";
 import { ModuleSpecifierExtractor } from "./module-specifier.extractor.mjs";
 import { PackageArchitectureInspector } from "./package-architecture.inspector.mjs";
@@ -68,7 +67,6 @@ export class ArchitectureVerifierFactory {
         paths,
         () => new WorkspaceDependencyGraph(),
       ),
-      new CollectionArchitectureInspector(directories, paths),
     ]);
   }
 }

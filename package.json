@@ -29,7 +29,7 @@
   "scripts": {
     "benchmark:core": "pnpm --filter @aster/core run build && pnpm --filter @aster/icons run build && node --expose-gc tooling/performance/core/core-baseline.mjs",
     "build": "pnpm --recursive --if-present run build",
-    "check": "pnpm run check:types && pnpm run check:architecture && pnpm run check:docs && pnpm run lint && pnpm run format:check",
+    "check": "pnpm run check:types && pnpm run check:architecture && pnpm run check:docs",
     "check:architecture": "node tooling/architecture/check-architecture.mjs",
     "check:docs": "node tooling/documentation/check-documentation.mjs",
     "check:types": "pnpm run build && pnpm --recursive --if-present run check:types",

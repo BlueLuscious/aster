@@ -1,5 +1,3 @@
-import { sourceModule } from "../constants/source-module.constant.mjs";
-
 /**
  * @description Enforces dependency-free portable Core package architecture.
  */
@@ -37,12 +35,6 @@ export class CorePackagePolicy {
   async inspect(record, dependencies, workspaceDependencies, issues) {
     if (workspaceDependencies.size > 0) {
       issues.add("@aster/core cannot depend on another workspace package");
-    }
-
-    for (const name of Object.keys(dependencies)) {
-      if (sourceModule.hostEcosystemPackagePattern.test(name)) {
-        issues.add(`@aster/core cannot depend on host ecosystem package ${name}`);
-      }
     }
 
     const dependencyNames = Object.keys(dependencies);

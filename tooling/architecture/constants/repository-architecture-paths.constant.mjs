@@ -5,7 +5,6 @@ export const repositoryArchitecturePaths = Object.freeze({
   buildNormalisation: "src/normalisation",
   buildValidationRuntime: "src/validation/runtime",
   cliShell: "src/shell",
-  collections: "collections",
   packageConfiguration: "tsconfig.json",
   packageEntry: "src/index.ts",
   packageManifest: "package.json",

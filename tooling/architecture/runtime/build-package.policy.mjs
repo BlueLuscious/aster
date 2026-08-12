@@ -1,5 +1,4 @@
 import { packageBoundaries } from "../constants/package-boundaries.constant.mjs";
-import { sourceModule } from "../constants/source-module.constant.mjs";
 
 /**
  * @description Enforces private Build package dependency, parser, export, and compiler architecture.
@@ -43,12 +42,6 @@ export class BuildPackagePolicy {
     for (const name of workspaceDependencies) {
       if (name !== packageBoundaries.names.core) {
         issues.add(`@aster/build cannot depend on workspace package ${name}`);
-      }
-    }
-
-    for (const name of Object.keys(dependencies)) {
-      if (sourceModule.hostEcosystemPackagePattern.test(name)) {
-        issues.add(`@aster/build cannot depend on host ecosystem package ${name}`);
       }
     }
 

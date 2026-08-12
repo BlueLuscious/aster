@@ -126,14 +126,13 @@ export class PackageModuleInspector {
     }
 
     if (
-      record.name === packageBoundaries.names.build &&
       this.#paths.contains(
         this.#paths.resolve(workspaceRoot, repositoryArchitecturePaths.tooling),
         target,
       )
     ) {
       issues.add(
-        `${this.#paths.relative(workspaceRoot, modulePath)} imports repository tooling into @aster/build`,
+        `${this.#paths.relative(workspaceRoot, modulePath)} imports repository tooling into ${record.name}`,
       );
     }
 
