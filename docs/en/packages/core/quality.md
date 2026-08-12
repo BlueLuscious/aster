@@ -41,6 +41,28 @@ modules but cannot be resolved through the package export map.
 No consumer grants Core filesystem, DOM, terminal, process, framework, or catalogue-registry
 authority.
 
+## Public authority classification
+
+| Public value | Classification | Evidence |
+| --- | --- | --- |
+| `Icon` and `Collection` | Portable domain authorities | Every canonical definition enters the ecosystem through their frozen `define()` operations. |
+| `iconNodeKinds` | Portable domain authority | SVG dispatches portable node kinds through this closed vocabulary. |
+| `iconDirections` and `iconRtlPolicies` | Portable domain authorities | SVG resolves direction and RTL behaviour without owning either vocabulary. |
+| `iconPaintSchema` | Portable domain authority | Core validation and SVG option normalisation share its accepted paint grammar. |
+| `iconPresentationOverrideOrder` | Portable domain authority | Core and SVG require the same deterministic presentation override order. |
+| `iconTechnicalPresentation` | Portable domain authority | SVG omits Core-owned technical presentation fields from authored output. |
+| `iconPresentationEnumerations` | Unresolved public exposure | Core derives closed presentation types and performs validation from it, but no current external runtime consumer imports the value. |
+
+Public contracts and types describe the portable data ABI independently of whether every leaf
+contract currently has a named external import. Individual geometry contracts remain deliberate
+domain vocabulary rather than consumer conveniences. Internal emitted modules remain outside the
+supported ABI because the package export map exposes only the root.
+
+No current workflow justifies another immutable API operation. Consumers either define one complete
+icon or one complete collection, and none requires incremental membership composition. A future
+operation must therefore prove immutable return, duplicate, ordering, ownership, and failure
+semantics before it expands the API.
+
 ## Distribution snapshot
 
 The accepted baseline emits native ES2022 ESM with one public root export and `sideEffects: false`.
@@ -53,11 +75,13 @@ not a fixed compatibility promise.
 | Risk | Evidence | Decision boundary |
 | --- | --- | --- |
 | Repeated complete icon validation | Collection construction validates every member even when it retains an already deeply frozen canonical icon. | Measure before changing trust or retention semantics; immutability alone must not become unproven provenance. |
-| Deep-freeze inspection cost | Collection retention recursively inspects every nested value after constructing an isolated candidate. | Compare traversal cost and preserve protection against shallowly frozen authored input. |
+| Frozen-input retention boundary | Exact-field validation and deep-freeze inspection currently traverse enumerable string properties, while a deeply frozen authored object may also contain symbols or non-enumerable values. | Prove that collection construction never retains unsupported hidden fields or mutable hidden aliases before preserving the retention shortcut. |
+| Deep-freeze inspection cost | Collection retention recursively inspects every nested enumerable value after constructing an isolated candidate. | Compare traversal cost only after the retention boundary is correct and preserve protection against shallowly frozen authored input. |
+| Adversarial object coverage | Current tests cover ordinary unknown fields, prototypes, mutation isolation, numeric boundaries, and deep freezing, but not the complete symbol, non-enumerable, accessor, proxy, cycle, and sparse-array matrix. | Add focused JavaScript boundary evidence without claiming that Core is an execution sandbox. |
 | API composition ambiguity | `Icon` and `Collection` currently expose only `define()`; names such as `add()` do not state mutation, ownership, duplicate, or ordering semantics. | Require a demonstrated immutable composition workflow before adding an operation. Collection membership remains collection-owned. |
 | Definition instance pressure | Canonical definitions are plain deeply frozen data, while instance methods would add prototypes and behaviour to the portable value model. | Keep definitions structural; evaluate explicit immutable API operations before considering a separate value-object representation. |
-| Broad runtime constant surface | Several schemas and canonical vocabularies are public values required by current Build and SVG consumers. | Audit each value independently; do not hide a real portable authority merely to reduce key count. |
-| Error type is intentionally private | JavaScript consumers observe deterministic error fields but cannot import `IconDefinitionError`. | Confirm whether stable failure discrimination needs a public contract without exposing internal construction. |
+| Unused public presentation enumeration | `iconPresentationEnumerations` has no current external runtime consumer even though related Core types and normalisers use it internally. | Retain, internalise, or replace its public role only through an explicit ABI decision. |
+| Error discrimination crosses the package boundary | Build currently identifies rejected Core definitions through the private error name, while JavaScript consumers cannot import a stable discriminator. | Decide whether to expose a narrow failure contract or remove the consumer's dependency on an implementation class name. |
 | Distribution granularity | TypeScript emits one module per source file with no bundling. | Treat file and byte counts as inspection evidence; do not add a bundler without a distribution requirement. |
 
 No item authorises caching, mutable singletons, global registries, trusted-object branding, or API
