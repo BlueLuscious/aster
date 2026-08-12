@@ -8,7 +8,7 @@ Date: **2026-07-28**
 
 Affected documents:
 
-- [Workspace and Tooling](../governance/workspace-and-tooling.md)
+- [Repository Tooling](../tooling/index.md)
 - [Product and Package Boundaries](../architecture/product-and-package-boundaries.md)
 
 Supersedes: **None**

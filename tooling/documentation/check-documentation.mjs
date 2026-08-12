@@ -18,6 +18,7 @@ const requiredDocumentationEntries = Object.freeze([
   "decisions/index.md",
   "governance/index.md",
   "packages/index.md",
+  "tooling/index.md",
 ]);
 
 /**
