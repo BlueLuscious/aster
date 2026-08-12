@@ -7,7 +7,9 @@ speed guarantees or CI thresholds.
 
 ## Structure
 
-Shared runtime classes own capabilities that apply to more than one package baseline:
+Shared performance runtime classes own capabilities that apply to more than one package baseline.
+Repository filesystem, path, strict JSON, and deterministic traversal capabilities come from
+[Shared Tooling](../shared/index.md):
 
 | Class | Responsibility |
 | --- | --- |

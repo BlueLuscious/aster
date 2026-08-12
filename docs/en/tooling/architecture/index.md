@@ -31,7 +31,7 @@ need a built package or network access.
 
 ## Internal hardening
 
-The current implementation contains acquisition, graph, package, compiler, and collection policy
-in one module. Internal hardening separates those responsibilities into runtime and policy objects
-without changing the root command or fixture outcomes. Shared filesystem capabilities are accepted
-only when another tooling feature uses the same semantics.
+Filesystem acquisition, path handling, strict JSON reading, directory discovery, and deterministic
+source traversal use the [Shared Tooling](../shared/index.md) foundations. The current feature
+module still combines graph, package, compiler, and collection policy; its feature-specific
+hardening separates those responsibilities without changing the root command or fixture outcomes.

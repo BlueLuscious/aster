@@ -29,7 +29,9 @@ records.
 
 ## Internal hardening
 
-The current implementation combines hierarchy, mirroring, reference, link, and decision policy in
-one module. Internal hardening separates those responsibilities behind the same root command and
-result shape. The stable policy itself remains defined by
+Filesystem acquisition, path handling, directory discovery, and deterministic Markdown traversal
+use the [Shared Tooling](../shared/index.md) foundations. The current feature module still combines
+hierarchy, mirroring, reference, link, and decision policy; its feature-specific hardening
+separates those responsibilities behind the same root command and result shape. The stable policy
+itself remains defined by
 [Documentation Policy](../../governance/documentation-policy.md).

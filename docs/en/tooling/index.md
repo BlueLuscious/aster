@@ -15,6 +15,7 @@ The canonical documentation mirrors the real tooling feature roots:
 | [Architecture](architecture/index.md) | Verifies compiler, workspace, package dependency, and authored collection boundaries. |
 | [Documentation](documentation/index.md) | Verifies canonical hierarchy, package mirroring, links, local exclusions, and decision records. |
 | [Performance](performance/index.md) | Provides development-only package comparison infrastructure and independent scenario runners. |
+| [Shared](shared/index.md) | Supplies narrow filesystem, path, directory, traversal, and strict JSON foundations used by multiple tooling features. |
 | [Workspace](workspace/index.md) | Owns guarded repository and package maintenance operations such as distribution cleanup. |
 
 User-facing project operations do not belong here. Persistent target export and disposable review
