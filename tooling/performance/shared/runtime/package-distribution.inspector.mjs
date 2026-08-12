@@ -1,37 +1,45 @@
-import { NodeRepositoryFileSystem } from "../../../shared/runtime/node-repository-file-system.mjs";
-import { RepositoryFileWalker } from "../../../shared/runtime/repository-file.walker.mjs";
-import { RepositoryJsonReader } from "../../../shared/runtime/repository-json.reader.mjs";
-import { RepositoryPathResolver } from "../../../shared/runtime/repository-path.resolver.mjs";
+import { packageDistribution } from "../constants/package-distribution.constant.mjs";
 
 /**
  * @description Inspects emitted package shape without assigning bundler-specific meaning.
  */
 export class PackageDistributionInspector {
-  /** @type {NodeRepositoryFileSystem} */
+  /**
+   * @description Repository filesystem capability used to read emitted file sizes.
+   * @type {import("../../../shared/contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem}
+   */
   #fileSystem;
 
-  /** @type {RepositoryJsonReader} */
+  /**
+   * @description Strict repository JSON acquisition capability.
+   * @type {import("../../../shared/runtime/repository-json.reader.mjs").RepositoryJsonReader}
+   */
   #json;
 
-  /** @type {RepositoryPathResolver} */
+  /**
+   * @description Repository path composition capability.
+   * @type {import("../../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver}
+   */
   #paths;
 
-  /** @type {RepositoryFileWalker} */
+  /**
+   * @description Deterministic emitted-file traversal capability.
+   * @type {import("../../../shared/runtime/repository-file.walker.mjs").RepositoryFileWalker}
+   */
   #files;
 
   /**
    * @description Creates an emitted-package inspector from repository filesystem capabilities.
-   * @param {NodeRepositoryFileSystem} fileSystem - Repository file acquisition capability.
-   * @param {RepositoryPathResolver} paths - Repository path capability.
+   * @param {import("../../../shared/contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem} fileSystem - Repository file acquisition capability.
+   * @param {import("../../../shared/runtime/repository-json.reader.mjs").RepositoryJsonReader} json - Strict JSON acquisition capability.
+   * @param {import("../../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver} paths - Repository path capability.
+   * @param {import("../../../shared/runtime/repository-file.walker.mjs").RepositoryFileWalker} files - Deterministic emitted-file traversal capability.
    */
-  constructor(
-    fileSystem = new NodeRepositoryFileSystem(),
-    paths = new RepositoryPathResolver(),
-  ) {
+  constructor(fileSystem, json, paths, files) {
     this.#fileSystem = fileSystem;
-    this.#json = new RepositoryJsonReader(fileSystem);
+    this.#json = json;
     this.#paths = paths;
-    this.#files = new RepositoryFileWalker(fileSystem, paths);
+    this.#files = files;
   }
 
   /**
@@ -42,10 +50,10 @@ export class PackageDistributionInspector {
   async inspect(packagePath) {
     const packageRoot = this.#paths.resolve(packagePath);
     const manifest = await this.#json.read(
-      this.#paths.resolve(packageRoot, "package.json"),
+      this.#paths.resolve(packageRoot, packageDistribution.manifest),
     );
     const paths = await this.#files.collect(
-      this.#paths.resolve(packageRoot, "dist"),
+      this.#paths.resolve(packageRoot, packageDistribution.outputDirectory),
       () => true,
     );
     const files = await Promise.all(
@@ -53,8 +61,12 @@ export class PackageDistributionInspector {
         Object.freeze({ path, bytes: await this.#fileSystem.fileSize(path) }),
       ),
     );
-    const modules = files.filter((file) => file.path.endsWith(".js"));
-    const declarations = files.filter((file) => file.path.endsWith(".d.ts"));
+    const modules = files.filter((file) =>
+      file.path.endsWith(packageDistribution.moduleSuffix),
+    );
+    const declarations = files.filter((file) =>
+      file.path.endsWith(packageDistribution.declarationSuffix),
+    );
 
     return Object.freeze({
       moduleFiles: modules.length,
@@ -68,5 +80,4 @@ export class PackageDistributionInspector {
       sideEffects: manifest.sideEffects,
     });
   }
-
 }

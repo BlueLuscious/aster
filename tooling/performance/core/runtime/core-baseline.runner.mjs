@@ -1,6 +1,8 @@
 import { Collection, Icon } from "@aster/core";
 import { AsterCollection } from "@aster/icons";
 
+import { coreBaseline } from "../constants/core-baseline.constant.mjs";
+
 /**
  * @description Coordinates Core-only construction and distribution baseline evidence.
  */
@@ -39,23 +41,23 @@ export class CoreBaselineRunner {
   async run() {
     const scenarios = [
       Object.freeze({
-        name: "core.icon.define",
-        operationsPerSample: 2_000,
+        ...coreBaseline.scenarios.iconDefinition,
         execute: (iterations) => this.#defineIcons(iterations),
       }),
       Object.freeze({
-        name: "core.collection.define",
-        operationsPerSample: 250,
+        ...coreBaseline.scenarios.collectionDefinition,
         execute: (iterations) => this.#defineCollections(iterations),
       }),
     ];
 
     return Object.freeze({
-      schemaVersion: 1,
-      package: "@aster/core",
+      schemaVersion: coreBaseline.schemaVersion,
+      package: coreBaseline.packageName,
       environment: this.#host.environment(),
       methodology: this.#benchmarkRunner.methodology(),
-      distribution: await this.#distributionInspector.inspect("packages/core"),
+      distribution: await this.#distributionInspector.inspect(
+        coreBaseline.packagePath,
+      ),
       scenarios: Object.freeze(
         scenarios.map((scenario) => this.#benchmarkRunner.measure(scenario)),
       ),

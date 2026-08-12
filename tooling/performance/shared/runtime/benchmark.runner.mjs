@@ -1,11 +1,20 @@
+import { benchmarkMethodology } from "../constants/benchmark-methodology.constant.mjs";
+
 /**
  * @description Measures deterministic operation scenarios through injected host capabilities.
  */
 export class BenchmarkRunner {
   /**
    * @description Host supplying clock, heap, and garbage-collection capabilities.
+   * @type {import("../contracts/internal/benchmark-host.contract.mjs").IBenchmarkHost}
    */
   #host;
+
+  /**
+   * @description Numeric sample aggregation authority.
+   * @type {import("./numeric-sample.statistics.mjs").NumericSampleStatistics}
+   */
+  #statistics;
 
   /**
    * @description Number of untimed operations used to stabilise each scenario.
@@ -19,13 +28,16 @@ export class BenchmarkRunner {
 
   /**
    * @description Creates one reusable benchmark runner.
-   * @param {{ assertAvailable(): void, collectGarbage(): void, now(): bigint, heapUsed(): number }} host - Explicit measurement host.
+   * @param {import("../contracts/internal/benchmark-host.contract.mjs").IBenchmarkHost} host - Explicit measurement host.
+   * @param {import("./numeric-sample.statistics.mjs").NumericSampleStatistics} statistics - Numeric sample aggregation authority.
    * @param {{ warmupOperations?: number, sampleCount?: number }} [options] - Optional stable methodology controls.
    */
-  constructor(host, options = {}) {
+  constructor(host, statistics, options = {}) {
     this.#host = host;
-    this.#warmupOperations = options.warmupOperations ?? 500;
-    this.#sampleCount = options.sampleCount ?? 7;
+    this.#statistics = statistics;
+    this.#warmupOperations =
+      options.warmupOperations ?? benchmarkMethodology.warmupOperations;
+    this.#sampleCount = options.sampleCount ?? benchmarkMethodology.sampleCount;
 
     this.#positiveInteger(this.#warmupOperations, "options.warmupOperations");
     this.#positiveInteger(this.#sampleCount, "options.sampleCount");
@@ -33,7 +45,7 @@ export class BenchmarkRunner {
 
   /**
    * @description Measures one deterministic operation scenario after warm-up.
-   * @param {{ name: string, operationsPerSample: number, execute(iterations: number): number }} scenario - Scenario definition.
+   * @param {import("../contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario} scenario - Scenario definition.
    * @returns {{ name: string, operationsPerSample: number, medianNanosecondsPerOperation: number, minimumNanosecondsPerOperation: number, maximumNanosecondsPerOperation: number, medianHeapGrowthBytesPerOperation: number, checksum: number }} Comparison summary.
    */
   measure(scenario) {
@@ -62,13 +74,16 @@ export class BenchmarkRunner {
       );
     }
 
+    const timing = this.#statistics.summarise(timings);
+    const memory = this.#statistics.summarise(heapGrowth);
+
     return Object.freeze({
       name: scenario.name,
       operationsPerSample: scenario.operationsPerSample,
-      medianNanosecondsPerOperation: Math.round(this.#median(timings)),
-      minimumNanosecondsPerOperation: Math.round(Math.min(...timings)),
-      maximumNanosecondsPerOperation: Math.round(Math.max(...timings)),
-      medianHeapGrowthBytesPerOperation: Math.round(this.#median(heapGrowth)),
+      medianNanosecondsPerOperation: Math.round(timing.median),
+      minimumNanosecondsPerOperation: Math.round(timing.minimum),
+      maximumNanosecondsPerOperation: Math.round(timing.maximum),
+      medianHeapGrowthBytesPerOperation: Math.round(memory.median),
       checksum,
     });
   }
@@ -81,26 +96,9 @@ export class BenchmarkRunner {
     return Object.freeze({
       sampleCount: this.#sampleCount,
       warmupOperations: this.#warmupOperations,
-      timing: "median high-resolution elapsed nanoseconds per operation",
-      memory:
-        "median non-negative heap growth bytes per operation after forced pre-sample collection",
+      timing: benchmarkMethodology.timing,
+      memory: benchmarkMethodology.memory,
     });
-  }
-
-  /**
-   * @description Calculates the median of one non-empty numeric sample.
-   * @param {readonly number[]} values - Numeric observations to order without mutating the caller.
-   * @returns {number} Middle observation or mean of the two middle observations.
-   */
-  #median(values) {
-    const ordered = [...values].sort((left, right) => left - right);
-    const middle = Math.floor(ordered.length / 2);
-
-    if (ordered.length % 2 === 1) {
-      return ordered[middle];
-    }
-
-    return (ordered[middle - 1] + ordered[middle]) / 2;
   }
 
   /**
