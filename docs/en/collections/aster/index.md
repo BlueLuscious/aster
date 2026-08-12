@@ -35,9 +35,8 @@ remains derived review or distribution output and Build remains an optional impo
 `AsterCollection` separately retains the accepted icon definitions as explicit membership data;
 the same definitions remain directly usable without importing or consulting that collection.
 
-The [pilot reference set](reference-set.md) contains sixteen canonical Experimental definitions.
-Its [review evidence](review-evidence.md) records reproducible technical reports, visual
-comparisons, residual risks, and the accepted Experimental pilot decision.
+The [pilot reference set](reference-set.md) contains sixteen canonical Experimental definitions
+and records the current structural and curatorial evidence.
 The package is not release quality and must not be presented as an Active collection before
 curatorial and release evidence is accepted.
 

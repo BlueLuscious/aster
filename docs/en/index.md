@@ -14,6 +14,8 @@ Canonical documentation is written in British English and organised by responsib
   product boundary that should trigger their evaluation.
 - [Packages](packages/index.md) document packages that exist in the repository.
 - [Collections](collections/index.md) document accepted curated collection identities.
+- [Repository Tooling](tooling/index.md) documents private verification and workspace-maintenance
+  features that exist under `tooling/`.
 
 Package documentation is created only when its corresponding repository structure exists.
 Collection-specific identity and design documentation is created when its curatorial ownership

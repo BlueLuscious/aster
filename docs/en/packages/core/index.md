@@ -24,6 +24,8 @@ registry, or global identity authority.
 | [Presentation](presentation/index.md) | Explicit paint data, node presentation, and collection override policy. |
 | [Render](render/index.md) | Target-independent options passed with a definition. |
 | [Shared](shared/index.md) | Internal primitive authored-value assertions and deterministic Core failures. |
+| [Workflow](workflow.md) | End-to-end icon and collection construction, validation, isolation, and consumption flow. |
+| [Quality](quality.md) | Public inventory, consumer map, distribution snapshot, and hardening risk register. |
 
 ## Dependency boundary
 

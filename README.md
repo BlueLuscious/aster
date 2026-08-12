@@ -13,6 +13,7 @@ public package.
 - [Documentation home](docs/en/index.md)
 - [Architecture](docs/en/architecture/index.md)
 - [Governance](docs/en/governance/index.md)
+- [Repository tooling](docs/en/tooling/index.md)
 - [Packages](docs/en/packages/index.md)
 - [Collections](docs/en/collections/index.md)
 - [Decision records](docs/en/decisions/index.md)
@@ -33,12 +34,6 @@ Run the standalone documentation validation with:
 
 ```sh
 pnpm run check:docs
-```
-
-Generate disposable Aster pilot review SVGs and technical evidence with:
-
-```sh
-pnpm run review:pilot
 ```
 
 ## Licence

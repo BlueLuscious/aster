@@ -18,6 +18,7 @@ Canonical English documentation lives under `docs/en/`:
 | `docs/en/governance/` | Contribution, review, versioning, release, and documentation policy. |
 | `docs/en/packages/` | Real package set and package-relative documentation. |
 | `docs/en/collections/` | Real collection set and collection-relative design documentation. |
+| `docs/en/tooling/` | Real private tooling set and tooling-relative implementation documentation. |
 
 Documentation is canonical only when it is committable, linked from this hierarchy, and
 self-contained without contributor-local inputs.
@@ -56,6 +57,11 @@ accepted source root exists, documentation and source collection identities must
 The package and collection indices document the sets generally and may exist before their first
 member. Package member directories mirror real package structure. Collection member directories
 represent accepted curatorial identities and do not imply a repository root named `collections/`.
+
+`docs/en/tooling/` mirrors real feature roots under `tooling/`. Its index owns shared private
+tooling boundaries and each feature directory explains one retained tool independently. Governance
+and architecture documents may define cross-cutting policy or dependency direction, but they link
+to tooling documentation rather than duplicating implementation structure, commands, or flows.
 
 ## Contracts, types, and flows
 
@@ -122,7 +128,8 @@ pnpm run check:docs
 
 The command validates repository structure, mirroring, local links, decision record shape, and
 forbidden local references without imposing subjective prose rules. Its implementation is
-repository tooling and may be replaced without changing this policy or the command contract.
+described by [Documentation Tooling](../tooling/documentation/index.md) and may be replaced without
+changing this policy or the command contract.
 
 Source ownership and the separation between authored and generated artefacts are defined by the
 [Source Assets and Generated Outputs](source-assets-and-generated-outputs.md) policy.

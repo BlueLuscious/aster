@@ -166,7 +166,7 @@ test("rejects host adapters and reverse dependencies in the private build domain
       type: "module",
       dependencies: {
         "@aster/svg": "workspace:*",
-        lilium: "^1.0.0",
+        "unexpected-package": "^1.0.0",
       },
     });
     await writeFixtureJson(root, "packages/build/tsconfig.json", {
@@ -192,7 +192,9 @@ test("rejects host adapters and reverse dependencies in the private build domain
     assert.ok(
       issues.some((issue) => /cannot depend on workspace package @aster\/svg/u.test(issue)),
     );
-    assert.ok(issues.some((issue) => /host ecosystem package lilium/u.test(issue)));
+    assert.ok(
+      issues.some((issue) => /unaccepted production dependency unexpected-package/u.test(issue)),
+    );
     assert.ok(issues.some((issue) => /cannot add host libraries/u.test(issue)));
     assert.ok(issues.some((issue) => /cannot add ambient/u.test(issue)));
     assert.ok(issues.some((issue) => /imports a Node adapter/u.test(issue)));
@@ -355,26 +357,24 @@ test("rejects Validation runtime imports from Build Normalisation", async () => 
   }
 });
 
-test("rejects invalid authored collection boundaries", async () => {
+test("rejects repository tooling imports from every production package", async () => {
   const root = await createFixture();
 
   try {
-    await mkdir(resolve(root, "collections/Bad_Name/masters"), { recursive: true });
-    await mkdir(resolve(root, "collections/Bad_Name/svg"), { recursive: true });
-    await mkdir(resolve(root, "collections/Bad_Name/generated"), { recursive: true });
+    await writeFixtureJson(root, "packages/example/package.json", {
+      name: "@aster/example",
+      type: "module",
+    });
+    await writeFixtureFile(
+      root,
+      "packages/example/src/index.ts",
+      'import "../../../tooling/private-adapter.mjs";\n',
+    );
 
     const issues = await verifyArchitecture(root);
 
     assert.ok(
-      issues.some((issue) => /must use a canonical kebab-case slug/u.test(issue)),
-    );
-    assert.ok(
-      issues.some((issue) => /is missing authored metadata\/ source/u.test(issue)),
-    );
-    assert.ok(
-      issues.some((issue) =>
-        /generated\/ cannot be inside an authored collection/u.test(issue),
-      ),
+      issues.some((issue) => /imports repository tooling into @aster\/example/u.test(issue)),
     );
   } finally {
     await rm(root, { recursive: true, force: true });

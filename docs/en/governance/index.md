@@ -13,8 +13,8 @@ define how accepted architecture, packages, collections, and generated artefacts
   English, JSDoc, generated documentation, and non-duplication requirements.
 - [Source Assets and Generated Outputs](source-assets-and-generated-outputs.md) defines authored
   collection evidence, design-tool boundaries, and deterministic derived artefacts.
-- [Workspace and Tooling](workspace-and-tooling.md) defines repository versions, dependency
-  classification, compiler baseline, commands, tests, and cleanup safety.
 
 Architecture contracts remain under [Architecture](../architecture/index.md). Material changes to
-accepted contracts use [Decision Records](../decisions/index.md).
+accepted contracts use [Decision Records](../decisions/index.md). Private development structure,
+commands, verification, and cleanup are documented by
+[Repository Tooling](../tooling/index.md).

@@ -24,14 +24,17 @@ may still wait for an earlier prerequisite in the recommended sequence.
 | Order | Importance | Capability | Completion gate |
 | --- | --- | --- | --- |
 | 1 | `P0` | Define the standalone and plugin-compatible CLI command boundary. | Commands can run through injected host capabilities without owning a generic ecosystem CLI. |
-| 2 | `P0` | Audit and harden `@aster/core` and `@aster/svg`. | Public APIs, correctness, performance evidence, exports, and conformance risks have explicit outcomes. |
-| 3 | `P1` | Implement useful catalogue and TypeScript-first CLI workflows. | Users can inspect and consume installed icons and collections without requiring `@aster/build`. |
-| 4 | `P0` | Evaluate the future of `@aster/build`. | Retain, narrow, pause, replace, or remove it using real SVG-import evidence. |
-| 5 | `P1` | Harden the retained Build boundary, if any. | A real import workflow validates its parser, diagnostics, normalisation, generation, and host split. |
-| 6 | `P2` | Consider an Aster-owned XML tokeniser. | Build is retained and parser conformance and maintenance evidence justify replacement. |
-| 7 | `P2` | Activate objective linting and formatting verification. | The first supported release or external contribution workflow requires enforceable source checks. |
-| 8 | `P3` | Consolidate project documentation. | Package documentation is self-contained and all preceding package decisions are stable. |
-| 9 | `P4` | Begin the Lilium adapter. | Core and renderer contracts are stable and documentation consolidation is complete. |
+| 2 | `P0` | Harden private repository tooling. | Stable root commands use independently testable object-oriented runtime boundaries without obsolete pilot hosts. |
+| 3 | `P0` | Audit and harden `@aster/core`. | Its model, API, validation, immutability, performance, exports, consumers, and documentation have explicit outcomes. |
+| 4 | `P0` | Audit and harden `@aster/svg`. | Serialisation correctness, performance, API, output, and package-boundary risks have explicit outcomes independently from Core. |
+| 5 | `P1` | Implement useful catalogue and TypeScript-first CLI workflows. | Users can inspect and consume installed icons and collections without requiring `@aster/build`. |
+| 6 | `P0` | Evaluate the future of `@aster/build`. | Retain, narrow, pause, replace, or remove it using real SVG-import evidence. |
+| 7 | `P1` | Harden the retained Build boundary, if any. | A real import workflow validates its parser, diagnostics, normalisation, generation, and host split. |
+| 8 | `P2` | Consider an Aster-owned XML tokeniser. | Build is retained and parser conformance and maintenance evidence justify replacement. |
+| 9 | `P2` | Activate objective linting and formatting verification. | The first supported release or external contribution workflow requires enforceable source checks. |
+| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels and can supply independent policies. |
+| 11 | `P3` | Consolidate project documentation. | Package documentation is self-contained and all preceding package decisions are stable. |
+| 12 | `P4` | Begin the Lilium adapter. | Core and renderer contracts are stable and documentation consolidation is complete. |
 
 ## Plugin-compatible Aster CLI
 
@@ -84,13 +87,14 @@ providers and canonical TypeScript definitions. They do not require the SVG impo
 | `show` | Display one icon or collection identity, metadata, membership, and available targets. | None. |
 | `add` | Integrate selected definitions into a consumer project through an explicit package, import, or vendoring policy. | None initially. |
 | `export` | Render one icon, an explicit selected set, or one collection to an explicit target output root. | None for TypeScript-first definitions. |
+| `review` | Compose disposable technical and visual evidence through explicit render and output hosts. | None for TypeScript-first definitions. |
 | `generate` | Produce explicitly selected manifests, barrels, wrappers, or target integrations through an installed generator. | None unless the selected generator imports SVG. |
 | `import` | Convert external SVG and metadata into reviewed portable definitions. | Conditional on retained Build support. |
 
-`add`, `export`, and `generate` must remain distinct. `add` changes consumer integration,
-`export` produces target artefacts such as SVG files, and `generate` produces code or integration
-artefacts. No command may silently copy source, install dependencies, overwrite user files, or
-infer ownership from a directory name.
+`add`, `export`, `review`, and `generate` must remain distinct. `add` changes consumer integration,
+`export` produces target artefacts such as SVG files, `review` composes disposable comparison
+evidence, and `generate` produces code or integration artefacts. No command may silently copy
+source, install dependencies, overwrite user files, or infer ownership from a directory name.
 
 CLI discovery must not introduce a runtime global registry. Catalogue providers should supply
 explicit manifests or indexes outside `IconDefinition`; collections continue to own only their
@@ -107,12 +111,52 @@ The initial CLI should support deterministic machine-readable output in addition
 formatting. Command failures should return structured Aster-owned results; only the executable
 shell maps them to stderr and process exit status.
 
-## Core and SVG hardening
+## Repository tooling hardening
+
+Status: **Completed**
+
+Remove obsolete repository-only product experiments and harden the private tools behind stable
+root commands before package performance work depends on them. Architecture, documentation,
+cleanup, and performance tooling should use thin entrypoints, object-owned runtime behaviour,
+explicit host capabilities, one primary concept per file, and fixture-based conformance.
+
+Tooling may coordinate public built packages but no package may import tooling. Reusable
+measurement infrastructure may be shared across package baselines, while every package retains an
+independent scenario runner and command. Future user-facing export or review behaviour belongs to
+`@aster/cli`, not to permanent repository-only hosts.
+
+The final audit retained only checks with current objective evidence. It removed the inactive
+canonical collection-source-root policy, removed ecosystem-name checks duplicated by exact
+dependency allowlists, and excluded empty lint and format delegators from the repository check.
+Production package imports into private tooling are now rejected uniformly. ABI tests remain
+necessary because they inspect emitted public artefacts rather than authored repository structure.
+
+## Headless repository-tooling extraction
+
+Importance: **P2 - Conditional**
+
+The hardened tooling structure permits a future independent headless project, but Aster should not
+extract it without a second real repository consumer. Candidate portable capabilities are verifier
+orchestration, issue collection, filesystem and path contracts, deterministic traversal, strict
+JSON acquisition, benchmark execution, and sample aggregation.
+
+Repository policy is not automatically portable. Aster-specific package identities, dependency
+allowlists, compiler requirements, documentation hierarchy, decision-record rules, parser
+ownership, cleanup boundaries, and Core performance scenarios must remain Aster-owned policies or
+explicit adapters.
+
+If extraction becomes justified, the independent project should expose host-neutral kernels and a
+small explicit policy composition boundary. Aster would consume it only as development tooling and
+retain its own thin process entrypoints. Do not extract by copying every current verifier, creating
+automatic rule discovery, embedding mutable global registries, or combining contributor tooling
+with the future user-facing multi-ecosystem CLI.
+
+## Core hardening
 
 Importance: **P0 - Required**
 
-Audit `@aster/core` and `@aster/svg` before broad CLI or adapter adoption. Improvements should be
-evidence-led and preserve their host-independent production boundaries.
+Audit `@aster/core` before broad CLI or adapter adoption. Improvements should be evidence-led and
+preserve its host-independent production boundary.
 
 The Core audit should cover:
 
@@ -122,6 +166,18 @@ The Core audit should cover:
 - allocations and repeated deep-validation costs measured with representative definitions;
 - side-effect-free ESM, declaration quality, bundle shape, tree shaking, and public export control;
 - extension pressure demonstrated by catalogues, CLI commands, target renderers, or adapters.
+
+Canonical definitions should remain plain immutable structural data unless a separate value-object
+model demonstrates a material interoperability benefit. Prefer explicit immutable `Icon` or
+`Collection` operations over instance setters or mutation methods, and add them only when their
+ownership, duplicate, ordering, and return semantics are stable.
+
+## SVG hardening
+
+Importance: **P0 - Required**
+
+Audit `@aster/svg` independently after Core settles. Improvements should preserve deterministic
+host-free string serialisation and must not assign DOM lifecycle or filesystem ownership to SVG.
 
 The SVG audit should cover:
 
@@ -134,9 +190,9 @@ The SVG audit should cover:
 - API additions only when a real target consumer cannot express its workflow through
   `Svg.render()`.
 
-Do not add caching, registries, streaming, mutable singletons, alternate builds, or convenience
-facades without measured benefit and explicit ownership. Performance work must include repeatable
-benchmarks and must not weaken correctness or portability.
+Neither hardening effort may add caching, registries, streaming, mutable singletons, alternate
+builds, or convenience facades without measured benefit and explicit ownership. Performance work
+must include repeatable package-specific benchmarks and must not weaken correctness or portability.
 
 ## Build viability decision
 
@@ -210,7 +266,7 @@ architecture, documentation, or human prose review. Any external tool must remai
 development-only dependency behind the existing root commands.
 
 The accepted replacement boundary is defined by
-[Workspace and Tooling](governance/workspace-and-tooling.md).
+[Repository Tooling](tooling/index.md).
 
 ## Project-centred documentation consolidation
 

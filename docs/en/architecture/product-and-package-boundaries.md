@@ -126,7 +126,8 @@ Build-time icon services are product-domain logic. They:
 
 Repository tooling is contributor infrastructure. It may locate workspace files, adapt domain
 results to terminal output, enforce repository-only policies, and set process exit status. Public
-runtime packages never depend on it.
+runtime packages never depend on it. Its implemented feature structure and commands are documented
+by [Repository Tooling](../tooling/index.md).
 
 The accepted `@aster/build` boundary is private without implying that its contracts are repository
 specific. It becomes public only after an independent consumer and versioning boundary exist.
