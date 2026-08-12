@@ -21,17 +21,66 @@ The exported `verifyDocumentation(workspaceRoot)` function returns issues and th
 count without owning terminal or process state. Its command adapter resolves the repository root,
 prints the result, and sets failure exit state.
 
+## Composition
+
+`DocumentationVerifierFactory` composes one fresh verifier from repository capabilities and
+feature-owned policies. `DocumentationVerifier` preserves this stable execution order:
+
+1. `DocumentationHierarchyInspector` verifies required canonical entries.
+2. `PackageDocumentationMirroringInspector` compares real and documented package membership.
+3. `CanonicalDocumentReader` acquires every Markdown document once in deterministic order.
+4. `CanonicalDocumentInspector` applies local-reference and local-link policies to each document.
+5. `DecisionRecordInspector` validates decision records after document-level policy.
+
+`DocumentationIssueCollector` accumulates every policy finding in inspection order. Filesystem
+failures, malformed URI encoding, or unreadable authorities remain operational failures rather
+than being converted into documentation findings.
+
+## Acquisition
+
+`CanonicalDocumentReader` produces internal `TCanonicalDocument` values containing an absolute
+path and exact UTF-8 content. `TDocumentationContext` combines the explicit workspace root,
+canonical documentation root, and ordered acquired documents. Policies consume that context and
+never derive authority from the ambient current directory.
+
+Filesystem acquisition, path handling, directory discovery, and deterministic traversal come from
+[Shared Tooling](../shared/index.md). Documentation policy does not leak into that shared boundary.
+
+## Policies
+
+Root inspectors implement the internal `IDocumentationInspector` contract. Per-document policies
+implement `ICanonicalDocumentPolicy`, allowing the document inspector to retain policy order for
+each document rather than regrouping findings by policy.
+
+| Inspector or policy | Responsibility |
+| --- | --- |
+| `DocumentationHierarchyInspector` | Requires canonical documentation entry points. |
+| `PackageDocumentationMirroringInspector` | Detects undocumented and stale package members. |
+| `LocalReferencePolicy` | Rejects local plans, implementation identifiers, and contributor-machine paths. |
+| `LocalLinkPolicy` | Rejects repository escapes and absent local link targets. |
+| `DecisionRecordInspector` | Verifies filenames, headings, accepted statuses, consequences, and index membership. |
+
+`MarkdownLinkTargetExtractor` performs only the lexical extraction needed by local-link policy. It
+does not parse Markdown generally, validate external URLs, inspect anchors, or evaluate prose.
+
+## Authorities
+
+Closed documentation vocabulary is owned by immutable feature constants:
+
+| Authority | Responsibility |
+| --- | --- |
+| `documentationHierarchy` | Canonical root, package and decision roots, Markdown extension, and required entries. |
+| `localReferenceRules` | Forbidden contributor-local reference patterns and stable labels. |
+| `markdownLinkRules` | Local link extraction and external-scheme classification grammar. |
+| `decisionRecordRules` | Accepted statuses, filename grammar, status grammar, and required consequences heading. |
+
+These authorities enforce only objective repository policy. British English quality, technical
+accuracy, readability, completeness, and curatorial judgement remain human review responsibilities
+defined by [Documentation Policy](../../governance/documentation-policy.md).
+
 ## Tests
 
 Fixture tests create self-contained temporary canonical hierarchies and exercise accepted roots,
 package mirroring, collection independence, broken links, local references, and malformed decision
-records.
-
-## Internal hardening
-
-Filesystem acquisition, path handling, directory discovery, and deterministic Markdown traversal
-use the [Shared Tooling](../shared/index.md) foundations. The current feature module still combines
-hierarchy, mirroring, reference, link, and decision policy; its feature-specific hardening
-separates those responsibilities behind the same root command and result shape. The stable policy
-itself remains defined by
-[Documentation Policy](../../governance/documentation-policy.md).
+records. Focused tests verify every isolated inspector or policy, local-link extraction, per-document
+ordering, decision finding order, explicit roots, acquisition count, and overall orchestration.
