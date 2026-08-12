@@ -14,12 +14,20 @@ Repository filesystem, path, strict JSON, and deterministic traversal capabiliti
 | Class | Responsibility |
 | --- | --- |
 | `NodeBenchmarkHost` | Supplies monotonic time, heap usage, explicit garbage collection, and environment identity. |
-| `BenchmarkRunner` | Applies warm-up, repeated samples, medians, ranges, heap-pressure summaries, and checksums. |
+| `NumericSampleStatistics` | Calculates median, minimum, and maximum observations without mutating samples. |
+| `BenchmarkRunner` | Applies warm-up, repeated samples, heap-pressure summaries, checksums, and injected aggregation. |
 | `PackageDistributionInspector` | Reports emitted JavaScript, declarations, bytes, exports, and side-effect metadata. |
 
-Each package owns an independent runner and command. `CoreBaselineRunner` defines only Core icon and
-collection construction scenarios. A future SVG, Build, CLI, or other baseline may reuse shared
-runtime classes but cannot add its scenarios to the Core runner.
+Closed methodology defaults and emitted-file vocabulary live in shared immutable constants. Narrow
+internal contracts describe the host, scenario, and distribution-inspection capabilities. The
+distribution inspector receives filesystem, JSON, path, and traversal capabilities explicitly; it
+does not construct Node adapters internally.
+
+Each package owns an independent runner, factory, and command. `CoreBaselineFactory` composes the
+shared Node capabilities, while `CoreBaselineRunner` defines only Core icon and collection
+construction scenarios. A future SVG, Build, CLI, or other baseline creates its own package factory
+and runner, reuses shared capabilities, and never edits a global scenario registry or imports Core
+configuration.
 
 ## Core comparison
 
@@ -40,6 +48,8 @@ Timing and heap pressure vary with runtime revision, machine, power state, and b
 Reports are compared only under equivalent conditions and never replace correctness tests.
 Distribution byte counts are unminified compiler output, not bundle-size guarantees.
 
-The tooling remains outside package manifests and public APIs. Future hardening adds deterministic
-aggregation tests through injected fake host capabilities rather than making wall-clock performance
-a repository pass condition.
+The tooling remains outside package manifests and public APIs. Deterministic tests inject a fake
+clock, heap readings, and garbage-collection capability to verify exact aggregation. Distribution
+inspection uses an isolated temporary package fixture rather than a real workspace output. Real
+wall-clock measurements remain informative development commands and never become repository pass
+thresholds.

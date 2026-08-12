@@ -68,10 +68,11 @@ provided a deterministic fixture exposes the scaling behaviour and the correctio
 
 ## Tooling boundary
 
-Generic measurement, Node-host, and package-distribution classes live in shared repository
-performance tooling. The Core runner owns only Core scenarios and fixture selection. A future
-package baseline must provide an independent package runner and may reuse the shared measurement
-infrastructure without adding its scenarios to the Core command.
+Generic measurement, statistics, Node-host, and package-distribution classes live in shared
+repository performance tooling. The Core factory composes those capabilities, while the Core runner
+owns only Core scenarios and fixture selection. A future package baseline must provide an
+independent factory, runner, and command; it may reuse shared measurement infrastructure without
+adding its scenarios to the Core command or importing Core configuration.
 
 Neither layer is shipped by Core, Icons, SVG, Build, or CLI. Raw reports are intentionally not
 committed because they are machine-specific and reproducible from the source revision.
