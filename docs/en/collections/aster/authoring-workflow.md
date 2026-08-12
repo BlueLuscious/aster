@@ -88,10 +88,10 @@ without that membership and can be retained by additional collections without mu
 - may be inspected in a browser or vector tool without becoming a Build dependency;
 - remains disposable review evidence outside package distribution.
 
-The repository-level `pnpm run review:pilot` host supplies the accepted disposable boundary,
-cleanup ownership, rebuild command, and deterministic report for the pilot. No derived collection
-SVG is committed by the current workflow. Persistent SVG distribution export remains separate and
-requires an explicit CLI output boundary that can be deleted and rebuilt safely.
+No derived collection SVG is committed by the current workflow. Persistent SVG distribution
+export and reproducible visual-review composition remain deferred to explicit `aster export` and
+`aster review` command boundaries. Those commands must own their output and cleanup policies
+without moving filesystem authority into Icons, Core, or SVG.
 
 ## Optional SVG Import
 
