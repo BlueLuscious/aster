@@ -1,4 +1,4 @@
-import type { IconDefinition } from "@aster/core";
+import { IconDefinitionError, type IconDefinition } from "@aster/core";
 import type { SourceDiagnostic } from "../../diagnostic/contracts/index.js";
 import type { DiagnosticResultType } from "../../diagnostic/types/index.js";
 import type { ISvgSyntaxDocument } from "../../parser/contracts/internal/svg-syntax-document.contract.js";
@@ -154,10 +154,7 @@ export class CollectionBuildPipeline {
     } catch (error) {
       if (
         !(error instanceof BuildContractError) &&
-        !(
-          error instanceof TypeError &&
-          error.name === "IconDefinitionError"
-        )
+        !(error instanceof IconDefinitionError)
       ) {
         throw error;
       }

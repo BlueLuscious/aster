@@ -64,10 +64,10 @@ test("exposes the exact immutable root value surface", async () => {
   assert.deepEqual(Object.keys(packageModule).sort(), [
     "Collection",
     "Icon",
+    "IconDefinitionError",
     "iconDirections",
     "iconNodeKinds",
     "iconPaintSchema",
-    "iconPresentationEnumerations",
     "iconPresentationOverrideOrder",
     "iconRtlPolicies",
     "iconTechnicalPresentation",
@@ -80,13 +80,25 @@ test("exposes the exact immutable root value surface", async () => {
   assert.ok(Object.isFrozen(packageModule.iconNodeKinds));
   assert.ok(Object.isFrozen(packageModule.iconPaintSchema));
   assert.ok(Object.isFrozen(packageModule.iconPaintSchema.keywords));
-  assert.ok(Object.isFrozen(packageModule.iconPresentationEnumerations));
-  assert.ok(Object.isFrozen(packageModule.iconPresentationEnumerations.fillRule));
-  assert.ok(Object.isFrozen(packageModule.iconPresentationEnumerations.strokeLineCap));
-  assert.ok(Object.isFrozen(packageModule.iconPresentationEnumerations.strokeLineJoin));
+  assert.ok(Object.isFrozen(packageModule.IconDefinitionError));
   assert.ok(Object.isFrozen(packageModule.iconPresentationOverrideOrder));
   assert.ok(Object.isFrozen(packageModule.iconRtlPolicies));
   assert.ok(Object.isFrozen(packageModule.iconTechnicalPresentation));
+});
+
+test("exposes deterministic definition failure discrimination", async () => {
+  const { Icon, IconDefinitionError } = await import("@aster/core");
+
+  assert.equal(IconDefinitionError.code, "ASTER-CORE-001");
+  assert.throws(
+    () => Icon.define({}),
+    (error) => {
+      assert.ok(error instanceof IconDefinitionError);
+      assert.equal(error.code, IconDefinitionError.code);
+      assert.equal(error.path, "definition.identity");
+      return true;
+    },
+  );
 });
 
 test("constructs isolated definitions without a catalogue registry", async () => {
