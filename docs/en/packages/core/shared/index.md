@@ -11,13 +11,15 @@ host authority, parser behaviour, registry, or mutable global state.
 | Class | Responsibility | Relations |
 | --- | --- | --- |
 | `CanonicalSlugNormaliser` | Validates stable ASCII lowercase `kebab-case` domain slugs. | Shared by icon, collection, and intrinsic-tag normalisers. |
-| `IconValueValidator` | Provides plain-object, exact-field, text, number, boolean, opacity, and array assertions. | Used only by internal Core normalisers. |
+| `IconValueValidator` | Provides plain-object, exact data-field, text, number, boolean, opacity, and dense-array assertions. | Used only by internal Core normalisers. |
 | `IconDefinitionError` | Represents deterministic invalid-definition failures with code `ASTER-CORE-001` and a logical object path. | Raised by validators and normalisers; exported only through the package root. |
 
 `IconValueValidator` accepts unknown authored values and returns only locally validated primitive
-representations. It does not infer domain semantics such as node cardinality, presentation
-precedence, identity relationships, or renderer authority; those rules remain with their owning
-features.
+representations. Object records may use `Object.prototype` or a null prototype, but accepted fields
+must be own enumerable string-keyed data properties. Arrays must be dense and cannot carry symbols,
+accessors, hidden elements, or authored non-index properties. The validator does not infer domain
+semantics such as node cardinality, presentation precedence, identity relationships, or renderer
+authority; those rules remain with their owning features.
 
 `IconDefinitionError` is a programming error for malformed authored portable data. Its message
 contains no host path, parser failure, source location, or environment state. Build source

@@ -68,7 +68,7 @@ semantics before it expands the API.
 
 The accepted baseline emits native ES2022 ESM with one public root export and `sideEffects: false`.
 On the accepted revision the unminified distribution contains 72 JavaScript modules totalling
-45,898 bytes and 72 declaration files totalling 33,451 bytes. These values are comparison evidence,
+48,345 bytes and 72 declaration files totalling 33,535 bytes. These values are comparison evidence,
 not a fixed compatibility promise.
 
 ## Risk inventory
@@ -76,12 +76,21 @@ not a fixed compatibility promise.
 | Risk | Evidence | Decision boundary |
 | --- | --- | --- |
 | Repeated complete icon validation | Collection construction validates every member even when it retains an already deeply frozen canonical icon. | Measure before changing trust or retention semantics; immutability alone must not become unproven provenance. |
-| Frozen-input retention boundary | Exact-field validation and deep-freeze inspection currently traverse enumerable string properties, while a deeply frozen authored object may also contain symbols or non-enumerable values. | Prove that collection construction never retains unsupported hidden fields or mutable hidden aliases before preserving the retention shortcut. |
-| Deep-freeze inspection cost | Collection retention recursively inspects every nested enumerable value after constructing an isolated candidate. | Compare traversal cost only after the retention boundary is correct and preserve protection against shallowly frozen authored input. |
-| Adversarial object coverage | Current tests cover ordinary unknown fields, prototypes, mutation isolation, numeric boundaries, and deep freezing, but not the complete symbol, non-enumerable, accessor, proxy, cycle, and sparse-array matrix. | Add focused JavaScript boundary evidence without claiming that Core is an execution sandbox. |
+| Deep-freeze inspection cost | Collection retention recursively inspects every own data value after constructing an isolated candidate. | Compare traversal cost while preserving protection against shallow freezing, hidden state, cycles, and repeated aliases. |
 | API composition ambiguity | `Icon` and `Collection` currently expose only `define()`; names such as `add()` do not state mutation, ownership, duplicate, or ordering semantics. | Require a demonstrated immutable composition workflow before adding an operation. Collection membership remains collection-owned. |
 | Definition instance pressure | Canonical definitions are plain deeply frozen data, while instance methods would add prototypes and behaviour to the portable value model. | Keep definitions structural; evaluate explicit immutable API operations before considering a separate value-object representation. |
 | Distribution granularity | TypeScript emits one module per source file with no bundling. | Treat file and byte counts as inspection evidence; do not add a bundler without a distribution requirement. |
+
+## Hardened input boundary
+
+Core accepts only plain records with own enumerable string-keyed data fields and dense arrays with
+canonical indexed data elements. Runtime evidence covers unknown fields, custom and null
+prototypes, symbols, hidden properties, accessors, sparse arrays, authored array properties,
+cycles, repeated aliases, mutation isolation, numeric boundaries, Unicode text, ASCII slugs,
+relationship invariants, deterministic errors, ordering, and many-to-many collection membership.
+
+Proxy traps and caller-controlled execution remain outside Core's sandbox authority. Their failures
+are propagated without being misclassified as `IconDefinitionError`.
 
 No item authorises caching, mutable singletons, global registries, trusted-object branding, or API
 growth by itself. Each correction requires conformance evidence or a measured comparison.
