@@ -83,7 +83,7 @@ The accepted value is plain readonly data. Consumers inspect `identity`, `viewBo
 `@aster/core` approves only its root `"."` export. The root provides `Icon`, `Collection`,
 documented frozen portable runtime authorities, and all public contracts and types.
 
-No feature, runtime, manager, normaliser, error, or shared implementation subpath is public.
+No feature, runtime, manager, normaliser, validator, or shared implementation subpath is public.
 Unsupported subpaths fail through the package resolver rather than becoming compatibility
 contracts accidentally.
 
@@ -91,10 +91,10 @@ The exact runtime value surface is:
 
 - `Collection`;
 - `Icon`;
+- `IconDefinitionError`;
 - `iconDirections`;
 - `iconNodeKinds`;
 - `iconPaintSchema`;
-- `iconPresentationEnumerations`;
 - `iconPresentationOverrideOrder`;
 - `iconRtlPolicies`;
 - `iconTechnicalPresentation`.
@@ -106,5 +106,6 @@ bundler-specific tree-shaking behaviour.
 ## Failure
 
 Invalid authored data raises the deterministic error documented by
-[Immutable Definition Runtime](../definition/runtime/index.md). The error implementation is not a
-separate package export.
+[Immutable Definition Runtime](../definition/runtime/index.md). `IconDefinitionError` is exported
+from the root so JavaScript consumers can use `instanceof` and inspect its stable `code` and
+logical `path` without importing implementation modules.

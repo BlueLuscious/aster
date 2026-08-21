@@ -12,8 +12,8 @@ The package exposes only the root subpath. Its runtime values are:
 - `Collection` and `Icon`;
 - `iconDirections` and `iconRtlPolicies`;
 - `iconNodeKinds`;
-- `iconPaintSchema`, `iconPresentationEnumerations`,
-  `iconPresentationOverrideOrder`, and `iconTechnicalPresentation`.
+- `iconPaintSchema`, `iconPresentationOverrideOrder`, and `iconTechnicalPresentation`;
+- `IconDefinitionError`.
 
 Its public type surface comprises:
 
@@ -25,8 +25,9 @@ Its public type surface comprises:
   `IconStrokeLineCapType`, `IconStrokeLineJoinType`, and `IconPresentationOverrideType`;
 - `IconRenderOptions`, `IconDirectionType`, and `IconRtlPolicyType`.
 
-Internal factories, normalisers, validators, and `IconDefinitionError` are emitted as implementation
-modules but cannot be resolved through the package export map.
+Internal factories, normalisers, and validators are emitted as implementation modules but cannot
+be resolved through the package export map. `IconDefinitionError` is available only from the root;
+its implementation subpath remains unsupported.
 
 ## Consumers
 
@@ -51,7 +52,7 @@ authority.
 | `iconPaintSchema` | Portable domain authority | Core validation and SVG option normalisation share its accepted paint grammar. |
 | `iconPresentationOverrideOrder` | Portable domain authority | Core and SVG require the same deterministic presentation override order. |
 | `iconTechnicalPresentation` | Portable domain authority | SVG omits Core-owned technical presentation fields from authored output. |
-| `iconPresentationEnumerations` | Unresolved public exposure | Core derives closed presentation types and performs validation from it, but no current external runtime consumer imports the value. |
+| `IconDefinitionError` | Portable failure authority | Build and JavaScript consumers can distinguish invalid authored definitions without relying on a private class name. |
 
 Public contracts and types describe the portable data ABI independently of whether every leaf
 contract currently has a named external import. Individual geometry contracts remain deliberate
@@ -66,8 +67,8 @@ semantics before it expands the API.
 ## Distribution snapshot
 
 The accepted baseline emits native ES2022 ESM with one public root export and `sideEffects: false`.
-On the baseline revision the unminified distribution contains 71 JavaScript modules totalling
-45,880 bytes and 71 declaration files totalling 33,322 bytes. These values are comparison evidence,
+On the accepted revision the unminified distribution contains 72 JavaScript modules totalling
+45,898 bytes and 72 declaration files totalling 33,451 bytes. These values are comparison evidence,
 not a fixed compatibility promise.
 
 ## Risk inventory
@@ -80,8 +81,6 @@ not a fixed compatibility promise.
 | Adversarial object coverage | Current tests cover ordinary unknown fields, prototypes, mutation isolation, numeric boundaries, and deep freezing, but not the complete symbol, non-enumerable, accessor, proxy, cycle, and sparse-array matrix. | Add focused JavaScript boundary evidence without claiming that Core is an execution sandbox. |
 | API composition ambiguity | `Icon` and `Collection` currently expose only `define()`; names such as `add()` do not state mutation, ownership, duplicate, or ordering semantics. | Require a demonstrated immutable composition workflow before adding an operation. Collection membership remains collection-owned. |
 | Definition instance pressure | Canonical definitions are plain deeply frozen data, while instance methods would add prototypes and behaviour to the portable value model. | Keep definitions structural; evaluate explicit immutable API operations before considering a separate value-object representation. |
-| Unused public presentation enumeration | `iconPresentationEnumerations` has no current external runtime consumer even though related Core types and normalisers use it internally. | Retain, internalise, or replace its public role only through an explicit ABI decision. |
-| Error discrimination crosses the package boundary | Build currently identifies rejected Core definitions through the private error name, while JavaScript consumers cannot import a stable discriminator. | Decide whether to expose a narrow failure contract or remove the consumer's dependency on an implementation class name. |
 | Distribution granularity | TypeScript emits one module per source file with no bundling. | Treat file and byte counts as inspection evidence; do not add a bundler without a distribution requirement. |
 
 No item authorises caching, mutable singletons, global registries, trusted-object branding, or API

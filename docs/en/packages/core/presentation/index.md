@@ -32,15 +32,16 @@ validation.
 | Authority | Responsibility |
 | --- | --- |
 | `iconPaintSchema` | Defines portable paint keywords and canonical short and long hexadecimal colour grammar. |
-| `iconPresentationEnumerations` | Defines accepted fill-rule, stroke-line-cap, and stroke-line-join values. |
+| `iconPresentationEnumerations` | Defines the internal accepted fill-rule, stroke-line-cap, and stroke-line-join values. |
 | `iconPresentationFields` | Defines the single closed presentation-field order shared by node and presentation validation. |
 | `iconPresentationOverrideOrder` | Defines accepted caller override capabilities in canonical semantic order. |
 | `iconTechnicalPresentation` | Defines the complete lowest-precedence presentation of the portable model. |
 
 Public presentation unions derive from these immutable authorities wherever both represent the
-same closed set. Core exports `iconPaintSchema`, `iconPresentationEnumerations`,
-`iconPresentationOverrideOrder`, and `iconTechnicalPresentation` as frozen root values because
-target consumers require them. `iconPresentationFields` remains internal because it owns Core
+same closed set. Core exports `iconPaintSchema`, `iconPresentationOverrideOrder`, and
+`iconTechnicalPresentation` as frozen root values because target consumers require them.
+`iconPresentationEnumerations` remains internal because consumers need its derived public types,
+not the grouped runtime object. `iconPresentationFields` also remains internal because it owns Core
 validation order rather than portable consumer behaviour.
 
 ## Runtime
