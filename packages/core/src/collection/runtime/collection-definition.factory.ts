@@ -71,7 +71,7 @@ export class CollectionDefinitionFactory {
    */
   #normaliseIcon(value: unknown): IconDefinition {
     const isolated = this.#iconFactory.create(value);
-    return this.#isDeeplyFrozen(value)
+    return this.#isDeeplyFrozen(value, new Set<object>())
       ? (value as IconDefinition)
       : isolated;
   }
@@ -79,20 +79,37 @@ export class CollectionDefinitionFactory {
   /**
    * @description Determines whether an object graph is already deeply immutable.
    * @param value - Candidate object graph.
+   * @param visited - Objects already inspected in the current traversal.
    * @returns Whether every retained object and array is frozen.
    */
-  #isDeeplyFrozen(value: unknown): boolean {
+  #isDeeplyFrozen(value: unknown, visited: Set<object>): boolean {
     if (typeof value !== "object" || value === null) {
       return true;
     }
 
-    if (!Object.isFrozen(value)) {
+    if (!Object.isFrozen(value) || visited.has(value)) {
       return false;
     }
 
-    return Object.values(value).every((nested) =>
-      this.#isDeeplyFrozen(nested),
-    );
+    visited.add(value);
+
+    for (const field of Reflect.ownKeys(value)) {
+      if (Array.isArray(value) && field === "length") {
+        continue;
+      }
+
+      const descriptor = Object.getOwnPropertyDescriptor(value, field);
+
+      if (
+        descriptor === undefined ||
+        !("value" in descriptor) ||
+        !this.#isDeeplyFrozen(descriptor.value, visited)
+      ) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   /**
