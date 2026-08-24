@@ -215,6 +215,48 @@ test("reconstructs frozen graphs that contain repeated object aliases", () => {
   }
 });
 
+test("reconstructs frozen valid input that is not already canonical", () => {
+  const authored = createInput();
+  authored.metadata.displayName = " Search ";
+  authored.metadata.presentation.overrides = ["stroke", "fill"] as never;
+  freezeEnumerableGraph(authored);
+
+  const retained = Collection.define({
+    identity: { name: "normalised" },
+    icons: [authored],
+    metadata: { displayName: "Normalised" },
+  } as never).icons[0];
+
+  assert.notEqual(retained, authored);
+  assert.equal(retained?.metadata.displayName, "Search");
+  assert.deepEqual(retained?.metadata.presentation.overrides, ["fill", "stroke"]);
+});
+
+test("reconstructs frozen input with non-canonical field order", () => {
+  const input = createInput();
+  const authored = {
+    metadata: input.metadata,
+    nodes: input.nodes,
+    viewBox: input.viewBox,
+    identity: input.identity,
+  };
+  freezeEnumerableGraph(authored);
+
+  const retained = Collection.define({
+    identity: { name: "field-order" },
+    icons: [authored],
+    metadata: { displayName: "Field Order" },
+  } as never).icons[0];
+
+  assert.notEqual(retained, authored);
+  assert.deepEqual(Object.keys(retained ?? {}), [
+    "identity",
+    "viewBox",
+    "nodes",
+    "metadata",
+  ]);
+});
+
 test("propagates proxy execution failures without misclassifying them", () => {
   const failure = new Error("proxy-own-keys-failure");
   const authored = new Proxy(createInput(), {

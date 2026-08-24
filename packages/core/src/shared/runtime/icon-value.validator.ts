@@ -156,6 +156,8 @@ export class IconValueValidator {
       throw new IconDefinitionError(path, "expected an array");
     }
 
+    let elementCount = 0;
+
     for (const field of Reflect.ownKeys(value)) {
       if (field === "length") {
         continue;
@@ -177,11 +179,17 @@ export class IconValueValidator {
       }
 
       this.#enumerableDataProperty(value, field, `${path}[${index}]`);
+      elementCount += 1;
     }
 
-    for (let index = 0; index < value.length; index += 1) {
-      if (!Object.hasOwn(value, index)) {
-        throw new IconDefinitionError(`${path}[${index}]`, "expected an array element");
+    if (elementCount !== value.length) {
+      for (let index = 0; index < value.length; index += 1) {
+        if (!Object.hasOwn(value, index)) {
+          throw new IconDefinitionError(
+            `${path}[${index}]`,
+            "expected an array element",
+          );
+        }
       }
     }
 
