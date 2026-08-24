@@ -68,15 +68,36 @@ semantics before it expands the API.
 
 The accepted baseline emits native ES2022 ESM with one public root export and `sideEffects: false`.
 On the accepted revision the unminified distribution contains 72 JavaScript modules totalling
-48,345 bytes and 72 declaration files totalling 33,535 bytes. These values are comparison evidence,
+48,345 bytes and 72 declaration files totalling 33,535 bytes. The retained performance correction
+adds one internal matcher module, producing 73 JavaScript modules totalling 50,089 bytes and 73
+declaration files totalling 34,185 bytes. These values are comparison evidence,
 not a fixed compatibility promise.
+
+## Performance comparison
+
+Three baseline and three candidate reports were captured under the same Node, operating-system,
+architecture, hardware, scenario, and workspace conditions. The median across report medians was:
+
+| Scenario | Hardened baseline | Retained candidate | Difference |
+| --- | ---: | ---: | ---: |
+| `core.icon.define` | 11,118 ns per operation | 11,540 ns per operation | 3.8% slower |
+| `core.collection.define` | 222,683 ns per operation | 197,876 ns per operation | 11.1% faster |
+
+The candidate removes a redundant dense-array pass, combines collection normalisation with
+duplicate detection, and replaces independent freezing inspection with one canonical graph
+comparison. It also corrects retention of frozen but non-canonical input. Checksums and observable
+construction semantics remain unchanged.
+
+Heap observations did not meet the accepted improvement threshold, so no memory reduction is
+claimed. The correction changes constant traversal work rather than algorithmic complexity; no
+scaling claim or CI threshold follows from this evidence.
 
 ## Risk inventory
 
 | Risk | Evidence | Decision boundary |
 | --- | --- | --- |
-| Repeated complete icon validation | Collection construction validates every member even when it retains an already deeply frozen canonical icon. | Measure before changing trust or retention semantics; immutability alone must not become unproven provenance. |
-| Deep-freeze inspection cost | Collection retention recursively inspects every own data value after constructing an isolated candidate. | Compare traversal cost while preserving protection against shallow freezing, hidden state, cycles, and repeated aliases. |
+| Repeated complete icon validation | Collection construction still validates every member before canonical identity retention. | Retain this cost unless a future security model proves provenance without branding, registries, caches, or hidden state. |
+| Canonical graph comparison | Collection compares a successfully reconstructed member with frozen authored data before retaining object identity. | Preserve exact values, key order, prototypes, topology, and adversarial protections in any future implementation. |
 | API composition ambiguity | `Icon` and `Collection` currently expose only `define()`; names such as `add()` do not state mutation, ownership, duplicate, or ordering semantics. | Require a demonstrated immutable composition workflow before adding an operation. Collection membership remains collection-owned. |
 | Definition instance pressure | Canonical definitions are plain deeply frozen data, while instance methods would add prototypes and behaviour to the portable value model. | Keep definitions structural; evaluate explicit immutable API operations before considering a separate value-object representation. |
 | Distribution granularity | TypeScript emits one module per source file with no bundling. | Treat file and byte counts as inspection evidence; do not add a bundler without a distribution requirement. |

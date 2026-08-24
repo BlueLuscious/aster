@@ -93,11 +93,11 @@ isolated deeply frozen CollectionDefinition
 ```
 
 An already deeply frozen canonical icon may be retained after successful reconstruction proves its
-complete shape and confirms that the authored graph contains no cycles, repeated aliases, hidden
-state, or accessor semantics. Every other valid candidate is represented by the isolated canonical
-reconstruction. Membership order is preserved, identities must be unique within one collection,
-and the same canonical icon may belong to multiple independent collections without acquiring
-collection state.
+complete shape and a dedicated matcher confirms equal prototypes, field order, primitive values,
+and graph topology without cycles, repeated aliases, hidden state, or accessor semantics. Every
+other valid candidate uses the isolated canonical reconstruction. Membership order is preserved,
+identities must be unique within one collection, and the same canonical icon may belong to multiple
+independent collections without acquiring collection state.
 
 A collection may be empty. It remains a valid identity and metadata authority rather than an icon
 registry.
