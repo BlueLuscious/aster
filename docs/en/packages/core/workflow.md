@@ -150,5 +150,5 @@ global identity state. Importing it performs no registration or host initialisat
 - [Core API](api/index.md) defines the public construction authorities and usage.
 - [Immutable Definition Runtime](definition/runtime/index.md) defines icon construction internals.
 - [Core Collection](collection/index.md) defines membership and collection construction.
-- [Core Quality](quality.md) records current audit risks and consumer pressure.
+- [Core Quality](quality.md) records accepted conformance evidence and future pressure boundaries.
 - [Portable Icon Model](../../architecture/portable-icon-model.md) defines the project-level model.

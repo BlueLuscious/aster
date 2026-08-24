@@ -1,9 +1,10 @@
 # Core Quality
 
-Status: **Accepted Baseline**
+Status: **Accepted**
 
-This document inventories the observable `@aster/core` boundary and its current hardening risks.
-The measurement method is the [Core Quality Baseline](quality-baseline.md).
+This document inventories the observable `@aster/core` boundary, records accepted consumer and
+distribution conformance, and identifies pressures that do not currently justify API or runtime
+growth. The measurement method is the [Core Quality Baseline](quality-baseline.md).
 
 ## Public inventory
 
@@ -67,11 +68,11 @@ semantics before it expands the API.
 ## Distribution snapshot
 
 The accepted baseline emits native ES2022 ESM with one public root export and `sideEffects: false`.
-On the accepted revision the unminified distribution contains 72 JavaScript modules totalling
-48,345 bytes and 72 declaration files totalling 33,535 bytes. The retained performance correction
-adds one internal matcher module, producing 73 JavaScript modules totalling 50,089 bytes and 73
-declaration files totalling 34,185 bytes. These values are comparison evidence,
-not a fixed compatibility promise.
+Before the canonical-retention correction, the unminified distribution contained 72 JavaScript
+modules totalling 48,345 bytes and 72 declaration files totalling 33,535 bytes. The current
+distribution includes the dedicated matcher responsibility and contains 73 JavaScript modules
+totalling 50,270 bytes and 73 declaration files totalling 34,366 bytes. These values are comparison
+evidence, not a fixed compatibility promise.
 
 ## Performance comparison
 
@@ -92,9 +93,9 @@ Heap observations did not meet the accepted improvement threshold, so no memory 
 claimed. The correction changes constant traversal work rather than algorithmic complexity; no
 scaling claim or CI threshold follows from this evidence.
 
-## Risk inventory
+## Future pressure boundaries
 
-| Risk | Evidence | Decision boundary |
+| Pressure | Current evidence | Decision boundary |
 | --- | --- | --- |
 | Repeated complete icon validation | Collection construction still validates every member before canonical identity retention. | Retain this cost unless a future security model proves provenance without branding, registries, caches, or hidden state. |
 | Canonical graph comparison | Collection compares a successfully reconstructed member with frozen authored data before retaining object identity. | Preserve exact values, key order, prototypes, topology, and adversarial protections in any future implementation. |
@@ -113,5 +114,24 @@ relationship invariants, deterministic errors, ordering, and many-to-many collec
 Proxy traps and caller-controlled execution remain outside Core's sandbox authority. Their failures
 are propagated without being misclassified as `IconDefinitionError`.
 
-No item authorises caching, mutable singletons, global registries, trusted-object branding, or API
-growth by itself. Each correction requires conformance evidence or a measured comparison.
+No pressure authorises caching, mutable singletons, global registries, trusted-object branding, or
+API growth by itself. Any future correction requires conformance evidence or a measured
+comparison.
+
+## Accepted conformance
+
+- Icons author definitions and collection membership only through public Core construction.
+- SVG revalidates portable definitions, consumes exported runtime vocabularies, and owns SVG,
+  accessibility-resolution, and target-error semantics independently.
+- Build creates Core values through the public root and owns parsing, source diagnostics,
+  normalisation, generation, and filesystem-host separation independently.
+- CLI isolates provider values through public Core construction while keeping catalogue identity,
+  membership evidence, search, provenance, and discovery state outside Core.
+- Built package declarations and modules contain no reverse package dependency, Node or DOM type,
+  CommonJS output, repository-tooling import, or implementation-subpath dependency.
+- Repository workflows exercise TypeScript-first authoring, SVG import equivalence, collection
+  composition, and SVG hand-off through built public package roots.
+
+These guarantees are verified by package runtime and ABI suites, CLI clean-consumer and executable
+conformance, architecture checks, and repository workflow tests. They describe implemented
+relationships only and do not simulate future framework or target adapters.

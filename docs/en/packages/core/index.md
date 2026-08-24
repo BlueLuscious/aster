@@ -25,7 +25,7 @@ registry, or global identity authority.
 | [Render](render/index.md) | Target-independent options passed with a definition. |
 | [Shared](shared/index.md) | Internal primitive assertions and the public deterministic Core failure boundary. |
 | [Workflow](workflow.md) | End-to-end icon and collection construction, validation, isolation, and consumption flow. |
-| [Quality](quality.md) | Public inventory, consumer map, distribution snapshot, and hardening risk register. |
+| [Quality](quality.md) | Public inventory, consumer conformance, distribution evidence, and future pressure boundaries. |
 
 ## Dependency boundary
 
