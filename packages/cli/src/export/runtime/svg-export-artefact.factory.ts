@@ -1,10 +1,13 @@
-import type { IconRenderOptions } from "@aster/core";
 import { Svg, SvgRenderError } from "@aster/svg";
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
 import { svgExportArtefactSchema } from "../constants/svg-export-artefact-schema.constant.js";
 import type { AsterExportArtefact } from "../contracts/index.js";
+import type {
+  AsterExportOptionsType,
+  AsterIconExportOptionsType,
+} from "../types/index.js";
 import type { TExportSelection } from "../types/internal/export-selection.type.js";
 import { ExportPathFormatter } from "./export-path.formatter.js";
 
@@ -30,15 +33,16 @@ export class SvgExportArtefactFactory {
    */
   create(
     selection: TExportSelection,
-    options: IconRenderOptions | undefined,
+    options: AsterExportOptionsType | AsterIconExportOptionsType | undefined,
   ): TAcceptanceResult<readonly AsterExportArtefact[]> {
     const artefacts: AsterExportArtefact[] = [];
-    const paths = new Set<string>();
+    const paths = selection.definitions.map((definition) =>
+      this.#paths.icon(definition.identity),
+    );
+    const uniquePaths = new Set<string>();
 
-    for (const definition of selection.definitions) {
-      const path = this.#paths.icon(definition.identity);
-
-      if (paths.has(path)) {
+    for (const path of paths) {
+      if (uniquePaths.has(path)) {
         return Object.freeze({
           accepted: false,
           diagnostic: this.#diagnostics.create(
@@ -48,6 +52,16 @@ export class SvgExportArtefactFactory {
             [path],
           ),
         });
+      }
+
+      uniquePaths.add(path);
+    }
+
+    for (const [index, definition] of selection.definitions.entries()) {
+      const path = paths[index];
+
+      if (path === undefined) {
+        throw new TypeError("Missing preflighted export path");
       }
 
       try {
@@ -71,11 +85,8 @@ export class SvgExportArtefactFactory {
           ),
         });
       }
-
-      paths.add(path);
     }
 
     return Object.freeze({ accepted: true, value: Object.freeze(artefacts) });
   }
 }
-

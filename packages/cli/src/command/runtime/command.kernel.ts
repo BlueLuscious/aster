@@ -97,45 +97,48 @@ export class CommandKernel implements AsterCommandSet {
     invocation: unknown,
     context: unknown,
   ): Promise<AsterCommandResultType> {
-    const acceptedInvocation = this.#invocations.normalise(invocation);
-
-    if (!acceptedInvocation.accepted) {
-      return this.#results.failure(
-        this.#identifyCommand(invocation),
-        acceptedInvocation.diagnostic,
-      );
-    }
-
-    const acceptedContext = this.#contexts.normalise(context);
-
-    if (!acceptedContext.accepted) {
-      return this.#results.failure(
-        acceptedInvocation.value.command,
-        acceptedContext.diagnostic,
-      );
-    }
-
-    const definition = this.#definitions.get(acceptedInvocation.value.command);
-
-    if (definition === undefined) {
-      return this.#results.failure(
-        acceptedInvocation.value.command,
-        this.#diagnostics.create(
-          commandDiagnosticSchema.categories.usage,
-          commandDiagnosticSchema.codes.usage,
-          `command ${acceptedInvocation.value.command} is not registered`,
-        ),
-      );
-    }
+    let command: AsterCommandNameType | undefined;
 
     try {
+      const acceptedInvocation = this.#invocations.normalise(invocation);
+
+      if (!acceptedInvocation.accepted) {
+        return this.#results.failure(
+          this.#identifyCommand(invocation),
+          acceptedInvocation.diagnostic,
+        );
+      }
+
+      command = acceptedInvocation.value.command;
+      const acceptedContext = this.#contexts.normalise(context);
+
+      if (!acceptedContext.accepted) {
+        return this.#results.failure(
+          command,
+          acceptedContext.diagnostic,
+        );
+      }
+
+      const definition = this.#definitions.get(command);
+
+      if (definition === undefined) {
+        return this.#results.failure(
+          command,
+          this.#diagnostics.create(
+            commandDiagnosticSchema.categories.usage,
+            commandDiagnosticSchema.codes.usage,
+            `command ${command} is not registered`,
+          ),
+        );
+      }
+
       return await definition.execute(
         acceptedInvocation.value,
         acceptedContext.value,
       );
     } catch {
       return this.#results.failure(
-        acceptedInvocation.value.command,
+        command,
         this.#diagnostics.create(
           commandDiagnosticSchema.categories.executionFailure,
           commandDiagnosticSchema.codes.executionFailure,

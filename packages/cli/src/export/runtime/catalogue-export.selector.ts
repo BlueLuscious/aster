@@ -72,9 +72,18 @@ export class CatalogueExportSelector {
       return scoped;
     }
 
-    const candidates = invocation.subject === asterCommandSubjects.export.icon
-      ? this.#icons(scoped.value, invocation.identity)
+    const selected = invocation.subject === asterCommandSubjects.export.icon
+      ? Object.freeze({
+          accepted: true,
+          value: this.#icons(scoped.value, invocation.identity),
+        } as const)
       : this.#collections(scoped.value, invocation.identity);
+
+    if (!selected.accepted) {
+      return selected;
+    }
+
+    const candidates = selected.value;
 
     if (candidates.length === 0) {
       return this.#failure(
@@ -130,7 +139,7 @@ export class CatalogueExportSelector {
   #collections(
     catalogues: readonly TAcceptedCatalogue[],
     identity: string,
-  ): readonly TExportSelection[] {
+  ): TAcceptanceResult<readonly TExportSelection[]> {
     const selections: TExportSelection[] = [];
 
     for (const catalogue of catalogues) {
@@ -142,19 +151,31 @@ export class CatalogueExportSelector {
         continue;
       }
 
-      const memberKeys = collection.definition.icons.map((definition) =>
-        this.#identities.icon(definition.identity),
+      const iconsByIdentity = new Map(
+        catalogue.icons.map((record) => [
+          this.#identities.icon(record.definition.identity),
+          record.definition,
+        ]),
       );
       const definitions: IconDefinition[] = [];
 
-      for (const memberKey of memberKeys) {
-        const record = catalogue.icons.find((candidate) =>
-          this.#identities.icon(candidate.definition.identity) === memberKey,
-        );
+      for (const member of collection.definition.icons) {
+        const memberKey = this.#identities.icon(member.identity);
+        const definition = iconsByIdentity.get(memberKey);
 
-        if (record !== undefined) {
-          definitions.push(record.definition);
+        if (definition === undefined) {
+          return Object.freeze({
+            accepted: false,
+            diagnostic: this.#diagnostics.create(
+              commandDiagnosticSchema.categories.catalogueUnavailable,
+              commandDiagnosticSchema.codes.catalogueUnavailable,
+              `collection ${identity} contains unavailable icon ${memberKey}`,
+              [catalogue.identity, memberKey],
+            ),
+          });
         }
+
+        definitions.push(definition);
       }
 
       definitions.sort((left, right) => {
@@ -170,7 +191,10 @@ export class CatalogueExportSelector {
       }));
     }
 
-    return Object.freeze(selections);
+    return Object.freeze({
+      accepted: true,
+      value: Object.freeze(selections),
+    });
   }
 
   /**
@@ -193,4 +217,3 @@ export class CatalogueExportSelector {
     });
   }
 }
-
