@@ -503,3 +503,122 @@ test("enforces icon-owned viewport boundaries and canonical dimensions", () => {
     "options.size",
   );
 });
+
+test("accepts the exact XML 1.0 repertoire and escapes each output context", () => {
+  const allowedCharacters = "\t\n\r\u007f\u0085\ufdd0\ue000\ufffd\u{10000}\u{1ffff}\u{10ffff}";
+  const definition = Icon.define({
+    ...createDefinition(),
+    nodes: [
+      {
+        kind: "path",
+        data: `M0 0${allowedCharacters}Z`,
+      },
+    ],
+  });
+  const label = 'Label\tline\nreturn\r & < > "';
+  const title = 'Title\tline\nreturn\r & < > "';
+  const markup = Svg.render(definition, {
+    label,
+    title,
+  });
+
+  assert.match(
+    markup,
+    / aria-label="Label&#9;line&#10;return&#13; &amp; &lt; &gt; &quot;">/u,
+  );
+  assert.ok(markup.includes('<title>Title\tline\nreturn\r &amp; &lt; &gt; "</title>'));
+  assert.ok(
+    markup.includes(
+      `d="M0 0&#9;&#10;&#13;\u007f\u0085\ufdd0\ue000\ufffd\u{10000}\u{1ffff}\u{10ffff}Z"`,
+    ),
+  );
+});
+
+test("rejects every XML 1.0 character gap with the source path", () => {
+  const invalidCharacters = [
+    "\u0000",
+    "\u0008",
+    "\u000b",
+    "\u000c",
+    "\u001f",
+    "\ud800",
+    "\udfff",
+    "\ufffe",
+    "\uffff",
+  ];
+
+  for (const character of invalidCharacters) {
+    const definition = Icon.define({
+      ...createDefinition(),
+      nodes: [
+        {
+          kind: "path",
+          data: `M0 0${character}Z`,
+        },
+      ],
+    });
+    const error = expectRenderError(
+      () => Svg.render(definition),
+      "definition.nodes[0].data",
+    );
+
+    assert.match(error.message, /unsupported by XML 1\.0/u);
+  }
+
+  expectRenderError(
+    () => Svg.render(createDefinition(), { title: "Invalid\ud800title" }),
+    "options.title",
+  );
+});
+
+test("serialises canonical numeric boundaries without locale dependence", () => {
+  const definition = Icon.define({
+    identity: {
+      namespace: "testing",
+      name: "numbers",
+    },
+    viewBox: {
+      minX: -1e-7,
+      minY: -0,
+      width: 1e21,
+      height: 0.5,
+    },
+    nodes: [
+      {
+        kind: "line",
+        x1: -0,
+        y1: -1e-7,
+        x2: 1e21,
+        y2: 0.000001,
+      },
+    ],
+    metadata: {
+      displayName: "Numbers",
+      rtl: "preserve",
+      presentation: {
+        defaults: {
+          strokeWidth: 0.5,
+          opacity: 0,
+          fillOpacity: 0.25,
+          strokeOpacity: 1,
+        },
+        overrides: [],
+      },
+      deprecated: false,
+    },
+  });
+  const markup = Svg.render(definition);
+
+  assert.match(
+    markup,
+    / viewBox="-1e-7 0 1e\+21 0\.5" width="1e\+21" height="0\.5"/u,
+  );
+  assert.match(
+    markup,
+    /<line x1="0" y1="-1e-7" x2="1e\+21" y2="0\.000001"/u,
+  );
+  assert.match(
+    markup,
+    / stroke-width="0\.5"[^>]+ opacity="0" fill-opacity="0\.25" stroke-opacity="1"/u,
+  );
+});

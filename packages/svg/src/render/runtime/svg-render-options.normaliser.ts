@@ -12,6 +12,7 @@ import {
 import { SvgRenderError } from "../../error/index.js";
 import { svgRenderOptionsSchema } from "../constants/svg-render-options-schema.constant.js";
 import type { ISvgRenderContext } from "../contracts/internal/index.js";
+import { SvgXmlCharacterValidator } from "./svg-xml-character.validator.js";
 
 /**
  * @description Validates portable render options and resolves one immutable SVG render context.
@@ -28,9 +29,9 @@ export class SvgRenderOptionsNormaliser {
   readonly #longHexPattern = new RegExp(iconPaintSchema.longHexPatternSource, "iu");
 
   /**
-   * @description Controls that cannot enter compact SVG option text.
+   * @description XML 1.0 character authority shared by accepted option text and serialisation.
    */
-  readonly #invalidTextControlPattern = new RegExp(svgRenderOptionsSchema.invalidTextControlPatternSource, "u");
+  readonly #characterValidator = new SvgXmlCharacterValidator();
 
   /**
    * @description Validates options and resolves viewport, presentation, accessibility, and direction.
@@ -279,9 +280,11 @@ export class SvgRenderOptionsNormaliser {
     }
 
     const text = value.trim();
-    if (text.length === 0 || this.#invalidTextControlPattern.test(text)) {
-      throw new SvgRenderError(path, "expected non-empty text without controls");
+    if (text.length === 0) {
+      throw new SvgRenderError(path, "expected non-empty text");
     }
+
+    this.#characterValidator.validate(text, path);
 
     return text;
   }

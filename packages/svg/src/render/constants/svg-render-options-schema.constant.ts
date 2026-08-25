@@ -1,7 +1,7 @@
 import { iconPresentationOverrideOrder } from "@aster/core";
 
 /**
- * @description Immutable runtime schema sources for the closed portable SVG render options.
+ * @description Immutable closed field authority for portable SVG render options.
  */
 export const svgRenderOptionsSchema = Object.freeze({
   fields: Object.freeze([
@@ -13,5 +13,4 @@ export const svgRenderOptionsSchema = Object.freeze({
     "decorative",
     "direction",
   ] as const),
-  invalidTextControlPatternSource: String.raw`[\u0000-\u001f\u007f]`,
 });

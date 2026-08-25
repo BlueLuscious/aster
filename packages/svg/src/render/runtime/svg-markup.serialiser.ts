@@ -8,18 +8,18 @@ import {
   type IconPresentation,
 } from "@aster/core";
 import { SvgRenderError } from "../../error/index.js";
-import { svgMarkupSchema } from "../constants/svg-markup-schema.constant.js";
 import type { ISvgRenderContext } from "../contracts/internal/index.js";
 import type { SvgMarkupType } from "../types/index.js";
+import { SvgXmlCharacterValidator } from "./svg-xml-character.validator.js";
 
 /**
  * @description Serialises one accepted render context into deterministic complete SVG markup.
  */
 export class SvgMarkupSerialiser {
   /**
-   * @description Characters that cannot enter an XML 1.0 markup value.
+   * @description XML 1.0 character authority applied before escaping target values.
    */
-  readonly #invalidCharacterPattern = new RegExp(svgMarkupSchema.invalidCharacterPatternSource, "u");
+  readonly #characterValidator = new SvgXmlCharacterValidator();
 
   /**
    * @description Produces complete markup with canonical element and attribute ordering.
@@ -59,7 +59,7 @@ export class SvgMarkupSerialiser {
     const title =
       context.title === undefined
         ? ""
-        : `<title>${this.#text(context.title)}</title>`;
+        : `<title>${this.#text(context.title, "options.title")}</title>`;
     const geometry = definition.nodes
       .map((node, index) => this.#node(node, index, context))
       .join("");
@@ -210,9 +210,7 @@ export class SvgMarkupSerialiser {
     value: string,
     path = "target.attribute",
   ): string {
-    if (this.#invalidCharacterPattern.test(value)) {
-      throw new SvgRenderError(path, "contains a character unsupported by XML");
-    }
+    this.#characterValidator.validate(value, path);
 
     return ` ${name}="${this.#attributeText(value)}"`;
   }
@@ -236,9 +234,12 @@ export class SvgMarkupSerialiser {
   /**
    * @description Escapes accepted SVG text-node content.
    * @param value - Accepted unescaped text.
+   * @param path - Logical source path reported for unsupported content.
    * @returns Escaped text-node content.
    */
-  #text(value: string): string {
+  #text(value: string, path: string): string {
+    this.#characterValidator.validate(value, path);
+
     return value
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")
