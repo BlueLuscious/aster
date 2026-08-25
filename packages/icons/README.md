@@ -4,6 +4,7 @@ Canonical portable TypeScript definitions for the Experimental Aster icon collec
 
 The package depends only on `@aster/core`. It provides one isolated public subpath per icon and
 contains no renderer, framework, DOM, filesystem, Build, or global catalogue dependency.
+The example below assumes `@aster/svg` is installed independently by the consumer.
 
 ```ts
 import { ArrowLeft } from "@aster/icons/arrow-left";
