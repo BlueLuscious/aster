@@ -65,6 +65,7 @@ The private root exposes stable orchestration contracts:
 | `pnpm check:docs` | Run the [documentation verifier](documentation/index.md). |
 | `pnpm check:types` | Build and type-check every applicable package. |
 | `pnpm benchmark:core` | Run the development-only [Core comparison](performance/index.md). |
+| `pnpm benchmark:svg` | Run the development-only [SVG comparison](performance/index.md). |
 | `pnpm lint` | Delegate to packages that define an accepted lint contract. |
 | `pnpm format` | Delegate to packages that define a mutating format contract. |
 | `pnpm format:check` | Delegate to packages that define a non-mutating format contract. |
