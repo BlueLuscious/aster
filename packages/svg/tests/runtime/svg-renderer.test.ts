@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   Icon,
+  IconDefinitionError,
   iconDirections,
   iconRtlPolicies,
   type IconDefinition,
@@ -222,7 +223,7 @@ test("rejects malformed definitions through one deterministic target error", () 
   );
 });
 
-test("preserves caller-controlled execution failures from definition inspection", () => {
+test("translates Core error identities and preserves unrelated caller failures", () => {
   const failure = new Error("caller-own-keys-failure");
   const definition = new Proxy(createDefinition(), {
     ownKeys() {
@@ -233,6 +234,26 @@ test("preserves caller-controlled execution failures from definition inspection"
   assert.throws(
     () => Svg.render(definition),
     (error: unknown) => error === failure,
+  );
+
+  const injectedCoreError = new IconDefinitionError(
+    "caller.definition",
+    "caller supplied Core error",
+  );
+  const coreErrorDefinition = new Proxy(createDefinition(), {
+    ownKeys() {
+      throw injectedCoreError;
+    },
+  });
+  const translated = expectRenderError(
+    () => Svg.render(coreErrorDefinition),
+    "caller.definition",
+  );
+
+  assert.notEqual(translated, injectedCoreError);
+  assert.equal(
+    translated.message,
+    "ASTER-SVG-001 at caller.definition: expected a valid portable icon definition.",
   );
 });
 
@@ -369,6 +390,18 @@ test("isolates exact own enumerable option data without executing accessors", ()
 });
 
 test("preserves caller-controlled failures while inspecting option shape", () => {
+  const prototypeFailure = new Error("caller-option-prototype-failure");
+  const prototypeOptions = new Proxy({}, {
+    getPrototypeOf() {
+      throw prototypeFailure;
+    },
+  }) as IconRenderOptions;
+
+  assert.throws(
+    () => Svg.render(createDefinition(), prototypeOptions),
+    (error: unknown) => error === prototypeFailure,
+  );
+
   const ownKeysFailure = new Error("caller-option-own-keys-failure");
   const ownKeysOptions = new Proxy({}, {
     ownKeys() {
