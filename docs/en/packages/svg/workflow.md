@@ -71,6 +71,11 @@ authority. Failures raised by caller-controlled reflection itself preserve their
 order, resolves complete presentation for each node, maps portable nodes to SVG geometry, escapes
 target text, and joins all content into one compact string.
 
+`SvgXmlCharacterValidator` first applies the exact XML 1.0 code-point repertoire to option text and
+every source value that enters markup. It accepts valid supplementary pairs, rejects isolated
+surrogates and excluded code points, and reports the logical option or definition path without
+silently replacing content.
+
 ```text
 accepted render context
     |
@@ -86,8 +91,9 @@ complete SvgMarkupType
 
 The serialiser does not append to a caller-visible stream or mutate a target. A successful call
 returns one complete `<svg>...</svg>` value; a synchronous failure returns no partial output.
-The exact accepted XML character repertoire remains under audit because Core portability and XML
-serialisability are separate responsibilities.
+Core portability and XML serialisability remain separate responsibilities: Core owns the portable
+definition, while SVG owns whether its strings can enter this target and how each output context is
+escaped.
 
 ## Consumer hand-off
 

@@ -88,9 +88,19 @@ Finite numbers use locale-independent ECMAScript string form after canonicalisin
 to zero. Coordinate sequences use one ASCII space between numbers. `viewBox` follows the same
 four-number form.
 
-Attribute text escapes ampersand, less-than, greater-than, and double-quote characters. `title`
-text escapes ampersand, less-than, and greater-than characters. Invalid controls and malformed
-option text fail before any markup is returned.
+The accepted XML 1.0 character repertoire is exactly tab, line feed, carriage return,
+`U+0020-U+D7FF`, `U+E000-U+FFFD`, and `U+10000-U+10FFFF`. Valid supplementary characters and XML
+noncharacters inside those ranges are preserved. Unsupported controls, isolated UTF-16
+surrogates, `U+FFFE`, and `U+FFFF` fail at their logical source path before markup is returned.
+
+Attribute text escapes ampersand, less-than, greater-than, and double-quote characters. Tabs, line
+feeds, and carriage returns in attributes use `&#9;`, `&#10;`, and `&#13;` respectively. `title`
+text escapes ampersand, less-than, and greater-than characters while retaining quotes and accepted
+XML whitespace as authored after option trimming.
+
+Serialisation uses ECMAScript code-point iteration and string conversion without a locale, DOM,
+XML parser, stream, or platform encoder. An invalid value can discard only local intermediate
+strings; no partial result or external target exists before the complete return value.
 
 ## Viewport and colour
 

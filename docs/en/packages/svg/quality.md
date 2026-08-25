@@ -30,7 +30,7 @@ resolved through the package export map.
 | Definition boundary | Public Core `Icon.define()` reconstruction | Implemented |
 | Option acceptance | `SvgRenderOptionsNormaliser` and SVG-owned closed field schema | Implemented with exact reflective isolation |
 | Render transaction | `SvgRenderer` | Implemented with explicit Core-error translation |
-| Markup production | `SvgMarkupSerialiser` and SVG-owned character schema | Implemented, XML repertoire under audit |
+| Markup production | `SvgMarkupSerialiser` and SVG-owned XML character validator | Implemented with exact XML 1.0 conformance |
 | Failure identity | Frozen public `SvgRenderError` with static and instance code | Implemented |
 
 The runtime classes are cohesive state-free authorities despite their method counts. Splitting
@@ -75,6 +75,10 @@ Existing runtime evidence covers:
   hidden fields, accessors, inherited state, and unknown fields;
 - caller and accepted-definition non-mutation;
 - deterministic repeated output;
+- exact XML 1.0 code-point acceptance, contextual escaping, invalid-surrogate rejection, and
+  source-path failures;
+- the complete real Icons corpus under default, semantic, colour-context, viewport, and direction
+  scenarios;
 - representative malformed definitions, options, conflicts, and target values;
 - public error identity, code, path, and message shape.
 
@@ -86,8 +90,6 @@ side effects, module format, and host-independent imports.
 
 | Pressure | Current evidence | Decision boundary |
 | --- | --- | --- |
-| XML character repertoire | The current pattern rejects `U+007F`, which XML 1.0 permits, while allowing `U+FFFF` and isolated UTF-16 surrogates into output. | Define the exact XML 1.0 character set for JavaScript strings and reject invalid code points before returning markup. |
-| Output corpus | Every primitive has one golden test, while the complete real Icons corpus is not yet rendered as SVG package conformance. | Add corpus-level deterministic evidence without assigning catalogue ownership to SVG. |
 | Performance | No SVG-specific scenario matrix, CPU attribution, allocation comparison, or accepted baseline exists. | Measure only after correctness closes; optimise one attributed mechanism at a time under repository comparison rules. |
 | API growth | No implemented consumer requires batch, fragment, file, stream, DOM, or extension operations. | Keep `Svg.render()` as the sole operation until a real host workflow proves stable additional semantics. |
 
@@ -112,6 +114,10 @@ singletons, trusted definitions, streaming state, host access, or consumer-speci
   fields before value normalisation, and reject hidden state, symbols, accessors, and inheritance.
 - Treat minimum size as icon-owned policy, preserve label precedence over title for accessible
   naming, and generate RTL transforms only for the explicit Mirror-policy combination.
+- Validate JavaScript strings by XML 1.0 code point rather than regular-expression code unit,
+  preserving valid supplementary values and rejecting isolated surrogates without replacement.
+- Keep character acceptance separate from contextual escaping and retain complete markup as the
+  only observable success value.
 
 ## Accepted starting boundary
 

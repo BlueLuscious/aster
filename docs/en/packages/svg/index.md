@@ -57,10 +57,11 @@ The compiled-package ABI suite verifies:
 - side-effect-free ESM without CommonJS compatibility output;
 - deterministic representative markup from an explicitly supplied definition.
 
-Runtime tests separately cover every supported primitive and representative presentation,
-accessibility, direction, escaping, invalid-target, and definition-immutability scenarios. The
-remaining hardening pressures and evidence limits are recorded in [Quality](quality.md). Detailed
-semantics remain canonical in [Render](render/index.md) and
+Runtime tests separately cover every supported primitive, the complete real Icons corpus,
+presentation, accessibility, direction, exact XML 1.0 acceptance, contextual escaping,
+invalid-target, and definition-immutability scenarios. The remaining hardening pressures and
+evidence limits are recorded in [Quality](quality.md). Detailed semantics remain canonical in
+[Render](render/index.md) and
 [Accessibility and Direction](../../architecture/accessibility-and-direction.md).
 
 The stable semantics are defined by the
