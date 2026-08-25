@@ -82,3 +82,11 @@ Built-executable integration tests additionally verify human and JSON presentati
 selection, exit status, argument rejection, and silent public-root imports. Package conformance
 also verifies exact exports and declarations, rejected subpaths, dependency direction, exclusive
 Node process authority, and execution from a temporary consumer containing no source files.
+
+## Accepted next boundary
+
+SVG export is architecturally accepted but not yet implemented or part of the current package ABI.
+It will add exact icon and collection selection, complete immutable SVG artefact plans, raw
+single-icon output, and an optional private Node output host without adding filesystem authority to
+`AsterCommands`. The canonical future contract is defined by the
+[Command-line Boundary](../../architecture/command-line-boundary.md#accepted-export-extension).

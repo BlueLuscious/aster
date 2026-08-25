@@ -95,7 +95,7 @@ target renderer -------------------> portable Core
 framework adapter -----------------> portable Core + framework public APIs
 target adapter --------------------> corresponding adapter + target public APIs
 generated target wrappers --------> generated definitions + corresponding generic adapter
-product CLI -----------------------> portable Core + explicit catalogue definitions
+product CLI -----------------------> portable Core + explicit catalogue definitions + selected target renderers
 repository tooling ----------------> build-time services where required
 ```
 
@@ -180,7 +180,7 @@ distribution boundaries and are not registry reservations:
 | Private build-time implementation | `@aster/build` | Implemented and accepted |
 | Aster collection definitions | `@aster/icons` | Implemented and Experimental |
 | Generic SVG renderer | `@aster/svg` | Implemented and hardened pre-release boundary |
-| Standalone and programmatic CLI | `@aster/cli` | Implemented programmatic discovery, standalone shell, and package conformance |
+| Standalone and programmatic CLI | `@aster/cli` | Implemented discovery and shell; accepted SVG export extension pending implementation |
 | Generated icon-target integration | Target package or generated exports, pending evidence | Provisional |
 | Target-independent Lilium adapter | `@aster/lilium` | Provisional |
 | DOM-specific Lilium mappings | `@aster/lilium-dom` if evidence requires a separate package | Provisional |
@@ -193,3 +193,5 @@ The collection package and authoring decision is recorded by
 [TypeScript-first Aster Collection Package](../decisions/0007-typescript-first-aster-collection-package.md).
 The command and executable boundary is recorded by
 [Public Plugin-compatible Aster CLI Boundary](../decisions/0008-public-plugin-compatible-aster-cli-boundary.md).
+The first target-producing command boundary is recorded by
+[Headless SVG Export and Node Output Boundary](../decisions/0010-headless-svg-export-and-node-output-boundary.md).

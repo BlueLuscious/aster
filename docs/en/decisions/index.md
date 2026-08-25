@@ -93,3 +93,4 @@ supersession links, and unindexed records.
 | [0007: TypeScript-first Aster Collection Package](0007-typescript-first-aster-collection-package.md) | Accepted | Technical maintainers and Aster collection curator | Collection authoring and distribution |
 | [0008: Public Plugin-compatible Aster CLI Boundary](0008-public-plugin-compatible-aster-cli-boundary.md) | Accepted | Technical maintainers | CLI package and command-host boundary |
 | [0009: Core Runtime Authority and Failure Boundary](0009-core-runtime-authority-failure-boundary.md) | Accepted | Technical maintainers | Core runtime value and failure API |
+| [0010: Headless SVG Export and Node Output Boundary](0010-headless-svg-export-and-node-output-boundary.md) | Accepted | Technical maintainers | CLI export planning and output effects |

@@ -76,6 +76,8 @@ Icons, SVG, Lotus, Lilium, and unrelated projects must never depend on the CLI.
 
 Importance: **P1 - High**
 
+Status: **SVG export boundary accepted; implementation pending**
+
 The first useful commands should operate on explicitly installed or configured catalogue
 providers and canonical TypeScript definitions. They do not require the SVG importer in
 `@aster/build`.
@@ -86,7 +88,7 @@ providers and canonical TypeScript definitions. They do not require the SVG impo
 | `search` | Match canonical identity, display name, intrinsic tags, and explicit catalogue indexes. | None. |
 | `show` | Display one icon or collection identity, metadata, membership, and available targets. | None. |
 | `add` | Integrate selected definitions into a consumer project through an explicit package, import, or vendoring policy. | None initially. |
-| `export` | Render one icon, an explicit selected set, or one collection to an explicit target output root. | None for TypeScript-first definitions. |
+| `export` | Produce a headless SVG artefact plan for one icon or one collection and optionally publish it through the private Node host. | None for TypeScript-first definitions. |
 | `review` | Compose disposable technical and visual evidence through explicit render and output hosts. | None for TypeScript-first definitions. |
 | `generate` | Produce explicitly selected manifests, barrels, wrappers, or target integrations through an installed generator. | None unless the selected generator imports SVG. |
 | `import` | Convert external SVG and metadata into reviewed portable definitions. | Conditional on retained Build support. |
@@ -95,6 +97,13 @@ providers and canonical TypeScript definitions. They do not require the SVG impo
 `export` produces target artefacts such as SVG files, `review` composes disposable comparison
 evidence, and `generate` produces code or integration artefacts. No command may silently copy
 source, install dependencies, overwrite user files, or infer ownership from a directory name.
+
+The first export workflow now has an accepted boundary. It returns complete immutable SVG
+artefacts with logical paths from the host-neutral command set, keeps output-root resolution and
+filesystem commitment in the standalone shell, forbids initial overwrite, and does not introduce
+Build or a generic target registry. Its exact selection, presentation, staging, and dependency
+decisions are defined by
+[0010: Headless SVG Export and Node Output Boundary](decisions/0010-headless-svg-export-and-node-output-boundary.md).
 
 CLI discovery must not introduce a runtime global registry. Catalogue providers should supply
 explicit manifests or indexes outside `IconDefinition`; collections continue to own only their
