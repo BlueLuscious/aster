@@ -76,7 +76,7 @@ Icons, SVG, Lotus, Lilium, and unrelated projects must never depend on the CLI.
 
 Importance: **P1 - High**
 
-Status: **SVG export boundary accepted; implementation pending**
+Status: **Initial headless SVG export implemented; output host pending**
 
 The first useful commands should operate on explicitly installed or configured catalogue
 providers and canonical TypeScript definitions. They do not require the SVG importer in
@@ -98,7 +98,7 @@ providers and canonical TypeScript definitions. They do not require the SVG impo
 evidence, and `generate` produces code or integration artefacts. No command may silently copy
 source, install dependencies, overwrite user files, or infer ownership from a directory name.
 
-The first export workflow now has an accepted boundary. It returns complete immutable SVG
+The first export workflow now has an accepted boundary and initial implementation. It returns complete immutable SVG
 artefacts with logical paths from the host-neutral command set, keeps output-root resolution and
 filesystem commitment in the standalone shell, forbids initial overwrite, and does not introduce
 Build or a generic target registry. Its exact selection, presentation, staging, and dependency

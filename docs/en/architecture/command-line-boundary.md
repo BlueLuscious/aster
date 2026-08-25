@@ -39,7 +39,7 @@ The accepted export extension adds the public `@aster/svg` root as a direct CLI 
 @aster/cli ------> @aster/svg ------> @aster/core
 ```
 
-This relationship becomes observable only when export is implemented. The CLI does not depend on
+This relationship is now observable through the implemented export command. The CLI does not depend on
 `@aster/build`, a framework, repository tooling, or a generic plugin framework. Core, Icons, SVG,
 Build, adapters, and consumers never depend on the CLI.
 
@@ -153,7 +153,9 @@ aster list icons [--catalogue <provider>] [--collection <identity>] [--tag <tag>
 aster search <query> [--catalogue <provider>] [--collection <identity>] [--tag <tag>]...
 aster show icon <identity> [--catalogue <provider>]
 aster show collection <identity> [--catalogue <provider>]
-aster help [list|search|show]
+aster export icon <identity> [--catalogue <provider>]
+aster export collection <identity> [--catalogue <provider>] --json
+aster help [export|list|search|show]
 aster version
 ```
 
@@ -170,11 +172,12 @@ provider-supplied search terms, and succeeds with an empty sequence when nothing
 query terms must match somewhere on one record. `show` requires one exact result and otherwise
 returns not-found or ambiguity.
 
-## Accepted export extension
+## Export boundary
 
-The export boundary is accepted but not part of the current implementation. It adds exact icon
-and collection selection over installed TypeScript-first definitions and produces deterministic
-SVG artefact plans without Build.
+The implemented host-neutral export boundary adds exact icon and collection selection over
+installed TypeScript-first definitions and produces deterministic SVG artefact plans without
+Build. The current shell exposes raw single-icon SVG and JSON plans; output publication remains
+pending.
 
 The accepted standalone forms are:
 
@@ -189,6 +192,10 @@ Render options are `--size`, `--colour`, `--fill`, `--stroke`, `--stroke-width`,
 and, for icon export only, `--label` and `--title`. Icon export without `--output` or `--json`
 emits one raw SVG. Collection export requires one of those modes. `--json` and `--output` are
 mutually exclusive shell concerns and never enter the structured invocation.
+
+Only the no-option raw icon form and JSON icon or collection forms are currently implemented by
+the shell. Programmatic invocations already accept the closed render-option values. The remaining
+argv options and `--output` belong to the standalone-host extension.
 
 The host-neutral command result contains a complete immutable serialisable plan. Each artefact has
 a canonical logical relative path, `image/svg+xml` media type, and complete SVG content. Namespace
@@ -229,6 +236,10 @@ The initial failure categories are:
 | `ambiguous` | Exact identity lookup resolves to multiple providers. |
 | `catalogue-conflict` | Provider or snapshot identities violate uniqueness. |
 | `catalogue-unavailable` | A provider cannot supply a valid snapshot. |
+| `render-failure` | An accepted definition cannot be rendered by the SVG target. |
+| `export-conflict` | Multiple selected definitions resolve to one logical artefact path. |
+| `output-conflict` | A requested output destination violates publication policy. |
+| `output-failure` | The standalone output host cannot complete an accepted publication. |
 | `execution-failure` | An unexpected command-definition fault was sanitised by the kernel. |
 
 Expected command failures do not throw. Unexpected implementation faults may be caught at the
@@ -244,9 +255,9 @@ sequences or human table formatting, and the same exit-status mapping still appl
 
 ## Deferred capabilities
 
-`add`, `export`, `generate`, and `import` remain absent from the current descriptors and invocation
-union. The export boundary above is accepted for implementation but grants no authority until its
-contracts and conformance exist. The other names grant no filesystem, package-manager, renderer,
+`add`, `generate`, and `import` remain absent from the current descriptors and invocation union.
+The implemented export command grants SVG rendering authority only to its internal headless
+composition. The other names grant no filesystem, package-manager, renderer,
 or Build capabilities to the current context.
 
 An accepted future command may add a narrow explicit effect capability. `import` remains

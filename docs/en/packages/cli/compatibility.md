@@ -21,10 +21,10 @@ its public declarations.
 The first supported ABI consists of:
 
 - the root package export and private `aster` binary mapping;
-- the frozen `AsterCommands`, `AsterCatalogue`, and `catalogueResultKinds` values;
-- every public command and catalogue contract and type exported through the root;
+- the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, and `exportTargets` values;
+- every public command, catalogue, and export contract and type exported through the root;
 - the `aster` command-set identity;
-- the `list`, `search`, `show`, `help`, and `version` invocation variants;
+- the `export`, `list`, `search`, `show`, `help`, and `version` invocation variants;
 - current payload and catalogue-result discriminators;
 - current diagnostic codes and categories;
 - deterministic ordering, canonicalisation, and expected-failure semantics.
@@ -71,6 +71,14 @@ insertion order.
 
 Provider and membership guarantees are owned by the
 [CLI Catalogue](catalogue/index.md).
+
+## Export isolation
+
+Headless export consumes only accepted catalogue snapshots and the public SVG renderer. It returns
+complete immutable logical artefacts and acquires no process or filesystem capability. The shell
+may present a raw single-icon SVG or serialise the same structured plan; future output publication
+cannot change the programmatic result contract. Detailed ownership is documented by
+[CLI Export](export/index.md).
 
 ## Conformance evidence
 

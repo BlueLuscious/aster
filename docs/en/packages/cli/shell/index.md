@@ -26,13 +26,19 @@ aster list icons [--catalogue <provider>] [--collection <identity>] [--tag <tag>
 aster search <query> [--catalogue <provider>] [--collection <identity>] [--tag <tag>]...
 aster show icon <identity> [--catalogue <provider>]
 aster show collection <identity> [--catalogue <provider>]
-aster help [list|search|show]
+aster export icon <identity> [--catalogue <provider>]
+aster export collection <identity> [--catalogue <provider>] --json
+aster help [export|list|search|show]
 aster version
 ```
 
 Invoking `aster` without arguments is equivalent to `aster help`. A query containing spaces must
 be supplied as one quoted shell argument. `--tag` may be repeated; singleton filters and `--json`
 may not be repeated. Unknown options and extra positional arguments are usage failures.
+
+Icon export without `--json` writes one raw SVG document. JSON mode exposes the complete
+host-neutral plan for either subject. Collection export currently requires `--json`; filesystem
+publication and shell render options are not yet implemented.
 
 The shell explicitly supplies `AsterCatalogue`. This is executable composition rather than an
 ambient default in `AsterCommands`.
@@ -70,8 +76,9 @@ behaviour.
 | --- | --- |
 | `CommandLineParser` | Separates shell presentation and adapts positional command forms. |
 | `CommandLineOptionParser` | Parses closed command-specific singleton filters and repeated tags. |
+| `ExportCommandLineParser` | Owns the initial icon and collection export grammar and presentation constraint. |
 | `CommandOutputPresenter` | Selects human or JSON presentation, streams, and exit status. |
-| `HumanOutputPresenter` | Renders plain help, list, search, show, version, and failure text. |
+| `HumanOutputPresenter` | Renders plain help, discovery, raw single-icon SVG, export summaries, version, and failure text. |
 | `JsonOutputPresenter` | Serialises one unstyled structured result document. |
 | `ShellDiagnosticFactory` | Adapts parser and unexpected shell faults into canonical command diagnostics. |
 | `NodeShell` | Delegates parsed invocations to `AsterCommands` with explicit product and catalogue context. |

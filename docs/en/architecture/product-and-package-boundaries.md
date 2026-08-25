@@ -180,7 +180,7 @@ distribution boundaries and are not registry reservations:
 | Private build-time implementation | `@aster/build` | Implemented and accepted |
 | Aster collection definitions | `@aster/icons` | Implemented and Experimental |
 | Generic SVG renderer | `@aster/svg` | Implemented and hardened pre-release boundary |
-| Standalone and programmatic CLI | `@aster/cli` | Implemented discovery and shell; accepted SVG export extension pending implementation |
+| Standalone and programmatic CLI | `@aster/cli` | Implemented discovery, headless SVG export planning, and initial shell presentation; output host pending |
 | Generated icon-target integration | Target package or generated exports, pending evidence | Provisional |
 | Target-independent Lilium adapter | `@aster/lilium` | Provisional |
 | DOM-specific Lilium mappings | `@aster/lilium-dom` if evidence requires a separate package | Provisional |

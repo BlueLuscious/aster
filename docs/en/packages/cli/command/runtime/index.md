@@ -12,7 +12,11 @@ subpath.
 | `CommandKernel` | Isolates descriptors, orders definitions, coordinates both normalisers, dispatches explicitly, and sanitises thrown definition failures. |
 | `CommandDiagnosticFactory` | Constructs isolated deeply frozen command diagnostics. |
 | `CommandResultFactory` | Constructs immutable closed success payloads and structured failures. |
-| Command definitions | Bind immutable descriptors to the list, search, show, help, and version behaviours. |
+| Command definitions | Bind immutable descriptors to export, list, search, show, help, and version behaviours. |
+
+Export owns command-local selection and artefact-planning collaborators rather than adding that
+grammar or target behaviour to the generic kernel. The explicit composition root registers the
+definition like every other command; no mutable registry or reflection-based discovery exists.
 
 ## Execution flow
 
