@@ -79,18 +79,18 @@ named wrapper, collection registry, filesystem operation, or framework integrati
 
 ### Deferred
 
-- Implement the frozen `Svg` value, internal renderer, and stable `SvgRenderError`.
 - Decide whether authoring-oriented SVG export requires a narrower result profile.
 - Evaluate generated wrappers only after `@aster/icons` or a framework adapter demonstrates demand.
 
 ## Compatibility and migration
 
-This is the first SVG renderer package and affects no released consumer. Before a
-compatibility-bearing release, conformance will freeze root exports, declarations, error
-observables, option behaviour, and deterministic markup.
+This is the first SVG renderer package and affects no released consumer. Hardened pre-release
+conformance now fixes its root exports, declarations, error observables, option behaviour, and
+deterministic markup as the basis for a future compatibility-bearing release.
 
 ## Evidence
 
 - [SVG API](../packages/svg/api/index.md)
+- [SVG Render Error](../packages/svg/error/index.md)
 - [SVG Render Result](../packages/svg/render/index.md)
 - [Accessibility and Direction](../architecture/accessibility-and-direction.md)

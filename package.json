@@ -28,6 +28,7 @@
   ],
   "scripts": {
     "benchmark:core": "pnpm --filter @aster/core run build && pnpm --filter @aster/icons run build && node --expose-gc tooling/performance/core/core-baseline.mjs",
+    "benchmark:svg": "pnpm --filter @aster/core run build && pnpm --filter @aster/icons run build && pnpm --filter @aster/svg run build && node --expose-gc tooling/performance/svg/svg-baseline.mjs",
     "build": "pnpm --recursive --if-present run build",
     "check": "pnpm run check:types && pnpm run check:architecture && pnpm run check:docs",
     "check:architecture": "node tooling/architecture/check-architecture.mjs",

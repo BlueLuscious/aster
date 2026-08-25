@@ -31,7 +31,7 @@ const markup = Svg.render(Camera, options);
 `Svg.render()` receives the definition explicitly and returns one complete SVG markup string. It
 does not mount content or retain lifecycle state.
 
-The initial package exposes no generated named wrapper. A future target integration may close over
+The package exposes no generated named wrapper. A future target integration may close over
 one definition, but it must delegate to `Svg.render()` and requires independent package and
 consumer evidence.
 
@@ -114,14 +114,14 @@ SVG token `currentColor` to inherit from its host. A supplied `colour` maps to a
 and stroke but is an option error when supplied as the external colour context.
 
 Stroke widths use viewBox units and scale with geometry when `size` changes. Constant device-pixel
-strokes are target-specific behaviour and are not part of the initial portable options.
+strokes are target-specific behaviour and are not part of the portable options.
 
 The renderer never rewrites the definition to apply effective presentation. Resolution exists
 only for the current render operation.
 
-## First SVG result
+## SVG result
 
-The first generic SVG renderer returns a complete standalone `<svg>` markup string. The result:
+The generic SVG renderer returns a complete standalone `<svg>` markup string. The result:
 
 - includes the accepted viewBox and SVG namespace;
 - sets explicit numeric width and height from the effective viewport;

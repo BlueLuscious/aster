@@ -10,6 +10,9 @@ import { CoreBaselineRunner } from "../../tooling/performance/core/runtime/core-
 import { BenchmarkRunner } from "../../tooling/performance/shared/runtime/benchmark.runner.mjs";
 import { NumericSampleStatistics } from "../../tooling/performance/shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../tooling/performance/shared/runtime/package-distribution.inspector.mjs";
+import { svgBaseline } from "../../tooling/performance/svg/constants/svg-baseline.constant.mjs";
+import { SvgBaselineFixtureFactory } from "../../tooling/performance/svg/runtime/svg-baseline-fixture.factory.mjs";
+import { SvgBaselineRunner } from "../../tooling/performance/svg/runtime/svg-baseline.runner.mjs";
 import { NodeRepositoryFileSystem } from "../../tooling/shared/runtime/node-repository-file-system.mjs";
 import { RepositoryFileWalker } from "../../tooling/shared/runtime/repository-file.walker.mjs";
 import { RepositoryJsonReader } from "../../tooling/shared/runtime/repository-json.reader.mjs";
@@ -75,6 +78,67 @@ test("runs the complete Core scenario matrix through public values", async () =>
   assert.equal(measured[4]?.checksum, 42);
   assert.equal(measured[5]?.checksum, 42);
   assert.deepEqual(report.distribution, { packagePath: "packages/core" });
+});
+
+test("prepares independent immutable SVG benchmark fixtures", () => {
+  const fixtures = new SvgBaselineFixtureFactory().create();
+
+  assert.ok(Object.isFrozen(fixtures));
+  assert.ok(Object.isFrozen(fixtures.minimalDefinition));
+  assert.ok(Object.isFrozen(fixtures.primitivesDefinition));
+  assert.ok(Object.isFrozen(fixtures.corpusDefinitions));
+  assert.ok(Object.isFrozen(fixtures.overrideDefinition));
+  assert.ok(Object.isFrozen(fixtures.rtlDefinition));
+  assert.ok(Object.isFrozen(fixtures.escapingDefinition));
+  assert.ok(Object.isFrozen(fixtures.pointSequenceDefinition));
+  assert.ok(Object.isFrozen(fixtures.semanticOptions));
+  assert.ok(Object.isFrozen(fixtures.overrideOptions));
+  assert.ok(Object.isFrozen(fixtures.rtlOptions));
+  assert.ok(Object.isFrozen(fixtures.escapingOptions));
+  assert.equal(fixtures.minimalDefinition.nodes.length, 1);
+  assert.equal(fixtures.primitivesDefinition.nodes.length, 7);
+  assert.ok(fixtures.corpusDefinitions.length > 0);
+  assert.equal(fixtures.pointSequenceDefinition.nodes[0]?.kind, "polyline");
+  assert.equal(fixtures.pointSequenceDefinition.nodes[0]?.points.length, 128);
+});
+
+test("runs the complete SVG scenario matrix through public values", async () => {
+  const measured = [];
+  const runner = new SvgBaselineRunner(
+    {
+      measure(scenario) {
+        const result = Object.freeze({
+          name: scenario.name,
+          checksum: scenario.execute(2),
+        });
+        measured.push(result);
+        return result;
+      },
+      methodology() {
+        return Object.freeze({ fixture: true });
+      },
+    },
+    {
+      async inspect(packagePath) {
+        return Object.freeze({ packagePath });
+      },
+    },
+    {
+      environment() {
+        return Object.freeze({ fixture: true });
+      },
+    },
+    new SvgBaselineFixtureFactory().create(),
+  );
+  const report = await runner.run();
+
+  assert.equal(report.schemaVersion, 1);
+  assert.deepEqual(
+    measured.map((scenario) => scenario.name),
+    Object.values(svgBaseline.scenarios).map((scenario) => scenario.name),
+  );
+  assert.ok(measured.every((scenario) => scenario.checksum !== 0));
+  assert.deepEqual(report.distribution, { packagePath: "packages/svg" });
 });
 
 test("aggregates deterministic timing and heap samples through a fake host", () => {

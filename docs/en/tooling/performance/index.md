@@ -25,9 +25,10 @@ does not construct Node adapters internally.
 
 Each package owns an independent runner, factory, and command. `CoreBaselineFactory` composes the
 shared Node capabilities, while `CoreBaselineRunner` defines only Core icon and collection
-construction scenarios. A future SVG, Build, CLI, or other baseline creates its own package factory
-and runner, reuses shared capabilities, and never edits a global scenario registry or imports Core
-configuration.
+construction scenarios. `SvgBaselineFactory` and `SvgBaselineRunner` independently compose SVG
+definitions, options, rendering scenarios, and distribution evidence. A future Build, CLI, or
+other baseline follows the same isolation, reuses shared capabilities, and never edits a global
+scenario registry or imports another package baseline's configuration.
 
 ## Core comparison
 
@@ -41,6 +42,18 @@ The command builds Core and its real Icons corpus, prepares mutable and canonica
 outside timed loops, runs Node with explicit garbage-collection access, prints one JSON report,
 and writes no artefact. Exact scenarios, interpretation, and acceptance rules are defined by the
 [Core Quality Baseline](../../packages/core/quality-baseline.md).
+
+## SVG comparison
+
+Run:
+
+```sh
+pnpm benchmark:svg
+```
+
+The command builds Core, the real Icons corpus, and SVG before measuring public rendering and
+distribution. Exact scenarios, attribution, retained decisions, and acceptance rules are defined
+by the [SVG Quality Baseline](../../packages/svg/quality-baseline.md).
 
 ## Comparison limits
 

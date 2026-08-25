@@ -3,14 +3,14 @@
  */
 export class SvgRenderError extends TypeError {
   /**
-   * @description Canonical Aster-owned code used for invalid SVG render operations.
+   * @description Stable Aster-owned code for invalid SVG render operations.
    */
-  static readonly #code = "ASTER-SVG-001";
+  static readonly code = "ASTER-SVG-001";
 
   /**
    * @description Stable Aster-owned code for invalid SVG render operations.
    */
-  readonly code = SvgRenderError.#code;
+  readonly code = SvgRenderError.code;
 
   /**
    * @description Logical value path at which rendering failed.
@@ -23,8 +23,10 @@ export class SvgRenderError extends TypeError {
    * @param reason - Stable explanation of the violated invariant.
    */
   constructor(path: string, reason: string) {
-    super(`${SvgRenderError.#code} at ${path}: ${reason}.`);
+    super(`${SvgRenderError.code} at ${path}: ${reason}.`);
     this.name = "SvgRenderError";
     this.path = path;
   }
 }
+
+Object.freeze(SvgRenderError);

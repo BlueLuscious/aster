@@ -35,6 +35,7 @@ const publicError: TypeError = new SvgRenderError(
   "options.size",
   "expected a positive finite number",
 );
+const publicErrorCode: string = SvgRenderError.code;
 
 api.render(definition, {
   // @ts-expect-error Arbitrary SVG attributes are not portable renderer options.
@@ -56,4 +57,5 @@ void defaultMarkup;
 void semanticMarkup;
 void publicMarkup;
 void publicError;
+void publicErrorCode;
 void hostElement;

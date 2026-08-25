@@ -14,6 +14,7 @@ import { PackageModuleInspector } from "./package-module.inspector.mjs";
 import { PortableCompilerPolicy } from "./portable-compiler.policy.mjs";
 import { RootPackageExportPolicy } from "./root-package-export.policy.mjs";
 import { RuntimeDependencyReader } from "./runtime-dependency.reader.mjs";
+import { SvgPackagePolicy } from "./svg-package.policy.mjs";
 import { WorkspaceArchitectureInspector } from "./workspace-architecture.inspector.mjs";
 import { WorkspaceDependencyGraph } from "./workspace-dependency.graph.mjs";
 
@@ -47,6 +48,10 @@ export class ArchitectureVerifierFactory {
     policies.set(
       packageBoundaries.names.cli,
       new CliPackagePolicy(compiler, rootExport),
+    );
+    policies.set(
+      packageBoundaries.names.svg,
+      new SvgPackagePolicy(compiler, rootExport),
     );
     const modules = new PackageModuleInspector(
       fileSystem,

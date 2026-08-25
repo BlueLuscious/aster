@@ -24,9 +24,9 @@ may still wait for an earlier prerequisite in the recommended sequence.
 | Order | Importance | Capability | Completion gate |
 | --- | --- | --- | --- |
 | 1 | `P0` | Define the standalone and plugin-compatible CLI command boundary. | Commands can run through injected host capabilities without owning a generic ecosystem CLI. |
-| 2 | `P0` | Harden private repository tooling. | Stable root commands use independently testable object-oriented runtime boundaries without obsolete pilot hosts. |
-| 3 | `P0` | Audit and harden `@aster/core`. | Its model, API, validation, immutability, performance, exports, consumers, and documentation have explicit outcomes. |
-| 4 | `P0` | Audit and harden `@aster/svg`. | Serialisation correctness, performance, API, output, and package-boundary risks have explicit outcomes independently from Core. |
+| 2 | `P0` | Completed: harden private repository tooling. | Stable root commands use independently testable object-oriented runtime boundaries without obsolete pilot hosts. |
+| 3 | `P0` | Completed: audit and harden `@aster/core`. | Its model, API, validation, immutability, performance, exports, consumers, and documentation have explicit outcomes. |
+| 4 | `P0` | Completed: audit and harden `@aster/svg`. | Serialisation correctness, performance, API, output, and package-boundary risks have explicit outcomes independently from Core. |
 | 5 | `P1` | Implement useful catalogue and TypeScript-first CLI workflows. | Users can inspect and consume installed icons and collections without requiring `@aster/build`. |
 | 6 | `P0` | Evaluate the future of `@aster/build`. | Retain, narrow, pause, replace, or remove it using real SVG-import evidence. |
 | 7 | `P1` | Harden the retained Build boundary, if any. | A real import workflow validates its parser, diagnostics, normalisation, generation, and host split. |
@@ -183,23 +183,26 @@ ownership, duplicate, ordering, and return semantics are stable.
 
 Importance: **P0 - Required**
 
-Audit `@aster/svg` independently after Core settles. Improvements should preserve deterministic
-host-free string serialisation and must not assign DOM lifecycle or filesystem ownership to SVG.
+Status: **Completed**
 
-The SVG audit should cover:
+The completed SVG audit established:
 
-- serialisation throughput and allocation profiles measured before optimisation;
-- option normalisation, presentation precedence, escaping, accessibility, direction, and atomic
-  failure behaviour;
-- deterministic byte output and compatibility fixtures across representative definitions;
-- whether batch export needs a host-level composition without adding filesystem, process, DOM, or
-  catalogue authority to the renderer;
-- API additions only when a real target consumer cannot express its workflow through
-  `Svg.render()`.
+- deterministic host-free string serialisation with exact XML 1.0 character and escaping rules;
+- closed option normalisation, presentation precedence, accessibility, direction, and atomic
+  failure guarantees;
+- byte-level conformance across every portable primitive, the complete Icons corpus, isolated
+  package consumers, and equivalent TypeScript-first and Build-import workflows;
+- a measured single-pass attribute-escaping optimisation with an independent SVG baseline;
+- batch export, filesystem, process, DOM, catalogue, lifecycle, and adapter composition remaining
+  explicit host responsibilities around atomic `Svg.render()` calls;
+- a deliberately unchanged public API because no implemented consumer proves another stable
+  target operation.
 
-Neither hardening effort may add caching, registries, streaming, mutable singletons, alternate
-builds, or convenience facades without measured benefit and explicit ownership. Performance work
-must include repeatable package-specific benchmarks and must not weaken correctness or portability.
+The accepted boundary and retained evidence are documented by
+[SVG Renderer](packages/svg/index.md), [SVG Quality](packages/svg/quality.md), and
+[SVG Quality Baseline](packages/svg/quality-baseline.md). Future work cannot add caching,
+registries, streaming, mutable singletons, alternate builds, trusted definitions, or convenience
+facades without measured benefit and explicit ownership.
 
 ## Build viability decision
 

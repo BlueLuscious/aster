@@ -237,9 +237,13 @@ test("imports equivalent SVG and JSON into the same portable definition", () => 
 
   assert.ok(iconModule !== undefined);
   assert.match(iconModule.content, /export const ArrowLeft = \$Icon\.define/u);
-  assert.deepEqual(
-    readGeneratedDefinition(iconModule.content),
-    authorArrowLeft(),
+  const importedDefinition = readGeneratedDefinition(iconModule.content);
+  const authoredDefinition = authorArrowLeft();
+
+  assert.deepEqual(importedDefinition, authoredDefinition);
+  assert.equal(
+    Svg.render(importedDefinition),
+    Svg.render(authoredDefinition),
   );
 });
 

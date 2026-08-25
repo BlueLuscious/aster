@@ -12,6 +12,7 @@ import {
 import { SvgRenderError } from "../../error/index.js";
 import { svgRenderOptionsSchema } from "../constants/svg-render-options-schema.constant.js";
 import type { ISvgRenderContext } from "../contracts/internal/index.js";
+import { SvgXmlCharacterValidator } from "./svg-xml-character.validator.js";
 
 /**
  * @description Validates portable render options and resolves one immutable SVG render context.
@@ -28,9 +29,9 @@ export class SvgRenderOptionsNormaliser {
   readonly #longHexPattern = new RegExp(iconPaintSchema.longHexPatternSource, "iu");
 
   /**
-   * @description Controls that cannot enter compact SVG option text.
+   * @description XML 1.0 character authority shared by accepted option text and serialisation.
    */
-  readonly #invalidTextControlPattern = new RegExp(svgRenderOptionsSchema.invalidTextControlPatternSource, "u");
+  readonly #characterValidator = new SvgXmlCharacterValidator();
 
   /**
    * @description Validates options and resolves viewport, presentation, accessibility, and direction.
@@ -42,8 +43,10 @@ export class SvgRenderOptionsNormaliser {
     definition: IconDefinition,
     value: IconRenderOptions | undefined,
   ): ISvgRenderContext {
-    const options = value === undefined ? {} : this.#record(value, "options");
-    this.#exactFields(options);
+    const options =
+      value === undefined
+        ? Object.freeze({})
+        : this.#exactFields(this.#record(value, "options"));
 
     const size =
       "size" in options
@@ -101,7 +104,7 @@ export class SvgRenderOptionsNormaliser {
     ) {
       throw new SvgRenderError(
         "options.size",
-        `cannot be smaller than collection minimum ${String(policy.minimumSize)}`,
+        `cannot be smaller than icon minimum ${String(policy.minimumSize)}`,
       );
     }
 
@@ -160,16 +163,40 @@ export class SvgRenderOptionsNormaliser {
   }
 
   /**
-   * @description Rejects every option field outside the portable closed schema.
+   * @description Captures own enumerable data fields from the exact portable option schema.
    * @param value - Candidate option record.
-   * @returns Nothing.
+   * @returns Frozen isolated option values safe for subsequent normalisation.
    */
-  #exactFields(value: Record<string, unknown>): void {
-    for (const field of Object.keys(value)) {
+  #exactFields(
+    value: Record<string, unknown>,
+  ): Readonly<Record<string, unknown>> {
+    const accepted: Record<string, unknown> = {};
+
+    for (const field of Reflect.ownKeys(value)) {
+      if (typeof field !== "string") {
+        throw new SvgRenderError("options", "expected string fields");
+      }
+
       if (!(svgRenderOptionsSchema.fields as readonly string[]).includes(field)) {
         throw new SvgRenderError(`options.${field}`, "unexpected field");
       }
+
+      const descriptor = Object.getOwnPropertyDescriptor(value, field);
+      if (
+        descriptor === undefined ||
+        !descriptor.enumerable ||
+        !("value" in descriptor)
+      ) {
+        throw new SvgRenderError(
+          `options.${field}`,
+          "expected an enumerable data field",
+        );
+      }
+
+      accepted[field] = descriptor.value;
     }
+
+    return Object.freeze(accepted);
   }
 
   /**
@@ -253,9 +280,11 @@ export class SvgRenderOptionsNormaliser {
     }
 
     const text = value.trim();
-    if (text.length === 0 || this.#invalidTextControlPattern.test(text)) {
-      throw new SvgRenderError(path, "expected non-empty text without controls");
+    if (text.length === 0) {
+      throw new SvgRenderError(path, "expected non-empty text");
     }
+
+    this.#characterValidator.validate(text, path);
 
     return text;
   }

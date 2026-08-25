@@ -1,6 +1,6 @@
 # SVG Render Result
 
-Status: **Experimental**
+Status: **Accepted**
 
 The render feature defines the output produced by successful framework-independent SVG rendering.
 Its [runtime composition](runtime/index.md) validates the complete input before returning markup.
@@ -21,7 +21,7 @@ escaping rules are owned by Aster rather than by ambient platform behaviour.
 
 ## Document form
 
-The initial renderer emits:
+The renderer emits:
 
 - one compact `<svg>...</svg>` string;
 - no XML declaration, indentation, trailing newline, comments, or editor metadata;
@@ -43,6 +43,12 @@ Decorative accessibility attributes are ordered as `aria-hidden`, then `focusabl
 attributes are ordered as `role`, then `aria-label`. An optional `title` is the first child and
 always remains outside a generated RTL geometry group.
 
+Output is decorative by default when neither `label` nor `title` is present. Supplying either value
+selects semantic output by default; `label` is the accessible name when both are present, while
+`title` remains target title content. Explicit decorative output cannot carry a label or title,
+and explicit semantic output must provide at least one of them. Accepted text is trimmed, non-empty
+Unicode text without disallowed controls.
+
 ## Geometry mapping
 
 Portable nodes map directly and retain paint order:
@@ -56,6 +62,11 @@ Portable nodes map directly and retain paint order:
 | `line` | `line` | `x1`, `y1`, `x2`, `y2` |
 | `polyline` | `polyline` | `points` |
 | `polygon` | `polygon` | `points` |
+
+Path data is an opaque, non-empty portable value whose grammar must be validated by its
+authoritative ingestion or authoring workflow. SVG validates its XML character representation and
+escapes it as an attribute, but does not duplicate Build's path parser or repair invalid geometry.
+The ownership boundary is defined by [Core Node](../../core/node/index.md).
 
 Presentation follows geometry attributes in this order:
 
@@ -82,9 +93,19 @@ Finite numbers use locale-independent ECMAScript string form after canonicalisin
 to zero. Coordinate sequences use one ASCII space between numbers. `viewBox` follows the same
 four-number form.
 
-Attribute text escapes ampersand, less-than, greater-than, and double-quote characters. `title`
-text escapes ampersand, less-than, and greater-than characters. Invalid controls and malformed
-option text fail before any markup is returned.
+The accepted XML 1.0 character repertoire is exactly tab, line feed, carriage return,
+`U+0020-U+D7FF`, `U+E000-U+FFFD`, and `U+10000-U+10FFFF`. Valid supplementary characters and XML
+noncharacters inside those ranges are preserved. Unsupported controls, isolated UTF-16
+surrogates, `U+FFFE`, and `U+FFFF` fail at their logical source path before markup is returned.
+
+Attribute text escapes ampersand, less-than, greater-than, and double-quote characters. Tabs, line
+feeds, and carriage returns in attributes use `&#9;`, `&#10;`, and `&#13;` respectively. `title`
+text escapes ampersand, less-than, and greater-than characters while retaining quotes and accepted
+XML whitespace as authored after option trimming.
+
+Serialisation uses ECMAScript code-point iteration and string conversion without a locale, DOM,
+XML parser, stream, or platform encoder. An invalid value can discard only local intermediate
+strings; no partial result or external target exists before the complete return value.
 
 ## Viewport and colour
 
@@ -104,5 +125,6 @@ Mirror-policy geometry rendered in right-to-left direction is wrapped once:
 <g transform="matrix(-1 0 0 1 T 0)">...</g>
 ```
 
-`T` is the canonical numeric result of `2 * minX + width`. Preserve and Manual policies emit no
-generated transform.
+`T` is the canonical numeric result of `2 * minX + width`, including view boxes with positive or
+negative minima. Mirroring occurs only for explicit right-to-left direction under the Mirror
+policy. Left-to-right output and the Preserve and Manual policies emit no generated transform.

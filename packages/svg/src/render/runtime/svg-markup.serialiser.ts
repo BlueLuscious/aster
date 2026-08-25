@@ -8,18 +8,18 @@ import {
   type IconPresentation,
 } from "@aster/core";
 import { SvgRenderError } from "../../error/index.js";
-import { svgMarkupSchema } from "../constants/svg-markup-schema.constant.js";
 import type { ISvgRenderContext } from "../contracts/internal/index.js";
 import type { SvgMarkupType } from "../types/index.js";
+import { SvgXmlCharacterValidator } from "./svg-xml-character.validator.js";
 
 /**
  * @description Serialises one accepted render context into deterministic complete SVG markup.
  */
 export class SvgMarkupSerialiser {
   /**
-   * @description Characters that cannot enter an XML 1.0 markup value.
+   * @description XML 1.0 character authority applied before escaping target values.
    */
-  readonly #invalidCharacterPattern = new RegExp(svgMarkupSchema.invalidCharacterPatternSource, "u");
+  readonly #characterValidator = new SvgXmlCharacterValidator();
 
   /**
    * @description Produces complete markup with canonical element and attribute ordering.
@@ -59,7 +59,7 @@ export class SvgMarkupSerialiser {
     const title =
       context.title === undefined
         ? ""
-        : `<title>${this.#text(context.title)}</title>`;
+        : `<title>${this.#text(context.title, "options.title")}</title>`;
     const geometry = definition.nodes
       .map((node, index) => this.#node(node, index, context))
       .join("");
@@ -210,9 +210,7 @@ export class SvgMarkupSerialiser {
     value: string,
     path = "target.attribute",
   ): string {
-    if (this.#invalidCharacterPattern.test(value)) {
-      throw new SvgRenderError(path, "contains a character unsupported by XML");
-    }
+    this.#characterValidator.validate(value, path);
 
     return ` ${name}="${this.#attributeText(value)}"`;
   }
@@ -223,22 +221,58 @@ export class SvgMarkupSerialiser {
    * @returns Escaped attribute text.
    */
   #attributeText(value: string): string {
-    return value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("\t", "&#9;")
-      .replaceAll("\n", "&#10;")
-      .replaceAll("\r", "&#13;");
+    let escaped = "";
+    let segmentStart = 0;
+
+    for (let index = 0; index < value.length; index += 1) {
+      let replacement: string | undefined;
+
+      switch (value.charCodeAt(index)) {
+        case 0x26: // &
+          replacement = "&amp;";
+          break;
+        case 0x3c: // <
+          replacement = "&lt;";
+          break;
+        case 0x3e: // >
+          replacement = "&gt;";
+          break;
+        case 0x22: // "
+          replacement = "&quot;";
+          break;
+        case 0x09: // Tab
+          replacement = "&#9;";
+          break;
+        case 0x0a: // Line feed
+          replacement = "&#10;";
+          break;
+        case 0x0d: // Carriage return
+          replacement = "&#13;";
+          break;
+      }
+
+      if (replacement === undefined) {
+        continue;
+      }
+
+      escaped += value.slice(segmentStart, index) + replacement;
+      segmentStart = index + 1;
+    }
+
+    return segmentStart === 0
+      ? value
+      : escaped + value.slice(segmentStart);
   }
 
   /**
    * @description Escapes accepted SVG text-node content.
    * @param value - Accepted unescaped text.
+   * @param path - Logical source path reported for unsupported content.
    * @returns Escaped text-node content.
    */
-  #text(value: string): string {
+  #text(value: string, path: string): string {
+    this.#characterValidator.validate(value, path);
+
     return value
       .replaceAll("&", "&amp;")
       .replaceAll("<", "&lt;")

@@ -40,5 +40,8 @@
   },
   "dependencies": {
     "@aster/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@aster/icons": "workspace:*"
   }
 }

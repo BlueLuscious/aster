@@ -258,6 +258,64 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
   }
 });
 
+test("rejects SVG dependency, package-surface, and compiler drift", async () => {
+  const root = await createFixture();
+
+  try {
+    await writeFixtureJson(root, "packages/core/package.json", {
+      name: "@aster/core",
+      type: "module",
+    });
+    await writeFixtureFile(root, "packages/core/src/index.ts", "export {};\n");
+    await writeFixtureJson(root, "packages/icons/package.json", {
+      name: "@aster/icons",
+      type: "module",
+    });
+    await writeFixtureFile(root, "packages/icons/src/index.ts", "export {};\n");
+    await writeFixtureJson(root, "packages/svg/package.json", {
+      name: "@aster/svg",
+      private: true,
+      type: "module",
+      sideEffects: true,
+      exports: {
+        ".": {
+          types: "./dist/index.d.ts",
+          import: "./dist/index.js",
+        },
+        "./runtime": "./dist/runtime.js",
+      },
+      dependencies: {
+        "@aster/core": "workspace:*",
+        "@aster/icons": "workspace:*",
+        "host-library": "^1.0.0",
+      },
+    });
+    await writeFixtureJson(root, "packages/svg/tsconfig.json", {
+      compilerOptions: {
+        lib: ["ES2022", "DOM"],
+        types: ["node"],
+      },
+    });
+    await writeFixtureFile(root, "packages/svg/src/index.ts", "export {};\n");
+
+    const issues = await verifyArchitecture(root);
+
+    assert.ok(
+      issues.some((issue) => /cannot depend on workspace package @aster\/icons/u.test(issue)),
+    );
+    assert.ok(
+      issues.some((issue) => /unaccepted production dependency host-library/u.test(issue)),
+    );
+    assert.ok(issues.some((issue) => /must remain a public package/u.test(issue)));
+    assert.ok(issues.some((issue) => /sideEffects as false/u.test(issue)));
+    assert.ok(issues.some((issue) => /expose only the root/u.test(issue)));
+    assert.ok(issues.some((issue) => /cannot add host libraries/u.test(issue)));
+    assert.ok(issues.some((issue) => /cannot add ambient/u.test(issue)));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("rejects private parser dependency and adapter boundary drift", async () => {
   const root = await createFixture();
 

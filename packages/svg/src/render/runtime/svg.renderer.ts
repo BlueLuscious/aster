@@ -1,5 +1,6 @@
 import {
   Icon,
+  IconDefinitionError,
   type IconDefinition,
   type IconRenderOptions,
 } from "@aster/core";
@@ -37,15 +38,14 @@ export class SvgRenderer {
     try {
       acceptedDefinition = Icon.define(definition);
     } catch (error: unknown) {
-      const path =
-        typeof error === "object" &&
-        error !== null &&
-        "path" in error &&
-        typeof error.path === "string"
-          ? error.path
-          : "definition";
+      if (!(error instanceof IconDefinitionError)) {
+        throw error;
+      }
 
-      throw new SvgRenderError(path, "expected a valid portable icon definition");
+      throw new SvgRenderError(
+        error.path,
+        "expected a valid portable icon definition",
+      );
     }
 
     const context = this.#optionsNormaliser.normalise(

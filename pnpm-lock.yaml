@@ -64,6 +64,10 @@ importers:
       '@aster/core':
         specifier: workspace:*
         version: link:../core
+    devDependencies:
+      '@aster/icons':
+        specifier: workspace:*
+        version: link:../icons
 
 packages:
 
