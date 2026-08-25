@@ -40,7 +40,9 @@ isolated deeply frozen IconDefinition
 ```
 
 The root must be a plain closed object containing `identity`, `viewBox`, `nodes`, and `metadata`.
-Unknown fields are rejected rather than ignored. Each feature normaliser validates its own numeric,
+Every retained domain field must be an own enumerable string-keyed data property. Unknown fields,
+symbols, non-enumerable fields, accessors, custom prototypes, sparse arrays, and authored array
+properties are rejected rather than ignored. Each feature normaliser validates its own numeric,
 textual, cardinality, vocabulary, ordering, and relationship rules before creating new retained
 objects.
 
@@ -90,10 +92,12 @@ CollectionDefinitionFactory
 isolated deeply frozen CollectionDefinition
 ```
 
-An already deeply frozen icon may be retained after successful reconstruction proves its complete
-shape. Mutable candidates are represented by the isolated canonical reconstruction. Membership
-order is preserved, identities must be unique within one collection, and the same canonical icon
-may belong to multiple independent collections without acquiring collection state.
+An already deeply frozen canonical icon may be retained after successful reconstruction proves its
+complete shape and a dedicated matcher confirms equal prototypes, field order, primitive values,
+and graph topology without cycles, repeated aliases, hidden state, or accessor semantics. Every
+other valid candidate uses the isolated canonical reconstruction. Membership order is preserved,
+identities must be unique within one collection, and the same canonical icon may belong to multiple
+independent collections without acquiring collection state.
 
 A collection may be empty. It remains a valid identity and metadata authority rather than an icon
 registry.
@@ -132,9 +136,11 @@ their own boundaries. They cannot move those responsibilities back into Core.
 ## Security and trust boundary
 
 Core validates data invariants and protects accepted values from caller mutation. It is not a
-JavaScript sandbox: reading a hostile proxy or accessor can execute caller-controlled behaviour
-before Core can classify the resulting value. Acquisition and decoding of untrusted bytes belong
-to an explicit host or source pipeline before Core construction.
+JavaScript sandbox: reflective inspection of a hostile proxy, or reading fields before an accessor
+descriptor is rejected, can execute caller-controlled behaviour before Core can classify the
+value. Such execution failures are propagated rather than relabelled as Core validation errors.
+Acquisition and decoding of untrusted bytes belong to an explicit host or source pipeline before
+Core construction.
 
 Core itself owns no filesystem, network, DOM, process, parser, framework, catalogue registry, or
 global identity state. Importing it performs no registration or host initialisation.
@@ -144,5 +150,5 @@ global identity state. Importing it performs no registration or host initialisat
 - [Core API](api/index.md) defines the public construction authorities and usage.
 - [Immutable Definition Runtime](definition/runtime/index.md) defines icon construction internals.
 - [Core Collection](collection/index.md) defines membership and collection construction.
-- [Core Quality](quality.md) records current audit risks and consumer pressure.
+- [Core Quality](quality.md) records accepted conformance evidence and future pressure boundaries.
 - [Portable Icon Model](../../architecture/portable-icon-model.md) defines the project-level model.

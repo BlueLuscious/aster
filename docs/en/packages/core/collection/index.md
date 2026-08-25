@@ -22,12 +22,15 @@ collection without weakening the portable domain contract.
 | Class | Responsibility | Relations |
 | --- | --- | --- |
 | `CollectionDefinitionFactory` | Owns complete collection validation, icon revalidation, isolation, duplicate detection, and deep freezing. | Composes both collection normalisers and `IconDefinitionFactory`. |
+| `CanonicalIconMatcher` | Compares a frozen authored graph with its isolated canonical reconstruction before identity retention. | Used only after successful icon reconstruction. |
 | `CollectionIdentityNormaliser` | Validates optional namespace and required canonical collection name. | Uses the shared canonical slug authority. |
 | `CollectionMetadataNormaliser` | Validates descriptive metadata, unique tags, and licensing relationships. | Produces frozen `CollectionMetadata`. |
 
-Canonical deeply frozen icons are retained by object identity. A valid mutable icon input is
-isolated through Core before the collection retains it. This permits the same canonical icon to
-belong to multiple collections without cloning or shared mutable state.
+Canonical deeply frozen icons are retained by object identity only when their complete graph has
+canonical data-property semantics, canonical key order and values, matching prototypes, and no
+cycles or repeated aliases. Every other valid icon input uses the isolated canonical
+reconstruction. This permits the same canonical icon to belong to multiple collections without
+cloning or shared mutable state.
 
 Duplicate logical icon identity within one collection is rejected. Core does not require
 collection identities to be globally unique because it owns no registry.

@@ -23,9 +23,9 @@ registry, or global identity authority.
 | [Metadata](metadata/index.md) | Resolved runtime metadata and right-to-left policy. |
 | [Presentation](presentation/index.md) | Explicit paint data, node presentation, and collection override policy. |
 | [Render](render/index.md) | Target-independent options passed with a definition. |
-| [Shared](shared/index.md) | Internal primitive authored-value assertions and deterministic Core failures. |
+| [Shared](shared/index.md) | Internal primitive assertions and the public deterministic Core failure boundary. |
 | [Workflow](workflow.md) | End-to-end icon and collection construction, validation, isolation, and consumption flow. |
-| [Quality](quality.md) | Public inventory, consumer map, distribution snapshot, and hardening risk register. |
+| [Quality](quality.md) | Public inventory, consumer conformance, distribution evidence, and future pressure boundaries. |
 
 ## Dependency boundary
 
@@ -46,6 +46,7 @@ The package root exports:
 | --- | --- | --- |
 | `Icon` | Frozen value object | Validates and constructs definitions through `define()`. |
 | `Collection` | Frozen value object | Validates and constructs independent collections through `define()`. |
+| `IconDefinitionError` | Frozen error class | Distinguishes invalid authored Core definitions through stable code and path fields. |
 | Portable runtime authorities | Frozen values | Define node, presentation, metadata, and render-option vocabularies required by consumers. |
 | Feature contracts and types | Type-only exports | Describe portable definitions, nodes, metadata, presentation, and options. |
 

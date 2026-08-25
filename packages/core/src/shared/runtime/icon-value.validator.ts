@@ -11,12 +11,16 @@ export class IconValueValidator {
    * @returns The accepted object record.
    */
   record(value: unknown, path: string): Record<string, unknown> {
+    const prototype =
+      typeof value === "object" && value !== null
+        ? Object.getPrototypeOf(value)
+        : undefined;
+
     if (
       typeof value !== "object" ||
       value === null ||
       Array.isArray(value) ||
-      (Object.getPrototypeOf(value) !== Object.prototype &&
-        Object.getPrototypeOf(value) !== null)
+      (prototype !== Object.prototype && prototype !== null)
     ) {
       throw new IconDefinitionError(path, "expected a plain object");
     }
@@ -25,7 +29,7 @@ export class IconValueValidator {
   }
 
   /**
-   * @description Rejects unknown own enumerable fields.
+   * @description Rejects unknown, symbolic, hidden, or accessor-owned object fields.
    * @param value - Object record whose keys are inspected.
    * @param accepted - Closed field sequence.
    * @param path - Logical object path.
@@ -36,10 +40,18 @@ export class IconValueValidator {
     accepted: readonly string[],
     path: string,
   ): void {
-    const unknown = Object.keys(value).find((field) => !accepted.includes(field));
+    for (const field of Reflect.ownKeys(value)) {
+      if (typeof field !== "string") {
+        throw new IconDefinitionError(path, "expected string fields");
+      }
 
-    if (unknown !== undefined) {
-      throw new IconDefinitionError(`${path}.${unknown}`, "unsupported field");
+      const fieldPath = `${path}.${field}`;
+
+      if (!accepted.includes(field)) {
+        throw new IconDefinitionError(fieldPath, "unsupported field");
+      }
+
+      this.#enumerableDataProperty(value, field, fieldPath);
     }
   }
 
@@ -134,7 +146,7 @@ export class IconValueValidator {
   }
 
   /**
-   * @description Accepts one array value.
+   * @description Accepts one dense array containing only enumerable data elements.
    * @param value - Unknown value to inspect.
    * @param path - Logical value path.
    * @returns Accepted mutable input array.
@@ -144,6 +156,66 @@ export class IconValueValidator {
       throw new IconDefinitionError(path, "expected an array");
     }
 
+    let elementCount = 0;
+
+    for (const field of Reflect.ownKeys(value)) {
+      if (field === "length") {
+        continue;
+      }
+
+      if (typeof field !== "string") {
+        throw new IconDefinitionError(path, "expected indexed array fields");
+      }
+
+      const index = Number(field);
+
+      if (
+        !Number.isSafeInteger(index) ||
+        index < 0 ||
+        index >= value.length ||
+        String(index) !== field
+      ) {
+        throw new IconDefinitionError(`${path}.${field}`, "unsupported field");
+      }
+
+      this.#enumerableDataProperty(value, field, `${path}[${index}]`);
+      elementCount += 1;
+    }
+
+    if (elementCount !== value.length) {
+      for (let index = 0; index < value.length; index += 1) {
+        if (!Object.hasOwn(value, index)) {
+          throw new IconDefinitionError(
+            `${path}[${index}]`,
+            "expected an array element",
+          );
+        }
+      }
+    }
+
     return value;
+  }
+
+  /**
+   * @description Requires one own property to use canonical enumerable data semantics.
+   * @param value - Object that owns the inspected property.
+   * @param field - Own string property key.
+   * @param path - Logical property path.
+   * @returns Nothing.
+   */
+  #enumerableDataProperty(
+    value: object,
+    field: string,
+    path: string,
+  ): void {
+    const descriptor = Object.getOwnPropertyDescriptor(value, field);
+
+    if (
+      descriptor === undefined ||
+      !descriptor.enumerable ||
+      !("value" in descriptor)
+    ) {
+      throw new IconDefinitionError(path, "expected an enumerable data field");
+    }
   }
 }

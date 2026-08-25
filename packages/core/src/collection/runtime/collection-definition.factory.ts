@@ -3,6 +3,7 @@ import { IconDefinitionFactory } from "../../definition/runtime/icon-definition.
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
 import type { CollectionDefinition } from "../contracts/index.js";
+import { CanonicalIconMatcher } from "./canonical-icon.matcher.js";
 import { CollectionIdentityNormaliser } from "./collection-identity.normaliser.js";
 import { CollectionMetadataNormaliser } from "./collection-metadata.normaliser.js";
 
@@ -31,6 +32,11 @@ export class CollectionDefinitionFactory {
   readonly #iconFactory = new IconDefinitionFactory();
 
   /**
+   * @description Canonical frozen icon retention authority.
+   */
+  readonly #canonicalIconMatcher = new CanonicalIconMatcher();
+
+  /**
    * @description Validates authored data and returns a deeply frozen collection.
    * @param value - Unknown authored collection value.
    * @returns Deeply frozen canonical collection definition.
@@ -39,23 +45,23 @@ export class CollectionDefinitionFactory {
     const path = "collection";
     const record = this.#validator.record(value, path);
     this.#validator.exactFields(record, ["identity", "icons", "metadata"], path);
+    const identities = new Set<string>();
     const icons = this.#validator
       .array(record.icons, `${path}.icons`)
-      .map((icon) => this.#normaliseIcon(icon));
-    const identities = new Set<string>();
+      .map((value, index) => {
+        const icon = this.#normaliseIcon(value);
+        const key = this.#identityKey(icon);
 
-    for (const [index, icon] of icons.entries()) {
-      const key = this.#identityKey(icon);
+        if (identities.has(key)) {
+          throw new IconDefinitionError(
+            `${path}.icons[${index}]`,
+            "duplicates an icon identity",
+          );
+        }
 
-      if (identities.has(key)) {
-        throw new IconDefinitionError(
-          `${path}.icons[${index}]`,
-          "duplicates an icon identity",
-        );
-      }
-
-      identities.add(key);
-    }
+        identities.add(key);
+        return icon;
+      });
 
     return Object.freeze({
       identity: this.#identityNormaliser.normalise(record.identity),
@@ -71,28 +77,7 @@ export class CollectionDefinitionFactory {
    */
   #normaliseIcon(value: unknown): IconDefinition {
     const isolated = this.#iconFactory.create(value);
-    return this.#isDeeplyFrozen(value)
-      ? (value as IconDefinition)
-      : isolated;
-  }
-
-  /**
-   * @description Determines whether an object graph is already deeply immutable.
-   * @param value - Candidate object graph.
-   * @returns Whether every retained object and array is frozen.
-   */
-  #isDeeplyFrozen(value: unknown): boolean {
-    if (typeof value !== "object" || value === null) {
-      return true;
-    }
-
-    if (!Object.isFrozen(value)) {
-      return false;
-    }
-
-    return Object.values(value).every((nested) =>
-      this.#isDeeplyFrozen(nested),
-    );
+    return this.#canonicalIconMatcher.matches(value, isolated) ? value : isolated;
   }
 
   /**

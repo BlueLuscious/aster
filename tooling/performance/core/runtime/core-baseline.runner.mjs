@@ -1,6 +1,4 @@
 import { Collection, Icon } from "@aster/core";
-import { AsterCollection } from "@aster/icons";
-
 import { coreBaseline } from "../constants/core-baseline.constant.mjs";
 
 /**
@@ -23,15 +21,23 @@ export class CoreBaselineRunner {
   #host;
 
   /**
+   * @description Prepared mutable and canonical public Core inputs.
+   * @type {import("../contracts/internal/core-baseline-fixtures.contract.mjs").ICoreBaselineFixtures}
+   */
+  #fixtures;
+
+  /**
    * @description Creates one Core baseline composition.
    * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number }): object, methodology(): object }} benchmarkRunner - Generic measurement authority.
    * @param {{ inspect(packagePath: string): Promise<object> }} distributionInspector - Package distribution authority.
    * @param {{ environment(): object }} host - Runtime environment authority.
+   * @param {import("../contracts/internal/core-baseline-fixtures.contract.mjs").ICoreBaselineFixtures} fixtures - Prepared public Core scenario inputs.
    */
-  constructor(benchmarkRunner, distributionInspector, host) {
+  constructor(benchmarkRunner, distributionInspector, host, fixtures) {
     this.#benchmarkRunner = benchmarkRunner;
     this.#distributionInspector = distributionInspector;
     this.#host = host;
+    this.#fixtures = fixtures;
   }
 
   /**
@@ -41,12 +47,43 @@ export class CoreBaselineRunner {
   async run() {
     const scenarios = [
       Object.freeze({
-        ...coreBaseline.scenarios.iconDefinition,
-        execute: (iterations) => this.#defineIcons(iterations),
+        ...coreBaseline.scenarios.iconMutable,
+        execute: (iterations) =>
+          this.#defineIcons(this.#fixtures.mutableIcons, iterations),
       }),
       Object.freeze({
-        ...coreBaseline.scenarios.collectionDefinition,
-        execute: (iterations) => this.#defineCollections(iterations),
+        ...coreBaseline.scenarios.iconCanonical,
+        execute: (iterations) =>
+          this.#defineIcons(this.#fixtures.canonicalIcons, iterations),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.collectionEmpty,
+        execute: (iterations) =>
+          this.#defineCollection(this.#fixtures.emptyCollection, iterations),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.collectionSingleCanonical,
+        execute: (iterations) =>
+          this.#defineCollection(
+            this.#fixtures.singleCanonicalCollection,
+            iterations,
+          ),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.collectionCompleteMutable,
+        execute: (iterations) =>
+          this.#defineCollection(
+            this.#fixtures.mutableCollection,
+            iterations,
+          ),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.collectionCompleteCanonical,
+        execute: (iterations) =>
+          this.#defineCollection(
+            this.#fixtures.canonicalCollection,
+            iterations,
+          ),
       }),
     ];
 
@@ -66,14 +103,20 @@ export class CoreBaselineRunner {
 
   /**
    * @description Reconstructs canonical icons from the representative collection.
+   * @param {readonly import("@aster/core").IconDefinition[]} definitions - Prepared equivalent icon inputs.
    * @param {number} iterations - Number of public API operations to execute.
    * @returns {number} Deterministic checksum preventing discarded scenario results.
    */
-  #defineIcons(iterations) {
+  #defineIcons(definitions, iterations) {
     let checksum = 0;
 
     for (let index = 0; index < iterations; index += 1) {
-      const source = AsterCollection.icons[index % AsterCollection.icons.length];
+      const source = definitions[index % definitions.length];
+
+      if (source === undefined) {
+        throw new TypeError("The Core icon scenario requires prepared definitions.");
+      }
+
       const definition = Icon.define(source);
       checksum = (checksum + definition.nodes.length) >>> 0;
     }
@@ -82,16 +125,21 @@ export class CoreBaselineRunner {
   }
 
   /**
-   * @description Reconstructs the complete representative collection through the public API.
+   * @description Reconstructs one prepared collection repeatedly through the public API.
+   * @param {import("@aster/core").CollectionDefinition} source - Prepared collection input.
    * @param {number} iterations - Number of public API operations to execute.
    * @returns {number} Deterministic checksum preventing discarded scenario results.
    */
-  #defineCollections(iterations) {
+  #defineCollection(source, iterations) {
     let checksum = 0;
 
     for (let index = 0; index < iterations; index += 1) {
-      const collection = Collection.define(AsterCollection);
-      checksum = (checksum + collection.icons.length) >>> 0;
+      const collection = Collection.define(source);
+      checksum = (
+        checksum +
+        collection.icons.length +
+        collection.identity.name.length
+      ) >>> 0;
     }
 
     return checksum;

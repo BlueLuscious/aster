@@ -155,17 +155,24 @@ with the future user-facing multi-ecosystem CLI.
 
 Importance: **P0 - Required**
 
-Audit `@aster/core` before broad CLI or adapter adoption. Improvements should be evidence-led and
-preserve its host-independent production boundary.
+Status: **Completed**
 
-The Core audit should cover:
+The completed Core audit established the host-independent production boundary before broader CLI
+or adapter adoption. Its accepted inventory, workflow, conformance evidence, and remaining
+pressure boundaries are documented by [Portable Icon Core](packages/core/index.md) and
+[Core Quality](packages/core/quality.md).
 
-- API completeness and consistency across `Icon` and `Collection`;
-- exact validation, canonicalisation, isolation, deep immutability, and deterministic errors;
+The audit confirmed:
+
+- deliberately minimal and symmetric `Icon.define()` and `Collection.define()` APIs;
+- exact validation, canonicalisation, caller isolation, deep immutability, and deterministic
+  definition errors;
 - identity, metadata, tags, replacement relationships, and many-to-many membership invariants;
-- allocations and repeated deep-validation costs measured with representative definitions;
-- side-effect-free ESM, declaration quality, bundle shape, tree shaking, and public export control;
-- extension pressure demonstrated by catalogues, CLI commands, target renderers, or adapters.
+- representative construction and distribution measurement without CI performance thresholds;
+- side-effect-free ES2022 ESM, host-independent declarations, one controlled root export, and no
+  production dependency;
+- conformance of Icons, SVG, Build, CLI, and implemented repository workflows against the public
+  Core boundary.
 
 Canonical definitions should remain plain immutable structural data unless a separate value-object
 model demonstrates a material interoperability benefit. Prefer explicit immutable `Icon` or

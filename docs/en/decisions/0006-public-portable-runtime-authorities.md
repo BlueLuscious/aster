@@ -1,6 +1,6 @@
 # 0006: Public Portable Runtime Authorities
 
-Status: **Accepted**
+Status: **Superseded**
 
 Owners: **Technical maintainers**
 
@@ -14,7 +14,7 @@ Affected documents:
 
 Supersedes: **None**
 
-Superseded by: **None**
+Superseded by: **[0009: Core Runtime Authority and Failure Boundary](0009-core-runtime-authority-failure-boundary.md)**
 
 ## Context
 

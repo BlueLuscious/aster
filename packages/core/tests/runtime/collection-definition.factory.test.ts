@@ -86,6 +86,21 @@ test("retains one canonical icon in multiple independent collections", () => {
   assert.equal("collection" in search.identity, false);
 });
 
+test("preserves authored membership order without sharing collection state", () => {
+  const search = icon("search");
+  const settings = icon("settings");
+  const accepted = collection("ordered", [settings, search]);
+
+  assert.deepEqual(
+    accepted.icons.map((definition) => definition.identity.name),
+    ["settings", "search"],
+  );
+  assert.equal(accepted.icons[0], settings);
+  assert.equal(accepted.icons[1], search);
+  assert.equal("collection" in settings.identity, false);
+  assert.equal("collection" in search.identity, false);
+});
+
 test("isolates mutable valid icon input before retaining it", () => {
   const search = structuredClone(icon());
   const retained = collection("isolated", [search]).icons[0];

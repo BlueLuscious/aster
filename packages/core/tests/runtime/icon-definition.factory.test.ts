@@ -308,6 +308,13 @@ test("accepts complete deprecation metadata and enforces metadata edge relations
   });
   assertDeeplyFrozen(accepted.metadata.replacedBy);
 
+  const unicodeDisplayName = createInput();
+  unicodeDisplayName.metadata.displayName = " Icône de recherche ";
+  assert.equal(
+    definitionFactory.create(unicodeDisplayName).metadata.displayName,
+    "Icône de recherche",
+  );
+
   const invalidRtl = createInput();
   invalidRtl.metadata.rtl = "automatic";
   expectDefinitionError(invalidRtl, "definition.metadata.rtl");

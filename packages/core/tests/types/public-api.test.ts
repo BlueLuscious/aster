@@ -1,10 +1,10 @@
 import {
   Collection,
   Icon,
+  IconDefinitionError,
   iconDirections,
   iconNodeKinds,
   iconPaintSchema,
-  iconPresentationEnumerations,
   iconPresentationOverrideOrder,
   iconRtlPolicies,
   iconTechnicalPresentation,
@@ -12,6 +12,7 @@ import {
 import type {
   CollectionDefinition,
   IconDefinition,
+  IconFillRuleType,
 } from "../../src/index.js";
 
 const camera = Icon.define({
@@ -63,9 +64,11 @@ const pathKind: typeof iconNodeKinds.path = "path";
 const direction: (typeof iconDirections)[number] = "rtl";
 const rtlPolicy: (typeof iconRtlPolicies)[number] = "mirror";
 const paintKeyword: (typeof iconPaintSchema.keywords)[number] = "currentColor";
-const fillRule: (typeof iconPresentationEnumerations.fillRule)[number] = "evenodd";
+const fillRule: IconFillRuleType = "evenodd";
 const override: (typeof iconPresentationOverrideOrder)[number] = "strokeWidth";
 const technicalFill = iconTechnicalPresentation.fill;
+const definitionError = new IconDefinitionError("definition", "expected valid data");
+const definitionErrorCode: typeof IconDefinitionError.code = definitionError.code;
 
 Icon.define({
   ...camera,
@@ -82,3 +85,4 @@ void paintKeyword;
 void fillRule;
 void override;
 void technicalFill;
+void definitionErrorCode;
