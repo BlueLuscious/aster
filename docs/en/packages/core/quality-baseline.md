@@ -50,6 +50,33 @@ Runtime suites remain the correctness authority for malformed values, numeric bo
 canonical ordering, isolation, deep freezing, and deterministic failures. A benchmark never
 replaces a conformance test.
 
+## Attributed investigation outcome
+
+CPU profiles from four material scenarios across three runs each separated common strict
+inspection from canonical-retention work. Complete mutable and canonical collections both spend
+material time validating exact fields, property descriptors, and dense arrays. Only the canonical
+scenario materially exercises `CanonicalIconMatcher`, where recursive graph comparison accounted
+for a median 20.66% of self-time. Duplicate detection, identity-key construction, and freezing did
+not present independent material self-time.
+
+The selected experiment changed only matcher traversal. Three fresh control and three candidate
+reports produced these medians across report medians:
+
+| Scenario | Recursive control | Iterative candidate | Difference |
+| --- | ---: | ---: | ---: |
+| `core.icon.define.mutable` | 11,923 ns | 11,419 ns | 4.23% faster |
+| `core.icon.define.canonical` | 9,996 ns | 10,122 ns | 1.26% slower |
+| `core.collection.define.empty` | 1,736 ns | 1,769 ns | 1.90% slower |
+| `core.collection.define.single-canonical` | 17,865 ns | 17,656 ns | 1.17% faster |
+| `core.collection.define.complete-mutable` | 159,200 ns | 160,777 ns | 0.99% slower |
+| `core.collection.define.complete-canonical` | 208,472 ns | 212,604 ns | 1.98% slower |
+
+The candidate preserved the complete runtime, type, and ABI conformance surface, but it failed the
+10% target improvement rule and made the target scenario slower. Its lower observed heap pressure
+did not justify retaining additional traversal state when elapsed time remained the declared
+target. The implementation was restored exactly, so these results document a rejected mechanism
+rather than a distribution change or performance promise.
+
 ## Reproduction
 
 Run the development-only comparison from a clean workspace:

@@ -93,12 +93,38 @@ Heap observations did not meet the accepted improvement threshold, so no memory 
 claimed. The correction changes constant traversal work rather than algorithmic complexity; no
 scaling claim or CI threshold follows from this evidence.
 
+## Focused performance investigation
+
+The granular six-scenario matrix subsequently isolated mutable and canonical icon construction,
+fixed collection overhead, single-member retention, and complete mutable and canonical
+collections. Three equivalent reports established the investigation baseline documented in
+[Core Quality Baseline](quality-baseline.md).
+
+CPU attribution identified strict field, descriptor, and dense-array inspection as essential work
+shared by mutable and canonical inputs. `CanonicalIconMatcher` accounted for a median 20.66% of
+self-time in complete canonical collection profiles and did not appear in the equivalent mutable
+scenario. Duplicate detection, identity-key construction, and freezing were not independent
+material hotspots.
+
+One controlled candidate replaced recursive authored-to-canonical correspondence with iterative
+stack traversal and authored-object visitation. It preserved exact values, field order,
+prototypes, frozen state, repeated-alias and cycle rejection, and canonical member identity. The
+median complete canonical collection result across three fresh reports changed from 208,472 to
+212,604 nanoseconds per operation, a 1.98% regression. Although observed heap pressure decreased,
+the candidate failed the accepted timing threshold and was reverted completely.
+
+Core therefore retains its existing implementation. The observed canonical-retention cost is a
+bounded consequence of complete semantic validation and identity-safe graph comparison, not an
+unfinished correction. Further work requires a new measured mechanism that preserves the same
+trust boundary; caching, branding, registries, mutable memoisation, and frozen-only shortcuts
+remain unacceptable substitutes for evidence.
+
 ## Future pressure boundaries
 
 | Pressure | Current evidence | Decision boundary |
 | --- | --- | --- |
 | Repeated complete icon validation | Collection construction still validates every member before canonical identity retention. | Retain this cost unless a future security model proves provenance without branding, registries, caches, or hidden state. |
-| Canonical graph comparison | Collection compares a successfully reconstructed member with frozen authored data before retaining object identity. | Preserve exact values, key order, prototypes, topology, and adversarial protections in any future implementation. |
+| Canonical graph comparison | Collection compares a successfully reconstructed member with frozen authored data before retaining object identity; focused profiling attributes material canonical-only cost to this responsibility. | Preserve exact values, key order, prototypes, topology, and adversarial protections. Reopen only with a distinct measured mechanism and equivalent reports. |
 | API composition ambiguity | `Icon` and `Collection` currently expose only `define()`; names such as `add()` do not state mutation, ownership, duplicate, or ordering semantics. | Require a demonstrated immutable composition workflow before adding an operation. Collection membership remains collection-owned. |
 | Definition instance pressure | Canonical definitions are plain deeply frozen data, while instance methods would add prototypes and behaviour to the portable value model. | Keep definitions structural; evaluate explicit immutable API operations before considering a separate value-object representation. |
 | Distribution granularity | TypeScript emits one module per source file with no bundling. | Treat file and byte counts as inspection evidence; do not add a bundler without a distribution requirement. |
