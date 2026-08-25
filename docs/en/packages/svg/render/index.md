@@ -43,6 +43,12 @@ Decorative accessibility attributes are ordered as `aria-hidden`, then `focusabl
 attributes are ordered as `role`, then `aria-label`. An optional `title` is the first child and
 always remains outside a generated RTL geometry group.
 
+Output is decorative by default when neither `label` nor `title` is present. Supplying either value
+selects semantic output by default; `label` is the accessible name when both are present, while
+`title` remains target title content. Explicit decorative output cannot carry a label or title,
+and explicit semantic output must provide at least one of them. Accepted text is trimmed, non-empty
+Unicode text without disallowed controls.
+
 ## Geometry mapping
 
 Portable nodes map directly and retain paint order:
@@ -104,5 +110,6 @@ Mirror-policy geometry rendered in right-to-left direction is wrapped once:
 <g transform="matrix(-1 0 0 1 T 0)">...</g>
 ```
 
-`T` is the canonical numeric result of `2 * minX + width`. Preserve and Manual policies emit no
-generated transform.
+`T` is the canonical numeric result of `2 * minX + width`, including view boxes with positive or
+negative minima. Mirroring occurs only for explicit right-to-left direction under the Mirror
+policy. Left-to-right output and the Preserve and Manual policies emit no generated transform.

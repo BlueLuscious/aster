@@ -50,7 +50,11 @@ unchanged because SVG cannot classify them as target programming errors.
 `SvgRenderOptionsNormaliser` accepts the optional value and resolves one frozen internal render
 context. It currently:
 
-- validates the known option names;
+- accepts only plain records with own enumerable string-named data fields;
+- rejects symbols, hidden fields, accessors, inherited state, and unknown fields before reading
+  option values;
+- captures accepted values in a frozen local snapshot so later processing never reads or retains
+  the caller-owned record;
 - canonicalises size, colour, fill, stroke, stroke width, text, boolean, and direction values;
 - enforces icon minimum size and authorised presentation overrides;
 - derives decorative or semantic accessibility state;
@@ -59,7 +63,7 @@ context. It currently:
 - retains only the reconstructed definition and accepted option effects.
 
 The context has no public export and carries no DOM, filesystem, process, catalogue, or lifecycle
-authority. Exact reflective option-shape acceptance remains under audit.
+authority. Failures raised by caller-controlled reflection itself preserve their original identity.
 
 ## Serialisation
 

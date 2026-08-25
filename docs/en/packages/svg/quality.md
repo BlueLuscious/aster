@@ -28,7 +28,7 @@ resolved through the package export map.
 | --- | --- | --- |
 | Public composition | Frozen `Svg` object and one stateless `SvgRenderer` instance | Implemented |
 | Definition boundary | Public Core `Icon.define()` reconstruction | Implemented |
-| Option acceptance | `SvgRenderOptionsNormaliser` and SVG-owned closed field schema | Implemented, exact reflective shape under audit |
+| Option acceptance | `SvgRenderOptionsNormaliser` and SVG-owned closed field schema | Implemented with exact reflective isolation |
 | Render transaction | `SvgRenderer` | Implemented with explicit Core-error translation |
 | Markup production | `SvgMarkupSerialiser` and SVG-owned character schema | Implemented, XML repertoire under audit |
 | Failure identity | Frozen public `SvgRenderError` with static and instance code | Implemented |
@@ -68,8 +68,11 @@ Existing runtime evidence covers:
 - exact representative standalone markup and stable attribute order;
 - every portable geometry kind and complete presentation output order;
 - authorised presentation precedence and hexadecimal paint canonicalisation;
-- decorative and semantic representative output;
-- one mirrored right-to-left result with title placement;
+- the complete decorative, labelled, titled, semantic, and conflicting accessibility matrix;
+- left-to-right and right-to-left output for Mirror, Preserve, and Manual policies with positive
+  and negative view-box minima;
+- exact own enumerable option-data acceptance, null-prototype records, and rejection of symbols,
+  hidden fields, accessors, inherited state, and unknown fields;
 - caller and accepted-definition non-mutation;
 - deterministic repeated output;
 - representative malformed definitions, options, conflicts, and target values;
@@ -83,10 +86,7 @@ side effects, module format, and host-independent imports.
 
 | Pressure | Current evidence | Decision boundary |
 | --- | --- | --- |
-| Exact option shape | A non-enumerable known field can influence output, a symbol field is ignored, and an accessor-owned known field executes during normalisation. | Align option-shape semantics with the deliberate SVG boundary; reject unsupported reflective state before reading accepted values. |
 | XML character repertoire | The current pattern rejects `U+007F`, which XML 1.0 permits, while allowing `U+FFFF` and isolated UTF-16 surrogates into output. | Define the exact XML 1.0 character set for JavaScript strings and reject invalid code points before returning markup. |
-| Diagnostic vocabulary | Minimum-size rejection currently refers to a collection minimum although the policy belongs to the icon definition. | Use stable target-owned language that identifies the correct domain authority. |
-| Accessibility matrix | Representative decorative, labelled, titled, and mirrored output exists, but the complete conflict and policy matrix is not yet explicit. | Prove every accepted combination and its exact output before declaring the behaviour hardened. |
 | Output corpus | Every primitive has one golden test, while the complete real Icons corpus is not yet rendered as SVG package conformance. | Add corpus-level deterministic evidence without assigning catalogue ownership to SVG. |
 | Performance | No SVG-specific scenario matrix, CPU attribution, allocation comparison, or accepted baseline exists. | Measure only after correctness closes; optimise one attributed mechanism at a time under repository comparison rules. |
 | API growth | No implemented consumer requires batch, fragment, file, stream, DOM, or extension operations. | Keep `Svg.render()` as the sole operation until a real host workflow proves stable additional semantics. |
@@ -108,6 +108,10 @@ singletons, trusted definitions, streaming state, host access, or consumer-speci
   getter, and unrelated execution failures without relabelling them as SVG errors.
 - Keep `Svg.render()` as the sole API operation because no current consumer demonstrates stable
   semantics for batch, fragment, stream, file, DOM, or target-extension operations.
+- Accept only own enumerable string-named data fields from plain option records, snapshot those
+  fields before value normalisation, and reject hidden state, symbols, accessors, and inheritance.
+- Treat minimum size as icon-owned policy, preserve label precedence over title for accessible
+  naming, and generate RTL transforms only for the explicit Mirror-policy combination.
 
 ## Accepted starting boundary
 
@@ -115,8 +119,8 @@ singletons, trusted definitions, streaming state, host access, or consumer-speci
 - Rendering is synchronous, stateless, and returns one complete string or throws.
 - Definitions are revalidated and isolated before target interpretation.
 - Options, context, and output remain local to one call.
-- Root, geometry, presentation, accessibility, and RTL ordering are deterministic where currently
-  covered.
+- Root, geometry, presentation, accessibility, and RTL ordering are deterministic across the
+  accepted option matrix.
 - The result grants no filesystem, DOM, lifecycle, parsing, or trusted-markup authority.
 
 These statements describe the current starting boundary. The package remains experimental until

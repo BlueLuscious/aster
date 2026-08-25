@@ -27,7 +27,9 @@ private Core paths.
 2. Core validates, clones, canonicalises, and deeply freezes the portable value.
 3. A Core rejection becomes `SvgRenderError` at the same logical path without exposing the Core
    message.
-4. `SvgRenderOptionsNormaliser` rejects unsupported fields and malformed values.
+4. `SvgRenderOptionsNormaliser` captures only own enumerable string-named data fields from a plain
+   record into a frozen local snapshot; symbols, hidden fields, accessors, inherited state, unknown
+   fields, and malformed values are rejected before accepted values are read.
 5. It enforces icon override authority, viewport minimums, accessibility conflicts, and
    explicit direction.
 6. `SvgMarkupSerialiser` resolves technical defaults, icon defaults, node values, and
