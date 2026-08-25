@@ -67,6 +67,8 @@ test("exposes the exact documented root value surface", async () => {
   );
   assert.deepEqual(Object.keys(packageModule.Svg), ["render"]);
   assert.ok(Object.isFrozen(packageModule.Svg));
+  assert.ok(Object.isFrozen(packageModule.SvgRenderError));
+  assert.equal(packageModule.SvgRenderError.code, "ASTER-SVG-001");
   assert.equal(
     Object.getPrototypeOf(packageModule.SvgRenderError.prototype),
     TypeError.prototype,

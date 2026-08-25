@@ -63,7 +63,7 @@ function expectRenderError(
     (error: unknown) => {
       assert.ok(error instanceof SvgRenderError);
       assert.equal(error.name, "SvgRenderError");
-      assert.equal(error.code, "ASTER-SVG-001");
+      assert.equal(error.code, SvgRenderError.code);
       assert.equal(error.path, expectedPath);
       assert.match(error.message, /^ASTER-SVG-001 at /u);
       acceptedError = error;
@@ -215,6 +215,20 @@ test("rejects malformed definitions through one deterministic target error", () 
   assert.equal(
     error.message,
     "ASTER-SVG-001 at definition.nodes: expected a valid portable icon definition.",
+  );
+});
+
+test("preserves caller-controlled execution failures from definition inspection", () => {
+  const failure = new Error("caller-own-keys-failure");
+  const definition = new Proxy(createDefinition(), {
+    ownKeys() {
+      throw failure;
+    },
+  });
+
+  assert.throws(
+    () => Svg.render(definition),
+    (error: unknown) => error === failure,
   );
 });
 
