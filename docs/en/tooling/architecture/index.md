@@ -16,6 +16,7 @@ The verifier inspects:
 - Core dependency freedom and public package restrictions;
 - Build privacy, parser dependency, and host separation;
 - CLI dependency, executable, and Node-authority restrictions;
+- SVG dependency, public-surface, and host-independent compiler restrictions;
 - cross-package relative imports and production dependency cycles;
 - imports from production package sources into private repository tooling.
 
@@ -50,6 +51,7 @@ Recognised packages implement the internal `IPackageArchitecturePolicy` contract
 | `CorePackagePolicy` | Enforces dependency freedom, root export shape, and portable compiler options. |
 | `BuildPackagePolicy` | Enforces privacy, accepted dependencies, parser pinning, root export shape, and portable compiler options. |
 | `CliPackagePolicy` | Enforces public visibility, accepted dependencies, root export shape, and portable compiler options. |
+| `SvgPackagePolicy` | Enforces public visibility, the sole Core production dependency, root export shape, and portable compiler options. |
 
 `RootPackageExportPolicy` and `PortableCompilerPolicy` hold rules genuinely shared by those package
 policies. Unrecognised workspace packages still participate in manifest acquisition, ESM checks,
