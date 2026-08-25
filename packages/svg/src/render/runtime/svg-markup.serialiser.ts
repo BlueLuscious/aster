@@ -221,14 +221,47 @@ export class SvgMarkupSerialiser {
    * @returns Escaped attribute text.
    */
   #attributeText(value: string): string {
-    return value
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("\t", "&#9;")
-      .replaceAll("\n", "&#10;")
-      .replaceAll("\r", "&#13;");
+    let escaped = "";
+    let segmentStart = 0;
+
+    for (let index = 0; index < value.length; index += 1) {
+      let replacement: string | undefined;
+
+      switch (value.charCodeAt(index)) {
+        case 0x26: // &
+          replacement = "&amp;";
+          break;
+        case 0x3c: // <
+          replacement = "&lt;";
+          break;
+        case 0x3e: // >
+          replacement = "&gt;";
+          break;
+        case 0x22: // "
+          replacement = "&quot;";
+          break;
+        case 0x09: // Tab
+          replacement = "&#9;";
+          break;
+        case 0x0a: // Line feed
+          replacement = "&#10;";
+          break;
+        case 0x0d: // Carriage return
+          replacement = "&#13;";
+          break;
+      }
+
+      if (replacement === undefined) {
+        continue;
+      }
+
+      escaped += value.slice(segmentStart, index) + replacement;
+      segmentStart = index + 1;
+    }
+
+    return segmentStart === 0
+      ? value
+      : escaped + value.slice(segmentStart);
   }
 
   /**
