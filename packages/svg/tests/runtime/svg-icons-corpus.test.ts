@@ -1,13 +1,19 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { AsterCollection } from "@aster/icons";
+import * as AsterIcons from "@aster/icons";
 import { Svg } from "../../src/index.js";
 
 test("renders the complete real icon corpus deterministically", () => {
+  const { AsterCollection, ...individualExports } = AsterIcons;
+  const definitions = Object.values(individualExports);
   const outputs = new Set<string>();
 
-  for (const icon of AsterCollection.icons) {
+  assert.equal(definitions.length, AsterCollection.icons.length);
+
+  for (const icon of definitions) {
+    assert.ok(AsterCollection.icons.includes(icon));
+
     const scenarios = [
       Svg.render(icon),
       Svg.render(icon, { label: icon.metadata.displayName }),
@@ -36,5 +42,5 @@ test("renders the complete real icon corpus deterministically", () => {
     );
   }
 
-  assert.ok(outputs.size >= AsterCollection.icons.length);
+  assert.ok(outputs.size >= definitions.length);
 });
