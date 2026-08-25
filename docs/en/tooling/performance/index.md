@@ -37,9 +37,9 @@ Run:
 pnpm benchmark:core
 ```
 
-The command builds Core and its real Icons corpus, runs Node with explicit garbage-collection
-access, prints one JSON report, and writes no artefact. Exact scenarios, interpretation, and
-acceptance rules are defined by the
+The command builds Core and its real Icons corpus, prepares mutable and canonical fixture variants
+outside timed loops, runs Node with explicit garbage-collection access, prints one JSON report,
+and writes no artefact. Exact scenarios, interpretation, and acceptance rules are defined by the
 [Core Quality Baseline](../../packages/core/quality-baseline.md).
 
 ## Comparison limits
