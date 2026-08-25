@@ -1,6 +1,6 @@
 # SVG Render Result
 
-Status: **Experimental**
+Status: **Accepted**
 
 The render feature defines the output produced by successful framework-independent SVG rendering.
 Its [runtime composition](runtime/index.md) validates the complete input before returning markup.
@@ -21,7 +21,7 @@ escaping rules are owned by Aster rather than by ambient platform behaviour.
 
 ## Document form
 
-The initial renderer emits:
+The renderer emits:
 
 - one compact `<svg>...</svg>` string;
 - no XML declaration, indentation, trailing newline, comments, or editor metadata;

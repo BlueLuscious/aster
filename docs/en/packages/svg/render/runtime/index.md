@@ -1,6 +1,6 @@
 # SVG Render Runtime
 
-Status: **Experimental**
+Status: **Accepted**
 
 The render runtime is an internal stateless composition behind `Svg.render()`. It has no public
 implementation subpath and retains no definition, catalogue, host, or render result between calls.

@@ -1,6 +1,6 @@
 # SVG API
 
-Status: **Experimental**
+Status: **Accepted**
 
 The API feature exposes the immutable public target authority `Svg`.
 
@@ -10,7 +10,7 @@ The API feature exposes the immutable public target authority `Svg`.
 | --- | --- | --- |
 | `SvgApi` | Declares `render()` from one explicit definition and optional portable options to complete SVG markup. | Accepts Core `IconDefinition` and `IconRenderOptions`; returns `SvgMarkupType`. |
 
-`SvgApi` introduces no target-extension object in the initial package. Arbitrary attributes,
+`SvgApi` introduces no target-extension object. Arbitrary attributes,
 events, DOM nodes, framework controllers, lifecycle values, and variant selection remain outside
 the accepted operation.
 
@@ -23,20 +23,13 @@ const markup = Svg.render(Camera, {
 });
 ```
 
-`Svg.render()` will retain no definition, catalogue, mount, or lifecycle state.
+`Svg.render()` retains no definition, catalogue, mount, or lifecycle state.
 
 ## Failure boundary
 
 Invalid definitions, options, policy overrides, or target representations raise the public
-[`SvgRenderError`](../error/index.md) programming error. Its stable observable members are:
-
-| Member | Value or meaning |
-| --- | --- |
-| Static `code` | `ASTER-SVG-001` |
-| `name` | `SvgRenderError` |
-| `code` | `ASTER-SVG-001` |
-| `path` | Logical failing value path such as `options.size` or `definition.nodes[0].fill`. |
-| `message` | Deterministic Aster-owned explanation containing no native exception text. |
+[`SvgRenderError`](../error/index.md) programming error. That document owns its complete stable
+observable shape and translation rules.
 
 The renderer either returns complete markup or throws before returning any output. Render-option
 programming errors do not use Build source diagnostics. A Core `IconDefinitionError` becomes an

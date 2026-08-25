@@ -1,6 +1,6 @@
 # SVG Render Error
 
-Status: **Experimental**
+Status: **Accepted**
 
 The error feature owns deterministic programming failures raised by the public SVG target. It
 does not expose Core construction errors, native parser messages, Build source diagnostics, or

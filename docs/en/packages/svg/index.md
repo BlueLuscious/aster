@@ -1,6 +1,6 @@
 # SVG Renderer
 
-Status: **Experimental**
+Status: **Accepted**
 
 `@aster/svg` owns framework-independent conversion of portable `@aster/core` icon definitions into
 complete standalone SVG markup. It is a public target renderer with no DOM, browser, Node, Build,
@@ -19,8 +19,8 @@ closed render options, resolves effective presentation, and returns complete mar
 | [API](api/index.md) | Exposes the immutable `Svg` rendering authority. |
 | [Error](error/index.md) | Defines deterministic programming failures at the target boundary. |
 | [Render](render/index.md) | Defines and implements the atomic standalone SVG markup result. |
-| [Workflow](workflow.md) | Traces one definition and option value through the current runtime composition. |
-| [Quality](quality.md) | Inventories the public boundary, distribution, consumers, evidence, and audit pressures. |
+| [Workflow](workflow.md) | Traces one definition and option value through the accepted runtime composition. |
+| [Quality](quality.md) | Records the accepted public boundary, distribution, consumers, and conformance evidence. |
 | [Quality Baseline](quality-baseline.md) | Defines reproducible rendering, performance, and distribution evidence. |
 
 ## Dependency boundary
@@ -56,12 +56,13 @@ The compiled-package ABI suite verifies:
 - dependency on the public `@aster/core` root only;
 - host-independent declarations without DOM, Node, framework, Build, or tooling references;
 - side-effect-free ESM without CommonJS compatibility output;
-- deterministic representative markup from an explicitly supplied definition.
+- deterministic representative markup from an explicitly supplied definition;
+- import and rendering from an isolated consumer containing only publishable Core and SVG files.
 
 Runtime tests separately cover every supported primitive, the complete real Icons corpus,
 presentation, accessibility, direction, exact XML 1.0 acceptance, contextual escaping,
-invalid-target, and definition-immutability scenarios. The remaining hardening pressures and
-evidence limits are recorded in [Quality](quality.md). Detailed semantics remain canonical in
+invalid-target, and definition-immutability scenarios. Accepted decisions and bounded future
+change pressures are recorded in [Quality](quality.md). Detailed semantics remain canonical in
 [Render](render/index.md) and
 [Accessibility and Direction](../../architecture/accessibility-and-direction.md).
 

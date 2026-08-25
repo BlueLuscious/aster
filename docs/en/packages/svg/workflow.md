@@ -1,8 +1,8 @@
 # SVG Workflow
 
-Status: **Under Audit**
+Status: **Accepted**
 
-This document explains how one supplied portable definition and optional render value currently
+This document explains how one supplied portable definition and optional render value
 become complete standalone SVG markup. Feature documents remain authoritative for individual
 contracts, options, output rules, and errors. Open correctness boundaries are recorded in
 [SVG Quality](quality.md).
@@ -48,7 +48,7 @@ unchanged because SVG cannot classify them as target programming errors.
 ## Option normalisation
 
 `SvgRenderOptionsNormaliser` accepts the optional value and resolves one frozen internal render
-context. It currently:
+context. It:
 
 - accepts only plain records with own enumerable string-named data fields;
 - rejects symbols, hidden fields, accessors, inherited state, and unknown fields before reading
@@ -111,5 +111,5 @@ package's state or authority.
 - [SVG API](api/index.md) defines the public operation and failure surface.
 - [SVG Render Result](render/index.md) defines canonical output ordering and representation.
 - [SVG Render Runtime](render/runtime/index.md) documents the internal composition.
-- [SVG Quality](quality.md) records current evidence and unresolved hardening boundaries.
+- [SVG Quality](quality.md) records accepted decisions, conformance, and bounded change pressures.
 - [Core Workflow](../core/workflow.md) defines the portable construction authority used first.

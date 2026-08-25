@@ -1,9 +1,9 @@
 # SVG Quality
 
-Status: **Under Audit**
+Status: **Accepted**
 
-This document inventories the observable `@aster/svg` boundary, current distribution and consumer
-evidence, and unresolved pressures that must be closed before the package is accepted as hardened.
+This document records the accepted observable `@aster/svg` boundary, distribution and consumer
+evidence, and the pressures that require new evidence before changing that boundary.
 The implemented execution path is documented by [SVG Workflow](workflow.md).
 
 ## Public inventory
@@ -43,6 +43,8 @@ separate responsibility or demonstrated reuse.
 | --- | --- |
 | Repository authoring workflow | Renders deterministic review and derived distribution markup through `Svg.render()`. |
 | Icons documentation | Demonstrates rendering one exported canonical definition. |
+| Build import workflow | Proves an accepted imported definition renders byte-equivalent markup to its TypeScript-first equivalent. |
+| Isolated package consumer | Imports and renders using only publishable Core and SVG files, without repository sources. |
 | Future CLI export or review host | Deferred pressure only; no current CLI production dependency exists. |
 
 `@aster/icons`, `@aster/core`, `@aster/build`, and `@aster/cli` do not depend on SVG. Build imports
@@ -51,7 +53,7 @@ markup. Neither direction owns the other.
 
 ## Distribution snapshot
 
-The current package emits native ES2022 ESM with one public root export and `sideEffects: false`.
+The package emits native ES2022 ESM with one public root export and `sideEffects: false`.
 The unminified TypeScript distribution contains 19 JavaScript modules totalling 27,315 bytes and
 19 declaration files totalling 7,609 bytes. Its sole production dependency is the public
 `@aster/core` package root. These values are inspection evidence, not fixed compatibility or
@@ -59,7 +61,8 @@ performance promises.
 
 Production compilation excludes DOM, browser, Node, Build, framework, and tooling ambient types.
 The ABI suite rejects implementation subpaths, CommonJS output, private Core imports, reverse
-package dependencies, and undeclared host authorities.
+package dependencies, and undeclared host authorities. Architecture tooling independently enforces
+public visibility, the Core-only production dependency, the root export, and portable compilation.
 
 ## Current conformance
 
@@ -84,16 +87,19 @@ Existing runtime evidence covers:
 
 Type conformance rejects arbitrary attributes, event handlers, explicit undefined option fields,
 and DOM ambient values. ABI conformance verifies root values, declarations, exports, dependencies,
-side effects, module format, and host-independent imports.
+side effects, module format, host-independent imports, and loading without repository sources.
+Workflow conformance verifies equivalent TypeScript-first and accepted Build-import definitions
+produce identical standalone markup through public package roots.
 
-## Audit pressures
+## Change pressures
 
 | Pressure | Current evidence | Decision boundary |
 | --- | --- | --- |
 | API growth | No implemented consumer requires batch, fragment, file, stream, DOM, or extension operations. | Keep `Svg.render()` as the sole operation until a real host workflow proves stable additional semantics. |
 
-These pressures are bounded audit work, not permission to introduce caches, registries, mutable
-singletons, trusted definitions, streaming state, host access, or consumer-specific branches.
+These pressures do not permit caches, registries, mutable singletons, trusted definitions,
+streaming state, host access, or consumer-specific branches without separate evidence and an
+accepted ownership decision.
 
 ## Closed public decisions
 
@@ -123,7 +129,7 @@ singletons, trusted definitions, streaming state, host access, or consumer-speci
   trusted-definition shortcuts. The accepted evidence method is the
   [SVG Quality Baseline](quality-baseline.md).
 
-## Accepted starting boundary
+## Accepted boundary
 
 - SVG depends only on the public Core root and owns target conversion only.
 - Rendering is synchronous, stateless, and returns one complete string or throws.
@@ -133,5 +139,5 @@ singletons, trusted definitions, streaming state, host access, or consumer-speci
   accepted option matrix.
 - The result grants no filesystem, DOM, lifecycle, parsing, or trusted-markup authority.
 
-These statements describe the current starting boundary. The package remains experimental until
-the audit pressures are corrected, accepted, or explicitly deferred with conformance evidence.
+These guarantees establish the hardened pre-release boundary. Future compatibility policy may
+version them more strictly, but no consumer may depend on a broader implicit authority.

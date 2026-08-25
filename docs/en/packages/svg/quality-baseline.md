@@ -21,7 +21,7 @@ deterministic checksum.
 | Semantic accessibility | Label, title, accessible-name, escaping, and semantic root attributes. |
 | Authorised overrides | Complete option normalisation and presentation override precedence. |
 | RTL mirroring | Direction policy, translation, title ordering, and generated group composition. |
-| Escaping pressure | XML validation and multiple replacements in attributes and text. |
+| Escaping pressure | XML validation and replacement-heavy attribute and text values. |
 | Dense point sequence | Core point reconstruction, coordinate conversion, flattening, and large markup composition. |
 
 The Core reference is attribution evidence rather than an SVG product operation. It never grants
