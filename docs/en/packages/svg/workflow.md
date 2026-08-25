@@ -42,7 +42,8 @@ isolated IconDefinition
 
 The renderer converts only public Core `IconDefinitionError` instances into `SvgRenderError`. It
 preserves the logical Core path, replaces the reason with deterministic SVG-owned language, and
-does not expose the Core message. Caller-controlled reflective or execution failures propagate
+does not expose the Core message. This classification uses public error identity, not error
+provenance. Caller-controlled reflective or execution failures with another identity propagate
 unchanged because SVG cannot classify them as target programming errors.
 
 ## Option normalisation

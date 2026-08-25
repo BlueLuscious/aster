@@ -34,8 +34,9 @@ observable shape and translation rules.
 The renderer either returns complete markup or throws before returning any output. Render-option
 programming errors do not use Build source diagnostics. A Core `IconDefinitionError` becomes an
 SVG-owned definition rejection with the same logical path and no copied Core message. Exceptions
-from caller-controlled reflection or execution are not SVG programming errors and propagate with
-their original identity.
+from caller-controlled reflection or execution propagate with their original identity unless they
+use the public `IconDefinitionError` identity, which is translated consistently regardless of
+where it was constructed.
 
 ## Deliberate surface
 

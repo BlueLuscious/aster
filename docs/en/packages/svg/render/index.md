@@ -63,6 +63,11 @@ Portable nodes map directly and retain paint order:
 | `polyline` | `polyline` | `points` |
 | `polygon` | `polygon` | `points` |
 
+Path data is an opaque, non-empty portable value whose grammar must be validated by its
+authoritative ingestion or authoring workflow. SVG validates its XML character representation and
+escapes it as an attribute, but does not duplicate Build's path parser or repair invalid geometry.
+The ownership boundary is defined by [Core Node](../../core/node/index.md).
+
 Presentation follows geometry attributes in this order:
 
 1. `fill`;

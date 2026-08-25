@@ -25,5 +25,7 @@ source-authoring workflows continue to use Build diagnostics.
 
 The renderer translates public Core `IconDefinitionError` instances because an invalid portable
 definition cannot enter the SVG target. It preserves the Core logical path but replaces the reason
-with stable SVG-owned language. Other exceptions raised by caller-controlled reflection or
-execution propagate unchanged: their identity is not evidence of an SVG invariant violation.
+with stable SVG-owned language. Translation is identity-based rather than provenance-based: every
+`IconDefinitionError` instance is translated, including one deliberately thrown by caller-owned
+reflection. All other exceptions raised by caller-controlled reflection or execution propagate
+unchanged.

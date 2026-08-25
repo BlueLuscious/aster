@@ -60,15 +60,17 @@ The unminified TypeScript distribution contains 19 JavaScript modules totalling 
 performance promises.
 
 Production compilation excludes DOM, browser, Node, Build, framework, and tooling ambient types.
-The ABI suite rejects implementation subpaths, CommonJS output, private Core imports, reverse
-package dependencies, and undeclared host authorities. Architecture tooling independently enforces
-public visibility, the Core-only production dependency, the root export, and portable compilation.
+The ABI suite rejects implementation subpaths, CommonJS output, private Core imports, unexpected
+SVG dependencies, and undeclared host authorities. Architecture tooling independently enforces
+public visibility, the Core-only production dependency, the root export, portable compilation,
+and recognised reverse dependency restrictions.
 
 ## Current conformance
 
 Existing runtime evidence covers:
 
 - exact representative standalone markup and stable attribute order;
+- opaque path-data serialisation without parser duplication or geometry repair;
 - every portable geometry kind and complete presentation output order;
 - authorised presentation precedence and hexadecimal paint canonicalisation;
 - the complete decorative, labelled, titled, semantic, and conflicting accessibility matrix;
@@ -111,8 +113,8 @@ accepted ownership decision.
   markup, parser, or DOM authority.
 - Retain `SvgRenderError` as the public target failure class, expose one frozen static code
   authority consistent with its instance code, and keep implementation subpaths private.
-- Translate only public Core `IconDefinitionError` instances. Preserve caller-controlled Proxy,
-  getter, and unrelated execution failures without relabelling them as SVG errors.
+- Translate every public Core `IconDefinitionError` instance regardless of provenance. Preserve
+  caller-controlled Proxy, getter, and unrelated execution failures with any other identity.
 - Keep `Svg.render()` as the sole API operation because no current consumer demonstrates stable
   semantics for batch, fragment, stream, file, DOM, or target-extension operations.
 - Accept only own enumerable string-named data fields from plain option records, snapshot those
