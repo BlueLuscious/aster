@@ -21,6 +21,7 @@ closed render options, resolves effective presentation, and returns complete mar
 | [Render](render/index.md) | Defines and implements the atomic standalone SVG markup result. |
 | [Workflow](workflow.md) | Traces one definition and option value through the current runtime composition. |
 | [Quality](quality.md) | Inventories the public boundary, distribution, consumers, evidence, and audit pressures. |
+| [Quality Baseline](quality-baseline.md) | Defines reproducible rendering, performance, and distribution evidence. |
 
 ## Dependency boundary
 

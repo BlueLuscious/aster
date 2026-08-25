@@ -52,8 +52,8 @@ markup. Neither direction owns the other.
 ## Distribution snapshot
 
 The current package emits native ES2022 ESM with one public root export and `sideEffects: false`.
-The unminified TypeScript distribution contains 18 JavaScript modules totalling 23,124 bytes and
-18 declaration files totalling 6,387 bytes. Its sole production dependency is the public
+The unminified TypeScript distribution contains 19 JavaScript modules totalling 27,315 bytes and
+19 declaration files totalling 7,609 bytes. Its sole production dependency is the public
 `@aster/core` package root. These values are inspection evidence, not fixed compatibility or
 performance promises.
 
@@ -90,7 +90,6 @@ side effects, module format, and host-independent imports.
 
 | Pressure | Current evidence | Decision boundary |
 | --- | --- | --- |
-| Performance | No SVG-specific scenario matrix, CPU attribution, allocation comparison, or accepted baseline exists. | Measure only after correctness closes; optimise one attributed mechanism at a time under repository comparison rules. |
 | API growth | No implemented consumer requires batch, fragment, file, stream, DOM, or extension operations. | Keep `Svg.render()` as the sole operation until a real host workflow proves stable additional semantics. |
 
 These pressures are bounded audit work, not permission to introduce caches, registries, mutable
@@ -118,6 +117,11 @@ singletons, trusted definitions, streaming state, host access, or consumer-speci
   preserving valid supplementary values and rejecting isolated surrogates without replacement.
 - Keep character acceptance separate from contextual escaping and retain complete markup as the
   only observable success value.
+- Retain single-pass attribute escaping because public scenario and CPU-profile evidence identifies
+  and removes repeated full-string traversal without changing output bytes or failure semantics.
+- Preserve complete Core revalidation, stateless rendering, and allocation without caches or
+  trusted-definition shortcuts. The accepted evidence method is the
+  [SVG Quality Baseline](quality-baseline.md).
 
 ## Accepted starting boundary
 
