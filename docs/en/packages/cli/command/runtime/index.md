@@ -31,8 +31,9 @@ candidate context -------> context normaliser -------+--> explicit definition
 
 Invocation rejection occurs before context inspection. Context rejection occurs before handler
 dispatch. A valid command without a composed definition returns a usage failure. A thrown handler
-exception becomes `ASTER-CLI-999` with category `execution-failure`; native exception text is not
-retained.
+exception becomes `ASTER-CLI-999` with category `execution-failure`; the same sanitisation applies
+to unexpected caller-controlled exceptions raised while inspecting invocation or context shape.
+Native exception text is not retained.
 
 Descriptors are copied from definitions, their usage sequences are frozen, and the resulting
 sequence is ordered lexically by command identity. Reading descriptors executes no command or

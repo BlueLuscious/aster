@@ -90,6 +90,9 @@ Package conformance builds the distribution and verifies:
 - import behaviour in a temporary consumer containing only package manifests and distributions;
 - standalone and independent programmatic-host result equivalence;
 - explicit catalogue registration and registration-order independence;
+- byte-equivalent export plans across provider-record and membership order;
+- empty collections, variants, namespaced paths, malformed providers, path collisions, target
+  failures, and caller-controlled exceptions;
 - executable human, JSON, stream, diagnostic, and exit-status behaviour.
 
 Run the package evidence with:

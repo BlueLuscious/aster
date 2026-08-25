@@ -26,9 +26,11 @@ output root, read or write files, or mutate process state.
 
 `ExportOptionsNormaliser` validates, copies, and freezes the closed programmatic option record.
 `CatalogueExportSelector` loads accepted snapshots, applies an optional exact provider scope, and
-resolves either one icon or every member of one collection. `ExportPathFormatter` derives paths
-only from portable identities. `SvgExportArtefactFactory` renders through the public `Svg` API,
-detects path collisions, and translates target failures into Aster command diagnostics.
+resolves either one icon or every member of one collection from that same provider. It rejects an
+unavailable member rather than omitting it, even though snapshot acceptance already enforces that
+invariant. `ExportPathFormatter` derives paths only from portable identities.
+`SvgExportArtefactFactory` preflights every logical path and rejects collisions before rendering
+through the public `Svg` API; it then translates target failures into Aster command diagnostics.
 `ExportPlanQuery` publishes a result only after the complete selection renders successfully.
 
 ```text
@@ -55,9 +57,13 @@ collections produce an empty complete plan rather than a partial or invented art
 
 Expected lookup failures retain existing not-found and ambiguity semantics. SVG target failures
 use `ASTER-CLI-007`; logical path conflicts use `ASTER-CLI-008`. Unexpected faults still enter the
-generic command-kernel sanitisation boundary.
+generic command-kernel sanitisation boundary. Target-owned SVG failures never expose target or
+Core messages through CLI diagnostics, while unrelated exceptions are not misclassified as
+expected render failures before the command kernel sanitises them.
 
-No partial plan is observable. Filesystem publication is a separate standalone-host
+No partial plan is observable after member, path, or render failure. Equivalent provider record
+order, collection membership order, and canonical invocation values produce byte-equivalent plans.
+Filesystem publication is a separate standalone-host
 responsibility and cannot be added to these contracts as an ambient capability. The broader
 boundary is defined by the
 [Command-line Boundary](../../../architecture/command-line-boundary.md#export-boundary).
