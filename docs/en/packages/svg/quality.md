@@ -29,9 +29,9 @@ resolved through the package export map.
 | Public composition | Frozen `Svg` object and one stateless `SvgRenderer` instance | Implemented |
 | Definition boundary | Public Core `Icon.define()` reconstruction | Implemented |
 | Option acceptance | `SvgRenderOptionsNormaliser` and SVG-owned closed field schema | Implemented, exact reflective shape under audit |
-| Render transaction | `SvgRenderer` | Implemented, failure classification under audit |
+| Render transaction | `SvgRenderer` | Implemented with explicit Core-error translation |
 | Markup production | `SvgMarkupSerialiser` and SVG-owned character schema | Implemented, XML repertoire under audit |
-| Failure identity | Public `SvgRenderError` | Implemented, translation boundary under audit |
+| Failure identity | Frozen public `SvgRenderError` with static and instance code | Implemented |
 
 The runtime classes are cohesive state-free authorities despite their method counts. Splitting
 them, adding base classes, or centralising incidental SVG literals is not justified without a
@@ -52,8 +52,8 @@ markup. Neither direction owns the other.
 ## Distribution snapshot
 
 The current package emits native ES2022 ESM with one public root export and `sideEffects: false`.
-The unminified TypeScript distribution contains 18 JavaScript modules totalling 23,206 bytes and
-18 declaration files totalling 6,262 bytes. Its sole production dependency is the public
+The unminified TypeScript distribution contains 18 JavaScript modules totalling 23,124 bytes and
+18 declaration files totalling 6,387 bytes. Its sole production dependency is the public
 `@aster/core` package root. These values are inspection evidence, not fixed compatibility or
 performance promises.
 
@@ -84,7 +84,6 @@ side effects, module format, and host-independent imports.
 | Pressure | Current evidence | Decision boundary |
 | --- | --- | --- |
 | Exact option shape | A non-enumerable known field can influence output, a symbol field is ignored, and an accessor-owned known field executes during normalisation. | Align option-shape semantics with the deliberate SVG boundary; reject unsupported reflective state before reading accepted values. |
-| Failure classification | `SvgRenderer` converts every exception from Core reconstruction into `SvgRenderError`, including caller-controlled Proxy failures. | Translate only failures whose invariant SVG deliberately owns; preserve unrelated execution identity without native-message leakage. |
 | XML character repertoire | The current pattern rejects `U+007F`, which XML 1.0 permits, while allowing `U+FFFF` and isolated UTF-16 surrogates into output. | Define the exact XML 1.0 character set for JavaScript strings and reject invalid code points before returning markup. |
 | Diagnostic vocabulary | Minimum-size rejection currently refers to a collection minimum although the policy belongs to the icon definition. | Use stable target-owned language that identifies the correct domain authority. |
 | Accessibility matrix | Representative decorative, labelled, titled, and mirrored output exists, but the complete conflict and policy matrix is not yet explicit. | Prove every accepted combination and its exact output before declaring the behaviour hardened. |
@@ -94,6 +93,21 @@ side effects, module format, and host-independent imports.
 
 These pressures are bounded audit work, not permission to introduce caches, registries, mutable
 singletons, trusted definitions, streaming state, host access, or consumer-specific branches.
+
+## Closed public decisions
+
+- Retain the frozen `Svg` object and stateless internal renderer composition; no facade or public
+  renderer class owns an additional responsibility.
+- Retain `SvgApi` as the explicit structural capability contract used by programmatic hosts and
+  type conformance.
+- Retain `SvgMarkupType` as the semantic name for one complete plain string result without trusted
+  markup, parser, or DOM authority.
+- Retain `SvgRenderError` as the public target failure class, expose one frozen static code
+  authority consistent with its instance code, and keep implementation subpaths private.
+- Translate only public Core `IconDefinitionError` instances. Preserve caller-controlled Proxy,
+  getter, and unrelated execution failures without relabelling them as SVG errors.
+- Keep `Svg.render()` as the sole API operation because no current consumer demonstrates stable
+  semantics for batch, fragment, stream, file, DOM, or target-extension operations.
 
 ## Accepted starting boundary
 

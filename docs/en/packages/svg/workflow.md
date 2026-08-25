@@ -40,10 +40,10 @@ Icon.define()
 isolated IconDefinition
 ```
 
-The current renderer converts every exception raised during that call into `SvgRenderError` while
-preserving an available logical `path`. This includes ordinary Core definition rejection, but it
-also currently reclassifies caller-controlled reflective failures. The required distinction is an
-open failure-boundary decision documented by [SVG Quality](quality.md).
+The renderer converts only public Core `IconDefinitionError` instances into `SvgRenderError`. It
+preserves the logical Core path, replaces the reason with deterministic SVG-owned language, and
+does not expose the Core message. Caller-controlled reflective or execution failures propagate
+unchanged because SVG cannot classify them as target programming errors.
 
 ## Option normalisation
 
