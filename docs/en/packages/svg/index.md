@@ -19,6 +19,8 @@ closed render options, resolves effective presentation, and returns complete mar
 | [API](api/index.md) | Exposes the immutable `Svg` rendering authority. |
 | [Error](error/index.md) | Defines deterministic programming failures at the target boundary. |
 | [Render](render/index.md) | Defines and implements the atomic standalone SVG markup result. |
+| [Workflow](workflow.md) | Traces one definition and option value through the current runtime composition. |
+| [Quality](quality.md) | Inventories the public boundary, distribution, consumers, evidence, and audit pressures. |
 
 ## Dependency boundary
 
@@ -55,9 +57,10 @@ The compiled-package ABI suite verifies:
 - side-effect-free ESM without CommonJS compatibility output;
 - deterministic representative markup from an explicitly supplied definition.
 
-Runtime tests separately cover every supported primitive, presentation precedence, accessibility,
-direction, escaping, invalid target values, and definition immutability. Detailed semantics
-remain canonical in [Render](render/index.md) and
+Runtime tests separately cover every supported primitive and representative presentation,
+accessibility, direction, escaping, invalid-target, and definition-immutability scenarios. The
+remaining hardening pressures and evidence limits are recorded in [Quality](quality.md). Detailed
+semantics remain canonical in [Render](render/index.md) and
 [Accessibility and Direction](../../architecture/accessibility-and-direction.md).
 
 The stable semantics are defined by the

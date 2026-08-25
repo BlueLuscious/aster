@@ -1,0 +1,105 @@
+# SVG Workflow
+
+Status: **Under Audit**
+
+This document explains how one supplied portable definition and optional render value currently
+become complete standalone SVG markup. Feature documents remain authoritative for individual
+contracts, options, output rules, and errors. Open correctness boundaries are recorded in
+[SVG Quality](quality.md).
+
+## Public entry
+
+Rendering begins through the immutable package object:
+
+```ts
+const markup = Svg.render(definition, options);
+```
+
+The API owns one stateless `SvgRenderer` instance. Sharing that object introduces no render state:
+definitions, options, accepted context, intermediate strings, and results remain local to each
+synchronous call.
+
+## Definition acceptance
+
+`SvgRenderer` first passes the supplied definition to the public Core `Icon.define()` authority.
+The static TypeScript shape is not trusted. Core validates and reconstructs the complete portable
+graph, canonicalises accepted values, isolates caller-owned data, and returns one deeply frozen
+definition.
+
+```text
+supplied definition
+    |
+    v
+Icon.define()
+    |
+    +--> exact portable validation
+    +--> canonical reconstruction
+    +--> deep immutability
+    |
+    v
+isolated IconDefinition
+```
+
+The current renderer converts every exception raised during that call into `SvgRenderError` while
+preserving an available logical `path`. This includes ordinary Core definition rejection, but it
+also currently reclassifies caller-controlled reflective failures. The required distinction is an
+open failure-boundary decision documented by [SVG Quality](quality.md).
+
+## Option normalisation
+
+`SvgRenderOptionsNormaliser` accepts the optional value and resolves one frozen internal render
+context. It currently:
+
+- validates the known option names;
+- canonicalises size, colour, fill, stroke, stroke width, text, boolean, and direction values;
+- enforces icon minimum size and authorised presentation overrides;
+- derives decorative or semantic accessibility state;
+- resolves the effective accessible name and optional title;
+- resolves width and height from explicit size, icon default size, or the view box;
+- retains only the reconstructed definition and accepted option effects.
+
+The context has no public export and carries no DOM, filesystem, process, catalogue, or lifecycle
+authority. Exact reflective option-shape acceptance remains under audit.
+
+## Serialisation
+
+`SvgMarkupSerialiser` consumes only the accepted context. It builds the root attributes in fixed
+order, resolves complete presentation for each node, maps portable nodes to SVG geometry, escapes
+target text, and joins all content into one compact string.
+
+```text
+accepted render context
+    |
+    +--> root namespace, viewBox, viewport, colour, and accessibility
+    +--> optional escaped title
+    +--> geometry in portable paint order
+    +--> technical, icon, node, and authorised caller presentation
+    +--> optional single RTL mirror group
+    |
+    v
+complete SvgMarkupType
+```
+
+The serialiser does not append to a caller-visible stream or mutate a target. A successful call
+returns one complete `<svg>...</svg>` value; a synchronous failure returns no partial output.
+The exact accepted XML character repertoire remains under audit because Core portability and XML
+serialisability are separate responsibilities.
+
+## Consumer hand-off
+
+The result is a plain string. Repository authoring workflows use it as deterministic review or
+derived distribution evidence. A consumer may write, transmit, parse, or insert it only under its
+own target and security policy; `SvgMarkupType` does not grant trusted-markup or DOM-insertion
+authority.
+
+Repeated rendering, collection export, file output, terminal presentation, and future adapter
+composition belong to explicit consumers or hosts around `Svg.render()`. They do not enlarge this
+package's state or authority.
+
+## Related documentation
+
+- [SVG API](api/index.md) defines the public operation and failure surface.
+- [SVG Render Result](render/index.md) defines canonical output ordering and representation.
+- [SVG Render Runtime](render/runtime/index.md) documents the internal composition.
+- [SVG Quality](quality.md) records current evidence and unresolved hardening boundaries.
+- [Core Workflow](../core/workflow.md) defines the portable construction authority used first.
