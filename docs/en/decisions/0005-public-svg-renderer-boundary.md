@@ -84,9 +84,9 @@ named wrapper, collection registry, filesystem operation, or framework integrati
 
 ## Compatibility and migration
 
-This is the first SVG renderer package and affects no released consumer. Before a
-compatibility-bearing release, conformance will freeze root exports, declarations, error
-observables, option behaviour, and deterministic markup.
+This is the first SVG renderer package and affects no released consumer. Hardened pre-release
+conformance now fixes its root exports, declarations, error observables, option behaviour, and
+deterministic markup as the basis for a future compatibility-bearing release.
 
 ## Evidence
 
