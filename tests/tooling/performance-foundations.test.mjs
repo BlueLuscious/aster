@@ -4,6 +4,9 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
 
+import { coreBaseline } from "../../tooling/performance/core/constants/core-baseline.constant.mjs";
+import { CoreBaselineFixtureFactory } from "../../tooling/performance/core/runtime/core-baseline-fixture.factory.mjs";
+import { CoreBaselineRunner } from "../../tooling/performance/core/runtime/core-baseline.runner.mjs";
 import { BenchmarkRunner } from "../../tooling/performance/shared/runtime/benchmark.runner.mjs";
 import { NumericSampleStatistics } from "../../tooling/performance/shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../tooling/performance/shared/runtime/package-distribution.inspector.mjs";
@@ -11,6 +14,68 @@ import { NodeRepositoryFileSystem } from "../../tooling/shared/runtime/node-repo
 import { RepositoryFileWalker } from "../../tooling/shared/runtime/repository-file.walker.mjs";
 import { RepositoryJsonReader } from "../../tooling/shared/runtime/repository-json.reader.mjs";
 import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
+
+test("prepares distinct mutable and canonical Core benchmark fixtures", () => {
+  const fixtures = new CoreBaselineFixtureFactory().create();
+
+  assert.ok(Object.isFrozen(fixtures));
+  assert.ok(Object.isFrozen(fixtures.canonicalIcons));
+  assert.equal(Object.isFrozen(fixtures.mutableIcons), false);
+  assert.notEqual(fixtures.mutableIcons, fixtures.canonicalIcons);
+  assert.notEqual(fixtures.mutableIcons[0], fixtures.canonicalIcons[0]);
+  assert.deepEqual(fixtures.mutableIcons, fixtures.canonicalIcons);
+  assert.equal(Object.isFrozen(fixtures.mutableCollection), false);
+  assert.deepEqual(fixtures.mutableCollection, fixtures.canonicalCollection);
+  assert.equal(fixtures.emptyCollection.icons.length, 0);
+  assert.equal(fixtures.singleCanonicalCollection.icons.length, 1);
+  assert.equal(
+    fixtures.singleCanonicalCollection.icons[0],
+    fixtures.canonicalIcons[0],
+  );
+});
+
+test("runs the complete Core scenario matrix through public values", async () => {
+  const measured = [];
+  const runner = new CoreBaselineRunner(
+    {
+      measure(scenario) {
+        const result = Object.freeze({
+          name: scenario.name,
+          checksum: scenario.execute(2),
+        });
+        measured.push(result);
+        return result;
+      },
+      methodology() {
+        return Object.freeze({ fixture: true });
+      },
+    },
+    {
+      async inspect(packagePath) {
+        return Object.freeze({ packagePath });
+      },
+    },
+    {
+      environment() {
+        return Object.freeze({ fixture: true });
+      },
+    },
+    new CoreBaselineFixtureFactory().create(),
+  );
+  const report = await runner.run();
+
+  assert.equal(report.schemaVersion, 2);
+  assert.deepEqual(
+    measured.map((scenario) => scenario.name),
+    Object.values(coreBaseline.scenarios).map((scenario) => scenario.name),
+  );
+  assert.equal(measured[0]?.checksum, measured[1]?.checksum);
+  assert.equal(measured[2]?.checksum, 10);
+  assert.equal(measured[3]?.checksum, 34);
+  assert.equal(measured[4]?.checksum, 42);
+  assert.equal(measured[5]?.checksum, 42);
+  assert.deepEqual(report.distribution, { packagePath: "packages/core" });
+});
 
 test("aggregates deterministic timing and heap samples through a fake host", () => {
   const clock = [0n, 20n, 100n, 140n, 200n, 260n];
