@@ -77,6 +77,7 @@ before(async () => {
   await Promise.all([
     copyPublishedPackage("core"),
     copyPublishedPackage("icons"),
+    copyPublishedPackage("svg"),
     copyPublishedPackage("cli"),
   ]);
 });
@@ -101,6 +102,7 @@ test("imports the public package without source files or observable effects", ()
     "AsterCatalogue",
     "AsterCommands",
     "catalogueResultKinds",
+    "exportTargets",
   ]);
 });
 

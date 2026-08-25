@@ -177,6 +177,9 @@ test("returns usage failures for malformed invocations", async () => {
   const kernel = new CommandKernel([]);
   const candidates: readonly unknown[] = [
     { command: "remove" },
+    { command: "export", subject: "icon", identity: "Camera" },
+    { command: "export", subject: "collection", identity: "aster", options: { label: "Aster" } },
+    { command: "export", subject: "icon", identity: "aster/camera", options: { colour: "red" } },
     { command: "search" },
     { command: "search", query: "camera", tags: ["outline", "outline"] },
     { command: "show", subject: "icon", identity: "Camera" },

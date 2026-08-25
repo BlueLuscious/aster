@@ -2,6 +2,7 @@
  * @description Immutable discriminators for every initial structured command payload.
  */
 export const asterCommandPayloadKinds = Object.freeze({
+  export: "export",
   catalogueList: "catalogue-list",
   collectionList: "collection-list",
   iconList: "icon-list",

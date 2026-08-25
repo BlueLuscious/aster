@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@aster/core": "workspace:*",
-    "@aster/icons": "workspace:*"
+    "@aster/icons": "workspace:*",
+    "@aster/svg": "workspace:*"
   }
 }

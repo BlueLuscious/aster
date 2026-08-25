@@ -2,6 +2,7 @@ import { commandLineTokens } from "../constants/command-line-tokens.constant.js"
 import type { TParsedCommandLine } from "../types/internal/parsed-command-line.type.js";
 import { CommandLineError } from "./command-line.error.js";
 import { CommandLineOptionParser } from "./command-line-option.parser.js";
+import { ExportCommandLineParser } from "./export-command-line.parser.js";
 
 /**
  * @description Adapts exact standalone argv tokens into the host-neutral invocation union.
@@ -11,6 +12,11 @@ export class CommandLineParser {
    * @description Closed command-specific option parser.
    */
   readonly #options = new CommandLineOptionParser();
+
+  /**
+   * @description Command-local parser for the initial standalone export grammar.
+   */
+  readonly #export = new ExportCommandLineParser(this.#options);
 
   /**
    * @description Parses one executable argument sequence without reading process state.
@@ -30,6 +36,8 @@ export class CommandLineParser {
 
     const invocation = (() => {
       switch (command) {
+        case commandLineTokens.commands.export:
+          return this.#export.parse(tokens, json);
         case commandLineTokens.commands.list:
           return this.#parseList(tokens);
         case commandLineTokens.commands.search:
@@ -223,12 +231,13 @@ export class CommandLineParser {
 
     if (
       commandName !== undefined &&
+      commandName !== commandLineTokens.commands.export &&
       commandName !== commandLineTokens.commands.list &&
       commandName !== commandLineTokens.commands.search &&
       commandName !== commandLineTokens.commands.show
     ) {
       throw new CommandLineError(
-        "help command must be list, search, or show",
+        "help command must identify an accepted command",
         commandLineTokens.commands.help,
       );
     }

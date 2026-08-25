@@ -3,11 +3,14 @@ import { CatalogueLoader } from "../catalogue/runtime/catalogue.loader.js";
 import { CatalogueSearchQuery } from "../catalogue/runtime/catalogue-search.query.js";
 import { CatalogueShowQuery } from "../catalogue/runtime/catalogue-show.query.js";
 import { asterCommandDescriptors } from "../command/constants/aster-command-descriptors.constant.js";
+import { ExportCommandDefinition } from "../command/definition/export-command.definition.js";
 import { HelpCommandDefinition } from "../command/definition/help-command.definition.js";
 import { ListCommandDefinition } from "../command/definition/list-command.definition.js";
 import { SearchCommandDefinition } from "../command/definition/search-command.definition.js";
 import { ShowCommandDefinition } from "../command/definition/show-command.definition.js";
 import { VersionCommandDefinition } from "../command/definition/version-command.definition.js";
+import { CatalogueExportSelector } from "../export/runtime/catalogue-export.selector.js";
+import { ExportPlanQuery } from "../export/runtime/export-plan.query.js";
 import type {
   AsterCommandContext,
   AsterCommandSet,
@@ -32,6 +35,9 @@ const commandDescriptors = Object.freeze(Object.values(asterCommandDescriptors))
  * @description Explicit immutable command kernel used by every programmatic host.
  */
 const commandKernel = new CommandKernel([
+  new ExportCommandDefinition(
+    new ExportPlanQuery(new CatalogueExportSelector(catalogueLoader)),
+  ),
   new ListCommandDefinition(new CatalogueListQuery(catalogueLoader)),
   new SearchCommandDefinition(new CatalogueSearchQuery(catalogueLoader)),
   new ShowCommandDefinition(new CatalogueShowQuery(catalogueLoader)),

@@ -26,6 +26,13 @@ export class HumanOutputPresenter {
     const payload = result.payload;
 
     switch (payload.kind) {
+      case asterCommandPayloadKinds.export:
+        return payload.plan.artefacts.length === 1
+          ? payload.plan.artefacts[0]?.content ?? ""
+          : this.#sequence(
+              "SVG artefacts",
+              payload.plan.artefacts.map((artefact) => artefact.path),
+            );
       case asterCommandPayloadKinds.catalogueList:
         return this.#sequence(
           "Catalogues",

@@ -21,7 +21,7 @@ export const packageBoundaries = Object.freeze({
   }),
   workspaceProtocolPrefix: "workspace:",
   buildDependencies: Object.freeze(["@aster/core", "xmlsax-typescript"]),
-  cliDependencies: Object.freeze(["@aster/core", "@aster/icons"]),
+  cliDependencies: Object.freeze(["@aster/core", "@aster/icons", "@aster/svg"]),
   svgDependencies: Object.freeze(["@aster/core"]),
   parser: Object.freeze({
     dependency: "xmlsax-typescript",

@@ -2,11 +2,67 @@ import type { asterCommandNames } from "../constants/aster-command-names.constan
 import type { AsterCommandListSubjectType } from "./aster-command-list-subject.type.js";
 import type { AsterCommandNameType } from "./aster-command-name.type.js";
 import type { AsterCommandShowSubjectType } from "./aster-command-show-subject.type.js";
+import type {
+  AsterExportOptionsType,
+  AsterIconExportOptionsType,
+} from "../../export/types/index.js";
 
 /**
  * @description Closed structured invocation accepted by the initial Aster command set.
  */
 export type AsterCommandInvocationType =
+  | Readonly<{
+      /**
+       * @description Selects deterministic SVG export planning.
+       */
+      command: typeof asterCommandNames.export;
+
+      /**
+       * @description Selects one exact icon definition.
+       */
+      subject: "icon";
+
+      /**
+       * @description Canonical textual icon identity to export.
+       */
+      identity: string;
+
+      /**
+       * @description Optional exact catalogue-provider filter.
+       */
+      catalogue?: string;
+
+      /**
+       * @description Optional portable icon-specific render values.
+       */
+      options?: AsterIconExportOptionsType;
+    }>
+  | Readonly<{
+      /**
+       * @description Selects deterministic SVG export planning.
+       */
+      command: typeof asterCommandNames.export;
+
+      /**
+       * @description Selects one exact collection definition.
+       */
+      subject: "collection";
+
+      /**
+       * @description Canonical textual collection identity to export.
+       */
+      identity: string;
+
+      /**
+       * @description Optional exact catalogue-provider filter.
+       */
+      catalogue?: string;
+
+      /**
+       * @description Optional portable values applied uniformly to every member.
+       */
+      options?: AsterExportOptionsType;
+    }>
   | Readonly<{
       /**
        * @description Selects deterministic catalogue listing.

@@ -5,6 +5,14 @@ import { asterCommandNames } from "./aster-command-names.constant.js";
  * @description Immutable host-neutral help metadata for every initial Aster command definition.
  */
 export const asterCommandDescriptors = Object.freeze({
+  export: Object.freeze({
+    name: asterCommandNames.export,
+    summary: "Export one icon or collection as deterministic SVG artefacts.",
+    usage: Object.freeze([
+      "export icon <identity> [--catalogue <provider>]",
+      "export collection <identity> [--catalogue <provider>] --json",
+    ]),
+  }),
   list: Object.freeze({
     name: asterCommandNames.list,
     summary: "List catalogue providers, collections, or icons.",

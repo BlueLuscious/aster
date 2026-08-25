@@ -7,6 +7,7 @@ import type {
 } from "../types/index.js";
 import type { TAcceptanceResult } from "../types/internal/acceptance-result.type.js";
 import { CommandDiagnosticFactory } from "./command-diagnostic.factory.js";
+import { ExportOptionsNormaliser } from "../../export/runtime/export-options.normaliser.js";
 
 /**
  * @description Validates, canonicalises, isolates, and freezes structured command invocations.
@@ -23,6 +24,11 @@ export class CommandInvocationNormaliser {
   readonly #diagnostics = new CommandDiagnosticFactory();
 
   /**
+   * @description Command-local portable export-option acceptance boundary.
+   */
+  readonly #exportOptions = new ExportOptionsNormaliser();
+
+  /**
    * @description Validates and isolates one untrusted structured invocation.
    * @param value - Candidate invocation supplied by a shell or programmatic host.
    * @returns Accepted canonical invocation or structured usage rejection.
@@ -33,6 +39,8 @@ export class CommandInvocationNormaliser {
     }
 
     switch (value.command) {
+      case asterCommandNames.export:
+        return this.#normaliseExport(value);
       case asterCommandNames.list:
         return this.#normaliseList(value);
       case asterCommandNames.search:
@@ -46,6 +54,68 @@ export class CommandInvocationNormaliser {
       default:
         return this.#invalid(`unknown command ${JSON.stringify(value.command)}`);
     }
+  }
+
+  /**
+   * @description Accepts one exact icon or collection export invocation.
+   * @param value - Candidate export record.
+   * @returns Accepted immutable export invocation or usage rejection.
+   */
+  #normaliseExport(
+    value: Record<string, unknown>,
+  ): TAcceptanceResult<AsterCommandInvocationType> {
+    if (!this.#hasOnlyFields(value, [
+      "command",
+      "subject",
+      "identity",
+      "catalogue",
+      "options",
+    ])) {
+      return this.#invalid("export invocation contains an unknown field");
+    }
+
+    if (
+      value.subject !== asterCommandSubjects.export.icon &&
+      value.subject !== asterCommandSubjects.export.collection
+    ) {
+      return this.#invalid("expected export subject to be icon or collection");
+    }
+
+    if (
+      !this.#isCanonicalIdentity(
+        value.identity,
+        value.subject === asterCommandSubjects.export.icon,
+      )
+    ) {
+      return this.#invalid(`expected a canonical ${value.subject} identity`);
+    }
+
+    if (!this.#hasCanonicalOptionalProvider(value, "catalogue")) {
+      return this.#invalid("expected catalogue filter to be a canonical provider identity");
+    }
+
+    const options = this.#exportOptions.normalise(
+      value.options,
+      Object.hasOwn(value, "options"),
+      value.subject === asterCommandSubjects.export.icon,
+    );
+
+    if (!options.accepted) {
+      return options;
+    }
+
+    return Object.freeze({
+      accepted: true,
+      value: Object.freeze({
+        command: asterCommandNames.export,
+        subject: value.subject,
+        identity: value.identity,
+        ...(Object.hasOwn(value, "catalogue")
+          ? { catalogue: value.catalogue as string }
+          : {}),
+        ...(options.value === undefined ? {} : { options: options.value }),
+      }),
+    });
   }
 
   /**

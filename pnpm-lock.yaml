@@ -50,6 +50,9 @@ importers:
       '@aster/icons':
         specifier: workspace:*
         version: link:../icons
+      '@aster/svg':
+        specifier: workspace:*
+        version: link:../svg
 
   packages/core: {}
 

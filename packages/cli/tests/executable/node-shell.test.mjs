@@ -50,6 +50,22 @@ test("renders list, search, show, and version as deterministic human text", () =
   }
 });
 
+test("renders one icon directly and one collection as a JSON export plan", () => {
+  const icon = run(["export", "icon", "aster/camera"]);
+  const collection = run(["export", "collection", "aster", "--json"]);
+
+  assert.equal(icon.status, 0);
+  assert.equal(icon.stderr, "");
+  assert.match(icon.stdout, /^<svg /u);
+  assert.equal(collection.status, 0);
+  assert.equal(collection.stderr, "");
+
+  const result = JSON.parse(collection.stdout);
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.kind, "export");
+  assert.equal(result.payload.plan.artefacts.length, 16);
+});
+
 test("emits one stable JSON success document without terminal styling", () => {
   const first = run(["list", "icons", "--tag", "photo", "--json"]);
   const second = run(["--json", "list", "icons", "--tag", "photo"]);
