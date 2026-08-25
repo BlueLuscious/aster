@@ -6,6 +6,7 @@ import { BenchmarkRunner } from "../../shared/runtime/benchmark.runner.mjs";
 import { NodeBenchmarkHost } from "../../shared/runtime/node-benchmark.host.mjs";
 import { NumericSampleStatistics } from "../../shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../shared/runtime/package-distribution.inspector.mjs";
+import { CoreBaselineFixtureFactory } from "./core-baseline-fixture.factory.mjs";
 import { CoreBaselineRunner } from "./core-baseline.runner.mjs";
 
 /**
@@ -32,6 +33,7 @@ export class CoreBaselineFactory {
       new BenchmarkRunner(host, new NumericSampleStatistics()),
       distribution,
       host,
+      new CoreBaselineFixtureFactory().create(),
     );
   }
 }
