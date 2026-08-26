@@ -118,6 +118,21 @@ explicit recovery. Absent parent directories may be created before staging, so a
 guarantees stage cleanup rather than removal of newly created empty ancestors. Native filesystem
 messages are not part of the stable failure surface.
 
+Logical artefact paths use forward slashes and portable segments. Empty segments, traversal,
+absolute paths, backslashes, control characters, cross-platform-invalid characters, trailing
+dots or spaces, Windows device names, destination escape, and exact duplicate destinations are
+rejected before filesystem mutation. Generated Aster artefact paths are canonical lowercase
+ASCII identities, so platform case folding and Unicode normalisation cannot alias two accepted
+generated entries.
+
+Publication is failure-safe only for operations observed by the current process. Exclusive stage
+creation and file writes, a second target check, and same-parent rename narrow ordinary races, but
+do not form an operating-system transaction. The shell does not guarantee recovery after process
+termination or machine failure, directory-entry durability after rename, protection against a
+privileged or hostile process mutating paths or symlinks concurrently, or removal of an
+interrupted stage from an earlier run. A pre-existing target or stage, including a symlink visible
+to the existence check, is rejected and never removed by the current attempt.
+
 The executable entrypoint is the only module that imports `node:process`. Node path and filesystem
 imports occur only in private output-host collaborators. The host-neutral compiler excludes the
 complete shell tree. The referenced shell project consumes host-neutral declarations, admits Node

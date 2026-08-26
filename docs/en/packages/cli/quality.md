@@ -103,14 +103,16 @@ existing target.
 
 ## Existing conformance
 
-The current evidence comprises compile-time public-shape checks, 25 host-neutral runtime tests,
-32 package-ABI and executable tests, architecture policy, documentation verification, and complete
+The current evidence comprises compile-time public-shape checks, 35 host-neutral runtime tests,
+34 package-ABI and executable tests, architecture policy, documentation verification, and complete
 repository workflows. It currently demonstrates:
 
 - exact immutable root values and rejected implementation subpaths;
 - silent root import and lazy built-in catalogue loading;
 - explicit provider injection and deterministic provider-order independence;
 - structured invocation, context, descriptor, result, diagnostic, and payload behaviour;
+- strict plain-data acceptance without authored accessors, symbols, custom prototypes, sparse
+  arrays, or retained provider-method mutation;
 - catalogue discovery, empty values, many-to-many membership, ambiguity, conflicts, and failures;
 - complete icon and collection export planning without partial artefacts;
 - equivalent standalone and independent programmatic results;
@@ -143,12 +145,12 @@ inventory.
 
 | Pressure | Current evidence | Required boundary |
 | --- | --- | --- |
-| Reflective input acceptance | Current record checks rely on `Object.keys`, direct property reads, and broad non-array object acceptance. | Decide exact prototype, symbol, descriptor, accessor, sparse-array, Proxy, and caller-failure semantics before claiming hostile-input hardening. |
-| Provider retention | Context normalisation freezes the provider sequence but retains provider objects and their callable methods by reference. | Define whether provider identity and loading capability require snapshots, structural isolation, or explicit trusted capability semantics. |
-| Repeated authorities | Canonical slug checks and ASCII comparison appear in multiple command, catalogue, and export responsibilities. | Centralise only semantics proven identical across features, without leaking Core or shell ownership. |
+| Reflective input acceptance | Exact own-data inspection rejects accessors, symbols, custom prototypes, unknown or hidden fields, sparse arrays, array side state, and caller traps before accepted state. | Retain the distinction between strict serialisable data and explicitly accepted provider capabilities. |
+| Provider retention | Context normalisation snapshots provider identity and callable capability while preserving the original receiver required by class implementations. | Keep provider-owned mutable state behind the capability; never treat its returned snapshot as trusted. |
+| Shared authorities | Canonical textual identity, ASCII ordering, and structured-data inspection are centralised under the private CLI shared feature. | Keep each authority internal and avoid widening it into Core or the public ABI. |
 | Command growth | Invocation normalisation, argv parsing, and human presentation contain command-family switches. | Keep explicit dispatch but prevent future commands from extending unrelated unbounded coordinators. |
 | Catalogue concentration | Record and snapshot normalisers are sizeable complete data boundaries. | Split only if adversarial evidence proves independently changing responsibilities; method count alone is insufficient. |
-| Filesystem races | Lexical path validation, exclusive writes, staging, and rename are covered, while symlink and concurrent-host semantics need an explicit guarantee or non-guarantee. | Preserve destination confinement and stage ownership without claiming an operating-system transaction the host cannot provide. |
+| Filesystem races | Lexical confinement, portable segments, exclusive writes, same-parent staging, a second target check, current-stage cleanup, and sanitised failures are covered. | Retain explicit non-guarantees for hostile concurrent mutation, symlink replacement, process interruption, crash durability, and native rename semantics. |
 | Startup and package cost | Current subprocess timings include Node startup and temporary-consumer preparation; distribution emits one module per source file. | Measure cold import, command execution, provider loading, export, presentation, and packaging independently before optimisation. |
 | External documentation | Some project documents still describe CLI export as future pressure or rely on legacy architecture and governance roots. | Synchronise consumers during hardening and complete authority migration in documentation hardening. |
 

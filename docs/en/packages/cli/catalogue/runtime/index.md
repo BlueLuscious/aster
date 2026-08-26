@@ -34,3 +34,12 @@ explicit providers --> loader --> snapshot normaliser --> accepted catalogues
 The loader retains no catalogue cache or global registry. Every command execution observes one
 complete snapshot from every selected explicit provider. Search aliases and provider provenance
 remain outside Core definitions.
+
+Provider order is normalised through locale-independent ASCII comparison before loading. A
+snapshot must be an exact plain data record containing dense ordinary icon and collection arrays;
+individual records follow the same own-data boundary. Portable icon and collection candidates are
+then reconstructed through `@aster/core`, while CLI-owned memberships, search terms, conflicts,
+and provider evidence remain under CLI validation. One rejected provider prevents any partial
+catalogue payload or export plan from becoming observable. Rejected provider promises and
+exceptions raised while inspecting provider-owned snapshot structure both become sanitised
+`catalogue-unavailable` diagnostics associated with the accepted provider identity.
