@@ -235,6 +235,11 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
       "packages/cli/src/command/runtime/command.ts",
       'import "node:process";\n',
     );
+    await writeFixtureFile(
+      root,
+      "packages/cli/src/shell/parsing/runtime/parser.ts",
+      'import "../../output/runtime/export-output.publisher.js";\n',
+    );
     await writeFixtureJson(root, "packages/build/package.json", {
       name: "@aster/build",
       type: "module",
@@ -253,6 +258,7 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
     assert.ok(issues.some((issue) => /cannot add host libraries/u.test(issue)));
     assert.ok(issues.some((issue) => /cannot add ambient/u.test(issue)));
     assert.ok(issues.some((issue) => /Node authority outside the CLI shell/u.test(issue)));
+    assert.ok(issues.some((issue) => /cannot import presentation or output/u.test(issue)));
   } finally {
     await rm(root, { recursive: true, force: true });
   }
