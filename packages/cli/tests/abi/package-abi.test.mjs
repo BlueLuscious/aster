@@ -188,7 +188,10 @@ test("limits Node process authority and the manifest bridge to the private entry
         .sort(),
     );
     assert.doesNotMatch(source, /\bmodule\.exports\b/gu);
-
+    assert.doesNotMatch(
+      source,
+      /(?:@aster\/build|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
+    );
     if (module !== executableEntry) {
       assert.doesNotMatch(
         source,

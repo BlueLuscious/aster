@@ -5,6 +5,8 @@ import {
   copyFile,
   mkdir,
   mkdtemp,
+  readFile,
+  readdir,
   rm,
   writeFile,
 } from "node:fs/promises";
@@ -135,6 +137,120 @@ test("returns the same result through the executable and an independent plugin h
   assert.equal(programmatic.status, 0);
   assert.equal(programmatic.stderr, "");
   assert.equal(programmatic.stdout, executable.stdout);
+});
+
+test("returns the same complete export through standalone and programmatic hosts", () => {
+  const executable = runExecutable([
+    "export",
+    "collection",
+    "aster",
+    "--size",
+    "32",
+    "--colour",
+    "#123456",
+    "--direction",
+    "rtl",
+    "--json",
+  ]);
+  const programmatic = runModule([
+    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    "const plugins = new Map([[AsterCommands.identity, AsterCommands]]);",
+    'const plugin = plugins.get("aster");',
+    'if (plugin === undefined) throw new TypeError("Missing Aster plugin");',
+    "const result = await plugin.execute(",
+    "  {",
+    '    command: "export",',
+    '    subject: "collection",',
+    '    identity: "aster",',
+    "    options: {",
+    "      size: 32,",
+    '      colour: "#123456",',
+    '      direction: "rtl",',
+    "    },",
+    "  },",
+    "  {",
+    "    catalogues: [AsterCatalogue],",
+    '    productName: "Aster",',
+    '    productVersion: "0.0.0",',
+    "  },",
+    ");",
+    'process.stdout.write(`${JSON.stringify(result)}\\n`);',
+  ].join("\n"));
+
+  assert.equal(executable.status, 0);
+  assert.equal(executable.stderr, "");
+  assert.equal(programmatic.status, 0);
+  assert.equal(programmatic.stderr, "");
+  assert.equal(programmatic.stdout, executable.stdout);
+
+  const result = JSON.parse(executable.stdout);
+
+  assert.equal(result.payload.plan.artefacts.length, 16);
+  assert.deepEqual(
+    result.payload.plan.artefacts.map((artefact) => artefact.path),
+    [
+      "aster/arrow-left.svg",
+      "aster/bell.svg",
+      "aster/camera.svg",
+      "aster/check.svg",
+      "aster/close.svg",
+      "aster/cloud.svg",
+      "aster/folder.svg",
+      "aster/heart.svg",
+      "aster/home.svg",
+      "aster/leaf.svg",
+      "aster/lock.svg",
+      "aster/plus.svg",
+      "aster/search.svg",
+      "aster/settings.svg",
+      "aster/star.svg",
+      "aster/user.svg",
+    ],
+  );
+});
+
+test("publishes the complete planned collection from the clean consumer", async () => {
+  const planned = runExecutable([
+    "export",
+    "collection",
+    "aster",
+    "--size",
+    "20",
+    "--json",
+  ]);
+  const published = runExecutable([
+    "export",
+    "collection",
+    "aster",
+    "--size",
+    "20",
+    "--output",
+    "published",
+  ]);
+
+  assert.equal(planned.status, 0);
+  assert.equal(planned.stderr, "");
+  assert.equal(published.status, 0);
+  assert.equal(published.stderr, "");
+
+  const artefacts = JSON.parse(planned.stdout).payload.plan.artefacts;
+  const publishedRoot = resolve(consumerRoot, "published");
+  const publishedPaths = (await readdir(publishedRoot, { recursive: true }))
+    .filter((entry) => entry.endsWith(".svg"))
+    .map((entry) => entry.replaceAll("\\", "/"))
+    .sort((left, right) => left.localeCompare(right));
+
+  assert.deepEqual(
+    publishedPaths,
+    artefacts.map((artefact) => artefact.path),
+  );
+
+  for (const artefact of artefacts) {
+    assert.equal(
+      await readFile(resolve(publishedRoot, artefact.path), "utf8"),
+      artefact.content,
+    );
+  }
 });
 
 test("requires explicit catalogues and canonicalises provider registration order", () => {
