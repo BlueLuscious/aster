@@ -41,9 +41,10 @@ definitions without importing Build, filesystem services, or SVG implementation 
 
 The host-neutral production compilation uses ES2022 ESM without Node or DOM ambient types. A
 referenced shell project consumes its emitted declarations and admits Node types only beneath
-`src/shell/`; it does not re-emit the host-neutral implementation. The initial shell acquires
-argv, writes stdout or stderr, and sets process exit status; it has no filesystem mutation,
-network, package-manager, Build, framework, plugin-loader, or repository-tooling authority.
+`src/shell/`; it does not re-emit the host-neutral implementation. The shell acquires argv, writes
+stdout or stderr, sets process exit status, and privately composes the narrow filesystem authority
+required to publish complete export trees. It has no network, package-manager, Build, framework,
+plugin-loader, or repository-tooling authority.
 
 ## Current package surface
 
@@ -89,12 +90,14 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
 Built-executable integration tests additionally verify human and JSON presentation, exact stream
 selection, exit status, argument rejection, and silent public-root imports. Package conformance
 also verifies exact exports and declarations, rejected subpaths, dependency direction, exclusive
-Node process authority, and execution from a temporary consumer containing no source files.
+Node process authority, private Node filesystem ownership, safe output-path mapping, atomic visible
+publication, current-stage cleanup, and execution from a temporary consumer containing no source
+files.
 
 ## Remaining export boundary
 
-The initial host-neutral SVG export and minimal shell presentation are implemented. Explicit
-output-root publication, shell render options, stronger collision and provider evidence, and the
-final command experience remain pending without adding filesystem authority to `AsterCommands`.
-The complete accepted contract is defined by the
+The initial host-neutral SVG export, minimal shell presentation, and private output publisher are
+implemented. Executable `--output` composition, shell render options, publication feedback, and
+the final command experience remain pending without adding filesystem authority to
+`AsterCommands`. The complete accepted contract is defined by the
 [Command-line Boundary](../../architecture/command-line-boundary.md#export-boundary).

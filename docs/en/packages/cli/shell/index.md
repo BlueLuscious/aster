@@ -3,9 +3,9 @@
 Status: **Experimental**
 
 The shell feature is the private Node adapter over the public `AsterCommands` composition. It owns
-argv tokenisation, the built-in executable context, presentation, stdout, stderr, and process exit
-status. It does not own command validation, catalogue queries, portable values, or provider
-normalisation.
+argv tokenisation, the built-in executable context, presentation, optional output-tree
+publication, stdout, stderr, and process exit status. It does not own command validation,
+catalogue queries, portable values, or provider normalisation.
 
 ## Installation And Invocation
 
@@ -37,8 +37,9 @@ be supplied as one quoted shell argument. `--tag` may be repeated; singleton fil
 may not be repeated. Unknown options and extra positional arguments are usage failures.
 
 Icon export without `--json` writes one raw SVG document. JSON mode exposes the complete
-host-neutral plan for either subject. Collection export currently requires `--json`; filesystem
-publication and shell render options are not yet implemented.
+host-neutral plan for either subject. Collection export currently requires `--json`. The private
+filesystem publisher is implemented, but `--output`, publication feedback, and shell render
+options are not yet connected to the executable grammar.
 
 The shell explicitly supplies `AsterCatalogue`. This is executable composition rather than an
 ambient default in `AsterCommands`.
@@ -82,11 +83,31 @@ behaviour.
 | `JsonOutputPresenter` | Serialises one unstyled structured result document. |
 | `ShellDiagnosticFactory` | Adapts parser and unexpected shell faults into canonical command diagnostics. |
 | `NodeShell` | Delegates parsed invocations to `AsterCommands` with explicit product and catalogue context. |
+| `ExportOutputPathResolver` | Resolves explicit output roots and rejects unsafe, ambiguous, escaping, or duplicate logical artefact paths. |
+| `ExportOutputPublisher` | Stages a complete non-empty artefact tree beside an absent target and publishes it through one rename. |
+| `NodeExportOutputFileSystem` | Implements the narrow private output authority with Node filesystem operations. |
+| `ExportOutputError` | Carries sanitised output-conflict or output-failure evidence for later shell diagnostic adaptation. |
 
-The executable entrypoint is the only module that imports `node:process`. The host-neutral
-compiler excludes the complete shell tree. The referenced shell project consumes host-neutral
-declarations, admits Node types, and emits only the private binary modules. Importing `@aster/cli`
-resolves only the side-effect-free programmatic root and never evaluates the entrypoint.
+The private `IExportOutputFileSystem` contract limits publication to existence checks, directory
+creation, exclusive text creation, directory rename, and current-stage removal. Resolved
+locations, staged entries, publication evidence, and error kinds remain internal shell types. No
+filesystem contract or Node type enters the package root or host-neutral declaration graph.
+
+The supplied current directory must be absolute, preventing path resolution from consulting
+ambient process state. An empty export plan resolves its requested location but performs no
+filesystem operation. A non-empty plan rejects an existing target or deterministic sibling stage
+before creating anything. The publisher creates the complete stage, checks the target again, and
+commits through one same-parent rename. A caught write or rename failure removes only a stage
+created by that publication attempt; pre-existing and interrupted stages are preserved for
+explicit recovery. Absent parent directories may be created before staging, so a caught failure
+guarantees stage cleanup rather than removal of newly created empty ancestors. Native filesystem
+messages are not part of the stable failure surface.
+
+The executable entrypoint is the only module that imports `node:process`. Node path and filesystem
+imports occur only in private output-host collaborators. The host-neutral compiler excludes the
+complete shell tree. The referenced shell project consumes host-neutral declarations, admits Node
+types, and emits only the private binary modules. Importing `@aster/cli` resolves only the
+side-effect-free programmatic root and never evaluates the entrypoint.
 
 The authoritative command and output semantics are defined by the
 [Command-line Boundary](../../../architecture/command-line-boundary.md).

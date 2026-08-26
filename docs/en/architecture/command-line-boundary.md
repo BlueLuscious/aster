@@ -176,8 +176,9 @@ returns not-found or ambiguity.
 
 The implemented host-neutral export boundary adds exact icon and collection selection over
 installed TypeScript-first definitions and produces deterministic SVG artefact plans without
-Build. The current shell exposes raw single-icon SVG and JSON plans; output publication remains
-pending.
+Build. The current shell exposes raw single-icon SVG and JSON plans. Its private output
+composition can publish a complete plan safely, while `--output` parsing, diagnostics, and
+presentation remain pending.
 
 The accepted standalone forms are:
 
@@ -193,9 +194,10 @@ and, for icon export only, `--label` and `--title`. Icon export without `--outpu
 emits one raw SVG. Collection export requires one of those modes. `--json` and `--output` are
 mutually exclusive shell concerns and never enter the structured invocation.
 
-Only the no-option raw icon form and JSON icon or collection forms are currently implemented by
-the shell. Programmatic invocations already accept the closed render-option values. The remaining
-argv options and `--output` belong to the standalone-host extension.
+Only the no-option raw icon form and JSON icon or collection forms are currently exposed by the
+shell. Programmatic invocations already accept the closed render-option values. The private Node
+publisher is implemented independently from argv; the remaining render options and `--output`
+composition belong to the shell extension.
 
 The host-neutral command result contains a complete immutable serialisable plan. Each artefact has
 a canonical logical relative path, `image/svg+xml` media type, and complete SVG content. Namespace
@@ -204,8 +206,10 @@ filename. No provider or descriptive metadata controls a path.
 
 An output root must not exist. The private Node host stages the complete tree beside it and
 publishes through one same-parent directory rename. There is no initial overwrite, force, stale
-cleanup, or crash-durability guarantee. The complete accepted boundary and rationale are recorded
-by [0010: Headless SVG Export and Node Output Boundary](../decisions/0010-headless-svg-export-and-node-output-boundary.md).
+cleanup, unknown-stage removal, or crash-durability guarantee. Caught failures remove only a stage
+owned by the current attempt. An empty plan performs no filesystem operation. The complete
+accepted boundary and rationale are recorded by
+[0010: Headless SVG Export and Node Output Boundary](../decisions/0010-headless-svg-export-and-node-output-boundary.md).
 
 ## Deterministic ordering
 
