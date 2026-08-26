@@ -205,9 +205,9 @@ test("limits Node process authority and the manifest bridge to the private entry
 
   assert.deepEqual(nodeOwners, [
     ["shell/aster.js", ["node:module", "node:process"]],
-    ["shell/runtime/export-output-path.resolver.js", ["node:path"]],
+    ["shell/output/runtime/export-output-path.resolver.js", ["node:path"]],
     [
-      "shell/runtime/node-export-output-file-system.js",
+      "shell/output/runtime/node-export-output-file-system.js",
       ["node:fs/promises"],
     ],
   ]);

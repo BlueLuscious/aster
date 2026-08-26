@@ -1,14 +1,20 @@
-import type { asterCommandNames } from "../../command/constants/aster-command-names.constant.js";
-import type { AsterCommandInvocationType } from "../../command/types/index.js";
+import type { asterCommandNames } from "../../../command/constants/aster-command-names.constant.js";
+import type { AsterCommandInvocationType } from "../../../command/types/index.js";
 import { commandLineTokens } from "../constants/command-line-tokens.constant.js";
-import type { TParsedExportCommandLine } from "../types/internal/parsed-export-command-line.type.js";
+import type { ICommandLineCommandParser } from "../contracts/internal/command-line-command-parser.contract.js";
+import type { TParsedCommandLine } from "../types/internal/parsed-command-line.type.js";
 import { CommandLineError } from "./command-line.error.js";
 import { ExportCommandLineOptionParser } from "./export-command-line-option.parser.js";
 
 /**
  * @description Adapts the standalone export grammar into a host-neutral invocation.
  */
-export class ExportCommandLineParser {
+export class ExportCommandLineParser implements ICommandLineCommandParser {
+  /**
+   * @description Command identity owned by this parser.
+   */
+  readonly command = commandLineTokens.commands.export;
+
   /**
    * @description Closed parser for export-specific invocation and shell options.
    */
@@ -23,7 +29,7 @@ export class ExportCommandLineParser {
   parse(
     tokens: readonly string[],
     json: boolean,
-  ): TParsedExportCommandLine {
+  ): TParsedCommandLine {
     const subject = tokens[1];
     const identity = tokens[2];
 
@@ -33,14 +39,14 @@ export class ExportCommandLineParser {
     ) {
       throw new CommandLineError(
         "expected export subject to be icon or collection",
-        commandLineTokens.commands.export,
+        this.command,
       );
     }
 
     if (identity === undefined || identity.startsWith("--")) {
       throw new CommandLineError(
         `expected one exact ${subject} identity`,
-        commandLineTokens.commands.export,
+        this.command,
       );
     }
 
@@ -49,7 +55,7 @@ export class ExportCommandLineParser {
     if (json && parsed.output !== undefined) {
       throw new CommandLineError(
         "options --json and --output cannot be combined",
-        commandLineTokens.commands.export,
+        this.command,
       );
     }
 
@@ -60,7 +66,7 @@ export class ExportCommandLineParser {
     ) {
       throw new CommandLineError(
         "collection export requires --json or --output",
-        commandLineTokens.commands.export,
+        this.command,
       );
     }
 
@@ -82,7 +88,7 @@ export class ExportCommandLineParser {
       AsterCommandInvocationType,
       { command: typeof asterCommandNames.export }
     > = {
-      command: commandLineTokens.commands.export,
+      command: this.command,
       subject,
       identity,
       ...(parsed.catalogue === undefined
@@ -93,6 +99,7 @@ export class ExportCommandLineParser {
 
     return Object.freeze({
       invocation: Object.freeze(invocation),
+      json,
       ...(parsed.output === undefined ? {} : { output: parsed.output }),
     });
   }

@@ -2,7 +2,7 @@ import type {
   IconDirectionType,
   IconPaintType,
 } from "@aster/core";
-import type { AsterExportSubjectType } from "../../export/types/index.js";
+import type { AsterExportSubjectType } from "../../../export/types/index.js";
 import { commandLineTokens } from "../constants/command-line-tokens.constant.js";
 import type { TParsedExportCommandOptions } from "../types/internal/parsed-export-command-options.type.js";
 import { CommandLineError } from "./command-line.error.js";

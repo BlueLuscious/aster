@@ -3,6 +3,35 @@
  */
 export class StructuredDataInspector {
   /**
+   * @description Reads one own enumerable data member from an ordinary record without executing it.
+   * @param value - Candidate plain record.
+   * @param key - Own field to inspect.
+   * @returns Frozen member snapshot or no value after structural rejection.
+   */
+  ownDataMember(
+    value: unknown,
+    key: string,
+  ): Readonly<{ value: unknown }> | undefined {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      return undefined;
+    }
+
+    const prototype = Object.getPrototypeOf(value);
+
+    if (prototype !== Object.prototype && prototype !== null) {
+      return undefined;
+    }
+
+    const descriptor = Object.getOwnPropertyDescriptor(value, key);
+
+    return descriptor !== undefined
+      && descriptor.enumerable
+      && "value" in descriptor
+      ? Object.freeze({ value: descriptor.value })
+      : undefined;
+  }
+
+  /**
    * @description Accepts one plain data record against closed field authorities.
    * @param value - Candidate record.
    * @param acceptedFields - Complete field names allowed on the record.
@@ -102,4 +131,3 @@ export class StructuredDataInspector {
     return Object.freeze(snapshot);
   }
 }
-

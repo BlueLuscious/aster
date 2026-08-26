@@ -2,9 +2,9 @@ import { asterCommandNames } from "../../command/constants/aster-command-names.c
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { AsterCommandResultType } from "../../command/types/index.js";
-import { exportOutputErrorKinds } from "../constants/export-output-error-kinds.constant.js";
-import { CommandLineError } from "./command-line.error.js";
-import { ExportOutputError } from "./export-output.error.js";
+import { exportOutputErrorKinds } from "../output/constants/export-output-error-kinds.constant.js";
+import { ExportOutputError } from "../output/runtime/export-output.error.js";
+import { CommandLineError } from "../parsing/runtime/command-line.error.js";
 
 /**
  * @description Adapts shell-owned parsing and execution faults into command-result diagnostics.

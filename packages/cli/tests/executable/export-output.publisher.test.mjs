@@ -3,9 +3,9 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
-import { ExportOutputPublisher } from "../../dist/shell/runtime/export-output.publisher.js";
-import { ExportOutputPathResolver } from "../../dist/shell/runtime/export-output-path.resolver.js";
-import { NodeExportOutputFileSystem } from "../../dist/shell/runtime/node-export-output-file-system.js";
+import { ExportOutputPublisher } from "../../dist/shell/output/runtime/export-output.publisher.js";
+import { ExportOutputPathResolver } from "../../dist/shell/output/runtime/export-output-path.resolver.js";
+import { NodeExportOutputFileSystem } from "../../dist/shell/output/runtime/node-export-output-file-system.js";
 
 const svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
 

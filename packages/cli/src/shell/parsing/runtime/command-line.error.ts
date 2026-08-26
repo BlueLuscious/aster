@@ -1,4 +1,4 @@
-import type { AsterCommandNameType } from "../../command/types/index.js";
+import type { AsterCommandNameType } from "../../../command/types/index.js";
 
 /**
  * @description Deterministic usage error raised while adapting argv into a structured invocation.

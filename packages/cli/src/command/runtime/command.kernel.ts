@@ -12,7 +12,7 @@ import type {
 import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
 import { CommandContextNormaliser } from "./command-context.normaliser.js";
 import { CommandDiagnosticFactory } from "./command-diagnostic.factory.js";
-import { CommandInvocationNormaliser } from "./command-invocation.normaliser.js";
+import { CommandInvocationNormaliser } from "../invocation/runtime/command-invocation.normaliser.js";
 import { CommandResultFactory } from "./command-result.factory.js";
 
 /**
@@ -42,7 +42,7 @@ export class CommandKernel implements AsterCommandSet {
   /**
    * @description Structured invocation boundary normaliser.
    */
-  readonly #invocations = new CommandInvocationNormaliser();
+  readonly #invocations: CommandInvocationNormaliser;
 
   /**
    * @description Explicit capability boundary normaliser.
@@ -62,8 +62,12 @@ export class CommandKernel implements AsterCommandSet {
   /**
    * @description Creates one isolated command composition from explicit definitions.
    * @param definitions - Closed executable definitions owned by the composition root.
+   * @param invocations - Explicit command-family invocation acceptance composition.
    */
-  constructor(definitions: readonly ICommandDefinition[]) {
+  constructor(
+    definitions: readonly ICommandDefinition[],
+    invocations: CommandInvocationNormaliser,
+  ) {
     const entries: [AsterCommandNameType, ICommandDefinition][] = [];
     const descriptors: AsterCommandDescriptor[] = [];
 
@@ -85,6 +89,7 @@ export class CommandKernel implements AsterCommandSet {
 
     this.#definitions = new Map(entries);
     this.#descriptors = Object.freeze(descriptors);
+    this.#invocations = invocations;
   }
 
   /**

@@ -8,10 +8,13 @@ import type {
   AsterCommandDescriptor,
 } from "../../src/command/contracts/index.js";
 import { CommandKernel } from "../../src/command/runtime/command.kernel.js";
+import { CommandInvocationNormaliser } from "../../src/command/invocation/runtime/command-invocation.normaliser.js";
+import { VersionInvocationNormaliser } from "../../src/command/invocation/runtime/version-invocation.normaliser.js";
 import type {
   AsterCommandInvocationType,
   AsterCommandResultType,
 } from "../../src/command/types/index.js";
+import { createCommandInvocations } from "./command-invocation.fixture.js";
 
 const emptyProvider: CatalogueProvider = {
   identity: "testing",
@@ -109,7 +112,7 @@ test("isolates descriptors and exposes deterministic help metadata", () => {
         }),
       }),
     ),
-  ]);
+  ], createCommandInvocations());
 
   mutableUsage.push("mutated");
 
@@ -122,6 +125,16 @@ test("isolates descriptors and exposes deterministic help metadata", () => {
   assert.ok(Object.isFrozen(kernel.descriptors));
   assert.ok(Object.isFrozen(kernel.descriptors[0]));
   assert.ok(Object.isFrozen(kernel.descriptors[0]?.usage));
+});
+
+test("rejects duplicate command invocation normalisers at composition", () => {
+  assert.throws(
+    () => new CommandInvocationNormaliser([
+      new VersionInvocationNormaliser(),
+      new VersionInvocationNormaliser(),
+    ]),
+    /Duplicate command invocation normaliser/u,
+  );
 });
 
 test("normalises equivalent invocations through an independent host", async () => {
@@ -146,7 +159,7 @@ test("normalises equivalent invocations through an independent host", async () =
     },
   );
   const host = new IndependentProgrammaticHost(
-    new CommandKernel([command]),
+    new CommandKernel([command], createCommandInvocations()),
     createContext(),
   );
 
@@ -174,7 +187,7 @@ test("normalises equivalent invocations through an independent host", async () =
 });
 
 test("returns usage failures for malformed invocations", async () => {
-  const kernel = new CommandKernel([]);
+  const kernel = new CommandKernel([], createCommandInvocations());
   const candidates: readonly unknown[] = [
     { command: "remove" },
     { command: "export", subject: "icon", identity: "Camera" },
@@ -200,7 +213,7 @@ test("returns usage failures for malformed invocations", async () => {
 });
 
 test("rejects malformed and conflicting explicit capabilities", async () => {
-  const kernel = new CommandKernel([]);
+  const kernel = new CommandKernel([], createCommandInvocations());
   const invalid = await kernel.execute(
     { command: "version" },
     {
@@ -236,7 +249,7 @@ test("sanitises unexpected command failures", async () => {
         throw new Error("native secret");
       },
     ),
-  ]);
+  ], createCommandInvocations());
 
   const result = await kernel.execute({ command: "version" }, createContext());
 

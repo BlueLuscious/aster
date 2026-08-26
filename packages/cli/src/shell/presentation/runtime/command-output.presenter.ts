@@ -1,7 +1,7 @@
-import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
-import type { AsterCommandResultType } from "../../command/types/index.js";
+import { commandDiagnosticSchema } from "../../../command/constants/command-diagnostic-schema.constant.js";
+import type { AsterCommandResultType } from "../../../command/types/index.js";
 import type { TShellExecution } from "../types/internal/shell-execution.type.js";
-import type { TExportOutputPublication } from "../types/internal/export-output-publication.type.js";
+import type { TExportOutputPublication } from "../../output/types/internal/export-output-publication.type.js";
 import { HumanOutputPresenter } from "./human-output.presenter.js";
 import { JsonOutputPresenter } from "./json-output.presenter.js";
 

@@ -1,5 +1,5 @@
 import { dirname, isAbsolute, relative, resolve } from "node:path";
-import type { AsterExportArtefact } from "../../export/contracts/index.js";
+import type { AsterExportArtefact } from "../../../export/contracts/index.js";
 import { exportOutputErrorKinds } from "../constants/export-output-error-kinds.constant.js";
 import type { TExportOutputEntry } from "../types/internal/export-output-entry.type.js";
 import type { TExportOutputLocation } from "../types/internal/export-output-location.type.js";

@@ -9,6 +9,7 @@ import type {
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { CommandKernel } from "../../src/command/runtime/command.kernel.js";
 import { StructuredDataInspector } from "../../src/shared/runtime/structured-data.inspector.js";
+import { createCommandInvocations } from "./command-invocation.fixture.js";
 
 const emptySnapshot: CatalogueSnapshot = Object.freeze({
   icons: Object.freeze([]),
@@ -70,7 +71,7 @@ test("accepts only ordinary dense arrays without authored side state", () => {
 });
 
 test("rejects reflective invocation state without executing accessors", async () => {
-  const kernel = new CommandKernel([]);
+  const kernel = new CommandKernel([], createCommandInvocations());
   let getterCalls = 0;
   const accessor = Object.defineProperty({}, "command", {
     enumerable: true,
@@ -83,11 +84,23 @@ test("rejects reflective invocation state without executing accessors", async ()
     [Symbol("hidden")]: true,
   });
   const inherited = Object.create({ command: "version" }) as object;
+  const unrelatedAccessor = Object.defineProperty(
+    { command: "version" },
+    "extra",
+    {
+      enumerable: true,
+      get() {
+        getterCalls += 1;
+        return true;
+      },
+    },
+  );
   const sparseTags = ["outline", , "interface"];
   const candidates: readonly unknown[] = [
     accessor,
     symbol,
     inherited,
+    unrelatedAccessor,
     { command: "search", query: "icon", tags: sparseTags },
   ];
 
@@ -105,7 +118,7 @@ test("rejects reflective invocation state without executing accessors", async ()
 });
 
 test("sanitises proxy traps before dispatch", async () => {
-  const kernel = new CommandKernel([]);
+  const kernel = new CommandKernel([], createCommandInvocations());
   const invocation = new Proxy({}, {
     getPrototypeOf() {
       throw new Error("native reflective secret");

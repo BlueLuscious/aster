@@ -1,4 +1,4 @@
-import type { AsterCommandResultType } from "../../command/types/index.js";
+import type { AsterCommandResultType } from "../../../command/types/index.js";
 
 /**
  * @description Renders one structured result as a stable unstyled JSON document.

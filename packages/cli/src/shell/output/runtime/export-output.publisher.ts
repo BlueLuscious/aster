@@ -1,4 +1,4 @@
-import type { AsterExportPlan } from "../../export/contracts/index.js";
+import type { AsterExportPlan } from "../../../export/contracts/index.js";
 import { exportOutputErrorKinds } from "../constants/export-output-error-kinds.constant.js";
 import type { IExportOutputFileSystem } from "../contracts/internal/export-output-file-system.contract.js";
 import type { TExportOutputPublication } from "../types/internal/export-output-publication.type.js";

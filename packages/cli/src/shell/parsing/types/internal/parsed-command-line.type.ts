@@ -1,4 +1,4 @@
-import type { AsterCommandInvocationType } from "../../../command/types/index.js";
+import type { AsterCommandInvocationType } from "../../../../command/types/index.js";
 
 /**
  * @description Accepted argv adaptation and its shell-owned presentation selection.

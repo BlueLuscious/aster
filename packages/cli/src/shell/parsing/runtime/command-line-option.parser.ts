@@ -1,4 +1,4 @@
-import type { AsterCommandNameType } from "../../command/types/index.js";
+import type { AsterCommandNameType } from "../../../command/types/index.js";
 import { commandLineTokens } from "../constants/command-line-tokens.constant.js";
 import type { TParsedCommandOptions } from "../types/internal/parsed-command-options.type.js";
 import { CommandLineError } from "./command-line.error.js";

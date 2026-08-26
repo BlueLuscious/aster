@@ -1,4 +1,4 @@
-import type { AsterExportArtefact } from "../../../export/contracts/index.js";
+import type { AsterExportArtefact } from "../../../../export/contracts/index.js";
 
 /**
  * @description Validated mapping from one logical export artefact to its staged host path.

@@ -1,5 +1,5 @@
-import { asterCommandNames } from "../../command/constants/aster-command-names.constant.js";
-import { asterCommandSubjects } from "../../command/constants/aster-command-subjects.constant.js";
+import { asterCommandNames } from "../../../command/constants/aster-command-names.constant.js";
+import { asterCommandSubjects } from "../../../command/constants/aster-command-subjects.constant.js";
 
 /**
  * @description Immutable standalone-shell tokens that adapt argv into structured commands.
