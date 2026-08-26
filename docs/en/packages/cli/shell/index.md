@@ -26,20 +26,29 @@ aster list icons [--catalogue <provider>] [--collection <identity>] [--tag <tag>
 aster search <query> [--catalogue <provider>] [--collection <identity>] [--tag <tag>]...
 aster show icon <identity> [--catalogue <provider>]
 aster show collection <identity> [--catalogue <provider>]
-aster export icon <identity> [--catalogue <provider>]
-aster export collection <identity> [--catalogue <provider>] --json
+aster export icon <identity> [--catalogue <provider>] [render-options] [--output <root>]
+aster export collection <identity> [--catalogue <provider>] [render-options] --output <root>
+aster export icon <identity> [--catalogue <provider>] [render-options] --json
+aster export collection <identity> [--catalogue <provider>] [render-options] --json
 aster help [export|list|search|show]
 aster version
 ```
 
-Invoking `aster` without arguments is equivalent to `aster help`. A query containing spaces must
-be supplied as one quoted shell argument. `--tag` may be repeated; singleton filters and `--json`
-may not be repeated. Unknown options and extra positional arguments are usage failures.
+Export render options are `--size`, `--colour`, `--fill`, `--stroke`, `--stroke-width`, and
+`--direction`. Icon export additionally accepts `--label` and `--title`. Numeric values use finite
+decimal notation. Paint and direction domains, minimum size, and icon-owned presentation override
+policies remain validated by the same host-neutral command and SVG boundaries as programmatic
+invocation.
 
-Icon export without `--json` writes one raw SVG document. JSON mode exposes the complete
-host-neutral plan for either subject. Collection export currently requires `--json`. The private
-filesystem publisher is implemented, but `--output`, publication feedback, and shell render
-options are not yet connected to the executable grammar.
+Invoking `aster` without arguments is equivalent to `aster help`. A query or accessible value
+containing spaces must be supplied as one quoted shell argument. `--tag` may be repeated; every
+export option and singleton filter may occur only once, and `--json` may not be repeated. Unknown,
+empty, incomplete, or extra arguments are usage failures.
+
+Icon export without `--json` or `--output` writes one raw SVG document. JSON mode exposes the
+complete host-neutral plan for either subject. Collection export requires JSON or an output root.
+`--json` and `--output` are mutually exclusive shell concerns and never enter
+`AsterCommandInvocationType` together.
 
 The shell explicitly supplies `AsterCatalogue`. This is executable composition rather than an
 ambient default in `AsterCommands`.
@@ -49,6 +58,11 @@ ambient default in `AsterCommands`.
 Human output is plain deterministic text with no terminal-width or mandatory ANSI behaviour.
 Successful human output is written to stdout. Expected human failures are written to stderr with
 their stable diagnostic code and any related values.
+
+Successful output publication writes only a committed destination and artefact-count summary. An
+empty collection writes an explicit non-publication summary because no output root is created.
+The shell never prints SVG markup or a headless plan after claiming that the same result was
+published.
 
 `--json` may occur once for any command. It is removed before structured invocation and therefore
 never enters `AsterCommandInvocationType`. JSON mode writes exactly one compact command-result
@@ -65,7 +79,7 @@ contract first.
 | --- | --- | --- | --- |
 | `0` | Command success. | stdout | stdout |
 | `2` | Usage failure. | stderr | stdout |
-| `1` | Lookup, catalogue, execution, or shell failure. | stderr | stdout |
+| `1` | Lookup, catalogue, render, output, execution, or shell failure. | stderr | stdout where JSON mode applies. |
 
 Presentation receives an immutable result and returns complete stream strings plus status before
 the entrypoint performs any process write. Presentation therefore cannot mutate or alter command
@@ -77,16 +91,17 @@ behaviour.
 | --- | --- |
 | `CommandLineParser` | Separates shell presentation and adapts positional command forms. |
 | `CommandLineOptionParser` | Parses closed command-specific singleton filters and repeated tags. |
-| `ExportCommandLineParser` | Owns the initial icon and collection export grammar and presentation constraint. |
+| `ExportCommandLineParser` | Owns exact icon and collection export forms while keeping output outside the invocation. |
+| `ExportCommandLineOptionParser` | Parses export-specific provider, render, accessibility, and output values. |
 | `CommandOutputPresenter` | Selects human or JSON presentation, streams, and exit status. |
 | `HumanOutputPresenter` | Renders plain help, discovery, raw single-icon SVG, export summaries, version, and failure text. |
 | `JsonOutputPresenter` | Serialises one unstyled structured result document. |
-| `ShellDiagnosticFactory` | Adapts parser and unexpected shell faults into canonical command diagnostics. |
-| `NodeShell` | Delegates parsed invocations to `AsterCommands` with explicit product and catalogue context. |
+| `ShellDiagnosticFactory` | Adapts parser, output-host, and unexpected shell faults into canonical command diagnostics. |
+| `NodeShell` | Executes the host-neutral command before optionally publishing its complete export plan. |
 | `ExportOutputPathResolver` | Resolves explicit output roots and rejects unsafe, ambiguous, escaping, or duplicate logical artefact paths. |
 | `ExportOutputPublisher` | Stages a complete non-empty artefact tree beside an absent target and publishes it through one rename. |
 | `NodeExportOutputFileSystem` | Implements the narrow private output authority with Node filesystem operations. |
-| `ExportOutputError` | Carries sanitised output-conflict or output-failure evidence for later shell diagnostic adaptation. |
+| `ExportOutputError` | Carries sanitised output-conflict or output-failure evidence for shell diagnostic adaptation. |
 
 The private `IExportOutputFileSystem` contract limits publication to existence checks, directory
 creation, exclusive text creation, directory rename, and current-stage removal. Resolved

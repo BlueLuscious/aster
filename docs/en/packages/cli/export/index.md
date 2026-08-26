@@ -63,7 +63,7 @@ expected render failures before the command kernel sanitises them.
 
 No partial plan is observable after member, path, or render failure. Equivalent provider record
 order, collection membership order, and canonical invocation values produce byte-equivalent plans.
-Filesystem publication is a separate standalone-host
-responsibility and cannot be added to these contracts as an ambient capability. The broader
-boundary is defined by the
+Filesystem publication remains a separate standalone-host responsibility. The current shell can
+publish this complete plan beneath an explicit absent output root, but no filesystem capability is
+added to these contracts. The broader boundary is defined by the
 [Command-line Boundary](../../../architecture/command-line-boundary.md#export-boundary).

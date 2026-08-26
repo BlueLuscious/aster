@@ -176,9 +176,8 @@ returns not-found or ambiguity.
 
 The implemented host-neutral export boundary adds exact icon and collection selection over
 installed TypeScript-first definitions and produces deterministic SVG artefact plans without
-Build. The current shell exposes raw single-icon SVG and JSON plans. Its private output
-composition can publish a complete plan safely, while `--output` parsing, diagnostics, and
-presentation remain pending.
+Build. The current shell exposes raw single-icon SVG, JSON plans, and explicit output-root
+publication through its private Node composition.
 
 The accepted standalone forms are:
 
@@ -194,10 +193,9 @@ and, for icon export only, `--label` and `--title`. Icon export without `--outpu
 emits one raw SVG. Collection export requires one of those modes. `--json` and `--output` are
 mutually exclusive shell concerns and never enter the structured invocation.
 
-Only the no-option raw icon form and JSON icon or collection forms are currently exposed by the
-shell. Programmatic invocations already accept the closed render-option values. The private Node
-publisher is implemented independently from argv; the remaining render options and `--output`
-composition belong to the shell extension.
+All four forms and the closed render-option family are implemented. The shell converts textual
+options into the same structured option record accepted programmatically, while JSON selection and
+the output root remain private presentation and host-effect choices.
 
 The host-neutral command result contains a complete immutable serialisable plan. Each artefact has
 a canonical logical relative path, `image/svg+xml` media type, and complete SVG content. Namespace

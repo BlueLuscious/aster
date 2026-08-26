@@ -77,8 +77,8 @@ Provider and membership guarantees are owned by the
 Headless export consumes only accepted catalogue snapshots and the public SVG renderer. It returns
 complete immutable logical artefacts and acquires no process or filesystem capability. The shell
 may present a raw single-icon SVG or serialise the same structured plan. Its private output host
-can stage and publish that plan without changing the programmatic result contract; executable
-`--output` adaptation remains pending. Detailed ownership is documented by
+can stage and publish that plan without changing the programmatic result contract. Shell render
+options become the same portable option record before command execution. Detailed ownership is documented by
 [CLI Export](export/index.md).
 
 ## Conformance evidence
@@ -97,6 +97,8 @@ Package conformance builds the distribution and verifies:
 - safe private output mapping, absent parents, existing targets, interrupted stages, filesystem
   failures, current-stage cleanup, empty-plan non-mutation, and deterministic fresh-root output;
 - executable human, JSON, stream, diagnostic, and exit-status behaviour.
+- raw SVG redirection, exact export-option parsing, committed output summaries, and reserved
+  output conflict and failure diagnostics.
 
 Run the package evidence with:
 

@@ -85,7 +85,8 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
 - many-to-many membership without duplicated icon identity;
 - mixed search fields, cross-provider ambiguity, snapshot conflicts, and unavailable providers.
 - exact export selection, option normalisation, deterministic SVG paths and contents, and complete
-  immutable plans.
+  immutable plans;
+- exact shell render options, raw SVG redirection, and staged output-root publication.
 
 Built-executable integration tests additionally verify human and JSON presentation, exact stream
 selection, exit status, argument rejection, and silent public-root imports. Package conformance
@@ -94,10 +95,9 @@ Node process authority, private Node filesystem ownership, safe output-path mapp
 publication, current-stage cleanup, and execution from a temporary consumer containing no source
 files.
 
-## Remaining export boundary
+## Export boundary
 
-The initial host-neutral SVG export, minimal shell presentation, and private output publisher are
-implemented. Executable `--output` composition, shell render options, publication feedback, and
-the final command experience remain pending without adding filesystem authority to
-`AsterCommands`. The complete accepted contract is defined by the
+Host-neutral SVG planning, raw and JSON presentation, shell render options, private output
+publication, stable output diagnostics, and committed-destination feedback are implemented
+without adding filesystem authority to `AsterCommands`. The complete accepted contract is defined by the
 [Command-line Boundary](../../architecture/command-line-boundary.md#export-boundary).
