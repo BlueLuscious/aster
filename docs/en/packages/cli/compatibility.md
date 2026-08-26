@@ -9,8 +9,8 @@ feature documents.
 ## Runtime compatibility
 
 The package distributes native ESM targeting ES2022 and provides no CommonJS, legacy, or alternate
-build. The programmatic root has no Node or DOM ambient dependency. The standalone `aster`
-executable supports the repository Node range, currently `>=24.10.0 <25`.
+build. The programmatic root has no Node or DOM ambient dependency. The package manifest declares
+`>=24.10.0 <25` as the supported Node range for the standalone `aster` executable.
 
 The Node shell is a referenced TypeScript project. It consumes host-neutral declarations and emits
 only private shell modules, so Node ambient types cannot alter the host-neutral implementation or

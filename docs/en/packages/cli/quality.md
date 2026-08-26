@@ -35,6 +35,22 @@ Command definitions, normalisers, queries, factories, provider implementations, 
 errors, internal contracts, and internal types are emitted modules but are not resolvable through
 the package export map. The executable module is reachable only through the package `bin` mapping.
 
+## Accepted surface classification
+
+| Public family | Current consumer evidence | Decision |
+| --- | --- | --- |
+| `AsterCommands` and `AsterCommandSet` | Standalone shell and independent programmatic host | Retain as the host-neutral execution boundary. |
+| Command invocation, context, descriptor, result, payload, and diagnostic types | Programmatic hosts construct requests, supply capabilities, and interpret results without argv. | Retain as the complete structured command ABI. |
+| `AsterCatalogue` and `CatalogueProvider` | Standalone composition and explicit programmatic catalogue registration | Retain the built-in provider and replaceable provider capability. |
+| Catalogue snapshot and record contracts | Independent providers author discovery evidence without a global registry. | Retain as the provider input boundary. |
+| Catalogue result contracts and `catalogueResultKinds` | Hosts interpret discriminated discovery results at runtime and compile time. | Retain the paired runtime and type authorities. |
+| Export options, plan, artefact, subject, and `exportTargets` | Programmatic and standalone hosts plan, present, redirect, or publish complete SVG output. | Retain the paired planning and target authorities. |
+
+No public value or type can currently be narrowed without making the shell depend on an
+implementation subpath, removing independent provider authorship, or forcing programmatic hosts to
+redeclare observable command data. This classification does not expose internal command
+definitions, normalisers, queries, presenters, filesystem capabilities, or Node services.
+
 ## Runtime inventory
 
 | Feature | Current responsibility | Host authority |
@@ -62,6 +78,12 @@ Build, DOM, browser, framework, network, package-manager, Flora, and repository-
 absent from production source. Node imports occur only in the private shell entrypoint, output-path
 resolver, and filesystem adapter. The host-neutral TypeScript project excludes the complete shell
 tree and admits neither Node nor DOM ambient types.
+
+`@aster/icons` remains a regular dependency because the package publishes `AsterCatalogue` and the
+standalone executable composes it by default. Its definitions are nevertheless acquired only by
+the provider's explicit dynamic import when a catalogue-consuming command runs. Making the
+dependency optional would misrepresent the installed executable contract; extracting a separate
+command package requires an independent Flora or host consumer rather than dependency tidiness.
 
 ## Observable workflows
 
@@ -109,7 +131,7 @@ The current build emits native ES2022 ESM. The unminified distribution contains:
 - 186 distribution files totalling 223,341 bytes.
 
 The package dry-run contains 189 entries including the manifest, README, and licence. Its observed
-archive size is 42,975 bytes and its unpacked size is 226,565 bytes. These values are comparison
+archive size is 43,098 bytes and its unpacked size is 226,931 bytes. These values are comparison
 evidence from the current toolchain, not compatibility promises or performance thresholds.
 
 The shell project intentionally emits no declarations, but currently emits empty JavaScript
@@ -121,9 +143,6 @@ inventory.
 
 | Pressure | Current evidence | Required boundary |
 | --- | --- | --- |
-| Public ABI | Four runtime values and 26 public contracts or types are exported, but hardening has not classified each against an independent consumer. | Retain, narrow, or document each value in the package and dependency audit without exposing implementation subpaths. |
-| Runtime declaration | Canonical docs claim the repository Node range for the executable, while the package manifest has no package-local `engines` field. | Publish one explicit executable runtime contract in the package manifest. |
-| README completeness | The package README lists discovery commands but omits the implemented export workflow. | Synchronise it with the retained public and executable surface. |
 | Reflective input acceptance | Current record checks rely on `Object.keys`, direct property reads, and broad non-array object acceptance. | Decide exact prototype, symbol, descriptor, accessor, sparse-array, Proxy, and caller-failure semantics before claiming hostile-input hardening. |
 | Provider retention | Context normalisation freezes the provider sequence but retains provider objects and their callable methods by reference. | Define whether provider identity and loading capability require snapshots, structural isolation, or explicit trusted capability semantics. |
 | Repeated authorities | Canonical slug checks and ASCII comparison appear in multiple command, catalogue, and export responsibilities. | Centralise only semantics proven identical across features, without leaking Core or shell ownership. |
