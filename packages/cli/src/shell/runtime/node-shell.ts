@@ -1,9 +1,14 @@
+import { asterCommandPayloadKinds } from "../../command/constants/aster-command-payload-kinds.constant.js";
 import { AsterCatalogue, AsterCommands } from "../../index.js";
 import { commandLineTokens } from "../constants/command-line-tokens.constant.js";
 import type { TShellExecution } from "../types/internal/shell-execution.type.js";
 import { CommandLineError } from "./command-line.error.js";
 import { CommandLineParser } from "./command-line.parser.js";
 import { CommandOutputPresenter } from "./command-output.presenter.js";
+import { ExportOutputError } from "./export-output.error.js";
+import { ExportOutputPathResolver } from "./export-output-path.resolver.js";
+import { ExportOutputPublisher } from "./export-output.publisher.js";
+import { NodeExportOutputFileSystem } from "./node-export-output-file-system.js";
 import { ShellDiagnosticFactory } from "./shell-diagnostic.factory.js";
 
 /**
@@ -26,6 +31,19 @@ export class NodeShell {
   readonly #diagnostics = new ShellDiagnosticFactory();
 
   /**
+   * @description Private Node output composition applied only to complete export plans.
+   */
+  readonly #publisher = new ExportOutputPublisher(
+    new NodeExportOutputFileSystem(),
+    new ExportOutputPathResolver(),
+  );
+
+  /**
+   * @description Explicit absolute host directory used for output-root resolution.
+   */
+  readonly #currentDirectory: string;
+
+  /**
    * @description Explicit immutable command context owned by this executable composition.
    */
   readonly #context;
@@ -34,8 +52,14 @@ export class NodeShell {
    * @description Creates one standalone shell with explicit product metadata.
    * @param productName - Stable product name for the version command.
    * @param productVersion - Installed package version for the version command.
+   * @param currentDirectory - Explicit absolute host directory for output resolution.
    */
-  constructor(productName: string, productVersion: string) {
+  constructor(
+    productName: string,
+    productVersion: string,
+    currentDirectory: string,
+  ) {
+    this.#currentDirectory = currentDirectory;
     this.#context = Object.freeze({
       catalogues: Object.freeze([AsterCatalogue]),
       productName,
@@ -54,10 +78,26 @@ export class NodeShell {
     try {
       const parsed = this.#parser.parse(argv);
       const result = await AsterCommands.execute(parsed.invocation, this.#context);
+
+      if (
+        parsed.output !== undefined
+        && result.ok
+        && result.payload.kind === asterCommandPayloadKinds.export
+      ) {
+        const publication = await this.#publisher.publish(
+          result.payload.plan,
+          this.#currentDirectory,
+          parsed.output,
+        );
+        return this.#output.presentPublication(publication);
+      }
+
       return this.#output.present(result, parsed.json);
     } catch (error) {
       const result = error instanceof CommandLineError
         ? this.#diagnostics.usage(error)
+        : error instanceof ExportOutputError
+          ? this.#diagnostics.output(error)
         : this.#diagnostics.unexpected();
       return this.#output.present(result, json);
     }

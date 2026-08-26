@@ -14,9 +14,9 @@ export class CommandLineParser {
   readonly #options = new CommandLineOptionParser();
 
   /**
-   * @description Command-local parser for the initial standalone export grammar.
+   * @description Command-local parser for the standalone export grammar.
    */
-  readonly #export = new ExportCommandLineParser(this.#options);
+  readonly #export = new ExportCommandLineParser();
 
   /**
    * @description Parses one executable argument sequence without reading process state.
@@ -34,10 +34,17 @@ export class CommandLineParser {
       });
     }
 
+    if (command === commandLineTokens.commands.export) {
+      const parsed = this.#export.parse(tokens, json);
+      return Object.freeze({
+        invocation: parsed.invocation,
+        json,
+        ...(parsed.output === undefined ? {} : { output: parsed.output }),
+      });
+    }
+
     const invocation = (() => {
       switch (command) {
-        case commandLineTokens.commands.export:
-          return this.#export.parse(tokens, json);
         case commandLineTokens.commands.list:
           return this.#parseList(tokens);
         case commandLineTokens.commands.search:

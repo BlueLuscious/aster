@@ -1,6 +1,7 @@
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import type { AsterCommandResultType } from "../../command/types/index.js";
 import type { TShellExecution } from "../types/internal/shell-execution.type.js";
+import type { TExportOutputPublication } from "../types/internal/export-output-publication.type.js";
 import { HumanOutputPresenter } from "./human-output.presenter.js";
 import { JsonOutputPresenter } from "./json-output.presenter.js";
 
@@ -17,6 +18,21 @@ export class CommandOutputPresenter {
    * @description Stable unstyled machine presenter.
    */
   readonly #json = new JsonOutputPresenter();
+
+  /**
+   * @description Presents one completed standalone output publication.
+   * @param publication - Immutable committed or empty-plan publication evidence.
+   * @returns Human stdout summary and successful exit status.
+   */
+  presentPublication(
+    publication: TExportOutputPublication,
+  ): TShellExecution {
+    return Object.freeze({
+      stdout: `${this.#human.publication(publication)}\n`,
+      stderr: "",
+      exitCode: 0,
+    });
+  }
 
   /**
    * @description Presents one result without writing to process streams.

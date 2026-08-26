@@ -13,4 +13,9 @@ export type TParsedCommandLine = Readonly<{
    * @description Whether the shell must emit one machine-readable JSON document.
    */
   json: boolean;
+
+  /**
+   * @description Optional export output root retained outside the host-neutral invocation.
+   */
+  output?: string;
 }>;

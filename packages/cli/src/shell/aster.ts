@@ -21,7 +21,7 @@ if (typeof manifest.version !== "string" || manifest.version.length === 0) {
 /**
  * @description Standalone executable composition using installed product metadata.
  */
-const shell = new NodeShell("Aster", manifest.version);
+const shell = new NodeShell("Aster", manifest.version, process.cwd());
 
 /**
  * @description Pure shell execution description produced from process arguments.

@@ -9,8 +9,10 @@ export const asterCommandDescriptors = Object.freeze({
     name: asterCommandNames.export,
     summary: "Export one icon or collection as deterministic SVG artefacts.",
     usage: Object.freeze([
-      "export icon <identity> [--catalogue <provider>]",
-      "export collection <identity> [--catalogue <provider>] --json",
+      "export icon <identity> [--catalogue <provider>] [--size <number>] [--colour <paint>] [--fill <paint>] [--stroke <paint>] [--stroke-width <number>] [--direction <ltr|rtl>] [--label <text>] [--title <text>] [--output <root>]",
+      "export collection <identity> [--catalogue <provider>] [--size <number>] [--colour <paint>] [--fill <paint>] [--stroke <paint>] [--stroke-width <number>] [--direction <ltr|rtl>] --output <root>",
+      "export icon <identity> [--catalogue <provider>] [--size <number>] [--colour <paint>] [--fill <paint>] [--stroke <paint>] [--stroke-width <number>] [--direction <ltr|rtl>] [--label <text>] [--title <text>] --json",
+      "export collection <identity> [--catalogue <provider>] [--size <number>] [--colour <paint>] [--fill <paint>] [--stroke <paint>] [--stroke-width <number>] [--direction <ltr|rtl>] --json",
     ]),
   }),
   list: Object.freeze({

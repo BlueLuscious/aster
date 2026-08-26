@@ -1,35 +1,29 @@
+import type { asterCommandNames } from "../../command/constants/aster-command-names.constant.js";
 import type { AsterCommandInvocationType } from "../../command/types/index.js";
 import { commandLineTokens } from "../constants/command-line-tokens.constant.js";
+import type { TParsedExportCommandLine } from "../types/internal/parsed-export-command-line.type.js";
 import { CommandLineError } from "./command-line.error.js";
-import { CommandLineOptionParser } from "./command-line-option.parser.js";
+import { ExportCommandLineOptionParser } from "./export-command-line-option.parser.js";
 
 /**
- * @description Adapts the initial standalone export grammar into a host-neutral invocation.
+ * @description Adapts the standalone export grammar into a host-neutral invocation.
  */
 export class ExportCommandLineParser {
   /**
-   * @description Closed shared option parser used for the provider filter.
+   * @description Closed parser for export-specific invocation and shell options.
    */
-  readonly #options: CommandLineOptionParser;
-
-  /**
-   * @description Creates one export parser from the shell's shared option parser.
-   * @param options - Closed command-option parser.
-   */
-  constructor(options: CommandLineOptionParser) {
-    this.#options = options;
-  }
+  readonly #options = new ExportCommandLineOptionParser();
 
   /**
    * @description Parses one exact icon or collection export without acquiring output authority.
    * @param tokens - Command tokens beginning with `export`.
    * @param json - Whether machine-readable plan presentation was requested.
-   * @returns Structured export invocation candidate.
+   * @returns Structured export invocation and optional shell-owned output root.
    */
   parse(
     tokens: readonly string[],
     json: boolean,
-  ): Extract<AsterCommandInvocationType, { command: "export" }> {
+  ): TParsedExportCommandLine {
     const subject = tokens[1];
     const identity = tokens[2];
 
@@ -50,26 +44,56 @@ export class ExportCommandLineParser {
       );
     }
 
-    if (subject === commandLineTokens.subjects.collection && !json) {
+    const parsed = this.#options.parse(tokens.slice(3), subject);
+
+    if (json && parsed.output !== undefined) {
       throw new CommandLineError(
-        "collection export requires --json until an output root is supplied",
+        "options --json and --output cannot be combined",
         commandLineTokens.commands.export,
       );
     }
 
-    const options = this.#options.parse(
-      tokens.slice(3),
-      [commandLineTokens.options.catalogue],
-      commandLineTokens.commands.export,
-    );
+    if (
+      subject === commandLineTokens.subjects.collection
+      && !json
+      && parsed.output === undefined
+    ) {
+      throw new CommandLineError(
+        "collection export requires --json or --output",
+        commandLineTokens.commands.export,
+      );
+    }
 
-    return {
+    const options = Object.freeze({
+      ...(parsed.size === undefined ? {} : { size: parsed.size }),
+      ...(parsed.colour === undefined ? {} : { colour: parsed.colour }),
+      ...(parsed.fill === undefined ? {} : { fill: parsed.fill }),
+      ...(parsed.stroke === undefined ? {} : { stroke: parsed.stroke }),
+      ...(parsed.strokeWidth === undefined
+        ? {}
+        : { strokeWidth: parsed.strokeWidth }),
+      ...(parsed.direction === undefined
+        ? {}
+        : { direction: parsed.direction }),
+      ...(parsed.label === undefined ? {} : { label: parsed.label }),
+      ...(parsed.title === undefined ? {} : { title: parsed.title }),
+    });
+    const invocation: Extract<
+      AsterCommandInvocationType,
+      { command: typeof asterCommandNames.export }
+    > = {
       command: commandLineTokens.commands.export,
       subject,
       identity,
-      ...(options.catalogue === undefined
+      ...(parsed.catalogue === undefined
         ? {}
-        : { catalogue: options.catalogue }),
+        : { catalogue: parsed.catalogue }),
+      ...(Object.keys(options).length === 0 ? {} : { options }),
     };
+
+    return Object.freeze({
+      invocation: Object.freeze(invocation),
+      ...(parsed.output === undefined ? {} : { output: parsed.output }),
+    });
   }
 }
