@@ -89,14 +89,15 @@ Package conformance builds the distribution and verifies:
 - host-neutral declaration imports and dependency direction;
 - exclusive Node process authority in the executable entrypoint;
 - import behaviour in a temporary consumer containing only package manifests and distributions;
-- standalone and independent programmatic-host result equivalence;
+- standalone and independent programmatic-host discovery and complete export equivalence;
 - explicit catalogue registration and registration-order independence;
+- byte-equivalent publication of the complete built-in collection from a clean consumer;
 - byte-equivalent export plans across provider-record and membership order;
 - empty collections, variants, namespaced paths, malformed providers, path collisions, target
   failures, and caller-controlled exceptions;
 - safe private output mapping, absent parents, existing targets, interrupted stages, filesystem
   failures, current-stage cleanup, empty-plan non-mutation, and deterministic fresh-root output;
-- executable human, JSON, stream, diagnostic, and exit-status behaviour.
+- executable human, JSON, stream, diagnostic, and exit-status behaviour;
 - raw SVG redirection, exact export-option parsing, committed output summaries, and reserved
   output conflict and failure diagnostics.
 

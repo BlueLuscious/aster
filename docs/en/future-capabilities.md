@@ -27,7 +27,7 @@ may still wait for an earlier prerequisite in the recommended sequence.
 | 2 | `P0` | Completed: harden private repository tooling. | Stable root commands use independently testable object-oriented runtime boundaries without obsolete pilot hosts. |
 | 3 | `P0` | Completed: audit and harden `@aster/core`. | Its model, API, validation, immutability, performance, exports, consumers, and documentation have explicit outcomes. |
 | 4 | `P0` | Completed: audit and harden `@aster/svg`. | Serialisation correctness, performance, API, output, and package-boundary risks have explicit outcomes independently from Core. |
-| 5 | `P1` | Implement useful catalogue and TypeScript-first CLI workflows. | Users can inspect and consume installed icons and collections without requiring `@aster/build`. |
+| 5 | `P1` | Completed: implement useful catalogue and TypeScript-first CLI workflows. | Users can inspect and export installed icons and collections without requiring `@aster/build`. |
 | 6 | `P0` | Evaluate the future of `@aster/build`. | Retain, narrow, pause, replace, or remove it using real SVG-import evidence. |
 | 7 | `P1` | Harden the retained Build boundary, if any. | A real import workflow validates its parser, diagnostics, normalisation, generation, and host split. |
 | 8 | `P2` | Consider an Aster-owned XML tokeniser. | Build is retained and parser conformance and maintenance evidence justify replacement. |
@@ -60,9 +60,9 @@ ambient mutable registry, and a thin Node shell. If independent consumers later 
 host-neutral command set may move to a separate package such as `@aster/commands`, while
 `@aster/cli` remains the executable adapter.
 
-The closed initial command family deliberately uses exhaustive invocation, argument, and human
-presentation dispatch. When the next substantial command family such as `add`, `export`, or
-`generate` is accepted, reassess that pressure and extract vertical command adapters or explicit
+The current command family deliberately uses explicit invocation, argument, and human presentation
+dispatch. When the next substantial command family such as `add`, `generate`, `import`, or
+`review` is accepted, reassess that pressure and extract further vertical command adapters or explicit
 registrations if doing so localises validation, shell parsing, and presentation changes. Do not
 introduce inheritance hierarchies, automatic command discovery, or a generic registry merely to
 remove small exhaustive switches.
@@ -76,7 +76,7 @@ Icons, SVG, Lotus, Lilium, and unrelated projects must never depend on the CLI.
 
 Importance: **P1 - High**
 
-Status: **Initial headless SVG export implemented; output host pending**
+Status: **Initial TypeScript-first discovery and SVG export workflow completed**
 
 The first useful commands should operate on explicitly installed or configured catalogue
 providers and canonical TypeScript definitions. They do not require the SVG importer in
@@ -98,10 +98,14 @@ providers and canonical TypeScript definitions. They do not require the SVG impo
 evidence, and `generate` produces code or integration artefacts. No command may silently copy
 source, install dependencies, overwrite user files, or infer ownership from a directory name.
 
-The first export workflow now has an accepted boundary and initial implementation. It returns complete immutable SVG
+The first export workflow has an accepted implementation. It returns complete immutable SVG
 artefacts with logical paths from the host-neutral command set, keeps output-root resolution and
 filesystem commitment in the standalone shell, forbids initial overwrite, and does not introduce
-Build or a generic target registry. Its exact selection, presentation, staging, and dependency
+Build or a generic target registry. `add` remains deferred until consumer integration has one
+explicit package, import, or vendoring policy. `generate` requires one concrete generated target;
+`review` requires a disposable visual evidence host; and `import` remains conditional on the Build
+decision. Generic target plugins and extraction to `@aster/commands` require independent consumers
+rather than speculative abstractions. Exact selection, presentation, staging, and dependency
 decisions are defined by
 [0010: Headless SVG Export and Node Output Boundary](decisions/0010-headless-svg-export-and-node-output-boundary.md).
 

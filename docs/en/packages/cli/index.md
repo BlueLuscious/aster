@@ -27,6 +27,9 @@ help metadata does not eagerly evaluate the built-in catalogue.
 | [Export](export/index.md) | Selects exact catalogue definitions and constructs immutable host-neutral SVG artefact plans. |
 | [Shell](shell/index.md) | Adapts Node argv, presents human or JSON output, and commits documented process effects. |
 
+[CLI Workflow](workflow.md) describes how these features compose from one structured invocation
+through immutable planning and optional standalone publication.
+
 [CLI Compatibility and Conformance](compatibility.md) defines the package ABI, supported runtime,
 programmatic-host guarantees, and release evidence across these features.
 
@@ -92,8 +95,9 @@ Built-executable integration tests additionally verify human and JSON presentati
 selection, exit status, argument rejection, and silent public-root imports. Package conformance
 also verifies exact exports and declarations, rejected subpaths, dependency direction, exclusive
 Node process authority, private Node filesystem ownership, safe output-path mapping, atomic visible
-publication, current-stage cleanup, and execution from a temporary consumer containing no source
-files.
+publication, current-stage cleanup, equivalent complete export through standalone and independent
+programmatic hosts, and byte-equivalent publication from a temporary consumer containing no
+source files.
 
 ## Export boundary
 
