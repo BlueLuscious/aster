@@ -17,10 +17,12 @@ import type {
   AsterExportSubjectType,
   AsterIconExportOptionsType,
   AsterCommandShowSubjectType,
+  CatalogueCollectionRecord,
+  CatalogueCollectionResult,
+  CatalogueIconRecord,
+  CatalogueIconResult,
   CatalogueProvider,
   CatalogueProviderResult,
-  CatalogueIconResult,
-  CatalogueCollectionResult,
   CatalogueResultKindType,
   CatalogueSnapshot,
 } from "../../src/index.js";
@@ -119,7 +121,9 @@ const publicExecution: Promise<AsterCommandResultType> = AsterCommands.execute(
 );
 const publicProvider: CatalogueProvider = AsterCatalogue;
 declare const commandPayload: AsterCommandPayloadType;
+declare const iconRecord: CatalogueIconRecord;
 declare const iconResult: CatalogueIconResult;
+declare const collectionRecord: CatalogueCollectionRecord;
 declare const collectionResult: CatalogueCollectionResult;
 declare const providerResult: CatalogueProviderResult;
 
@@ -157,7 +161,9 @@ void publicExecution;
 void publicProvider;
 void commandPayload;
 void catalogueResultKind;
+void collectionRecord;
 void iconResult;
+void iconRecord;
 void iconExportOptions;
 void invalidCollectionExport;
 void collectionResult;
