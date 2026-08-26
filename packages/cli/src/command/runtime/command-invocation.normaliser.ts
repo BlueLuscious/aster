@@ -8,15 +8,22 @@ import type {
 import type { TAcceptanceResult } from "../types/internal/acceptance-result.type.js";
 import { CommandDiagnosticFactory } from "./command-diagnostic.factory.js";
 import { ExportOptionsNormaliser } from "../../export/runtime/export-options.normaliser.js";
+import { CanonicalIdentityValidator } from "../../shared/runtime/canonical-identity.validator.js";
+import { StructuredDataInspector } from "../../shared/runtime/structured-data.inspector.js";
 
 /**
  * @description Validates, canonicalises, isolates, and freezes structured command invocations.
  */
 export class CommandInvocationNormaliser {
   /**
-   * @description Canonical ASCII slug grammar shared by CLI identity components and tags.
+   * @description Canonical provider and portable textual identity validator.
    */
-  readonly #slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+  readonly #identities = new CanonicalIdentityValidator();
+
+  /**
+   * @description Exact record and dense-array acceptance authority.
+   */
+  readonly #data = new StructuredDataInspector();
 
   /**
    * @description Immutable diagnostic constructor used for rejected invocations.
@@ -34,25 +41,37 @@ export class CommandInvocationNormaliser {
    * @returns Accepted canonical invocation or structured usage rejection.
    */
   normalise(value: unknown): TAcceptanceResult<AsterCommandInvocationType> {
-    if (!this.#isRecord(value) || typeof value.command !== "string") {
+    const record = this.#data.record(value, [
+      "command",
+      "subject",
+      "identity",
+      "catalogue",
+      "options",
+      "collection",
+      "tags",
+      "query",
+      "commandName",
+    ], ["command"]);
+
+    if (record === undefined || typeof record.command !== "string") {
       return this.#invalid("expected invocation.command to identify a command");
     }
 
-    switch (value.command) {
+    switch (record.command) {
       case asterCommandNames.export:
-        return this.#normaliseExport(value);
+        return this.#normaliseExport(record);
       case asterCommandNames.list:
-        return this.#normaliseList(value);
+        return this.#normaliseList(record);
       case asterCommandNames.search:
-        return this.#normaliseSearch(value);
+        return this.#normaliseSearch(record);
       case asterCommandNames.show:
-        return this.#normaliseShow(value);
+        return this.#normaliseShow(record);
       case asterCommandNames.help:
-        return this.#normaliseHelp(value);
+        return this.#normaliseHelp(record);
       case asterCommandNames.version:
-        return this.#normaliseVersion(value);
+        return this.#normaliseVersion(record);
       default:
-        return this.#invalid(`unknown command ${JSON.stringify(value.command)}`);
+        return this.#invalid(`unknown command ${JSON.stringify(record.command)}`);
     }
   }
 
@@ -62,17 +81,21 @@ export class CommandInvocationNormaliser {
    * @returns Accepted immutable export invocation or usage rejection.
    */
   #normaliseExport(
-    value: Record<string, unknown>,
+    value: Readonly<Record<string, unknown>>,
   ): TAcceptanceResult<AsterCommandInvocationType> {
-    if (!this.#hasOnlyFields(value, [
+    const record = this.#data.record(value, [
       "command",
       "subject",
       "identity",
       "catalogue",
       "options",
-    ])) {
+    ]);
+
+    if (record === undefined) {
       return this.#invalid("export invocation contains an unknown field");
     }
+
+    value = record;
 
     if (
       value.subject !== asterCommandSubjects.export.icon &&
@@ -81,12 +104,11 @@ export class CommandInvocationNormaliser {
       return this.#invalid("expected export subject to be icon or collection");
     }
 
-    if (
-      !this.#isCanonicalIdentity(
-        value.identity,
-        value.subject === asterCommandSubjects.export.icon,
-      )
-    ) {
+    const validIdentity = value.subject === asterCommandSubjects.export.icon
+      ? this.#identities.icon(value.identity)
+      : this.#identities.collection(value.identity);
+
+    if (!validIdentity) {
       return this.#invalid(`expected a canonical ${value.subject} identity`);
     }
 
@@ -109,12 +131,12 @@ export class CommandInvocationNormaliser {
       value: Object.freeze({
         command: asterCommandNames.export,
         subject: value.subject,
-        identity: value.identity,
+        identity: value.identity as string,
         ...(Object.hasOwn(value, "catalogue")
           ? { catalogue: value.catalogue as string }
           : {}),
         ...(options.value === undefined ? {} : { options: options.value }),
-      }),
+      }) as AsterCommandInvocationType,
     });
   }
 
@@ -124,17 +146,21 @@ export class CommandInvocationNormaliser {
    * @returns Accepted immutable list invocation or usage rejection.
    */
   #normaliseList(
-    value: Record<string, unknown>,
+    value: Readonly<Record<string, unknown>>,
   ): TAcceptanceResult<AsterCommandInvocationType> {
-    if (!this.#hasOnlyFields(value, [
+    const record = this.#data.record(value, [
       "command",
       "subject",
       "catalogue",
       "collection",
       "tags",
-    ])) {
+    ]);
+
+    if (record === undefined) {
       return this.#invalid("list invocation contains an unknown field");
     }
+
+    value = record;
 
     if (
       value.subject !== asterCommandSubjects.list.catalogues &&
@@ -196,17 +222,21 @@ export class CommandInvocationNormaliser {
    * @returns Accepted immutable search invocation or usage rejection.
    */
   #normaliseSearch(
-    value: Record<string, unknown>,
+    value: Readonly<Record<string, unknown>>,
   ): TAcceptanceResult<AsterCommandInvocationType> {
-    if (!this.#hasOnlyFields(value, [
+    const record = this.#data.record(value, [
       "command",
       "query",
       "catalogue",
       "collection",
       "tags",
-    ])) {
+    ]);
+
+    if (record === undefined) {
       return this.#invalid("search invocation contains an unknown field");
     }
+
+    value = record;
 
     if (typeof value.query !== "string" || value.query.trim().length === 0) {
       return this.#invalid("expected search query to be a non-empty string");
@@ -250,16 +280,20 @@ export class CommandInvocationNormaliser {
    * @returns Accepted immutable show invocation or usage rejection.
    */
   #normaliseShow(
-    value: Record<string, unknown>,
+    value: Readonly<Record<string, unknown>>,
   ): TAcceptanceResult<AsterCommandInvocationType> {
-    if (!this.#hasOnlyFields(value, [
+    const record = this.#data.record(value, [
       "command",
       "subject",
       "identity",
       "catalogue",
-    ])) {
+    ]);
+
+    if (record === undefined) {
       return this.#invalid("show invocation contains an unknown field");
     }
+
+    value = record;
 
     if (
       value.subject !== asterCommandSubjects.show.icon &&
@@ -268,12 +302,11 @@ export class CommandInvocationNormaliser {
       return this.#invalid("expected show subject to be icon or collection");
     }
 
-    if (
-      !this.#isCanonicalIdentity(
-        value.identity,
-        value.subject === asterCommandSubjects.show.icon,
-      )
-    ) {
+    const validIdentity = value.subject === asterCommandSubjects.show.icon
+      ? this.#identities.icon(value.identity)
+      : this.#identities.collection(value.identity);
+
+    if (!validIdentity) {
       return this.#invalid(`expected a canonical ${value.subject} identity`);
     }
 
@@ -286,7 +319,7 @@ export class CommandInvocationNormaliser {
       value: Object.freeze({
         command: asterCommandNames.show,
         subject: value.subject,
-        identity: value.identity,
+        identity: value.identity as string,
         ...(Object.hasOwn(value, "catalogue")
           ? { catalogue: value.catalogue as string }
           : {}),
@@ -300,11 +333,15 @@ export class CommandInvocationNormaliser {
    * @returns Accepted immutable help invocation or usage rejection.
    */
   #normaliseHelp(
-    value: Record<string, unknown>,
+    value: Readonly<Record<string, unknown>>,
   ): TAcceptanceResult<AsterCommandInvocationType> {
-    if (!this.#hasOnlyFields(value, ["command", "commandName"])) {
+    const record = this.#data.record(value, ["command", "commandName"]);
+
+    if (record === undefined) {
       return this.#invalid("help invocation contains an unknown field");
     }
+
+    value = record;
 
     if (
       Object.hasOwn(value, "commandName") &&
@@ -330,9 +367,9 @@ export class CommandInvocationNormaliser {
    * @returns Accepted immutable version invocation or usage rejection.
    */
   #normaliseVersion(
-    value: Record<string, unknown>,
+    value: Readonly<Record<string, unknown>>,
   ): TAcceptanceResult<AsterCommandInvocationType> {
-    if (!this.#hasOnlyFields(value, ["command"])) {
+    if (this.#data.record(value, ["command"]) === undefined) {
       return this.#invalid("version invocation does not accept additional fields");
     }
 
@@ -359,38 +396,16 @@ export class CommandInvocationNormaliser {
   }
 
   /**
-   * @description Determines whether a candidate is a non-null string-keyed record.
-   * @param value - Candidate value.
-   * @returns Whether own fields can be inspected safely.
-   */
-  #isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-  }
-
-  /**
-   * @description Determines whether a record contains no fields outside a closed set.
-   * @param value - Record to inspect.
-   * @param fields - Accepted own-field names.
-   * @returns Whether every own field is accepted.
-   */
-  #hasOnlyFields(
-    value: Record<string, unknown>,
-    fields: readonly string[],
-  ): boolean {
-    return Object.keys(value).every((field) => fields.includes(field));
-  }
-
-  /**
    * @description Determines whether one optional field is a canonical provider identity.
    * @param value - Record containing the optional field.
    * @param field - Own field to inspect when present.
    * @returns Whether the absent or present value is valid.
    */
   #hasCanonicalOptionalProvider(
-    value: Record<string, unknown>,
+    value: Readonly<Record<string, unknown>>,
     field: string,
   ): boolean {
-    return !Object.hasOwn(value, field) || this.#isSlug(value[field]);
+    return !Object.hasOwn(value, field) || this.#identities.slug(value[field]);
   }
 
   /**
@@ -401,13 +416,15 @@ export class CommandInvocationNormaliser {
    * @returns Whether the absent or present identity is valid.
    */
   #hasCanonicalOptionalIdentity(
-    value: Record<string, unknown>,
+    value: Readonly<Record<string, unknown>>,
     field: string,
     allowVariant: boolean,
   ): boolean {
     return (
       !Object.hasOwn(value, field) ||
-      this.#isCanonicalIdentity(value[field], allowVariant)
+      (allowVariant
+        ? this.#identities.icon(value[field])
+        : this.#identities.collection(value[field]))
     );
   }
 
@@ -416,57 +433,21 @@ export class CommandInvocationNormaliser {
    * @param value - Invocation record containing optional tags.
    * @returns Whether absent or present tags satisfy the accepted boundary.
    */
-  #hasCanonicalOptionalTags(value: Record<string, unknown>): boolean {
+  #hasCanonicalOptionalTags(value: Readonly<Record<string, unknown>>): boolean {
     if (!Object.hasOwn(value, "tags")) {
       return true;
     }
 
-    if (!Array.isArray(value.tags) || value.tags.length === 0) {
+    const tags = this.#data.array(value.tags);
+
+    if (tags === undefined || tags.length === 0) {
       return false;
     }
 
-    const tags = value.tags;
-    return tags.every((tag) => this.#isSlug(tag)) && new Set(tags).size === tags.length;
-  }
-
-  /**
-   * @description Determines whether a value is a canonical portable textual identity.
-   * @param value - Candidate textual identity.
-   * @param allowVariant - Whether an `@variant` component is accepted.
-   * @returns Whether every identity component is a canonical slug.
-   */
-  #isCanonicalIdentity(value: unknown, allowVariant: boolean): value is string {
-    if (typeof value !== "string") {
-      return false;
-    }
-
-    const variantSections = value.split("@");
-
-    if (variantSections.length > (allowVariant ? 2 : 1)) {
-      return false;
-    }
-
-    const identity = variantSections[0];
-    const variant = variantSections[1];
-
-    if (identity === undefined || (variant !== undefined && !this.#isSlug(variant))) {
-      return false;
-    }
-
-    const identitySections = identity.split("/");
     return (
-      identitySections.length <= 2 &&
-      identitySections.every((section) => this.#isSlug(section))
+      tags.every((tag) => this.#identities.slug(tag))
+      && new Set(tags).size === tags.length
     );
-  }
-
-  /**
-   * @description Determines whether a candidate is a canonical ASCII lowercase kebab-case slug.
-   * @param value - Candidate slug.
-   * @returns Whether the slug matches the shared CLI grammar.
-   */
-  #isSlug(value: unknown): value is string {
-    return typeof value === "string" && this.#slugPattern.test(value);
   }
 
   /**

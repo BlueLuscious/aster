@@ -12,6 +12,9 @@ import type {
   CatalogueCollectionRecord,
   CatalogueIconRecord,
 } from "../contracts/index.js";
+import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
+import { CanonicalIdentityValidator } from "../../shared/runtime/canonical-identity.validator.js";
+import { StructuredDataInspector } from "../../shared/runtime/structured-data.inspector.js";
 import { CatalogueIdentityFormatter } from "./catalogue-identity.formatter.js";
 
 /**
@@ -19,9 +22,19 @@ import { CatalogueIdentityFormatter } from "./catalogue-identity.formatter.js";
  */
 export class CatalogueRecordNormaliser {
   /**
-   * @description Canonical ASCII slug grammar for supplied membership identities.
+   * @description Locale-independent ordering authority for canonical membership identities.
    */
-  readonly #slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+  readonly #ascii = new AsciiStringComparator();
+
+  /**
+   * @description Exact provider-record and dense-array acceptance authority.
+   */
+  readonly #data = new StructuredDataInspector();
+
+  /**
+   * @description Canonical provider-owned identity validator.
+   */
+  readonly #identityValidation = new CanonicalIdentityValidator();
 
   /**
    * @description Canonical portable identity formatter used for membership resolution.
@@ -43,21 +56,23 @@ export class CatalogueRecordNormaliser {
     providerIdentity: string,
     value: unknown,
   ): TAcceptanceResult<CatalogueCollectionRecord> {
-    if (
-      !this.#isRecord(value) ||
-      !this.#hasOnlyFields(value, ["definition", "searchTerms"]) ||
-      !Object.hasOwn(value, "definition")
-    ) {
+    const record = this.#data.record(
+      value,
+      ["definition", "searchTerms"],
+      ["definition"],
+    );
+
+    if (record === undefined) {
       return this.#unavailable(
         providerIdentity,
         "expected a valid collection record",
       );
     }
 
-    const definition = this.#acceptCollection(value.definition);
+    const definition = this.#acceptCollection(record.definition);
     const searchTerms = this.#acceptSearchTerms(
-      value.searchTerms,
-      Object.hasOwn(value, "searchTerms"),
+      record.searchTerms,
+      Object.hasOwn(record, "searchTerms"),
     );
 
     if (definition === undefined || searchTerms === null) {
@@ -88,19 +103,23 @@ export class CatalogueRecordNormaliser {
     value: unknown,
     collectionsByIdentity: ReadonlyMap<string, CatalogueCollectionRecord>,
   ): TAcceptanceResult<CatalogueIconRecord> {
-    if (
-      !this.#isRecord(value) ||
-      !this.#hasOnlyFields(value, ["definition", "memberships", "searchTerms"]) ||
-      !Object.hasOwn(value, "definition") ||
-      !Array.isArray(value.memberships)
-    ) {
+    const record = this.#data.record(
+      value,
+      ["definition", "memberships", "searchTerms"],
+      ["definition", "memberships"],
+    );
+    const membershipValues = record === undefined
+      ? undefined
+      : this.#data.array(record.memberships);
+
+    if (record === undefined || membershipValues === undefined) {
       return this.#unavailable(providerIdentity, "expected a valid icon record");
     }
 
-    const definition = this.#acceptIcon(value.definition);
+    const definition = this.#acceptIcon(record.definition);
     const searchTerms = this.#acceptSearchTerms(
-      value.searchTerms,
-      Object.hasOwn(value, "searchTerms"),
+      record.searchTerms,
+      Object.hasOwn(record, "searchTerms"),
     );
 
     if (definition === undefined || searchTerms === null) {
@@ -113,7 +132,7 @@ export class CatalogueRecordNormaliser {
     const memberships: CollectionIdentity[] = [];
     const membershipKeys: string[] = [];
 
-    for (const membership of value.memberships) {
+    for (const membership of membershipValues) {
       const key = this.#acceptCollectionIdentity(membership);
       const collection = key === undefined
         ? undefined
@@ -137,11 +156,7 @@ export class CatalogueRecordNormaliser {
     memberships.sort((left, right) => {
       const leftIdentity = this.#identities.collection(left);
       const rightIdentity = this.#identities.collection(right);
-      return leftIdentity < rightIdentity
-        ? -1
-        : leftIdentity > rightIdentity
-          ? 1
-          : 0;
+      return this.#ascii.compare(leftIdentity, rightIdentity);
     });
 
     return Object.freeze({
@@ -194,11 +209,13 @@ export class CatalogueRecordNormaliser {
       return undefined;
     }
 
-    if (!Array.isArray(value) || value.length === 0) {
+    const values = this.#data.array(value);
+
+    if (values === undefined || values.length === 0) {
       return null;
     }
 
-    const terms = value.map((term) =>
+    const terms = values.map((term) =>
       typeof term === "string" ? term.trim().toLowerCase() : "",
     );
 
@@ -218,16 +235,20 @@ export class CatalogueRecordNormaliser {
    * @returns Canonical textual identity or no value after rejection.
    */
   #acceptCollectionIdentity(value: unknown): string | undefined {
+    const identity = this.#data.record(value, ["namespace", "name"], ["name"]);
+
     if (
-      !this.#isRecord(value) ||
-      !this.#hasOnlyFields(value, ["namespace", "name"]) ||
-      !this.#isSlug(value.name) ||
-      (Object.hasOwn(value, "namespace") && !this.#isSlug(value.namespace))
+      identity === undefined
+      || !this.#identityValidation.slug(identity.name)
+      || (
+        Object.hasOwn(identity, "namespace")
+        && !this.#identityValidation.slug(identity.namespace)
+      )
     ) {
       return undefined;
     }
 
-    return this.#identities.collection(value as unknown as CollectionIdentity);
+    return this.#identities.collection(identity as unknown as CollectionIdentity);
   }
 
   /**
@@ -272,36 +293,5 @@ export class CatalogueRecordNormaliser {
         [providerIdentity],
       ),
     });
-  }
-
-  /**
-   * @description Determines whether a candidate is a non-null string-keyed record.
-   * @param value - Candidate value.
-   * @returns Whether own fields can be inspected safely.
-   */
-  #isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-  }
-
-  /**
-   * @description Determines whether a record contains no field outside a closed set.
-   * @param value - Record to inspect.
-   * @param fields - Accepted own fields.
-   * @returns Whether every own field is accepted.
-   */
-  #hasOnlyFields(
-    value: Record<string, unknown>,
-    fields: readonly string[],
-  ): boolean {
-    return Object.keys(value).every((field) => fields.includes(field));
-  }
-
-  /**
-   * @description Determines whether a candidate is a canonical ASCII lowercase kebab-case slug.
-   * @param value - Candidate slug.
-   * @returns Whether the candidate matches the accepted grammar.
-   */
-  #isSlug(value: unknown): value is string {
-    return typeof value === "string" && this.#slugPattern.test(value);
   }
 }

@@ -9,6 +9,7 @@ import type {
   AsterCommandNameType,
   AsterCommandResultType,
 } from "../types/index.js";
+import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
 import { CommandContextNormaliser } from "./command-context.normaliser.js";
 import { CommandDiagnosticFactory } from "./command-diagnostic.factory.js";
 import { CommandInvocationNormaliser } from "./command-invocation.normaliser.js";
@@ -18,6 +19,11 @@ import { CommandResultFactory } from "./command-result.factory.js";
  * @description Coordinates immutable invocation acceptance, capability acceptance, and dispatch.
  */
 export class CommandKernel implements AsterCommandSet {
+  /**
+   * @description Locale-independent ordering authority for canonical command identities.
+   */
+  readonly #strings = new AsciiStringComparator();
+
   /**
    * @description Stable host-neutral identity of this command composition.
    */
@@ -72,8 +78,10 @@ export class CommandKernel implements AsterCommandSet {
       descriptors.push(descriptor);
     }
 
-    entries.sort(([left], [right]) => this.#compare(left, right));
-    descriptors.sort((left, right) => this.#compare(left.name, right.name));
+    entries.sort(([left], [right]) => this.#strings.compare(left, right));
+    descriptors.sort((left, right) =>
+      this.#strings.compare(left.name, right.name),
+    );
 
     this.#definitions = new Map(entries);
     this.#descriptors = Object.freeze(descriptors);
@@ -189,24 +197,26 @@ export class CommandKernel implements AsterCommandSet {
    * @returns Recognised command identity or no value.
    */
   #identifyCommand(value: unknown): AsterCommandNameType | undefined {
-    if (typeof value !== "object" || value === null || !("command" in value)) {
+    if (typeof value !== "object" || value === null) {
       return undefined;
     }
 
-    const command = value.command;
+    let descriptor: PropertyDescriptor | undefined;
+
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(value, "command");
+    } catch {
+      return undefined;
+    }
+
+    if (descriptor === undefined || !("value" in descriptor)) {
+      return undefined;
+    }
+
+    const command = descriptor.value;
     return typeof command === "string" &&
       (Object.values(asterCommandNames) as readonly string[]).includes(command)
       ? (command as AsterCommandNameType)
       : undefined;
-  }
-
-  /**
-   * @description Compares canonical ASCII values without locale-sensitive behaviour.
-   * @param left - Left canonical value.
-   * @param right - Right canonical value.
-   * @returns Negative, zero, or positive lexical relation.
-   */
-  #compare(left: string, right: string): number {
-    return left < right ? -1 : left > right ? 1 : 0;
   }
 }

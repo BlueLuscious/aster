@@ -1,4 +1,9 @@
-import type { CatalogueProvider } from "../../catalogue/contracts/index.js";
+import type {
+  CatalogueProvider,
+  CatalogueSnapshot,
+} from "../../catalogue/contracts/index.js";
+import { CanonicalIdentityValidator } from "../../shared/runtime/canonical-identity.validator.js";
+import { StructuredDataInspector } from "../../shared/runtime/structured-data.inspector.js";
 import { commandDiagnosticSchema } from "../constants/command-diagnostic-schema.constant.js";
 import type { AsterCommandContext } from "../contracts/index.js";
 import type { TAcceptanceResult } from "../types/internal/acceptance-result.type.js";
@@ -11,7 +16,12 @@ export class CommandContextNormaliser {
   /**
    * @description Canonical ASCII provider-identity grammar.
    */
-  readonly #providerIdentityPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+  readonly #identities = new CanonicalIdentityValidator();
+
+  /**
+   * @description Exact context-record and provider-sequence acceptance authority.
+   */
+  readonly #data = new StructuredDataInspector();
 
   /**
    * @description Immutable diagnostic constructor used for rejected contexts.
@@ -24,34 +34,36 @@ export class CommandContextNormaliser {
    * @returns Accepted immutable context or structured rejection evidence.
    */
   normalise(value: unknown): TAcceptanceResult<AsterCommandContext> {
-    if (!this.#isRecord(value)) {
-      return this.#invalid("expected context to be an object");
-    }
-
-    if (!this.#hasExactFields(value, [
+    const record = this.#data.record(value, [
       "catalogues",
       "productName",
       "productVersion",
-    ])) {
+    ], ["catalogues", "productName", "productVersion"]);
+
+    if (record === undefined) {
       return this.#invalid("expected only catalogues, productName, and productVersion");
     }
 
-    if (!Array.isArray(value.catalogues)) {
+    const providerValues = this.#data.array(record.catalogues);
+
+    if (providerValues === undefined) {
       return this.#invalid("expected context.catalogues to be an array");
     }
 
-    if (!this.#isNonEmptyString(value.productName)) {
+    if (!this.#isNonEmptyString(record.productName)) {
       return this.#invalid("expected context.productName to be a non-empty string");
     }
 
-    if (!this.#isNonEmptyString(value.productVersion)) {
+    if (!this.#isNonEmptyString(record.productVersion)) {
       return this.#invalid("expected context.productVersion to be a non-empty string");
     }
 
     const catalogues: CatalogueProvider[] = [];
 
-    for (const provider of value.catalogues) {
-      if (!this.#isProvider(provider)) {
+    for (const providerValue of providerValues) {
+      const provider = this.#acceptProvider(providerValue);
+
+      if (provider === undefined) {
         return this.#invalid(
           "expected each catalogue provider to expose a canonical identity and load method",
         );
@@ -78,8 +90,8 @@ export class CommandContextNormaliser {
       accepted: true,
       value: Object.freeze({
         catalogues: Object.freeze([...catalogues]),
-        productName: value.productName,
-        productVersion: value.productVersion,
+        productName: record.productName,
+        productVersion: record.productVersion,
       }),
     });
   }
@@ -101,29 +113,6 @@ export class CommandContextNormaliser {
   }
 
   /**
-   * @description Determines whether a candidate is a non-null plain record boundary.
-   * @param value - Candidate value.
-   * @returns Whether string-keyed fields can be inspected safely.
-   */
-  #isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-  }
-
-  /**
-   * @description Determines whether a record exposes exactly the accepted own fields.
-   * @param value - Record to inspect.
-   * @param fields - Closed accepted own-field sequence.
-   * @returns Whether no required field is missing and no unknown field is present.
-   */
-  #hasExactFields(
-    value: Record<string, unknown>,
-    fields: readonly string[],
-  ): boolean {
-    const keys = Object.keys(value);
-    return keys.length === fields.length && fields.every((field) => Object.hasOwn(value, field));
-  }
-
-  /**
    * @description Determines whether a candidate is a non-empty string without edge whitespace.
    * @param value - Candidate value.
    * @returns Whether the value is already canonical for product metadata.
@@ -137,12 +126,69 @@ export class CommandContextNormaliser {
    * @param value - Candidate provider.
    * @returns Whether the provider can be accepted without invoking it.
    */
-  #isProvider(value: unknown): value is CatalogueProvider {
-    return (
-      this.#isRecord(value) &&
-      typeof value.identity === "string" &&
-      this.#providerIdentityPattern.test(value.identity) &&
-      typeof value.load === "function"
-    );
+  #acceptProvider(value: unknown): CatalogueProvider | undefined {
+    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+      return undefined;
+    }
+
+    const identityMember = this.#dataMember(value, "identity");
+    const loadMember = this.#dataMember(value, "load");
+
+    if (
+      identityMember === undefined
+      || loadMember === undefined
+      || !this.#identities.slug(identityMember.value)
+      || typeof loadMember.value !== "function"
+    ) {
+      return undefined;
+    }
+
+    const identity = identityMember.value;
+    const load = loadMember.value;
+
+    return Object.freeze({
+      identity,
+
+      /**
+       * @description Invokes the snapshotted provider capability with its original receiver.
+       * @returns Provider-owned snapshot candidate for strict downstream acceptance.
+       */
+      async load(): Promise<CatalogueSnapshot> {
+        return Reflect.apply(load, value, []) as Promise<CatalogueSnapshot>;
+      },
+    });
+  }
+
+  /**
+   * @description Resolves one data-valued capability member without executing accessors.
+   * @param value - Capability object or class instance.
+   * @param key - Public contract member to resolve.
+   * @returns Snapshotted member value or no value after absence or accessor rejection.
+   */
+  #dataMember(
+    value: object,
+    key: string,
+  ): Readonly<{ value: unknown }> | undefined {
+    let owner: object | null = value;
+    const visited = new Set<object>();
+
+    while (owner !== null) {
+      if (visited.has(owner)) {
+        return undefined;
+      }
+
+      visited.add(owner);
+      const descriptor = Object.getOwnPropertyDescriptor(owner, key);
+
+      if (descriptor !== undefined) {
+        return "value" in descriptor
+          ? Object.freeze({ value: descriptor.value })
+          : undefined;
+      }
+
+      owner = Object.getPrototypeOf(owner) as object | null;
+    }
+
+    return undefined;
   }
 }
