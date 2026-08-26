@@ -72,6 +72,37 @@ may load Aster commands as one plugin alongside commands from other ecosystems. 
 Aster CLI may eventually load explicitly compatible catalogue or target plugins, but Aster Core,
 Icons, SVG, Lotus, Lilium, and unrelated projects must never depend on the CLI.
 
+### Future Flora integration
+
+Flora is the prospective headless multi-ecosystem CLI host. Aster must integrate through an
+optional adapter rather than making its command domain or portable packages depend directly on
+Flora. If an independent Flora consumer and stable plugin contract justify package extraction,
+the intended dependency direction is:
+
+```text
+@aster/core <- @aster/svg <- @aster/commands
+                              ^           ^
+                              |           |
+                         @aster/cli   @aster/flora -> @flora/core
+                              |
+                         @aster/icons
+```
+
+`@aster/commands` would own host-neutral structured commands, validation, catalogue selection,
+and immutable target plans. `@aster/cli` would remain Aster's standalone Node executable and
+compose the default Icons catalogue. `@aster/flora` would adapt Flora plugin invocations and
+capabilities to the same Aster command set without moving Aster behaviour into Flora.
+
+Flora would route an explicit Aster namespace and remain independent from Aster packages. Target
+plans would stay effect-free: the standalone Aster host or Flora capability host would decide how
+to present or publish them. Flora, Aster Core, Icons, SVG, Lotus, Lilium, and unrelated consumers
+must not acquire reverse dependencies through this integration.
+
+Do not create `@aster/commands` merely to reorganise files, and do not create `@aster/flora` before
+Flora exposes a minimal stable plugin ABI and one real Aster integration scenario. Until those
+conditions exist, `@aster/cli` retains both the host-neutral command composition and its private
+standalone shell while preserving their current boundary.
+
 ## Catalogue and command capabilities
 
 Importance: **P1 - High**
