@@ -33,6 +33,9 @@ through immutable planning and optional standalone publication.
 [CLI Compatibility and Conformance](compatibility.md) defines the package ABI, supported runtime,
 programmatic-host guarantees, and release evidence across these features.
 
+[CLI Quality](quality.md) inventories the current implementation, distribution, conformance, and
+unresolved hardening pressures without presenting later corrective work as accepted behaviour.
+
 ## Dependency boundary
 
 The command and catalogue domains depend on the public root of `@aster/core`, which validates and
