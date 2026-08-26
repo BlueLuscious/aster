@@ -103,7 +103,7 @@ existing target.
 
 ## Existing conformance
 
-The current evidence comprises compile-time public-shape checks, 35 host-neutral runtime tests,
+The current evidence comprises compile-time public-shape checks, 36 host-neutral runtime tests,
 34 package-ABI and executable tests, architecture policy, documentation verification, and complete
 repository workflows. It currently demonstrates:
 
@@ -123,23 +123,16 @@ repository workflows. It currently demonstrates:
 Subprocess-based executable and clean-consumer evidence requires an environment that permits child
 Node processes. A blocked subprocess reports no process status and is not a CLI result.
 
-## Distribution snapshot
+## Distribution measurement
 
-The current build emits native ES2022 ESM. The unminified distribution contains:
+The current build emits native ES2022 ESM and exposes only the documented root plus the private
+binary mapping. Exact module, byte, archive, and unpacked-size observations are remeasured by the
+dedicated distribution audit whenever source organisation changes; stale snapshots are not
+retained as compatibility promises or performance thresholds.
 
-- 79 host-neutral JavaScript modules totalling 109,881 bytes;
-- 28 private shell JavaScript modules totalling 52,089 bytes;
-- 79 host-neutral declaration files totalling 61,371 bytes;
-- 186 distribution files totalling 223,341 bytes.
-
-The package dry-run contains 189 entries including the manifest, README, and licence. Its observed
-archive size is 43,098 bytes and its unpacked size is 226,931 bytes. These values are comparison
-evidence from the current toolchain, not compatibility promises or performance thresholds.
-
-The shell project intentionally emits no declarations, but currently emits empty JavaScript
-modules for type-only shell files. Distribution granularity and executable startup remain future
-measurement concerns rather than reasons to add bundling or alter source organisation during the
-inventory.
+The shell project intentionally emits no declarations. Distribution granularity and executable
+startup remain measurement concerns rather than reasons to add bundling or collapse coherent
+source boundaries without evidence.
 
 ## Audit pressures
 
@@ -148,7 +141,7 @@ inventory.
 | Reflective input acceptance | Exact own-data inspection rejects accessors, symbols, custom prototypes, unknown or hidden fields, sparse arrays, array side state, and caller traps before accepted state. | Retain the distinction between strict serialisable data and explicitly accepted provider capabilities. |
 | Provider retention | Context normalisation snapshots provider identity and callable capability while preserving the original receiver required by class implementations. | Keep provider-owned mutable state behind the capability; never treat its returned snapshot as trusted. |
 | Shared authorities | Canonical textual identity, ASCII ordering, and structured-data inspection are centralised under the private CLI shared feature. | Keep each authority internal and avoid widening it into Core or the public ABI. |
-| Command growth | Invocation normalisation, argv parsing, and human presentation contain command-family switches. | Keep explicit dispatch but prevent future commands from extending unrelated unbounded coordinators. |
+| Command growth | Programmatic acceptance and argv parsing dispatch to explicit command-owned collaborators; human presentation dispatches to cohesive payload-family presenters. | Keep integration explicit and bounded without mutable registries, reflection, base-class hierarchies, or automatic discovery. |
 | Catalogue concentration | Record and snapshot normalisers are sizeable complete data boundaries. | Split only if adversarial evidence proves independently changing responsibilities; method count alone is insufficient. |
 | Filesystem races | Lexical confinement, portable segments, exclusive writes, same-parent staging, a second target check, current-stage cleanup, and sanitised failures are covered. | Retain explicit non-guarantees for hostile concurrent mutation, symlink replacement, process interruption, crash durability, and native rename semantics. |
 | Startup and package cost | Current subprocess timings include Node startup and temporary-consumer preparation; distribution emits one module per source file. | Measure cold import, command execution, provider loading, export, presentation, and packaging independently before optimisation. |

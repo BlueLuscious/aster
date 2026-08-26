@@ -87,54 +87,19 @@ behaviour.
 
 ## Runtime Composition
 
+The shell is divided into [Parsing](parsing/index.md), [Presentation](presentation/index.md), and
+[Output](output/index.md) subfeatures. `NodeShell` coordinates those private boundaries without
+moving their host authority into the programmatic command API.
+
 | Class | Responsibility |
 | --- | --- |
-| `CommandLineParser` | Separates shell presentation and adapts positional command forms. |
-| `CommandLineOptionParser` | Parses closed command-specific singleton filters and repeated tags. |
-| `ExportCommandLineParser` | Owns exact icon and collection export forms while keeping output outside the invocation. |
-| `ExportCommandLineOptionParser` | Parses export-specific provider, render, accessibility, and output values. |
+| `CommandLineParser` | Dispatches argv adaptation to explicit command-owned parsers. |
 | `CommandOutputPresenter` | Selects human or JSON presentation, streams, and exit status. |
-| `HumanOutputPresenter` | Renders plain help, discovery, raw single-icon SVG, export summaries, version, and failure text. |
-| `JsonOutputPresenter` | Serialises one unstyled structured result document. |
 | `ShellDiagnosticFactory` | Adapts parser, output-host, and unexpected shell faults into canonical command diagnostics. |
 | `NodeShell` | Executes the host-neutral command before optionally publishing its complete export plan. |
-| `ExportOutputPathResolver` | Resolves explicit output roots and rejects unsafe, ambiguous, escaping, or duplicate logical artefact paths. |
-| `ExportOutputPublisher` | Stages a complete non-empty artefact tree beside an absent target and publishes it through one rename. |
-| `NodeExportOutputFileSystem` | Implements the narrow private output authority with Node filesystem operations. |
-| `ExportOutputError` | Carries sanitised output-conflict or output-failure evidence for shell diagnostic adaptation. |
-
-The private `IExportOutputFileSystem` contract limits publication to existence checks, directory
-creation, exclusive text creation, directory rename, and current-stage removal. Resolved
-locations, staged entries, publication evidence, and error kinds remain internal shell types. No
-filesystem contract or Node type enters the package root or host-neutral declaration graph.
-
-The supplied current directory must be absolute, preventing path resolution from consulting
-ambient process state. An empty export plan resolves its requested location but performs no
-filesystem operation. A non-empty plan rejects an existing target or deterministic sibling stage
-before creating anything. The publisher creates the complete stage, checks the target again, and
-commits through one same-parent rename. A caught write or rename failure removes only a stage
-created by that publication attempt; pre-existing and interrupted stages are preserved for
-explicit recovery. Absent parent directories may be created before staging, so a caught failure
-guarantees stage cleanup rather than removal of newly created empty ancestors. Native filesystem
-messages are not part of the stable failure surface.
-
-Logical artefact paths use forward slashes and portable segments. Empty segments, traversal,
-absolute paths, backslashes, control characters, cross-platform-invalid characters, trailing
-dots or spaces, Windows device names, destination escape, and exact duplicate destinations are
-rejected before filesystem mutation. Generated Aster artefact paths are canonical lowercase
-ASCII identities, so platform case folding and Unicode normalisation cannot alias two accepted
-generated entries.
-
-Publication is failure-safe only for operations observed by the current process. Exclusive stage
-creation and file writes, a second target check, and same-parent rename narrow ordinary races, but
-do not form an operating-system transaction. The shell does not guarantee recovery after process
-termination or machine failure, directory-entry durability after rename, protection against a
-privileged or hostile process mutating paths or symlinks concurrently, or removal of an
-interrupted stage from an earlier run. A pre-existing target or stage, including a symlink visible
-to the existence check, is rejected and never removed by the current attempt.
 
 The executable entrypoint is the only module that imports `node:process`. Node path and filesystem
-imports occur only in private output-host collaborators. The host-neutral compiler excludes the
+imports occur only in the private [Output](output/index.md) subfeature. The host-neutral compiler excludes the
 complete shell tree. The referenced shell project consumes host-neutral declarations, admits Node
 types, and emits only the private binary modules. Importing `@aster/cli` resolves only the
 side-effect-free programmatic root and never evaluates the entrypoint.

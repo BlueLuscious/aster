@@ -7,7 +7,7 @@ subpath.
 
 | Class | Responsibility |
 | --- | --- |
-| `CommandInvocationNormaliser` | Validates, canonicalises, copies, and freezes one structured invocation. |
+| `CommandInvocationNormaliser` | Dispatches acceptance to explicit command-owned normalisers documented by [Command Invocation](../invocation/index.md). |
 | `CommandContextNormaliser` | Validates explicit providers and product metadata, snapshots provider identities and load capabilities, rejects duplicate identities, and freezes the context container. |
 | `CommandKernel` | Isolates descriptors, orders definitions, coordinates both normalisers, dispatches explicitly, and sanitises thrown definition failures. |
 | `CommandDiagnosticFactory` | Constructs isolated deeply frozen command diagnostics. |
@@ -21,9 +21,12 @@ definition like every other command; no mutable registry or reflection-based dis
 ## Execution flow
 
 ```text
-candidate invocation ----> invocation normaliser ---+
-                                                     |
-candidate context -------> context normaliser -------+--> explicit definition
+candidate invocation ----> invocation dispatcher ----+
+                                  |                   |
+                                  v                   |
+                         command-owned normaliser ----+
+                                                      |
+candidate context -------> context normaliser --------+--> explicit definition
                                                                |
                                                                v
                                                     structured immutable result

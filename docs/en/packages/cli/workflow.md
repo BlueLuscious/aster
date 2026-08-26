@@ -13,14 +13,15 @@ An independent host mounts the frozen `AsterCommands` command set under its `ast
 each execution, the host supplies one structured invocation and an `AsterCommandContext` containing
 product metadata and an explicit ordered set of catalogue providers.
 
-The command kernel performs this flow:
+The command composition performs this flow:
 
-1. Validate and normalise the invocation and context without consulting ambient state.
-2. Select the exact command definition from the closed command authority.
-3. Load only the catalogue providers required by that command.
-4. Validate, isolate, freeze, and canonically order retained catalogue values.
-5. Execute discovery, help, version, or export behaviour.
-6. Return one immutable structured success or sanitised failure result.
+1. Inspect the command discriminator and delegate to its command-owned invocation normaliser.
+2. Validate and normalise the explicit context without consulting ambient state.
+3. Select the exact command definition from the closed command authority.
+4. Load only the catalogue providers required by that command.
+5. Validate, isolate, freeze, and canonically order retained catalogue values.
+6. Execute discovery, help, version, or export behaviour.
+7. Return one immutable structured success or sanitised failure result.
 
 Provider registration order, locale, filesystem enumeration, and current directory do not alter
 accepted command results. `help` and `version` do not load providers. Importing the package root

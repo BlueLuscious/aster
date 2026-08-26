@@ -23,9 +23,13 @@ help metadata does not eagerly evaluate the built-in catalogue.
 | Feature | Responsibility |
 | --- | --- |
 | [Command](command/index.md) | Defines and executes host-neutral invocation, context, metadata, result, and diagnostic contracts. |
+| [Command Invocation](command/invocation/index.md) | Accepts untrusted programmatic requests through explicit command-owned normalisers. |
 | [Catalogue](catalogue/index.md) | Loads explicit providers and performs deterministic provider, collection, and icon discovery. |
 | [Export](export/index.md) | Selects exact catalogue definitions and constructs immutable host-neutral SVG artefact plans. |
 | [Shell](shell/index.md) | Adapts Node argv, presents human or JSON output, and commits documented process effects. |
+| [Shell Parsing](shell/parsing/index.md) | Adapts standalone argv through explicit command-owned parsers. |
+| [Shell Presentation](shell/presentation/index.md) | Produces deterministic human or JSON stream results. |
+| [Shell Output](shell/output/index.md) | Publishes complete export trees through the private Node filesystem boundary. |
 
 [CLI Workflow](workflow.md) describes how these features compose from one structured invocation
 through immutable planning and optional standalone publication.
