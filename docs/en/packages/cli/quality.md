@@ -1,10 +1,9 @@
 # CLI Quality
 
-Status: **Experimental Audit Baseline**
+Status: **Hardened Pre-release**
 
-This document inventories the current observable `@aster/cli` boundary, its existing conformance
-evidence, and the pressures that require resolution before the package can claim a hardened
-pre-release contract. The implemented execution path is documented by the
+This document records the hardened observable `@aster/cli` boundary, its conformance evidence,
+and the constraints retained for the pre-release contract. The implemented execution path is documented by the
 [CLI Workflow](workflow.md).
 
 ## Public inventory
@@ -139,9 +138,9 @@ cold-process evidence, emitted shape, package dry-run, packed installation, and 
 verification. It found no isolated material CLI-owned mechanism that justifies changing runtime
 behaviour or distribution structure.
 
-## Audit pressures
+## Retained constraints
 
-| Pressure | Current evidence | Required boundary |
+| Concern | Current evidence | Retained boundary |
 | --- | --- | --- |
 | Reflective input acceptance | Exact own-data inspection rejects accessors, symbols, custom prototypes, unknown or hidden fields, sparse arrays, array side state, and caller traps before accepted state. | Retain the distinction between strict serialisable data and explicitly accepted provider capabilities. |
 | Provider retention | Context normalisation snapshots provider identity and callable capability while preserving the original receiver required by class implementations. | Keep provider-owned mutable state behind the capability; never treat its returned snapshot as trusted. |
@@ -150,9 +149,8 @@ behaviour or distribution structure.
 | Catalogue concentration | Record and snapshot normalisers are sizeable complete data boundaries. | Split only if adversarial evidence proves independently changing responsibilities; method count alone is insufficient. |
 | Filesystem races | Lexical confinement, portable segments, exclusive writes, same-parent staging, a second target check, current-stage cleanup, and sanitised failures are covered. | Retain explicit non-guarantees for hostile concurrent mutation, symlink replacement, process interruption, crash durability, and native rename semantics. |
 | Startup and package cost | Cold Node control, root import, executable startup, command execution, provider loading, export, presentation, emitted distribution, and packed installation are measured independently. | Retain the current structure until a repeatable CLI-owned mechanism satisfies the documented comparison rules. |
-| External documentation | Some project documents still describe CLI export as future pressure or rely on legacy architecture and governance roots. | Synchronise consumers during hardening and complete authority migration in documentation hardening. |
 
-No pressure currently authorises mutable caches, global registries, automatic discovery,
+No current evidence authorises mutable caches, global registries, automatic discovery,
 inheritance hierarchies, trusted-definition shortcuts, bundling, or API growth.
 
 ## Baseline scenario boundary

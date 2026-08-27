@@ -1,6 +1,6 @@
 # CLI Compatibility and Conformance
 
-Status: **Experimental**
+Status: **Pre-release**
 
 This document defines the compatibility-bearing surface and release evidence for `@aster/cli`.
 Detailed command, catalogue, and executable semantics remain owned by their respective package
@@ -80,6 +80,33 @@ may present a raw single-icon SVG or serialise the same structured plan. Its pri
 can stage and publish that plan without changing the programmatic result contract. Shell render
 options become the same portable option record before command execution. Detailed ownership is documented by
 [CLI Export](export/index.md).
+
+## Conditional Flora seam
+
+The current `@aster/cli` package is a complete standalone product. It owns both the host-neutral
+`AsterCommands` composition and the private Node shell; neither `@aster/commands` nor
+`@aster/flora` exists or forms part of the supported ABI.
+
+If an independent Flora consumer and stable Flora plugin contract demonstrate a separate
+installation or versioning need, the host-neutral domain may be extracted without inverting
+dependencies:
+
+```text
+@aster/commands <---- @aster/cli
+        ^
+        |
+@aster/flora -------> @flora/core
+```
+
+`@aster/commands` would retain structured Aster invocations, explicit contexts, catalogue
+selection, and immutable export plans. `@aster/cli` would remain the standalone executable and
+default Icons composition. `@aster/flora` would adapt the same Aster command domain to Flora's
+public plugin ABI; Flora would not acquire Aster domain behaviour and portable Aster packages
+would not depend on either host.
+
+Extraction is not authorised merely to reorganise files. Until both triggers exist, the current
+package boundary remains canonical. Broader product sequencing is recorded by
+[Future Flora Integration](../../future-capabilities.md#future-flora-integration).
 
 ## Conformance evidence
 

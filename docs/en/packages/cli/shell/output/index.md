@@ -1,6 +1,6 @@
 # CLI Shell Output
 
-Status: **Experimental**
+Status: **Pre-release**
 
 The output subfeature is the private Node filesystem adapter that publishes one complete export
 plan beneath an explicit destination. No filesystem contract, Node type, or output implementation

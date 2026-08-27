@@ -117,6 +117,6 @@ committed.
 ## Tooling boundary
 
 CLI owns its fixture factory, operation runner, cold-start runner, Node process adapter, composition
-factory, and command. Generic synchronous and asynchronous measurement, statistics, heap, clock,
-repository, and distribution capabilities remain shared private tooling. Neither layer is shipped
-by CLI or imported by production packages.
+factory, and command. One generic runner measures synchronous or asynchronous scenario results
+sequentially while statistics, heap, clock, repository, and distribution capabilities remain
+shared private tooling. Neither layer is shipped by CLI or imported by production packages.

@@ -1,6 +1,6 @@
 # CLI Command Invocation
 
-Status: **Experimental**
+Status: **Pre-release**
 
 The invocation subfeature accepts untrusted programmatic command values and produces either one
 canonical immutable invocation or one structured usage rejection. It remains host-neutral and

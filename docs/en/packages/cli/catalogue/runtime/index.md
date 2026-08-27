@@ -1,6 +1,6 @@
 # CLI Catalogue Runtime
 
-Status: **Experimental**
+Status: **Pre-release**
 
 The internal catalogue runtime separates provider acceptance from list, search, and exact lookup
 queries. None of these classes is exported through a package subpath.

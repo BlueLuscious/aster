@@ -1,6 +1,6 @@
 # CLI Workflow
 
-Status: **Experimental**
+Status: **Pre-release**
 
 This document describes how `@aster/cli` turns one explicit invocation into an observable result
 without merging host-neutral command behaviour with standalone Node effects. Feature contracts and

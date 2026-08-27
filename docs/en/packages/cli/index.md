@@ -1,6 +1,6 @@
 # Aster CLI
 
-Status: **Experimental**
+Status: **Pre-release**
 
 `@aster/cli` owns Aster's host-neutral command contracts, deterministic catalogue discovery, and
 the standalone Node host. The implementation provides the frozen programmatic `AsterCommands`
@@ -37,8 +37,8 @@ through immutable planning and optional standalone publication.
 [CLI Compatibility and Conformance](compatibility.md) defines the package ABI, supported runtime,
 programmatic-host guarantees, and release evidence across these features.
 
-[CLI Quality](quality.md) inventories the current implementation, distribution, conformance, and
-unresolved hardening pressures without presenting later corrective work as accepted behaviour.
+[CLI Quality](quality.md) records the hardened implementation, distribution, conformance, and
+retained constraints without presenting deferred capabilities as accepted behaviour.
 [CLI Quality Baseline](quality-baseline.md) defines reproducible execution, cold-start, allocation,
 and distribution comparison evidence.
 
@@ -75,8 +75,8 @@ The package exposes only its root `"."`. It exports these types:
 - `AsterExportArtefact`, `AsterExportPlan`, `AsterExportSubjectType`, `AsterExportOptionsType`, and
   `AsterIconExportOptionsType`.
 
-The root also exports the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, and `exportTargets`
-values. The package manifest maps the `aster` binary to its private built shell entrypoint. No
+The root also exports the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, and
+`exportTargets` values. The package manifest maps the `aster` binary to its private built shell entrypoint. No
 implementation subpath is public. The accepted surface and dependency direction are defined by the
 [Command-line Boundary](../../architecture/command-line-boundary.md).
 
@@ -95,7 +95,7 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
 - explicit built-in discovery and lazy provider loading;
 - empty and standalone catalogue values, canonical ordering, and exact filters;
 - many-to-many membership without duplicated icon identity;
-- mixed search fields, cross-provider ambiguity, snapshot conflicts, and unavailable providers.
+- mixed search fields, cross-provider ambiguity, snapshot conflicts, and unavailable providers;
 - exact export selection, option normalisation, deterministic SVG paths and contents, and complete
   immutable plans;
 - exact shell render options, raw SVG redirection, and staged output-root publication.

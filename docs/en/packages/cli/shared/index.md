@@ -1,6 +1,6 @@
 # CLI Shared Authorities
 
-Status: **Experimental**
+Status: **Pre-release**
 
 The CLI shared feature owns internal deterministic authorities used by more than one host-neutral
 feature. It is not exported from `@aster/cli` and grants no process, filesystem, terminal, network,

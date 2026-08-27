@@ -1,6 +1,6 @@
 # CLI Export
 
-Status: **Experimental**
+Status: **Pre-release**
 
 The export feature converts exact definitions from explicit accepted catalogue providers into
 complete immutable SVG artefact plans. It is host-neutral: it does not inspect argv, resolve an

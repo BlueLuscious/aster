@@ -1,6 +1,6 @@
 # CLI Command
 
-Status: **Experimental**
+Status: **Pre-release**
 
 The command feature defines structured host-neutral requests, explicit execution capabilities,
 immutable help metadata, and serialisable results. It does not parse Node argv or present terminal
