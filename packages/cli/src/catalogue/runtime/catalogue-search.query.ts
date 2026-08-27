@@ -7,6 +7,7 @@ import type {
   AsterCommandInvocationType,
   AsterCommandResultType,
 } from "../../command/types/index.js";
+import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
 import type {
   CatalogueCollectionResult,
   CatalogueIconResult,
@@ -44,6 +45,11 @@ export class CatalogueSearchQuery {
    * @description Structured command outcome constructor.
    */
   readonly #commandResults = new CommandResultFactory();
+
+  /**
+   * @description Canonical deterministic string-ordering policy.
+   */
+  readonly #strings = new AsciiStringComparator();
 
   /**
    * @description Creates one search query using the explicit shared provider loader.
@@ -154,6 +160,6 @@ export class CatalogueSearchQuery {
       : this.#identities.collection(right.identity);
     const leftKey = `${left.catalogue}\u0000${leftIdentity}\u0000${left.kind}`;
     const rightKey = `${right.catalogue}\u0000${rightIdentity}\u0000${right.kind}`;
-    return leftKey < rightKey ? -1 : leftKey > rightKey ? 1 : 0;
+    return this.#strings.compare(leftKey, rightKey);
   }
 }

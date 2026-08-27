@@ -18,10 +18,10 @@ The canonical documentation mirrors the real tooling feature roots:
 | [Shared](shared/index.md) | Supplies narrow filesystem, path, directory, traversal, and strict JSON foundations used by multiple tooling features. |
 | [Workspace](workspace/index.md) | Owns guarded repository and package maintenance operations such as distribution cleanup. |
 
-User-facing project operations do not belong here. Persistent target export and disposable review
-composition are future `aster export` and `aster review` responsibilities. The CLI may compose
-public package capabilities, but neither CLI nor any other published package imports repository
-tooling.
+User-facing project operations do not belong here. Persistent target export is implemented by
+`aster export`; disposable review composition remains a future `aster review` responsibility. The
+CLI may compose public package capabilities, but neither CLI nor any other published package
+imports repository tooling.
 
 ## Runtime and dependencies
 

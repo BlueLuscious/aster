@@ -221,7 +221,7 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
         "./runtime": "./dist/runtime.js",
       },
       dependencies: {
-        "@aster/svg": "workspace:*",
+        "@aster/build": "workspace:*",
       },
     });
     await writeFixtureJson(root, "packages/cli/tsconfig.json", {
@@ -235,24 +235,30 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
       "packages/cli/src/command/runtime/command.ts",
       'import "node:process";\n',
     );
-    await writeFixtureJson(root, "packages/svg/package.json", {
-      name: "@aster/svg",
+    await writeFixtureFile(
+      root,
+      "packages/cli/src/shell/parsing/runtime/parser.ts",
+      'import "../../output/runtime/export-output.publisher.js";\n',
+    );
+    await writeFixtureJson(root, "packages/build/package.json", {
+      name: "@aster/build",
       type: "module",
     });
-    await writeFixtureFile(root, "packages/svg/src/index.ts", "export {};\n");
+    await writeFixtureFile(root, "packages/build/src/index.ts", "export {};\n");
 
     const issues = await verifyArchitecture(root);
 
     assert.ok(
-      issues.some((issue) => /cannot depend on workspace package @aster\/svg/u.test(issue)),
+      issues.some((issue) => /cannot depend on workspace package @aster\/build/u.test(issue)),
     );
-    assert.ok(issues.some((issue) => /unaccepted production dependency @aster\/svg/u.test(issue)));
+    assert.ok(issues.some((issue) => /unaccepted production dependency @aster\/build/u.test(issue)));
     assert.ok(issues.some((issue) => /must remain a public package/u.test(issue)));
     assert.ok(issues.some((issue) => /sideEffects as false/u.test(issue)));
     assert.ok(issues.some((issue) => /expose only the root/u.test(issue)));
     assert.ok(issues.some((issue) => /cannot add host libraries/u.test(issue)));
     assert.ok(issues.some((issue) => /cannot add ambient/u.test(issue)));
     assert.ok(issues.some((issue) => /Node authority outside the CLI shell/u.test(issue)));
+    assert.ok(issues.some((issue) => /cannot import presentation or output/u.test(issue)));
   } finally {
     await rm(root, { recursive: true, force: true });
   }

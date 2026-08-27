@@ -6,6 +6,8 @@ import type {
   CatalogueIconRecord,
 } from "../contracts/index.js";
 import type { TAcceptedCatalogue } from "../types/internal/accepted-catalogue.type.js";
+import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
+import { StructuredDataInspector } from "../../shared/runtime/structured-data.inspector.js";
 import { CatalogueIdentityFormatter } from "./catalogue-identity.formatter.js";
 import { CatalogueMembershipValidator } from "./catalogue-membership.validator.js";
 import { CatalogueRecordNormaliser } from "./catalogue-record.normaliser.js";
@@ -14,6 +16,16 @@ import { CatalogueRecordNormaliser } from "./catalogue-record.normaliser.js";
  * @description Coordinates record acceptance, cross-checking, ordering, and snapshot freezing.
  */
 export class CatalogueSnapshotNormaliser {
+  /**
+   * @description Deterministic ASCII identity ordering authority.
+   */
+  readonly #ascii = new AsciiStringComparator();
+
+  /**
+   * @description Exact snapshot-record and dense-array acceptance authority.
+   */
+  readonly #data = new StructuredDataInspector();
+
   /**
    * @description Individual provider-record acceptance boundary.
    */
@@ -44,12 +56,19 @@ export class CatalogueSnapshotNormaliser {
     providerIdentity: string,
     value: unknown,
   ): TAcceptanceResult<TAcceptedCatalogue> {
-    if (
-      !this.#isRecord(value) ||
-      !this.#hasExactFields(value, ["icons", "collections"]) ||
-      !Array.isArray(value.icons) ||
-      !Array.isArray(value.collections)
-    ) {
+    const snapshot = this.#data.record(
+      value,
+      ["icons", "collections"],
+      ["icons", "collections"],
+    );
+    const iconValues = snapshot === undefined
+      ? undefined
+      : this.#data.array(snapshot.icons);
+    const collectionValues = snapshot === undefined
+      ? undefined
+      : this.#data.array(snapshot.collections);
+
+    if (snapshot === undefined || iconValues === undefined || collectionValues === undefined) {
       return this.#unavailable(
         providerIdentity,
         "expected a complete catalogue snapshot",
@@ -59,7 +78,7 @@ export class CatalogueSnapshotNormaliser {
     const collections: CatalogueCollectionRecord[] = [];
     const collectionsByIdentity = new Map<string, CatalogueCollectionRecord>();
 
-    for (const candidate of value.collections) {
+    for (const candidate of collectionValues) {
       const accepted = this.#records.collection(providerIdentity, candidate);
 
       if (!accepted.accepted) {
@@ -84,7 +103,7 @@ export class CatalogueSnapshotNormaliser {
     const icons: CatalogueIconRecord[] = [];
     const iconsByIdentity = new Map<string, CatalogueIconRecord>();
 
-    for (const candidate of value.icons) {
+    for (const candidate of iconValues) {
       const accepted = this.#records.icon(
         providerIdentity,
         candidate,
@@ -118,13 +137,13 @@ export class CatalogueSnapshotNormaliser {
     }
 
     collections.sort((left, right) =>
-      this.#compare(
+      this.#ascii.compare(
         this.#identities.collection(left.definition.identity),
         this.#identities.collection(right.definition.identity),
       ),
     );
     icons.sort((left, right) =>
-      this.#compare(
+      this.#ascii.compare(
         this.#identities.icon(left.definition.identity),
         this.#identities.icon(right.definition.identity),
       ),
@@ -182,39 +201,4 @@ export class CatalogueSnapshotNormaliser {
     });
   }
 
-  /**
-   * @description Determines whether a candidate is a non-null string-keyed record.
-   * @param value - Candidate value.
-   * @returns Whether own fields can be inspected safely.
-   */
-  #isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-  }
-
-  /**
-   * @description Determines whether a record exposes exactly the accepted own fields.
-   * @param value - Record to inspect.
-   * @param fields - Closed required field sequence.
-   * @returns Whether no required field is missing and no unknown field exists.
-   */
-  #hasExactFields(
-    value: Record<string, unknown>,
-    fields: readonly string[],
-  ): boolean {
-    const keys = Object.keys(value);
-    return (
-      keys.length === fields.length &&
-      fields.every((field) => Object.hasOwn(value, field))
-    );
-  }
-
-  /**
-   * @description Compares canonical ASCII identities without locale-sensitive behaviour.
-   * @param left - Left canonical identity.
-   * @param right - Right canonical identity.
-   * @returns Negative, zero, or positive lexical relation.
-   */
-  #compare(left: string, right: string): number {
-    return left < right ? -1 : left > right ? 1 : 0;
-  }
 }

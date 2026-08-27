@@ -162,6 +162,81 @@ export class PackageModuleInspector {
         `${this.#paths.relative(workspaceRoot, modulePath)} cannot import Validation runtime implementations`,
       );
     }
+
+    if (record.name === packageBoundaries.names.cli) {
+      this.#inspectCliShellBoundary(
+        workspaceRoot,
+        record.packageRoot,
+        modulePath,
+        target,
+        issues,
+      );
+    }
+  }
+
+  /**
+   * @description Enforces directional imports between private CLI shell subfeatures.
+   * @param {string} workspaceRoot - Absolute repository root.
+   * @param {string} packageRoot - Absolute CLI package root.
+   * @param {string} modulePath - Importing source module.
+   * @param {string} target - Resolved package-local import target.
+   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @returns {void} Completion after private shell boundaries are inspected.
+   */
+  #inspectCliShellBoundary(
+    workspaceRoot,
+    packageRoot,
+    modulePath,
+    target,
+    issues,
+  ) {
+    const parsing = this.#paths.resolve(
+      packageRoot,
+      repositoryArchitecturePaths.cliShellParsing,
+    );
+    const presentation = this.#paths.resolve(
+      packageRoot,
+      repositoryArchitecturePaths.cliShellPresentation,
+    );
+    const output = this.#paths.resolve(
+      packageRoot,
+      repositoryArchitecturePaths.cliShellOutput,
+    );
+    const outputRuntime = this.#paths.resolve(
+      packageRoot,
+      repositoryArchitecturePaths.cliShellOutputRuntime,
+    );
+    const source = this.#paths.relative(workspaceRoot, modulePath);
+
+    if (
+      this.#paths.contains(parsing, modulePath)
+      && (
+        this.#paths.contains(presentation, target)
+        || this.#paths.contains(output, target)
+      )
+    ) {
+      issues.add(`${source} cannot import presentation or output from CLI parsing`);
+    }
+
+    if (
+      this.#paths.contains(output, modulePath)
+      && (
+        this.#paths.contains(parsing, target)
+        || this.#paths.contains(presentation, target)
+      )
+    ) {
+      issues.add(`${source} cannot import parsing or presentation from CLI output`);
+    }
+
+    if (
+      this.#paths.contains(presentation, modulePath)
+      && (
+        this.#paths.contains(parsing, target)
+        || this.#paths.contains(outputRuntime, target)
+      )
+    ) {
+      issues.add(`${source} cannot import parsing or output runtime from CLI presentation`);
+    }
   }
 
   /**

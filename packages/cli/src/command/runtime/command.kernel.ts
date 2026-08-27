@@ -9,15 +9,21 @@ import type {
   AsterCommandNameType,
   AsterCommandResultType,
 } from "../types/index.js";
+import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
 import { CommandContextNormaliser } from "./command-context.normaliser.js";
 import { CommandDiagnosticFactory } from "./command-diagnostic.factory.js";
-import { CommandInvocationNormaliser } from "./command-invocation.normaliser.js";
+import { CommandInvocationNormaliser } from "../invocation/runtime/command-invocation.normaliser.js";
 import { CommandResultFactory } from "./command-result.factory.js";
 
 /**
  * @description Coordinates immutable invocation acceptance, capability acceptance, and dispatch.
  */
 export class CommandKernel implements AsterCommandSet {
+  /**
+   * @description Locale-independent ordering authority for canonical command identities.
+   */
+  readonly #strings = new AsciiStringComparator();
+
   /**
    * @description Stable host-neutral identity of this command composition.
    */
@@ -36,7 +42,7 @@ export class CommandKernel implements AsterCommandSet {
   /**
    * @description Structured invocation boundary normaliser.
    */
-  readonly #invocations = new CommandInvocationNormaliser();
+  readonly #invocations: CommandInvocationNormaliser;
 
   /**
    * @description Explicit capability boundary normaliser.
@@ -56,8 +62,12 @@ export class CommandKernel implements AsterCommandSet {
   /**
    * @description Creates one isolated command composition from explicit definitions.
    * @param definitions - Closed executable definitions owned by the composition root.
+   * @param invocations - Explicit command-family invocation acceptance composition.
    */
-  constructor(definitions: readonly ICommandDefinition[]) {
+  constructor(
+    definitions: readonly ICommandDefinition[],
+    invocations: CommandInvocationNormaliser,
+  ) {
     const entries: [AsterCommandNameType, ICommandDefinition][] = [];
     const descriptors: AsterCommandDescriptor[] = [];
 
@@ -72,11 +82,14 @@ export class CommandKernel implements AsterCommandSet {
       descriptors.push(descriptor);
     }
 
-    entries.sort(([left], [right]) => this.#compare(left, right));
-    descriptors.sort((left, right) => this.#compare(left.name, right.name));
+    entries.sort(([left], [right]) => this.#strings.compare(left, right));
+    descriptors.sort((left, right) =>
+      this.#strings.compare(left.name, right.name),
+    );
 
     this.#definitions = new Map(entries);
     this.#descriptors = Object.freeze(descriptors);
+    this.#invocations = invocations;
   }
 
   /**
@@ -97,45 +110,48 @@ export class CommandKernel implements AsterCommandSet {
     invocation: unknown,
     context: unknown,
   ): Promise<AsterCommandResultType> {
-    const acceptedInvocation = this.#invocations.normalise(invocation);
-
-    if (!acceptedInvocation.accepted) {
-      return this.#results.failure(
-        this.#identifyCommand(invocation),
-        acceptedInvocation.diagnostic,
-      );
-    }
-
-    const acceptedContext = this.#contexts.normalise(context);
-
-    if (!acceptedContext.accepted) {
-      return this.#results.failure(
-        acceptedInvocation.value.command,
-        acceptedContext.diagnostic,
-      );
-    }
-
-    const definition = this.#definitions.get(acceptedInvocation.value.command);
-
-    if (definition === undefined) {
-      return this.#results.failure(
-        acceptedInvocation.value.command,
-        this.#diagnostics.create(
-          commandDiagnosticSchema.categories.usage,
-          commandDiagnosticSchema.codes.usage,
-          `command ${acceptedInvocation.value.command} is not registered`,
-        ),
-      );
-    }
+    let command: AsterCommandNameType | undefined;
 
     try {
+      const acceptedInvocation = this.#invocations.normalise(invocation);
+
+      if (!acceptedInvocation.accepted) {
+        return this.#results.failure(
+          this.#identifyCommand(invocation),
+          acceptedInvocation.diagnostic,
+        );
+      }
+
+      command = acceptedInvocation.value.command;
+      const acceptedContext = this.#contexts.normalise(context);
+
+      if (!acceptedContext.accepted) {
+        return this.#results.failure(
+          command,
+          acceptedContext.diagnostic,
+        );
+      }
+
+      const definition = this.#definitions.get(command);
+
+      if (definition === undefined) {
+        return this.#results.failure(
+          command,
+          this.#diagnostics.create(
+            commandDiagnosticSchema.categories.usage,
+            commandDiagnosticSchema.codes.usage,
+            `command ${command} is not registered`,
+          ),
+        );
+      }
+
       return await definition.execute(
         acceptedInvocation.value,
         acceptedContext.value,
       );
     } catch {
       return this.#results.failure(
-        acceptedInvocation.value.command,
+        command,
         this.#diagnostics.create(
           commandDiagnosticSchema.categories.executionFailure,
           commandDiagnosticSchema.codes.executionFailure,
@@ -186,24 +202,26 @@ export class CommandKernel implements AsterCommandSet {
    * @returns Recognised command identity or no value.
    */
   #identifyCommand(value: unknown): AsterCommandNameType | undefined {
-    if (typeof value !== "object" || value === null || !("command" in value)) {
+    if (typeof value !== "object" || value === null) {
       return undefined;
     }
 
-    const command = value.command;
+    let descriptor: PropertyDescriptor | undefined;
+
+    try {
+      descriptor = Object.getOwnPropertyDescriptor(value, "command");
+    } catch {
+      return undefined;
+    }
+
+    if (descriptor === undefined || !("value" in descriptor)) {
+      return undefined;
+    }
+
+    const command = descriptor.value;
     return typeof command === "string" &&
       (Object.values(asterCommandNames) as readonly string[]).includes(command)
       ? (command as AsterCommandNameType)
       : undefined;
-  }
-
-  /**
-   * @description Compares canonical ASCII values without locale-sensitive behaviour.
-   * @param left - Left canonical value.
-   * @param right - Right canonical value.
-   * @returns Negative, zero, or positive lexical relation.
-   */
-  #compare(left: string, right: string): number {
-    return left < right ? -1 : left > right ? 1 : 0;
   }
 }

@@ -13,7 +13,7 @@ The current package set is:
 | [`@aster/build`](build/index.md) | Private | Build-time source, diagnostic, parsing, validation, normalisation, and generation domain services. |
 | [`@aster/icons`](icons/index.md) | Experimental | Canonical portable icons and opt-in collection aggregates for the Aster pilot. |
 | [`@aster/svg`](svg/index.md) | Pre-release | Hardened framework-independent standalone SVG rendering. |
-| [`@aster/cli`](cli/index.md) | Experimental | Host-neutral command execution, deterministic explicit catalogue discovery, and a thin standalone Node shell. |
+| [`@aster/cli`](cli/index.md) | Pre-release | Host-neutral command execution, explicit catalogue discovery, deterministic SVG export planning, and a thin standalone Node output host. |
 
 Accepted responsibilities and dependency direction are defined by
 [Product and Package Boundaries](../architecture/product-and-package-boundaries.md).

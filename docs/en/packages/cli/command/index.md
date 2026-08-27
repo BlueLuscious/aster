@@ -1,6 +1,6 @@
 # CLI Command
 
-Status: **Experimental**
+Status: **Pre-release**
 
 The command feature defines structured host-neutral requests, explicit execution capabilities,
 immutable help metadata, and serialisable results. It does not parse Node argv or present terminal
@@ -21,12 +21,12 @@ provided explicitly to the kernel and never registered globally.
 
 | Type | Responsibility | Relations |
 | --- | --- | --- |
-| `AsterCommandNameType` | Closed identity union for `list`, `search`, `show`, `help`, and `version`. | Derived from the internal immutable command-name authority. |
+| `AsterCommandNameType` | Closed identity union for `export`, `list`, `search`, `show`, `help`, and `version`. | Derived from the internal immutable command-name authority. |
 | `AsterCommandListSubjectType` | Closed subject union for `catalogues`, `collections`, and `icons`. | Derived from the list branch of the immutable command-subject authority. |
 | `AsterCommandShowSubjectType` | Closed subject union for `icon` and `collection`. | Derived from the show branch of the immutable command-subject authority. |
-| `AsterCommandInvocationType` | Discriminated structured request union with command-specific subjects and filters. | Validated and isolated by `CommandInvocationNormaliser`. |
+| `AsterCommandInvocationType` | Discriminated structured request union with command-specific subjects and filters. | Validated and isolated by the [Command Invocation](invocation/index.md) subfeature. |
 | `AsterCommandPayloadKindType` | Closed discriminator union for every current success payload. | Derived from the immutable payload-kind authority. |
-| `AsterCommandPayloadType` | Closed union of list, search, show, help, and version payloads. | Retains public catalogue results or command descriptors according to its kind. |
+| `AsterCommandPayloadType` | Closed union of export, list, search, show, help, and version payloads. | Retains export plans, public catalogue results, or command descriptors according to its kind. |
 | `AsterCommandResultType` | Generic structured success or failure outcome. | Success defaults to `AsterCommandPayloadType`; failure retains `AsterCommandDiagnosticType`. |
 | `AsterCommandDiagnosticType` | Stable code, category, message, and optional related-value evidence. | Its categories and codes derive from one immutable runtime schema. |
 | `AsterCommandDiagnosticCodeType` | Closed stable diagnostic-code union. | Derived from the code branch of the immutable diagnostic schema. |
@@ -37,7 +37,7 @@ structured rejection without throwing an expected command error.
 
 ## Invocation semantics
 
-The normaliser validates the complete accepted invocation union. It rejects unknown own
+Command-specific normalisers validate the complete accepted invocation union. They reject unknown own
 fields, unknown commands, missing values, invalid subjects, non-canonical filters and identities,
 and duplicate tags. It copies and freezes every retained sequence.
 
@@ -45,11 +45,16 @@ Search queries are trimmed and lowercased. Provider identities and tags use cano
 lowercase kebab-case. Collection identities use `[namespace/]name`; icon identities additionally
 permit `@variant`.
 
-The exact future standalone grammar remains canonical in the
-[Command-line Boundary](../../../architecture/command-line-boundary.md). Node token parsing is not
-part of the current kernel.
+Export accepts an exact icon or collection identity, an optional provider filter, and a closed
+portable option record. Icon export additionally accepts `label` and `title`. The complete export
+contracts and execution flow are documented by [CLI Export](../export/index.md).
+
+The exact implemented standalone grammar remains canonical in the
+[Command-line Boundary](../../../architecture/command-line-boundary.md). Node token parsing and
+output publication are not part of the command kernel.
 
 ## Runtime
 
-[Command Runtime](runtime/index.md) documents context acceptance, invocation acceptance,
-deterministic dispatch, and sanitised failure flow.
+[Command Invocation](invocation/index.md) documents programmatic input acceptance and bounded
+command composition. [Command Runtime](runtime/index.md) documents context acceptance,
+deterministic execution dispatch, and sanitised failure flow.

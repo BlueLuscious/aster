@@ -5,6 +5,9 @@
   "type": "module",
   "author": "BlueLuscious",
   "license": "ISC",
+  "engines": {
+    "node": ">=24.10.0 <25"
+  },
   "homepage": "https://github.com/BlueLuscious/aster/tree/develop/packages/cli#readme",
   "repository": {
     "type": "git",
@@ -45,6 +48,7 @@
   },
   "dependencies": {
     "@aster/core": "workspace:*",
-    "@aster/icons": "workspace:*"
+    "@aster/icons": "workspace:*",
+    "@aster/svg": "workspace:*"
   }
 }

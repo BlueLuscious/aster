@@ -1,6 +1,6 @@
 # CLI Compatibility and Conformance
 
-Status: **Experimental**
+Status: **Pre-release**
 
 This document defines the compatibility-bearing surface and release evidence for `@aster/cli`.
 Detailed command, catalogue, and executable semantics remain owned by their respective package
@@ -9,8 +9,8 @@ feature documents.
 ## Runtime compatibility
 
 The package distributes native ESM targeting ES2022 and provides no CommonJS, legacy, or alternate
-build. The programmatic root has no Node or DOM ambient dependency. The standalone `aster`
-executable supports the repository Node range, currently `>=24.10.0 <25`.
+build. The programmatic root has no Node or DOM ambient dependency. The package manifest declares
+`>=24.10.0 <25` as the supported Node range for the standalone `aster` executable.
 
 The Node shell is a referenced TypeScript project. It consumes host-neutral declarations and emits
 only private shell modules, so Node ambient types cannot alter the host-neutral implementation or
@@ -21,10 +21,10 @@ its public declarations.
 The first supported ABI consists of:
 
 - the root package export and private `aster` binary mapping;
-- the frozen `AsterCommands`, `AsterCatalogue`, and `catalogueResultKinds` values;
-- every public command and catalogue contract and type exported through the root;
+- the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, and `exportTargets` values;
+- every public command, catalogue, and export contract and type exported through the root;
 - the `aster` command-set identity;
-- the `list`, `search`, `show`, `help`, and `version` invocation variants;
+- the `export`, `list`, `search`, `show`, `help`, and `version` invocation variants;
 - current payload and catalogue-result discriminators;
 - current diagnostic codes and categories;
 - deterministic ordering, canonicalisation, and expected-failure semantics.
@@ -72,6 +72,42 @@ insertion order.
 Provider and membership guarantees are owned by the
 [CLI Catalogue](catalogue/index.md).
 
+## Export isolation
+
+Headless export consumes only accepted catalogue snapshots and the public SVG renderer. It returns
+complete immutable logical artefacts and acquires no process or filesystem capability. The shell
+may present a raw single-icon SVG or serialise the same structured plan. Its private output host
+can stage and publish that plan without changing the programmatic result contract. Shell render
+options become the same portable option record before command execution. Detailed ownership is documented by
+[CLI Export](export/index.md).
+
+## Conditional Flora seam
+
+The current `@aster/cli` package is a complete standalone product. It owns both the host-neutral
+`AsterCommands` composition and the private Node shell; neither `@aster/commands` nor
+`@aster/flora` exists or forms part of the supported ABI.
+
+If an independent Flora consumer and stable Flora plugin contract demonstrate a separate
+installation or versioning need, the host-neutral domain may be extracted without inverting
+dependencies:
+
+```text
+@aster/commands <---- @aster/cli
+        ^
+        |
+@aster/flora -------> @flora/core
+```
+
+`@aster/commands` would retain structured Aster invocations, explicit contexts, catalogue
+selection, and immutable export plans. `@aster/cli` would remain the standalone executable and
+default Icons composition. `@aster/flora` would adapt the same Aster command domain to Flora's
+public plugin ABI; Flora would not acquire Aster domain behaviour and portable Aster packages
+would not depend on either host.
+
+Extraction is not authorised merely to reorganise files. Until both triggers exist, the current
+package boundary remains canonical. Broader product sequencing is recorded by
+[Future Flora Integration](../../future-capabilities.md#future-flora-integration).
+
 ## Conformance evidence
 
 Package conformance builds the distribution and verifies:
@@ -79,10 +115,19 @@ Package conformance builds the distribution and verifies:
 - exact runtime values, export map, binary mapping, declarations, and rejected subpaths;
 - host-neutral declaration imports and dependency direction;
 - exclusive Node process authority in the executable entrypoint;
-- import behaviour in a temporary consumer containing only package manifests and distributions;
-- standalone and independent programmatic-host result equivalence;
+- package dry-run, local tarball installation, strict engine acceptance, binary linking, and root
+  import behaviour in a temporary consumer containing no workspace source files;
+- standalone and independent programmatic-host discovery and complete export equivalence;
 - explicit catalogue registration and registration-order independence;
-- executable human, JSON, stream, diagnostic, and exit-status behaviour.
+- byte-equivalent publication of the complete built-in collection from a clean consumer;
+- byte-equivalent export plans across provider-record and membership order;
+- empty collections, variants, namespaced paths, malformed providers, path collisions, target
+  failures, and caller-controlled exceptions;
+- safe private output mapping, absent parents, existing targets, interrupted stages, filesystem
+  failures, current-stage cleanup, empty-plan non-mutation, and deterministic fresh-root output;
+- executable human, JSON, stream, diagnostic, and exit-status behaviour;
+- raw SVG redirection, exact export-option parsing, committed output summaries, and reserved
+  output conflict and failure diagnostics.
 
 Run the package evidence with:
 

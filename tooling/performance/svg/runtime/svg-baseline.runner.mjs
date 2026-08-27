@@ -23,7 +23,7 @@ export class SvgBaselineRunner {
 
   /**
    * @description Creates one SVG baseline composition.
-   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number }): object, methodology(): object }} benchmarkRunner - Generic measurement authority.
+   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Generic measurement authority.
    * @param {{ inspect(packagePath: string): Promise<object> }} distributionInspector - Package distribution authority.
    * @param {{ environment(): object }} host - Runtime environment authority.
    * @param {import("../contracts/internal/svg-baseline-fixtures.contract.mjs").ISvgBaselineFixtures} fixtures - Prepared public SVG scenario inputs.
@@ -107,6 +107,12 @@ export class SvgBaselineRunner {
       }),
     ];
 
+    const results = [];
+
+    for (const scenario of scenarios) {
+      results.push(await this.#benchmarkRunner.measure(scenario));
+    }
+
     return Object.freeze({
       schemaVersion: svgBaseline.schemaVersion,
       package: svgBaseline.packageName,
@@ -115,9 +121,7 @@ export class SvgBaselineRunner {
       distribution: await this.#distributionInspector.inspect(
         svgBaseline.packagePath,
       ),
-      scenarios: Object.freeze(
-        scenarios.map((scenario) => this.#benchmarkRunner.measure(scenario)),
-      ),
+      scenarios: Object.freeze(results),
     });
   }
 

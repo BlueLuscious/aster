@@ -1,6 +1,7 @@
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
+import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
 import type { CatalogueProvider } from "../contracts/index.js";
 import type { TAcceptedCatalogue } from "../types/internal/accepted-catalogue.type.js";
 import { CatalogueSnapshotNormaliser } from "./catalogue-snapshot.normaliser.js";
@@ -9,6 +10,11 @@ import { CatalogueSnapshotNormaliser } from "./catalogue-snapshot.normaliser.js"
  * @description Loads every explicit provider once and accepts results in canonical provider order.
  */
 export class CatalogueLoader {
+  /**
+   * @description Locale-independent ordering authority for canonical provider identities.
+   */
+  readonly #strings = new AsciiStringComparator();
+
   /**
    * @description Provider snapshot acceptance boundary.
    */
@@ -28,7 +34,7 @@ export class CatalogueLoader {
     providers: readonly CatalogueProvider[],
   ): Promise<TAcceptanceResult<readonly TAcceptedCatalogue[]>> {
     const orderedProviders = [...providers].sort((left, right) =>
-      this.#compare(left.identity, right.identity),
+      this.#strings.compare(left.identity, right.identity),
     );
     const settled = await Promise.allSettled(
       orderedProviders.map((provider) => provider.load()),
@@ -43,18 +49,22 @@ export class CatalogueLoader {
       }
 
       if (result.status === "rejected") {
-        return Object.freeze({
-          accepted: false,
-          diagnostic: this.#diagnostics.create(
-            commandDiagnosticSchema.categories.catalogueUnavailable,
-            commandDiagnosticSchema.codes.catalogueUnavailable,
-            "catalogue provider failed to load",
-            [provider.identity],
-          ),
-        });
+        return this.#unavailable(
+          provider.identity,
+          "catalogue provider failed to load",
+        );
       }
 
-      const accepted = this.#snapshots.normalise(provider.identity, result.value);
+      let accepted: TAcceptanceResult<TAcceptedCatalogue>;
+
+      try {
+        accepted = this.#snapshots.normalise(provider.identity, result.value);
+      } catch {
+        return this.#unavailable(
+          provider.identity,
+          "catalogue provider returned an unreadable snapshot",
+        );
+      }
 
       if (!accepted.accepted) {
         return accepted;
@@ -70,12 +80,23 @@ export class CatalogueLoader {
   }
 
   /**
-   * @description Compares canonical ASCII provider identities without locale sensitivity.
-   * @param left - Left provider identity.
-   * @param right - Right provider identity.
-   * @returns Negative, zero, or positive lexical relation.
+   * @description Creates one sanitised provider-unavailable rejection.
+   * @param providerIdentity - Canonical identity of the failing provider.
+   * @param message - Stable Aster-owned explanation.
+   * @returns Immutable rejected catalogue acceptance result.
    */
-  #compare(left: string, right: string): number {
-    return left < right ? -1 : left > right ? 1 : 0;
+  #unavailable(
+    providerIdentity: string,
+    message: string,
+  ): TAcceptanceResult<readonly TAcceptedCatalogue[]> {
+    return Object.freeze({
+      accepted: false,
+      diagnostic: this.#diagnostics.create(
+        commandDiagnosticSchema.categories.catalogueUnavailable,
+        commandDiagnosticSchema.codes.catalogueUnavailable,
+        message,
+        [providerIdentity],
+      ),
+    });
   }
 }

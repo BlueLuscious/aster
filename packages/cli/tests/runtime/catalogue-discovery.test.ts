@@ -375,7 +375,7 @@ test("executes help and version without loading catalogue providers", async () =
   if (help.ok && help.payload.kind === "help") {
     assert.deepEqual(
       help.payload.descriptors.map((descriptor) => descriptor.name),
-      ["help", "list", "search", "show", "version"],
+      ["export", "help", "list", "search", "show", "version"],
     );
   }
 });

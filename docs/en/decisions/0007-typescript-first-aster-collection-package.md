@@ -102,7 +102,8 @@ collection.
   verification.
 - Search aliases, collection-specific taxonomy, or catalogue manifests require a real discovery
   consumer.
-- A CLI remains conditional on a real user-facing SVG-import workflow.
+- A future SVG-import command remains conditional on a real user-facing ingestion workflow and
+  the separate Build viability decision; catalogue discovery and TypeScript-first export do not.
 - Variant subpaths remain absent until the collection accepts a variant.
 
 ## Compatibility and migration

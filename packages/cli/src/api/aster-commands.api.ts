@@ -3,11 +3,21 @@ import { CatalogueLoader } from "../catalogue/runtime/catalogue.loader.js";
 import { CatalogueSearchQuery } from "../catalogue/runtime/catalogue-search.query.js";
 import { CatalogueShowQuery } from "../catalogue/runtime/catalogue-show.query.js";
 import { asterCommandDescriptors } from "../command/constants/aster-command-descriptors.constant.js";
+import { ExportCommandDefinition } from "../command/definition/export-command.definition.js";
 import { HelpCommandDefinition } from "../command/definition/help-command.definition.js";
 import { ListCommandDefinition } from "../command/definition/list-command.definition.js";
 import { SearchCommandDefinition } from "../command/definition/search-command.definition.js";
 import { ShowCommandDefinition } from "../command/definition/show-command.definition.js";
 import { VersionCommandDefinition } from "../command/definition/version-command.definition.js";
+import { CommandInvocationNormaliser } from "../command/invocation/runtime/command-invocation.normaliser.js";
+import { ExportInvocationNormaliser } from "../command/invocation/runtime/export-invocation.normaliser.js";
+import { HelpInvocationNormaliser } from "../command/invocation/runtime/help-invocation.normaliser.js";
+import { ListInvocationNormaliser } from "../command/invocation/runtime/list-invocation.normaliser.js";
+import { SearchInvocationNormaliser } from "../command/invocation/runtime/search-invocation.normaliser.js";
+import { ShowInvocationNormaliser } from "../command/invocation/runtime/show-invocation.normaliser.js";
+import { VersionInvocationNormaliser } from "../command/invocation/runtime/version-invocation.normaliser.js";
+import { CatalogueExportSelector } from "../export/runtime/catalogue-export.selector.js";
+import { ExportPlanQuery } from "../export/runtime/export-plan.query.js";
 import type {
   AsterCommandContext,
   AsterCommandSet,
@@ -29,15 +39,33 @@ const catalogueLoader = new CatalogueLoader();
 const commandDescriptors = Object.freeze(Object.values(asterCommandDescriptors));
 
 /**
+ * @description Explicit structured invocation grammars supplied to the command kernel.
+ */
+const commandInvocations = new CommandInvocationNormaliser([
+  new ExportInvocationNormaliser(),
+  new ListInvocationNormaliser(),
+  new SearchInvocationNormaliser(),
+  new ShowInvocationNormaliser(),
+  new HelpInvocationNormaliser(),
+  new VersionInvocationNormaliser(),
+]);
+
+/**
  * @description Explicit immutable command kernel used by every programmatic host.
  */
-const commandKernel = new CommandKernel([
-  new ListCommandDefinition(new CatalogueListQuery(catalogueLoader)),
-  new SearchCommandDefinition(new CatalogueSearchQuery(catalogueLoader)),
-  new ShowCommandDefinition(new CatalogueShowQuery(catalogueLoader)),
-  new HelpCommandDefinition(commandDescriptors),
-  new VersionCommandDefinition(),
-]);
+const commandKernel = new CommandKernel(
+  [
+    new ExportCommandDefinition(
+      new ExportPlanQuery(new CatalogueExportSelector(catalogueLoader)),
+    ),
+    new ListCommandDefinition(new CatalogueListQuery(catalogueLoader)),
+    new SearchCommandDefinition(new CatalogueSearchQuery(catalogueLoader)),
+    new ShowCommandDefinition(new CatalogueShowQuery(catalogueLoader)),
+    new HelpCommandDefinition(commandDescriptors),
+    new VersionCommandDefinition(),
+  ],
+  commandInvocations,
+);
 
 /**
  * @description Immutable public host-neutral composition for executing initial Aster commands.

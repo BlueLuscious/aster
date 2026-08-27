@@ -1,6 +1,6 @@
 # CLI Catalogue
 
-Status: **Experimental**
+Status: **Pre-release**
 
 The catalogue feature defines explicit provider and snapshot contracts, accepts portable values,
 and performs host-neutral discovery. It has no ambient provider registry.

@@ -1,7 +1,10 @@
+import { asterCommandNames } from "../../command/constants/aster-command-names.constant.js";
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { AsterCommandResultType } from "../../command/types/index.js";
-import { CommandLineError } from "./command-line.error.js";
+import { exportOutputErrorKinds } from "../output/constants/export-output-error-kinds.constant.js";
+import { ExportOutputError } from "../output/runtime/export-output.error.js";
+import { CommandLineError } from "../parsing/runtime/command-line.error.js";
 
 /**
  * @description Adapts shell-owned parsing and execution faults into command-result diagnostics.
@@ -24,6 +27,28 @@ export class ShellDiagnosticFactory {
       diagnostic: this.#diagnostics.create(
         commandDiagnosticSchema.categories.usage,
         commandDiagnosticSchema.codes.usage,
+        error.message,
+      ),
+    });
+  }
+
+  /**
+   * @description Converts one sanitised output-host error into its reserved command diagnostic.
+   * @param error - Private output conflict or operation failure.
+   * @returns Immutable failed export result suitable for human presentation.
+   */
+  output(error: ExportOutputError): AsterCommandResultType {
+    const conflict = error.kind === exportOutputErrorKinds.conflict;
+    return Object.freeze({
+      ok: false,
+      command: asterCommandNames.export,
+      diagnostic: this.#diagnostics.create(
+        conflict
+          ? commandDiagnosticSchema.categories.outputConflict
+          : commandDiagnosticSchema.categories.outputFailure,
+        conflict
+          ? commandDiagnosticSchema.codes.outputConflict
+          : commandDiagnosticSchema.codes.outputFailure,
         error.message,
       ),
     });

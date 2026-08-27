@@ -26,16 +26,22 @@ The first implementation targets the repository Node range, currently `>=24.10.0
 
 ## Dependency direction
 
-The initial package depends on the public roots of `@aster/core` and `@aster/icons`:
+The current discovery package depends on the public roots of `@aster/core` and `@aster/icons`:
 
 ```text
 @aster/cli ------> @aster/icons ------> @aster/core
        +------------------------------> @aster/core
 ```
 
-It does not depend on `@aster/svg`, `@aster/build`, a framework, a renderer, repository tooling,
-or a generic plugin framework. Core, Icons, SVG, Build, adapters, and consumers never depend on
-the CLI.
+The accepted export extension adds the public `@aster/svg` root as a direct CLI dependency:
+
+```text
+@aster/cli ------> @aster/svg ------> @aster/core
+```
+
+This relationship is now observable through the implemented export command. The CLI does not depend on
+`@aster/build`, a framework, repository tooling, or a generic plugin framework. Core, Icons, SVG,
+Build, adapters, and consumers never depend on the CLI.
 
 The direct Core dependency allows public catalogue records to retain portable icon and collection
 contracts without relying on transitive dependency resolution. The Icons dependency supplies the
@@ -94,8 +100,9 @@ There are no default ambient providers. The standalone shell passes `AsterCatalo
 A programmatic host may pass the same provider, additional providers, or an empty sequence.
 
 Handlers receive no output writer, terminal, logger, process, clock, filesystem, network, package
-manager, renderer, Build service, or dynamic loader. Deferred effectful commands must introduce
-narrow capabilities when their real workflows are accepted rather than widening this foundation.
+manager, Build service, or dynamic loader. The accepted export command composes SVG internally and
+returns complete artefact data rather than adding a renderer or output capability to this
+context.
 
 ## Catalogue providers and snapshots
 
@@ -146,7 +153,9 @@ aster list icons [--catalogue <provider>] [--collection <identity>] [--tag <tag>
 aster search <query> [--catalogue <provider>] [--collection <identity>] [--tag <tag>]...
 aster show icon <identity> [--catalogue <provider>]
 aster show collection <identity> [--catalogue <provider>]
-aster help [list|search|show]
+aster export icon <identity> [--catalogue <provider>]
+aster export collection <identity> [--catalogue <provider>] --json
+aster help [export|list|search|show]
 aster version
 ```
 
@@ -162,6 +171,43 @@ and lowercases its non-empty query, matches canonical identity, display name, in
 provider-supplied search terms, and succeeds with an empty sequence when nothing matches. All
 query terms must match somewhere on one record. `show` requires one exact result and otherwise
 returns not-found or ambiguity.
+
+## Export boundary
+
+The implemented host-neutral export boundary adds exact icon and collection selection over
+installed TypeScript-first definitions and produces deterministic SVG artefact plans without
+Build. The current shell exposes raw single-icon SVG, JSON plans, and explicit output-root
+publication through its private Node composition.
+
+The accepted standalone forms are:
+
+```text
+aster export icon <identity> [--catalogue <provider>] [render-options] [--output <root>]
+aster export collection <identity> [--catalogue <provider>] [render-options] --output <root>
+aster export icon <identity> [--catalogue <provider>] [render-options] --json
+aster export collection <identity> [--catalogue <provider>] [render-options] --json
+```
+
+Render options are `--size`, `--colour`, `--fill`, `--stroke`, `--stroke-width`, `--direction`,
+and, for icon export only, `--label` and `--title`. Icon export without `--output` or `--json`
+emits one raw SVG. Collection export requires one of those modes. `--json` and `--output` are
+mutually exclusive shell concerns and never enter the structured invocation.
+
+All four forms and the closed render-option family are implemented. The shell converts textual
+options into the same structured option record accepted programmatically, while JSON selection and
+the output root remain private presentation and host-effect choices.
+
+The host-neutral command result contains a complete immutable serialisable plan. Each artefact has
+a canonical logical relative path, `image/svg+xml` media type, and complete SVG content. Namespace
+becomes a directory segment and the icon name plus optional `@variant` becomes the `.svg`
+filename. No provider or descriptive metadata controls a path.
+
+An output root must not exist. The private Node host stages the complete tree beside it and
+publishes through one same-parent directory rename. There is no initial overwrite, force, stale
+cleanup, unknown-stage removal, or crash-durability guarantee. Caught failures remove only a stage
+owned by the current attempt. An empty plan performs no filesystem operation. The complete
+accepted boundary and rationale are recorded by
+[0010: Headless SVG Export and Node Output Boundary](../decisions/0010-headless-svg-export-and-node-output-boundary.md).
 
 ## Deterministic ordering
 
@@ -192,6 +238,10 @@ The initial failure categories are:
 | `ambiguous` | Exact identity lookup resolves to multiple providers. |
 | `catalogue-conflict` | Provider or snapshot identities violate uniqueness. |
 | `catalogue-unavailable` | A provider cannot supply a valid snapshot. |
+| `render-failure` | An accepted definition cannot be rendered by the SVG target. |
+| `export-conflict` | Multiple selected definitions resolve to one logical artefact path. |
+| `output-conflict` | A requested output destination violates publication policy. |
+| `output-failure` | The standalone output host cannot complete an accepted publication. |
 | `execution-failure` | An unexpected command-definition fault was sanitised by the kernel. |
 
 Expected command failures do not throw. Unexpected implementation faults may be caught at the
@@ -207,9 +257,10 @@ sequences or human table formatting, and the same exit-status mapping still appl
 
 ## Deferred capabilities
 
-`add`, `export`, `generate`, and `import` are absent from the initial descriptors and invocation
-union. Their names do not grant filesystem, package-manager, renderer, or Build capabilities to
-the current context.
+`add`, `generate`, and `import` remain absent from the current descriptors and invocation union.
+The implemented export command grants SVG rendering authority only to its internal headless
+composition. The other names grant no filesystem, package-manager, renderer,
+or Build capabilities to the current context.
 
 An accepted future command may add a narrow explicit effect capability. `import` remains
 conditional on the separate Build viability decision. No deferred command can change Core values,
@@ -218,4 +269,5 @@ catalogue membership, or this package's dependency direction implicitly.
 Package compatibility and evidence are defined by
 [CLI Compatibility and Conformance](../packages/cli/compatibility.md). The public-boundary
 rationale is recorded by
-[0008: Public Plugin-compatible Aster CLI Boundary](../decisions/0008-public-plugin-compatible-aster-cli-boundary.md).
+[0008: Public Plugin-compatible Aster CLI Boundary](../decisions/0008-public-plugin-compatible-aster-cli-boundary.md)
+and [0010: Headless SVG Export and Node Output Boundary](../decisions/0010-headless-svg-export-and-node-output-boundary.md).

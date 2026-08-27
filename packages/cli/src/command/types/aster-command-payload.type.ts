@@ -5,11 +5,23 @@ import type {
 } from "../../catalogue/contracts/index.js";
 import type { asterCommandPayloadKinds } from "../constants/aster-command-payload-kinds.constant.js";
 import type { AsterCommandDescriptor } from "../contracts/index.js";
+import type { AsterExportPlan } from "../../export/contracts/index.js";
 
 /**
  * @description Closed immutable success payload union returned by the initial command family.
  */
 export type AsterCommandPayloadType =
+  | Readonly<{
+      /**
+       * @description Discriminator for one complete headless export plan.
+       */
+      kind: typeof asterCommandPayloadKinds.export;
+
+      /**
+       * @description Complete immutable SVG artefact plan.
+       */
+      plan: AsterExportPlan;
+    }>
   | Readonly<{
       /**
        * @description Discriminator for provider listing.

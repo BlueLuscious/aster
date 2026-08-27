@@ -8,6 +8,10 @@ export const commandDiagnosticSchema = Object.freeze({
     ambiguous: "ambiguous",
     catalogueConflict: "catalogue-conflict",
     catalogueUnavailable: "catalogue-unavailable",
+    renderFailure: "render-failure",
+    exportConflict: "export-conflict",
+    outputConflict: "output-conflict",
+    outputFailure: "output-failure",
     executionFailure: "execution-failure",
   } as const),
   codes: Object.freeze({
@@ -17,6 +21,10 @@ export const commandDiagnosticSchema = Object.freeze({
     notFound: "ASTER-CLI-004",
     ambiguous: "ASTER-CLI-005",
     catalogueUnavailable: "ASTER-CLI-006",
+    renderFailure: "ASTER-CLI-007",
+    exportConflict: "ASTER-CLI-008",
+    outputConflict: "ASTER-CLI-009",
+    outputFailure: "ASTER-CLI-010",
     executionFailure: "ASTER-CLI-999",
   } as const),
 });

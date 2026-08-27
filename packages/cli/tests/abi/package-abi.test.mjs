@@ -35,6 +35,7 @@ test("exposes the exact documented immutable root value surface", async () => {
     "AsterCatalogue",
     "AsterCommands",
     "catalogueResultKinds",
+    "exportTargets",
   ]);
   assert.deepEqual(Object.keys(packageModule.AsterCommands), [
     "identity",
@@ -53,6 +54,8 @@ test("exposes the exact documented immutable root value surface", async () => {
   assert.ok(Object.isFrozen(packageModule.AsterCommands.descriptors));
   assert.ok(Object.isFrozen(packageModule.AsterCatalogue));
   assert.ok(Object.isFrozen(packageModule.catalogueResultKinds));
+  assert.deepEqual(packageModule.exportTargets, { svg: "svg" });
+  assert.ok(Object.isFrozen(packageModule.exportTargets));
 });
 
 test("publishes the accepted root, executable, dependency, and declaration surface", async () => {
@@ -76,10 +79,14 @@ test("publishes the accepted root, executable, dependency, and declaration surfa
   assert.equal(manifest.main, "./dist/index.js");
   assert.equal(manifest.types, "./dist/index.d.ts");
   assert.equal(manifest.sideEffects, false);
+  assert.deepEqual(manifest.engines, {
+    node: ">=24.10.0 <25",
+  });
   assert.deepEqual(manifest.files, ["dist"]);
   assert.deepEqual(manifest.dependencies, {
     "@aster/core": "workspace:*",
     "@aster/icons": "workspace:*",
+    "@aster/svg": "workspace:*",
   });
   assert.equal(manifest.peerDependencies, undefined);
   assert.equal(manifest.optionalDependencies, undefined);
@@ -90,6 +97,8 @@ test("publishes the accepted root, executable, dependency, and declaration surfa
       'export type * from "./catalogue/index.js";',
       'export { AsterCatalogue, catalogueResultKinds, } from "./catalogue/index.js";',
       'export type * from "./command/index.js";',
+      'export { exportTargets } from "./export/index.js";',
+      'export type * from "./export/index.js";',
       "",
     ].join("\n"),
   );
@@ -114,7 +123,7 @@ test("rejects implementation and executable subpaths through package exports", a
   );
 });
 
-test("emits host-neutral declarations with only public Core imports", async () => {
+test("emits host-neutral declarations with only accepted public package imports", async () => {
   const declarations = await collectDistributionFiles(".d.ts");
 
   assert.ok(declarations.length > 0);
@@ -126,8 +135,12 @@ test("emits host-neutral declarations with only public Core imports", async () =
     );
 
     assert.deepEqual(
-      [...new Set(externalSpecifiers)],
-      externalSpecifiers.length === 0 ? [] : ["@aster/core"],
+      [...new Set(externalSpecifiers)].sort(),
+      [...new Set(externalSpecifiers)]
+        .filter((specifier) =>
+          specifier === "@aster/core" || specifier === "@aster/svg"
+        )
+        .sort(),
     );
     assert.doesNotMatch(source, /\/src\/|\\src\\/gu);
     assert.doesNotMatch(source, /\/\/\/\s*<reference/iu);
@@ -137,7 +150,7 @@ test("emits host-neutral declarations with only public Core imports", async () =
     );
     assert.doesNotMatch(
       source,
-      /(?:@aster\/build|@aster\/svg|\blilium\b|\blotus\b|\btooling\b|\bplans\b)/giu,
+      /(?:@aster\/build|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
     );
   }
 });
@@ -173,11 +186,15 @@ test("limits Node process authority and the manifest bridge to the private entry
       [...new Set(externalSpecifiers)]
         .filter((specifier) =>
           specifier === "@aster/core" || specifier === "@aster/icons"
+          || specifier === "@aster/svg"
         )
         .sort(),
     );
     assert.doesNotMatch(source, /\bmodule\.exports\b/gu);
-
+    assert.doesNotMatch(
+      source,
+      /(?:@aster\/build|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
+    );
     if (module !== executableEntry) {
       assert.doesNotMatch(
         source,
@@ -188,8 +205,33 @@ test("limits Node process authority and the manifest bridge to the private entry
 
   assert.deepEqual(nodeOwners, [
     ["shell/aster.js", ["node:module", "node:process"]],
+    ["shell/output/runtime/export-output-path.resolver.js", ["node:path"]],
+    [
+      "shell/output/runtime/node-export-output-file-system.js",
+      ["node:fs/promises"],
+    ],
   ]);
   assert.deepEqual(requireOwners, ["shell/aster.js"]);
+});
+
+test("acquires the built-in Icons catalogue only through its explicit lazy provider", async () => {
+  const modules = await collectDistributionFiles(".js");
+  const iconsOwners = [];
+
+  for (const module of modules) {
+    const source = await readFile(module, "utf8");
+    const modulePath = relative(distributionRoot, module).replaceAll("\\", "/");
+
+    if (extractModuleSpecifiers(source).includes("@aster/icons")) {
+      iconsOwners.push(modulePath);
+      assert.match(source, /await import\("@aster\/icons"\)/u);
+      assert.doesNotMatch(source, /from\s+["']@aster\/icons["']/u);
+    }
+  }
+
+  assert.deepEqual(iconsOwners, [
+    "catalogue/runtime/aster-catalogue.provider.js",
+  ]);
 });
 
 test("preserves the accepted workspace dependency direction", async () => {
@@ -216,6 +258,7 @@ test("preserves the accepted workspace dependency direction", async () => {
   assert.deepEqual(manifests.cli.dependencies, {
     "@aster/core": "workspace:*",
     "@aster/icons": "workspace:*",
+    "@aster/svg": "workspace:*",
   });
 
   for (const [name, manifest] of Object.entries(manifests)) {

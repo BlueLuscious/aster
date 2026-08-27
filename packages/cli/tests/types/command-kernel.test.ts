@@ -11,11 +11,18 @@ import type {
   AsterCommandPayloadType,
   AsterCommandResultType,
   AsterCommandSet,
+  AsterExportArtefact,
+  AsterExportOptionsType,
+  AsterExportPlan,
+  AsterExportSubjectType,
+  AsterIconExportOptionsType,
   AsterCommandShowSubjectType,
+  CatalogueCollectionRecord,
+  CatalogueCollectionResult,
+  CatalogueIconRecord,
+  CatalogueIconResult,
   CatalogueProvider,
   CatalogueProviderResult,
-  CatalogueIconResult,
-  CatalogueCollectionResult,
   CatalogueResultKindType,
   CatalogueSnapshot,
 } from "../../src/index.js";
@@ -23,6 +30,7 @@ import {
   AsterCatalogue,
   AsterCommands,
   catalogueResultKinds,
+  exportTargets,
 } from "../../src/index.js";
 
 const snapshot: CatalogueSnapshot = {
@@ -56,6 +64,33 @@ const diagnosticCode: AsterCommandDiagnosticCodeType = "ASTER-CLI-004";
 const diagnosticCategory: AsterCommandDiagnosticCategoryType = "not-found";
 const payloadKind: AsterCommandPayloadKindType = "icon-list";
 const catalogueResultKind: CatalogueResultKindType = catalogueResultKinds.icon;
+const exportSubject: AsterExportSubjectType = "icon";
+const exportOptions: AsterExportOptionsType = {
+  size: 24,
+  direction: "ltr",
+};
+const iconExportOptions: AsterIconExportOptionsType = {
+  ...exportOptions,
+  label: "Camera",
+};
+const exportInvocation: AsterCommandInvocationType = {
+  command: "export",
+  subject: "icon",
+  identity: "aster/camera",
+  options: iconExportOptions,
+};
+const exportArtefact: AsterExportArtefact = {
+  path: "aster/camera.svg",
+  mediaType: "image/svg+xml",
+  content: "<svg></svg>",
+};
+const exportPlan: AsterExportPlan = {
+  target: exportTargets.svg,
+  subject: exportSubject,
+  catalogue: "aster",
+  identity: "aster/camera",
+  artefacts: [exportArtefact],
+};
 const invocation: AsterCommandInvocationType = {
   command: "search",
   query: "camera",
@@ -86,12 +121,22 @@ const publicExecution: Promise<AsterCommandResultType> = AsterCommands.execute(
 );
 const publicProvider: CatalogueProvider = AsterCatalogue;
 declare const commandPayload: AsterCommandPayloadType;
+declare const iconRecord: CatalogueIconRecord;
 declare const iconResult: CatalogueIconResult;
+declare const collectionRecord: CatalogueCollectionRecord;
 declare const collectionResult: CatalogueCollectionResult;
 declare const providerResult: CatalogueProviderResult;
 
 // @ts-expect-error Unknown command identities are outside the accepted invocation union.
 const unknownInvocation: AsterCommandInvocationType = { command: "remove" };
+
+const invalidCollectionExport: AsterCommandInvocationType = {
+  command: "export",
+  subject: "collection",
+  identity: "aster",
+  // @ts-expect-error Collection export does not accept icon-specific accessibility options.
+  options: { label: "Collection" },
+};
 
 // @ts-expect-error Collection listing cannot contain an explicit undefined provider filter.
 const undefinedFilter: AsterCommandInvocationType = {
@@ -107,11 +152,20 @@ void commandName;
 void diagnosticCategory;
 void diagnosticCode;
 void execution;
+void exportArtefact;
+void exportInvocation;
+void exportOptions;
+void exportPlan;
+void exportSubject;
 void publicExecution;
 void publicProvider;
 void commandPayload;
 void catalogueResultKind;
+void collectionRecord;
 void iconResult;
+void iconRecord;
+void iconExportOptions;
+void invalidCollectionExport;
 void collectionResult;
 void providerResult;
 void failure;
