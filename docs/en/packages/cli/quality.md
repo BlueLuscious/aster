@@ -104,7 +104,7 @@ existing target.
 ## Existing conformance
 
 The current evidence comprises compile-time public-shape checks, 36 host-neutral runtime tests,
-34 package-ABI and executable tests, architecture policy, documentation verification, and complete
+35 package-ABI and executable tests, architecture policy, documentation verification, and complete
 repository workflows. It currently demonstrates:
 
 - exact immutable root values and rejected implementation subpaths;
@@ -118,7 +118,7 @@ repository workflows. It currently demonstrates:
 - equivalent standalone and independent programmatic results;
 - human, JSON, and raw SVG presentation with deterministic streams and statuses;
 - output-path rejection, exclusive staging, absent-target publication, and current-stage cleanup;
-- clean consumption using only copied publishable package files.
+- clean consumption through locally packed and package-manager-installed Aster packages.
 
 Subprocess-based executable and clean-consumer evidence requires an environment that permits child
 Node processes. A blocked subprocess reports no process status and is not a CLI result.
@@ -134,6 +134,11 @@ The shell project intentionally emits no declarations. Distribution granularity 
 startup remain measurement concerns rather than reasons to add bundling or collapse coherent
 source boundaries without evidence.
 
+The accepted [CLI Quality Baseline](quality-baseline.md) records current operation attribution,
+cold-process evidence, emitted shape, package dry-run, packed installation, and linked-binary
+verification. It found no isolated material CLI-owned mechanism that justifies changing runtime
+behaviour or distribution structure.
+
 ## Audit pressures
 
 | Pressure | Current evidence | Required boundary |
@@ -144,7 +149,7 @@ source boundaries without evidence.
 | Command growth | Programmatic acceptance and argv parsing dispatch to explicit command-owned collaborators; human presentation dispatches to cohesive payload-family presenters. | Keep integration explicit and bounded without mutable registries, reflection, base-class hierarchies, or automatic discovery. |
 | Catalogue concentration | Record and snapshot normalisers are sizeable complete data boundaries. | Split only if adversarial evidence proves independently changing responsibilities; method count alone is insufficient. |
 | Filesystem races | Lexical confinement, portable segments, exclusive writes, same-parent staging, a second target check, current-stage cleanup, and sanitised failures are covered. | Retain explicit non-guarantees for hostile concurrent mutation, symlink replacement, process interruption, crash durability, and native rename semantics. |
-| Startup and package cost | Current subprocess timings include Node startup and temporary-consumer preparation; distribution emits one module per source file. | Measure cold import, command execution, provider loading, export, presentation, and packaging independently before optimisation. |
+| Startup and package cost | Cold Node control, root import, executable startup, command execution, provider loading, export, presentation, emitted distribution, and packed installation are measured independently. | Retain the current structure until a repeatable CLI-owned mechanism satisfies the documented comparison rules. |
 | External documentation | Some project documents still describe CLI export as future pressure or rely on legacy architecture and governance roots. | Synchronise consumers during hardening and complete authority migration in documentation hardening. |
 
 No pressure currently authorises mutable caches, global registries, automatic discovery,
@@ -152,11 +157,12 @@ inheritance hierarchies, trusted-definition shortcuts, bundling, or API growth.
 
 ## Baseline scenario boundary
 
-The future CLI performance baseline should measure cold root import, `help`, `version`, catalogue
+The CLI performance baseline measures cold root import, `help`, `version`, catalogue
 discovery, one icon export, complete collection export, JSON presentation, and host-neutral output
 planning independently. Package-manager startup, dependency installation, temporary-consumer
 copying, filesystem publication, and test-runner bootstrap must not be included accidentally in
-command-domain timing.
+command-domain timing. Exact scenarios and current attribution are documented by the
+[CLI Quality Baseline](quality-baseline.md).
 
 Any candidate comparison must preserve exact structured results, diagnostics, ordering, SVG bytes,
 streams, statuses, path semantics, lazy provider loading, and package ABI. Performance reports

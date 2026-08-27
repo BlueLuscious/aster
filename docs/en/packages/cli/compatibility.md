@@ -88,7 +88,8 @@ Package conformance builds the distribution and verifies:
 - exact runtime values, export map, binary mapping, declarations, and rejected subpaths;
 - host-neutral declaration imports and dependency direction;
 - exclusive Node process authority in the executable entrypoint;
-- import behaviour in a temporary consumer containing only package manifests and distributions;
+- package dry-run, local tarball installation, strict engine acceptance, binary linking, and root
+  import behaviour in a temporary consumer containing no workspace source files;
 - standalone and independent programmatic-host discovery and complete export equivalence;
 - explicit catalogue registration and registration-order independence;
 - byte-equivalent publication of the complete built-in collection from a clean consumer;

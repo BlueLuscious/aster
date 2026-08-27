@@ -39,6 +39,8 @@ programmatic-host guarantees, and release evidence across these features.
 
 [CLI Quality](quality.md) inventories the current implementation, distribution, conformance, and
 unresolved hardening pressures without presenting later corrective work as accepted behaviour.
+[CLI Quality Baseline](quality-baseline.md) defines reproducible execution, cold-start, allocation,
+and distribution comparison evidence.
 
 ## Dependency boundary
 
