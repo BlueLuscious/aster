@@ -8,11 +8,11 @@ import { cliBaseline } from "../constants/cli-baseline.constant.mjs";
  * @description Coordinates CLI operation, cold-start, and distribution baseline evidence.
  */
 export class CliBaselineRunner {
-  /** @description Generic deterministic synchronous scenario runner. */
+  /** @description Generic deterministic runner configured for synchronous scenarios. */
   #benchmarkRunner;
 
-  /** @description Generic deterministic asynchronous scenario runner. */
-  #asyncBenchmarkRunner;
+  /** @description Generic deterministic runner configured for asynchronous scenarios. */
+  #asynchronousBenchmarkRunner;
 
   /** @description Fresh-process CLI measurement authority. */
   #coldStartRunner;
@@ -37,8 +37,8 @@ export class CliBaselineRunner {
 
   /**
    * @description Creates one CLI baseline composition.
-   * @param {{ measure(scenario: object): object, methodology(): object }} benchmarkRunner - Synchronous measurement authority.
-   * @param {{ measure(scenario: object): Promise<object>, methodology(): object }} asyncBenchmarkRunner - Asynchronous measurement authority.
+   * @param {{ measure(scenario: object): Promise<object>, methodology(): object }} benchmarkRunner - Measurement authority configured for synchronous scenarios.
+   * @param {{ measure(scenario: object): Promise<object>, methodology(): object }} asynchronousBenchmarkRunner - Measurement authority configured for asynchronous scenarios.
    * @param {{ measure(scenario: object): object }} coldStartRunner - Fresh-process measurement authority.
    * @param {{ inspect(packagePath: string): Promise<object> }} distributionInspector - Package distribution authority.
    * @param {{ environment(): object }} host - Runtime environment authority.
@@ -47,7 +47,7 @@ export class CliBaselineRunner {
    */
   constructor(
     benchmarkRunner,
-    asyncBenchmarkRunner,
+    asynchronousBenchmarkRunner,
     coldStartRunner,
     distributionInspector,
     host,
@@ -55,7 +55,7 @@ export class CliBaselineRunner {
     executablePath,
   ) {
     this.#benchmarkRunner = benchmarkRunner;
-    this.#asyncBenchmarkRunner = asyncBenchmarkRunner;
+    this.#asynchronousBenchmarkRunner = asynchronousBenchmarkRunner;
     this.#coldStartRunner = coldStartRunner;
     this.#distributionInspector = distributionInspector;
     this.#host = host;
@@ -156,10 +156,17 @@ export class CliBaselineRunner {
         executablePath: this.#executablePath,
       }),
     ];
-    const asyncResults = [];
+    const synchronousResults = [];
+    const asynchronousResults = [];
+
+    for (const scenario of synchronousScenarios) {
+      synchronousResults.push(await this.#benchmarkRunner.measure(scenario));
+    }
 
     for (const scenario of asynchronousScenarios) {
-      asyncResults.push(await this.#asyncBenchmarkRunner.measure(scenario));
+      asynchronousResults.push(
+        await this.#asynchronousBenchmarkRunner.measure(scenario),
+      );
     }
 
     return Object.freeze({
@@ -168,18 +175,14 @@ export class CliBaselineRunner {
       environment: this.#host.environment(),
       methodology: Object.freeze({
         synchronous: this.#benchmarkRunner.methodology(),
-        asynchronous: this.#asyncBenchmarkRunner.methodology(),
+        asynchronous: this.#asynchronousBenchmarkRunner.methodology(),
         coldStart: "fresh direct Node processes without package-manager bootstrap",
       }),
       distribution: await this.#distributionInspector.inspect(
         cliBaseline.packagePath,
       ),
-      scenarios: Object.freeze(
-        synchronousScenarios.map((scenario) =>
-          this.#benchmarkRunner.measure(scenario),
-        ),
-      ),
-      asyncScenarios: Object.freeze(asyncResults),
+      scenarios: Object.freeze(synchronousResults),
+      asyncScenarios: Object.freeze(asynchronousResults),
       coldScenarios: Object.freeze(
         coldScenarios.map((scenario) => this.#coldStartRunner.measure(scenario)),
       ),

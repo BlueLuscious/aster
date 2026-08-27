@@ -2,7 +2,6 @@ import { NodeRepositoryFileSystem } from "../../../shared/runtime/node-repositor
 import { RepositoryFileWalker } from "../../../shared/runtime/repository-file.walker.mjs";
 import { RepositoryJsonReader } from "../../../shared/runtime/repository-json.reader.mjs";
 import { RepositoryPathResolver } from "../../../shared/runtime/repository-path.resolver.mjs";
-import { AsyncBenchmarkRunner } from "../../shared/runtime/async-benchmark.runner.mjs";
 import { BenchmarkRunner } from "../../shared/runtime/benchmark.runner.mjs";
 import { NodeBenchmarkHost } from "../../shared/runtime/node-benchmark.host.mjs";
 import { NumericSampleStatistics } from "../../shared/runtime/numeric-sample.statistics.mjs";
@@ -36,7 +35,7 @@ export class CliBaselineFactory {
 
     return new CliBaselineRunner(
       new BenchmarkRunner(host, statistics, { warmupOperations: 20 }),
-      new AsyncBenchmarkRunner(host, statistics, { warmupOperations: 5 }),
+      new BenchmarkRunner(host, statistics, { warmupOperations: 5 }),
       new CliColdStartRunner(
         new NodeCliProcessHost(paths.resolve(".")),
         statistics,

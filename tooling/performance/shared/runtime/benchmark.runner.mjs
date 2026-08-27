@@ -2,7 +2,7 @@ import { benchmarkMethodology } from "../constants/benchmark-methodology.constan
 import { BenchmarkConfigurationValidator } from "./benchmark-configuration.validator.mjs";
 
 /**
- * @description Measures deterministic operation scenarios through injected host capabilities.
+ * @description Measures deterministic synchronous or asynchronous operation scenarios through injected host capabilities.
  */
 export class BenchmarkRunner {
   /** @description Shared closed benchmark configuration validator. */
@@ -51,17 +51,21 @@ export class BenchmarkRunner {
   }
 
   /**
-   * @description Measures one deterministic operation scenario after warm-up.
+   * @description Measures one deterministic operation scenario after warm-up without suspending synchronous timing paths.
    * @param {import("../contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario} scenario - Scenario definition.
-   * @returns {{ name: string, operationsPerSample: number, medianNanosecondsPerOperation: number, minimumNanosecondsPerOperation: number, maximumNanosecondsPerOperation: number, medianHeapGrowthBytesPerOperation: number, checksum: number }} Comparison summary.
+   * @returns {Promise<{ name: string, operationsPerSample: number, medianNanosecondsPerOperation: number, minimumNanosecondsPerOperation: number, maximumNanosecondsPerOperation: number, medianHeapGrowthBytesPerOperation: number, checksum: number }>} Comparison summary.
    */
-  measure(scenario) {
+  async measure(scenario) {
     this.#host.assertAvailable();
     this.#configuration.positiveInteger(
       scenario.operationsPerSample,
       "scenario.operationsPerSample",
     );
-    scenario.execute(this.#warmupOperations);
+    const warmupResult = scenario.execute(this.#warmupOperations);
+
+    if (this.#isPromiseLike(warmupResult)) {
+      await warmupResult;
+    }
 
     const timings = [];
     const heapGrowth = [];
@@ -71,7 +75,11 @@ export class BenchmarkRunner {
       this.#host.collectGarbage();
       const heapBefore = this.#host.heapUsed();
       const startedAt = this.#host.now();
-      checksum = scenario.execute(scenario.operationsPerSample);
+      const executionResult = scenario.execute(scenario.operationsPerSample);
+
+      checksum = this.#isPromiseLike(executionResult)
+        ? await executionResult
+        : executionResult;
       const elapsed = this.#host.now() - startedAt;
       const heapAfter = this.#host.heapUsed();
 
@@ -106,6 +114,19 @@ export class BenchmarkRunner {
       timing: benchmarkMethodology.timing,
       memory: benchmarkMethodology.memory,
     });
+  }
+
+  /**
+   * @description Determines whether one scenario result requires asynchronous settlement.
+   * @param {number | PromiseLike<number>} value - Direct or deferred scenario checksum.
+   * @returns {boolean} Whether the value exposes a callable promise-like continuation.
+   */
+  #isPromiseLike(value) {
+    return (
+      value !== null
+      && (typeof value === "object" || typeof value === "function")
+      && typeof value.then === "function"
+    );
   }
 
 }

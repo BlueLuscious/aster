@@ -12,7 +12,6 @@ import { coreBaseline } from "../../tooling/performance/core/constants/core-base
 import { CoreBaselineFixtureFactory } from "../../tooling/performance/core/runtime/core-baseline-fixture.factory.mjs";
 import { CoreBaselineRunner } from "../../tooling/performance/core/runtime/core-baseline.runner.mjs";
 import { BenchmarkRunner } from "../../tooling/performance/shared/runtime/benchmark.runner.mjs";
-import { AsyncBenchmarkRunner } from "../../tooling/performance/shared/runtime/async-benchmark.runner.mjs";
 import { NumericSampleStatistics } from "../../tooling/performance/shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../tooling/performance/shared/runtime/package-distribution.inspector.mjs";
 import { svgBaseline } from "../../tooling/performance/svg/constants/svg-baseline.constant.mjs";
@@ -146,7 +145,7 @@ test("runs the complete SVG scenario matrix through public values", async () => 
   assert.deepEqual(report.distribution, { packagePath: "packages/svg" });
 });
 
-test("aggregates deterministic timing and heap samples through a fake host", () => {
+test("aggregates synchronous timing without suspending its measurement path", async () => {
   const clock = [0n, 20n, 100n, 140n, 200n, 260n];
   const heap = [100, 120, 200, 180, 300, 360];
   let collections = 0;
@@ -174,7 +173,7 @@ test("aggregates deterministic timing and heap samples through a fake host", () 
     { warmupOperations: 3, sampleCount: 3 },
   );
 
-  const result = runner.measure({
+  const resultPromise = runner.measure({
     name: "fixture.operation",
     operationsPerSample: 2,
     execute(iterations) {
@@ -182,6 +181,9 @@ test("aggregates deterministic timing and heap samples through a fake host", () 
       return executions.length;
     },
   });
+  assert.deepEqual(executions, [3, 2, 2, 2]);
+
+  const result = await resultPromise;
 
   assert.deepEqual(result, {
     name: "fixture.operation",
@@ -192,7 +194,6 @@ test("aggregates deterministic timing and heap samples through a fake host", () 
     medianHeapGrowthBytesPerOperation: 10,
     checksum: 4,
   });
-  assert.deepEqual(executions, [3, 2, 2, 2]);
   assert.equal(availabilityChecks, 1);
   assert.equal(collections, 3);
   assert.deepEqual(runner.methodology(), {
@@ -208,7 +209,7 @@ test("aggregates asynchronous timing and heap samples without overlapping scenar
   const clock = [0n, 20n, 100n, 140n];
   const heap = [100, 120, 200, 180];
   const executions = [];
-  const runner = new AsyncBenchmarkRunner(
+  const runner = new BenchmarkRunner(
     {
       assertAvailable() {},
       collectGarbage() {},
