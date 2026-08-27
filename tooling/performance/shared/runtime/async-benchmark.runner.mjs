@@ -2,36 +2,26 @@ import { benchmarkMethodology } from "../constants/benchmark-methodology.constan
 import { BenchmarkConfigurationValidator } from "./benchmark-configuration.validator.mjs";
 
 /**
- * @description Measures deterministic operation scenarios through injected host capabilities.
+ * @description Measures deterministic asynchronous operation scenarios through injected hosts.
  */
-export class BenchmarkRunner {
+export class AsyncBenchmarkRunner {
   /** @description Shared closed benchmark configuration validator. */
   #configuration = new BenchmarkConfigurationValidator();
 
-  /**
-   * @description Host supplying clock, heap, and garbage-collection capabilities.
-   * @type {import("../contracts/internal/benchmark-host.contract.mjs").IBenchmarkHost}
-   */
+  /** @description Host supplying clock, heap, and garbage-collection capabilities. */
   #host;
 
-  /**
-   * @description Numeric sample aggregation authority.
-   * @type {import("./numeric-sample.statistics.mjs").NumericSampleStatistics}
-   */
+  /** @description Numeric sample aggregation authority. */
   #statistics;
 
-  /**
-   * @description Number of untimed operations used to stabilise each scenario.
-   */
+  /** @description Number of untimed operations used to stabilise each scenario. */
   #warmupOperations;
 
-  /**
-   * @description Number of independently measured samples retained for each scenario.
-   */
+  /** @description Number of independently measured samples retained for each scenario. */
   #sampleCount;
 
   /**
-   * @description Creates one reusable benchmark runner.
+   * @description Creates one reusable asynchronous benchmark runner.
    * @param {import("../contracts/internal/benchmark-host.contract.mjs").IBenchmarkHost} host - Explicit measurement host.
    * @param {import("./numeric-sample.statistics.mjs").NumericSampleStatistics} statistics - Numeric sample aggregation authority.
    * @param {{ warmupOperations?: number, sampleCount?: number }} [options] - Optional stable methodology controls.
@@ -51,17 +41,17 @@ export class BenchmarkRunner {
   }
 
   /**
-   * @description Measures one deterministic operation scenario after warm-up.
-   * @param {import("../contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario} scenario - Scenario definition.
-   * @returns {{ name: string, operationsPerSample: number, medianNanosecondsPerOperation: number, minimumNanosecondsPerOperation: number, maximumNanosecondsPerOperation: number, medianHeapGrowthBytesPerOperation: number, checksum: number }} Comparison summary.
+   * @description Measures one asynchronous operation scenario after warm-up.
+   * @param {import("../contracts/internal/async-benchmark-scenario.contract.mjs").IAsyncBenchmarkScenario} scenario - Scenario definition.
+   * @returns {Promise<{ name: string, operationsPerSample: number, medianNanosecondsPerOperation: number, minimumNanosecondsPerOperation: number, maximumNanosecondsPerOperation: number, medianHeapGrowthBytesPerOperation: number, checksum: number }>} Comparison summary.
    */
-  measure(scenario) {
+  async measure(scenario) {
     this.#host.assertAvailable();
     this.#configuration.positiveInteger(
       scenario.operationsPerSample,
       "scenario.operationsPerSample",
     );
-    scenario.execute(this.#warmupOperations);
+    await scenario.execute(this.#warmupOperations);
 
     const timings = [];
     const heapGrowth = [];
@@ -71,7 +61,7 @@ export class BenchmarkRunner {
       this.#host.collectGarbage();
       const heapBefore = this.#host.heapUsed();
       const startedAt = this.#host.now();
-      checksum = scenario.execute(scenario.operationsPerSample);
+      checksum = await scenario.execute(scenario.operationsPerSample);
       const elapsed = this.#host.now() - startedAt;
       const heapAfter = this.#host.heapUsed();
 
