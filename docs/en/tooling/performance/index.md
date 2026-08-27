@@ -16,8 +16,7 @@ Repository filesystem, path, strict JSON, and deterministic traversal capabiliti
 | `NodeBenchmarkHost` | Supplies monotonic time, heap usage, explicit garbage collection, and environment identity. |
 | `NumericSampleStatistics` | Calculates median, minimum, and maximum observations without mutating samples. |
 | `BenchmarkConfigurationValidator` | Enforces shared positive operation and sample-count controls. |
-| `BenchmarkRunner` | Applies warm-up, repeated samples, heap-pressure summaries, checksums, and injected aggregation. |
-| `AsyncBenchmarkRunner` | Applies the same methodology to sequential asynchronous operations without overlapping samples or scenarios. |
+| `BenchmarkRunner` | Applies one warm-up, sampling, heap-pressure, checksum, and aggregation methodology to synchronous or asynchronous operations without overlapping samples or scenarios. |
 | `PackageDistributionInspector` | Reports emitted JavaScript, declarations, bytes, exports, and side-effect metadata. |
 
 Closed methodology defaults and emitted-file vocabulary live in shared immutable constants. Narrow
