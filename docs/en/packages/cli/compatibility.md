@@ -1,6 +1,6 @@
 # CLI Compatibility and Conformance
 
-Status: **Experimental**
+Status: **Pre-release**
 
 This document defines the compatibility-bearing surface and release evidence for `@aster/cli`.
 Detailed command, catalogue, and executable semantics remain owned by their respective package
@@ -9,8 +9,8 @@ feature documents.
 ## Runtime compatibility
 
 The package distributes native ESM targeting ES2022 and provides no CommonJS, legacy, or alternate
-build. The programmatic root has no Node or DOM ambient dependency. The standalone `aster`
-executable supports the repository Node range, currently `>=24.10.0 <25`.
+build. The programmatic root has no Node or DOM ambient dependency. The package manifest declares
+`>=24.10.0 <25` as the supported Node range for the standalone `aster` executable.
 
 The Node shell is a referenced TypeScript project. It consumes host-neutral declarations and emits
 only private shell modules, so Node ambient types cannot alter the host-neutral implementation or
@@ -81,6 +81,33 @@ can stage and publish that plan without changing the programmatic result contrac
 options become the same portable option record before command execution. Detailed ownership is documented by
 [CLI Export](export/index.md).
 
+## Conditional Flora seam
+
+The current `@aster/cli` package is a complete standalone product. It owns both the host-neutral
+`AsterCommands` composition and the private Node shell; neither `@aster/commands` nor
+`@aster/flora` exists or forms part of the supported ABI.
+
+If an independent Flora consumer and stable Flora plugin contract demonstrate a separate
+installation or versioning need, the host-neutral domain may be extracted without inverting
+dependencies:
+
+```text
+@aster/commands <---- @aster/cli
+        ^
+        |
+@aster/flora -------> @flora/core
+```
+
+`@aster/commands` would retain structured Aster invocations, explicit contexts, catalogue
+selection, and immutable export plans. `@aster/cli` would remain the standalone executable and
+default Icons composition. `@aster/flora` would adapt the same Aster command domain to Flora's
+public plugin ABI; Flora would not acquire Aster domain behaviour and portable Aster packages
+would not depend on either host.
+
+Extraction is not authorised merely to reorganise files. Until both triggers exist, the current
+package boundary remains canonical. Broader product sequencing is recorded by
+[Future Flora Integration](../../future-capabilities.md#future-flora-integration).
+
 ## Conformance evidence
 
 Package conformance builds the distribution and verifies:
@@ -88,7 +115,8 @@ Package conformance builds the distribution and verifies:
 - exact runtime values, export map, binary mapping, declarations, and rejected subpaths;
 - host-neutral declaration imports and dependency direction;
 - exclusive Node process authority in the executable entrypoint;
-- import behaviour in a temporary consumer containing only package manifests and distributions;
+- package dry-run, local tarball installation, strict engine acceptance, binary linking, and root
+  import behaviour in a temporary consumer containing no workspace source files;
 - standalone and independent programmatic-host discovery and complete export equivalence;
 - explicit catalogue registration and registration-order independence;
 - byte-equivalent publication of the complete built-in collection from a clean consumer;

@@ -79,6 +79,9 @@ test("publishes the accepted root, executable, dependency, and declaration surfa
   assert.equal(manifest.main, "./dist/index.js");
   assert.equal(manifest.types, "./dist/index.d.ts");
   assert.equal(manifest.sideEffects, false);
+  assert.deepEqual(manifest.engines, {
+    node: ">=24.10.0 <25",
+  });
   assert.deepEqual(manifest.files, ["dist"]);
   assert.deepEqual(manifest.dependencies, {
     "@aster/core": "workspace:*",
@@ -202,13 +205,33 @@ test("limits Node process authority and the manifest bridge to the private entry
 
   assert.deepEqual(nodeOwners, [
     ["shell/aster.js", ["node:module", "node:process"]],
-    ["shell/runtime/export-output-path.resolver.js", ["node:path"]],
+    ["shell/output/runtime/export-output-path.resolver.js", ["node:path"]],
     [
-      "shell/runtime/node-export-output-file-system.js",
+      "shell/output/runtime/node-export-output-file-system.js",
       ["node:fs/promises"],
     ],
   ]);
   assert.deepEqual(requireOwners, ["shell/aster.js"]);
+});
+
+test("acquires the built-in Icons catalogue only through its explicit lazy provider", async () => {
+  const modules = await collectDistributionFiles(".js");
+  const iconsOwners = [];
+
+  for (const module of modules) {
+    const source = await readFile(module, "utf8");
+    const modulePath = relative(distributionRoot, module).replaceAll("\\", "/");
+
+    if (extractModuleSpecifiers(source).includes("@aster/icons")) {
+      iconsOwners.push(modulePath);
+      assert.match(source, /await import\("@aster\/icons"\)/u);
+      assert.doesNotMatch(source, /from\s+["']@aster\/icons["']/u);
+    }
+  }
+
+  assert.deepEqual(iconsOwners, [
+    "catalogue/runtime/aster-catalogue.provider.js",
+  ]);
 });
 
 test("preserves the accepted workspace dependency direction", async () => {

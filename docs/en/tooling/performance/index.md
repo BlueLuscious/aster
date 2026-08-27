@@ -15,7 +15,8 @@ Repository filesystem, path, strict JSON, and deterministic traversal capabiliti
 | --- | --- |
 | `NodeBenchmarkHost` | Supplies monotonic time, heap usage, explicit garbage collection, and environment identity. |
 | `NumericSampleStatistics` | Calculates median, minimum, and maximum observations without mutating samples. |
-| `BenchmarkRunner` | Applies warm-up, repeated samples, heap-pressure summaries, checksums, and injected aggregation. |
+| `BenchmarkConfigurationValidator` | Enforces shared positive operation and sample-count controls. |
+| `BenchmarkRunner` | Applies one warm-up, sampling, heap-pressure, checksum, and aggregation methodology to synchronous or asynchronous operations without overlapping samples or scenarios. |
 | `PackageDistributionInspector` | Reports emitted JavaScript, declarations, bytes, exports, and side-effect metadata. |
 
 Closed methodology defaults and emitted-file vocabulary live in shared immutable constants. Narrow
@@ -26,9 +27,14 @@ does not construct Node adapters internally.
 Each package owns an independent runner, factory, and command. `CoreBaselineFactory` composes the
 shared Node capabilities, while `CoreBaselineRunner` defines only Core icon and collection
 construction scenarios. `SvgBaselineFactory` and `SvgBaselineRunner` independently compose SVG
-definitions, options, rendering scenarios, and distribution evidence. A future Build, CLI, or
-other baseline follows the same isolation, reuses shared capabilities, and never edits a global
+definitions, options, rendering scenarios, and distribution evidence. `CliBaselineFactory` and
+`CliBaselineRunner` independently compose command, shell, cold-process, and distribution evidence.
+A future Build or other baseline follows the same isolation, reuses shared capabilities, and never edits a global
 scenario registry or imports another package baseline's configuration.
+
+The CLI baseline owns a narrow fresh-process host and runner because cold root import and
+executable startup cannot be measured by an in-process operation loop. That adapter remains
+CLI-specific until another package demonstrates the same process contract.
 
 ## Core comparison
 
@@ -54,6 +60,19 @@ pnpm benchmark:svg
 The command builds Core, the real Icons corpus, and SVG before measuring public rendering and
 distribution. Exact scenarios, attribution, retained decisions, and acceptance rules are defined
 by the [SVG Quality Baseline](../../packages/svg/quality-baseline.md).
+
+## CLI comparison
+
+Run:
+
+```sh
+pnpm benchmark:cli
+```
+
+The command builds Core, Icons, SVG, and CLI before measuring synchronous shell adaptation,
+asynchronous programmatic commands, fresh Node startup, and emitted distribution evidence. Exact
+scenarios, attribution, and acceptance rules are defined by the
+[CLI Quality Baseline](../../packages/cli/quality-baseline.md).
 
 ## Comparison limits
 

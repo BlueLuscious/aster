@@ -1,14 +1,14 @@
 import { asterCommandPayloadKinds } from "../../command/constants/aster-command-payload-kinds.constant.js";
 import { AsterCatalogue, AsterCommands } from "../../index.js";
-import { commandLineTokens } from "../constants/command-line-tokens.constant.js";
-import type { TShellExecution } from "../types/internal/shell-execution.type.js";
-import { CommandLineError } from "./command-line.error.js";
-import { CommandLineParser } from "./command-line.parser.js";
-import { CommandOutputPresenter } from "./command-output.presenter.js";
-import { ExportOutputError } from "./export-output.error.js";
-import { ExportOutputPathResolver } from "./export-output-path.resolver.js";
-import { ExportOutputPublisher } from "./export-output.publisher.js";
-import { NodeExportOutputFileSystem } from "./node-export-output-file-system.js";
+import { ExportOutputError } from "../output/runtime/export-output.error.js";
+import { ExportOutputPathResolver } from "../output/runtime/export-output-path.resolver.js";
+import { ExportOutputPublisher } from "../output/runtime/export-output.publisher.js";
+import { NodeExportOutputFileSystem } from "../output/runtime/node-export-output-file-system.js";
+import { commandLineTokens } from "../parsing/constants/command-line-tokens.constant.js";
+import { CommandLineError } from "../parsing/runtime/command-line.error.js";
+import { CommandLineParser } from "../parsing/runtime/command-line.parser.js";
+import { CommandOutputPresenter } from "../presentation/runtime/command-output.presenter.js";
+import type { TShellExecution } from "../presentation/types/internal/shell-execution.type.js";
 import { ShellDiagnosticFactory } from "./shell-diagnostic.factory.js";
 
 /**

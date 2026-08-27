@@ -45,11 +45,12 @@ separate responsibility or demonstrated reuse.
 | Icons documentation | Demonstrates rendering one exported canonical definition. |
 | Build import workflow | Proves an accepted imported definition renders byte-equivalent markup to its TypeScript-first equivalent. |
 | Isolated package consumer | Imports and renders using only publishable Core and SVG files, without repository sources. |
-| Future CLI export or review host | Deferred pressure only; no current CLI production dependency exists. |
+| CLI export | Renders selected icon and collection definitions into complete immutable export plans through the public SVG root. |
+| Future review host | Deferred pressure only; no current review product depends on SVG. |
 
-`@aster/icons`, `@aster/core`, `@aster/build`, and `@aster/cli` do not depend on SVG. Build imports
-external SVG towards portable definitions; this package renders portable definitions towards SVG
-markup. Neither direction owns the other.
+`@aster/cli` depends on the public SVG root for export rendering. `@aster/icons`, `@aster/core`, and
+`@aster/build` do not depend on SVG. Build imports external SVG towards portable definitions; this
+package renders portable definitions towards SVG markup. Neither direction owns the other.
 
 ## Distribution snapshot
 

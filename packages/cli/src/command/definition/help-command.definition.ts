@@ -11,6 +11,7 @@ import type {
   AsterCommandInvocationType,
   AsterCommandResultType,
 } from "../types/index.js";
+import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
 
 /**
  * @description Returns deterministic definition-owned help metadata without loading catalogues.
@@ -32,12 +33,17 @@ export class HelpCommandDefinition implements ICommandDefinition {
   readonly #results = new CommandResultFactory();
 
   /**
+   * @description Canonical deterministic string-ordering policy.
+   */
+  readonly #strings = new AsciiStringComparator();
+
+  /**
    * @description Creates one help definition from complete immutable command metadata.
    * @param descriptors - Complete descriptor sequence selected independently of terminal output.
    */
   constructor(descriptors: readonly AsterCommandDescriptor[]) {
     this.#descriptors = Object.freeze([...descriptors].sort((left, right) =>
-      left.name < right.name ? -1 : left.name > right.name ? 1 : 0,
+      this.#strings.compare(left.name, right.name),
     ));
   }
 

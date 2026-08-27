@@ -1,6 +1,6 @@
 # Aster CLI
 
-Status: **Experimental**
+Status: **Pre-release**
 
 `@aster/cli` owns Aster's host-neutral command contracts, deterministic catalogue discovery, and
 the standalone Node host. The implementation provides the frozen programmatic `AsterCommands`
@@ -23,15 +23,24 @@ help metadata does not eagerly evaluate the built-in catalogue.
 | Feature | Responsibility |
 | --- | --- |
 | [Command](command/index.md) | Defines and executes host-neutral invocation, context, metadata, result, and diagnostic contracts. |
+| [Command Invocation](command/invocation/index.md) | Accepts untrusted programmatic requests through explicit command-owned normalisers. |
 | [Catalogue](catalogue/index.md) | Loads explicit providers and performs deterministic provider, collection, and icon discovery. |
 | [Export](export/index.md) | Selects exact catalogue definitions and constructs immutable host-neutral SVG artefact plans. |
 | [Shell](shell/index.md) | Adapts Node argv, presents human or JSON output, and commits documented process effects. |
+| [Shell Parsing](shell/parsing/index.md) | Adapts standalone argv through explicit command-owned parsers. |
+| [Shell Presentation](shell/presentation/index.md) | Produces deterministic human or JSON stream results. |
+| [Shell Output](shell/output/index.md) | Publishes complete export trees through the private Node filesystem boundary. |
 
 [CLI Workflow](workflow.md) describes how these features compose from one structured invocation
 through immutable planning and optional standalone publication.
 
 [CLI Compatibility and Conformance](compatibility.md) defines the package ABI, supported runtime,
 programmatic-host guarantees, and release evidence across these features.
+
+[CLI Quality](quality.md) records the hardened implementation, distribution, conformance, and
+retained constraints without presenting deferred capabilities as accepted behaviour.
+[CLI Quality Baseline](quality-baseline.md) defines reproducible execution, cold-start, allocation,
+and distribution comparison evidence.
 
 ## Dependency boundary
 
@@ -66,8 +75,8 @@ The package exposes only its root `"."`. It exports these types:
 - `AsterExportArtefact`, `AsterExportPlan`, `AsterExportSubjectType`, `AsterExportOptionsType`, and
   `AsterIconExportOptionsType`.
 
-The root also exports the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, and `exportTargets`
-values. The package manifest maps the `aster` binary to its private built shell entrypoint. No
+The root also exports the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, and
+`exportTargets` values. The package manifest maps the `aster` binary to its private built shell entrypoint. No
 implementation subpath is public. The accepted surface and dependency direction are defined by the
 [Command-line Boundary](../../architecture/command-line-boundary.md).
 
@@ -86,7 +95,7 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
 - explicit built-in discovery and lazy provider loading;
 - empty and standalone catalogue values, canonical ordering, and exact filters;
 - many-to-many membership without duplicated icon identity;
-- mixed search fields, cross-provider ambiguity, snapshot conflicts, and unavailable providers.
+- mixed search fields, cross-provider ambiguity, snapshot conflicts, and unavailable providers;
 - exact export selection, option normalisation, deterministic SVG paths and contents, and complete
   immutable plans;
 - exact shell render options, raw SVG redirection, and staged output-root publication.

@@ -3,9 +3,9 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
-import { ExportOutputPublisher } from "../../dist/shell/runtime/export-output.publisher.js";
-import { ExportOutputPathResolver } from "../../dist/shell/runtime/export-output-path.resolver.js";
-import { NodeExportOutputFileSystem } from "../../dist/shell/runtime/node-export-output-file-system.js";
+import { ExportOutputPublisher } from "../../dist/shell/output/runtime/export-output.publisher.js";
+import { ExportOutputPathResolver } from "../../dist/shell/output/runtime/export-output-path.resolver.js";
+import { NodeExportOutputFileSystem } from "../../dist/shell/output/runtime/node-export-output-file-system.js";
 
 const svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
 
@@ -82,6 +82,21 @@ class FixtureFileSystem {
     if (this.failure === operation) {
       throw new Error(`fixture ${operation} failure`);
     }
+  }
+}
+
+class AppearingTargetFileSystem extends FixtureFileSystem {
+  targetChecks = 0;
+
+  async exists(path) {
+    this.operations.push(["exists", path]);
+
+    if (path.endsWith("output")) {
+      this.targetChecks += 1;
+      return this.targetChecks > 1;
+    }
+
+    return false;
   }
 }
 
@@ -171,6 +186,8 @@ test("performs no filesystem operation for empty plans", async () => {
 test("rejects unsafe, ambiguous, and duplicate logical paths before mutation", async () => {
   const unsafePaths = [
     "../escape.svg",
+    "namespace/../escape.svg",
+    "namespace/./icon.svg",
     "/absolute.svg",
     "namespace\\icon.svg",
     "namespace//icon.svg",
@@ -254,6 +271,30 @@ test("removes only its current stage after write and rename failures", async () 
     assert.equal(removals.length, 1);
     assert.match(removals[0]?.[1] ?? "", /\.output\.aster-stage$/u);
   }
+});
+
+test("removes its stage when the target appears before publication", async () => {
+  const fileSystem = new AppearingTargetFileSystem();
+
+  await assert.rejects(
+    fixturePublisher(fileSystem).publish(
+      plan(["namespace/icon.svg"]),
+      "/explicit/current-directory",
+      "output",
+    ),
+    (error) =>
+      error?.kind === "conflict"
+      && error?.message === "output root appeared before publication",
+  );
+
+  assert.equal(
+    fileSystem.operations.some(([name]) => name === "renameDirectory"),
+    false,
+  );
+  assert.equal(
+    fileSystem.operations.filter(([name]) => name === "removeDirectory").length,
+    1,
+  );
 });
 
 test("reports cleanup failures without exposing native failure text", async () => {

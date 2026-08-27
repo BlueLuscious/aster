@@ -1,9 +1,13 @@
 import { benchmarkMethodology } from "../constants/benchmark-methodology.constant.mjs";
+import { BenchmarkConfigurationValidator } from "./benchmark-configuration.validator.mjs";
 
 /**
- * @description Measures deterministic operation scenarios through injected host capabilities.
+ * @description Measures deterministic synchronous or asynchronous operation scenarios through injected host capabilities.
  */
 export class BenchmarkRunner {
+  /** @description Shared closed benchmark configuration validator. */
+  #configuration = new BenchmarkConfigurationValidator();
+
   /**
    * @description Host supplying clock, heap, and garbage-collection capabilities.
    * @type {import("../contracts/internal/benchmark-host.contract.mjs").IBenchmarkHost}
@@ -39,22 +43,29 @@ export class BenchmarkRunner {
       options.warmupOperations ?? benchmarkMethodology.warmupOperations;
     this.#sampleCount = options.sampleCount ?? benchmarkMethodology.sampleCount;
 
-    this.#positiveInteger(this.#warmupOperations, "options.warmupOperations");
-    this.#positiveInteger(this.#sampleCount, "options.sampleCount");
+    this.#configuration.positiveInteger(
+      this.#warmupOperations,
+      "options.warmupOperations",
+    );
+    this.#configuration.positiveInteger(this.#sampleCount, "options.sampleCount");
   }
 
   /**
-   * @description Measures one deterministic operation scenario after warm-up.
+   * @description Measures one deterministic operation scenario after warm-up without suspending synchronous timing paths.
    * @param {import("../contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario} scenario - Scenario definition.
-   * @returns {{ name: string, operationsPerSample: number, medianNanosecondsPerOperation: number, minimumNanosecondsPerOperation: number, maximumNanosecondsPerOperation: number, medianHeapGrowthBytesPerOperation: number, checksum: number }} Comparison summary.
+   * @returns {Promise<{ name: string, operationsPerSample: number, medianNanosecondsPerOperation: number, minimumNanosecondsPerOperation: number, maximumNanosecondsPerOperation: number, medianHeapGrowthBytesPerOperation: number, checksum: number }>} Comparison summary.
    */
-  measure(scenario) {
+  async measure(scenario) {
     this.#host.assertAvailable();
-    this.#positiveInteger(
+    this.#configuration.positiveInteger(
       scenario.operationsPerSample,
       "scenario.operationsPerSample",
     );
-    scenario.execute(this.#warmupOperations);
+    const warmupResult = scenario.execute(this.#warmupOperations);
+
+    if (this.#isPromiseLike(warmupResult)) {
+      await warmupResult;
+    }
 
     const timings = [];
     const heapGrowth = [];
@@ -64,7 +75,11 @@ export class BenchmarkRunner {
       this.#host.collectGarbage();
       const heapBefore = this.#host.heapUsed();
       const startedAt = this.#host.now();
-      checksum = scenario.execute(scenario.operationsPerSample);
+      const executionResult = scenario.execute(scenario.operationsPerSample);
+
+      checksum = this.#isPromiseLike(executionResult)
+        ? await executionResult
+        : executionResult;
       const elapsed = this.#host.now() - startedAt;
       const heapAfter = this.#host.heapUsed();
 
@@ -102,14 +117,16 @@ export class BenchmarkRunner {
   }
 
   /**
-   * @description Rejects invalid finite positive integer configuration.
-   * @param {number} value - Candidate configuration value.
-   * @param {string} path - Logical configuration path.
-   * @returns {void} Nothing.
+   * @description Determines whether one scenario result requires asynchronous settlement.
+   * @param {number | PromiseLike<number>} value - Direct or deferred scenario checksum.
+   * @returns {boolean} Whether the value exposes a callable promise-like continuation.
    */
-  #positiveInteger(value, path) {
-    if (!Number.isSafeInteger(value) || value <= 0) {
-      throw new TypeError(`${path} must be a positive safe integer.`);
-    }
+  #isPromiseLike(value) {
+    return (
+      value !== null
+      && (typeof value === "object" || typeof value === "function")
+      && typeof value.then === "function"
+    );
   }
+
 }

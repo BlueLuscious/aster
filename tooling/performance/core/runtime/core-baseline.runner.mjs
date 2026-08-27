@@ -28,7 +28,7 @@ export class CoreBaselineRunner {
 
   /**
    * @description Creates one Core baseline composition.
-   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number }): object, methodology(): object }} benchmarkRunner - Generic measurement authority.
+   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Generic measurement authority.
    * @param {{ inspect(packagePath: string): Promise<object> }} distributionInspector - Package distribution authority.
    * @param {{ environment(): object }} host - Runtime environment authority.
    * @param {import("../contracts/internal/core-baseline-fixtures.contract.mjs").ICoreBaselineFixtures} fixtures - Prepared public Core scenario inputs.
@@ -87,6 +87,12 @@ export class CoreBaselineRunner {
       }),
     ];
 
+    const results = [];
+
+    for (const scenario of scenarios) {
+      results.push(await this.#benchmarkRunner.measure(scenario));
+    }
+
     return Object.freeze({
       schemaVersion: coreBaseline.schemaVersion,
       package: coreBaseline.packageName,
@@ -95,9 +101,7 @@ export class CoreBaselineRunner {
       distribution: await this.#distributionInspector.inspect(
         coreBaseline.packagePath,
       ),
-      scenarios: Object.freeze(
-        scenarios.map((scenario) => this.#benchmarkRunner.measure(scenario)),
-      ),
+      scenarios: Object.freeze(results),
     });
   }
 

@@ -11,11 +11,17 @@ import type {
   AsterExportOptionsType,
   AsterIconExportOptionsType,
 } from "../types/index.js";
+import { StructuredDataInspector } from "../../shared/runtime/structured-data.inspector.js";
 
 /**
  * @description Accepts and isolates the closed portable options available to SVG export.
  */
 export class ExportOptionsNormaliser {
+  /**
+   * @description Exact plain-record acceptance authority.
+   */
+  readonly #data = new StructuredDataInspector();
+
   /**
    * @description Immutable diagnostic constructor for rejected option records.
    */
@@ -49,10 +55,6 @@ export class ExportOptionsNormaliser {
       return Object.freeze({ accepted: true, value: undefined });
     }
 
-    if (!this.#isRecord(value)) {
-      return this.#invalid("expected export options to be an object");
-    }
-
     const acceptedFields = [
       "size",
       "colour",
@@ -62,46 +64,47 @@ export class ExportOptionsNormaliser {
       "direction",
       ...(accessible ? ["label", "title"] : []),
     ];
+    const record = this.#data.record(value, acceptedFields);
 
-    if (!Object.keys(value).every((field) => acceptedFields.includes(field))) {
-      return this.#invalid("export options contain an unknown field");
+    if (record === undefined) {
+      return this.#invalid("expected export options to contain only plain data fields");
     }
 
     if (
-      !this.#optionalNumber(value, "size", (number) => number > 0) ||
-      !this.#optionalNumber(value, "strokeWidth", (number) => number >= 0) ||
-      !this.#optionalPaint(value, "colour", false) ||
-      !this.#optionalPaint(value, "fill", true) ||
-      !this.#optionalPaint(value, "stroke", true) ||
-      !this.#optionalDirection(value) ||
-      !this.#optionalText(value, "label") ||
-      !this.#optionalText(value, "title")
+      !this.#optionalNumber(record, "size", (number) => number > 0) ||
+      !this.#optionalNumber(record, "strokeWidth", (number) => number >= 0) ||
+      !this.#optionalPaint(record, "colour", false) ||
+      !this.#optionalPaint(record, "fill", true) ||
+      !this.#optionalPaint(record, "stroke", true) ||
+      !this.#optionalDirection(record) ||
+      !this.#optionalText(record, "label") ||
+      !this.#optionalText(record, "title")
     ) {
       return this.#invalid("export options contain an invalid value");
     }
 
     const options: AsterExportOptionsType | AsterIconExportOptionsType = {
-      ...(Object.hasOwn(value, "size") ? { size: value.size as number } : {}),
-      ...(Object.hasOwn(value, "colour")
-        ? { colour: value.colour as IconPaintType }
+      ...(Object.hasOwn(record, "size") ? { size: record.size as number } : {}),
+      ...(Object.hasOwn(record, "colour")
+        ? { colour: record.colour as IconPaintType }
         : {}),
-      ...(Object.hasOwn(value, "fill")
-        ? { fill: value.fill as IconPaintType }
+      ...(Object.hasOwn(record, "fill")
+        ? { fill: record.fill as IconPaintType }
         : {}),
-      ...(Object.hasOwn(value, "stroke")
-        ? { stroke: value.stroke as IconPaintType }
+      ...(Object.hasOwn(record, "stroke")
+        ? { stroke: record.stroke as IconPaintType }
         : {}),
-      ...(Object.hasOwn(value, "strokeWidth")
-        ? { strokeWidth: value.strokeWidth as number }
+      ...(Object.hasOwn(record, "strokeWidth")
+        ? { strokeWidth: record.strokeWidth as number }
         : {}),
-      ...(Object.hasOwn(value, "direction")
-        ? { direction: value.direction as IconDirectionType }
+      ...(Object.hasOwn(record, "direction")
+        ? { direction: record.direction as IconDirectionType }
         : {}),
-      ...(Object.hasOwn(value, "label")
-        ? { label: (value.label as string).trim() }
+      ...(Object.hasOwn(record, "label")
+        ? { label: (record.label as string).trim() }
         : {}),
-      ...(Object.hasOwn(value, "title")
-        ? { title: (value.title as string).trim() }
+      ...(Object.hasOwn(record, "title")
+        ? { title: (record.title as string).trim() }
         : {}),
     };
 
@@ -193,12 +196,4 @@ export class ExportOptionsNormaliser {
     });
   }
 
-  /**
-   * @description Determines whether a candidate is a non-null string-keyed record.
-   * @param value - Candidate value.
-   * @returns Whether own fields can be inspected.
-   */
-  #isRecord(value: unknown): value is Record<string, unknown> {
-    return typeof value === "object" && value !== null && !Array.isArray(value);
-  }
 }

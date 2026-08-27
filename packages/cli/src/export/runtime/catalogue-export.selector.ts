@@ -10,6 +10,7 @@ import type { AsterCommandContext } from "../../command/contracts/index.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { AsterCommandInvocationType } from "../../command/types/index.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
+import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
 import type { TExportSelection } from "../types/internal/export-selection.type.js";
 
 /**
@@ -35,6 +36,11 @@ export class CatalogueExportSelector {
    * @description Immutable diagnostic constructor for selection failures.
    */
   readonly #diagnostics = new CommandDiagnosticFactory();
+
+  /**
+   * @description Canonical deterministic string-ordering policy.
+   */
+  readonly #strings = new AsciiStringComparator();
 
   /**
    * @description Creates one export selector using the explicit shared catalogue loader.
@@ -181,7 +187,7 @@ export class CatalogueExportSelector {
       definitions.sort((left, right) => {
         const leftIdentity = this.#identities.icon(left.identity);
         const rightIdentity = this.#identities.icon(right.identity);
-        return leftIdentity < rightIdentity ? -1 : leftIdentity > rightIdentity ? 1 : 0;
+        return this.#strings.compare(leftIdentity, rightIdentity);
       });
       selections.push(Object.freeze({
         catalogue: catalogue.identity,
