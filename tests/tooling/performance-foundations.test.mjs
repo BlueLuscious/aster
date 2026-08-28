@@ -11,6 +11,9 @@ import { CliColdStartRunner } from "../../tooling/performance/cli/runtime/cli-co
 import { coreBaseline } from "../../tooling/performance/core/constants/core-baseline.constant.mjs";
 import { CoreBaselineFixtureFactory } from "../../tooling/performance/core/runtime/core-baseline-fixture.factory.mjs";
 import { CoreBaselineRunner } from "../../tooling/performance/core/runtime/core-baseline.runner.mjs";
+import { importBaseline } from "../../tooling/performance/import/constants/import-baseline.constant.mjs";
+import { ImportBaselineFixtureFactory } from "../../tooling/performance/import/runtime/import-baseline-fixture.factory.mjs";
+import { ImportBaselineRunner } from "../../tooling/performance/import/runtime/import-baseline.runner.mjs";
 import { BenchmarkRunner } from "../../tooling/performance/shared/runtime/benchmark.runner.mjs";
 import { NumericSampleStatistics } from "../../tooling/performance/shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../tooling/performance/shared/runtime/package-distribution.inspector.mjs";
@@ -82,6 +85,63 @@ test("runs the complete Core scenario matrix through public values", async () =>
   assert.equal(measured[4]?.checksum, 42);
   assert.equal(measured[5]?.checksum, 42);
   assert.deepEqual(report.distribution, { packagePath: "packages/core" });
+});
+
+test("prepares explicit Import benchmark fixtures outside timed work", () => {
+  const fixtures = new ImportBaselineFixtureFactory().create();
+
+  assert.ok(Object.isFrozen(fixtures));
+  assert.ok(Object.isFrozen(fixtures.batchRequests));
+  assert.ok(Object.isFrozen(fixtures.definitionRequest.draft));
+  assert.ok(Object.isFrozen(fixtures.emissionRequest.definition));
+  assert.equal(fixtures.sizes.batchSize, importBaseline.batchSize);
+  assert.equal(fixtures.batchRequests.length, importBaseline.batchSize);
+  assert.ok(fixtures.sizes.minimalSourceBytes > 0);
+  assert.ok(
+    fixtures.sizes.editorSourceBytes > fixtures.sizes.minimalSourceBytes,
+  );
+  assert.ok(fixtures.sizes.rejectedSourceBytes > 0);
+});
+
+test("runs the complete Import scenario matrix through public operations", async () => {
+  const measured = [];
+  const fixtures = new ImportBaselineFixtureFactory().create();
+  const runner = new ImportBaselineRunner(
+    {
+      measure(scenario) {
+        const result = Object.freeze({
+          name: scenario.name,
+          checksum: scenario.execute(2),
+        });
+        measured.push(result);
+        return result;
+      },
+      methodology() {
+        return Object.freeze({ fixture: true });
+      },
+    },
+    {
+      async inspect(packagePath) {
+        return Object.freeze({ packagePath });
+      },
+    },
+    {
+      environment() {
+        return Object.freeze({ fixture: true });
+      },
+    },
+    fixtures,
+  );
+  const report = await runner.run();
+
+  assert.equal(report.schemaVersion, 1);
+  assert.deepEqual(
+    measured.map((scenario) => scenario.name),
+    Object.values(importBaseline.scenarios).map((scenario) => scenario.name),
+  );
+  assert.ok(measured.every((scenario) => scenario.checksum !== 0));
+  assert.deepEqual(report.fixtures, fixtures.sizes);
+  assert.deepEqual(report.distribution, { packagePath: "packages/import" });
 });
 
 test("prepares independent immutable SVG benchmark fixtures", () => {

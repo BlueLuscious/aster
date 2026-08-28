@@ -29,6 +29,7 @@
   "scripts": {
     "benchmark:core": "pnpm --filter @aster/core run build && pnpm --filter @aster/icons run build && node --expose-gc tooling/performance/core/core-baseline.mjs",
     "benchmark:cli": "pnpm --filter @aster/core run build && pnpm --filter @aster/icons run build && pnpm --filter @aster/svg run build && pnpm --filter @aster/cli run build && node --expose-gc tooling/performance/cli/cli-baseline.mjs",
+    "benchmark:import": "pnpm --filter @aster/core run build && pnpm --filter @aster/import run build && node --expose-gc tooling/performance/import/import-baseline.mjs",
     "benchmark:svg": "pnpm --filter @aster/core run build && pnpm --filter @aster/icons run build && pnpm --filter @aster/svg run build && node --expose-gc tooling/performance/svg/svg-baseline.mjs",
     "build": "pnpm --recursive --if-present run build",
     "check": "pnpm run check:types && pnpm run check:architecture && pnpm run check:docs",
