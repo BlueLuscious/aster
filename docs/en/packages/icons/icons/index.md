@@ -55,7 +55,7 @@ isolated icon module.
 ## Isolation
 
 An icon module imports only public `@aster/core` authority and the internal authoring constant. It
-does not import a collection, another icon, the root index, a manifest, a renderer, or Build.
+does not import a collection, another icon, the root index, a manifest, a renderer, or Import.
 
 Package ABI tests verify that direct and root imports preserve the same object identity, internal
 subpaths are rejected, and emitted ESM and declarations remain host independent.

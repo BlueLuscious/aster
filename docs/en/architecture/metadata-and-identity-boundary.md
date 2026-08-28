@@ -2,101 +2,18 @@
 
 Status: **Accepted**
 
-This document defines metadata ownership, composition, identity, naming, lifecycle relationships,
-and licensing resolution without selecting a serialisation or schema-validation technology.
+This document defines portable metadata, canonical identity, collection membership, and source
+adoption authority. Geometry and metadata remain separate responsibilities.
 
-Geometry is not metadata. Portable geometry may be authored directly as a Core definition or
-imported from SVG through Build. The product authoring authority remains open until both workflows
-have representative evidence.
+## Portable metadata
 
-## Metadata layers
+`@aster/core` owns the public `IconMetadata` contract and validates complete metadata during
+`Icon.define(...)`. Metadata includes stable identity, display information, intrinsic tags,
+licensing, direction policy, and lifecycle relationships required by portable consumers.
 
-Aster composes metadata from three distinct layers:
-
-| Layer | Ownership | Examples |
-| --- | --- | --- |
-| Collection-authored metadata | Collection curator | Collection identity, status, licence defaults, supported variants, and presentation defaults. |
-| Icon-authored metadata | Icon contributor and curator | Display name, aliases, tags, category, author override, licence override, RTL policy, and deprecation relationship. |
-| Generated technical metadata | Build pipeline | Computed bounds, primitive counts, source digest, normalised identity, and release-derived fields. |
-
-Project-wide technical invariants are not metadata defaults and cannot be overridden by a
-collection or icon.
-
-Composition follows this authority:
-
-1. Project invariants validate every input.
-2. Collection metadata supplies declared defaults.
-3. Icon metadata supplies only fields that the collection allows icons to override.
-4. Generated technical facts are authoritative for computed fields and cannot be authored.
-
-The resulting portable definition retains only metadata required by runtime, redistribution,
-discovery, or target consumers. Optional intrinsic tags are retained; aliases, collection-specific
-taxonomy, search indexes, Build review, source provenance, and repository-only fields remain
-outside the runtime definition unless a concrete public consumer requires them.
-
-## Collection metadata draft
-
-The conceptual collection fields are:
-
-| Field | Requirement | Meaning |
-| --- | --- | --- |
-| `name` | Required | Human-readable collection name. |
-| `slug` | Required | Stable ASCII lowercase `kebab-case` identity. |
-| `status` | Required | Experimental, Active, Deprecated, or Archived lifecycle. |
-| `description` | Optional | Concise purpose and visual positioning. |
-| `curator` | Required for Active | Person or group responsible for visual approval. |
-| `licence` | Required for distribution | Default effective licence identifier. |
-| `attribution` | Conditional | Attribution text or reference required by the effective licence. |
-| `defaultSize` | Optional | Collection presentation default validated by representative icons. |
-| `minimumSize` | Optional | Smallest curator-approved display size. |
-| `presentationDefaults` | Optional | Portable fill, stroke, and stroke-width defaults used when nodes omit those values. |
-| `presentationOverrides` | Defaults to empty | Closed set of fill, stroke, and stroke-width capabilities callers may override. |
-| `allowIconLicenceOverride` | Defaults to false | Explicit authority allowing an icon to replace the collection artwork licence. |
-| `variants` | Optional | Declared controlled variations supported by the collection. |
-| `deprecated` | Derived from status | Indicates retirement intent without deleting identity. |
-| `replacedBy` | Optional | Fully qualified replacement collection identity. |
-
-Detailed grid, stroke, safe-area, construction, and optical rules belong in the collection design
-contract. Runtime metadata retains only presentation defaults and override policy needed by
-renderers. Resolution precedence is defined by
-[Rendering Contract](rendering-contract.md).
-
-## Icon metadata draft
-
-The conceptual icon fields are:
-
-| Field | Requirement | Meaning |
-| --- | --- | --- |
-| `namespace` | Optional | Stable producer or collision-domain slug independent of collection membership. |
-| `name` | Required | Stable canonical icon slug. |
-| `displayName` | Required | Human-readable name for documentation and search. |
-| `aliases` | Defaults to empty | Alternative search terms that do not create export identity. |
-| `tags` | Defaults to empty | Descriptive search and discovery terms. |
-| `category` | Optional | One accepted taxonomy value when a collection uses categories. |
-| `author` | Optional | Icon-specific author overriding or supplementing collection authorship. |
-| `licence` | Optional | Icon-specific distribution licence allowed by the collection. |
-| `attribution` | Conditional | Icon-specific attribution required by its effective licence. |
-| `variant` | Optional | Controlled variation identity of the icon. |
-| `rtl` | Defaults to Preserve | Mirror, Preserve, or Manual directional behaviour. |
-| `deprecated` | Defaults to false | Indicates that consumers should migrate away from this identity. |
-| `replacedBy` | Optional | Fully qualified replacement icon identity. |
-| `introducedIn` | Generated at release | First released collection or package version containing the icon. |
-
-Metadata may gain fields when a real build, renderer, search, documentation, licensing, or
-governance consumer exists. Fields are not added solely because they might be useful eventually.
-
-## Structured build boundary
-
-Textual metadata remains an acquired source until a replaceable decoder produces Aster-owned
-structured collection and icon values. Those values retain the canonical source identity and
-logical icon identity required to link them to successful SVG validation evidence.
-
-The decoder owns textual syntax and field diagnostics. During SVG import, the normaliser owns
-authority composition: selected-collection defaults apply first, and an icon-specific artwork
-licence applies only when that import context explicitly grants the override. The resulting
-portable definition retains its resolved metadata independently of later collection membership.
-This split keeps serialisation replaceable while preventing opaque text or parser-library values
-from entering portable definitions.
+Repository review evidence, parser facts, source provenance, catalogue indexes, aliases that do
+not form portable identity, and collection-specific taxonomy remain outside an icon definition
+unless a concrete public consumer requires them.
 
 ## Canonical identity
 
@@ -106,115 +23,40 @@ One logical icon identity is:
 optional-namespace / icon-slug / optional-variant-slug
 ```
 
-Namespace and icon slugs are stable ASCII lowercase `kebab-case`. Variant slugs follow the same
-rule when variants have separate logical identity. Namespace prevents producer collisions but does
-not imply collection membership.
+Identity is independent from display name, source filename, TypeScript symbol, renderer, package
+layout, catalogue, and collection membership. One icon may be standalone or retained by several
+collections without changing its identity.
 
-This logical identity is independent from:
+## Collection membership
 
-- display name;
-- generated TypeScript symbol;
-- source file extension;
-- target renderer or framework;
-- package layout or export path;
-- aliases, tags, and categories.
+A `CollectionDefinition` owns its identity, metadata, and explicit retained icons. An icon does not
+own reverse membership. Collection defaults do not mutate an icon definition, and Import does not
+create collection policy implicitly.
 
-Collection membership is intentionally absent. One icon can be standalone or retained directly by
-multiple collections without changing its logical identity, metadata, or rendering. Membership is
-owned only by each `CollectionDefinition`.
+## Adoption metadata
 
-Every distributable variant is a separate portable definition with its own canonical identity,
-generated symbol, module, and per-icon subpath. Documentation may recommend a default variant, but
-distribution and render options cannot silently erase or replace variant identity. The complete
-export relationship is defined by
-[Distribution and Adapters](distribution-and-adapters.md).
+External source inspection returns a metadata-free draft. The host must supply complete reviewed
+Core metadata when calling `IconImport.define(...)` or `IconImport.adopt(...)`. Import has no
+textual metadata decoder and does not infer metadata from SVG, filenames, directories, or
+collection context.
 
-Duplicate logical identity within one generation unit is an error. Diagnostic names, display
-names, aliases, and object shape never substitute for canonical identity.
+This boundary keeps external source formats replaceable and preserves Core as the only definition
+and metadata validity authority. See [Import Adoption](../packages/import/adoption/index.md).
 
-## Naming relationships
+## Naming
 
-Naming has separate audiences:
+Canonical slugs use stable ASCII lowercase `kebab-case`. TypeScript symbols are deterministic
+serialisation concerns and never replace canonical identity. Naming collisions within one atomic
+adoption batch are blocking diagnostics.
 
-| Name | Form | Authority |
-| --- | --- | --- |
-| Namespace | `minimal` | Optional stable icon producer or collision domain. |
-| Collection slug | `interface-icons` | Independent collection identity and optional source grouping. |
-| Icon slug | `arrow-left` | Stable icon identity and optional SVG import base filename. |
-| Display name | `Arrow Left` | Human-readable documentation and search label. |
-| Generated symbol | `ArrowLeft` | Deterministically derived TypeScript definition symbol. |
-| Generated named wrapper | `ArrowLeftIcon` | Deterministically derived target-renderer symbol. |
-| Alias | `back` | Search-only alternative, never an import identity. |
+## Direction and lifecycle
 
-Generated-name collisions are errors even when canonical slugs differ. Reserved JavaScript words,
-case folding, punctuation removal, and wrapper suffixes must be considered by generation
-validation.
+RTL policy is portable metadata interpreted only by compatible targets. Core does not inspect DOM
+direction or infer semantics. Deprecation preserves identity; replacement identities cannot point
+to themselves or form invalid relationships accepted by Core.
 
-Aliases and tags are normalised for search but do not redirect imports. Category taxonomy remains
-Open until a collection or catalogue consumer demonstrates the required hierarchy.
+## Licensing
 
-## Deprecation and replacement
-
-Deprecation preserves identity and distribution history. It does not remove an icon or collection
-silently.
-
-A replacement:
-
-- uses a fully qualified logical identity;
-- cannot point to itself;
-- cannot create a replacement cycle;
-- must preserve a diagnostic when its target is unavailable in the current generation unit;
-- may cross namespaces only through an explicit ownership decision.
-
-`replacedBy` remains optional because some deprecated symbols have no direct replacement.
-Generated documentation and declarations expose deprecation according to the accepted distribution
-contract.
-
-## RTL metadata
-
-Directional behaviour is portable metadata:
-
-| Value | Meaning |
-| --- | --- |
-| Mirror | A target adapter mirrors the icon in right-to-left context. |
-| Preserve | The icon keeps its original geometry in every text direction. |
-| Manual | The consumer or semantic UI layer selects directional behaviour explicitly. |
-
-Core stores the policy but does not read browser direction, apply transforms, or infer semantics
-from the icon name.
-
-## Licence resolution
-
-Effective icon licensing resolves in this order:
-
-1. An allowed icon-specific licence and attribution.
-2. The collection default licence and attribution.
-
-Project software licensing does not fill missing artwork licensing. Distribution fails when an
-effective artwork licence or required attribution cannot be resolved.
-
-Generated definitions may retain the effective licence identifier when runtime or redistribution
-consumers require it. Full legal text and repository policy remain outside each icon definition.
-
-## Technology boundary
-
-Canonical authored metadata uses strict UTF-8 JSON with `schemaVersion: 1`, as defined by
-[JSON Metadata for SVG Imports](../decisions/0004-canonical-json-metadata-sources.md). JSON
-decoding remains a private Build responsibility and cannot leak mutable parser values or native
-exception messages into diagnostics or portable definitions.
-
-The decoder and any future schema or authoring UI must:
-
-- preserve the accepted field meanings and authority layers;
-- produce deterministic validation diagnostics;
-- support authored defaults and generated facts without mixing ownership;
-- avoid framework, DOM, browser, and Lotus types;
-- remain replaceable behind Aster-owned metadata contracts.
-
-No JSON Schema library or authoring UI is selected. Those tools require concrete editor or
-collection-workflow evidence and cannot become runtime Core dependencies.
-
-The implemented version-one subset, accepted fields, immutable values, and stable diagnostic
-families are documented by [Build Metadata](../packages/build/metadata/index.md). The broader
-collection and icon drafts above remain capability direction rather than permission for unknown
-fields in version-one sources.
+Every distributable icon requires explicit artwork licensing accepted by Core. Repository software
+licensing does not fill missing artwork authority. Collection and product documentation may add
+curatorial context without becoming runtime metadata.

@@ -129,5 +129,5 @@ owns only Core scenarios and fixture selection. A future package baseline must p
 independent factory, runner, and command; it may reuse shared measurement infrastructure without
 adding its scenarios to the Core command or importing Core configuration.
 
-Neither layer is shipped by Core, Icons, SVG, Build, or CLI. Raw reports are intentionally not
+Neither layer is shipped by Core, Icons, SVG, Import, or CLI. Raw reports are intentionally not
 committed because they are machine-specific and reproducible from the source revision.

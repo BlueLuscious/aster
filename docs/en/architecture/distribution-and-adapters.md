@@ -73,9 +73,9 @@ files.
 
 Collection definition packages declare `@aster/core` as their only production dependency and map
 each supported subpath independently to its ESM implementation and declaration. The canonical
-authored package is [`@aster/icons`](../packages/icons/index.md). Build's corresponding generated
-shape and ownership model are documented by
-[Build Generator](../packages/build/generator/index.md).
+authored package is [`@aster/icons`](../packages/icons/index.md). Import may emit an editable
+per-icon module, but it owns no collection package shape or generated-output lifecycle; see
+[Import Adoption](../packages/import/adoption/index.md).
 
 ## Definition re-exports
 
@@ -124,7 +124,7 @@ Importing one per-icon definition must not:
 
 - evaluate another icon module;
 - load a collection manifest or global registry;
-- load a renderer, framework, DOM, build, or filesystem module.
+- load a renderer, framework, DOM, Import, build-tool, or filesystem module.
 
 Importing one named integration must evaluate only its wrapper, corresponding definition, generic
 target runtime, and their shared portable dependencies. It cannot evaluate other icon wrappers or

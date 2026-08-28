@@ -43,13 +43,13 @@ separate responsibility or demonstrated reuse.
 | --- | --- |
 | Repository authoring workflow | Renders deterministic review and derived distribution markup through `Svg.render()`. |
 | Icons documentation | Demonstrates rendering one exported canonical definition. |
-| Build import workflow | Proves an accepted imported definition renders byte-equivalent markup to its TypeScript-first equivalent. |
+| Import adoption workflow | Proves an accepted imported definition renders byte-equivalent markup to its TypeScript-first equivalent. |
 | Isolated package consumer | Imports and renders using only publishable Core and SVG files, without repository sources. |
 | CLI export | Renders selected icon and collection definitions into complete immutable export plans through the public SVG root. |
 | Future review host | Deferred pressure only; no current review product depends on SVG. |
 
 `@aster/cli` depends on the public SVG root for export rendering. `@aster/icons`, `@aster/core`, and
-`@aster/build` do not depend on SVG. Build imports external SVG towards portable definitions; this
+`@aster/import` do not depend on SVG. Import adopts external SVG into portable definitions; this
 package renders portable definitions towards SVG markup. Neither direction owns the other.
 
 ## Distribution snapshot
@@ -60,7 +60,7 @@ The unminified TypeScript distribution contains 19 JavaScript modules totalling 
 `@aster/core` package root. These values are inspection evidence, not fixed compatibility or
 performance promises.
 
-Production compilation excludes DOM, browser, Node, Build, framework, and tooling ambient types.
+Production compilation excludes DOM, browser, Node, Import, framework, and tooling ambient types.
 The ABI suite rejects implementation subpaths, CommonJS output, private Core imports, unexpected
 SVG dependencies, and undeclared host authorities. Architecture tooling independently enforces
 public visibility, the Core-only production dependency, the root export, portable compilation,
@@ -91,7 +91,7 @@ Existing runtime evidence covers:
 Type conformance rejects arbitrary attributes, event handlers, explicit undefined option fields,
 and DOM ambient values. ABI conformance verifies root values, declarations, exports, dependencies,
 side effects, module format, host-independent imports, and loading without repository sources.
-Workflow conformance verifies equivalent TypeScript-first and accepted Build-import definitions
+Workflow conformance verifies equivalent TypeScript-first and Import-adopted definitions
 produce identical standalone markup through public package roots.
 
 ## Change pressures

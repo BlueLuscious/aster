@@ -1,6 +1,6 @@
 # 0004: JSON Metadata for SVG Imports
 
-Status: **Accepted**
+Status: **Superseded**
 
 Owners: **Technical maintainers**
 
@@ -10,11 +10,11 @@ Affected documents:
 
 - [Collection and Source Boundary](../architecture/collection-and-source-boundary.md)
 - [Metadata and Identity Boundary](../architecture/metadata-and-identity-boundary.md)
-- [Build Source](../packages/build/source/index.md)
+- [Replacement Import Source](../packages/import/source/index.md)
 
 Supersedes: **None**
 
-Superseded by: **None**
+Superseded by: **[0011: Private External-source Adoption Compiler](0011-private-external-source-adoption-compiler.md)**
 
 ## Context
 
@@ -106,7 +106,7 @@ without changing canonical metadata semantics.
 
 ## Evidence
 
-- [Build Metadata](../packages/build/metadata/index.md)
-- [Build Pipeline](../packages/build/pipeline/index.md)
-- [Build SVG Normalisation](../packages/build/normalisation/index.md)
+- [Replacement decision](0011-private-external-source-adoption-compiler.md)
+- [Import Adoption](../packages/import/adoption/index.md)
+- [Import SVG Normalisation](../packages/import/formats/svg/normalisation/index.md)
 - [SVG Processing Pipeline](../architecture/svg-processing-pipeline.md)

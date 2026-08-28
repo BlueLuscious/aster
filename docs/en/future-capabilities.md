@@ -27,10 +27,10 @@ may still wait for an earlier prerequisite in the recommended sequence.
 | 2 | `P0` | Completed: harden private repository tooling. | Stable root commands use independently testable object-oriented runtime boundaries without obsolete pilot hosts. |
 | 3 | `P0` | Completed: audit and harden `@aster/core`. | Its model, API, validation, immutability, performance, exports, consumers, and documentation have explicit outcomes. |
 | 4 | `P0` | Completed: audit and harden `@aster/svg`. | Serialisation correctness, performance, API, output, and package-boundary risks have explicit outcomes independently from Core. |
-| 5 | `P1` | Completed: implement useful catalogue and TypeScript-first CLI workflows. | Users can inspect and export installed icons and collections without requiring `@aster/build`. |
-| 6 | `P0` | Evaluate the future of `@aster/build`. | Retain, narrow, pause, replace, or remove it using real SVG-import evidence. |
-| 7 | `P1` | Harden the retained Build boundary, if any. | A real import workflow validates its parser, diagnostics, normalisation, generation, and host split. |
-| 8 | `P2` | Consider an Aster-owned XML tokeniser. | Build is retained and parser conformance and maintenance evidence justify replacement. |
+| 5 | `P1` | Completed: implement useful catalogue and TypeScript-first CLI workflows. | Users can inspect and export installed icons and collections without requiring `@aster/import`. |
+| 6 | `P0` | Completed: replace Build with narrow `@aster/import` adoption. | External SVG adoption remains host independent and emitted TypeScript becomes human-owned source. |
+| 7 | `P1` | Host and harden the retained Import boundary. | A real CLI or programmatic workflow validates acquisition, review, persistence, and package conformance. |
+| 8 | `P2` | Consider an Aster-owned XML tokeniser. | Import is retained and parser conformance and maintenance evidence justify replacement. |
 | 9 | `P2` | Activate objective linting and formatting verification. | The first supported release or external contribution workflow requires enforceable source checks. |
 | 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels and can supply independent policies. |
 | 11 | `P3` | Consolidate project documentation. | Package documentation is self-contained and all preceding package decisions are stable. |
@@ -111,9 +111,9 @@ Status: **Initial TypeScript-first discovery and SVG export workflow completed**
 
 The first useful commands should operate on explicitly installed or configured catalogue
 providers and canonical TypeScript definitions. They do not require the SVG importer in
-`@aster/build`.
+`@aster/import`.
 
-| Command family | Initial responsibility | Build dependency |
+| Command family | Initial responsibility | Import dependency |
 | --- | --- | --- |
 | `list` | List available catalogue providers, collections, or icons. | None. |
 | `search` | Match canonical identity, display name, intrinsic tags, and explicit catalogue indexes. | None. |
@@ -122,7 +122,7 @@ providers and canonical TypeScript definitions. They do not require the SVG impo
 | `export` | Produce a headless SVG artefact plan for one icon or one collection and optionally publish it through the private Node host. | None for TypeScript-first definitions. |
 | `review` | Compose disposable technical and visual evidence through explicit render and output hosts. | None for TypeScript-first definitions. |
 | `generate` | Produce explicitly selected manifests, barrels, wrappers, or target integrations through an installed generator. | None unless the selected generator imports SVG. |
-| `import` | Convert external SVG and metadata into reviewed portable definitions. | Conditional on retained Build support. |
+| `import` | Acquire external SVG, collect reviewed Core metadata, and adopt editable portable definitions. | Hosts the private Import boundary. |
 
 `add`, `export`, `review`, and `generate` must remain distinct. `add` changes consumer integration,
 `export` produces target artefacts such as SVG files, `review` composes disposable comparison
@@ -132,11 +132,12 @@ source, install dependencies, overwrite user files, or infer ownership from a di
 The first export workflow has an accepted implementation. It returns complete immutable SVG
 artefacts with logical paths from the host-neutral command set, keeps output-root resolution and
 filesystem commitment in the standalone shell, forbids initial overwrite, and does not introduce
-Build or a generic target registry. `add` remains deferred until consumer integration has one
+Import or a generic target registry. `add` remains deferred until consumer integration has one
 explicit package, import, or vendoring policy. `generate` requires one concrete generated target;
-`review` requires a disposable visual evidence host; and `import` remains conditional on the Build
-decision. Generic target plugins and extraction to `@aster/commands` require independent consumers
-rather than speculative abstractions. Exact selection, presentation, staging, and dependency
+`review` requires a disposable visual evidence host; and `import` requires explicit source
+acquisition, metadata review, output presentation, and persistence capabilities. Generic target
+plugins and extraction to `@aster/commands` require independent consumers rather than speculative
+abstractions. Exact selection, presentation, staging, and dependency
 decisions are defined by
 [0010: Headless SVG Export and Node Output Boundary](decisions/0010-headless-svg-export-and-node-output-boundary.md).
 
@@ -215,7 +216,7 @@ The audit confirmed:
 - representative construction and distribution measurement without CI performance thresholds;
 - side-effect-free ES2022 ESM, host-independent declarations, one controlled root export, and no
   production dependency;
-- conformance of Icons, SVG, Build, CLI, and implemented repository workflows against the public
+- conformance of Icons, SVG, Import, CLI, and implemented repository workflows against the public
   Core boundary.
 
 Canonical definitions should remain plain immutable structural data unless a separate value-object
@@ -235,7 +236,7 @@ The completed SVG audit established:
 - closed option normalisation, presentation precedence, accessibility, direction, and atomic
   failure guarantees;
 - byte-level conformance across every portable primitive, the complete Icons corpus, isolated
-  package consumers, and equivalent TypeScript-first and Build-import workflows;
+  package consumers, and equivalent TypeScript-first and Import adoption workflows;
 - a measured single-pass attribute-escaping optimisation with an independent SVG baseline;
 - batch export, filesystem, process, DOM, catalogue, lifecycle, and adapter composition remaining
   explicit host responsibilities around atomic `Svg.render()` calls;
@@ -248,50 +249,46 @@ The accepted boundary and retained evidence are documented by
 registries, streaming, mutable singletons, alternate builds, trusted definitions, or convenience
 facades without measured benefit and explicit ownership.
 
-## Build viability decision
+## Import adoption hosting
 
 Importance: **P0 - Required**
 
-`@aster/build` currently provides a functioning optional SVG plus JSON import domain. It is not
+`@aster/import` provides a narrow optional external-source adoption compiler. It is not
 required for TypeScript-first icon authoring, catalogue browsing, search, Core construction, SVG
 rendering, or initial CLI export.
 
-Before investing further, evaluate it against real workflows:
+The next investment requires one real host workflow:
 
 - importing third-party or vector-tool SVG artwork;
-- supporting an intentionally SVG-first collection;
 - preserving source locations and stable diagnostics that a simpler importer cannot provide;
 - normalising accepted SVG into reviewable portable definitions;
-- generating deterministic package text without acquiring filesystem authority.
+- emitting editable TypeScript without acquiring filesystem authority.
 
-Retain and harden Build only if at least one workflow benefits materially from those capabilities.
-Narrow or pause it if only a subset is useful. Remove it from the active workspace if no real
-consumer justifies its parser, metadata, validation, and generator maintenance cost. Existing
-conformance evidence and accepted product guarantees must be migrated or explicitly retired before
-removal.
+The CLI may eventually acquire files, request complete reviewed Core metadata, call Import, present
+diagnostics, and commit explicitly accepted output. Import must continue to own none of those host
+effects.
 
-The CLI must not force the decision. Build may power a future `import` command, but catalogue,
+The CLI must not force the decision. Import may power a future `import` command, but catalogue,
 search, add, TypeScript-first export, and most generation commands should remain independently
 usable.
 
-## Build hardening, if retained
+## Import package hardening
 
 Importance: **P1 - High**
 
-A retained Build package should be reviewed for API and internal boundaries, duplicated
-authorities, performance, diagnostics, parser safety, metadata composition, normalisation,
-generation ownership, and stale-file planning. The first production host should remain outside
-Build and should prove atomic source acquisition and output commit through explicit contracts.
+After one real host exists, review Import's API, internal boundaries, duplicated authorities,
+performance, diagnostics, parser safety, normalisation, editable serialisation, and distribution.
+The host should prove atomic source acquisition and output commitment through explicit contracts.
 
-Do not expose Build merely because the CLI needs one command. The CLI should adapt the narrowest
-host-independent Build composition, while source discovery, byte decoding, terminal presentation,
+Do not expose Import merely because the CLI needs one command. The CLI should adapt the narrowest
+host-independent Import composition, while source discovery, byte decoding, terminal presentation,
 filesystem writes, and process status remain host responsibilities.
 
 ## Aster-owned XML tokeniser
 
 Importance: **P2 - Conditional**
 
-Consider replacing `xmlsax-typescript` only after Build is retained and hardened. Replacement is
+Consider replacing `xmlsax-typescript` only after Import has a real host and package conformance. Replacement is
 worthwhile only when dependency maintenance, security, performance, source-location precision,
 or grammar control provides concrete evidence that the existing adapter is insufficient.
 
@@ -300,7 +297,7 @@ safety limits, inert sections, namespace handling, malformed input, and exact so
 that point Aster may own runtime token discriminators rather than mirroring an external ABI, while
 the syntax document and downstream pipeline contracts remain unchanged.
 
-If Build is paused or removed, do not create a standalone XML tokeniser without an independent
+Do not create a standalone XML tokeniser without measured Import evidence or another independent
 product consumer.
 
 The current replaceable dependency boundary is defined by
@@ -332,7 +329,7 @@ establishing package boundaries and product guarantees. Package documentation sh
 be the detailed source of truth for what each package does independently, how its features work,
 and how packages compose without duplicating related material.
 
-After the CLI boundary, Core and SVG hardening, Build decision, and any retained parser work are
+After the CLI boundary, Core and SVG hardening, Import hosting, and any retained parser work are
 stable:
 
 - ensure every package and feature document reflects implemented behaviour and current ownership;

@@ -9,8 +9,8 @@ Date: **2026-07-28**
 Affected documents:
 
 - [SVG Processing Pipeline](../architecture/svg-processing-pipeline.md)
-- [Private Build Domain](../packages/build/index.md)
-- [Build SVG Parser](../packages/build/parser/index.md)
+- [Private Import Domain](../packages/import/index.md)
+- [Import SVG Parser](../packages/import/formats/svg/parser/index.md)
 
 Supersedes: **None**
 
@@ -63,7 +63,7 @@ an owned adapter and conformance suite.
 
 ## Decision
 
-The private `@aster/build` package pins `xmlsax-typescript` version `1.0.0` as its initial XML
+The private `@aster/import` package pins `xmlsax-typescript` version `1.0.0` as its initial XML
 token parser.
 
 The dependency is confined to `SvgParser`, which implements the internal `ISvgParser` contract.
@@ -96,7 +96,7 @@ internal syntax model for later validation and normalisation.
 
 ### Negative
 
-- The private Build package has one production dependency.
+- The private Import package has one production dependency.
 - A young dependency requires stronger local conformance coverage and review before upgrades.
 - Aster must enforce document-level and resource-limit behaviour not proven by the raw token
   stream.
@@ -120,8 +120,8 @@ new declaration or dependency leakage.
 
 ## Evidence
 
-- [Build package manifest](../../../packages/build/package.json)
-- [SVG parser implementation](../../../packages/build/src/parser/runtime/svg.parser.ts)
-- [Parser runtime conformance](../../../packages/build/tests/runtime/svg-parser.test.ts)
+- [Import package manifest](../../../packages/import/package.json)
+- [SVG parser implementation](../../../packages/import/src/formats/svg/parser/runtime/svg.parser.ts)
+- [Parser runtime conformance](../../../packages/import/tests/runtime/svg-import-adapter.test.ts)
 - [Architecture verification](../../../tooling/architecture/check-architecture.mjs)
-- [Build SVG Parser documentation](../packages/build/parser/index.md)
+- [Import SVG Parser documentation](../packages/import/formats/svg/parser/index.md)

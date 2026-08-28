@@ -1,6 +1,6 @@
 # 0002: Private Build-time Domain Package
 
-Status: **Accepted**
+Status: **Superseded**
 
 Owners: **Technical maintainers**
 
@@ -9,12 +9,12 @@ Date: **2026-07-28**
 Affected documents:
 
 - [Product and Package Boundaries](../architecture/product-and-package-boundaries.md)
-- [Private Build Domain](../packages/build/index.md)
+- [Replacement Import Domain](../packages/import/index.md)
 - [SVG Processing Pipeline](../architecture/svg-processing-pipeline.md)
 
 Supersedes: **None**
 
-Superseded by: **None**
+Superseded by: **[0011: Private External-source Adoption Compiler](0011-private-external-source-adoption-compiler.md)**
 
 ## Context
 
@@ -106,8 +106,7 @@ boundary requires a superseding decision record.
 
 ## Evidence
 
-- [Build package manifest](../../../packages/build/package.json)
-- [Build source contracts](../../../packages/build/src/source/contracts/index.ts)
-- [Build diagnostic contracts](../../../packages/build/src/diagnostic/contracts/index.ts)
+- [Replacement Import package](../../../packages/import/package.json)
+- [Replacement decision](0011-private-external-source-adoption-compiler.md)
 - [Architecture verification](../../../tooling/architecture/check-architecture.mjs)
-- [Build package documentation](../packages/build/index.md)
+- [Import package documentation](../packages/import/index.md)

@@ -2,116 +2,85 @@
 
 Status: **Accepted**
 
-This document defines stable source diagnostics and environment-independent generation. It applies
-to metadata and SVG processing without exposing parser- or filesystem-specific errors.
+This document defines the project-level guarantees shared by Import source diagnostics and
+deterministic target production. Detailed Import contracts remain canonical in
+[Import Diagnostics](../packages/import/diagnostic/index.md), while SVG output guarantees remain
+canonical in [SVG Quality](../packages/svg/quality.md).
 
-## Diagnostic shape
+## Import diagnostic shape
 
-One source diagnostic contains:
+One `SourceDiagnostic` contains:
 
 | Field | Meaning |
 | --- | --- |
 | `code` | Stable Aster-owned identifier. |
 | `severity` | `error` or `warning`. |
-| `category` | Syntax, Safety, Technical, Collection, or Generation. |
+| `category` | `syntax`, `safety`, `technical`, or `adoption`. |
 | `message` | Deterministic British English explanation without environment-specific text. |
-| `sourceId` | Repository-relative logical source identifier using `/` separators. |
-| `span` | Start and end offsets plus human-readable line and column positions when available. |
-| `related` | Optional ordered locations needed to explain a collision or relationship. |
+| `sourceId` | Host-supplied logical source identifier using `/` separators. |
+| `span` | Optional exact start and end offsets with one-based line and column positions. |
+| `related` | Optional ordered additional source relationships. |
 
-Codes use `ASTER-<CATEGORY>-<NUMBER>`, for example `ASTER-SAFETY-001`. Once published, a code keeps
-the same semantic meaning. External parser codes and messages are mapped to Aster-owned
-diagnostics.
+`sourceId` provides diagnostic provenance only. It is not filesystem authority and Import never
+resolves, reads, writes, or discovers it. Absolute paths, parent segments, backslashes, control
+characters, stack traces, platform errors, timestamps, process identifiers, and parser-owned
+messages cannot enter stable diagnostics.
 
-Absolute paths, stack traces, platform error text, timestamps, process identifiers, and parser
-implementation names cannot enter stable diagnostics.
+Codes use `ASTER-<CATEGORY>-<NUMBER>`, for example `ASTER-SAFETY-001`. External parser failures are
+translated into Aster-owned syntax or safety evidence without exposing dependency values.
 
 ## Locations
 
-Offsets count UTF-16 code units in the decoded source string and are zero-based. Lines and columns
-are one-based for display. End offsets are exclusive.
+Offsets count UTF-16 code units in the exact decoded source and are zero-based. Lines and columns
+are one-based for presentation; end offsets are exclusive. Import rejects a byte-order mark and
+malformed Unicode before source parsing, while preserving accepted newline sequences so every
+location continues to identify the supplied text.
 
-Source decoding is UTF-8. A byte-order mark may be accepted only through one documented decoding
-rule. CRLF and LF each count as one logical line ending. Invalid decoding is a syntax error located
-at the earliest determinable position.
+A diagnostic without a trustworthy span identifies the complete logical source. Import never
+fabricates location precision.
 
-A diagnostic without a trustworthy source span may identify the complete source. Fabricated
-precision is not permitted.
+## Failure boundaries
 
-## Severity and category
+- syntax failures represent malformed source or accepted-grammar violations;
+- safety failures represent executable, external, foreign, embedded, or resource-limit risks;
+- technical failures represent unsupported or invalid portable SVG evidence;
+- adoption failures represent rejected Core construction, editable emission, or batch
+  collisions.
 
-Errors block the affected definition and generated output. Warnings preserve accepted output but
-remain observable to callers and verification.
-
-| Category | Responsibility |
-| --- | --- |
-| Syntax | Malformed XML, metadata, numbers, points, path data, or enumeration values. |
-| Safety | Executable, external, foreign, raster, embedded, or resource-exhaustion risks. |
-| Technical | Unsupported source features, invalid portable geometry, or identity disagreement. |
-| Collection | Curatorial quality advice or an evidenced collection rule. |
-| Generation | Name collisions, invalid output plans, or deterministic-output violations. |
-
-Safety failures are always errors. Unsupported required syntax is a Technical error. Collection
-quality advice is a warning unless an accepted collection contract explicitly makes the rule
-blocking.
-
-Unexpected implementation failures are not converted into misleading source diagnostics. They
-terminate the operation through the internal failure boundary and cannot commit generated output.
+Errors block the operation and return no value. Warnings may accompany one successful immutable
+value. Malformed public API structure raises `IconImportError`; unexpected caller or implementation
+execution failures are not converted into misleading source diagnostics.
 
 ## Deterministic ordering
 
 Diagnostics use this ascending order:
 
 1. canonical `sourceId`;
-2. start offset;
+2. start offset, with whole-source evidence first;
 3. end offset;
-4. errors before warnings at the same span;
+4. errors before warnings at the same location;
 5. category;
 6. code;
-7. stable encounter index for otherwise identical diagnostics.
+7. stable encounter index for otherwise equivalent evidence.
 
-Related locations have their own deterministic order. Filesystem enumeration, asynchronous
-completion, map insertion from uncontrolled input, and external parser order cannot alter the
-observable sequence.
+Exact duplicate diagnostics collapse to one immutable value. Text comparison uses Unicode
+code-unit order rather than locale-sensitive collation.
 
-Duplicate diagnostics with the same code, source, span, and semantic cause are reported once.
-Distinct occurrences remain distinct.
+## Deterministic outputs
 
-A diagnostic without a span identifies the complete source and sorts with start and end offset
-`-1`, before located diagnostics for the same `sourceId`. Text comparison uses Unicode code-unit
-order rather than locale-sensitive collation.
+Target determinism belongs to the package producing the target. Import emits the same editable
+TypeScript content for the same accepted definition and canonical source identifiers. SVG renders
+the same markup for the same accepted definition and options. Neither operation may depend on
+locale, current time, random values, process state, platform paths, filesystem enumeration, DOM
+state, or uncontrolled mutable registries.
 
-## Deterministic generation
-
-Identical acquired SVG bytes, metadata values, collection rules, generator version, and explicit
-generation options must produce byte-identical output.
-
-Generated output uses:
-
-- UTF-8 encoding without an environment-dependent byte-order mark;
-- LF line endings;
-- canonical logical identity order;
-- stable node, field, import, export, and manifest order;
-- canonical numeric and string escaping rules;
-- explicit filenames derived from accepted identity;
-- an Aster-owned formatter or template whose version is part of generation authority.
-
-Generated output cannot contain timestamps, absolute paths, random values, locale-sensitive text,
-machine names, platform separators, nondeterministic hashes, or uncontrolled environment values.
-Content digests use one explicitly selected algorithm and canonical byte input.
-
-The generator validates the complete plan before committing files. Existing stale files are
-removed only inside the declared generated root, and source errors cannot produce a partially
-accepted generation.
+Import emission has no generated ownership or persistence lifecycle. A host decides whether and
+where to retain an emitted module. SVG similarly returns complete markup without filesystem or DOM
+authority.
 
 ## Verification
 
-Conformance evidence must cover:
-
-- repeated generation in one environment;
-- generation from different filesystem enumeration orders;
-- LF and CRLF source handling;
-- stable diagnostics after asynchronous processing;
-- clean deletion and deterministic rebuild of generated artefacts;
-- equivalent results on every supported operating system;
-- rejection without committed output for unsafe or invalid source.
+Current conformance evidence covers malformed and unsafe sources, exact spans, deterministic
+diagnostic aggregation, warning-bearing accepted Illustrator input, atomic single and batch
+adoption, editable TypeScript emission, repeated SVG rendering, and equivalent TypeScript-first
+and Import-adopted definitions through public package roots.

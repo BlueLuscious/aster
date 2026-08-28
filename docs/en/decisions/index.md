@@ -85,12 +85,13 @@ supersession links, and unindexed records.
 | Record | Status | Owners | Domain |
 | --- | --- | --- | --- |
 | [0001: pnpm and TypeScript Workspace Toolchain](0001-pnpm-typescript-workspace-toolchain.md) | Accepted | Technical maintainers | Repository toolchain |
-| [0002: Private Build-time Domain Package](0002-private-build-time-domain-package.md) | Accepted | Technical maintainers | Build-time product domain |
+| [0002: Private Build-time Domain Package](0002-private-build-time-domain-package.md) | Superseded | Technical maintainers | Build-time product domain |
 | [0003: Private XML Parser Boundary](0003-private-xml-parser-boundary.md) | Accepted | Technical maintainers | SVG ingestion safety |
-| [0004: JSON Metadata for SVG Imports](0004-canonical-json-metadata-sources.md) | Accepted | Technical maintainers | SVG-import metadata serialisation |
+| [0004: JSON Metadata for SVG Imports](0004-canonical-json-metadata-sources.md) | Superseded | Technical maintainers | SVG-import metadata serialisation |
 | [0005: Public SVG Renderer Boundary](0005-public-svg-renderer-boundary.md) | Accepted | Technical maintainers | Public SVG target and package API |
 | [0006: Public Portable Runtime Authorities](0006-public-portable-runtime-authorities.md) | Superseded | Technical maintainers | Core runtime value API |
 | [0007: TypeScript-first Aster Collection Package](0007-typescript-first-aster-collection-package.md) | Accepted | Technical maintainers and Aster collection curator | Collection authoring and distribution |
 | [0008: Public Plugin-compatible Aster CLI Boundary](0008-public-plugin-compatible-aster-cli-boundary.md) | Accepted | Technical maintainers | CLI package and command-host boundary |
 | [0009: Core Runtime Authority and Failure Boundary](0009-core-runtime-authority-failure-boundary.md) | Accepted | Technical maintainers | Core runtime value and failure API |
 | [0010: Headless SVG Export and Node Output Boundary](0010-headless-svg-export-and-node-output-boundary.md) | Accepted | Technical maintainers | CLI export planning and output effects |
+| [0011: Private External-source Adoption Compiler](0011-private-external-source-adoption-compiler.md) | Accepted | Technical maintainers | External-source adoption and editable TypeScript emission |

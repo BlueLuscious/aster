@@ -102,7 +102,7 @@ rewriting the portable definition.
 Geometry numbers are finite ECMAScript numbers. Units, percentages, `calc()`, `NaN`, infinities,
 and environment-dependent numeric forms are rejected. Negative zero is normalised to zero.
 
-Canonical generation uses the shortest decimal representation that round-trips to the accepted
+Canonical serialisation uses the shortest decimal representation that round-trips to the accepted
 number. It does not round, quantise, or otherwise alter geometry for visual optimisation.
 
 Source order is retained because node order determines painting. Coordinate sequences retain their
@@ -149,9 +149,9 @@ handles and lifecycle state belong to their adapters, never to the icon definiti
 A new node kind or presentation field requires:
 
 - a real source and consumer that cannot be represented by the accepted model;
-- deterministic parsing, validation, and generation rules;
+- deterministic parsing, validation, and target-production rules;
 - a safety analysis;
 - conformance evidence across every claimed target;
-- a compatibility decision for previously generated definitions.
+- a compatibility decision for previously accepted definitions.
 
 The model does not expand solely to mirror an available SVG feature.

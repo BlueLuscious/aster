@@ -36,7 +36,7 @@ its implementation subpath remains unsupported.
 | --- | --- |
 | `@aster/icons` | Authors canonical icon and collection definitions. |
 | `@aster/svg` | Revalidates definitions and interprets portable render options and presentation authorities. |
-| `@aster/build` | Produces and validates portable identities, view boxes, presentation, nodes, definitions, and collections from external source evidence. |
+| `@aster/import` | Inspects external source evidence and delegates portable definition construction to Core. |
 | `@aster/cli` | Describes and normalises catalogue icon and collection records without changing definitions. |
 | Repository workflows | Exercise TypeScript-first authoring, import equivalence, and package composition through public roots. |
 
@@ -53,7 +53,7 @@ authority.
 | `iconPaintSchema` | Portable domain authority | Core validation and SVG option normalisation share its accepted paint grammar. |
 | `iconPresentationOverrideOrder` | Portable domain authority | Core and SVG require the same deterministic presentation override order. |
 | `iconTechnicalPresentation` | Portable domain authority | SVG omits Core-owned technical presentation fields from authored output. |
-| `IconDefinitionError` | Portable failure authority | Build and JavaScript consumers can distinguish invalid authored definitions without relying on a private class name. |
+| `IconDefinitionError` | Portable failure authority | Import and JavaScript consumers can distinguish invalid authored definitions without relying on a private class name. |
 
 Public contracts and types describe the portable data ABI independently of whether every leaf
 contract currently has a named external import. Individual geometry contracts remain deliberate
@@ -149,8 +149,8 @@ comparison.
 - Icons author definitions and collection membership only through public Core construction.
 - SVG revalidates portable definitions, consumes exported runtime vocabularies, and owns SVG,
   accessibility-resolution, and target-error semantics independently.
-- Build creates Core values through the public root and owns parsing, source diagnostics,
-  normalisation, generation, and filesystem-host separation independently.
+- Import creates Core values through the public root and owns parsing, source diagnostics,
+  normalisation, editable module emission, and filesystem-host separation independently.
 - CLI isolates provider values through public Core construction while keeping catalogue identity,
   membership evidence, search, provenance, and discovery state outside Core.
 - Built package declarations and modules contain no reverse package dependency, Node or DOM type,

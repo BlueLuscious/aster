@@ -13,9 +13,9 @@ Aster architecture is defined incrementally from accepted decisions and implemen
 - [Portable Icon Model](portable-icon-model.md) defines target-independent icon geometry,
   presentation, immutability, and extension rules.
 - [SVG Processing Pipeline](svg-processing-pipeline.md) defines parsing, safety, validation,
-  normalisation, construction, and generation boundaries.
-- [Diagnostics and Determinism](diagnostics-and-determinism.md) defines stable diagnostics,
-  ordering, and byte-reproducible generation.
+  normalisation, construction, and editable emission boundaries.
+- [Diagnostics and Determinism](diagnostics-and-determinism.md) defines stable Import diagnostics,
+  ordering, failure boundaries, and deterministic target production.
 - [Rendering Contract](rendering-contract.md) defines renderer authority, portable options,
   presentation precedence, and the first SVG result.
 - [Accessibility and Direction](accessibility-and-direction.md) defines decorative and semantic

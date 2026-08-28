@@ -3,10 +3,10 @@
 Status: **Accepted**
 
 The Experimental `aster` collection uses TypeScript-first authoring. Each distributable icon owns
-one portable `Icon.define(...)` module in `@aster/icons`; SVG is a derived target and SVG+JSON
-remains an optional import path for external artwork.
+one portable `Icon.define(...)` module in `@aster/icons`; SVG is a derived target and explicit SVG
+adoption remains an optional path for external artwork.
 
-The workflow selection applies to this collection. It does not remove Build, prohibit SVG-first
+The workflow selection applies to this collection. It does not remove Import, prohibit SVG-first
 collections, or make TypeScript source a universal Aster requirement.
 
 ## Comparison Evidence
@@ -17,7 +17,7 @@ presentation policy in both directions:
 ```text
 TypeScript definition --> @aster/svg --> deterministic review markup
 
-SVG geometry + JSON metadata --> @aster/build --> equivalent portable definition
+SVG geometry + reviewed Core metadata --> @aster/import --> editable portable definition
 ```
 
 The repository workflow test verifies that both authoring paths produce the same deeply
@@ -36,10 +36,10 @@ The comparison produced these findings:
 | --- | --- | --- |
 | Geometry editing | Explicit portable primitives and coordinates. | Natural output from vector tools, subject to the supported SVG subset. |
 | Source diffs | Semantic and reviewable alongside identity. | Export formatting and tool noise require normalisation awareness. |
-| Metadata | Co-located runtime metadata and presentation policy. | Separate JSON is required and must agree with acquired SVG identity. |
+| Metadata | Co-located runtime metadata and presentation policy. | Complete reviewed Core metadata is supplied explicitly during adoption. |
 | Review | Deterministic SVG is rendered directly from the candidate definition. | Original SVG can be viewed directly, while the imported definition still needs derived review output. |
 | Round-trip loss | SVG output omits search, lifecycle, licence, RTL, and source-authority information. | Import cannot reconstruct vector-tool masters, unsupported SVG capabilities, or discarded source formatting. |
-| Automation | Requires Core and the selected review renderer. | Requires metadata decoding, parsing, safety checks, validation, normalisation, and generation. |
+| Automation | Requires Core and the selected review renderer. | Requires parsing, safety checks, validation, normalisation, definition construction, and editable module emission. |
 
 Neither direction is a lossless design-tool round trip. The deciding advantage for the pilot is
 that TypeScript keeps the complete portable runtime authority in one reviewable module while SVG
@@ -59,7 +59,7 @@ In `@aster/icons`:
 - the package root may provide convenience re-exports without becoming a registry dependency;
 - collection definitions and manifests remain explicit opt-in modules and never enter a per-icon
   graph;
-- renderers, frameworks, DOM APIs, Build, filesystem APIs, and repository tooling are forbidden
+- renderers, frameworks, DOM APIs, Import, filesystem APIs, and repository tooling are forbidden
   dependencies.
 
 The pilot currently declares no variants, so its first definitions use only unqualified icon
@@ -85,7 +85,7 @@ without that membership and can be retained by additional collections without mu
 - is never edited as canonical geometry;
 - does not replace the TypeScript module as identity or metadata authority;
 - is byte-deterministic for the same definition and options;
-- may be inspected in a browser or vector tool without becoming a Build dependency;
+- may be inspected in a browser or vector tool without becoming an Import dependency;
 - remains disposable review evidence outside package distribution.
 
 No derived collection SVG is committed by the current workflow. Persistent SVG distribution has
@@ -95,14 +95,14 @@ without moving filesystem authority into Icons, Core, or SVG.
 
 ## Optional SVG Import
 
-Build remains the supported domain path for converting explicitly acquired SVG geometry and JSON
-metadata into portable definitions. It is appropriate for external artwork or a future
-SVG-first collection, but its generated TypeScript is not the canonical source for this
-TypeScript-first collection.
+Import remains the supported domain path for adopting explicitly acquired SVG geometry with
+complete reviewed Core metadata into portable definitions. It is appropriate for external artwork
+or a future SVG-first collection, but the emitted TypeScript has no generated lifecycle: once
+accepted, it becomes a human-owned editable module.
 
-An imported definition enters `@aster/icons` only after a contributor deliberately adopts and
-reviews the generated portable value as a canonical authored module. Subsequent corrections are
-made in that module, not in Build output or derived SVG.
+An imported definition enters `@aster/icons` only after a contributor deliberately reviews and
+accepts the adopted portable value as a canonical authored module. Subsequent corrections are made
+in that module rather than in the acquired source or derived SVG.
 
 ## Correction Loop
 
