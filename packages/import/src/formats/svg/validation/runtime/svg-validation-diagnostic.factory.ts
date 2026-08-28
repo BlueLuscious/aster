@@ -2,6 +2,7 @@ import type { SourceDiagnostic } from "../../../../diagnostic/contracts/index.js
 import type { TSvgValidationIssue } from "../types/internal/svg-validation-issue.type.js";
 import type { TSvgValidationDiagnosticDetails } from "../types/internal/svg-validation-diagnostic-details.type.js";
 import { diagnosticCategories } from "../../../../diagnostic/constants/diagnostic-categories.constant.js";
+import { diagnosticCodes } from "../../../../diagnostic/constants/diagnostic-codes.constant.js";
 import { diagnosticSeverities } from "../../../../diagnostic/constants/diagnostic-severities.constant.js";
 import { SourceDiagnosticFactory } from "../../../../diagnostic/runtime/source-diagnostic.factory.js";
 import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
@@ -49,7 +50,7 @@ export class SvgValidationDiagnosticFactory {
     switch (issue.kind) {
       case svgValidationIssueKinds.invalidViewBox:
         return {
-          code: "ASTER-SYNTAX-002",
+          code: diagnosticCodes.invalidViewBox,
           severity: diagnosticSeverities.error,
           category: diagnosticCategories.syntax,
           message:
@@ -57,7 +58,7 @@ export class SvgValidationDiagnosticFactory {
         };
       case svgValidationIssueKinds.invalidGeometry:
         return {
-          code: "ASTER-SYNTAX-003",
+          code: diagnosticCodes.invalidGeometry,
           severity: diagnosticSeverities.error,
           category: diagnosticCategories.syntax,
           message:
@@ -65,14 +66,14 @@ export class SvgValidationDiagnosticFactory {
         };
       case svgValidationIssueKinds.invalidPathData:
         return {
-          code: "ASTER-SYNTAX-004",
+          code: diagnosticCodes.invalidPathData,
           severity: diagnosticSeverities.error,
           category: diagnosticCategories.syntax,
           message: "SVG path data does not follow the accepted path grammar.",
         };
       case svgValidationIssueKinds.invalidPresentation:
         return {
-          code: "ASTER-SYNTAX-005",
+          code: diagnosticCodes.invalidPresentation,
           severity: diagnosticSeverities.error,
           category: diagnosticCategories.syntax,
           message:
@@ -80,7 +81,7 @@ export class SvgValidationDiagnosticFactory {
         };
       case svgValidationIssueKinds.unsupportedAttribute:
         return {
-          code: "ASTER-TECHNICAL-005",
+          code: diagnosticCodes.unsupportedAttribute,
           severity: diagnosticSeverities.error,
           category: diagnosticCategories.technical,
           message:
@@ -88,14 +89,14 @@ export class SvgValidationDiagnosticFactory {
         };
       case svgValidationIssueKinds.emptyGeometry:
         return {
-          code: "ASTER-TECHNICAL-006",
+          code: diagnosticCodes.emptyGeometry,
           severity: diagnosticSeverities.error,
           category: diagnosticCategories.technical,
           message: "SVG source must contain non-empty supported geometry.",
         };
       case svgValidationIssueKinds.discardedEditorAttribute:
         return {
-          code: "ASTER-TECHNICAL-007",
+          code: diagnosticCodes.discardedEditorAttribute,
           severity: diagnosticSeverities.warning,
           category: diagnosticCategories.technical,
           message:

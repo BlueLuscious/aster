@@ -97,7 +97,9 @@ export class SvgImportDraftFactory {
 
       if (schema.role === svgSourceElementRoles.primitive) {
         nodes.push(
-          this.#primitiveNormaliser.normalise(element, presentation),
+          Object.freeze(
+            this.#primitiveNormaliser.normalise(element, presentation),
+          ),
         );
       }
 

@@ -8,6 +8,7 @@ import { IconImportError } from "../../error/index.js";
 import { ImportValueValidator } from "../../shared/runtime/import-value.validator.js";
 import { SourceIdNormaliser } from "../../source/runtime/source-id.normaliser.js";
 import { diagnosticCategories } from "../constants/diagnostic-categories.constant.js";
+import { diagnosticCodes } from "../constants/diagnostic-codes.constant.js";
 import { diagnosticSeverities } from "../constants/diagnostic-severities.constant.js";
 import { DiagnosticMessageNormaliser } from "./diagnostic-message.normaliser.js";
 import { DiagnosticRelatedContextFactory } from "./diagnostic-related-context.factory.js";
@@ -121,7 +122,7 @@ export class SourceDiagnosticFactory {
   }
 
   /**
-   * @description Accepts one code whose category and three-digit suffix are canonical.
+   * @description Accepts one known code whose category matches its diagnostic authority.
    * @param value - Unknown diagnostic code.
    * @param category - Accepted diagnostic category.
    * @param path - Logical code path.
@@ -132,15 +133,14 @@ export class SourceDiagnosticFactory {
     category: DiagnosticCategoryType,
     path: string,
   ): DiagnosticCodeType {
-    const expected = new RegExp(
-      `^ASTER-${category.toUpperCase()}-[0-9]{3}$`,
-      "u",
-    );
-
-    if (typeof value !== "string" || !expected.test(value)) {
+    if (
+      typeof value !== "string" ||
+      !Object.values(diagnosticCodes).includes(value as DiagnosticCodeType) ||
+      !value.startsWith(`ASTER-${category.toUpperCase()}-`)
+    ) {
       throw new IconImportError(
         path,
-        "expected a matching Aster category code with three digits",
+        "expected a known Aster code matching the diagnostic category",
       );
     }
 

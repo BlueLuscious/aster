@@ -3,6 +3,7 @@ import type { TDiagnosticDetails } from "../../../../diagnostic/types/internal/d
 import type { ICanonicalSvgSource } from "../../../../source/contracts/internal/index.js";
 import type { TSvgParsingIssue } from "../types/internal/svg-parsing-issue.type.js";
 import { diagnosticCategories } from "../../../../diagnostic/constants/diagnostic-categories.constant.js";
+import { diagnosticCodes } from "../../../../diagnostic/constants/diagnostic-codes.constant.js";
 import { diagnosticSeverities } from "../../../../diagnostic/constants/diagnostic-severities.constant.js";
 import { SourceDiagnosticFactory } from "../../../../diagnostic/runtime/source-diagnostic.factory.js";
 import { SourceLocator } from "../../../../source/runtime/source.locator.js";
@@ -61,55 +62,55 @@ export class SvgParsingDiagnosticFactory {
     switch (issue.kind) {
       case svgParsingIssueKinds.malformedDocument:
         return {
-          code: "ASTER-SYNTAX-001",
+          code: diagnosticCodes.malformedDocument,
           category: diagnosticCategories.syntax,
           message: "The SVG source is not a well-formed single-root XML document.",
         };
       case svgParsingIssueKinds.doctype:
         return {
-          code: "ASTER-SAFETY-001",
+          code: diagnosticCodes.doctype,
           category: diagnosticCategories.safety,
           message: "Document type declarations are not accepted in SVG source.",
         };
       case svgParsingIssueKinds.entityReference:
         return {
-          code: "ASTER-SAFETY-002",
+          code: diagnosticCodes.entityReference,
           category: diagnosticCategories.safety,
           message: "Entity references are not accepted in SVG source.",
         };
       case svgParsingIssueKinds.executableElement:
         return {
-          code: "ASTER-SAFETY-003",
+          code: diagnosticCodes.executableElement,
           category: diagnosticCategories.safety,
           message: `Executable SVG element <${issue.subject}> is not accepted.`,
         };
       case svgParsingIssueKinds.rasterOrEmbeddedElement:
         return {
-          code: "ASTER-SAFETY-004",
+          code: diagnosticCodes.rasterOrEmbeddedElement,
           category: diagnosticCategories.safety,
           message: `Raster, embedded, or resolved element <${issue.subject}> is not accepted.`,
         };
       case svgParsingIssueKinds.eventHandler:
         return {
-          code: "ASTER-SAFETY-005",
+          code: diagnosticCodes.eventHandler,
           category: diagnosticCategories.safety,
           message: `Event-handler attribute ${issue.subject} is not accepted.`,
         };
       case svgParsingIssueKinds.resourceReference:
         return {
-          code: "ASTER-SAFETY-006",
+          code: diagnosticCodes.resourceReference,
           category: diagnosticCategories.safety,
           message: `Resource-bearing attribute ${issue.subject} is not accepted.`,
         };
       case svgParsingIssueKinds.foreignNamespace:
         return {
-          code: "ASTER-SAFETY-007",
+          code: diagnosticCodes.foreignNamespace,
           category: diagnosticCategories.safety,
           message: "Foreign namespace content is not accepted.",
         };
       case svgParsingIssueKinds.processingInstruction:
         return {
-          code: "ASTER-SAFETY-008",
+          code: diagnosticCodes.processingInstruction,
           category: diagnosticCategories.safety,
           message: "Processing instructions are not accepted in SVG source.",
         };
@@ -118,31 +119,31 @@ export class SvgParsingDiagnosticFactory {
       case svgParsingIssueKinds.elementLimit:
       case svgParsingIssueKinds.attributeLimit:
         return {
-          code: "ASTER-SAFETY-009",
+          code: diagnosticCodes.parserLimit,
           category: diagnosticCategories.safety,
           message: "The SVG source exceeds an accepted parser safety limit.",
         };
       case svgParsingIssueKinds.unsupportedElement:
         return {
-          code: "ASTER-TECHNICAL-001",
+          code: diagnosticCodes.unsupportedElement,
           category: diagnosticCategories.technical,
           message: `SVG element <${issue.subject}> is outside the accepted source subset.`,
         };
       case svgParsingIssueKinds.unsupportedTransform:
         return {
-          code: "ASTER-TECHNICAL-002",
+          code: diagnosticCodes.unsupportedTransform,
           category: diagnosticCategories.technical,
           message: "SVG transforms are outside the accepted source subset.",
         };
       case svgParsingIssueKinds.unsupportedText:
         return {
-          code: "ASTER-TECHNICAL-003",
+          code: diagnosticCodes.unsupportedText,
           category: diagnosticCategories.technical,
           message: "Character data is outside the accepted SVG geometry subset.",
         };
       case svgParsingIssueKinds.unsupportedCdata:
         return {
-          code: "ASTER-TECHNICAL-004",
+          code: diagnosticCodes.unsupportedCdata,
           category: diagnosticCategories.technical,
           message: "CDATA sections are outside the accepted SVG source subset.",
         };
