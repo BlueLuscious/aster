@@ -118,6 +118,8 @@ export class SvgParsingDiagnosticFactory {
       case svgParsingIssueKinds.elementDepthLimit:
       case svgParsingIssueKinds.elementLimit:
       case svgParsingIssueKinds.attributeLimit:
+      case svgParsingIssueKinds.textLimit:
+      case svgParsingIssueKinds.pathDataLimit:
         return {
           code: diagnosticCodes.parserLimit,
           category: diagnosticCategories.safety,

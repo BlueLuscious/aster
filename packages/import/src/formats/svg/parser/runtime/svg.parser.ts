@@ -17,6 +17,7 @@ import type { TSvgTagLocation } from "../types/internal/svg-tag-location.type.js
 import type { DiagnosticResultType } from "../../../../diagnostic/types/index.js";
 import type { ICanonicalSvgSource } from "../../../../source/contracts/internal/index.js";
 import { DiagnosticResultFactory } from "../../../../diagnostic/runtime/diagnostic-result.factory.js";
+import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
 import { SvgImportError } from "../../shared/runtime/svg-import.error.js";
 import { svgParsingIssueKinds } from "../constants/svg-parsing-issue-kinds.constant.js";
 import { svgParserLimits } from "../constants/svg-parser-limits.constant.js";
@@ -122,7 +123,10 @@ export class SvgParser implements ISvgParser {
       });
     } catch (error: unknown) {
       if (!(error instanceof XmlSaxError)) {
-        throw error;
+        throw new SvgImportError(
+          "source",
+          "XML parser failed without a recognised syntax error",
+        );
       }
 
       issues.push(this.#xmlFailure(source, error));
@@ -208,6 +212,22 @@ export class SvgParser implements ISvgParser {
             });
           }
 
+          const pathData = element.attributes.find(
+            (attribute) =>
+              attribute.localName === svgSourceAttributeNames.pathData,
+          );
+
+          if (
+            pathData !== undefined &&
+            pathData.value.length > svgParserLimits.maxPathDataLength
+          ) {
+            issues.push({
+              kind: svgParsingIssueKinds.pathDataLimit,
+              startOffset: pathData.valueSpan.start.offset,
+              endOffset: pathData.valueSpan.end.offset,
+            });
+          }
+
           if (location.duplicateAttributeName !== undefined) {
             issues.push({
               kind: svgParsingIssueKinds.malformedDocument,
@@ -259,10 +279,26 @@ export class SvgParser implements ISvgParser {
           break;
         case "text": {
           const textToken = token as TextToken;
+          const endOffset = this.#textEnd(
+            source.content,
+            startOffset,
+          );
+
+          if (
+            endOffset - startOffset > svgParserLimits.maxTextLength
+          ) {
+            issues.push({
+              kind: svgParsingIssueKinds.textLimit,
+              startOffset,
+              endOffset,
+            });
+            break;
+          }
+
           const issue = this.#subsetValidator.inspectText(
             textToken.text,
             startOffset,
-            this.#textEnd(source.content, startOffset),
+            endOffset,
             nonSelfClosingDepth > 0,
           );
 
