@@ -150,7 +150,7 @@ test("emits host-neutral declarations with only accepted public package imports"
     );
     assert.doesNotMatch(
       source,
-      /(?:@aster\/build|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
+      /(?:@aster\/import|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
     );
   }
 });
@@ -193,7 +193,7 @@ test("limits Node process authority and the manifest bridge to the private entry
     assert.doesNotMatch(source, /\bmodule\.exports\b/gu);
     assert.doesNotMatch(
       source,
-      /(?:@aster\/build|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
+      /(?:@aster\/import|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
     );
     if (module !== executableEntry) {
       assert.doesNotMatch(
@@ -237,7 +237,7 @@ test("acquires the built-in Icons catalogue only through its explicit lazy provi
 test("preserves the accepted workspace dependency direction", async () => {
   const manifests = Object.fromEntries(
     await Promise.all(
-      ["core", "icons", "svg", "build", "cli"].map(async (name) => [
+      ["core", "icons", "svg", "import", "cli"].map(async (name) => [
         name,
         await readManifest(resolve(workspaceRoot, "packages", name)),
       ]),
@@ -251,7 +251,7 @@ test("preserves the accepted workspace dependency direction", async () => {
   assert.deepEqual(manifests.svg.dependencies, {
     "@aster/core": "workspace:*",
   });
-  assert.deepEqual(manifests.build.dependencies, {
+  assert.deepEqual(manifests.import.dependencies, {
     "@aster/core": "workspace:*",
     "xmlsax-typescript": "1.0.0",
   });

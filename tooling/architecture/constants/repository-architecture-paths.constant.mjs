@@ -2,8 +2,8 @@
  * @description Immutable repository paths interpreted by architecture policy.
  */
 export const repositoryArchitecturePaths = Object.freeze({
-  buildNormalisation: "src/normalisation",
-  buildValidationRuntime: "src/validation/runtime",
+  importSvgNormalisation: "src/formats/svg/normalisation",
+  importSvgValidationRuntime: "src/formats/svg/validation/runtime",
   cliShell: "src/shell",
   cliShellOutput: "src/shell/output",
   cliShellOutputRuntime: "src/shell/output/runtime",

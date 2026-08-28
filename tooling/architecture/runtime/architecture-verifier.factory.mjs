@@ -5,7 +5,7 @@ import { RepositoryJsonReader } from "../../shared/runtime/repository-json.reade
 import { RepositoryPathResolver } from "../../shared/runtime/repository-path.resolver.mjs";
 import { packageBoundaries } from "../constants/package-boundaries.constant.mjs";
 import { ArchitectureVerifier } from "./architecture-verifier.mjs";
-import { BuildPackagePolicy } from "./build-package.policy.mjs";
+import { ImportPackagePolicy } from "./import-package.policy.mjs";
 import { CliPackagePolicy } from "./cli-package.policy.mjs";
 import { CorePackagePolicy } from "./core-package.policy.mjs";
 import { ModuleSpecifierExtractor } from "./module-specifier.extractor.mjs";
@@ -42,8 +42,8 @@ export class ArchitectureVerifierFactory {
       new CorePackagePolicy(compiler, rootExport),
     );
     policies.set(
-      packageBoundaries.names.build,
-      new BuildPackagePolicy(compiler, rootExport),
+      packageBoundaries.names.import,
+      new ImportPackagePolicy(compiler, rootExport),
     );
     policies.set(
       packageBoundaries.names.cli,
