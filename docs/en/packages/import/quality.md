@@ -12,7 +12,7 @@ operation ownership, internal dependency direction and reproducible performance 
 
 - Every public operation is deterministic for equivalent accepted input.
 - Successful drafts, definitions, modules, batches and diagnostic envelopes are isolated from
-  later caller mutation.
+  later caller mutation and deeply frozen, including individual geometry nodes.
 - Plain records and dense arrays reject hidden, symbolic, accessor-owned or unexpected state.
 - Caller-controlled execution failures preserve their identity; malformed owned structure uses
   `IconImportError` with stable logical paths.

@@ -9,6 +9,12 @@ Public types are `DiagnosticCodeType`, `DiagnosticCategoryType`, `DiagnosticSeve
 `DiagnosticResultType<Value>`. Categories are limited to syntax, safety, technical and adoption;
 severity is either error or warning.
 
+`DiagnosticCodeType` is derived from the private immutable `diagnosticCodes` authority and accepts
+only codes currently emitted by Import. Parser, validation and adoption producers consume that
+same authority rather than repeating observable code strings. Categories and severities likewise
+derive from their immutable runtime authorities. Those constants remain private because hosts
+consume diagnostic evidence but do not author Import diagnostics.
+
 Factories and aggregation remain private. They canonicalise, deduplicate and order diagnostics
 without exposing parser-library errors or environment-specific text.
 
