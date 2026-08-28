@@ -245,6 +245,27 @@ test("imports equivalent SVG and JSON into the same portable definition", () => 
     Svg.render(importedDefinition),
     Svg.render(authoredDefinition),
   );
+
+  const adoptedDefinition = Icon.define({
+    ...importedDefinition,
+    metadata: {
+      ...importedDefinition.metadata,
+      displayName: "Adopted Arrow Left",
+      tags: [
+        ...(importedDefinition.metadata.tags ?? []),
+        "adopted",
+      ],
+    },
+  });
+
+  assert.equal(
+    Svg.render(adoptedDefinition),
+    Svg.render(importedDefinition),
+  );
+  assert.equal(
+    adoptedDefinition.metadata.displayName,
+    "Adopted Arrow Left",
+  );
 });
 
 test("corrects an off-grid review finding in canonical TypeScript source", () => {
