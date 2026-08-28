@@ -29,18 +29,22 @@ export class ImportValueValidator {
   }
 
   /**
-   * @description Rejects own enumerable fields outside a closed sequence.
+   * @description Accepts exact own enumerable data fields against closed and required sequences.
    * @param value - Object record whose fields are inspected.
    * @param accepted - Closed accepted field sequence.
    * @param path - Logical object path.
+   * @param required - Fields that must be present as own data properties.
    * @returns Nothing.
    */
   exactFields(
     value: Record<string, unknown>,
     accepted: readonly string[],
     path: string,
+    required: readonly string[] = [],
   ): void {
-    for (const field of Reflect.ownKeys(value)) {
+    const fields = Reflect.ownKeys(value);
+
+    for (const field of fields) {
       if (typeof field !== "string") {
         throw new IconImportError(path, "expected string-named fields");
       }
@@ -50,6 +54,12 @@ export class ImportValueValidator {
       }
 
       this.#enumerableDataProperty(value, field, `${path}.${field}`);
+    }
+
+    for (const field of required) {
+      if (!fields.includes(field)) {
+        throw new IconImportError(`${path}.${field}`, "expected a required field");
+      }
     }
   }
 

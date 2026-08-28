@@ -24,7 +24,12 @@ export class SourceIdentityNormaliser {
    */
   normalise(value: unknown, path: string): IconIdentity {
     const record = this.#validator.record(value, path);
-    this.#validator.exactFields(record, ["namespace", "name", "variant"], path);
+    this.#validator.exactFields(
+      record,
+      ["namespace", "name", "variant"],
+      path,
+      ["name"],
+    );
     const namespace =
       "namespace" in record
         ? this.#slugNormaliser.normalise(

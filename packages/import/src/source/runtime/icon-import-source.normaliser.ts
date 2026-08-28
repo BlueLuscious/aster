@@ -37,6 +37,7 @@ export class IconImportSourceNormaliser {
       record,
       ["format", "sourceId", "identity", "content"],
       path,
+      ["format", "sourceId", "identity", "content"],
     );
 
     if (record.format !== iconImportFormats.svg) {

@@ -278,7 +278,7 @@ export class IconAdoptionService {
    */
   #request(value: unknown, fields: readonly string[]): Record<string, unknown> {
     const record = this.#validator.record(value, "request");
-    this.#validator.exactFields(record, fields, "request");
+    this.#validator.exactFields(record, fields, "request", fields);
     return record;
   }
 }
