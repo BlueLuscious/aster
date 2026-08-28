@@ -10,5 +10,6 @@ format-specific or host-specific code.
 
 Primitive validation accepts null-prototype or ordinary plain records and ordinary dense arrays.
 It rejects symbols, hidden fields, accessors, inherited behaviour, sparse elements and authored
-array side state before reading retained values. Unrelated Proxy execution failures preserve their
-original identity rather than becoming misleading Import diagnostics.
+array side state before reading retained values. Closed request records also enforce every required
+field before domain processing. Unrelated Proxy execution failures preserve their original
+identity rather than becoming misleading Import diagnostics.

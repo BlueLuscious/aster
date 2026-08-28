@@ -20,3 +20,7 @@ Definition construction always delegates to `Icon.define()`. Emission revalidate
 uses deterministic JSON-compatible TypeScript literals and never emits generated ownership,
 overwrite or rebuild policy. Batch adoption rejects duplicate identities and symbol collisions
 without returning partial output.
+
+One collection is represented by one host-prepared `adoptMany()` request. Several collections are
+independent calls whose grouping remains host-owned. Import has no collection registry, membership
+model or cross-collection transaction because no current consumer requires those responsibilities.

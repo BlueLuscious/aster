@@ -29,7 +29,7 @@ may still wait for an earlier prerequisite in the recommended sequence.
 | 4 | `P0` | Completed: audit and harden `@aster/svg`. | Serialisation correctness, performance, API, output, and package-boundary risks have explicit outcomes independently from Core. |
 | 5 | `P1` | Completed: implement useful catalogue and TypeScript-first CLI workflows. | Users can inspect and export installed icons and collections without requiring `@aster/import`. |
 | 6 | `P0` | Completed: replace Build with narrow `@aster/import` adoption. | External SVG adoption remains host independent and emitted TypeScript becomes human-owned source. |
-| 7 | `P1` | Host and harden the retained Import boundary. | A real CLI or programmatic workflow validates acquisition, review, persistence, and package conformance. |
+| 7 | `P1` | Host the retained Import boundary. | A real CLI or programmatic workflow validates acquisition, review and persistence without moving effects into Import. |
 | 8 | `P2` | Consider an Aster-owned XML tokeniser. | Import is retained and parser conformance and maintenance evidence justify replacement. |
 | 9 | `P2` | Activate objective linting and formatting verification. | The first supported release or external contribution workflow requires enforceable source checks. |
 | 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels and can supply independent policies. |
@@ -272,25 +272,51 @@ The CLI must not force the decision. Import may power a future `import` command,
 search, add, TypeScript-first export, and most generation commands should remain independently
 usable.
 
-## Import package hardening
+## Import host integration
 
 Importance: **P1 - High**
 
-After one real host exists, review Import's API, internal boundaries, duplicated authorities,
-performance, diagnostics, parser safety, normalisation, editable serialisation, and distribution.
-The host should prove atomic source acquisition and output commitment through explicit contracts.
+Import's API, internal boundaries, diagnostics, parser safety, normalisation, editable
+serialisation, caller isolation and private distribution are hardened. The remaining investment is
+one real host that proves source acquisition, human review and output commitment through explicit
+contracts.
 
 Do not expose Import merely because the CLI needs one command. The CLI should adapt the narrowest
 host-independent Import composition, while source discovery, byte decoding, terminal presentation,
 filesystem writes, and process status remain host responsibilities.
 
+## SVG-first Managed Mode
+
+Importance: **P2 - Conditional**
+
+Managed Mode remains outside the active product path. Reconsider it only when one real collection
+must keep SVG or another external format canonical across repeated regeneration and demonstrates
+that one-shot adoption creates material maintenance cost.
+
+That trigger must define source ownership, metadata ownership, overwrite policy, stale cleanup,
+conflict handling, deterministic regeneration and human-edit boundaries together. Do not add any
+of those guarantees incrementally to Import.
+
+## Export orchestration
+
+Importance: **P2 - Conditional**
+
+Core definitions can currently render to SVG through `@aster/svg`, and CLI can plan and publish SVG
+exports. Introduce a separate multi-target Export orchestration boundary only after a second real
+target such as JSON proves that shared target selection, diagnostics or atomic planning cannot
+remain in its owning adapter or host.
+
+Import must not absorb the reverse direction merely because it already emits editable TypeScript.
+Adoption and export have different trust, ownership and lifecycle boundaries.
+
 ## Aster-owned XML tokeniser
 
 Importance: **P2 - Conditional**
 
-Consider replacing `xmlsax-typescript` only after Import has a real host and package conformance. Replacement is
-worthwhile only when dependency maintenance, security, performance, source-location precision,
-or grammar control provides concrete evidence that the existing adapter is insufficient.
+Consider replacing `xmlsax-typescript` only after Import has a real host and package conformance.
+Replacement is worthwhile only when dependency maintenance, security, performance,
+source-location precision or grammar control provides concrete evidence that the existing adapter
+is insufficient.
 
 Parser conformance fixtures must first cover the accepted SVG subset, rejected XML capabilities,
 safety limits, inert sections, namespace handling, malformed input, and exact source spans. At

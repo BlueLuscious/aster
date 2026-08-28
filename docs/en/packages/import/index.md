@@ -20,6 +20,9 @@ immediately and depends only on [`@aster/core`](../core/index.md).
 - [SVG adapter](formats/svg/index.md) owns the initial external format implementation.
 - [Source](source/index.md) defines explicit acquired-source boundaries.
 - [Shared](shared/index.md) contains genuinely transversal private validation.
+- [Workflow](workflow.md) defines operation composition and host hand-off.
+- [Quality](quality.md) records safety, isolation, determinism and conformance evidence.
+- [Compatibility](compatibility.md) defines the private distribution and consumer boundary.
 
 ## Flow
 
@@ -31,4 +34,4 @@ immediately and depends only on [`@aster/core`](../core/index.md).
 6. `adopt()` composes those stages; `adoptMany()` adds atomic collision checks and canonical order.
 
 The package is private while its first real host and additional format evidence remain deferred.
-
+Its package boundary is hardened independently from those future host decisions.
