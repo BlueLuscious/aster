@@ -31,7 +31,7 @@ The collection identity, curator, Experimental lifecycle, licence, and
 
 The collection uses [TypeScript-first authoring](authoring-workflow.md). Each accepted icon owns
 one portable definition module in [`@aster/icons`](../../packages/icons/index.md), while SVG
-remains derived review or distribution output and Build remains an optional importer.
+remains derived review or distribution output and Import remains an optional importer.
 `AsterCollection` separately retains the accepted icon definitions as explicit membership data;
 the same definitions remain directly usable without importing or consulting that collection.
 

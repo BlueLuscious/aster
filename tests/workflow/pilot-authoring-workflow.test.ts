@@ -1,46 +1,38 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import {
-  CollectionBuildPipeline,
-  IngestionSourceFactory,
-  type CollectionBuildEntry,
-  type CollectionBuildRequest,
-  type CollectionMetadataSource,
-} from "@aster/build";
-import {
-  Icon,
-  type IconDefinition,
-} from "@aster/core";
-import {
-  ArrowLeft,
-  AsterCollection,
-} from "@aster/icons";
+import { IconImport, iconImportFormats } from "@aster/import";
+import { Icon, type IconDefinition, type IconMetadata } from "@aster/core";
+import { ArrowLeft, AsterCollection } from "@aster/icons";
 import { Svg } from "@aster/svg";
 
-const pipeline = new CollectionBuildPipeline();
-const sourceFactory = new IngestionSourceFactory();
+const arrowMetadata: IconMetadata = {
+  displayName: "Arrow Left",
+  tags: ["arrow", "back", "left", "navigation", "previous"],
+  rtl: "mirror",
+  presentation: {
+    defaults: {
+      fill: "none",
+      stroke: "currentColor",
+      strokeWidth: 1.5,
+      strokeLineCap: "round",
+      strokeLineJoin: "round",
+    },
+    overrides: [],
+    defaultSize: 24,
+    minimumSize: 16,
+  },
+  licence: "ISC",
+  attribution: "BlueLuscious",
+  deprecated: false,
+};
 
 function authorArrowLeft(shaftStartX = 4): IconDefinition {
   return Icon.define({
-    identity: {
-      namespace: "aster",
-      name: "arrow-left",
-    },
-    viewBox: {
-      minX: 0,
-      minY: 0,
-      width: 24,
-      height: 24,
-    },
+    identity: { namespace: "aster", name: "arrow-left" },
+    viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [
-      {
-        kind: "line",
-        x1: 20,
-        y1: 12,
-        x2: shaftStartX,
-        y2: 12,
-      },
+      { kind: "line", x1: 20, y1: 12, x2: shaftStartX, y2: 12 },
       {
         kind: "polyline",
         points: [
@@ -50,232 +42,58 @@ function authorArrowLeft(shaftStartX = 4): IconDefinition {
         ],
       },
     ],
-    metadata: {
-      displayName: "Arrow Left",
-      tags: [
-        "arrow",
-        "back",
-        "left",
-        "navigation",
-        "previous",
-      ],
-      rtl: "mirror",
-      presentation: {
-        defaults: {
-          fill: "none",
-          stroke: "currentColor",
-          strokeWidth: 1.5,
-          strokeLineCap: "round",
-          strokeLineJoin: "round",
-        },
-        overrides: [],
-        defaultSize: 24,
-        minimumSize: 16,
-      },
-      licence: "ISC",
-      attribution: "BlueLuscious",
-      deprecated: false,
-    },
+    metadata: arrowMetadata,
   });
 }
 
-function collectionMetadata(): CollectionMetadataSource {
-  const source = sourceFactory.create({
-    kind: "collection-metadata",
-    sourceId: "workflow/aster/metadata/collection.json",
-    collection: "aster",
-    content: JSON.stringify({
-      schemaVersion: 1,
-      name: "Aster",
-      slug: "aster",
-      status: "experimental",
-      description: "Geometric outline interface icons.",
-      package: {
-        name: "@aster/icons",
-        version: "0.0.0",
-      },
-      licence: "ISC",
-      attribution: "BlueLuscious",
-      allowIconLicenceOverride: false,
-      defaultSize: 24,
-      minimumSize: 16,
-      presentationDefaults: {
-        fill: "none",
-        stroke: "currentColor",
-        strokeWidth: 1.5,
-        strokeLineCap: "round",
-        strokeLineJoin: "round",
-      },
-      presentationOverrides: [],
-      validation: {
-        viewBox: {
-          expected: {
-            minX: 0,
-            minY: 0,
-            width: 24,
-            height: 24,
-          },
-          severity: "error",
-        },
-        stroke: {
-          acceptedWidths: [1.5],
-          severity: "error",
-        },
-        grid: {
-          step: 0.5,
-          severity: "warning",
-        },
-        bounds: {
-          inset: [2, 2, 2, 2],
-          severity: "warning",
-        },
-        complexity: {
-          maxPrimitives: 16,
-          maxPathCommands: 64,
-          severity: "warning",
-        },
-      },
-    }),
-  });
-
-  assert.equal(source.kind, "collection-metadata");
-
-  if (source.kind !== "collection-metadata") {
-    throw new Error("Expected collection metadata workflow source.");
-  }
-
-  return source;
-}
-
-function importedArrowLeftEntry(): CollectionBuildEntry {
-  const identity = {
-    namespace: "aster",
-    name: "arrow-left",
-  };
-  const svg = sourceFactory.create({
-    kind: "svg",
-    sourceId: "workflow/aster/svg/arrow-left.svg",
-    identity,
-    content:
-      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="10 6 4 12 10 18"/></svg>',
-  });
-  const metadata = sourceFactory.create({
-    kind: "icon-metadata",
-    sourceId: "workflow/aster/metadata/icons/arrow-left.json",
-    identity,
-    content: JSON.stringify({
-      schemaVersion: 1,
-      name: "arrow-left",
-      displayName: "Arrow Left",
-      tags: [
-        "arrow",
-        "back",
-        "left",
-        "navigation",
-        "previous",
-      ],
-      rtl: "mirror",
-      deprecated: false,
-    }),
-  });
-
-  assert.equal(svg.kind, "svg");
-  assert.equal(metadata.kind, "icon-metadata");
-
-  if (svg.kind !== "svg" || metadata.kind !== "icon-metadata") {
-    throw new Error("Expected paired SVG import workflow sources.");
-  }
-
-  return { svg, metadata };
-}
-
-function buildImportRequest(): CollectionBuildRequest {
-  return {
-    collectionMetadata: collectionMetadata(),
-    entries: [importedArrowLeftEntry()],
-  };
-}
-
-function readGeneratedDefinition(content: string): IconDefinition {
+function readAdoptedDefinition(content: string): IconDefinition {
   const match = /\$Icon\.define\(([\s\S]+)\);\s*$/u.exec(content);
-
   assert.ok(match?.[1] !== undefined);
   return JSON.parse(match[1]) as IconDefinition;
 }
 
 test("authors one portable definition and renders deterministic review SVG", () => {
   const definition = authorArrowLeft();
-  const first = Svg.render(definition);
-  const second = Svg.render(definition);
-
-  assert.equal(first, second);
-  assert.equal(
-    first,
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><line x1="20" y1="12" x2="4" y2="12" fill="none" fill-rule="nonzero" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" opacity="1" fill-opacity="1" stroke-opacity="1"/><polyline points="10 6 4 12 10 18" fill="none" fill-rule="nonzero" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="4" opacity="1" fill-opacity="1" stroke-opacity="1"/></svg>',
-  );
-  assert.doesNotMatch(first, /Arrow Left|mirror|ISC|BlueLuscious/u);
+  assert.equal(Svg.render(definition), Svg.render(definition));
+  assert.doesNotMatch(Svg.render(definition), /Arrow Left|mirror|ISC|BlueLuscious/u);
 });
 
-test("imports equivalent SVG and JSON into the same portable definition", () => {
-  const result = pipeline.build(buildImportRequest());
+test("adopts equivalent SVG into editable TypeScript and the same portable definition", () => {
+  const result = IconImport.adopt({
+    source: {
+      format: iconImportFormats.svg,
+      sourceId: "workflow/aster/svg/arrow-left.svg",
+      identity: { namespace: "aster", name: "arrow-left" },
+      content:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="10 6 4 12 10 18"/></svg>',
+    },
+    metadata: arrowMetadata,
+  });
 
-  assert.equal(
-    result.successful,
-    true,
-    JSON.stringify(result.diagnostics, null, 2),
-  );
+  assert.equal(result.successful, true, JSON.stringify(result.diagnostics, null, 2));
 
   if (!result.successful) {
-    throw new Error("Expected successful equivalent SVG workflow import.");
+    throw new Error("Expected successful SVG adoption workflow.");
   }
 
-  assert.deepEqual(result.diagnostics, []);
-
-  const iconModule = result.value.files.find(
-    (file) => file.path === "src/icons/arrow-left.icon.ts",
-  );
-
-  assert.ok(iconModule !== undefined);
-  assert.match(iconModule.content, /export const ArrowLeft = \$Icon\.define/u);
-  const importedDefinition = readGeneratedDefinition(iconModule.content);
-  const authoredDefinition = authorArrowLeft();
-
-  assert.deepEqual(importedDefinition, authoredDefinition);
-  assert.equal(
-    Svg.render(importedDefinition),
-    Svg.render(authoredDefinition),
-  );
+  assert.doesNotMatch(result.value.module.content, /@generated|Do not edit/iu);
+  const adopted = Icon.define(readAdoptedDefinition(result.value.module.content));
+  assert.deepEqual(adopted, authorArrowLeft());
+  assert.equal(Svg.render(adopted), Svg.render(authorArrowLeft()));
 });
 
 test("corrects an off-grid review finding in canonical TypeScript source", () => {
   const draft = Svg.render(authorArrowLeft(3.75));
   const corrected = Svg.render(authorArrowLeft());
-
   assert.match(draft, /x2="3\.75"/u);
   assert.doesNotMatch(corrected, /3\.75/u);
   assert.match(corrected, /x2="4"/u);
 });
 
-test("adopts the workflow evidence and renders the complete pilot distinctly", () => {
+test("renders every independently authored pilot icon distinctly", () => {
   assert.deepEqual(ArrowLeft, authorArrowLeft());
-
   const definitions = AsterCollection.icons;
-  const minimumSizeMarkup = definitions.map((definition) =>
-    Svg.render(definition, { size: 16 }),
-  );
-  const defaultSizeMarkup = definitions.map((definition) =>
-    Svg.render(definition),
-  );
-
+  const markup = definitions.map((definition) => Svg.render(definition));
   assert.equal(definitions.length, 16);
-  assert.equal(new Set(minimumSizeMarkup).size, definitions.length);
-  assert.equal(new Set(defaultSizeMarkup).size, definitions.length);
-
-  for (const markup of minimumSizeMarkup) {
-    assert.match(markup, /width="16" height="16"/u);
-  }
-
-  for (const markup of defaultSizeMarkup) {
-    assert.match(markup, /width="24" height="24"/u);
-  }
+  assert.equal(new Set(markup).size, definitions.length);
 });

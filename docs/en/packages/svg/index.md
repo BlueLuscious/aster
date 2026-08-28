@@ -3,7 +3,7 @@
 Status: **Accepted**
 
 `@aster/svg` owns framework-independent conversion of portable `@aster/core` icon definitions into
-complete standalone SVG markup. It is a public target renderer with no DOM, browser, Node, Build,
+complete standalone SVG markup. It is a public target renderer with no DOM, browser, Node, Import,
 Lilium, or Lotus authority.
 
 ## Current boundary
@@ -27,7 +27,7 @@ closed render options, resolves effective presentation, and returns complete mar
 
 The package depends only on the public root of `@aster/core`. It consumes `IconDefinition`,
 `IconRenderOptions`, and the frozen portable runtime authorities required to interpret them. It
-cannot import Core implementation paths, Build, a collection catalogue, a framework, or a
+cannot import Core implementation paths, Import, a collection catalogue, a framework, or a
 platform host.
 
 The target remains native ES2022 ESM. Production compilation excludes DOM, browser, Node, and
@@ -54,7 +54,7 @@ The compiled-package ABI suite verifies:
 - import through the approved `@aster/svg` root and rejection of implementation subpaths;
 - the exact root declaration and manifest export;
 - dependency on the public `@aster/core` root only;
-- host-independent declarations without DOM, Node, framework, Build, or tooling references;
+- host-independent declarations without DOM, Node, framework, Import, or tooling references;
 - side-effect-free ESM without CommonJS compatibility output;
 - deterministic representative markup from an explicitly supplied definition;
 - import and rendering from an isolated consumer containing only publishable Core and SVG files.

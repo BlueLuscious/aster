@@ -3,7 +3,7 @@
 Status: **Accepted**
 
 The error feature owns deterministic programming failures raised by the public SVG target. It
-does not expose Core construction errors, native parser messages, Build source diagnostics, or
+does not expose Core construction errors, native parser messages, Import source diagnostics, or
 partially rendered markup.
 
 ## Runtime
@@ -21,7 +21,7 @@ ASTER-SVG-001 at <path>: <reason>.
 
 The reason is owned by Aster and never copies an exception message from Core or an ambient host.
 Consumers may use `instanceof SvgRenderError`, `code`, and `path` to identify programming errors;
-source-authoring workflows continue to use Build diagnostics.
+source-authoring workflows continue to use Import diagnostics.
 
 The renderer translates public Core `IconDefinitionError` instances because an invalid portable
 definition cannot enter the SVG target. It preserves the Core logical path but replaces the reason

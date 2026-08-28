@@ -1,187 +1,64 @@
-# SVG Processing Pipeline
+# SVG Adoption Pipeline
 
 Status: **Accepted**
 
-This document defines the optional build-time boundary that imports acquired SVG and JSON metadata
-into portable icon definitions. It keeps untrusted syntax, accepted domain data, and generated
-artefacts separate.
+This document defines the optional host-independent path from explicitly acquired SVG text to a
+portable Aster icon definition and editable TypeScript source. Canonical Aster authoring remains
+TypeScript-first; SVG adoption is not a generated-file lifecycle.
 
-## Processing stages
+## Ownership
 
-One build request proceeds through ordered responsibilities:
+`@aster/import` owns source isolation, parser-neutral diagnostics, safety validation, portable SVG
+subset validation, normalisation, Core definition construction, and deterministic editable module
+emission. A host owns filesystem or network acquisition, source discovery, reviewed metadata,
+terminal presentation, persistence, overwrite policy, and process status.
 
-1. **Acquire sources.** Resolve selected SVG and metadata to one canonical identity.
-2. **Parse syntax.** Convert XML text into an internal, untrusted syntax representation with source
-   locations.
-3. **Validate safety and schema.** Reject unsafe, foreign, malformed, or unsupported syntax.
-4. **Validate semantics.** Apply project invariants, collection rules, and source identity rules.
-5. **Decode metadata.** Convert textual metadata through a replaceable decoder into Aster-owned
-   structured values linked to their canonical sources.
-6. **Normalise.** Compose metadata authority and produce one portable representation
-   without mutating authored sources.
-7. **Construct definitions.** Create deeply immutable portable icon definitions.
-8. **Plan generation.** Compute the complete deterministic output set before committing files.
+The complete package flow is documented by [`@aster/import`](../packages/import/index.md).
 
-Each stage accepts the output of the preceding stage through an Aster-owned boundary. Parsing,
-validation, normalisation, and generation are separate responsibilities even when an implementation
-composes them behind one command.
+## Stages
 
-## Source acquisition
+1. The host supplies an explicit source identity, logical icon identity, format discriminator, and
+   decoded content.
+2. Import isolates the value and selects the exact built-in format adapter.
+3. The SVG adapter tokenises XML behind an internal parser boundary.
+4. Aster-owned validation rejects malformed, executable, external, foreign, unsupported, or
+   resource-exhausting input.
+5. Normalisation resolves accepted hierarchy, geometry, and presentation into a deeply frozen
+   metadata-free draft.
+6. The host reviews diagnostics and supplies complete Core `IconMetadata`.
+7. Import delegates immutable definition construction to `@aster/core`.
+8. Import may serialise the accepted definition as deterministic editable `.icon.ts` source.
 
-Source acquisition follows
-[Collection and Source Boundary](collection-and-source-boundary.md). It must establish an
-unambiguous relationship among:
+`adoptMany()` applies the same stages atomically, rejects identity collisions, and returns outputs
+in canonical identity order. It does not infer collections or source layouts.
 
-- acquired collection identity;
-- acquired SVG identity;
-- collection metadata;
-- icon metadata;
-- optional variant identity.
+## Parser boundary
 
-Missing counterparts, duplicate identities, acquired identity disagreement, and generated-name
-collisions are diagnostic errors. Filesystem traversal order cannot determine semantic or output
-order. Build does not infer identity from a filesystem layout; an effectful host may enforce a
-storage convention before constructing the source descriptors.
+The initial SVG adapter pins `xmlsax-typescript` version `1.0.0`. Parser-library tokens, failures,
+and messages remain internal. Aster independently owns source spans, character checks, document
+shape, safety policy, resource limits, accepted SVG semantics, and result envelopes.
 
-## Internal parser output
+The dependency remains replaceable behind private contracts. Replacement requires conformance
+evidence rather than API compatibility with the selected library.
 
-Parser output is an internal source model, not a public SVG AST and not a portable icon definition.
-It may retain:
+## Accepted editor noise
 
-- element and attribute spelling;
-- hierarchy and source order;
-- namespace declarations;
-- raw numeric and path text;
-- group structure and inherited presentation;
-- source spans and parser recovery evidence.
+A finite root-only policy accepts and discards safe XML declarations, comments, unused namespace
+declarations, and recognised editor attributes. Every discarded editor attribute produces an
+exact warning. Invalid values, foreign namespace use, resource references, processing instructions,
+and unsupported semantics remain blocking.
 
-The source model is untrusted until validation succeeds. No parser-library type may appear in
-public contracts, generated definitions, collection metadata, or renderer adapters.
+The concrete policy is documented by [Import SVG Validation](../packages/import/formats/svg/validation/index.md).
 
-Parser recovery may continue to collect useful diagnostics, but recovered syntax cannot enter a
-portable definition unless every required invariant is proven. Unexpected implementation failures
-remain distinct from source diagnostics.
+## Normalisation limits
 
-## Safety and schema validation
+Normalisation may flatten accepted groups, resolve supported inherited presentation, canonicalise
+finite values, and omit explicitly reviewed editor noise. It never repairs unsafe input, infers
+missing intent, optimises geometry, converts strokes, or mutates the acquired source.
 
-Safety validation is always blocking. It rejects executable content, external resolution, foreign
-namespaces, raster content, document embedding, entity expansion, and any syntax whose safety
-cannot be established locally.
+## Output ownership
 
-Schema validation establishes the supported source subset:
-
-- one SVG root in the SVG namespace;
-- one finite, positive viewBox;
-- supported geometry elements and explicit presentation attributes;
-- structural groups used only for ordering and allowed inheritance;
-- no unsupported transform or presentation mechanism;
-- valid numeric, enumeration, point, colour, and path values.
-
-Unsupported technical syntax is an error rather than a quality warning. Source input never gains
-authority merely because a browser happens to render it.
-
-## Shared lexical authority
-
-Strict finite SVG numbers, sequence separators, path commands, command arity, arc parameters, and
-canonical path token spelling are owned by an internal shared Build composition. Validation uses
-that composition to establish trustworthy evidence and remains authoritative for blocking
-diagnostics. Normalisation uses the same stateless composition to canonicalise accepted values
-without importing Validation runtime implementations or defining a competing grammar.
-
-The concrete authorities, internal types, and runtime services are documented by
-[Build Shared Authorities](../packages/build/shared/index.md).
-
-## Semantic validation
-
-Semantic validation composes project, collection, and icon authority. It verifies:
-
-- canonical identity and source relationships;
-- required metadata and effective artwork licence;
-- collection-specific constraints that are declared blocking;
-- non-empty visible geometry;
-- generated symbol uniqueness;
-- replacement, deprecation, variant, and RTL invariants.
-
-Collection quality advice that does not threaten safety, identity, or technical validity is
-reported separately as a warning. A collection may promote an evidenced visual rule to a blocking
-requirement through its accepted design contract.
-
-The implemented internal validation boundary and the deliberate limits of its geometric evidence
-are documented by [Build SVG Validation](../packages/build/validation/index.md). Metadata decoding
-remains a separate stage: validation establishes required source pairing and acquired identity,
-while the decoder establishes structured metadata authority.
-
-## Normalisation authority
-
-The normaliser owns representation, not artwork. It may:
-
-- flatten accepted structural groups;
-- resolve allowed inherited presentation;
-- remove editor-only syntax that has no semantic consumer;
-- canonicalise finite numbers, colours, enumerations, point sequences, and path data;
-- omit fields equal to documented defaults;
-- preserve supported primitives and paint order.
-
-It must not:
-
-- mutate masters or acquired SVG;
-- reorder, merge, split, simplify, round, or optimise geometry;
-- infer missing design intent;
-- convert strokes to outlines;
-- convert all primitives to paths;
-- silently repair unsafe, unsupported, or ambiguous input.
-
-Normalisation is deterministic and idempotent. Applying it to an accepted normal form produces the
-same semantic value and generated bytes.
-
-The implemented internal conversion, structured metadata input, ownership composition, and Core
-construction boundary are documented by
-[Build SVG Normalisation](../packages/build/normalisation/index.md).
-
-## Generation boundary
-
-Generation consumes only validated portable definitions and resolved distribution metadata. It
-does not read parser nodes or acquired SVG directly.
-
-The generator first computes and validates a complete generation plan. Source errors prevent any
-new output from being committed. The implementation must define a staging, replacement, and
-cleanup boundary that cannot leave accepted generated files mixed with rejected data.
-
-Generated artefacts identify their declared input set and rebuild authority. They are terminal
-outputs and never replace their accepted authoring authority.
-
-The implemented pure module, export, collision, and stale-file planning boundary is documented by
-[Build Generator](../packages/build/generator/index.md). Filesystem discovery, atomic commit,
-cleanup execution, package compilation, and process status remain outside that domain boundary.
-
-## Parser-library criteria
-
-Selecting an XML or SVG parser is an implementation decision, not an architectural dependency.
-Any candidate must be evaluated for:
-
-- strict XML and namespace behaviour;
-- protection against entities, external resolution, and resource exhaustion;
-- accurate source locations and deterministic recovery;
-- maintained ESM support compatible with the ES2022 target;
-- browser- and DOM-independent execution;
-- acceptable software licence and transitive dependency surface;
-- replaceability behind Aster-owned internal contracts;
-- no leakage of library types or diagnostics into observable Aster output;
-- deterministic results for identical source bytes.
-
-A dependency may accelerate implementation, but conformance tests and Aster-owned contracts remain
-the authority.
-
-## Accepted parser boundary
-
-The private `@aster/build` package pins `xmlsax-typescript` version `1.0.0` as its initial token
-parser. The dependency is confined to the internal `SvgParser` adapter and has no authority beyond
-XML tokenisation, namespace metadata, and token offsets.
-
-Aster-owned code independently enforces accepted XML characters, comment and attribute structure,
-a sole document root, fixed resource limits, exact canonical spans, safety policy, accepted
-parser-stage subset behaviour, and all-or-nothing results. Parser types, messages, diagnostics,
-recovery values, and classes are absent from package root exports and portable packages.
-
-The accepted dependency and replacement constraints are recorded by
-[Private XML Parser Boundary](../decisions/0003-private-xml-parser-boundary.md).
+Emitted TypeScript contains informational provenance only. It has no generated marker, rebuild
+command, overwrite claim, stale-cleanup policy, or hidden source snapshot. Once emitted, it is
+human-owned editable source. Later SVG output is independently derived through
+[`@aster/svg`](../packages/svg/index.md).

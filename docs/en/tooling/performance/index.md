@@ -29,7 +29,7 @@ shared Node capabilities, while `CoreBaselineRunner` defines only Core icon and 
 construction scenarios. `SvgBaselineFactory` and `SvgBaselineRunner` independently compose SVG
 definitions, options, rendering scenarios, and distribution evidence. `CliBaselineFactory` and
 `CliBaselineRunner` independently compose command, shell, cold-process, and distribution evidence.
-A future Build or other baseline follows the same isolation, reuses shared capabilities, and never edits a global
+A future Import or other baseline follows the same isolation, reuses shared capabilities, and never edits a global
 scenario registry or imports another package baseline's configuration.
 
 The CLI baseline owns a narrow fresh-process host and runner because cold root import and

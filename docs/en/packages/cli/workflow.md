@@ -36,7 +36,7 @@ complete immutable `AsterExportPlan` before returning success.
 An icon produces one logical SVG artefact. A collection resolves every declared member before
 rendering and then orders all artefacts by canonical relative path. Selection, path collisions,
 render failures, and malformed providers fail without exposing a partial plan. The workflow does
-not import `@aster/build`, inspect source files, or acquire filesystem authority.
+not import `@aster/import`, inspect source files, or acquire filesystem authority.
 
 ## Standalone execution
 

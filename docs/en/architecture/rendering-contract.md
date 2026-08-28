@@ -144,5 +144,5 @@ the same string. Output cannot depend on locale, ambient text direction, process
 object insertion order from uncontrolled input, or current time.
 
 Element, attribute, presentation, numeric, escaping, and accessibility ordering are part of SVG
-renderer conformance. They do not alter the byte-generation rules defined in
+renderer conformance and follow the project-level target guarantees in
 [Diagnostics and Determinism](diagnostics-and-determinism.md).

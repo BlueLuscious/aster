@@ -40,8 +40,8 @@ The accepted export extension adds the public `@aster/svg` root as a direct CLI 
 ```
 
 This relationship is now observable through the implemented export command. The CLI does not depend on
-`@aster/build`, a framework, repository tooling, or a generic plugin framework. Core, Icons, SVG,
-Build, adapters, and consumers never depend on the CLI.
+`@aster/import`, a framework, repository tooling, or a generic plugin framework. Core, Icons, SVG,
+Import, adapters, and consumers never depend on the CLI.
 
 The direct Core dependency allows public catalogue records to retain portable icon and collection
 contracts without relying on transitive dependency resolution. The Icons dependency supplies the
@@ -100,7 +100,7 @@ There are no default ambient providers. The standalone shell passes `AsterCatalo
 A programmatic host may pass the same provider, additional providers, or an empty sequence.
 
 Handlers receive no output writer, terminal, logger, process, clock, filesystem, network, package
-manager, Build service, or dynamic loader. The accepted export command composes SVG internally and
+manager, Import service, or dynamic loader. The accepted export command composes SVG internally and
 returns complete artefact data rather than adding a renderer or output capability to this
 context.
 
@@ -176,7 +176,7 @@ returns not-found or ambiguity.
 
 The implemented host-neutral export boundary adds exact icon and collection selection over
 installed TypeScript-first definitions and produces deterministic SVG artefact plans without
-Build. The current shell exposes raw single-icon SVG, JSON plans, and explicit output-root
+Import. The current shell exposes raw single-icon SVG, JSON plans, and explicit output-root
 publication through its private Node composition.
 
 The accepted standalone forms are:
@@ -260,10 +260,10 @@ sequences or human table formatting, and the same exit-status mapping still appl
 `add`, `generate`, and `import` remain absent from the current descriptors and invocation union.
 The implemented export command grants SVG rendering authority only to its internal headless
 composition. The other names grant no filesystem, package-manager, renderer,
-or Build capabilities to the current context.
+or Import capabilities to the current context.
 
-An accepted future command may add a narrow explicit effect capability. `import` remains
-conditional on the separate Build viability decision. No deferred command can change Core values,
+An accepted future command may add a narrow explicit effect capability. `import` remains deferred
+until an explicit acquisition, metadata-review, and output-commit host is designed. No deferred command can change Core values,
 catalogue membership, or this package's dependency direction implicitly.
 
 Package compatibility and evidence are defined by

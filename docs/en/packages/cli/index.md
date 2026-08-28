@@ -49,13 +49,13 @@ isolates portable icon and collection values. The built-in provider depends on `
 adapts `AsterCollection` without assigning catalogue ownership to Core.
 
 The export domain depends directly on the public `@aster/svg` root. It renders accepted portable
-definitions without importing Build, filesystem services, or SVG implementation subpaths.
+definitions without importing Import, filesystem services, or SVG implementation subpaths.
 
 The host-neutral production compilation uses ES2022 ESM without Node or DOM ambient types. A
 referenced shell project consumes its emitted declarations and admits Node types only beneath
 `src/shell/`; it does not re-emit the host-neutral implementation. The shell acquires argv, writes
 stdout or stderr, sets process exit status, and privately composes the narrow filesystem authority
-required to publish complete export trees. It has no network, package-manager, Build, framework,
+required to publish complete export trees. It has no network, package-manager, Import, framework,
 plugin-loader, or repository-tooling authority.
 
 ## Current package surface

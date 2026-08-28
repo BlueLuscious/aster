@@ -73,7 +73,7 @@ read process state, access the filesystem, or write output.
 | `@aster/icons` | Canonical definitions supplied only by the explicit built-in provider through a dynamic import. |
 | `@aster/svg` | Public deterministic SVG rendering used to create export artefacts. |
 
-Build, DOM, browser, framework, network, package-manager, Flora, and repository-tooling imports are
+Import, DOM, browser, framework, network, package-manager, Flora, and repository-tooling imports are
 absent from production source. Node imports occur only in the private shell entrypoint, output-path
 resolver, and filesystem adapter. The host-neutral TypeScript project excludes the complete shell
 tree and admits neither Node nor DOM ambient types.

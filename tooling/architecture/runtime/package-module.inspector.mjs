@@ -137,23 +137,23 @@ export class PackageModuleInspector {
     }
 
     if (
-      record.name === packageBoundaries.names.build &&
+      record.name === packageBoundaries.names.import &&
       this.#paths.resolve(modulePath) ===
         this.#paths.resolve(record.packageRoot, repositoryArchitecturePaths.packageEntry)
     ) {
-      this.#inspectBuildRootExport(record.packageRoot, target, issues);
+      this.#inspectImportRootExport(record.packageRoot, target, issues);
     }
 
     if (
-      record.name === packageBoundaries.names.build &&
+      record.name === packageBoundaries.names.import &&
       this.#paths.contains(
-        this.#paths.resolve(record.packageRoot, repositoryArchitecturePaths.buildNormalisation),
+        this.#paths.resolve(record.packageRoot, repositoryArchitecturePaths.importSvgNormalisation),
         modulePath,
       ) &&
       this.#paths.contains(
         this.#paths.resolve(
           record.packageRoot,
-          repositoryArchitecturePaths.buildValidationRuntime,
+          repositoryArchitecturePaths.importSvgValidationRuntime,
         ),
         target,
       )
@@ -260,11 +260,11 @@ export class PackageModuleInspector {
     issues,
   ) {
     if (
-      record.name === packageBoundaries.names.build &&
+      record.name === packageBoundaries.names.import &&
       specifier.startsWith(sourceModule.nodeProtocolPrefix)
     ) {
       issues.add(
-        `${this.#paths.relative(workspaceRoot, modulePath)} imports a Node adapter into @aster/build`,
+        `${this.#paths.relative(workspaceRoot, modulePath)} imports a Node adapter into @aster/import`,
       );
     }
 
@@ -288,7 +288,7 @@ export class PackageModuleInspector {
       );
 
       if (
-        record.name !== packageBoundaries.names.build ||
+        record.name !== packageBoundaries.names.import ||
         this.#paths.resolve(modulePath) !== implementationPath
       ) {
         issues.add(
@@ -313,14 +313,14 @@ export class PackageModuleInspector {
   }
 
   /**
-   * @description Inspects private Build features exposed from its package root.
-   * @param {string} packageRoot - Absolute Build package root.
+   * @description Inspects private Import features exposed from its package root.
+   * @param {string} packageRoot - Absolute Import package root.
    * @param {string} target - Resolved relative export target.
    * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {void} Completion after all private feature roots are inspected.
    */
-  #inspectBuildRootExport(packageRoot, target, issues) {
-    for (const feature of packageBoundaries.buildPrivateFeatureRoots) {
+  #inspectImportRootExport(packageRoot, target, issues) {
+    for (const feature of packageBoundaries.importPrivateFeatureRoots) {
       if (this.#paths.contains(this.#paths.resolve(packageRoot, feature.path), target)) {
         issues.add(feature.issue);
       }

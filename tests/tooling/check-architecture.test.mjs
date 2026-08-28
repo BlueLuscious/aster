@@ -156,12 +156,12 @@ test("rejects Core production dependencies and public package boundary drift", a
   }
 });
 
-test("rejects host adapters and reverse dependencies in the private build domain", async () => {
+test("rejects host adapters and reverse dependencies in the private import domain", async () => {
   const root = await createFixture();
 
   try {
-    await writeFixtureJson(root, "packages/build/package.json", {
-      name: "@aster/build",
+    await writeFixtureJson(root, "packages/import/package.json", {
+      name: "@aster/import",
       private: false,
       type: "module",
       dependencies: {
@@ -169,7 +169,7 @@ test("rejects host adapters and reverse dependencies in the private build domain
         "unexpected-package": "^1.0.0",
       },
     });
-    await writeFixtureJson(root, "packages/build/tsconfig.json", {
+    await writeFixtureJson(root, "packages/import/tsconfig.json", {
       compilerOptions: {
         lib: ["ES2022", "DOM"],
         types: ["node"],
@@ -177,7 +177,7 @@ test("rejects host adapters and reverse dependencies in the private build domain
     });
     await writeFixtureFile(
       root,
-      "packages/build/src/index.ts",
+      "packages/import/src/index.ts",
       'import "node:fs";\nimport "../../../tooling/adapter.js";\n',
     );
     await writeFixtureJson(root, "packages/svg/package.json", {
@@ -221,7 +221,7 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
         "./runtime": "./dist/runtime.js",
       },
       dependencies: {
-        "@aster/build": "workspace:*",
+        "@aster/import": "workspace:*",
       },
     });
     await writeFixtureJson(root, "packages/cli/tsconfig.json", {
@@ -240,18 +240,18 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
       "packages/cli/src/shell/parsing/runtime/parser.ts",
       'import "../../output/runtime/export-output.publisher.js";\n',
     );
-    await writeFixtureJson(root, "packages/build/package.json", {
-      name: "@aster/build",
+    await writeFixtureJson(root, "packages/import/package.json", {
+      name: "@aster/import",
       type: "module",
     });
-    await writeFixtureFile(root, "packages/build/src/index.ts", "export {};\n");
+    await writeFixtureFile(root, "packages/import/src/index.ts", "export {};\n");
 
     const issues = await verifyArchitecture(root);
 
     assert.ok(
-      issues.some((issue) => /cannot depend on workspace package @aster\/build/u.test(issue)),
+      issues.some((issue) => /cannot depend on workspace package @aster\/import/u.test(issue)),
     );
-    assert.ok(issues.some((issue) => /unaccepted production dependency @aster\/build/u.test(issue)));
+    assert.ok(issues.some((issue) => /unaccepted production dependency @aster\/import/u.test(issue)));
     assert.ok(issues.some((issue) => /must remain a public package/u.test(issue)));
     assert.ok(issues.some((issue) => /sideEffects as false/u.test(issue)));
     assert.ok(issues.some((issue) => /expose only the root/u.test(issue)));
@@ -326,8 +326,8 @@ test("rejects private parser dependency and adapter boundary drift", async () =>
   const root = await createFixture();
 
   try {
-    await writeFixtureJson(root, "packages/build/package.json", {
-      name: "@aster/build",
+    await writeFixtureJson(root, "packages/import/package.json", {
+      name: "@aster/import",
       private: true,
       type: "module",
       sideEffects: false,
@@ -344,16 +344,15 @@ test("rejects private parser dependency and adapter boundary drift", async () =>
     });
     await writeFixtureFile(
       root,
-      "packages/build/src/source/runtime/source.ts",
+      "packages/import/src/source/runtime/source.ts",
       'import { tokenizeXml } from "xmlsax-typescript";\nvoid tokenizeXml;\n',
     );
     await writeFixtureFile(
       root,
-      "packages/build/src/index.ts",
+      "packages/import/src/index.ts",
       [
-        'export * from "./parser/runtime/svg.parser.js";',
-        'export * from "./validation/runtime/svg.validator.js";',
-        'export * from "./generator/runtime/generation.planner.js";',
+        'export * from "./formats/svg/parser/runtime/svg.parser.js";',
+        'export * from "./formats/svg/validation/runtime/svg-technical.validator.js";',
         "",
       ].join("\n"),
     );
@@ -375,20 +374,17 @@ test("rejects private parser dependency and adapter boundary drift", async () =>
     assert.ok(
       issues.some((issue) => /cannot expose its internal validation feature/u.test(issue)),
     );
-    assert.ok(
-      issues.some((issue) => /cannot expose its internal generator feature/u.test(issue)),
-    );
   } finally {
     await rm(root, { recursive: true, force: true });
   }
 });
 
-test("rejects Validation runtime imports from Build Normalisation", async () => {
+test("rejects Validation runtime imports from Import SVG Normalisation", async () => {
   const root = await createFixture();
 
   try {
-    await writeFixtureJson(root, "packages/build/package.json", {
-      name: "@aster/build",
+    await writeFixtureJson(root, "packages/import/package.json", {
+      name: "@aster/import",
       private: true,
       type: "module",
       sideEffects: false,
@@ -405,7 +401,7 @@ test("rejects Validation runtime imports from Build Normalisation", async () => 
     });
     await writeFixtureFile(
       root,
-      "packages/build/src/normalisation/runtime/svg.normaliser.ts",
+      "packages/import/src/formats/svg/normalisation/runtime/svg.normaliser.ts",
       'import "../../validation/runtime/svg-number.parser.js";\n',
     );
 

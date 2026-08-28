@@ -45,7 +45,7 @@
     "verify": "pnpm run check && pnpm run test && pnpm run build"
   },
   "devDependencies": {
-    "@aster/build": "workspace:*",
+    "@aster/import": "workspace:*",
     "@aster/cli": "workspace:*",
     "@aster/core": "workspace:*",
     "@aster/icons": "workspace:*",

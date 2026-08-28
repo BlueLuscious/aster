@@ -22,7 +22,7 @@ semantics such as node cardinality, presentation precedence, identity relationsh
 authority; those rules remain with their owning features.
 
 `IconDefinitionError` is a programming error for malformed authored portable data. Its message
-contains no host path, parser failure, source location, or environment state. Build source
+contains no host path, parser failure, source location, or environment state. Import source
 failures remain structured diagnostics rather than Core definition errors. Consumers can use the
 public frozen class for `instanceof` discrimination and inspect its stable static or instance
 `code` and logical `path`; the validators that produce it remain private.

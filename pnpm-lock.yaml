@@ -8,9 +8,6 @@ importers:
 
   .:
     devDependencies:
-      '@aster/build':
-        specifier: workspace:*
-        version: link:packages/build
       '@aster/cli':
         specifier: workspace:*
         version: link:packages/cli
@@ -20,6 +17,9 @@ importers:
       '@aster/icons':
         specifier: workspace:*
         version: link:packages/icons
+      '@aster/import':
+        specifier: workspace:*
+        version: link:packages/import
       '@aster/svg':
         specifier: workspace:*
         version: link:packages/svg
@@ -32,15 +32,6 @@ importers:
       typescript:
         specifier: 5.9.3
         version: 5.9.3
-
-  packages/build:
-    dependencies:
-      '@aster/core':
-        specifier: workspace:*
-        version: link:../core
-      xmlsax-typescript:
-        specifier: 1.0.0
-        version: 1.0.0
 
   packages/cli:
     dependencies:
@@ -61,6 +52,15 @@ importers:
       '@aster/core':
         specifier: workspace:*
         version: link:../core
+
+  packages/import:
+    dependencies:
+      '@aster/core':
+        specifier: workspace:*
+        version: link:../core
+      xmlsax-typescript:
+        specifier: 1.0.0
+        version: 1.0.0
 
   packages/svg:
     dependencies:

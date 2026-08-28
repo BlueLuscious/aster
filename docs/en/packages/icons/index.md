@@ -19,7 +19,7 @@ The package:
 - supports tree-shakable per-icon imports without a catalogue registry.
 
 The package does not render SVG, create framework components, access DOM or filesystem APIs,
-import SVG sources, run Build, discover paths, or own repository tooling.
+import SVG sources, run Import, discover paths, or own repository tooling.
 
 ## Dependency Boundary
 
@@ -29,7 +29,7 @@ The only production dependency is public `@aster/core`.
 @aster/icons --> @aster/core
 ```
 
-`@aster/svg`, `@aster/build`, Lilium, Lotus, Aster adapters, DOM libraries, and Node APIs are not
+`@aster/svg`, `@aster/import`, Lilium, Lotus, Aster adapters, DOM libraries, and Node APIs are not
 runtime dependencies. Repository-level workflow tests may compose independently installed
 packages without changing this boundary.
 

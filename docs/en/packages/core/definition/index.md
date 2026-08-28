@@ -12,8 +12,8 @@ retaining a catalogue or identity registry.
 
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
-| `IconIdentity` | Carries an optional canonical namespace, required icon name, and optional variant. | Used by `IconDefinition`, optional metadata replacement relationships, and Build source descriptors. |
-| `IconViewBox` | Carries finite minimum coordinates and positive logical dimensions. | Owns the coordinate system used by every node and is reused by Build validation evidence. |
+| `IconIdentity` | Carries an optional canonical namespace, required icon name, and optional variant. | Used by `IconDefinition`, optional metadata replacement relationships, and Import source descriptors. |
+| `IconViewBox` | Carries finite minimum coordinates and positive logical dimensions. | Owns the coordinate system used by every node and is reused by Import validation evidence. |
 | `IconDefinition` | Carries one complete serialisable icon value. | Composes `IconIdentity`, `IconViewBox`, `IconNodeType`, and `IconMetadata`. |
 
 ## Identity rules

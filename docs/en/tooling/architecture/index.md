@@ -14,7 +14,7 @@ The verifier inspects:
 - pnpm and ecosystem workspace-pattern equivalence;
 - exact package identity, manifests, dependencies, and package-root boundaries;
 - Core dependency freedom and public package restrictions;
-- Build privacy, parser dependency, and host separation;
+- Import privacy, parser dependency, and host separation;
 - CLI dependency, executable, and Node-authority restrictions;
 - SVG dependency, public-surface, and host-independent compiler restrictions;
 - cross-package relative imports and production dependency cycles;
@@ -49,7 +49,7 @@ Recognised packages implement the internal `IPackageArchitecturePolicy` contract
 | Policy | Responsibility |
 | --- | --- |
 | `CorePackagePolicy` | Enforces dependency freedom, root export shape, and portable compiler options. |
-| `BuildPackagePolicy` | Enforces privacy, accepted dependencies, parser pinning, root export shape, and portable compiler options. |
+| `ImportPackagePolicy` | Enforces privacy, accepted dependencies, parser pinning, root export shape, and portable compiler options. |
 | `CliPackagePolicy` | Enforces public visibility, accepted dependencies, root export shape, and portable compiler options. |
 | `SvgPackagePolicy` | Enforces public visibility, the sole Core production dependency, root export shape, and portable compiler options. |
 
@@ -62,7 +62,7 @@ policy.
 
 `PackageModuleInspector` walks source modules and delegates lexical extraction to
 `ModuleSpecifierExtractor`. It verifies relative package escapes, imports into repository tooling,
-Build private-feature exposure, Build and CLI Node authority, Build layer direction, parser adapter
+Import private-feature exposure, Import and CLI Node authority, Import layer direction, parser adapter
 ownership, and undeclared workspace imports. It does not resolve modules through Node or execute
 source code.
 
@@ -73,7 +73,7 @@ Closed architecture vocabulary is owned by immutable feature constants:
 | Authority | Responsibility |
 | --- | --- |
 | `compilerBaseline` | Exact host-independent root compiler options. |
-| `packageBoundaries` | Package identities, dependency allowlists, root exports, parser ownership, and private Build feature roots. |
+| `packageBoundaries` | Package identities, dependency allowlists, root exports, parser ownership, and private Import feature roots. |
 | `repositoryArchitecturePaths` | Repository roots and package-relative paths interpreted by architecture policy. |
 | `sourceModule` | Source extensions, ecosystem package grammar, and static module-specifier grammar. |
 

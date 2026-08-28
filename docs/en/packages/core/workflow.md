@@ -126,7 +126,7 @@ After construction, Core performs no work until another explicit API receives th
 
 - `@aster/icons` exports canonical definitions and explicit collection aggregates;
 - `@aster/svg` interprets one definition and render options as standalone SVG markup;
-- `@aster/build` converts accepted external source evidence into Core values;
+- `@aster/import` converts accepted external source evidence into Core values;
 - `@aster/cli` reads definitions through explicit catalogue providers;
 - future adapters may map definitions into target-specific occurrences and lifecycle state.
 
