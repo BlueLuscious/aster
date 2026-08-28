@@ -9,6 +9,10 @@ Import depends on the public root of `@aster/core` and pins `xmlsax-typescript` 
 private SVG parser boundary. It does not depend on Icons, SVG, CLI, repository tooling, Node, DOM,
 framework or filesystem APIs.
 
+The parser dependency is an implementation choice rather than part of the package ABI. Its token
+types, failures and messages remain private, and the [SVG parser authority](formats/svg/parser/index.md)
+defines the stable Aster-owned safety and source-evidence behaviour.
+
 The package exports one root only. Runtime values are limited to `IconImport`, `IconImportError`
 and `iconImportFormats`; contracts and types are declaration-only exports. Parser, adapter,
 validation, normalisation and runtime implementation subpaths are inaccessible through package

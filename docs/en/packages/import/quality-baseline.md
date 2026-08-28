@@ -73,6 +73,12 @@ should be split. Refactoring requires a distinct owner, change pressure or dupli
 These correctness families define behaviour independently from timing. Only representative
 accepted, editor-export, rejected and batch inputs enter the initial performance comparison.
 
+Parser-limit conformance exercises every exact ceiling and its immediately greater value. It also
+covers malformed Unicode, duplicate attributes, misleading inert delimiters, namespace aliases,
+stable dependency-failure translation and exact LF, CRLF and Unicode spans. A collection-scale
+structural fixture additionally guards the indexed source-location path against repeated full-source
+scans without turning wall-clock duration into a CI promise.
+
 ## Performance comparison
 
 Run:

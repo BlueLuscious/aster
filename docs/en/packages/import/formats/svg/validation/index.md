@@ -4,6 +4,10 @@ Technical validation checks the view box, supported geometry, finite numeric dom
 presentation and the closed attribute subset. Internal metric types retain located bounds,
 numbers, stroke widths, primitive counts and path-command counts needed for review.
 
+Validation receives only a complete parser-neutral document. The preceding
+[parser trust boundary](../parser/index.md) owns XML capabilities, parser limits and exact lexical
+source evidence; validation does not repeat those responsibilities.
+
 The editor-attribute validator recognises only the finite root policy. Safe discarded values emit
 `ASTER-TECHNICAL-007` warnings with exact spans; malformed values remain errors. Collection visual
 rules are intentionally outside Import.
