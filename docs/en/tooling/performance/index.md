@@ -29,8 +29,10 @@ shared Node capabilities, while `CoreBaselineRunner` defines only Core icon and 
 construction scenarios. `SvgBaselineFactory` and `SvgBaselineRunner` independently compose SVG
 definitions, options, rendering scenarios, and distribution evidence. `CliBaselineFactory` and
 `CliBaselineRunner` independently compose command, shell, cold-process, and distribution evidence.
-A future Import or other baseline follows the same isolation, reuses shared capabilities, and never edits a global
-scenario registry or imports another package baseline's configuration.
+`ImportBaselineFactory` and `ImportBaselineRunner` independently compose source inspection,
+definition, emission, adoption, rejection, batch and distribution evidence. Any other baseline
+follows the same isolation, reuses shared capabilities, and never edits a global scenario registry
+or imports another package baseline's configuration.
 
 The CLI baseline owns a narrow fresh-process host and runner because cold root import and
 executable startup cannot be measured by an in-process operation loop. That adapter remains
@@ -73,6 +75,19 @@ The command builds Core, Icons, SVG, and CLI before measuring synchronous shell 
 asynchronous programmatic commands, fresh Node startup, and emitted distribution evidence. Exact
 scenarios, attribution, and acceptance rules are defined by the
 [CLI Quality Baseline](../../packages/cli/quality-baseline.md).
+
+## Import comparison
+
+Run:
+
+```sh
+pnpm benchmark:import
+```
+
+The command builds Core and Import, prepares accepted, rejected, editor-export and batch fixtures
+outside timed loops, and measures only public Import operations and emitted distribution. Exact
+scenarios, fixture sizes, exclusions and interpretation are defined by the
+[Import Quality Baseline](../../packages/import/quality-baseline.md).
 
 ## Comparison limits
 

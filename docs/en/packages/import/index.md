@@ -22,6 +22,8 @@ immediately and depends only on [`@aster/core`](../core/index.md).
 - [Shared](shared/index.md) contains genuinely transversal private validation.
 - [Workflow](workflow.md) defines operation composition and host hand-off.
 - [Quality](quality.md) records safety, isolation, determinism and conformance evidence.
+- [Quality baseline](quality-baseline.md) inventories the observable boundary and defines measured
+  operation and distribution evidence.
 - [Compatibility](compatibility.md) defines the private distribution and consumer boundary.
 
 ## Flow

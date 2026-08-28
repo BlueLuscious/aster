@@ -5,6 +5,9 @@ Status: **Hardened private pre-release**
 Import quality is defined through public-operation, adapter, ABI and representative workflow
 conformance rather than through publication status.
 
+The [Import Quality Baseline](quality-baseline.md) records the current surface inventory,
+operation ownership, internal dependency direction and reproducible performance scenarios.
+
 ## Guarantees
 
 - Every public operation is deterministic for equivalent accepted input.
