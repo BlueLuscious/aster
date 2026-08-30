@@ -3,19 +3,17 @@
 Aster is an independent icon platform for creating, describing, validating, distributing, and
 rendering curated icon collections.
 
-Canonical documentation is written in British English and organised by responsibility:
+Canonical documentation is written in British English and organised by its narrowest owner:
 
-- [Architecture](architecture/index.md) defines project-wide guarantees and boundaries.
-- [Governance](governance/index.md) defines contribution, review, versioning, releases, and
-  documentation policy.
-- [Decision Records](decisions/index.md) define how material choices are proposed, accepted, and
-  superseded.
-- [Future Capabilities](future-capabilities.md) record deferred improvements and the evidence or
-  product boundary that should trigger their evaluation.
-- [Packages](packages/index.md) document packages that exist in the repository.
-- [Collections](collections/index.md) document accepted curated collection identities.
+- [Project](project/index.md) explains Aster's product boundary, package composition, dependency
+  direction, implemented workflows, and release posture.
+- [Packages](packages/index.md) document the production packages that exist in the repository.
 - [Repository Tooling](tooling/index.md) documents private verification and workspace-maintenance
-  features that exist under `tooling/`.
+  features.
+- [Collections](collections/index.md) document accepted curated collection identities, visual
+  rules, provenance, and evidence.
+- [Future Capabilities](future-capabilities.md) records proposals and their activation triggers;
+  it does not define current product guarantees.
 
 Package documentation is created only when its corresponding repository structure exists.
 Collection-specific identity and design documentation is created when its curatorial ownership
