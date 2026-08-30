@@ -18,6 +18,11 @@ and `iconImportFormats`; contracts and types are declaration-only exports. Parse
 validation, normalisation and runtime implementation subpaths are inaccessible through package
 exports.
 
+The emitted private distribution contains only ES2022 ESM `.js` modules and `.d.ts` declarations.
+It emits no CommonJS, source maps, alternate targets, Node or DOM declarations. Runtime modules may
+reference only the public `@aster/core` root and the exact private parser dependency; declarations
+remain host-neutral and do not expose parser types.
+
 ## Consumer independence
 
 Core, Icons, SVG and CLI have no production dependency on Import. Import may consume Core, but it

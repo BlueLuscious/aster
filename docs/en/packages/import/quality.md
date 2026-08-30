@@ -33,6 +33,12 @@ An isolated TypeScript consumer compiles an emitted `.icon.ts` module and render
 `@aster/svg` without importing Import. Repository workflows separately prove equivalence between
 TypeScript-first and adopted definitions.
 
+The package-owned advisory benchmark compares the original operation matrix and explicit source
+and batch scales. Current evidence remains linear for representative accepted geometry and batch
+growth. Inspection owns the material cost; Core definition construction and editable module
+emission remain comparatively small. No runtime shortcut is accepted unless it preserves parser
+safety, source evidence, caller isolation and deterministic diagnostics.
+
 ## Non-guarantees
 
 Import does not guarantee filesystem acquisition, encoding detection, source discovery, metadata

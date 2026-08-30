@@ -1,10 +1,10 @@
 # Import Quality Baseline
 
-Status: **Accepted Baseline**
+Status: **Accepted comparison boundary**
 
-This baseline freezes the current observable Import boundary before implementation or performance
-changes. It measures public operations and emitted distribution without granting Import filesystem,
-process or discovery authority.
+This baseline records the frozen initial Import boundary and its final hardening comparison. It
+measures public operations and emitted distribution without granting Import filesystem, process or
+discovery authority.
 
 ## Boundary inventory
 
@@ -20,9 +20,9 @@ accidental implementation exports:
 | Diagnostics | `DiagnosticRelatedContext`, `SourceDiagnostic`, `SourcePosition`, `SourceSpan`, `DiagnosticCategoryType`, `DiagnosticCodeType`, `DiagnosticResultType`, `DiagnosticSeverityType` | Types stable failure and advisory evidence returned by every operation. |
 | Format and source | `SvgIconImportSource`, `IconImportFormatType`, `IconImportSourceType` | Defines the exact built-in source discriminator and current source union. |
 
-All runtime implementation classes, adapter contracts, parser syntax, validation evidence and
-internal diagnostic details remain inaccessible through package exports. Their final necessity is
-subject to structural audit, but their current visibility is correct.
+All runtime implementation classes, adapter contracts, parser syntax, retained validation evidence
+and internal diagnostic details remain inaccessible through package exports. Structural review
+removed provisional evidence without widening this visibility.
 
 Import depends only on the public `@aster/core` root and the pinned `xmlsax-typescript` parser.
 Core, Icons, SVG and CLI do not depend on Import. Emitted modules depend on Core rather than Import.
@@ -70,8 +70,9 @@ should be split. Refactoring requires a distinct owner, change pressure or dupli
 | Adversarial | Reflective records, accessors, proxies, sparse arrays, cycles and configured parser limits. | Input-hardening and parser-limit conformance. |
 | Batch | Independent requests, collisions, canonical ordering and collection-scale sets. | Adoption composition conformance. |
 
-These correctness families define behaviour independently from timing. Only representative
-accepted, editor-export, rejected and batch inputs enter the initial performance comparison.
+These correctness families define behaviour independently from timing. Representative accepted,
+editor-export, rejected and batch inputs retain the initial comparison, while controlled geometry
+and batch scales provide bounded-growth evidence.
 
 Parser-limit conformance exercises every exact ceiling and its immediately greater value. It also
 covers malformed Unicode, duplicate attributes, misleading inert delimiters, namespace aliases,
@@ -98,10 +99,55 @@ distribution shape and these scenarios:
 | `import.inspect.minimal-svg` | Minimal accepted source parsing, validation and normalisation. |
 | `import.inspect.editor-svg` | Accepted editor export containing finite known noise. |
 | `import.inspect.rejected-svg` | Deterministic rejection of executable source without exception leakage. |
+| `import.inspect.medium-svg` | Accepted source containing 16 equivalent geometry elements. |
+| `import.inspect.large-svg` | Accepted source containing 64 equivalent geometry elements. |
 | `import.define.reviewed-draft` | Core construction from a pre-inspected draft and reviewed metadata. |
 | `import.emit.editable-module` | Editable TypeScript serialisation from a pre-defined icon. |
 | `import.adopt.single-svg` | Complete single-source composition. |
 | `import.adopt.batch-svg` | Atomic adoption and canonical ordering of eight distinct requests. |
+| `import.adopt.large-batch-svg` | Atomic adoption and canonical ordering of 32 distinct requests. |
+
+The seven original operation scenarios retain their fixture and measurement semantics. The three
+additional scenarios provide explicit scaling evidence without replacing that comparison matrix.
+
+## Final comparison evidence
+
+A representative Node 24.10 Windows x64 comparison after structural hardening emitted 141 ESM
+modules, 141 declaration modules and 280,181 unminified bytes. The frozen initial boundary emitted
+143 modules of each kind and 281,874 bytes. The reduction follows removal of unconsumed internal
+validation evidence rather than output compression or public-surface changes.
+
+Repeated local samples placed minimal inspection near 0.10 milliseconds, editor-export inspection
+near 0.25 milliseconds, reviewed definition construction near 0.01 milliseconds, editable module
+emission near 0.02 milliseconds and complete single-source adoption between 0.14 and 0.17
+milliseconds. These observations attribute the material cost to source tokenisation, safety,
+validation and normalisation rather than Core construction or TypeScript serialisation.
+
+The 801-byte, 16-element source inspected in approximately 0.43 milliseconds; the 2,969-byte,
+64-element source inspected in approximately 1.51 milliseconds. Increasing geometry fourfold
+therefore remained below fourfold elapsed growth in the reference run. Increasing a batch from
+eight to 32 equivalent adoptions increased elapsed time from approximately 1.13 to 4.96
+milliseconds. That small excess over fourfold growth falls within advisory benchmark and garbage
+collection variation and does not establish superlinear behaviour.
+
+Heap samples are retained in the report as diagnostic evidence, not stable allocation promises.
+Parser-owned token objects, Aster-owned syntax and source evidence, canonical diagnostics, isolated
+Core definitions, sorting and deep freezing are intentional costs. They are not bypassed to improve
+an advisory number. Repeated validation at the validation-to-normalisation trust hand-off also
+remains deliberate until an immutable intermediate representation demonstrates a measured net
+benefit without weakening the boundary.
+
+### Cost attribution
+
+| Cost family | Observable evidence | Accepted interpretation |
+| --- | --- | --- |
+| Tokenisation and source evidence | Present in every inspection; larger accepted sources scale with bytes and elements. | The parser dependency is contained, while Aster retains its own syntax, safety and exact span evidence. |
+| Repeated source scans | Indexed tag locations keep collection-scale parser conformance bounded. | No remaining repeated whole-source scan justifies a cache or mutable source index. |
+| Path parsing | Included in accepted inspection and repeated at the normalisation trust hand-off. | The second finite parse protects validation assumptions; removal requires a measured immutable intermediate model. |
+| Diagnostic construction | Executable-source rejection remains materially cheaper than accepted inspection. | Stable code policy, source spans, ordering and freezing do not dominate the rejected path. |
+| Core revalidation | Isolated by `import.define.reviewed-draft`. | Approximately 0.01 milliseconds is immaterial beside source inspection and preserves the portable Core authority. |
+| TypeScript serialisation | Isolated by `import.emit.editable-module`. | Approximately 0.02 milliseconds does not justify generated-template caching or retained mutable state. |
+| Sorting and freezing | Included in single and batch adoption. | Near-linear batch growth supports deterministic ordering and deep isolation without a shortcut. |
 
 Warm-up and repeated in-process samples use the repository-wide benchmark methodology. A cold
 process scenario is intentionally absent: Import has no executable, process lifecycle or host
