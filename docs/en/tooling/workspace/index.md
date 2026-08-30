@@ -21,6 +21,10 @@ The cleaner is an explicit composition of four responsibilities:
 the command line, supplies the current package root, emits diagnostics, and maps failure to the
 process exit state. It does not decide which path may be deleted.
 
+The internal `IPackageOutputFileSystem` contract exposes only file inspection and idempotent tree
+removal. It cannot choose a target; `PackageRootInspector` and `PackageOutputCleanupPolicy` must
+accept the package and direct output boundary before that destructive capability executes.
+
 The composition:
 
 - resolves package and output roots before deletion;

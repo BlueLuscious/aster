@@ -37,6 +37,10 @@ feature-owned policies. `ArchitectureVerifier` then invokes these inspectors in 
 an immutable ordered snapshot. Acquisition failures such as unreadable or malformed repository
 authorities remain operational failures rather than architecture findings.
 
+The internal `IArchitectureInspector` contract supplies one explicit workspace root and ordered
+issue collector to each independent inspection responsibility. It permits deterministic
+composition without giving an inspector terminal, process or ambient current-directory authority.
+
 ## Package inspection
 
 Package discovery produces an internal `TWorkspacePackageRecord` containing directory, canonical

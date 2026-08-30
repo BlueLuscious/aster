@@ -75,8 +75,9 @@ Closed documentation vocabulary is owned by immutable feature constants:
 | `decisionRecordRules` | Accepted statuses, filename grammar, status grammar, and required consequences heading. |
 
 These authorities enforce only objective repository policy. British English quality, technical
-accuracy, readability, completeness, and curatorial judgement remain human review responsibilities
-defined by [Documentation Policy](../../governance/documentation-policy.md).
+accuracy, readability, completeness, package truth and curatorial judgement remain human review
+responsibilities. A passing command proves the listed structural invariants only; it is not a
+general documentation-quality score.
 
 ## Tests
 

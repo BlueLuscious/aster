@@ -131,40 +131,17 @@ curatorial record.
 
 ## Enforcement Map
 
-The SVG import workflow can express this provisional collection validation authority:
+Current package tests enforce unique identities, the `0 0 24 24` viewBox, shared `1.5` stroke
+policy, round caps and joins, no node-specific presentation, a maximum of sixteen primitives,
+half-unit geometry, effective ISC licensing, attribution, deep immutability and the accepted RTL
+policy. Workflow tests prove deterministic review SVG, editable SVG adoption and correction in the
+canonical TypeScript source.
 
-```ts
-{
-  collection: "aster",
-  viewBox: {
-    expected: { minX: 0, minY: 0, width: 24, height: 24 },
-    severity: "error",
-  },
-  stroke: {
-    acceptedWidths: [1.5],
-    severity: "error",
-  },
-  grid: {
-    step: 0.5,
-    severity: "warning",
-  },
-  bounds: {
-    inset: [2, 2, 2, 2],
-    severity: "warning",
-  },
-  complexity: {
-    maxPrimitives: 16,
-    maxPathCommands: 64,
-    severity: "warning",
-  },
-}
-```
-
-ViewBox and explicit source-stroke disagreements are blocking because they prevent reliable family
-comparison. Grid, safe-area, and complexity findings are advisory because valid optical
-corrections can intentionally cross those guides. Caps, joins, negative space, curve quality,
-recognisability, and visual balance remain curatorial checks where automated evidence is
-insufficient.
+The repository has no generic collection-validation schema or configurable design-rule engine.
+The nominal safe area, path-command budget, negative space, curve quality, recognisability and
+visual balance remain documented advisory or curatorial checks. A future automation capability
+must implement and test its own exact severity and evidence contract before this document can
+claim machine enforcement.
 
 ## Exceptions
 

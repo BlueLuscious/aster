@@ -12,8 +12,23 @@ The current collection set is:
 
 No release-quality collection exists yet. A documented Experimental identity does not imply that
 canonical icon sources, distribution, or Active lifecycle requirements have been accepted.
-Collection identity, authoring authority, and lifecycle are defined by
-[Collection and Source Boundary](../architecture/collection-and-source-boundary.md).
+
+## Collection authority
+
+A collection document is valid only for an accepted curatorial identity with a canonical slug,
+named curator, lifecycle, artwork licence, intended use and provisional visual contract. Its
+directory records curatorial evidence; it does not create a package, source root, catalogue or
+distribution by existing.
+
+An Experimental collection may test its visual language and reference set before publication.
+When it accepts canonical authoring, its documentation must identify exactly one editable source
+authority and distinguish every derived artefact. Promotion to Active additionally requires
+reviewed canonical icons, provenance, licensing, technical and visual evidence, a supported
+distribution boundary and an accepted release posture.
+
+Collection membership remains separate from icon identity. Package documentation owns how
+`CollectionDefinition` and `@aster/icons` represent membership; this tree owns why a curator groups
+those icons and what visual evidence governs them.
 
 Each collection document covers:
 
@@ -24,5 +39,6 @@ Each collection document covers:
 - accepted exceptions and visual review evidence;
 - package, version, deprecation, and replacement relationships.
 
-Collection-relative mirroring is defined by
-[Documentation Policy](../governance/documentation-policy.md).
+`docs/en/collections/` is a deliberate curatorial exception to package and tooling mirroring. It
+is keyed by collection identity because visual authority can exist independently from one source
+layout. It is not a precedent for unrelated topic-based documentation roots.

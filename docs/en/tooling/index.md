@@ -13,7 +13,7 @@ The canonical documentation mirrors the real tooling feature roots:
 | Feature | Responsibility |
 | --- | --- |
 | [Architecture](architecture/index.md) | Verifies compiler, workspace, package dependency, and authored collection boundaries. |
-| [Documentation](documentation/index.md) | Verifies canonical hierarchy, package mirroring, links, local exclusions, and decision records. |
+| [Documentation](documentation/index.md) | Verifies the current canonical hierarchy, package mirroring, links, local exclusions, and retained decision records. |
 | [Performance](performance/index.md) | Provides development-only package comparison infrastructure and independent scenario runners. |
 | [Shared](shared/index.md) | Supplies narrow filesystem, path, directory, traversal, and strict JSON foundations used by multiple tooling features. |
 | [Workspace](workspace/index.md) | Owns guarded repository and package maintenance operations such as distribution cleanup. |
@@ -131,17 +131,14 @@ New and hardened tooling uses package-like boundaries only where responsibilitie
 - composition is preferred over inheritance;
 - filesystem, process, terminal, clock, and memory authority remains explicit and narrow.
 
-Architecture, documentation, and cleanup implementations predate the complete target structure and
-are being reorganised behind unchanged commands. Their current fixture behaviour remains
-authoritative during that internal work.
-
 ## Package isolation
 
 Tooling may inspect source structure and consume built public package roots for integration
 evidence. It cannot establish hidden package behaviour. Production packages compile and function
 without `tooling/`, Node ambient types, repository paths, or root scripts.
 
-The project-level dependency direction is defined by
-[Product and Package Boundaries](../architecture/product-and-package-boundaries.md). Toolchain
-selection rationale is recorded by
-[0001: pnpm and TypeScript Workspace Toolchain](../decisions/0001-pnpm-typescript-workspace-toolchain.md).
+The accepted production direction is one-way: tooling may inspect package sources, manifests and
+built public roots, while no production package may import tooling. Workspace versions and
+membership are owned directly by `.node-version`, `package.json`, `pnpm-lock.yaml`,
+`pnpm-workspace.yaml`, and the shared TypeScript configuration described above; historical
+toolchain alternatives do not form part of the current tooling contract.

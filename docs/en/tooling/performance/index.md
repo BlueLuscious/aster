@@ -24,6 +24,38 @@ internal contracts describe the host, scenario, and distribution-inspection capa
 distribution inspector receives filesystem, JSON, path, and traversal capabilities explicitly; it
 does not construct Node adapters internally.
 
+`benchmarkMethodology` is the shared immutable authority for seven retained samples, 500 warm-up
+operations, median high-resolution elapsed nanoseconds per operation, and median non-negative heap
+growth after explicit pre-sample collection. Package baselines may define scenario operation counts
+but cannot silently redefine those shared report meanings.
+
+## Internal contracts
+
+| Contract | Responsibility |
+| --- | --- |
+| `IBenchmarkHost` | Supplies availability checks, explicit garbage collection, monotonic time, heap usage and environment identity. |
+| `IBenchmarkScenario` | Describes one named synchronous or asynchronous operation, its sample operation count and checksum result. |
+| `IPackageDistributionInspector` | Reports one emitted package distribution without changing it. |
+| `ICoreBaselineFixtures` | Carries prepared canonical and mutable Core icon and collection values outside measured work. |
+| `ISvgBaselineFixtures` | Carries prepared definitions and options for primitive, corpus, override, RTL, escaping and point-sequence SVG scenarios. |
+| `IImportBaselineFixtures` | Carries prepared accepted, rejected, editor, scale, operation and batch Import values plus explicit sizes. |
+| `ICliBaselineFixtures` | Carries the prepared icon, contexts, invocations, argv sequences and command authority used by CLI scenarios. |
+| `ICliProcessHost` | Runs one fresh Node process and returns elapsed time, status and complete streams for cold CLI evidence. |
+
+Fixture contracts prevent source acquisition, parsing, catalogue loading and value construction
+from entering timed loops accidentally. They remain package-baseline-specific because their data
+has no useful cross-package semantic contract.
+
+## Package runtime composition
+
+| Class family | Responsibility |
+| --- | --- |
+| `CoreBaselineFixtureFactory`, `SvgBaselineFixtureFactory`, `ImportBaselineFixtureFactory`, `CliBaselineFixtureFactory` | Prepare complete package-specific public values and scale evidence outside timed work. |
+| `CoreBaselineFactory`, `SvgBaselineFactory`, `ImportBaselineFactory`, `CliBaselineFactory` | Compose fresh package runners from shared repository and benchmark capabilities. |
+| `CoreBaselineRunner`, `SvgBaselineRunner`, `ImportBaselineRunner`, `CliBaselineRunner` | Own each package's independent scenario matrix and final immutable report. |
+| `NodeCliProcessHost` | Executes one fresh Node process from an explicit repository root and captures complete timing, status and streams. |
+| `CliColdStartRunner` | Repeats cold root-import and executable scenarios, validates their exact process contract and summarises timings. |
+
 Each package owns an independent runner, factory, and command. `CoreBaselineFactory` composes the
 shared Node capabilities, while `CoreBaselineRunner` defines only Core icon and collection
 construction scenarios. `SvgBaselineFactory` and `SvgBaselineRunner` independently compose SVG
