@@ -28,6 +28,11 @@ The emitted module imports only `@aster/core`. Once retained as canonical author
 compiles, imports and renders through `@aster/svg` without `@aster/import`, the original SVG or
 external metadata files.
 
+Repository conformance exercises both direct TypeScript-first authorship and adopted editable
+modules through the built Core, Import and SVG package roots. Independent host-owned batches are
+converted back through `Icon.define()` and rendered without introducing an Import dependency into
+the retained definitions or their collection grouping.
+
 ## Failure flow
 
 Malformed public structure throws `IconImportError`. Validly shaped source or metadata that cannot

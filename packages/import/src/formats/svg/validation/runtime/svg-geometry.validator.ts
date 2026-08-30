@@ -4,8 +4,6 @@ import { svgSourceElementNames } from "../../shared/constants/svg-source-element
 import { svgSourceElementRoles } from "../../shared/constants/svg-source-element-roles.constant.js";
 import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
 import { svgNamespaces } from "../../parser/constants/svg-namespaces.constant.js";
-import type { TLocatedBounds } from "../types/internal/located-bounds.type.js";
-import type { TLocatedNumber } from "../types/internal/located-number.type.js";
 import type { TSvgGeometryValidation } from "../types/internal/svg-geometry-validation.type.js";
 import type { TSvgPrimitiveValidation } from "../types/internal/svg-primitive-validation.type.js";
 import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
@@ -54,16 +52,13 @@ export class SvgGeometryValidator {
    * @description Validates one complete safe parser document hierarchy.
    * @param sourceId - Canonical logical SVG source identifier.
    * @param root - Sole safe SVG syntax root.
-   * @returns Blocking diagnostics and safely computed collection metrics.
+   * @returns Blocking diagnostics and retained geometry counts.
    */
   inspect(
     sourceId: string,
     root: ISvgSyntaxElement,
   ): TSvgGeometryValidation {
     const diagnostics: SourceDiagnostic[] = [];
-    const gridValues: TLocatedNumber[] = [];
-    const strokeWidths: TLocatedNumber[] = [];
-    const bounds: TLocatedBounds[] = [];
     let primitiveCount = 0;
     let pathCommandCount = 0;
 
@@ -77,8 +72,7 @@ export class SvgGeometryValidator {
         sourceId,
         element,
       );
-      diagnostics.push(...presentation.diagnostics);
-      strokeWidths.push(...presentation.strokeWidths);
+      diagnostics.push(...presentation);
       diagnostics.push(...this.#unsupportedAttributes(sourceId, element));
 
       if (element === root) {
@@ -95,8 +89,6 @@ export class SvgGeometryValidator {
         primitiveCount += 1;
         const primitive = this.#inspectPrimitive(sourceId, element);
         diagnostics.push(...primitive.diagnostics);
-        gridValues.push(...primitive.gridValues);
-        bounds.push(...primitive.bounds);
         pathCommandCount += primitive.pathCommandCount;
       }
 
@@ -121,9 +113,6 @@ export class SvgGeometryValidator {
       diagnostics: Object.freeze(diagnostics),
       primitiveCount,
       pathCommandCount,
-      gridValues: Object.freeze(gridValues),
-      strokeWidths: Object.freeze(strokeWidths),
-      bounds: Object.freeze(bounds),
     });
   }
 

@@ -1,15 +1,13 @@
-import type { TLocatedBounds } from "./located-bounds.type.js";
-import type { TLocatedNumber } from "./located-number.type.js";
-import type { TLocatedViewBox } from "./located-view-box.type.js";
+import type { IconViewBox } from "@aster/core";
 
 /**
- * @description Deterministic technical facts retained for host-owned adoption review.
+ * @description Deterministic technical facts consumed by the imported draft.
  */
 export type TSvgValidationMetrics = {
   /**
    * @description Parsed viewBox when technically valid.
    */
-  readonly viewBox?: TLocatedViewBox;
+  readonly viewBox?: IconViewBox;
 
   /**
    * @description Number of supported geometry primitives.
@@ -21,18 +19,4 @@ export type TSvgValidationMetrics = {
    */
   readonly pathCommandCount: number;
 
-  /**
-   * @description Geometry values available for provisional grid inspection.
-   */
-  readonly gridValues: readonly TLocatedNumber[];
-
-  /**
-   * @description Explicitly authored stroke widths available for collection inspection.
-   */
-  readonly strokeWidths: readonly TLocatedNumber[];
-
-  /**
-   * @description Primitive bounds computable without path-curve interpretation.
-   */
-  readonly bounds: readonly TLocatedBounds[];
 };

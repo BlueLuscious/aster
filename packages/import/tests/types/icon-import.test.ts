@@ -1,11 +1,25 @@
 import type {
+  DiagnosticCategoryType,
+  DiagnosticCodeType,
+  DiagnosticRelatedContext,
   DiagnosticResultType,
+  DiagnosticSeverityType,
   IconAdoptionBatchOutput,
   IconAdoptionOutput,
+  IconAdoptionRequest,
   IconImportApi,
+  IconImportDefinitionRequest,
   IconImportDraft,
+  IconImportFormatType,
+  IconImportMetrics,
+  IconImportProvenance,
   IconImportSourceType,
+  IconModuleEmissionRequest,
   IconModuleOutput,
+  SourceDiagnostic,
+  SourcePosition,
+  SourceSpan,
+  SvgIconImportSource,
 } from "../../src/index.js";
 import {
   IconImport,
@@ -27,8 +41,33 @@ const outputs: readonly [
   IconAdoptionBatchOutput?,
   IconModuleOutput?,
 ] = [];
+const publicContracts: readonly [
+  IconAdoptionRequest?,
+  IconImportDefinitionRequest?,
+  IconImportMetrics?,
+  IconImportProvenance?,
+  IconModuleEmissionRequest?,
+  SvgIconImportSource?,
+  SourceDiagnostic?,
+  SourcePosition?,
+  SourceSpan?,
+  DiagnosticRelatedContext?,
+] = [];
+const publicVocabularies: readonly [
+  IconImportFormatType?,
+  DiagnosticCategoryType?,
+  DiagnosticSeverityType?,
+  DiagnosticCodeType?,
+] = [];
+const knownDiagnosticCode: DiagnosticCodeType = "ASTER-SAFETY-001";
+// @ts-expect-error Unknown diagnostic codes are outside the closed public vocabulary.
+const unknownDiagnosticCode: DiagnosticCodeType = "ASTER-SAFETY-999";
 const error: typeof IconImportError = IconImportError;
 
 void inspected;
 void outputs;
+void publicContracts;
+void publicVocabularies;
+void knownDiagnosticCode;
+void unknownDiagnosticCode;
 void error;

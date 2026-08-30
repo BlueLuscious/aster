@@ -1,14 +1,10 @@
 import type { SourceDiagnostic } from "../contracts/index.js";
-import type {
-  DiagnosticCategoryType,
-  DiagnosticCodeType,
-  DiagnosticSeverityType,
-} from "../types/index.js";
+import type { DiagnosticCodeType } from "../types/index.js";
+import type { TSourceDiagnosticInput } from "../types/internal/source-diagnostic-input.type.js";
 import { IconImportError } from "../../error/index.js";
 import { ImportValueValidator } from "../../shared/runtime/import-value.validator.js";
 import { SourceIdNormaliser } from "../../source/runtime/source-id.normaliser.js";
-import { diagnosticCategories } from "../constants/diagnostic-categories.constant.js";
-import { diagnosticSeverities } from "../constants/diagnostic-severities.constant.js";
+import { diagnosticCodePolicy } from "../constants/diagnostic-code-policy.constant.js";
 import { DiagnosticMessageNormaliser } from "./diagnostic-message.normaliser.js";
 import { DiagnosticRelatedContextFactory } from "./diagnostic-related-context.factory.js";
 import { SourceSpanFactory } from "./source-span.factory.js";
@@ -44,26 +40,19 @@ export class SourceDiagnosticFactory {
 
   /**
    * @description Creates one canonical immutable diagnostic.
-   * @param value - Unknown diagnostic value.
+   * @param value - Internal occurrence-specific diagnostic input.
    * @returns Deeply frozen canonical diagnostic.
    */
-  create(value: unknown): SourceDiagnostic {
+  create(value: TSourceDiagnosticInput): SourceDiagnostic {
     const path = "diagnostic";
     const record = this.#validator.record(value, path);
     this.#validator.exactFields(
       record,
-      ["code", "severity", "category", "message", "sourceId", "span", "related"],
+      ["code", "message", "sourceId", "span", "related"],
       path,
     );
-    const category = this.#normaliseCategory(
-      record.category,
-      `${path}.category`,
-    );
-    const code = this.#normaliseCode(record.code, category, `${path}.code`);
-    const severity = this.#normaliseSeverity(
-      record.severity,
-      `${path}.severity`,
-    );
+    const code = this.#normaliseCode(record.code, `${path}.code`);
+    const policy = diagnosticCodePolicy[code];
     const message = this.#messageNormaliser.normalise(
       record.message,
       `${path}.message`,
@@ -86,8 +75,8 @@ export class SourceDiagnosticFactory {
 
     return Object.freeze({
       code,
-      severity,
-      category,
+      severity: policy.severity,
+      category: policy.category,
       message,
       sourceId,
       ...(span === undefined ? {} : { span }),
@@ -96,79 +85,25 @@ export class SourceDiagnosticFactory {
   }
 
   /**
-   * @description Accepts one closed diagnostic category.
-   * @param value - Unknown category.
-   * @param path - Logical category path.
-   * @returns Accepted category.
-   */
-  #normaliseCategory(
-    value: unknown,
-    path: string,
-  ): DiagnosticCategoryType {
-    if (
-      typeof value !== "string" ||
-      !Object.hasOwn(diagnosticCategories, value)
-    ) {
-      throw new IconImportError(
-        path,
-        `expected one of ${Object.values(diagnosticCategories).join(", ")}`,
-      );
-    }
-
-    return diagnosticCategories[
-      value as keyof typeof diagnosticCategories
-    ];
-  }
-
-  /**
-   * @description Accepts one code whose category and three-digit suffix are canonical.
+   * @description Accepts one code owned by the complete diagnostic policy.
    * @param value - Unknown diagnostic code.
-   * @param category - Accepted diagnostic category.
    * @param path - Logical code path.
    * @returns Accepted diagnostic code.
    */
   #normaliseCode(
     value: unknown,
-    category: DiagnosticCategoryType,
     path: string,
   ): DiagnosticCodeType {
-    const expected = new RegExp(
-      `^ASTER-${category.toUpperCase()}-[0-9]{3}$`,
-      "u",
-    );
-
-    if (typeof value !== "string" || !expected.test(value)) {
+    if (
+      typeof value !== "string" ||
+      !Object.hasOwn(diagnosticCodePolicy, value)
+    ) {
       throw new IconImportError(
         path,
-        "expected a matching Aster category code with three digits",
+        "expected a known Aster diagnostic code",
       );
     }
 
     return value as DiagnosticCodeType;
-  }
-
-  /**
-   * @description Accepts one closed diagnostic severity.
-   * @param value - Unknown severity.
-   * @param path - Logical severity path.
-   * @returns Accepted severity.
-   */
-  #normaliseSeverity(
-    value: unknown,
-    path: string,
-  ): DiagnosticSeverityType {
-    if (
-      typeof value !== "string" ||
-      !Object.hasOwn(diagnosticSeverities, value)
-    ) {
-      throw new IconImportError(
-        path,
-        `expected one of ${Object.values(diagnosticSeverities).join(", ")}`,
-      );
-    }
-
-    return diagnosticSeverities[
-      value as keyof typeof diagnosticSeverities
-    ];
   }
 }

@@ -7,7 +7,7 @@ import { svgPathCommandParameterCounts } from "../constants/svg-path-command-par
 import { svgPathCommands } from "../constants/svg-path-commands.constant.js";
 
 /**
- * @description Validates the accepted SVG path grammar and extracts deterministic advisory facts.
+ * @description Validates SVG path grammar and extracts canonical data and retained command facts.
  */
 export class SvgPathDataInspector {
   /**
@@ -77,7 +77,6 @@ export class SvgPathDataInspector {
       return this.#invalid();
     }
 
-    const gridValues: number[] = [];
     let hasDrawingOperation = false;
 
     for (let index = 0; index < segments.length; index += 1) {
@@ -122,14 +121,12 @@ export class SvgPathDataInspector {
         hasDrawingOperation = true;
       }
 
-      gridValues.push(...this.#gridValues(segment.command, segment.values));
     }
 
     return Object.freeze({
       valid: true,
       commandCount: segments.length,
       hasDrawingOperation,
-      gridValues: Object.freeze(gridValues),
       canonicalData: segments
         .map((segment) =>
           segment.values.length === 0
@@ -254,34 +251,6 @@ export class SvgPathDataInspector {
   }
 
   /**
-   * @description Selects coordinate and size parameters appropriate for provisional grid checks.
-   * @param command - Lowercase supported path command.
-   * @param values - Complete repeated command parameter values.
-   * @returns Selected finite values in source order.
-   */
-  #gridValues(
-    command: TSvgPathCommand,
-    values: readonly number[],
-  ): readonly number[] {
-    if (command !== svgPathCommands.arc) {
-      return values;
-    }
-
-    const selected: number[] = [];
-
-    for (let index = 0; index < values.length; index += 7) {
-      selected.push(
-        values[index] ?? 0,
-        values[index + 1] ?? 0,
-        values[index + 5] ?? 0,
-        values[index + 6] ?? 0,
-      );
-    }
-
-    return selected;
-  }
-
-  /**
    * @description Creates the canonical malformed path inspection result.
    * @returns Frozen invalid inspection with no advisory facts.
    */
@@ -290,7 +259,6 @@ export class SvgPathDataInspector {
       valid: false,
       commandCount: 0,
       hasDrawingOperation: false,
-      gridValues: Object.freeze([]),
     });
   }
 }

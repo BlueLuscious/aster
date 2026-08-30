@@ -28,7 +28,7 @@ may still wait for an earlier prerequisite in the recommended sequence.
 | 3 | `P0` | Completed: audit and harden `@aster/core`. | Its model, API, validation, immutability, performance, exports, consumers, and documentation have explicit outcomes. |
 | 4 | `P0` | Completed: audit and harden `@aster/svg`. | Serialisation correctness, performance, API, output, and package-boundary risks have explicit outcomes independently from Core. |
 | 5 | `P1` | Completed: implement useful catalogue and TypeScript-first CLI workflows. | Users can inspect and export installed icons and collections without requiring `@aster/import`. |
-| 6 | `P0` | Completed: replace Build with narrow `@aster/import` adoption. | External SVG adoption remains host independent and emitted TypeScript becomes human-owned source. |
+| 6 | `P0` | Completed: harden narrow `@aster/import` adoption. | External SVG adoption remains host independent, measured and isolated behind a private package boundary. |
 | 7 | `P1` | Host the retained Import boundary. | A real CLI or programmatic workflow validates acquisition, review and persistence without moving effects into Import. |
 | 8 | `P2` | Consider an Aster-owned XML tokeniser. | Import is retained and parser conformance and maintenance evidence justify replacement. |
 | 9 | `P2` | Activate objective linting and formatting verification. | The first supported release or external contribution workflow requires enforceable source checks. |
@@ -249,41 +249,30 @@ The accepted boundary and retained evidence are documented by
 registries, streaming, mutable singletons, alternate builds, trusted definitions, or convenience
 facades without measured benefit and explicit ownership.
 
-## Import adoption hosting
-
-Importance: **P0 - Required**
-
-`@aster/import` provides a narrow optional external-source adoption compiler. It is not
-required for TypeScript-first icon authoring, catalogue browsing, search, Core construction, SVG
-rendering, or initial CLI export.
-
-The next investment requires one real host workflow:
-
-- importing third-party or vector-tool SVG artwork;
-- preserving source locations and stable diagnostics that a simpler importer cannot provide;
-- normalising accepted SVG into reviewable portable definitions;
-- emitting editable TypeScript without acquiring filesystem authority.
-
-The CLI may eventually acquire files, request complete reviewed Core metadata, call Import, present
-diagnostics, and commit explicitly accepted output. Import must continue to own none of those host
-effects.
-
-The CLI must not force the decision. Import may power a future `import` command, but catalogue,
-search, add, TypeScript-first export, and most generation commands should remain independently
-usable.
-
 ## Import host integration
 
 Importance: **P1 - High**
 
-Import's API, internal boundaries, diagnostics, parser safety, normalisation, editable
-serialisation, caller isolation and private distribution are hardened. The remaining investment is
-one real host that proves source acquisition, human review and output commitment through explicit
-contracts.
+The [Import package](packages/import/index.md) already owns hardened source inspection, diagnostics,
+parser safety, normalisation, editable serialisation, caller isolation and private distribution.
+The remaining investment begins only when one real user workflow needs to acquire external artwork,
+review complete Core metadata and commit accepted editable modules.
+
+That host must prove all of these capabilities together:
+
+- explicit file or byte acquisition and text decoding;
+- source identity and complete reviewed metadata collection;
+- deterministic diagnostic presentation and rejection handling;
+- user-confirmed output paths and atomic persistence;
+- preservation of editable TypeScript as the final human-owned source.
 
 Do not expose Import merely because the CLI needs one command. The CLI should adapt the narrowest
 host-independent Import composition, while source discovery, byte decoding, terminal presentation,
 filesystem writes, and process status remain host responsibilities.
+
+Catalogue discovery, search, TypeScript-first export and rendering must remain usable without that
+host or an Import dependency. Import gains no filesystem, process, collection or plugin authority
+when integration is eventually accepted.
 
 ## SVG-first Managed Mode
 
@@ -326,8 +315,9 @@ the syntax document and downstream pipeline contracts remain unchanged.
 Do not create a standalone XML tokeniser without measured Import evidence or another independent
 product consumer.
 
-The current replaceable dependency boundary is defined by
-[0003: Private XML Parser Boundary](decisions/0003-private-xml-parser-boundary.md).
+The current replaceable dependency boundary is defined by the
+[Import SVG parser](packages/import/formats/svg/parser/index.md) and
+[Import compatibility](packages/import/compatibility.md) authorities.
 
 ## Active linting and formatting verification
 

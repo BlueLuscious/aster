@@ -6,4 +6,6 @@ export const svgParserLimits = Object.freeze({
   maxElementDepth: 64,
   maxElements: 10_000,
   maxAttributesPerElement: 128,
+  maxTextLength: 262_144,
+  maxPathDataLength: 262_144,
 });

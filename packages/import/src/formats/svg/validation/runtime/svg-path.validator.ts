@@ -23,7 +23,7 @@ export class SvgPathValidator {
    * @description Validates one supported path element.
    * @param sourceId - Canonical logical SVG source identifier.
    * @param element - Located path element.
-   * @returns Blocking diagnostics and safely computed path advisory facts.
+   * @returns Blocking diagnostics and the accepted command count.
    */
   inspect(
     sourceId: string,
@@ -47,12 +47,6 @@ export class SvgPathValidator {
     return Object.freeze({
       diagnostics: Object.freeze([]),
       pathCommandCount: inspection.commandCount,
-      gridValues: Object.freeze(
-        inspection.gridValues.map((value) =>
-          Object.freeze({ value, span: attribute.valueSpan }),
-        ),
-      ),
-      bounds: Object.freeze([]),
     });
   }
 
@@ -75,8 +69,6 @@ export class SvgPathValidator {
         }),
       ]),
       pathCommandCount: 0,
-      gridValues: Object.freeze([]),
-      bounds: Object.freeze([]),
     });
   }
 }

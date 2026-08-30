@@ -1,4 +1,5 @@
 import type { DiagnosticResultType } from "../types/index.js";
+import type { SourceDiagnostic } from "../contracts/index.js";
 import { diagnosticSeverities } from "../constants/diagnostic-severities.constant.js";
 import { IconImportError } from "../../error/index.js";
 import { SourceDiagnosticAggregator } from "./source-diagnostic.aggregator.js";
@@ -21,7 +22,7 @@ export class DiagnosticResultFactory {
    */
   success<Value>(
     value: Value,
-    diagnostics: readonly unknown[] = [],
+    diagnostics: readonly SourceDiagnostic[] = [],
   ): DiagnosticResultType<Value> {
     const canonical = this.#aggregator.aggregate(diagnostics);
 
@@ -50,7 +51,7 @@ export class DiagnosticResultFactory {
    * @returns Frozen failed diagnostic-bearing result.
    */
   failure<Value>(
-    diagnostics: readonly unknown[],
+    diagnostics: readonly SourceDiagnostic[],
   ): DiagnosticResultType<Value> {
     const canonical = this.#aggregator.aggregate(diagnostics);
 

@@ -52,6 +52,26 @@ function readAdoptedDefinition(content: string): IconDefinition {
   return JSON.parse(match[1]) as IconDefinition;
 }
 
+function adoptionRequest(
+  namespace: string,
+  name: string,
+  geometry: string,
+): Parameters<typeof IconImport.adopt>[0] {
+  return {
+    source: {
+      format: iconImportFormats.svg,
+      sourceId: `workflow/${namespace}/${name}.svg`,
+      identity: { namespace, name },
+      content: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${geometry}</svg>`,
+    },
+    metadata: {
+      ...arrowMetadata,
+      displayName: name,
+      tags: [namespace, name],
+    },
+  };
+}
+
 test("authors one portable definition and renders deterministic review SVG", () => {
   const definition = authorArrowLeft();
   assert.equal(Svg.render(definition), Svg.render(definition));
@@ -88,6 +108,44 @@ test("corrects an off-grid review finding in canonical TypeScript source", () =>
   assert.match(draft, /x2="3\.75"/u);
   assert.doesNotMatch(corrected, /3\.75/u);
   assert.match(corrected, /x2="4"/u);
+});
+
+test("adopts independent host-owned batches into renderable editable definitions", () => {
+  const flora = IconImport.adoptMany([
+    adoptionRequest("flora", "leaf", '<path d="M4 20C4 10 10 4 20 4"/>'),
+    adoptionRequest("flora", "seed", '<circle cx="12" cy="12" r="4"/>'),
+  ]);
+  const weather = IconImport.adoptMany([
+    adoptionRequest("weather", "sun", '<circle cx="12" cy="12" r="6"/>'),
+  ]);
+
+  assert.equal(flora.successful, true, JSON.stringify(flora.diagnostics, null, 2));
+  assert.equal(weather.successful, true, JSON.stringify(weather.diagnostics, null, 2));
+
+  if (!flora.successful || !weather.successful) {
+    throw new Error("Expected successful independent host batches.");
+  }
+
+  const floraDefinitions = flora.value.entries.map((entry) =>
+    Icon.define(readAdoptedDefinition(entry.module.content)),
+  );
+  const weatherDefinitions = weather.value.entries.map((entry) =>
+    Icon.define(readAdoptedDefinition(entry.module.content)),
+  );
+
+  assert.deepEqual(
+    floraDefinitions.map((definition) => definition.identity.name),
+    ["leaf", "seed"],
+  );
+  assert.deepEqual(
+    weatherDefinitions.map((definition) => definition.identity.name),
+    ["sun"],
+  );
+  assert.ok(
+    [...floraDefinitions, ...weatherDefinitions].every((definition) =>
+      Svg.render(definition).startsWith("<svg "),
+    ),
+  );
 });
 
 test("renders every independently authored pilot icon distinctly", () => {

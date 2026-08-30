@@ -40,7 +40,7 @@ export class SvgImportDraftFactory {
     document: ISvgSyntaxDocument,
     metrics: TSvgValidationMetrics,
   ): IconImportDraft {
-    const viewBox = metrics.viewBox?.value;
+    const viewBox = metrics.viewBox;
 
     if (viewBox === undefined) {
       throw new SvgImportError(
@@ -97,7 +97,9 @@ export class SvgImportDraftFactory {
 
       if (schema.role === svgSourceElementRoles.primitive) {
         nodes.push(
-          this.#primitiveNormaliser.normalise(element, presentation),
+          Object.freeze(
+            this.#primitiveNormaliser.normalise(element, presentation),
+          ),
         );
       }
 

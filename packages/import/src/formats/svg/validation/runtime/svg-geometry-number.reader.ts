@@ -3,7 +3,6 @@ import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-synt
 import { svgNumericDomains } from "../../shared/constants/svg-numeric-domains.constant.js";
 import { SvgNumberParser } from "../../shared/runtime/svg-number.parser.js";
 import type { TSvgGeometryNumericDomain } from "../types/internal/svg-geometry-numeric-domain.type.js";
-import type { TLocatedNumber } from "../types/internal/located-number.type.js";
 import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
@@ -22,15 +21,14 @@ export class SvgGeometryNumberReader {
   readonly #diagnosticFactory = new SvgValidationDiagnosticFactory();
 
   /**
-   * @description Reads one numeric geometry attribute and records valid authored grid evidence.
+   * @description Reads one numeric geometry attribute through its accepted domain.
    * @param sourceId - Canonical logical SVG source identifier.
    * @param element - Located supported geometry element.
    * @param name - Namespace-free attribute name.
    * @param domain - Accepted numeric domain.
    * @param required - Whether absence violates the geometry contract.
    * @param diagnostics - Shared blocking diagnostic accumulator.
-   * @param gridValues - Shared valid authored-value accumulator.
-   * @returns Located valid authored number, or `undefined` when absent or invalid.
+   * @returns Valid authored number, or `undefined` when absent or invalid.
    */
   read(
     sourceId: string,
@@ -39,8 +37,7 @@ export class SvgGeometryNumberReader {
     domain: TSvgGeometryNumericDomain,
     required: boolean,
     diagnostics: SourceDiagnostic[],
-    gridValues: TLocatedNumber[],
-  ): TLocatedNumber | undefined {
+  ): number | undefined {
     const attribute = element.attributes.find(
       (candidate) => candidate.localName === name,
     );
@@ -67,9 +64,7 @@ export class SvgGeometryNumberReader {
       return undefined;
     }
 
-    const located = { value, span: attribute.valueSpan };
-    gridValues.push(located);
-    return located;
+    return value;
   }
 
   /**

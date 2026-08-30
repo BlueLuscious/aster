@@ -7,6 +7,14 @@ import { IconImportError } from "../../error/index.js";
  */
 export class SourceLocator {
   /**
+   * @description Lazily indexed line starts retained only while their canonical sources remain reachable.
+   */
+  readonly #lineStartsBySource = new WeakMap<
+    ICanonicalTextSource,
+    readonly number[]
+  >();
+
+  /**
    * @description Resolves one zero-based UTF-16 offset.
    * @param source - Canonical textual source.
    * @param offset - Offset at a UTF-16 code-unit boundary.
@@ -14,26 +22,22 @@ export class SourceLocator {
    */
   positionAt(source: ICanonicalTextSource, offset: number): SourcePosition {
     this.#assertOffset(source.content, offset, "offset");
-    let line = 1;
-    let column = 1;
+    const lineStarts = this.#lineStarts(source);
+    const lineIndex = this.#lineIndex(lineStarts, offset);
+    const lineStart = lineStarts[lineIndex];
 
-    for (let index = 0; index < offset; index += 1) {
-      const unit = source.content[index];
-
-      if (unit === "\r") {
-        line += 1;
-        column = 1;
-      } else if (unit === "\n") {
-        if (source.content[index - 1] !== "\r") {
-          line += 1;
-          column = 1;
-        }
-      } else {
-        column += 1;
-      }
+    if (lineStart === undefined) {
+      throw new IconImportError(
+        "source",
+        "could not resolve an indexed source position",
+      );
     }
 
-    return Object.freeze({ offset, line, column });
+    return Object.freeze({
+      offset,
+      line: lineIndex + 1,
+      column: offset - lineStart + 1,
+    });
   }
 
   /**
@@ -82,5 +86,62 @@ export class SourceLocator {
         "expected an offset within the exact source content",
       );
     }
+  }
+
+  /**
+   * @description Resolves or creates canonical line starts for one exact source object.
+   * @param source - Canonical textual source retained weakly as the cache key.
+   * @returns Frozen zero-based UTF-16 line-start offsets.
+   */
+  #lineStarts(source: ICanonicalTextSource): readonly number[] {
+    const cached = this.#lineStartsBySource.get(source);
+
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    const lineStarts = [0];
+
+    for (let index = 0; index < source.content.length; index += 1) {
+      const unit = source.content[index];
+
+      if (unit === "\r") {
+        lineStarts.push(
+          source.content[index + 1] === "\n" ? index + 2 : index + 1,
+        );
+      } else if (unit === "\n") {
+        if (source.content[index - 1] !== "\r") {
+          lineStarts.push(index + 1);
+        }
+      }
+    }
+
+    const indexed = Object.freeze(lineStarts);
+    this.#lineStartsBySource.set(source, indexed);
+    return indexed;
+  }
+
+  /**
+   * @description Finds the greatest indexed line start not exceeding one valid source offset.
+   * @param lineStarts - Canonical ascending line-start offsets.
+   * @param offset - Valid zero-based UTF-16 source offset.
+   * @returns Zero-based containing line index.
+   */
+  #lineIndex(lineStarts: readonly number[], offset: number): number {
+    let lower = 0;
+    let upper = lineStarts.length - 1;
+
+    while (lower <= upper) {
+      const middle = Math.floor((lower + upper) / 2);
+      const lineStart = lineStarts[middle];
+
+      if (lineStart === undefined || lineStart > offset) {
+        upper = middle - 1;
+      } else {
+        lower = middle + 1;
+      }
+    }
+
+    return upper;
   }
 }

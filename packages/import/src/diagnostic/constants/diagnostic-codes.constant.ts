@@ -1,0 +1,30 @@
+/**
+ * @description Immutable stable diagnostic codes emitted by Import operations.
+ */
+export const diagnosticCodes = Object.freeze({
+  malformedDocument: "ASTER-SYNTAX-001",
+  invalidViewBox: "ASTER-SYNTAX-002",
+  invalidGeometry: "ASTER-SYNTAX-003",
+  invalidPathData: "ASTER-SYNTAX-004",
+  invalidPresentation: "ASTER-SYNTAX-005",
+  doctype: "ASTER-SAFETY-001",
+  entityReference: "ASTER-SAFETY-002",
+  executableElement: "ASTER-SAFETY-003",
+  rasterOrEmbeddedElement: "ASTER-SAFETY-004",
+  eventHandler: "ASTER-SAFETY-005",
+  resourceReference: "ASTER-SAFETY-006",
+  foreignNamespace: "ASTER-SAFETY-007",
+  processingInstruction: "ASTER-SAFETY-008",
+  parserLimit: "ASTER-SAFETY-009",
+  unsupportedElement: "ASTER-TECHNICAL-001",
+  unsupportedTransform: "ASTER-TECHNICAL-002",
+  unsupportedText: "ASTER-TECHNICAL-003",
+  unsupportedCdata: "ASTER-TECHNICAL-004",
+  unsupportedAttribute: "ASTER-TECHNICAL-005",
+  emptyGeometry: "ASTER-TECHNICAL-006",
+  discardedEditorAttribute: "ASTER-TECHNICAL-007",
+  invalidDefinition: "ASTER-ADOPTION-001",
+  invalidEmission: "ASTER-ADOPTION-002",
+  duplicateIdentity: "ASTER-ADOPTION-003",
+  duplicateSymbol: "ASTER-ADOPTION-004",
+} as const);

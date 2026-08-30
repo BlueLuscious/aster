@@ -1,8 +1,7 @@
-import type { DiagnosticCategoryType } from "./diagnostic-category.type.js";
+import type { diagnosticCodes } from "../constants/diagnostic-codes.constant.js";
 
 /**
- * @description Aster-owned diagnostic identifier family.
- * @remarks Runtime construction enforces an uppercase category and exactly three digits.
+ * @description Closed stable Aster-owned diagnostic identifiers emitted by Import.
  */
 export type DiagnosticCodeType =
-  `ASTER-${Uppercase<DiagnosticCategoryType>}-${number}`;
+  (typeof diagnosticCodes)[keyof typeof diagnosticCodes];

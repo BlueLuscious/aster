@@ -1,25 +1,19 @@
 import type { SourceDiagnostic } from "../contracts/index.js";
 import type { TIndexedDiagnostic } from "../types/internal/indexed-diagnostic.type.js";
 import { diagnosticSeverities } from "../constants/diagnostic-severities.constant.js";
-import { SourceDiagnosticFactory } from "./source-diagnostic.factory.js";
 
 /**
  * @description Canonicalises, deduplicates, and deterministically orders diagnostics.
  */
 export class SourceDiagnosticAggregator {
   /**
-   * @description Diagnostic construction authority.
-   */
-  readonly #factory = new SourceDiagnosticFactory();
-
-  /**
    * @description Aggregates diagnostics independently from producer completion order.
-   * @param values - Unknown diagnostic values in stable semantic encounter order.
+   * @param values - Canonical diagnostic values in stable semantic encounter order.
    * @returns Frozen canonical diagnostic sequence.
    */
-  aggregate(values: readonly unknown[]): readonly SourceDiagnostic[] {
+  aggregate(values: readonly SourceDiagnostic[]): readonly SourceDiagnostic[] {
     const entries: TIndexedDiagnostic[] = values.map((value, index) => ({
-      diagnostic: this.#factory.create(value),
+      diagnostic: value,
       index,
     }));
     const unique = new Map<string, (typeof entries)[number]>();

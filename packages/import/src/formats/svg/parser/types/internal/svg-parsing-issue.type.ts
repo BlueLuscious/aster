@@ -42,8 +42,10 @@ export type TSvgParsingIssue = {
         | typeof svgParsingIssueKinds.entityReference
         | typeof svgParsingIssueKinds.foreignNamespace
         | typeof svgParsingIssueKinds.malformedDocument
+        | typeof svgParsingIssueKinds.pathDataLimit
         | typeof svgParsingIssueKinds.processingInstruction
         | typeof svgParsingIssueKinds.sourceLimit
+        | typeof svgParsingIssueKinds.textLimit
         | typeof svgParsingIssueKinds.unsupportedCdata
         | typeof svgParsingIssueKinds.unsupportedText
         | typeof svgParsingIssueKinds.unsupportedTransform;

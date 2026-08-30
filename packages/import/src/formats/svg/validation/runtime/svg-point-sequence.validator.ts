@@ -21,10 +21,10 @@ export class SvgPointSequenceValidator {
   readonly #diagnosticFactory = new SvgValidationDiagnosticFactory();
 
   /**
-   * @description Validates one supported point-sequence element and computes exact bounds.
+   * @description Validates one supported point-sequence element.
    * @param sourceId - Canonical logical SVG source identifier.
    * @param element - Located polyline or polygon element.
-   * @returns Blocking diagnostics and safely computed advisory facts.
+   * @returns Blocking diagnostics for the point sequence.
    */
   inspect(
     sourceId: string,
@@ -56,31 +56,12 @@ export class SvgPointSequenceValidator {
           }),
         ]),
         pathCommandCount: 0,
-        gridValues: Object.freeze([]),
-        bounds: Object.freeze([]),
       });
     }
-
-    const horizontal = values.filter((_, index) => index % 2 === 0);
-    const vertical = values.filter((_, index) => index % 2 === 1);
 
     return Object.freeze({
       diagnostics: Object.freeze([]),
       pathCommandCount: 0,
-      gridValues: Object.freeze(
-        values.map((value) =>
-          Object.freeze({ value, span: attribute.valueSpan }),
-        ),
-      ),
-      bounds: Object.freeze([
-        Object.freeze({
-          minX: Math.min(...horizontal),
-          minY: Math.min(...vertical),
-          maxX: Math.max(...horizontal),
-          maxY: Math.max(...vertical),
-          span: element.span,
-        }),
-      ]),
     });
   }
 }

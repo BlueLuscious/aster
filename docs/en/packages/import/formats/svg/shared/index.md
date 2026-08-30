@@ -15,4 +15,5 @@ The shared internal types remain narrowly tied to those authorities:
   by geometry and presentation validation.
 - `TSvgPathCommand` derives the accepted path-command vocabulary.
 - `TSvgPathSegment` retains one parsed command with its finite parameters.
-- `TSvgPathInspection` contains canonical path data, segments and computed command evidence.
+- `TSvgPathInspection` contains canonical path data and computed command evidence needed by
+  validation and normalisation.

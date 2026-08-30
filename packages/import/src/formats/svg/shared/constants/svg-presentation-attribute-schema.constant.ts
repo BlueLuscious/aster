@@ -12,69 +12,59 @@ export const svgPresentationAttributeSchema = Object.freeze({
     field: "fill",
     valueKind: svgPresentationValueKinds.paint,
     inherited: true,
-    collectStrokeWidth: false,
   }),
   [svgSourceAttributeNames.fillRule]: Object.freeze({
     field: "fillRule",
     valueKind: svgPresentationValueKinds.enumeration,
     acceptedValues: Object.freeze(["nonzero", "evenodd"] as const),
     inherited: true,
-    collectStrokeWidth: false,
   }),
   [svgSourceAttributeNames.stroke]: Object.freeze({
     field: "stroke",
     valueKind: svgPresentationValueKinds.paint,
     inherited: true,
-    collectStrokeWidth: false,
   }),
   [svgSourceAttributeNames.strokeWidth]: Object.freeze({
     field: "strokeWidth",
     valueKind: svgPresentationValueKinds.number,
     numericDomain: svgNumericDomains.nonNegative,
     inherited: true,
-    collectStrokeWidth: true,
   }),
   [svgSourceAttributeNames.strokeLineCap]: Object.freeze({
     field: "strokeLineCap",
     valueKind: svgPresentationValueKinds.enumeration,
     acceptedValues: Object.freeze(["butt", "round", "square"] as const),
     inherited: true,
-    collectStrokeWidth: false,
   }),
   [svgSourceAttributeNames.strokeLineJoin]: Object.freeze({
     field: "strokeLineJoin",
     valueKind: svgPresentationValueKinds.enumeration,
     acceptedValues: Object.freeze(["miter", "round", "bevel"] as const),
     inherited: true,
-    collectStrokeWidth: false,
   }),
   [svgSourceAttributeNames.strokeMiterLimit]: Object.freeze({
     field: "strokeMiterLimit",
     valueKind: svgPresentationValueKinds.number,
     numericDomain: svgNumericDomains.positive,
     inherited: true,
-    collectStrokeWidth: false,
   }),
   [svgSourceAttributeNames.opacity]: Object.freeze({
     field: "opacity",
     valueKind: svgPresentationValueKinds.number,
     numericDomain: svgNumericDomains.opacity,
     inherited: false,
-    collectStrokeWidth: false,
   }),
   [svgSourceAttributeNames.fillOpacity]: Object.freeze({
     field: "fillOpacity",
     valueKind: svgPresentationValueKinds.number,
     numericDomain: svgNumericDomains.opacity,
     inherited: true,
-    collectStrokeWidth: false,
   }),
   [svgSourceAttributeNames.strokeOpacity]: Object.freeze({
     field: "strokeOpacity",
     valueKind: svgPresentationValueKinds.number,
     numericDomain: svgNumericDomains.opacity,
     inherited: true,
-    collectStrokeWidth: false,
   }),
 }) satisfies Readonly<
   Record<
@@ -91,10 +81,6 @@ export const svgPresentationAttributeSchema = Object.freeze({
          */
         readonly inherited: boolean;
 
-        /**
-         * @description Whether accepted values contribute explicit collection stroke evidence.
-         */
-        readonly collectStrokeWidth: boolean;
       } & (
         | {
             /**
