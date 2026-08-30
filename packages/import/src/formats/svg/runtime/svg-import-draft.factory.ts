@@ -40,7 +40,7 @@ export class SvgImportDraftFactory {
     document: ISvgSyntaxDocument,
     metrics: TSvgValidationMetrics,
   ): IconImportDraft {
-    const viewBox = metrics.viewBox?.value;
+    const viewBox = metrics.viewBox;
 
     if (viewBox === undefined) {
       throw new SvgImportError(

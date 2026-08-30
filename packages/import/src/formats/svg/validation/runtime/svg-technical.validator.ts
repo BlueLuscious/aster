@@ -28,7 +28,7 @@ export class SvgTechnicalValidator {
   /**
    * @description Validates one parser-safe SVG entry against universal technical invariants.
    * @param entry - Paired canonical SVG, syntax, and metadata source.
-   * @returns Blocking diagnostics and safely computed collection metrics.
+   * @returns Blocking diagnostics and retained imported-draft metrics.
    */
   inspect(entry: ISvgValidationEntry): TSvgTechnicalValidation {
     const sourceId = entry.source.sourceId;
@@ -63,13 +63,10 @@ export class SvgTechnicalValidator {
     const viewBox =
       validViewBox && attribute !== undefined
         ? Object.freeze({
-            value: Object.freeze({
-              minX: sequence[0] ?? 0,
-              minY: sequence[1] ?? 0,
-              width: sequence[2] ?? 0,
-              height: sequence[3] ?? 0,
-            }),
-            span: attribute.valueSpan,
+            minX: sequence[0] ?? 0,
+            minY: sequence[1] ?? 0,
+            width: sequence[2] ?? 0,
+            height: sequence[3] ?? 0,
           })
         : undefined;
 
@@ -79,9 +76,6 @@ export class SvgTechnicalValidator {
         ...(viewBox === undefined ? {} : { viewBox }),
         primitiveCount: geometry.primitiveCount,
         pathCommandCount: geometry.pathCommandCount,
-        gridValues: geometry.gridValues,
-        strokeWidths: geometry.strokeWidths,
-        bounds: geometry.bounds,
       }),
     });
   }

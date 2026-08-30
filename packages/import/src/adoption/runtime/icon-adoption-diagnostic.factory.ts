@@ -1,6 +1,4 @@
 import type { SourceDiagnostic } from "../../diagnostic/contracts/index.js";
-import { diagnosticCategories } from "../../diagnostic/constants/diagnostic-categories.constant.js";
-import { diagnosticSeverities } from "../../diagnostic/constants/diagnostic-severities.constant.js";
 import { SourceDiagnosticFactory } from "../../diagnostic/runtime/source-diagnostic.factory.js";
 import { iconAdoptionDiagnostics } from "../constants/icon-adoption-diagnostics.constant.js";
 import type { TIconAdoptionDiagnosticDetails } from "../types/internal/icon-adoption-diagnostic-details.type.js";
@@ -62,8 +60,6 @@ export class IconAdoptionDiagnosticFactory {
   ): SourceDiagnostic {
     return this.#factory.create({
       code: details.code,
-      severity: diagnosticSeverities.error,
-      category: diagnosticCategories.adoption,
       message: details.message,
       sourceId,
     });

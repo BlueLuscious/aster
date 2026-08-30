@@ -1,9 +1,7 @@
 import type { SourceDiagnostic } from "../../../../diagnostic/contracts/index.js";
+import type { TDiagnosticDetails } from "../../../../diagnostic/types/internal/diagnostic-details.type.js";
 import type { TSvgValidationIssue } from "../types/internal/svg-validation-issue.type.js";
-import type { TSvgValidationDiagnosticDetails } from "../types/internal/svg-validation-diagnostic-details.type.js";
-import { diagnosticCategories } from "../../../../diagnostic/constants/diagnostic-categories.constant.js";
 import { diagnosticCodes } from "../../../../diagnostic/constants/diagnostic-codes.constant.js";
-import { diagnosticSeverities } from "../../../../diagnostic/constants/diagnostic-severities.constant.js";
 import { SourceDiagnosticFactory } from "../../../../diagnostic/runtime/source-diagnostic.factory.js";
 import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 
@@ -26,15 +24,10 @@ export class SvgValidationDiagnosticFactory {
 
     return this.#factory.create({
       code: details.code,
-      severity: details.severity,
-      category: details.category,
       message: details.message,
       sourceId: issue.sourceId,
       ...("span" in issue && issue.span !== undefined
         ? { span: issue.span }
-        : {}),
-      ...("related" in issue && issue.related !== undefined
-        ? { related: issue.related }
         : {}),
     });
   }
@@ -46,59 +39,45 @@ export class SvgValidationDiagnosticFactory {
    */
   #details(
     issue: TSvgValidationIssue,
-  ): TSvgValidationDiagnosticDetails {
+  ): TDiagnosticDetails {
     switch (issue.kind) {
       case svgValidationIssueKinds.invalidViewBox:
         return {
           code: diagnosticCodes.invalidViewBox,
-          severity: diagnosticSeverities.error,
-          category: diagnosticCategories.syntax,
           message:
             "The SVG root requires exactly four finite viewBox numbers with positive width and height.",
         };
       case svgValidationIssueKinds.invalidGeometry:
         return {
           code: diagnosticCodes.invalidGeometry,
-          severity: diagnosticSeverities.error,
-          category: diagnosticCategories.syntax,
           message:
             "An SVG geometry attribute does not follow its accepted finite numeric domain.",
         };
       case svgValidationIssueKinds.invalidPathData:
         return {
           code: diagnosticCodes.invalidPathData,
-          severity: diagnosticSeverities.error,
-          category: diagnosticCategories.syntax,
           message: "SVG path data does not follow the accepted path grammar.",
         };
       case svgValidationIssueKinds.invalidPresentation:
         return {
           code: diagnosticCodes.invalidPresentation,
-          severity: diagnosticSeverities.error,
-          category: diagnosticCategories.syntax,
           message:
             "An SVG presentation attribute has an unsupported or malformed value.",
         };
       case svgValidationIssueKinds.unsupportedAttribute:
         return {
           code: diagnosticCodes.unsupportedAttribute,
-          severity: diagnosticSeverities.error,
-          category: diagnosticCategories.technical,
           message:
             "An SVG attribute is outside the accepted portable source subset.",
         };
       case svgValidationIssueKinds.emptyGeometry:
         return {
           code: diagnosticCodes.emptyGeometry,
-          severity: diagnosticSeverities.error,
-          category: diagnosticCategories.technical,
           message: "SVG source must contain non-empty supported geometry.",
         };
       case svgValidationIssueKinds.discardedEditorAttribute:
         return {
           code: diagnosticCodes.discardedEditorAttribute,
-          severity: diagnosticSeverities.warning,
-          category: diagnosticCategories.technical,
           message:
             "A safe root editor attribute was reviewed and omitted from the portable definition.",
         };

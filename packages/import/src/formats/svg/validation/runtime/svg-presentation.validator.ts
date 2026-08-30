@@ -1,3 +1,4 @@
+import type { SourceDiagnostic } from "../../../../diagnostic/contracts/index.js";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
 import { svgNumericDomains } from "../../shared/constants/svg-numeric-domains.constant.js";
 import { svgPaintSchema } from "../../shared/constants/svg-paint-schema.constant.js";
@@ -7,7 +8,6 @@ import { svgSourceElementSchema } from "../../shared/constants/svg-source-elemen
 import { svgSourceElementRoles } from "../../shared/constants/svg-source-element-roles.constant.js";
 import { SvgNumberParser } from "../../shared/runtime/svg-number.parser.js";
 import type { TSvgPresentationNumericDomain } from "../../shared/types/internal/svg-presentation-numeric-domain.type.js";
-import type { TSvgPresentationValidation } from "../types/internal/svg-presentation-validation.type.js";
 import { svgValidationIssueKinds } from "../constants/svg-validation-issue-kinds.constant.js";
 import { SvgValidationDiagnosticFactory } from "./svg-validation-diagnostic.factory.js";
 
@@ -48,14 +48,13 @@ export class SvgPresentationValidator {
    * @description Validates every supported presentation attribute on one element.
    * @param sourceId - Canonical logical SVG source identifier.
    * @param element - Located safe SVG syntax element.
-   * @returns Presentation diagnostics and explicit valid stroke widths.
+   * @returns Blocking presentation diagnostics.
    */
   inspect(
     sourceId: string,
     element: ISvgSyntaxElement,
-  ): TSvgPresentationValidation {
-    const diagnostics = [];
-    const strokeWidths = [];
+  ): readonly SourceDiagnostic[] {
+    const diagnostics: SourceDiagnostic[] = [];
 
     for (const attribute of element.attributes) {
       const schema = this.#schema(attribute.localName);
@@ -64,7 +63,6 @@ export class SvgPresentationValidator {
         continue;
       }
 
-      const numeric = this.#numberParser.parse(attribute.value);
       let valid: boolean;
 
       switch (schema.valueKind) {
@@ -76,11 +74,13 @@ export class SvgPresentationValidator {
             attribute.value,
           );
           break;
-        case svgPresentationValueKinds.number:
+        case svgPresentationValueKinds.number: {
+          const numeric = this.#numberParser.parse(attribute.value);
           valid =
             numeric !== undefined &&
             this.#validNumber(numeric, schema.numericDomain);
           break;
+        }
       }
 
       if (
@@ -90,17 +90,6 @@ export class SvgPresentationValidator {
           svgSourceElementRoles.primitive
       ) {
         valid = false;
-      }
-
-      if (
-        valid &&
-        schema.collectStrokeWidth &&
-        numeric !== undefined
-      ) {
-        strokeWidths.push({
-          value: numeric,
-          span: attribute.valueSpan,
-        });
       }
 
       if (!valid) {
@@ -114,12 +103,7 @@ export class SvgPresentationValidator {
       }
     }
 
-    return Object.freeze({
-      diagnostics: Object.freeze(diagnostics),
-      strokeWidths: Object.freeze(
-        strokeWidths.map((entry) => Object.freeze(entry)),
-      ),
-    });
+    return Object.freeze(diagnostics);
   }
 
   /**
