@@ -11,7 +11,8 @@ icon, and one explicit collection subpath.
 The package:
 
 - authors each icon as one immutable `Icon.define(...)` value;
-- applies shared internal authoring defaults without embedding collection membership;
+- applies [shared internal authoring defaults](shared/index.md) without embedding collection
+  membership;
 - exposes the [representative icon set](icons/index.md);
 - exposes the independent [Aster collection](collections/index.md);
 - preserves canonical namespace, icon, and RTL identity;
@@ -20,6 +21,18 @@ The package:
 
 The package does not render SVG, create framework components, access DOM or filesystem APIs,
 import SVG sources, run Import, discover paths, or own repository tooling.
+
+## Authoring authority
+
+Each `.icon.ts` module is the sole canonical editable source for its definition. SVG is a derived
+render result, not a second source kept in synchronisation. Optional Import may translate reviewed
+external material into an editable module, but that module becomes ordinary human-owned Icons
+source and has no runtime or rebuild dependency on Import or the original input.
+
+Icons and collections are independent. An icon remains valid without membership and can belong to
+several collections; a collection owns only its explicit member sequence. Canonical collection
+modules therefore aggregate existing icon values instead of generating, cloning or decorating
+them.
 
 ## Dependency Boundary
 

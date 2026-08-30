@@ -32,11 +32,11 @@ The first supported ABI consists of:
 Implementation modules and the executable module are not exportable package subpaths. The package
 declares no generic plugin registration ABI and performs no automatic plugin discovery.
 
-Changes to this surface follow the accepted
-[Versioning and Releases](../../governance/versioning-and-releases.md) policy. In particular,
-removing, renaming, or reinterpreting an accepted command, discriminator, field, diagnostic, or
-observable semantic requires explicit breaking-change classification. Deferred commands are not
-part of the current ABI.
+Removing, renaming, or reinterpreting an accepted command, discriminator, field, diagnostic, or
+observable semantic is a breaking CLI change. Adding an optional compatible command or capability
+is additive; correcting implementation without changing the accepted result is compatible.
+Deferred commands are not part of the current ABI. Cross-package release sequencing belongs to
+the project release posture rather than this package contract.
 
 ## Programmatic and standalone equivalence
 
@@ -135,5 +135,5 @@ Run the package evidence with:
 pnpm --dir packages/cli run test:conformance
 ```
 
-The broader product and dependency contract is defined by the
-[Command-line Boundary](../../architecture/command-line-boundary.md).
+The complete execution boundary is defined by [CLI Workflow](workflow.md); feature-specific
+observable semantics remain with Command, Catalogue, Export and Shell.

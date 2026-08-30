@@ -63,11 +63,10 @@ Runtime tests separately cover every supported primitive, the complete real Icon
 presentation, accessibility, direction, exact XML 1.0 acceptance, contextual escaping,
 invalid-target, and definition-immutability scenarios. Accepted decisions and bounded future
 change pressures are recorded in [Quality](quality.md). Detailed semantics remain canonical in
-[Render](render/index.md) and
-[Accessibility and Direction](../../architecture/accessibility-and-direction.md).
+[Render](render/index.md), [Workflow](workflow.md), [API](api/index.md), and
+[Error](error/index.md).
 
-The stable semantics are defined by the
-[Rendering Contract](../../architecture/rendering-contract.md) and
-[Accessibility and Direction](../../architecture/accessibility-and-direction.md). The package
-boundary and API naming rationale are recorded by
-[Public SVG Renderer Boundary](../../decisions/0005-public-svg-renderer-boundary.md).
+SVG remains a dedicated package because target syntax, escaping, accessibility mapping and target
+failures do not belong in portable Core. The `Svg` name deliberately distinguishes rendering from
+Core's `Icon.define()` construction authority. A consumer needing SVG installs this second package;
+a browser consumer still owns its own safe parsing or insertion boundary.

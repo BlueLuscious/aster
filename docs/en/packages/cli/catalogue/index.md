@@ -68,6 +68,6 @@ providers produce an explicit ambiguity failure; an exact provider filter resolv
 The initial pilot catalogue is small, so the current API returns the complete deterministic result
 sequence and deliberately defines no pagination contract.
 
-[Catalogue Runtime](runtime/index.md) documents the internal acceptance and query composition. The
-accepted provider boundary is defined by the
-[Command-line Boundary](../../../architecture/command-line-boundary.md).
+[Catalogue Runtime](runtime/index.md) documents the internal acceptance and query composition.
+[CLI Workflow](../workflow.md) defines how an explicit command context supplies providers without
+creating an ambient registry.

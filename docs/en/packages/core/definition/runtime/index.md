@@ -50,13 +50,13 @@ Core rejects a replacement that points to the definition itself. It deliberately
 definitions with equal identity because it owns no global registry.
 
 Duplicate identities, unavailable replacement targets, and replacement cycles require a complete
-generation unit and remain responsibilities of the build pipeline.
+catalogue or publication unit and remain responsibilities of the consumer that owns that set.
 
 ## Path-data scope
 
-Core trims path data and requires non-empty text. Full SVG path parsing, canonical rewriting, and
-source-span diagnostics belong to the build pipeline, which establishes path conformance before
-construction.
+Core trims path data and requires non-empty text. Canonical TypeScript authors own reviewed path
+syntax directly. Full SVG path parsing, canonical rewriting, and source-span diagnostics for
+external inputs belong to the optional Import SVG adapter before Core construction.
 
 ## Isolation
 

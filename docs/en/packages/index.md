@@ -15,8 +15,24 @@ The current package set is:
 | [`@aster/svg`](svg/index.md) | Pre-release | Hardened framework-independent standalone SVG rendering. |
 | [`@aster/cli`](cli/index.md) | Pre-release | Host-neutral command execution, explicit catalogue discovery, deterministic SVG export planning, and a thin standalone Node output host. |
 
-Accepted responsibilities and dependency direction are defined by
-[Product and Package Boundaries](../architecture/product-and-package-boundaries.md).
+The accepted production dependency direction is:
+
+```text
+@aster/core <---- @aster/icons
+      ^
+      +---------- @aster/svg
+      +---------- @aster/import ----> xmlsax-typescript
+      ^                  (private)
+      |
+@aster/cli ------> @aster/icons
+      |
+      +----------> @aster/svg
+```
+
+Core is the portable foundation and has no runtime dependency. Icons and SVG depend only on its
+public root. Private Import depends on Core plus its contained XML parser adapter. CLI consumes
+the public Core, Icons and SVG roots to provide catalogue and export workflows. No portable or
+rendering package depends on CLI or Import, and no package imports repository tooling.
 
 Each package document covers:
 
@@ -27,5 +43,7 @@ Each package document covers:
 - contracts, types, APIs, and implemented flows;
 - target, compatibility, testing, and generation boundaries.
 
-Feature documentation mirrors the real package-relative feature path as defined by
-[Documentation Policy](../governance/documentation-policy.md).
+Feature documentation mirrors each real package-relative feature path when that feature owns a
+stable responsibility. Layer-only directories such as `runtime/`, `contracts/` and `types/` may
+be described by their owning feature document unless their composition requires a dedicated
+subdocument.

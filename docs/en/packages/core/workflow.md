@@ -150,5 +150,8 @@ global identity state. Importing it performs no registration or host initialisat
 - [Core API](api/index.md) defines the public construction authorities and usage.
 - [Immutable Definition Runtime](definition/runtime/index.md) defines icon construction internals.
 - [Core Collection](collection/index.md) defines membership and collection construction.
+- [Core Node](node/index.md) defines the complete portable geometry union.
+- [Core Metadata](metadata/index.md) defines portable metadata and RTL policy.
+- [Core Presentation](presentation/index.md) defines paint data and presentation precedence.
+- [Core Render Options](render/index.md) defines target-independent caller input.
 - [Core Quality](quality.md) records accepted conformance evidence and future pressure boundaries.
-- [Portable Icon Model](../../architecture/portable-icon-model.md) defines the project-level model.

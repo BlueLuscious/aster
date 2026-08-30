@@ -22,6 +22,7 @@ help metadata does not eagerly evaluate the built-in catalogue.
 
 | Feature | Responsibility |
 | --- | --- |
+| [API](api/index.md) | Composes the immutable host-neutral `AsterCommands` authority. |
 | [Command](command/index.md) | Defines and executes host-neutral invocation, context, metadata, result, and diagnostic contracts. |
 | [Command Invocation](command/invocation/index.md) | Accepts untrusted programmatic requests through explicit command-owned normalisers. |
 | [Catalogue](catalogue/index.md) | Loads explicit providers and performs deterministic provider, collection, and icon discovery. |
@@ -77,8 +78,8 @@ The package exposes only its root `"."`. It exports these types:
 
 The root also exports the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, and
 `exportTargets` values. The package manifest maps the `aster` binary to its private built shell entrypoint. No
-implementation subpath is public. The accepted surface and dependency direction are defined by the
-[Command-line Boundary](../../architecture/command-line-boundary.md).
+implementation subpath is public. [CLI Compatibility and Conformance](compatibility.md) owns the
+accepted surface, runtime support and dependency guarantees.
 
 ## Current verification
 
@@ -112,5 +113,5 @@ source files.
 
 Host-neutral SVG planning, raw and JSON presentation, shell render options, private output
 publication, stable output diagnostics, and committed-destination feedback are implemented
-without adding filesystem authority to `AsterCommands`. The complete accepted contract is defined by the
-[Command-line Boundary](../../architecture/command-line-boundary.md#export-boundary).
+without adding filesystem authority to `AsterCommands`. [CLI Export](export/index.md) owns
+headless planning, while [CLI Shell Output](shell/output/index.md) owns filesystem commitment.

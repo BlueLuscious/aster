@@ -19,6 +19,10 @@ queries. None of these classes is exported through a package subpath.
 | `CatalogueSearchQuery` | Matches mixed icon and collection records against deterministic search terms. |
 | `CatalogueShowQuery` | Resolves one exact identity or returns not-found or ambiguity evidence. |
 
+The internal `TAcceptedCatalogue` type associates one canonical provider identity with its
+canonically ordered, isolated icon and collection records. It is the immutable hand-off from
+snapshot acceptance to queries and export selection; it is not a public provider result.
+
 ```text
 explicit providers --> loader --> snapshot normaliser --> accepted catalogues
                                                            |

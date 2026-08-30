@@ -2,8 +2,8 @@
 
 Status: **Accepted**
 
-`@aster/core` owns Aster's serialisable, target-independent icon model. It allows source pipelines,
-generated collection modules, renderers, and framework adapters to exchange the same values
+`@aster/core` owns Aster's serialisable, target-independent icon model. It allows source adapters,
+canonical icon packages, renderers, and framework adapters to exchange the same values
 without importing SVG parser syntax, DOM objects, framework state, or repository tooling.
 
 ## Current boundary
@@ -32,7 +32,7 @@ registry, or global identity authority.
 Core has no runtime dependency. Its production compilation uses ES2022 only and includes no Node,
 DOM, browser, Lilium, Lotus, parser, renderer, or repository-tooling ambient types.
 
-Consumers depend on Core; Core never depends on a collection, build pipeline, renderer, framework,
+Consumers depend on Core; Core never depends on a collection, importer, renderer, framework,
 or target.
 
 Generated declarations are host-independent and import only relative package modules. Development
@@ -72,8 +72,10 @@ tree-shaking result for every bundler.
 - Numeric, textual, ordering, cloning, and deep-freeze invariants require runtime validation and
   are enforced by internal construction rather than claimed by the type surface alone.
 
-The architecture authority for this model is
-[Portable Icon Model](../../architecture/portable-icon-model.md).
+The package-local authorities for this model are [Definition](definition/index.md),
+[Node](node/index.md), [Metadata](metadata/index.md), [Presentation](presentation/index.md), and
+[Render](render/index.md). [Workflow](workflow.md) defines how those features construct and hand
+off one complete portable value.
 
 ## Deferred boundaries
 
