@@ -92,15 +92,31 @@ test("prepares explicit Import benchmark fixtures outside timed work", () => {
 
   assert.ok(Object.isFrozen(fixtures));
   assert.ok(Object.isFrozen(fixtures.batchRequests));
+  assert.ok(Object.isFrozen(fixtures.largeBatchRequests));
   assert.ok(Object.isFrozen(fixtures.definitionRequest.draft));
   assert.ok(Object.isFrozen(fixtures.emissionRequest.definition));
   assert.equal(fixtures.sizes.batchSize, importBaseline.batchSize);
   assert.equal(fixtures.batchRequests.length, importBaseline.batchSize);
+  assert.equal(
+    fixtures.largeBatchRequests.length,
+    importBaseline.scales.largeBatchSize,
+  );
   assert.ok(fixtures.sizes.minimalSourceBytes > 0);
   assert.ok(
     fixtures.sizes.editorSourceBytes > fixtures.sizes.minimalSourceBytes,
   );
   assert.ok(fixtures.sizes.rejectedSourceBytes > 0);
+  assert.equal(
+    fixtures.sizes.mediumSourceElements,
+    importBaseline.scales.mediumSourceElements,
+  );
+  assert.equal(
+    fixtures.sizes.largeSourceElements,
+    importBaseline.scales.largeSourceElements,
+  );
+  assert.ok(
+    fixtures.sizes.largeSourceBytes > fixtures.sizes.mediumSourceBytes,
+  );
 });
 
 test("runs the complete Import scenario matrix through public operations", async () => {
@@ -134,7 +150,7 @@ test("runs the complete Import scenario matrix through public operations", async
   );
   const report = await runner.run();
 
-  assert.equal(report.schemaVersion, 1);
+  assert.equal(report.schemaVersion, 2);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
     Object.values(importBaseline.scenarios).map((scenario) => scenario.name),

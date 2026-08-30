@@ -29,9 +29,17 @@ export class ImportBaselineFixtureFactory {
       "  <script>run()</script>",
       "</svg>",
     ].join("\n");
+    const mediumContent = this.#scaledContent(
+      importBaseline.scales.mediumSourceElements,
+    );
+    const largeContent = this.#scaledContent(
+      importBaseline.scales.largeSourceElements,
+    );
     const minimalSource = this.#source("minimal", minimalContent);
     const editorSource = this.#source("editor", editorContent);
     const rejectedSource = this.#source("rejected", rejectedContent);
+    const mediumSource = this.#source("medium", mediumContent);
+    const largeSource = this.#source("large", largeContent);
     const metadata = this.#metadata("Benchmark Minimal");
     const inspection = IconImport.inspect(minimalSource);
 
@@ -53,17 +61,23 @@ export class ImportBaselineFixtureFactory {
       source: minimalSource,
       metadata,
     };
-    const batchRequests = Object.freeze(
-      Array.from({ length: importBaseline.batchSize }, (_, index) => ({
-        source: this.#source(`batch-${index}`, minimalContent),
-        metadata: this.#metadata(`Benchmark Batch ${index}`),
-      })),
+    const batchRequests = this.#batchRequests(
+      importBaseline.batchSize,
+      "batch",
+      minimalContent,
+    );
+    const largeBatchRequests = this.#batchRequests(
+      importBaseline.scales.largeBatchSize,
+      "large-batch",
+      minimalContent,
     );
 
     return Object.freeze({
       minimalSource,
       editorSource,
       rejectedSource,
+      mediumSource,
+      largeSource,
       definitionRequest,
       emissionRequest: {
         definition: definitionResult.value,
@@ -71,13 +85,52 @@ export class ImportBaselineFixtureFactory {
       },
       adoptionRequest,
       batchRequests,
+      largeBatchRequests,
       sizes: Object.freeze({
         minimalSourceBytes: Buffer.byteLength(minimalContent),
         editorSourceBytes: Buffer.byteLength(editorContent),
         rejectedSourceBytes: Buffer.byteLength(rejectedContent),
+        mediumSourceBytes: Buffer.byteLength(mediumContent),
+        mediumSourceElements: importBaseline.scales.mediumSourceElements,
+        largeSourceBytes: Buffer.byteLength(largeContent),
+        largeSourceElements: importBaseline.scales.largeSourceElements,
         batchSize: batchRequests.length,
+        largeBatchSize: largeBatchRequests.length,
       }),
     });
+  }
+
+  /**
+   * @description Creates one accepted SVG source with a controlled number of equivalent geometry elements.
+   * @param {number} elementCount - Positive geometry element count owned by the benchmark configuration.
+   * @returns {string} Deterministic SVG source used for source-size scaling evidence.
+   */
+  #scaledContent(elementCount) {
+    return [
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">',
+      ...Array.from(
+        { length: elementCount },
+        (_, index) =>
+          `  <path d="M${index % 12} 12h8" stroke="currentColor" />`,
+      ),
+      "</svg>",
+    ].join("\n");
+  }
+
+  /**
+   * @description Creates one immutable batch with unique portable identities and equivalent source complexity.
+   * @param {number} requestCount - Positive request count owned by the benchmark configuration.
+   * @param {string} prefix - Identity prefix distinguishing the benchmark scale.
+   * @param {string} content - Exact accepted SVG source shared by the requests.
+   * @returns {readonly import("@aster/import").IconAdoptionRequest[]} Immutable host-owned batch inputs.
+   */
+  #batchRequests(requestCount, prefix, content) {
+    return Object.freeze(
+      Array.from({ length: requestCount }, (_, index) => ({
+        source: this.#source(`${prefix}-${index}`, content),
+        metadata: this.#metadata(`Benchmark ${prefix} ${index}`),
+      })),
+    );
   }
 
   /**

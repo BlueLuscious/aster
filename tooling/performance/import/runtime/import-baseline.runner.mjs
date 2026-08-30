@@ -49,6 +49,12 @@ export class ImportBaselineRunner {
       this.#scenario(importBaseline.scenarios.inspectRejected, () =>
         IconImport.inspect(this.#fixtures.rejectedSource),
       ),
+      this.#scenario(importBaseline.scenarios.inspectMedium, () =>
+        IconImport.inspect(this.#fixtures.mediumSource),
+      ),
+      this.#scenario(importBaseline.scenarios.inspectLarge, () =>
+        IconImport.inspect(this.#fixtures.largeSource),
+      ),
       this.#scenario(importBaseline.scenarios.define, () =>
         IconImport.define(this.#fixtures.definitionRequest),
       ),
@@ -60,6 +66,9 @@ export class ImportBaselineRunner {
       ),
       this.#scenario(importBaseline.scenarios.adoptBatch, () =>
         IconImport.adoptMany(this.#fixtures.batchRequests),
+      ),
+      this.#scenario(importBaseline.scenarios.adoptLargeBatch, () =>
+        IconImport.adoptMany(this.#fixtures.largeBatchRequests),
       ),
     ];
     const results = [];

@@ -5,6 +5,7 @@ import {
   readFile,
   readdir,
   rm,
+  stat,
   writeFile,
 } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
@@ -24,6 +25,19 @@ async function collectDistributionFiles(extension) {
     .filter((entry) => entry.endsWith(extension))
     .map((entry) => resolve(distributionRoot, entry))
     .sort((left, right) => left.localeCompare(right));
+}
+
+async function collectAllDistributionFiles() {
+  const entries = await readdir(distributionRoot, { recursive: true });
+  const inspected = await Promise.all(
+    entries.map(async (entry) => {
+      const path = resolve(distributionRoot, entry);
+
+      return (await stat(path)).isFile() ? path : undefined;
+    }),
+  );
+
+  return inspected.filter((entry) => entry !== undefined).sort();
 }
 
 function extractModuleSpecifiers(source) {
@@ -155,6 +169,16 @@ test("emits host-independent declarations and ESM with exact external authoritie
     assert.doesNotMatch(source, /\brequire\s*\(|\bmodule\.exports\b/gu);
     assert.doesNotMatch(source, /@aster\/(?:build|cli|icons|svg)|\bnode:/gu);
   }
+});
+
+test("emits only ESM modules and declarations without auxiliary artefacts", async () => {
+  const files = await collectAllDistributionFiles();
+  const modules = files.filter((file) => file.endsWith(".js"));
+  const declarations = files.filter((file) => file.endsWith(".d.ts"));
+
+  assert.ok(files.length > 0);
+  assert.equal(files.length, modules.length + declarations.length);
+  assert.ok(files.every((file) => file.endsWith(".js") || file.endsWith(".d.ts")));
 });
 
 test("compiles and renders an emitted editable module without Import", async (context) => {
