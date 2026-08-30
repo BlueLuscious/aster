@@ -29,6 +29,10 @@ Core, Icons, SVG and CLI have no production dependency on Import. Import may con
 cannot reverse that direction. Emitted modules depend only on Core and can be consumed by SVG or
 another render target independently from Import.
 
+Icons may retain a reviewed emitted module as ordinary human-owned `.icon.ts` source, but Import
+does not generate the Icons package, infer collection membership or remain in its distribution.
+TypeScript-first definitions and collections therefore remain fully usable when Import is absent.
+
 An additional source format requires an internal adapter and conformance evidence. It does not
 imply mutable registration, automatic discovery, a third-party plugin ABI or support for binary
 input. Those boundaries require separate evidence and an explicit package decision.
