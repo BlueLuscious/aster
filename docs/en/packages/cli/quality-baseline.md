@@ -66,9 +66,9 @@ a safe CLI-owned mechanism.
 
 ## Distribution evidence
 
-The measured native ES2022 ESM output contains 222 files and 256,485 unminified bytes:
+The measured native ES2022 ESM output contains 222 files and 257,086 unminified bytes:
 
-- 130 JavaScript modules totalling 183,742 bytes;
+- 130 JavaScript modules totalling 184,343 bytes;
 - 92 declaration files totalling 72,743 bytes;
 - one public root export;
 - one private `aster` binary mapping;
