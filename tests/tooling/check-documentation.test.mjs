@@ -17,21 +17,11 @@ async function createFixture() {
   const root = await mkdtemp(join(tmpdir(), "aster-documentation-"));
 
   await writeDocument(root, "docs/en/index.md", "# Documentation\n");
-  await writeDocument(root, "docs/en/architecture/index.md", "# Architecture\n");
   await writeDocument(root, "docs/en/collections/index.md", "# Collections\n");
-  await writeDocument(root, "docs/en/governance/index.md", "# Governance\n");
+  await writeDocument(root, "docs/en/future-capabilities.md", "# Future Capabilities\n");
   await writeDocument(root, "docs/en/packages/index.md", "# Packages\n");
+  await writeDocument(root, "docs/en/project/index.md", "# Project\n");
   await writeDocument(root, "docs/en/tooling/index.md", "# Tooling\n");
-  await writeDocument(
-    root,
-    "docs/en/decisions/index.md",
-    "# Decisions\n\n- [0001: Fixture](0001-fixture.md)\n",
-  );
-  await writeDocument(
-    root,
-    "docs/en/decisions/0001-fixture.md",
-    "# 0001: Fixture\n\nStatus: **Accepted**\n\n## Consequences\n\nNone.\n",
-  );
 
   return root;
 }
@@ -43,7 +33,7 @@ test("accepts a canonical documentation fixture", async () => {
     const result = await verifyDocumentation(root);
 
     assert.deepEqual(result.issues, []);
-    assert.equal(result.markdownFileCount, 8);
+    assert.equal(result.markdownFileCount, 6);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -78,7 +68,7 @@ test("accepts collection documentation without a prescribed source root", async 
     const result = await verifyDocumentation(root);
 
     assert.deepEqual(result.issues, []);
-    assert.equal(result.markdownFileCount, 9);
+    assert.equal(result.markdownFileCount, 7);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -88,12 +78,12 @@ test("rejects broken links and local-only references", async () => {
   const root = await createFixture();
 
   try {
-    const governancePath = resolve(root, "docs/en/governance/index.md");
-    const governance = await readFile(governancePath, "utf8");
+    const projectPath = resolve(root, "docs/en/project/index.md");
+    const project = await readFile(projectPath, "utf8");
 
     await writeFile(
-      governancePath,
-      `${governance}\n[Missing](missing.md)\n\nSee plans/private.md.\n`,
+      projectPath,
+      `${project}\n[Missing](missing.md)\n\nSee plans/private.md.\n`,
       "utf8",
     );
 
@@ -104,29 +94,6 @@ test("rejects broken links and local-only references", async () => {
     );
     assert.ok(
       result.issues.some((issue) => /contains a local planning path/u.test(issue)),
-    );
-  } finally {
-    await rm(root, { recursive: true, force: true });
-  }
-});
-
-test("rejects a malformed decision record", async () => {
-  const root = await createFixture();
-
-  try {
-    await writeDocument(
-      root,
-      "docs/en/decisions/0001-fixture.md",
-      "# 0001: Fixture\n\nStatus: **Draft**\n",
-    );
-
-    const result = await verifyDocumentation(root);
-
-    assert.ok(
-      result.issues.some((issue) => /has no accepted decision status/u.test(issue)),
-    );
-    assert.ok(
-      result.issues.some((issue) => /has no consequences section/u.test(issue)),
     );
   } finally {
     await rm(root, { recursive: true, force: true });

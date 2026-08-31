@@ -24,12 +24,6 @@ export class DocumentationVerifier {
   #documentInspector;
 
   /**
-   * @description Decision-record inspector executed after document-level policies.
-   * @type {import("./decision-record.inspector.mjs").DecisionRecordInspector}
-   */
-  #decisions;
-
-  /**
    * @description Repository path composition capability.
    * @type {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver}
    */
@@ -40,14 +34,12 @@ export class DocumentationVerifier {
    * @param {readonly import("../contracts/internal/documentation-inspector.contract.mjs").IDocumentationInspector[]} rootInspectors - Ordered pre-acquisition inspectors.
    * @param {import("./canonical-document.reader.mjs").CanonicalDocumentReader} documents - Canonical Markdown reader.
    * @param {import("./canonical-document.inspector.mjs").CanonicalDocumentInspector} documentInspector - Ordered document policy inspector.
-   * @param {import("./decision-record.inspector.mjs").DecisionRecordInspector} decisions - Decision-record inspector.
    * @param {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver} paths - Repository path capability.
    */
-  constructor(rootInspectors, documents, documentInspector, decisions, paths) {
+  constructor(rootInspectors, documents, documentInspector, paths) {
     this.#rootInspectors = Object.freeze([...rootInspectors]);
     this.#documents = documents;
     this.#documentInspector = documentInspector;
-    this.#decisions = decisions;
     this.#paths = paths;
   }
 
@@ -78,7 +70,6 @@ export class DocumentationVerifier {
     const context = Object.freeze({ workspaceRoot, documentationRoot, documents });
 
     await this.#documentInspector.inspect(context, issues);
-    await this.#decisions.inspect(context, issues);
 
     return { issues: issues.snapshot(), markdownFileCount: documents.length };
   }

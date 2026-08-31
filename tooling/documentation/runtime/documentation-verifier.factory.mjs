@@ -4,7 +4,6 @@ import { RepositoryFileWalker } from "../../shared/runtime/repository-file.walke
 import { RepositoryPathResolver } from "../../shared/runtime/repository-path.resolver.mjs";
 import { CanonicalDocumentInspector } from "./canonical-document.inspector.mjs";
 import { CanonicalDocumentReader } from "./canonical-document.reader.mjs";
-import { DecisionRecordInspector } from "./decision-record.inspector.mjs";
 import { DocumentationHierarchyInspector } from "./documentation-hierarchy.inspector.mjs";
 import { DocumentationVerifier } from "./documentation-verifier.mjs";
 import { LocalLinkPolicy } from "./local-link.policy.mjs";
@@ -36,7 +35,6 @@ export class DocumentationVerifierFactory {
         new LocalReferencePolicy(paths),
         new LocalLinkPolicy(fileSystem, new MarkdownLinkTargetExtractor(), paths),
       ]),
-      new DecisionRecordInspector(fileSystem, paths),
       paths,
     );
   }

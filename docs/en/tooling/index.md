@@ -13,7 +13,7 @@ The canonical documentation mirrors the real tooling feature roots:
 | Feature | Responsibility |
 | --- | --- |
 | [Architecture](architecture/index.md) | Verifies compiler, workspace, package dependency, and authored collection boundaries. |
-| [Documentation](documentation/index.md) | Verifies the current canonical hierarchy, package mirroring, links, local exclusions, and retained decision records. |
+| [Documentation](documentation/index.md) | Verifies the current canonical hierarchy, package mirroring, links, and local exclusions. |
 | [Performance](performance/index.md) | Provides development-only package comparison infrastructure and independent scenario runners. |
 | [Shared](shared/index.md) | Supplies narrow filesystem, path, directory, traversal, and strict JSON foundations used by multiple tooling features. |
 | [Workspace](workspace/index.md) | Owns guarded repository and package maintenance operations such as distribution cleanup. |
@@ -87,7 +87,7 @@ Every retained feature protects a current boundary:
 | Feature | Retained evidence |
 | --- | --- |
 | Architecture | Detects source, manifest, dependency, compiler, host-authority, and private-tooling boundary drift before publication. |
-| Documentation | Detects broken local links, stale package mirroring, contributor-local references, malformed decision records, and missing current entry points. |
+| Documentation | Detects broken local links, stale package mirroring, contributor-local references, and missing current entry points. |
 | Workspace | Deletes only a verified package's direct generated distribution through an explicit destructive policy. |
 | Performance | Produces reproducible package-specific comparison reports without CI thresholds or production dependencies. |
 | Shared | Serves multiple retained tooling features with filesystem, path, JSON, directory, and traversal capabilities. |
