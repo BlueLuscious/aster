@@ -73,6 +73,36 @@ These guarded pattern targets prevent manifest growth per definition while keepi
 implementation modules and physical source paths inaccessible. The root deliberately remains an
 icon-only facade; complete collection discovery is opt-in.
 
+### Collection package boundary
+
+Collections currently remain inside `@aster/icons` because they are lightweight immutable
+aggregates of canonical icon definitions, share the same ownership and release maturity, and need
+no dependency that Icons does not already accept. The explicit `@aster/icons/collections` family
+keeps this placement from mixing collection exports into the icon root and provides a deliberate
+migration boundary if evidence later justifies another package.
+
+Do not create `@aster/collections` merely to mirror the source directory. A single collections
+package that depends on `@aster/icons` would separate API ownership and versioning, but npm would
+still acquire the complete Icons package. It therefore would not, by itself, provide selective
+collection downloads.
+
+Reconsider `@aster/collections` before the collection import family becomes a stable public
+guarantee when at least one of these conditions is observed:
+
+- collections require an independent release cadence or compatibility policy;
+- collection metadata, licensing, curation or tooling gains ownership distinct from icon
+  definitions;
+- consumers commonly use collection discovery without the complete icon facade;
+- another icon-definition provider must publish collections through the same product boundary;
+- measured package composition shows that a separate dependency graph materially improves real
+  consumers.
+
+If accepted, migrate through an explicit compatibility period rather than silently moving
+symbols. `@aster/icons/collections` may temporarily re-export the new authority, but the final
+dependency direction must avoid cycles and preserve one canonical owner for every definition and
+collection. If none of the triggers appears before the first supported release, retain collections
+inside `@aster/icons` and treat that location as the supported boundary.
+
 Package exports and package acquisition are separate concerns. Subpath imports can prevent
 unrelated modules from entering runtime evaluation or a consumer bundle, but installing one npm
 package still acquires its complete tarball. Downloading only selected icons or one collection
