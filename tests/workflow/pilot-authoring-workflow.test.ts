@@ -3,7 +3,8 @@ import test from "node:test";
 
 import { IconImport, iconImportFormats } from "@aster/import";
 import { Icon, type IconDefinition, type IconMetadata } from "@aster/core";
-import { ArrowLeft, AsterCollection } from "@aster/icons";
+import { ArrowLeft } from "@aster/icons";
+import { AsterCollection } from "@aster/icons/collections/aster";
 import { Svg } from "@aster/svg";
 
 const arrowMetadata: IconMetadata = {

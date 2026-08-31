@@ -25,7 +25,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | --- | --- | --- | --- |
 | 1 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics, and persistence together. |
 | 2 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 3 | `P1` | Define scalable Icons distribution and acquisition. | Before the first supported Icons release or material growth beyond the pilot corpus. |
+| 3 | `P2` | Evaluate selective Icons acquisition. | Measured package acquisition cost or consumer demand justifies a distribution product beyond subpath imports. |
 | 4 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
 | 5 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
 | 6 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
@@ -58,26 +58,20 @@ evidence, `generate` creates code or integration artefacts, and `import` adopts 
 No command may silently install dependencies, overwrite files, infer ownership from a directory
 name, or move filesystem authority into a host-neutral command.
 
-## Icons distribution and acquisition
+## Selective Icons acquisition
 
-Importance: **P1 - High**
+Importance: **P2 - Conditional**
 
-The current experimental `@aster/icons` manifest enumerates one public export entry per pilot icon.
-That is exact for a small corpus but does not remain maintainable for hundreds or thousands of
-definitions. Before the first supported Icons release or material corpus growth, replace explicit
-per-definition manifest entries with an accepted scalable import surface.
+The implemented `@aster/icons` export map already separates scalable public families:
 
-The near-term design should evaluate these distinct public families:
+- `.` provides named icon definitions and the complete `AsterIcons` index;
+- `./*` maps short isolated icon imports to canonical `*.icon` modules;
+- `./collections` provides the complete `AsterCollections` family;
+- `./collections/*` maps isolated collection imports to canonical `*.collection` modules.
 
-- `.` for the deliberate package facade or complete catalogue;
-- `./icons` and `./collections` for complete family indexes;
-- `./icons/*` and `./collections/*` pattern exports for isolated definitions;
-- an optional `./catalogue` subpath if complete discovery should not make the root eager.
-
-Pattern targets must map only to canonical `*.icon` and `*.collection` modules so constants,
-implementation modules and internal folders remain inaccessible. Full-family barrels and catalogue
-indexes may evaluate their complete graphs; isolated pattern imports must preserve the current
-single-definition module boundary and tree-shaking evidence.
+These guarded pattern targets prevent manifest growth per definition while keeping constants,
+implementation modules and physical source paths inaccessible. The root deliberately remains an
+icon-only facade; complete collection discovery is opt-in.
 
 Package exports and package acquisition are separate concerns. Subpath imports can prevent
 unrelated modules from entering runtime evaluation or a consumer bundle, but installing one npm

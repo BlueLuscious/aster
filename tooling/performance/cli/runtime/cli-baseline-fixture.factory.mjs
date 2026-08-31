@@ -1,5 +1,5 @@
 import { AsterCatalogue, AsterCommands } from "@aster/cli";
-import { AsterCollection } from "@aster/icons";
+import { AsterCollection } from "@aster/icons/collections/aster";
 import { CatalogueIdentityFormatter } from "../../../../packages/cli/dist/catalogue/runtime/catalogue-identity.formatter.js";
 
 /**

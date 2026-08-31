@@ -7,7 +7,8 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
-import { AsterCollections, AsterIcons } from "@aster/icons";
+import { AsterIcons } from "@aster/icons";
+import { AsterCollections } from "@aster/icons/collections";
 import {
   AsterCatalogue,
   AsterCommands,

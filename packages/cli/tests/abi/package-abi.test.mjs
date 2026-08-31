@@ -186,6 +186,7 @@ test("limits Node process authority and the manifest bridge to the private entry
       [...new Set(externalSpecifiers)]
         .filter((specifier) =>
           specifier === "@aster/core" || specifier === "@aster/icons"
+          || specifier === "@aster/icons/collections"
           || specifier === "@aster/svg"
         )
         .sort(),
@@ -222,10 +223,20 @@ test("acquires the built-in Icons catalogue only through its explicit lazy provi
     const source = await readFile(module, "utf8");
     const modulePath = relative(distributionRoot, module).replaceAll("\\", "/");
 
-    if (extractModuleSpecifiers(source).includes("@aster/icons")) {
+    const iconsSpecifiers = extractModuleSpecifiers(source).filter(
+      (specifier) => specifier === "@aster/icons"
+        || specifier === "@aster/icons/collections",
+    );
+
+    if (iconsSpecifiers.length > 0) {
       iconsOwners.push(modulePath);
-      assert.match(source, /await import\("@aster\/icons"\)/u);
-      assert.doesNotMatch(source, /from\s+["']@aster\/icons["']/u);
+      assert.deepEqual(iconsSpecifiers.sort(), [
+        "@aster/icons",
+        "@aster/icons/collections",
+      ]);
+      assert.match(source, /import\("@aster\/icons"\)/u);
+      assert.match(source, /import\("@aster\/icons\/collections"\)/u);
+      assert.doesNotMatch(source, /from\s+["']@aster\/icons(?:\/collections)?["']/u);
     }
   }
 

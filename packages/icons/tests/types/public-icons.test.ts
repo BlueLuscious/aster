@@ -3,8 +3,6 @@ import type {
   IconDefinition,
 } from "@aster/core";
 import {
-  AsterCollection,
-  AsterCollections,
   AsterIcons,
   ArrowLeft,
   Bell,
@@ -23,6 +21,10 @@ import {
   Star,
   User,
 } from "../../src/index.js";
+import {
+  AsterCollection,
+  AsterCollections,
+} from "../../src/collections/index.js";
 
 const definitions = [
   ArrowLeft,

@@ -40,25 +40,25 @@ function extractModuleSpecifiers(source) {
     .filter((specifier) => specifier !== undefined);
 }
 
-test("exposes the exact documented root and per-icon values", async () => {
+test("exposes the exact documented icon root and definition families", async () => {
   const root = await import("@aster/icons");
+  const collections = await import("@aster/icons/collections");
 
   assert.deepEqual(
     Object.keys(root).sort(),
-    [
-      "AsterCollection",
-      "AsterCollections",
-      "AsterIcons",
-      ...Object.values(iconSubpaths),
-    ].sort(),
+    ["AsterIcons", ...Object.values(iconSubpaths)].sort(),
   );
   assert.deepEqual(
     root.AsterIcons,
     Object.values(iconSubpaths).map((symbol) => root[symbol]),
   );
-  assert.deepEqual(root.AsterCollections, [root.AsterCollection]);
   assert.ok(Object.isFrozen(root.AsterIcons));
-  assert.ok(Object.isFrozen(root.AsterCollections));
+  assert.deepEqual(
+    Object.keys(collections).sort(),
+    ["AsterCollection", "AsterCollections"],
+  );
+  assert.deepEqual(collections.AsterCollections, [collections.AsterCollection]);
+  assert.ok(Object.isFrozen(collections.AsterCollections));
 
   for (const [subpath, symbol] of Object.entries(iconSubpaths)) {
     const direct = await import(`@aster/icons/${subpath}`);
@@ -72,49 +72,50 @@ test("exposes the exact documented root and per-icon values", async () => {
     "@aster/icons/collections/aster"
   );
 
-  assert.equal(AsterCollection, root.AsterCollection);
+  assert.equal(AsterCollection, collections.AsterCollection);
   assert.deepEqual(AsterCollection.icons, root.AsterIcons);
 });
 
 test("rejects implementation and undeclared internal subpaths", async () => {
   await assert.rejects(
     import("@aster/icons/icons/arrow-left.icon.js"),
-    (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    (error) => error?.code === "ERR_MODULE_NOT_FOUND",
   );
   await assert.rejects(
     import("@aster/icons/collections/aster.collection.js"),
-    (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    (error) => error?.code === "ERR_MODULE_NOT_FOUND",
+  );
+  await assert.rejects(
+    import("@aster/icons/aster-icons.constant"),
+    (error) => error?.code === "ERR_MODULE_NOT_FOUND",
   );
 });
 
-test("publishes only root and isolated per-icon exports", async () => {
+test("publishes only scalable icon and collection export families", async () => {
   const manifest = JSON.parse(
     await readFile(resolve(packageRoot, "package.json"), "utf8"),
   );
-  const expectedExportKeys = [
-    ".",
-    "./collections/aster",
-    ...Object.keys(iconSubpaths).map((subpath) => `./${subpath}`),
-  ];
+  const expectedExportKeys = [".", "./collections", "./collections/*", "./*"];
 
   assert.deepEqual(Object.keys(manifest.exports), expectedExportKeys);
   assert.equal(manifest.exports["."].import, "./dist/index.js");
   assert.equal(manifest.exports["."].types, "./dist/index.d.ts");
-  assert.deepEqual(manifest.exports["./collections/aster"], {
-    types: "./dist/collections/aster.collection.d.ts",
-    import: "./dist/collections/aster.collection.js",
+  assert.deepEqual(manifest.exports["./collections"], {
+    types: "./dist/collections/index.d.ts",
+    import: "./dist/collections/index.js",
+  });
+  assert.deepEqual(manifest.exports["./collections/*"], {
+    types: "./dist/collections/*.collection.d.ts",
+    import: "./dist/collections/*.collection.js",
+  });
+  assert.deepEqual(manifest.exports["./*"], {
+    types: "./dist/icons/*.icon.d.ts",
+    import: "./dist/icons/*.icon.js",
   });
   assert.deepEqual(manifest.dependencies, {
     "@aster/core": "workspace:*",
   });
   assert.equal(manifest.sideEffects, false);
-
-  for (const subpath of Object.keys(iconSubpaths)) {
-    assert.deepEqual(manifest.exports[`./${subpath}`], {
-      types: `./dist/icons/${subpath}.icon.d.ts`,
-      import: `./dist/icons/${subpath}.icon.js`,
-    });
-  }
 });
 
 test("keeps every per-icon module isolated from sibling definitions", async () => {

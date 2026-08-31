@@ -22,73 +22,17 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./collections/aster": {
-      "types": "./dist/collections/aster.collection.d.ts",
-      "import": "./dist/collections/aster.collection.js"
+    "./collections": {
+      "types": "./dist/collections/index.d.ts",
+      "import": "./dist/collections/index.js"
     },
-    "./arrow-left": {
-      "types": "./dist/icons/arrow-left.icon.d.ts",
-      "import": "./dist/icons/arrow-left.icon.js"
+    "./collections/*": {
+      "types": "./dist/collections/*.collection.d.ts",
+      "import": "./dist/collections/*.collection.js"
     },
-    "./bell": {
-      "types": "./dist/icons/bell.icon.d.ts",
-      "import": "./dist/icons/bell.icon.js"
-    },
-    "./camera": {
-      "types": "./dist/icons/camera.icon.d.ts",
-      "import": "./dist/icons/camera.icon.js"
-    },
-    "./check": {
-      "types": "./dist/icons/check.icon.d.ts",
-      "import": "./dist/icons/check.icon.js"
-    },
-    "./close": {
-      "types": "./dist/icons/close.icon.d.ts",
-      "import": "./dist/icons/close.icon.js"
-    },
-    "./cloud": {
-      "types": "./dist/icons/cloud.icon.d.ts",
-      "import": "./dist/icons/cloud.icon.js"
-    },
-    "./folder": {
-      "types": "./dist/icons/folder.icon.d.ts",
-      "import": "./dist/icons/folder.icon.js"
-    },
-    "./heart": {
-      "types": "./dist/icons/heart.icon.d.ts",
-      "import": "./dist/icons/heart.icon.js"
-    },
-    "./home": {
-      "types": "./dist/icons/home.icon.d.ts",
-      "import": "./dist/icons/home.icon.js"
-    },
-    "./leaf": {
-      "types": "./dist/icons/leaf.icon.d.ts",
-      "import": "./dist/icons/leaf.icon.js"
-    },
-    "./lock": {
-      "types": "./dist/icons/lock.icon.d.ts",
-      "import": "./dist/icons/lock.icon.js"
-    },
-    "./plus": {
-      "types": "./dist/icons/plus.icon.d.ts",
-      "import": "./dist/icons/plus.icon.js"
-    },
-    "./search": {
-      "types": "./dist/icons/search.icon.d.ts",
-      "import": "./dist/icons/search.icon.js"
-    },
-    "./settings": {
-      "types": "./dist/icons/settings.icon.d.ts",
-      "import": "./dist/icons/settings.icon.js"
-    },
-    "./star": {
-      "types": "./dist/icons/star.icon.d.ts",
-      "import": "./dist/icons/star.icon.js"
-    },
-    "./user": {
-      "types": "./dist/icons/user.icon.d.ts",
-      "import": "./dist/icons/user.icon.js"
+    "./*": {
+      "types": "./dist/icons/*.icon.d.ts",
+      "import": "./dist/icons/*.icon.js"
     }
   },
   "publishConfig": {

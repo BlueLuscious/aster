@@ -23,7 +23,10 @@ export class AsterCatalogueProvider implements CatalogueProvider {
    * @returns Immutable snapshot derived from canonical `@aster/icons` values.
    */
   async load(): Promise<CatalogueSnapshot> {
-    const { AsterCollections, AsterIcons } = await import("@aster/icons");
+    const [{ AsterIcons }, { AsterCollections }] = await Promise.all([
+      import("@aster/icons"),
+      import("@aster/icons/collections"),
+    ]);
     return this.#snapshots.create(AsterIcons, AsterCollections);
   }
 }
