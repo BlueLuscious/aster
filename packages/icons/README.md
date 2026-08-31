@@ -2,9 +2,10 @@
 
 Canonical portable TypeScript icon and collection definitions for Aster.
 
-The package depends only on `@aster/core`. It provides one isolated public subpath per icon and
-explicit immutable root indexes for complete icon and collection discovery. It contains no
-renderer, framework, DOM, filesystem, Import, or global catalogue dependency.
+The package depends only on `@aster/core`. Its root provides named icons and the complete immutable
+icon index. Collections use a separate public family, while every icon and collection also retains
+an isolated public subpath. It contains no renderer, framework, DOM, filesystem, Import, or global
+catalogue dependency.
 The example below assumes `@aster/svg` is installed independently by the consumer.
 
 ```ts

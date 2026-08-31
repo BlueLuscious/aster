@@ -34,11 +34,21 @@ Core rejects duplicate logical identity only within one collection.
 ## Imports
 
 ```ts
+import {
+  AsterCollection,
+  AsterCollections,
+} from "@aster/icons/collections";
+```
+
+An isolated collection import avoids evaluating the complete collection index:
+
+```ts
 import { AsterCollection } from "@aster/icons/collections/aster";
 ```
 
-The package root also provides the collection as a convenience. Isolated per-icon imports never
-load it or any sibling icon.
+The family subpath provides complete collection discovery; the isolated subpath loads only the
+selected collection and its declared icon members. The icon-only package root does not expose
+collections.
 
 `AsterCollections` supports complete package discovery without making a collection the owner of
 the icon catalogue. Registering or removing a collection changes derived membership only; it does

@@ -3,8 +3,8 @@
 Status: **Experimental**
 
 `@aster/icons` owns canonical portable TypeScript icon definitions, independently defined
-collections, and explicit immutable indexes for complete package discovery. It exposes a
-convenience root, one isolated public subpath per icon, and one explicit subpath per collection.
+collections, and explicit immutable indexes for complete package discovery. It exposes an
+icon-only convenience root, one isolated short subpath per icon, and a separate collection family.
 
 ## Responsibilities
 
@@ -48,23 +48,31 @@ packages without changing this boundary.
 
 ## Public Exports
 
-The root re-exports named definitions and complete immutable indexes as conveniences:
+The root re-exports named icon definitions and the complete immutable icon index:
 
 ```ts
 import {
   ArrowLeft,
-  AsterCollections,
   AsterIcons,
   Search,
 } from "@aster/icons";
 ```
 
-`AsterIcons` enumerates every canonical icon independently from membership. `AsterCollections`
-enumerates every canonical collection independently from icon discovery. Adding a source module
-does not cause runtime filesystem discovery: package authors explicitly register each accepted
-definition in its corresponding index.
+`AsterIcons` enumerates every canonical icon independently from membership. Collections do not
+leak through the icon root; their complete family is explicit:
 
-The canonical collection can be imported from the root or its explicit subpath:
+```ts
+import {
+  AsterCollection,
+  AsterCollections,
+} from "@aster/icons/collections";
+```
+
+`AsterCollections` enumerates every canonical collection independently from icon discovery. Adding
+a source module does not cause runtime filesystem discovery: package authors explicitly register
+each accepted definition in its corresponding index.
+
+The canonical collection can also be imported through its isolated subpath:
 
 ```ts
 import { AsterCollection } from "@aster/icons/collections/aster";
@@ -95,8 +103,9 @@ value to a renderer or adapter.
 Importing `AsterCollection` evaluates the collection module and its declared members. The
 collection retains the same canonical icon objects and does not reconstruct or modify them.
 
-Importing the package root also evaluates `AsterIcons` and `AsterCollections`. Isolated per-icon
-subpaths remain independent from both indexes, collections and sibling definitions.
+Importing the package root evaluates `AsterIcons` but no collection module. Importing
+`@aster/icons/collections` evaluates `AsterCollections`. Isolated definition subpaths remain
+independent from their family index and sibling definitions.
 
 The package's authoring and SVG review relationship is defined by the
 [Aster Collection Authoring Workflow](../../collections/aster/authoring-workflow.md).
