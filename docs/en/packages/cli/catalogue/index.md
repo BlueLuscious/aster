@@ -31,9 +31,11 @@ catalogue results until explicit lookup rules resolve or reject them.
 ## Public API
 
 `AsterCatalogue` is the explicit built-in `CatalogueProvider`. Its snapshot adapts
-`AsterCollection` and the collection's current canonical icon set from `@aster/icons`. It does not
-register itself globally or become a default inside `AsterCommands`; a standalone or programmatic
-host must include it in `AsterCommandContext.catalogues`.
+`AsterIcons` and `AsterCollections` from `@aster/icons`. It derives sorted memberships from every
+collection while preserving standalone icons and empty collections. Duplicate indexed identities,
+unknown members, and members that are not the indexed canonical definition reject provider loading.
+The provider does not register itself globally or become a default inside `AsterCommands`; a
+standalone or programmatic host must include it in `AsterCommandContext.catalogues`.
 
 ## Loading lifecycle
 

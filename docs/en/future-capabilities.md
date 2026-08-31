@@ -57,11 +57,6 @@ evidence, `generate` creates code or integration artefacts, and `import` adopts 
 No command may silently install dependencies, overwrite files, infer ownership from a directory
 name, or move filesystem authority into a host-neutral command.
 
-Before the first standalone icon or second collection becomes canonical, `@aster/icons` should
-expose independent immutable icon and collection indexes and the built-in CLI provider should
-adapt both. This preserves discovery of icons without collection membership and empty collections
-without assigning catalogue concerns to portable definitions.
-
 ## Command-set extraction and Flora integration
 
 Importance: **P2 - Conditional**

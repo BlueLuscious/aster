@@ -3,7 +3,7 @@
 Status: **Experimental**
 
 The `icons` feature contains one canonical TypeScript module and one named immutable value per
-pilot icon.
+pilot icon. `AsterIcons` is the complete immutable package index over those independent values.
 
 Canonical source modules use `<icon-slug>.icon.ts`. The semantic role remains internal to the
 source layout: public imports omit it and retain `@aster/icons/<icon-slug>`.
@@ -39,6 +39,11 @@ Every icon:
 - remains below the provisional primitive budget;
 - exports through `@aster/icons/<icon-slug>`.
 
+`AsterIcons` retains the canonical definitions in identity order. Registration in this index makes
+an icon available to complete-package consumers such as the built-in CLI catalogue without adding
+collection membership. It is a package-owned sequence, not a mutable runtime registry or source
+discovery service.
+
 Only `ArrowLeft` uses the `mirror` RTL policy. The remaining pilot identities preserve geometry in
 RTL because their metaphors are not directional.
 
@@ -48,8 +53,8 @@ The pilot retains display name, RTL policy, presentation policy, licence, attrib
 deprecation state, replacement relationship semantics, and intrinsic search tags supported by
 Core.
 
-Aliases, collection-specific categories, review notes, computed metrics, and search indexes are
-not embedded. They require an opt-in catalogue consumer and must not become dependencies of an
+Aliases, collection-specific categories, review notes, computed metrics, and provider search terms
+are not embedded. They require an opt-in catalogue consumer and must not become dependencies of an
 isolated icon module.
 
 ## Isolation

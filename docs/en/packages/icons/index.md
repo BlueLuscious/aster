@@ -2,9 +2,9 @@
 
 Status: **Experimental**
 
-`@aster/icons` owns canonical portable TypeScript icon definitions and the independently defined
-Experimental Aster collection. It exposes a convenience root, one isolated public subpath per
-icon, and one explicit collection subpath.
+`@aster/icons` owns canonical portable TypeScript icon definitions, independently defined
+collections, and explicit immutable indexes for complete package discovery. It exposes a
+convenience root, one isolated public subpath per icon, and one explicit subpath per collection.
 
 ## Responsibilities
 
@@ -13,11 +13,11 @@ The package:
 - authors each icon as one immutable `Icon.define(...)` value;
 - applies [shared internal authoring defaults](shared/index.md) without embedding collection
   membership;
-- exposes the [representative icon set](icons/index.md);
-- exposes the independent [Aster collection](collections/index.md);
+- exposes the [representative icon set](icons/index.md) and its `AsterIcons` index;
+- exposes the independent [Aster collection](collections/index.md) and `AsterCollections` index;
 - preserves canonical namespace, icon, and RTL identity;
 - retains effective artwork licence and attribution;
-- supports tree-shakable per-icon imports without a catalogue registry.
+- supports tree-shakable per-icon imports without an ambient catalogue registry.
 
 The package does not render SVG, create framework components, access DOM or filesystem APIs,
 import SVG sources, run Import, discover paths, or own repository tooling.
@@ -48,11 +48,21 @@ packages without changing this boundary.
 
 ## Public Exports
 
-The root re-exports the complete pilot as a convenience:
+The root re-exports named definitions and complete immutable indexes as conveniences:
 
 ```ts
-import { ArrowLeft, Search } from "@aster/icons";
+import {
+  ArrowLeft,
+  AsterCollections,
+  AsterIcons,
+  Search,
+} from "@aster/icons";
 ```
+
+`AsterIcons` enumerates every canonical icon independently from membership. `AsterCollections`
+enumerates every canonical collection independently from icon discovery. Adding a source module
+does not cause runtime filesystem discovery: package authors explicitly register each accepted
+definition in its corresponding index.
 
 The canonical collection can be imported from the root or its explicit subpath:
 
@@ -67,8 +77,8 @@ import { ArrowLeft } from "@aster/icons/arrow-left";
 import { Search } from "@aster/icons/search";
 ```
 
-No manifest, global registry, renderer, generated wrapper, implementation path, or undeclared
-subpath is public. The package currently has no variants.
+No mutable registry, renderer, generated wrapper, implementation path, or undeclared subpath is
+public. The package currently has no variants.
 
 ## Execution Flow
 
@@ -84,6 +94,9 @@ value to a renderer or adapter.
 
 Importing `AsterCollection` evaluates the collection module and its declared members. The
 collection retains the same canonical icon objects and does not reconstruct or modify them.
+
+Importing the package root also evaluates `AsterIcons` and `AsterCollections`. Isolated per-icon
+subpaths remain independent from both indexes, collections and sibling definitions.
 
 The package's authoring and SVG review relationship is defined by the
 [Aster Collection Authoring Workflow](../../collections/aster/authoring-workflow.md).

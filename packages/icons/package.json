@@ -1,7 +1,7 @@
 {
   "name": "@aster/icons",
   "version": "0.0.0",
-  "description": "Canonical portable definitions for the Experimental Aster icon collection.",
+  "description": "Canonical portable Aster icon and collection definitions.",
   "type": "module",
   "author": "BlueLuscious",
   "license": "ISC",

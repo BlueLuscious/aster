@@ -2,7 +2,11 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import type { IconDefinition } from "@aster/core";
-import { AsterCollection } from "../../src/collections/index.js";
+import {
+  AsterCollection,
+  AsterCollections,
+} from "../../src/collections/index.js";
+import { AsterIcons } from "../../src/icons/index.js";
 import * as icons from "../../src/icons/index.js";
 
 const expectedSymbols = [
@@ -76,12 +80,20 @@ function numericGeometryValues(definition: IconDefinition): readonly number[] {
 }
 
 test("exports the exact representative pilot set", () => {
-  assert.deepEqual(Object.keys(icons).sort(), [...expectedSymbols].sort());
-  assert.equal(Object.keys(icons).length, 16);
+  assert.deepEqual(
+    Object.keys(icons).sort(),
+    ["AsterIcons", ...expectedSymbols].sort(),
+  );
+  assert.equal(AsterIcons.length, 16);
+  assert.deepEqual(
+    AsterIcons,
+    expectedSymbols.map((symbol) => icons[symbol]),
+  );
+  assert.ok(Object.isFrozen(AsterIcons));
 });
 
 test("keeps every definition aligned with shared authoring defaults", () => {
-  const definitions = Object.values(icons);
+  const definitions = AsterIcons;
   const identities = new Set<string>();
 
   for (const definition of definitions) {
@@ -140,9 +152,11 @@ test("keeps every definition aligned with shared authoring defaults", () => {
 
 test("retains the complete pilot through independent collection membership", () => {
   assert.equal(AsterCollection.identity.name, "aster");
-  assert.deepEqual(AsterCollection.icons, Object.values(icons));
+  assert.deepEqual(AsterCollection.icons, AsterIcons);
+  assert.deepEqual(AsterCollections, [AsterCollection]);
+  assert.ok(Object.isFrozen(AsterCollections));
 
-  for (const definition of Object.values(icons)) {
+  for (const definition of AsterIcons) {
     assert.ok(AsterCollection.icons.includes(definition));
   }
 

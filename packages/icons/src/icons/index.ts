@@ -14,3 +14,4 @@ export { Search } from "./search.icon.js";
 export { Settings } from "./settings.icon.js";
 export { Star } from "./star.icon.js";
 export { User } from "./user.icon.js";
+export { AsterIcons } from "./constants/aster-icons.constant.js";

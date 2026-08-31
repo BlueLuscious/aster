@@ -45,8 +45,20 @@ test("exposes the exact documented root and per-icon values", async () => {
 
   assert.deepEqual(
     Object.keys(root).sort(),
-    ["AsterCollection", ...Object.values(iconSubpaths)].sort(),
+    [
+      "AsterCollection",
+      "AsterCollections",
+      "AsterIcons",
+      ...Object.values(iconSubpaths),
+    ].sort(),
   );
+  assert.deepEqual(
+    root.AsterIcons,
+    Object.values(iconSubpaths).map((symbol) => root[symbol]),
+  );
+  assert.deepEqual(root.AsterCollections, [root.AsterCollection]);
+  assert.ok(Object.isFrozen(root.AsterIcons));
+  assert.ok(Object.isFrozen(root.AsterCollections));
 
   for (const [subpath, symbol] of Object.entries(iconSubpaths)) {
     const direct = await import(`@aster/icons/${subpath}`);
@@ -61,9 +73,7 @@ test("exposes the exact documented root and per-icon values", async () => {
   );
 
   assert.equal(AsterCollection, root.AsterCollection);
-  assert.deepEqual(AsterCollection.icons, Object.values(iconSubpaths).map(
-    (symbol) => root[symbol],
-  ));
+  assert.deepEqual(AsterCollection.icons, root.AsterIcons);
 });
 
 test("rejects implementation and undeclared internal subpaths", async () => {

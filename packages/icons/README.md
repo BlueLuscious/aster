@@ -1,9 +1,10 @@
 # @aster/icons
 
-Canonical portable TypeScript definitions for the Experimental Aster icon collection.
+Canonical portable TypeScript icon and collection definitions for Aster.
 
 The package depends only on `@aster/core`. It provides one isolated public subpath per icon and
-contains no renderer, framework, DOM, filesystem, Build, or global catalogue dependency.
+explicit immutable root indexes for complete icon and collection discovery. It contains no
+renderer, framework, DOM, filesystem, Import, or global catalogue dependency.
 The example below assumes `@aster/svg` is installed independently by the consumer.
 
 ```ts
