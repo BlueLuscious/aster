@@ -33,6 +33,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | 8 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
 | 9 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
 | 10 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 11 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
 
 ## Catalogue and command expansion
 
@@ -200,6 +201,40 @@ An independent project should expose host-neutral kernels and a small explicit p
 boundary. Aster would consume it only as development tooling and retain thin process entrypoints.
 Do not extract by copying every verifier, introducing automatic rule discovery or mutable global
 registries, or combining contributor tooling with the user-facing multi-ecosystem CLI.
+
+## Aster Studio
+
+Importance: **P4 - Deferred**
+
+`@aster/studio` is a provisional name for a future Lilium web application dedicated to interactive
+Aster authoring. It is not a current package boundary, release prerequisite, or reason for Core,
+Icons, SVG, Import, or CLI to depend on Lilium. A broader Garden workbench may eventually host the
+same Aster experience, but cross-project composition must not move Aster domain behaviour into an
+unrelated product.
+
+The proposed application would maintain one explicit mutable authoring draft and project it into:
+
+- an interactive vector canvas with selectable nodes, points, snapping, grid, and safe-area guides;
+- a numeric inspector for geometry, presentation, identity, metadata, and tags;
+- live TypeScript and SVG representations;
+- explicit TypeScript and SVG import, copy, download, and export operations;
+- standalone-icon and collection-member modes with collection-owned authoring constraints.
+
+The draft, rather than the canvas or either text representation, should remain the editing
+authority. Visual changes may regenerate TypeScript and SVG immediately. Applying edited SVG may
+use the explicit Import boundary, while editable TypeScript requires a finite accepted authoring
+grammar and must never execute arbitrary source. Invalid text should preserve the last valid draft
+and expose diagnostics rather than partially changing geometry.
+
+Collection grid, safe-area, and view-box constraints require an authoring-profile decision based
+on real collection work. They must not be added to portable `CollectionDefinition` merely to serve
+one editor. Member editing may lock strict collection values, while editing the collection profile
+itself remains a separate higher-authority operation.
+
+Begin Studio only after static `aster review` evidence and sustained manual authoring demonstrate
+which interactive operations, history, parsing, and persistence boundaries are actually needed.
+Extract a headless authoring package only if the application reveals reusable draft, command,
+diagnostic, serialisation, or undo contracts independent from its Lilium UI.
 
 ## Lilium adapter
 
