@@ -13,7 +13,7 @@ The standalone Node package also exposes the `aster` executable:
 pnpm exec aster list icons
 pnpm exec aster search camera --json
 pnpm exec aster show icon aster/camera
-pnpm exec aster export icon aster/camera --raw
+pnpm exec aster export icon aster/camera
 pnpm exec aster export collection aster --output ./icons
 ```
 
