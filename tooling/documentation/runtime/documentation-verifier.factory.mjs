@@ -30,7 +30,7 @@ export class DocumentationVerifierFactory {
         new DocumentationHierarchyInspector(fileSystem, paths),
         new PackageDocumentationMirroringInspector(directories, paths),
       ],
-      new CanonicalDocumentReader(fileSystem, files),
+      new CanonicalDocumentReader(fileSystem, files, paths),
       new CanonicalDocumentInspector([
         new LocalReferencePolicy(paths),
         new LocalLinkPolicy(fileSystem, new MarkdownLinkTargetExtractor(), paths),

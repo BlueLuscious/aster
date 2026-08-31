@@ -87,26 +87,10 @@ The current `@aster/cli` package is a complete standalone product. It owns both 
 `AsterCommands` composition and the private Node shell; neither `@aster/commands` nor
 `@aster/flora` exists or forms part of the supported ABI.
 
-If an independent Flora consumer and stable Flora plugin contract demonstrate a separate
-installation or versioning need, the host-neutral domain may be extracted without inverting
-dependencies:
-
-```text
-@aster/commands <---- @aster/cli
-        ^
-        |
-@aster/flora -------> @flora/core
-```
-
-`@aster/commands` would retain structured Aster invocations, explicit contexts, catalogue
-selection, and immutable export plans. `@aster/cli` would remain the standalone executable and
-default Icons composition. `@aster/flora` would adapt the same Aster command domain to Flora's
-public plugin ABI; Flora would not acquire Aster domain behaviour and portable Aster packages
-would not depend on either host.
-
-Extraction is not authorised merely to reorganise files. Until both triggers exist, the current
-package boundary remains canonical. Broader product sequencing is recorded by
-[Future Flora Integration](../../future-capabilities.md#future-flora-integration).
+Extraction is not authorised merely to reorganise files, and no current package depends on a Flora
+contract. The independent-consumer trigger, prospective package roles, and required dependency
+direction belong to
+[Command-set Extraction and Flora Integration](../../future-capabilities.md#command-set-extraction-and-flora-integration).
 
 ## Conformance evidence
 

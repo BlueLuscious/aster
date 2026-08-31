@@ -17,13 +17,21 @@ export class CanonicalDocumentReader {
   #files;
 
   /**
+   * @description Repository path relation and presentation capability.
+   * @type {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver}
+   */
+  #paths;
+
+  /**
    * @description Creates a canonical Markdown reader.
    * @param {import("../../shared/contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem} fileSystem - Repository text acquisition capability.
    * @param {import("../../shared/runtime/repository-file.walker.mjs").RepositoryFileWalker} files - Deterministic repository file walker.
+   * @param {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver} paths - Repository path capability.
    */
-  constructor(fileSystem, files) {
+  constructor(fileSystem, files, paths) {
     this.#fileSystem = fileSystem;
     this.#files = files;
+    this.#paths = paths;
   }
 
   /**
@@ -32,9 +40,21 @@ export class CanonicalDocumentReader {
    * @returns {Promise<readonly import("../types/internal/canonical-document.type.mjs").TCanonicalDocument[]>} Ordered canonical documents.
    */
   async read(documentationRoot) {
-    const paths = await this.#files.collect(documentationRoot, (path) =>
-      path.endsWith(documentationHierarchy.markdownExtension),
-    );
+    const paths = await this.#files.collect(documentationRoot, (path) => {
+      if (!path.endsWith(documentationHierarchy.markdownExtension)) {
+        return false;
+      }
+
+      const relativePath = this.#paths.display(documentationRoot, path);
+
+      if (documentationHierarchy.canonicalFiles.includes(relativePath)) {
+        return true;
+      }
+
+      return documentationHierarchy.canonicalDirectories.some((directory) =>
+        relativePath.startsWith(`${directory}/`),
+      );
+    });
     const documents = [];
 
     for (const path of paths) {

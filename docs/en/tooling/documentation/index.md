@@ -27,7 +27,8 @@ feature-owned policies. `DocumentationVerifier` preserves this stable execution 
 
 1. `DocumentationHierarchyInspector` verifies required canonical entries.
 2. `PackageDocumentationMirroringInspector` compares real and documented package membership.
-3. `CanonicalDocumentReader` acquires every Markdown document once in deterministic order.
+3. `CanonicalDocumentReader` acquires Markdown only from the accepted canonical roots and files,
+   once and in deterministic order.
 4. `CanonicalDocumentInspector` applies local-reference and local-link policies to each document.
 
 `DocumentationIssueCollector` accumulates every policy finding in inspection order. Filesystem
@@ -66,7 +67,7 @@ Closed documentation vocabulary is owned by immutable feature constants:
 
 | Authority | Responsibility |
 | --- | --- |
-| `documentationHierarchy` | Canonical root, package root, Markdown extension, and required entries. |
+| `documentationHierarchy` | Canonical root, accepted directories and files, package root, Markdown extension, and required entries. |
 | `localReferenceRules` | Forbidden contributor-local reference patterns and stable labels. |
 | `markdownLinkRules` | Local link extraction and external-scheme classification grammar. |
 
@@ -78,6 +79,6 @@ general documentation-quality score.
 ## Tests
 
 Fixture tests create self-contained temporary canonical hierarchies and exercise accepted roots,
-package mirroring, collection independence, broken links, and local references. Focused tests
-verify every isolated inspector or policy, local-link extraction, per-document ordering, explicit
-roots, acquisition count, and overall orchestration.
+package mirroring, collection independence, non-canonical-root exclusion, broken links, and local
+references. Focused tests verify every isolated inspector or policy, local-link extraction,
+per-document ordering, explicit roots, acquisition count, and overall orchestration.

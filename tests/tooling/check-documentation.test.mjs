@@ -74,6 +74,25 @@ test("accepts collection documentation without a prescribed source root", async 
   }
 });
 
+test("ignores Markdown outside the accepted canonical hierarchy", async () => {
+  const root = await createFixture();
+
+  try {
+    await writeDocument(
+      root,
+      "docs/en/garden/index.md",
+      "# Garden\n\n[Missing](missing.md)\n\nSee plans/private.md.\n",
+    );
+
+    const result = await verifyDocumentation(root);
+
+    assert.deepEqual(result.issues, []);
+    assert.equal(result.markdownFileCount, 6);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("rejects broken links and local-only references", async () => {
   const root = await createFixture();
 

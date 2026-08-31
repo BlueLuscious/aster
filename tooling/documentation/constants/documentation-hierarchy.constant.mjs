@@ -6,6 +6,13 @@ export const documentationHierarchy = Object.freeze({
   packages: "packages",
   index: "index.md",
   markdownExtension: ".md",
+  canonicalDirectories: Object.freeze([
+    "collections",
+    "packages",
+    "project",
+    "tooling",
+  ]),
+  canonicalFiles: Object.freeze(["future-capabilities.md", "index.md"]),
   requiredEntries: Object.freeze([
     "index.md",
     "collections/index.md",
