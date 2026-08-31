@@ -25,15 +25,16 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | --- | --- | --- | --- |
 | 1 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics, and persistence together. |
 | 2 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 3 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 4 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 5 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
-| 6 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 7 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 8 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 9 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 10 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 11 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 3 | `P1` | Define scalable Icons distribution and acquisition. | Before the first supported Icons release or material growth beyond the pilot corpus. |
+| 4 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 5 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 6 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
+| 7 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 8 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 9 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 10 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 11 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 12 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
 
 ## Catalogue and command expansion
 
@@ -56,6 +57,43 @@ These commands remain distinct. `add` changes consumer integration, `review` cre
 evidence, `generate` creates code or integration artefacts, and `import` adopts external artwork.
 No command may silently install dependencies, overwrite files, infer ownership from a directory
 name, or move filesystem authority into a host-neutral command.
+
+## Icons distribution and acquisition
+
+Importance: **P1 - High**
+
+The current experimental `@aster/icons` manifest enumerates one public export entry per pilot icon.
+That is exact for a small corpus but does not remain maintainable for hundreds or thousands of
+definitions. Before the first supported Icons release or material corpus growth, replace explicit
+per-definition manifest entries with an accepted scalable import surface.
+
+The near-term design should evaluate these distinct public families:
+
+- `.` for the deliberate package facade or complete catalogue;
+- `./icons` and `./collections` for complete family indexes;
+- `./icons/*` and `./collections/*` pattern exports for isolated definitions;
+- an optional `./catalogue` subpath if complete discovery should not make the root eager.
+
+Pattern targets must map only to canonical `*.icon` and `*.collection` modules so constants,
+implementation modules and internal folders remain inaccessible. Full-family barrels and catalogue
+indexes may evaluate their complete graphs; isolated pattern imports must preserve the current
+single-definition module boundary and tree-shaking evidence.
+
+Package exports and package acquisition are separate concerns. Subpath imports can prevent
+unrelated modules from entering runtime evaluation or a consumer bundle, but installing one npm
+package still acquires its complete tarball. Downloading only selected icons or one collection
+requires a different distribution product, such as independently versioned collection packages or
+an explicit `aster add` vendoring workflow backed by a defined source and ownership policy.
+
+Do not split packages solely from an estimated future icon count. First measure packed size,
+installation cost, bundle behaviour, collection overlap, versioning pressure, licensing boundaries
+and real consumer demand. A collection-package model must resolve icons shared by several
+collections without accidental duplicate ownership. Selective CLI acquisition must define source
+integrity, provenance, updates, conflicts and removal before writing consumer files.
+
+If manual index and barrel maintenance becomes error-prone, consider deterministic repository-time
+generation from canonical icon modules. Generated indexes must retain a declared source of truth,
+verification and cleanup boundary; runtime filesystem scanning remains prohibited.
 
 ## Command-set extraction and Flora integration
 
