@@ -4,17 +4,21 @@
 export const documentationHierarchy = Object.freeze({
   root: "docs/en",
   packages: "packages",
-  decisions: "decisions",
   index: "index.md",
-  template: "template.md",
   markdownExtension: ".md",
+  canonicalDirectories: Object.freeze([
+    "collections",
+    "packages",
+    "project",
+    "tooling",
+  ]),
+  canonicalFiles: Object.freeze(["future-capabilities.md", "index.md"]),
   requiredEntries: Object.freeze([
     "index.md",
-    "architecture/index.md",
     "collections/index.md",
-    "decisions/index.md",
-    "governance/index.md",
+    "future-capabilities.md",
     "packages/index.md",
+    "project/index.md",
     "tooling/index.md",
   ]),
 });

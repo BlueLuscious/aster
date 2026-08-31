@@ -37,13 +37,24 @@ the same definitions remain directly usable without importing or consulting that
 
 The [pilot reference set](reference-set.md) contains sixteen canonical Experimental definitions
 and records the current structural and curatorial evidence.
-The package is not release quality and must not be presented as an Active collection before
+The collection is not release quality and must not be presented as an Active collection before
 curatorial and release evidence is accepted.
 
-The project-wide distinction between an Experimental identity and an Active collection is defined
-by [Collection and Source Boundary](../../architecture/collection-and-source-boundary.md).
-Source and generated-output ownership is defined by
-[Source Assets and Generated Outputs](../../governance/source-assets-and-generated-outputs.md).
+## Source and derived artefacts
+
+Each committed icon has one canonical editable `.icon.ts` module in `@aster/icons`. The collection
+module aggregates those definitions but does not own their geometry or intrinsic metadata. No
+Illustrator master, imported SVG, filename convention or generated manifest is an alternative
+canonical source for the current set.
+
+SVG produced by `@aster/svg` or `aster export` is derived review or distribution output. It may be
+deleted and reproduced from the TypeScript definition and must never be edited as source. Import
+may adopt external artwork into an editable module, but the acquired input and Import lifecycle
+cease to be dependencies once that module is reviewed and accepted.
+
+BlueLuscious authored and curates the current original artwork under ISC. Third-party material
+requires explicit provenance, compatible artwork licensing and curatorial acceptance before it can
+join this collection; repository software licensing cannot supply missing artwork authority.
 
 ## Initial Variant Policy
 
@@ -57,7 +68,11 @@ Promotion beyond Experimental requires:
 
 - representative canonical icon sources;
 - repeatable derived-artefact generation where applicable;
-- automated technical and collection-rule reports;
+- passing package, workflow and implemented collection-rule checks;
 - curator-approved reference icons and exception records;
 - review evidence at the default and minimum display sizes;
 - an accepted distribution and versioning boundary.
+
+Automation cannot infer recognisability, optical balance or artistic consistency. Curatorial
+approval cannot override portable validity, provenance, licensing, deterministic output or public
+compatibility failures.

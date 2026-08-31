@@ -19,6 +19,19 @@ The private `IExportOutputFileSystem` contract limits publication to existence c
 creation, exclusive text creation, directory rename, and current-stage removal. Resolved
 locations, staged entries, publication evidence, and error kinds remain internal output types.
 
+## Internal types
+
+| Type | Responsibility |
+| --- | --- |
+| `TExportOutputLocation` | Carries the absolute target, unique sibling stage, and their shared parent. |
+| `TExportOutputEntry` | Maps one validated logical artefact to its absolute staged destination and parent. |
+| `TExportOutputPublication` | Reports target, artefact count, and whether a visible output tree was committed. |
+| `TExportOutputErrorKind` | Derives the closed private output failure family from `exportOutputErrorKinds`. |
+
+These types remain private because absolute paths, staging and filesystem failure classification
+belong only to the standalone Node host. The public command result retains logical artefacts and
+stable Aster diagnostics instead.
+
 ## Publication guarantees
 
 The supplied current directory must be absolute, preventing path resolution from consulting

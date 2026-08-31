@@ -22,6 +22,10 @@ output root, read or write files, or mutate process state.
 | `AsterIconExportOptionsType` | Extends common export options with one icon's optional accessible label and title. | Accepted only by the icon invocation variant. |
 | `exportTargets` | Immutable runtime authority for supported export targets. | Currently contains only `svg`. |
 
+The internal `TExportSelection` type carries the exact provider, subject, requested identity, and
+canonically ordered definitions prepared for rendering. It separates catalogue lookup evidence
+from the public artefact plan and never becomes observable after a failed render.
+
 ## Runtime composition
 
 `ExportOptionsNormaliser` validates, copies, and freezes the closed programmatic option record.
@@ -65,5 +69,5 @@ No partial plan is observable after member, path, or render failure. Equivalent 
 order, collection membership order, and canonical invocation values produce byte-equivalent plans.
 Filesystem publication remains a separate standalone-host responsibility. The current shell can
 publish this complete plan beneath an explicit absent output root, but no filesystem capability is
-added to these contracts. The broader boundary is defined by the
-[Command-line Boundary](../../../architecture/command-line-boundary.md#export-boundary).
+added to these contracts. [CLI Shell Output](../shell/output/index.md) defines that private effect
+boundary, and [CLI Workflow](../workflow.md) defines their composition.

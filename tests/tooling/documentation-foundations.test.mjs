@@ -3,7 +3,6 @@ import { resolve } from "node:path";
 import test from "node:test";
 
 import { CanonicalDocumentInspector } from "../../tooling/documentation/runtime/canonical-document.inspector.mjs";
-import { DecisionRecordInspector } from "../../tooling/documentation/runtime/decision-record.inspector.mjs";
 import { DocumentationHierarchyInspector } from "../../tooling/documentation/runtime/documentation-hierarchy.inspector.mjs";
 import { DocumentationIssueCollector } from "../../tooling/documentation/runtime/documentation-issue.collector.mjs";
 import { DocumentationVerifier } from "../../tooling/documentation/runtime/documentation-verifier.mjs";
@@ -35,7 +34,7 @@ test("reports required hierarchy entries through an injected filesystem", async 
   const inspector = new DocumentationHierarchyInspector(
     {
       async exists(path) {
-        return !path.replaceAll("\\", "/").endsWith("governance/index.md");
+        return !path.replaceAll("\\", "/").endsWith("project/index.md");
       },
     },
     paths,
@@ -52,7 +51,7 @@ test("reports required hierarchy entries through an injected filesystem", async 
   );
 
   assert.deepEqual(issues.snapshot(), [
-    "Missing canonical documentation entry: docs/en/governance/index.md",
+    "Missing canonical documentation entry: docs/en/project/index.md",
   ]);
 });
 
@@ -120,46 +119,6 @@ test("applies local-reference and link policies in document order", async () => 
   ]);
 });
 
-test("reports malformed decision records after document-level inspection", async () => {
-  const paths = new RepositoryPathResolver();
-  const workspaceRoot = resolve("fixture");
-  const documentationRoot = resolve(workspaceRoot, "docs/en");
-  const issues = new DocumentationIssueCollector();
-  const inspector = new DecisionRecordInspector(
-    {
-      async readText() {
-        throw new Error("Decision index should be acquired once");
-      },
-    },
-    paths,
-  );
-
-  await inspector.inspect(
-    {
-      workspaceRoot,
-      documentationRoot,
-      documents: [
-        {
-          path: resolve(documentationRoot, "decisions/index.md"),
-          content: "# Decisions\n",
-        },
-        {
-          path: resolve(documentationRoot, "decisions/0001-fixture.md"),
-          content: "# Wrong\n\nStatus: **Draft**\n",
-        },
-      ],
-    },
-    issues,
-  );
-
-  assert.deepEqual(issues.snapshot(), [
-    "docs/en/decisions/0001-fixture.md has no matching decision heading",
-    "docs/en/decisions/0001-fixture.md has no accepted decision status",
-    "docs/en/decisions/0001-fixture.md has no consequences section",
-    "docs/en/decisions/0001-fixture.md is missing from the decision index",
-  ]);
-});
-
 test("coordinates explicit roots, acquisition and policy order", async () => {
   const paths = new RepositoryPathResolver();
   const observed = [];
@@ -184,19 +143,13 @@ test("coordinates explicit roots, acquisition and policy order", async () => {
         issues.add("document issue");
       },
     },
-    {
-      async inspect(context, issues) {
-        observed.push(context.documents.length);
-        issues.add("decision issue");
-      },
-    },
     paths,
   );
   const workspaceRoot = resolve("explicit-workspace");
 
   assert.deepEqual(await verifier.verify(workspaceRoot), {
-    issues: ["root issue", "document issue", "decision issue"],
+    issues: ["root issue", "document issue"],
     markdownFileCount: 1,
   });
-  assert.deepEqual(observed, [workspaceRoot, resolve(workspaceRoot, "docs/en"), 1, 1]);
+  assert.deepEqual(observed, [workspaceRoot, resolve(workspaceRoot, "docs/en"), 1]);
 });

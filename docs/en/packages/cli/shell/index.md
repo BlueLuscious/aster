@@ -104,5 +104,6 @@ complete shell tree. The referenced shell project consumes host-neutral declarat
 types, and emits only the private binary modules. Importing `@aster/cli` resolves only the
 side-effect-free programmatic root and never evaluates the entrypoint.
 
-The authoritative command and output semantics are defined by the
-[Command-line Boundary](../../../architecture/command-line-boundary.md).
+Host-neutral command semantics remain authoritative in [CLI Command](../command/index.md) and
+[CLI Export](../export/index.md). [CLI Workflow](../workflow.md) defines how this private adapter
+composes them without transferring Node authority into the public root.

@@ -35,5 +35,7 @@ Nodes are read-only and retain paint order. The contract documents that the sequ
 but cardinality, finite numbers, positive dimensions, canonical strings, and deep immutability are
 runtime invariants rather than compile-time claims.
 
-Canonical identity and naming authority are defined by
-[Metadata and Identity Boundary](../../../architecture/metadata-and-identity-boundary.md).
+`IconIdentity` is the canonical portable identity authority. Display names, filenames, TypeScript
+symbols, package subpaths, catalogues, and collection memberships neither replace nor extend it.
+Source adapters may map their own identifiers to this shape, but Core alone validates the final
+namespace, name, and variant accepted by a definition.

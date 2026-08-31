@@ -49,9 +49,8 @@ Export accepts an exact icon or collection identity, an optional provider filter
 portable option record. Icon export additionally accepts `label` and `title`. The complete export
 contracts and execution flow are documented by [CLI Export](../export/index.md).
 
-The exact implemented standalone grammar remains canonical in the
-[Command-line Boundary](../../../architecture/command-line-boundary.md). Node token parsing and
-output publication are not part of the command kernel.
+The exact implemented standalone grammar is documented by [CLI Shell](../shell/index.md). Node
+token parsing and output publication are not part of the command kernel.
 
 ## Runtime
 

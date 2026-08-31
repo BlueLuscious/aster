@@ -89,9 +89,11 @@ without that membership and can be retained by additional collections without mu
 - remains disposable review evidence outside package distribution.
 
 No derived collection SVG is committed by the current workflow. Persistent SVG distribution has
-an accepted but unimplemented `aster export` boundary; reproducible visual-review composition
-remains deferred to `aster review`. Those commands must own their output and cleanup policies
-without moving filesystem authority into Icons, Core, or SVG.
+an implemented `aster export` boundary that can return a headless plan, write one icon to stdout,
+or publish a complete collection beneath an explicit absent output root. Exported SVG remains
+derived and disposable rather than canonical collection source. Reproducible contact-sheet and
+visual-review composition remains deferred to `aster review`; that future command must own its
+outputs without moving filesystem authority into Icons, Core, or SVG.
 
 ## Optional SVG Import
 
@@ -126,3 +128,19 @@ automated and curatorial review
 ```
 
 Generated markup is observation evidence. It is never the location of a correction.
+
+## Review and acceptance
+
+One collection change is reviewed through distinct evidence layers:
+
+1. Package and workflow checks validate portable structure, identity, shared presentation,
+   membership, deterministic rendering and implemented geometric constraints.
+2. Geometric guidance identifies safe-area, complexity and optical questions without pretending
+   every visual exception is a programming failure.
+3. Human review compares reference icons, semantic neighbours and output at `16px` and `24px` for
+   recognisability, balance, weight, consistency and technical cleanliness.
+4. The named curator accepts the resulting icon and any explicit collection exception.
+
+A geometry change records before-and-after visual evidence at representative sizes. New artwork
+also records provenance and effective licence. An exception identifies the icon, affected rule,
+visual reason, evidence, curator and whether repetition should change the design contract.

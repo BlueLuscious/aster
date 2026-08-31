@@ -11,12 +11,11 @@ public package.
 ## Documentation
 
 - [Documentation home](docs/en/index.md)
-- [Architecture](docs/en/architecture/index.md)
-- [Governance](docs/en/governance/index.md)
+- [Project](docs/en/project/index.md)
 - [Repository tooling](docs/en/tooling/index.md)
 - [Packages](docs/en/packages/index.md)
 - [Collections](docs/en/collections/index.md)
-- [Decision records](docs/en/decisions/index.md)
+- [Future capabilities](docs/en/future-capabilities.md)
 
 Canonical documentation is written in British English under `docs/en/`.
 

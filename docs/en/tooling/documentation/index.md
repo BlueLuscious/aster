@@ -8,13 +8,12 @@ curatorial review.
 
 ## Current verification
 
-The verifier requires canonical entry points for architecture, collections, decisions, governance,
-packages, and tooling. It also verifies:
+The verifier requires canonical entry points for the root, project, packages, tooling, collections,
+and future capabilities. It also verifies:
 
 - package documentation mirrors real workspace packages;
 - local Markdown links resolve within the repository;
 - canonical prose contains no local plans, task identifiers, or contributor-machine paths;
-- decision records use accepted states, consequence sections, and index membership;
 - Markdown files are discovered and reported in deterministic order.
 
 The exported `verifyDocumentation(workspaceRoot)` function returns issues and the inspected Markdown
@@ -28,9 +27,9 @@ feature-owned policies. `DocumentationVerifier` preserves this stable execution 
 
 1. `DocumentationHierarchyInspector` verifies required canonical entries.
 2. `PackageDocumentationMirroringInspector` compares real and documented package membership.
-3. `CanonicalDocumentReader` acquires every Markdown document once in deterministic order.
+3. `CanonicalDocumentReader` acquires Markdown only from the accepted canonical roots and files,
+   once and in deterministic order.
 4. `CanonicalDocumentInspector` applies local-reference and local-link policies to each document.
-5. `DecisionRecordInspector` validates decision records after document-level policy.
 
 `DocumentationIssueCollector` accumulates every policy finding in inspection order. Filesystem
 failures, malformed URI encoding, or unreadable authorities remain operational failures rather
@@ -58,7 +57,6 @@ each document rather than regrouping findings by policy.
 | `PackageDocumentationMirroringInspector` | Detects undocumented and stale package members. |
 | `LocalReferencePolicy` | Rejects local plans, implementation identifiers, and contributor-machine paths. |
 | `LocalLinkPolicy` | Rejects repository escapes and absent local link targets. |
-| `DecisionRecordInspector` | Verifies filenames, headings, accepted statuses, consequences, and index membership. |
 
 `MarkdownLinkTargetExtractor` performs only the lexical extraction needed by local-link policy. It
 does not parse Markdown generally, validate external URLs, inspect anchors, or evaluate prose.
@@ -69,18 +67,18 @@ Closed documentation vocabulary is owned by immutable feature constants:
 
 | Authority | Responsibility |
 | --- | --- |
-| `documentationHierarchy` | Canonical root, package and decision roots, Markdown extension, and required entries. |
+| `documentationHierarchy` | Canonical root, accepted directories and files, package root, Markdown extension, and required entries. |
 | `localReferenceRules` | Forbidden contributor-local reference patterns and stable labels. |
 | `markdownLinkRules` | Local link extraction and external-scheme classification grammar. |
-| `decisionRecordRules` | Accepted statuses, filename grammar, status grammar, and required consequences heading. |
 
 These authorities enforce only objective repository policy. British English quality, technical
-accuracy, readability, completeness, and curatorial judgement remain human review responsibilities
-defined by [Documentation Policy](../../governance/documentation-policy.md).
+accuracy, readability, completeness, package truth and curatorial judgement remain human review
+responsibilities. A passing command proves the listed structural invariants only; it is not a
+general documentation-quality score.
 
 ## Tests
 
 Fixture tests create self-contained temporary canonical hierarchies and exercise accepted roots,
-package mirroring, collection independence, broken links, local references, and malformed decision
-records. Focused tests verify every isolated inspector or policy, local-link extraction, per-document
-ordering, decision finding order, explicit roots, acquisition count, and overall orchestration.
+package mirroring, collection independence, non-canonical-root exclusion, broken links, and local
+references. Focused tests verify every isolated inspector or policy, local-link extraction,
+per-document ordering, explicit roots, acquisition count, and overall orchestration.

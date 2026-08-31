@@ -81,11 +81,11 @@ Presentation follows geometry attributes in this order:
 9. `fill-opacity`;
 10. `stroke-opacity`.
 
-The renderer resolves the model's
-[technical presentation defaults](../../../architecture/portable-icon-model.md#technical-presentation-defaults),
-icon defaults, node presentation, and authorised caller overrides before serialising each
-node. Caller overrides therefore remain authoritative even when a node contains an explicit
-value. The root does not rely on inherited fill or stroke to approximate this precedence.
+The renderer resolves Core's
+[technical presentation defaults](../../core/presentation/index.md#technical-defaults), icon
+defaults, node presentation, and authorised caller overrides before serialising each node. Caller
+overrides therefore remain authoritative even when a node contains an explicit value. The root
+does not rely on inherited fill or stroke to approximate this precedence.
 
 ## Numeric and text form
 

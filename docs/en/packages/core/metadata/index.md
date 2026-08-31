@@ -42,5 +42,7 @@ not equal the complete identity of the definition being constructed. Core can co
 definition with its replacement, but collection-wide replacement availability and cycle checks
 remain generation-boundary responsibilities.
 
-Metadata composition and replacement rules are defined by
-[Metadata and Identity Boundary](../../../architecture/metadata-and-identity-boundary.md).
+Portable metadata is independent from source provenance, filenames, package layout and collection
+membership. Importers and catalogues may retain their own evidence around a definition, but they
+cannot add that host data to `IconMetadata` without a demonstrated portable consumer and a Core
+contract change.
