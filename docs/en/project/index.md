@@ -7,6 +7,10 @@ provides deterministic SVG rendering, supports explicit catalogue workflows, and
 reviewed external artwork into editable TypeScript. No portable Aster value requires a browser,
 DOM, framework, command-line host, or repository tool.
 
+An icon is portable data rather than an SVG file, framework component, or host object. Its
+canonical definition remains independent from the source used to author or adopt it and from every
+target used to present it.
+
 ## Product composition
 
 | Boundary | Maturity | Project role |

@@ -26,6 +26,9 @@ authority and distinguish every derived artefact. Promotion to Active additional
 reviewed canonical icons, provenance, licensing, technical and visual evidence, a supported
 distribution boundary and an accepted release posture.
 
+Catalogue size is not maturity or quality evidence. A smaller coherent collection with reviewed
+geometry, provenance, and visual behaviour is preferable to unreviewed expansion.
+
 Collection membership remains separate from icon identity. Package documentation owns how
 `CollectionDefinition` and `@aster/icons` represent membership; this tree owns why a curator groups
 those icons and what visual evidence governs them.
