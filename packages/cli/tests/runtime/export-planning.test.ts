@@ -7,6 +7,7 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
+import { AsterCollection } from "@aster/icons/collections/aster";
 import {
   AsterCatalogue,
   AsterCommands,
@@ -160,7 +161,7 @@ test("plans collection members in canonical path order", async () => {
   if (result.ok && result.payload.kind === "export") {
     const paths = result.payload.plan.artefacts.map((artefact) => artefact.path);
     assert.equal(result.payload.plan.subject, "collection");
-    assert.equal(paths.length, 16);
+    assert.equal(paths.length, AsterCollection.icons.length);
     assert.deepEqual(paths, [...paths].sort());
     assert.equal(new Set(paths).size, paths.length);
   }

@@ -9,25 +9,6 @@ import {
 import { AsterIcons } from "../../src/icons/index.js";
 import * as icons from "../../src/icons/index.js";
 
-const expectedSymbols = [
-  "ArrowLeft",
-  "Bell",
-  "Camera",
-  "Check",
-  "Close",
-  "Cloud",
-  "Folder",
-  "Heart",
-  "Home",
-  "Leaf",
-  "Lock",
-  "Plus",
-  "Search",
-  "Settings",
-  "Star",
-  "User",
-] as const;
-
 const presentationFields = [
   "fill",
   "fillRule",
@@ -79,16 +60,15 @@ function numericGeometryValues(definition: IconDefinition): readonly number[] {
   return values;
 }
 
-test("exports the exact representative pilot set", () => {
-  assert.deepEqual(
-    Object.keys(icons).sort(),
-    ["AsterIcons", ...expectedSymbols].sort(),
-  );
-  assert.equal(AsterIcons.length, 16);
-  assert.deepEqual(
-    AsterIcons,
-    expectedSymbols.map((symbol) => icons[symbol]),
-  );
+test("keeps named icon exports aligned with the complete icon index", () => {
+  const exportedDefinitions = Object.entries(icons)
+    .filter(([symbol]) => symbol !== "AsterIcons")
+    .map(([, definition]) => definition as IconDefinition)
+    .sort((left, right) =>
+      left.identity.name.localeCompare(right.identity.name),
+    );
+
+  assert.deepEqual(AsterIcons, exportedDefinitions);
   assert.ok(Object.isFrozen(AsterIcons));
 });
 

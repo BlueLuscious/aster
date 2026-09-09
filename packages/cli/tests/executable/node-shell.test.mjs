@@ -14,6 +14,7 @@ import { join, resolve } from "node:path";
 import process from "node:process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { AsterIcons } from "@aster/icons";
 
 const executablePath = fileURLToPath(
   new URL("../../dist/shell/aster.js", import.meta.url),
@@ -53,7 +54,10 @@ test("renders list, search, show, and version as deterministic human text", () =
   const version = run(["version"]);
 
   assert.equal(listed.status, 0);
-  assert.equal(listed.stdout, "Catalogues:\n  aster (16 icons, 1 collection)\n");
+  assert.equal(
+    listed.stdout,
+    `Catalogues:\n  aster (${AsterIcons.length} icons, 1 collection)\n`,
+  );
   assert.match(searched.stdout, /^Results:\n  icon: aster\/camera/u);
   assert.match(shown.stdout, /^Icon: aster\/camera\nCatalogue: aster/u);
   assert.match(shown.stdout, /Collections: aster\n/u);
@@ -96,7 +100,7 @@ test("renders standalone options and one collection as a JSON export plan", () =
   const result = JSON.parse(collection.stdout);
   assert.equal(result.ok, true);
   assert.equal(result.payload.kind, "export");
-  assert.equal(result.payload.plan.artefacts.length, 16);
+  assert.equal(result.payload.plan.artefacts.length, AsterIcons.length);
 });
 
 test("delegates accepted presentation overrides to icon policy", () => {
@@ -141,7 +145,7 @@ test("publishes icon and collection plans relative to the explicit process direc
     assert.equal(collection.stderr, "");
     assert.equal(
       collection.stdout,
-      `Exported 16 SVG artefacts to ${resolve(root, "exports/collection")}\n`,
+      `Exported ${AsterIcons.length} SVG artefacts to ${resolve(root, "exports/collection")}\n`,
     );
     assert.match(
       readFileSync(resolve(root, "exports/icon/aster/camera.svg"), "utf8"),

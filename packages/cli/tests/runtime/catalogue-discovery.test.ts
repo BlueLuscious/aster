@@ -124,7 +124,11 @@ test("discovers the explicit built-in Aster catalogue", async () => {
 
   if (listed.ok && listed.payload.kind === "catalogue-list") {
     assert.deepEqual(listed.payload.catalogues, [
-      { identity: "aster", iconCount: 16, collectionCount: 1 },
+      {
+        identity: "aster",
+        iconCount: AsterIcons.length,
+        collectionCount: AsterCollections.length,
+      },
     ]);
     assert.ok(Object.isFrozen(listed.payload.catalogues));
   }

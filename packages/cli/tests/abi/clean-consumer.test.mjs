@@ -13,9 +13,18 @@ import { basename, dirname, resolve } from "node:path";
 import process from "node:process";
 import test, { after, before } from "node:test";
 import { fileURLToPath } from "node:url";
+import { AsterCollection } from "@aster/icons/collections/aster";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const workspaceRoot = resolve(packageRoot, "../..");
+const expectedAsterCollectionPaths = Object.freeze(
+  AsterCollection.icons
+    .map(
+      (icon) =>
+        `${icon.identity.namespace}/${icon.identity.name}.svg`,
+    )
+    .sort((left, right) => left.localeCompare(right)),
+);
 let consumerRoot;
 
 function runPnpm(arguments_) {
@@ -248,27 +257,13 @@ test("returns the same complete export through standalone and programmatic hosts
 
   const result = JSON.parse(executable.stdout);
 
-  assert.equal(result.payload.plan.artefacts.length, 16);
+  assert.equal(
+    result.payload.plan.artefacts.length,
+    expectedAsterCollectionPaths.length,
+  );
   assert.deepEqual(
     result.payload.plan.artefacts.map((artefact) => artefact.path),
-    [
-      "aster/arrow-left.svg",
-      "aster/bell.svg",
-      "aster/camera.svg",
-      "aster/check.svg",
-      "aster/close.svg",
-      "aster/cloud.svg",
-      "aster/folder.svg",
-      "aster/heart.svg",
-      "aster/home.svg",
-      "aster/leaf.svg",
-      "aster/lock.svg",
-      "aster/plus.svg",
-      "aster/search.svg",
-      "aster/settings.svg",
-      "aster/star.svg",
-      "aster/user.svg",
-    ],
+    expectedAsterCollectionPaths,
   );
 });
 

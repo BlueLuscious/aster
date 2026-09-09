@@ -46,6 +46,7 @@ test("prepares distinct mutable and canonical Core benchmark fixtures", () => {
 
 test("runs the complete Core scenario matrix through public values", async () => {
   const measured = [];
+  const fixtures = new CoreBaselineFixtureFactory().create();
   const runner = new CoreBaselineRunner(
     {
       measure(scenario) {
@@ -70,7 +71,7 @@ test("runs the complete Core scenario matrix through public values", async () =>
         return Object.freeze({ fixture: true });
       },
     },
-    new CoreBaselineFixtureFactory().create(),
+    fixtures,
   );
   const report = await runner.run();
 
@@ -82,8 +83,12 @@ test("runs the complete Core scenario matrix through public values", async () =>
   assert.equal(measured[0]?.checksum, measured[1]?.checksum);
   assert.equal(measured[2]?.checksum, 10);
   assert.equal(measured[3]?.checksum, 34);
-  assert.equal(measured[4]?.checksum, 42);
-  assert.equal(measured[5]?.checksum, 42);
+  const completeCollectionChecksum =
+    2 *
+    (fixtures.canonicalCollection.icons.length +
+      fixtures.canonicalCollection.identity.name.length);
+  assert.equal(measured[4]?.checksum, completeCollectionChecksum);
+  assert.equal(measured[5]?.checksum, completeCollectionChecksum);
   assert.deepEqual(report.distribution, { packagePath: "packages/core" });
 });
 

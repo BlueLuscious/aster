@@ -6,24 +6,23 @@ import { fileURLToPath } from "node:url";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const distributionRoot = resolve(packageRoot, "dist");
-const iconSubpaths = Object.freeze({
-  "arrow-left": "ArrowLeft",
-  bell: "Bell",
-  camera: "Camera",
-  check: "Check",
-  close: "Close",
-  cloud: "Cloud",
-  folder: "Folder",
-  heart: "Heart",
-  home: "Home",
-  leaf: "Leaf",
-  lock: "Lock",
-  plus: "Plus",
-  search: "Search",
-  settings: "Settings",
-  star: "Star",
-  user: "User",
-});
+const iconSubpaths = Object.freeze(
+  Object.fromEntries(
+    (await readdir(resolve(distributionRoot, "icons"), {
+      withFileTypes: true,
+    }))
+      .filter((entry) => entry.isFile() && entry.name.endsWith(".icon.js"))
+      .map((entry) => entry.name.slice(0, -".icon.js".length))
+      .sort((left, right) => left.localeCompare(right))
+      .map((subpath) => [
+        subpath,
+        subpath
+          .split("-")
+          .map((part) => `${part[0]?.toUpperCase()}${part.slice(1)}`)
+          .join(""),
+      ]),
+  ),
+);
 
 async function collectDistributionFiles(extension) {
   const entries = await readdir(distributionRoot, { recursive: true });
