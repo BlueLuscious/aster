@@ -8,12 +8,14 @@ and the constraints retained for the pre-release contract. The implemented execu
 
 ## Public inventory
 
-The package exposes only the root subpath and publishes four immutable runtime values:
+The package exposes only the root subpath and publishes six immutable runtime values:
 
 - `AsterCommands`, the host-neutral command composition;
 - `AsterCatalogue`, the explicit built-in catalogue provider;
 - `catalogueResultKinds`, the catalogue-result discriminator authority;
 - `exportTargets`, the export-target discriminator authority.
+- `reviewSubjects`, the review-subject discriminator authority;
+- `reviewTargets`, the review-target discriminator authority.
 
 Its public type surface comprises:
 
@@ -29,6 +31,9 @@ Its public type surface comprises:
 - `CatalogueResultKindType`;
 - `AsterExportArtefact`, `AsterExportPlan`, `AsterExportSubjectType`, `AsterExportOptionsType`, and
   `AsterIconExportOptionsType`.
+- `AsterReviewIconEvidence`, `AsterIconReviewDocument`, `AsterCollectionReviewDocument`, and
+  `AsterReviewPlan`;
+- `AsterReviewDocumentType` and `AsterReviewSubjectType`.
 
 Command definitions, normalisers, queries, factories, provider implementations, shell services,
 errors, internal contracts, and internal types are emitted modules but are not resolvable through
@@ -44,6 +49,7 @@ the package export map. The executable module is reachable only through the pack
 | Catalogue snapshot and record contracts | Independent providers author discovery evidence without a global registry. | Retain as the provider input boundary. |
 | Catalogue result contracts and `catalogueResultKinds` | Hosts interpret discriminated discovery results at runtime and compile time. | Retain the paired runtime and type authorities. |
 | Export options, plan, artefact, subject, and `exportTargets` | Programmatic and standalone hosts plan, present, redirect, or publish complete SVG output. | Retain the paired planning and target authorities. |
+| Review models, plan, subject, `reviewSubjects`, and `reviewTargets` | Programmatic and standalone hosts inspect deterministic technical evidence without host effects. | Retain the paired planning and discriminator authorities. |
 
 No public value or type can currently be narrowed without making the shell depend on an
 implementation subpath, removing independent provider authorship, or forcing programmatic hosts to
@@ -55,9 +61,10 @@ definitions, normalisers, queries, presenters, filesystem capabilities, or Node 
 | Feature | Current responsibility | Host authority |
 | --- | --- | --- |
 | Public composition | Constructs one immutable command set from explicit definitions and services. | None |
-| Command | Accepts structured invocations and contexts, dispatches six commands, and returns immutable results. | None |
+| Command | Accepts structured invocations and contexts, dispatches seven commands, and returns immutable results. | None |
 | Catalogue | Loads explicit providers, isolates portable definitions, and performs deterministic discovery. | None |
 | Export | Selects exact catalogue definitions and produces complete immutable SVG artefact plans. | None |
+| Review | Selects exact catalogue definitions and produces complete immutable technical document plans. | None |
 | Built-in provider | Dynamically acquires canonical `@aster/icons` definitions when explicitly loaded. | Package loading only |
 | Shell | Parses argv, presents output, maps process status, and composes output publication. | Node process and filesystem |
 
@@ -88,12 +95,13 @@ command package requires an independent Flora or host consumer rather than depen
 
 | Workflow | Acquisition | Host-neutral result | Standalone effect |
 | --- | --- | --- | --- |
-| Root import | ESM root | Four runtime exports | None |
+| Root import | ESM root | Six runtime exports | None |
 | `help` | Structured invocation or argv | Frozen descriptor payload | Human or JSON output |
 | `version` | Structured invocation and product metadata | Frozen version payload | Human or JSON output |
 | `list`, `search`, `show` | Explicit catalogue providers | Frozen discovery payload | Human or JSON output |
 | Icon export | Exact icon selection and render options | One immutable SVG artefact plan | Human, JSON, raw SVG, or output-root publication |
 | Collection export | Exact collection selection and complete membership resolution | Canonically ordered immutable SVG artefact plan | Human, JSON, or output-root publication |
+| Review | Exact icon or collection selection and public SVG rendering | Immutable technical document plan | Human or JSON presentation; static publication is not yet implemented |
 
 The standalone shell uses the same structured command result as an independent programmatic host.
 Filesystem publication begins only after a complete successful plan exists. It stages an absent
@@ -102,8 +110,8 @@ existing target.
 
 ## Existing conformance
 
-The current evidence comprises compile-time public-shape checks, 36 host-neutral runtime tests,
-35 package-ABI and executable tests, architecture policy, documentation verification, and complete
+The current evidence comprises compile-time public-shape checks, host-neutral runtime tests,
+package-ABI and executable tests, architecture policy, documentation verification, and complete
 repository workflows. It currently demonstrates:
 
 - exact immutable root values and rejected implementation subpaths;

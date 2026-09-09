@@ -6,9 +6,9 @@ import type {
   AsterCommandInvocationType,
   AsterCommandResultType,
 } from "../../command/types/index.js";
+import { CatalogueSubjectSelector } from "../../catalogue/runtime/catalogue-subject.selector.js";
 import { exportTargets } from "../constants/export-targets.constant.js";
 import type { AsterExportPlan } from "../contracts/index.js";
-import { CatalogueExportSelector } from "./catalogue-export.selector.js";
 import { SvgExportArtefactFactory } from "./svg-export-artefact.factory.js";
 
 /**
@@ -18,7 +18,7 @@ export class ExportPlanQuery {
   /**
    * @description Exact accepted catalogue-selection boundary.
    */
-  readonly #selections: CatalogueExportSelector;
+  readonly #selections: CatalogueSubjectSelector;
 
   /**
    * @description Deterministic SVG artefact constructor.
@@ -34,7 +34,7 @@ export class ExportPlanQuery {
    * @description Creates one export query from its exact selection dependency.
    * @param selections - Accepted catalogue-selection boundary.
    */
-  constructor(selections: CatalogueExportSelector) {
+  constructor(selections: CatalogueSubjectSelector) {
     this.#selections = selections;
   }
 
@@ -51,7 +51,12 @@ export class ExportPlanQuery {
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
-    const selection = await this.#selections.select(invocation, context);
+    const selection = await this.#selections.select(
+      invocation.subject,
+      invocation.identity,
+      invocation.catalogue,
+      context,
+    );
 
     if (!selection.accepted) {
       return this.#results.failure(asterCommandNames.export, selection.diagnostic);
@@ -77,4 +82,3 @@ export class ExportPlanQuery {
     }));
   }
 }
-

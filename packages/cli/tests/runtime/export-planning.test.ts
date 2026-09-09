@@ -19,7 +19,7 @@ import type {
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { asterCommandSubjects } from "../../src/command/constants/aster-command-subjects.constant.js";
 import { SvgExportArtefactFactory } from "../../src/export/runtime/svg-export-artefact.factory.js";
-import type { TExportSelection } from "../../src/export/types/internal/export-selection.type.js";
+import type { TCatalogueSelection } from "../../src/catalogue/types/internal/catalogue-selection.type.js";
 
 const context: AsterCommandContext = {
   catalogues: [AsterCatalogue],
@@ -361,11 +361,14 @@ test("preflights path collisions before attempting SVG rendering", () => {
     namespace: "testing",
     data: "M0 0\u0000",
   });
-  const selection: TExportSelection = Object.freeze({
+  const selection: TCatalogueSelection = Object.freeze({
     catalogue: "testing",
     subject: asterCommandSubjects.export.collection,
     identity: "testing/colliding",
-    definitions: Object.freeze([invalid, invalid]),
+    icons: Object.freeze([
+      Object.freeze({ definition: invalid, memberships: Object.freeze([]) }),
+      Object.freeze({ definition: invalid, memberships: Object.freeze([]) }),
+    ]),
   });
   const result = new SvgExportArtefactFactory().create(selection, undefined);
 
@@ -385,11 +388,13 @@ test("preserves unrelated target exceptions and sanitises caller invocation fail
       throw failure;
     },
   });
-  const selection: TExportSelection = Object.freeze({
+  const selection: TCatalogueSelection = Object.freeze({
     catalogue: "testing",
     subject: asterCommandSubjects.export.icon,
     identity: "testing/proxy",
-    definitions: Object.freeze([definition]),
+    icons: Object.freeze([
+      Object.freeze({ definition, memberships: Object.freeze([]) }),
+    ]),
   });
 
   assert.throws(

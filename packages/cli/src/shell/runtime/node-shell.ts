@@ -82,6 +82,17 @@ export class NodeShell {
       if (
         parsed.output !== undefined
         && result.ok
+        && result.payload.kind === asterCommandPayloadKinds.review
+      ) {
+        throw new CommandLineError(
+          "review output publication is not available",
+          commandLineTokens.commands.review,
+        );
+      }
+
+      if (
+        parsed.output !== undefined
+        && result.ok
         && result.payload.kind === asterCommandPayloadKinds.export
       ) {
         const publication = await this.#publisher.publish(

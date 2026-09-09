@@ -4,6 +4,7 @@ import type { TExportOutputPublication } from "../../output/types/internal/expor
 import { CatalogueHumanOutputPresenter } from "./catalogue-human-output.presenter.js";
 import { ExportHumanOutputPresenter } from "./export-human-output.presenter.js";
 import { HelpHumanOutputPresenter } from "./help-human-output.presenter.js";
+import { ReviewHumanOutputPresenter } from "./review-human-output.presenter.js";
 
 /**
  * @description Dispatches structured command results to deterministic human-text collaborators.
@@ -25,6 +26,11 @@ export class HumanOutputPresenter {
   readonly #help = new HelpHumanOutputPresenter();
 
   /**
+   * @description Review-plan presenter.
+   */
+  readonly #review = new ReviewHumanOutputPresenter();
+
+  /**
    * @description Renders truthful destination evidence after output publication handling.
    * @param publication - Immutable publication result from the private output host.
    * @returns Plain deterministic publication summary without a final newline.
@@ -44,6 +50,8 @@ export class HumanOutputPresenter {
     switch (payload.kind) {
       case asterCommandPayloadKinds.export:
         return this.#export.plan(payload.plan);
+      case asterCommandPayloadKinds.review:
+        return this.#review.plan(payload.plan);
       case asterCommandPayloadKinds.catalogueList:
       case asterCommandPayloadKinds.collectionList:
       case asterCommandPayloadKinds.iconList:

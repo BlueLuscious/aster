@@ -36,6 +36,8 @@ test("exposes the exact documented immutable root value surface", async () => {
     "AsterCommands",
     "catalogueResultKinds",
     "exportTargets",
+    "reviewSubjects",
+    "reviewTargets",
   ]);
   assert.deepEqual(Object.keys(packageModule.AsterCommands), [
     "identity",
@@ -56,6 +58,13 @@ test("exposes the exact documented immutable root value surface", async () => {
   assert.ok(Object.isFrozen(packageModule.catalogueResultKinds));
   assert.deepEqual(packageModule.exportTargets, { svg: "svg" });
   assert.ok(Object.isFrozen(packageModule.exportTargets));
+  assert.deepEqual(packageModule.reviewSubjects, {
+    icon: "icon",
+    collection: "collection",
+  });
+  assert.deepEqual(packageModule.reviewTargets, { html: "html" });
+  assert.ok(Object.isFrozen(packageModule.reviewSubjects));
+  assert.ok(Object.isFrozen(packageModule.reviewTargets));
 });
 
 test("publishes the accepted root, executable, dependency, and declaration surface", async () => {
@@ -99,6 +108,8 @@ test("publishes the accepted root, executable, dependency, and declaration surfa
       'export type * from "./command/index.js";',
       'export { exportTargets } from "./export/index.js";',
       'export type * from "./export/index.js";',
+      'export { reviewSubjects, reviewTargets } from "./review/index.js";',
+      'export type * from "./review/index.js";',
       "",
     ].join("\n"),
   );

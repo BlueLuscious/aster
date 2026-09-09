@@ -12,9 +12,11 @@ present results, or access the filesystem.
 `--json` flag, selects the command identity, and delegates to one explicit
 `ICommandLineCommandParser`. Duplicate parser identities fail during construction.
 
-Dedicated parsers own the `export`, `list`, `search`, `show`, `help`, and `version` positional
+Dedicated parsers own the `export`, `review`, `list`, `search`, `show`, `help`, and `version` positional
 forms. `CommandLineOptionParser` owns common discovery filters, while
 `ExportCommandLineOptionParser` owns export render, accessibility, and destination options.
+`ReviewCommandLineParser` owns exact review subjects plus optional provider and shell-owned output
+selection without moving publication state into the structured invocation.
 `CommandLineError` carries stable parser evidence for shell diagnostic adaptation.
 
 No argument defaults to `help`. Unknown commands, duplicate singleton options, repeated `--json`,

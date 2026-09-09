@@ -16,6 +16,10 @@ import type {
   AsterExportPlan,
   AsterExportSubjectType,
   AsterIconExportOptionsType,
+  AsterReviewDocumentType,
+  AsterReviewIconEvidence,
+  AsterReviewPlan,
+  AsterReviewSubjectType,
   AsterCommandShowSubjectType,
   CatalogueCollectionRecord,
   CatalogueCollectionResult,
@@ -31,6 +35,7 @@ import {
   AsterCommands,
   catalogueResultKinds,
   exportTargets,
+  reviewTargets,
 } from "../../src/index.js";
 
 const snapshot: CatalogueSnapshot = {
@@ -90,6 +95,37 @@ const exportPlan: AsterExportPlan = {
   catalogue: "aster",
   identity: "aster/camera",
   artefacts: [exportArtefact],
+};
+const reviewSubject: AsterReviewSubjectType = "icon";
+const reviewIcon: AsterReviewIconEvidence = {
+  identity: { namespace: "aster", name: "camera" },
+  metadata: {
+    displayName: "Camera",
+    rtl: "preserve",
+    presentation: { defaults: {}, overrides: [] },
+    deprecated: false,
+  },
+  viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
+  nodeCount: 1,
+  primitiveKinds: ["path"],
+  memberships: [],
+  markup: "<svg></svg>",
+};
+const reviewDocument: AsterReviewDocumentType = {
+  kind: "icon",
+  icon: reviewIcon,
+};
+const reviewPlan: AsterReviewPlan = {
+  target: reviewTargets.html,
+  subject: reviewSubject,
+  catalogue: "aster",
+  identity: "aster/camera",
+  document: reviewDocument,
+};
+const reviewInvocation: AsterCommandInvocationType = {
+  command: "review",
+  subject: "icon",
+  identity: "aster/camera",
 };
 const invocation: AsterCommandInvocationType = {
   command: "search",
@@ -159,6 +195,11 @@ void exportPlan;
 void exportSubject;
 void publicExecution;
 void publicProvider;
+void reviewDocument;
+void reviewIcon;
+void reviewInvocation;
+void reviewPlan;
+void reviewSubject;
 void commandPayload;
 void catalogueResultKind;
 void collectionRecord;

@@ -21,10 +21,11 @@ its public declarations.
 The first supported ABI consists of:
 
 - the root package export and private `aster` binary mapping;
-- the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, and `exportTargets` values;
-- every public command, catalogue, and export contract and type exported through the root;
+- the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, `exportTargets`,
+  `reviewSubjects`, and `reviewTargets` values;
+- every public command, catalogue, export, and review contract and type exported through the root;
 - the `aster` command-set identity;
-- the `export`, `list`, `search`, `show`, `help`, and `version` invocation variants;
+- the `export`, `review`, `list`, `search`, `show`, `help`, and `version` invocation variants;
 - current payload and catalogue-result discriminators;
 - current diagnostic codes and categories;
 - deterministic ordering, canonicalisation, and expected-failure semantics.
@@ -80,6 +81,13 @@ may present a raw single-icon SVG or serialise the same structured plan. Its pri
 can stage and publish that plan without changing the programmatic result contract. Shell render
 options become the same portable option record before command execution. Detailed ownership is documented by
 [CLI Export](export/index.md).
+
+## Review isolation
+
+Headless review consumes the same catalogue-owned exact selection boundary as Export and renders
+only through public SVG. It returns a complete immutable technical model without serialising HTML,
+retaining host paths, or acquiring process, browser, or filesystem capabilities. Detailed
+ownership is documented by [CLI Review](review/index.md).
 
 ## Conditional Flora seam
 

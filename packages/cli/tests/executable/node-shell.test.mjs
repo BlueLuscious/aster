@@ -218,6 +218,44 @@ test("keeps JSON and output mutually exclusive before filesystem mutation", () =
   }
 });
 
+test("presents review plans without silently accepting unavailable publication", () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-review-"));
+
+  try {
+    const planned = run([
+      "review",
+      "icon",
+      "aster/camera",
+      "--json",
+    ], { cwd: root });
+    const unavailable = run([
+      "review",
+      "collection",
+      "aster",
+      "--output",
+      "review-site",
+    ], { cwd: root });
+
+    assert.equal(planned.status, 0);
+    assert.equal(planned.stderr, "");
+    const result = JSON.parse(planned.stdout);
+    assert.equal(result.ok, true);
+    assert.equal(result.payload.kind, "review");
+    assert.equal(result.payload.plan.target, "html");
+    assert.equal(result.payload.plan.document.kind, "icon");
+
+    assert.equal(unavailable.status, 2);
+    assert.equal(unavailable.stdout, "");
+    assert.equal(
+      unavailable.stderr,
+      "[ASTER-CLI-001] review output publication is not available\n",
+    );
+    assert.throws(() => readFileSync(resolve(root, "review-site")));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("writes raw icon SVG through ordinary stdout redirection", () => {
   const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-redirection-"));
   const destination = resolve(root, "camera.svg");

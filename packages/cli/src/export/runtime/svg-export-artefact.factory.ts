@@ -2,13 +2,13 @@ import { Svg, SvgRenderError } from "@aster/svg";
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
+import type { TCatalogueSelection } from "../../catalogue/types/internal/catalogue-selection.type.js";
 import { svgExportArtefactSchema } from "../constants/svg-export-artefact-schema.constant.js";
 import type { AsterExportArtefact } from "../contracts/index.js";
 import type {
   AsterExportOptionsType,
   AsterIconExportOptionsType,
 } from "../types/index.js";
-import type { TExportSelection } from "../types/internal/export-selection.type.js";
 import { ExportPathFormatter } from "./export-path.formatter.js";
 
 /**
@@ -32,11 +32,11 @@ export class SvgExportArtefactFactory {
    * @returns Complete immutable artefacts or one deterministic failure.
    */
   create(
-    selection: TExportSelection,
+    selection: TCatalogueSelection,
     options: AsterExportOptionsType | AsterIconExportOptionsType | undefined,
   ): TAcceptanceResult<readonly AsterExportArtefact[]> {
     const artefacts: AsterExportArtefact[] = [];
-    const paths = selection.definitions.map((definition) =>
+    const paths = selection.icons.map(({ definition }) =>
       this.#paths.icon(definition.identity),
     );
     const uniquePaths = new Set<string>();
@@ -57,7 +57,7 @@ export class SvgExportArtefactFactory {
       uniquePaths.add(path);
     }
 
-    for (const [index, definition] of selection.definitions.entries()) {
+    for (const [index, { definition }] of selection.icons.entries()) {
       const path = paths[index];
 
       if (path === undefined) {

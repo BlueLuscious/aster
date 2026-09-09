@@ -5,7 +5,7 @@ Status: **Pre-release**
 This document describes how `@aster/cli` turns one explicit invocation into an observable result
 without merging host-neutral command behaviour with standalone Node effects. Feature contracts and
 types remain documented by [Command](command/index.md), [Catalogue](catalogue/index.md),
-[Export](export/index.md), and [Shell](shell/index.md).
+[Export](export/index.md), [Review](review/index.md), and [Shell](shell/index.md).
 
 ## Programmatic execution
 
@@ -20,7 +20,7 @@ The command composition performs this flow:
 3. Select the exact command definition from the closed command authority.
 4. Load only the catalogue providers required by that command.
 5. Validate, isolate, freeze, and canonically order retained catalogue values.
-6. Execute discovery, help, version, or export behaviour.
+6. Execute discovery, help, version, export, or review behaviour.
 7. Return one immutable structured success or sanitised failure result.
 
 Provider registration order, locale, filesystem enumeration, and current directory do not alter
@@ -38,6 +38,17 @@ rendering and then orders all artefacts by canonical relative path. Selection, p
 render failures, and malformed providers fail without exposing a partial plan. The workflow does
 not import `@aster/import`, inspect source files, or acquire filesystem authority.
 
+## Review planning
+
+For `review`, the host-neutral path uses the same exact catalogue selector as Export. An icon
+selection retains its independent collection memberships. A collection selection resolves and
+canonically orders every declared member, while an empty collection remains a valid empty model.
+
+Review renders each selected definition through public `@aster/svg` and constructs one immutable
+`AsterReviewPlan` containing only portable technical evidence. The plan contains no output root,
+timestamp, environment value, current directory, serialised HTML, or publication effect. Expected
+lookup and render failures expose no partial model.
+
 ## Standalone execution
 
 The private `aster` executable adapts process arguments to the same structured invocation used by
@@ -47,6 +58,7 @@ programmatic hosts. It executes the complete host-neutral command before selecti
 | --- | --- |
 | Human | Writes deterministic help, discovery, version, summary, or failure text to the documented stream. |
 | JSON | Serialises the complete structured result as one compact document followed by one newline. |
+| Review summary | Describes one successful headless review plan without claiming HTML publication. |
 | Raw SVG | Writes one successful icon artefact directly to stdout. |
 | Output root | Publishes a complete successful export plan beneath one explicit absent destination. |
 

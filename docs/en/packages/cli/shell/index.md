@@ -30,7 +30,9 @@ aster export icon <identity> [--catalogue <provider>] [render-options] [--output
 aster export collection <identity> [--catalogue <provider>] [render-options] --output <root>
 aster export icon <identity> [--catalogue <provider>] [render-options] --json
 aster export collection <identity> [--catalogue <provider>] [render-options] --json
-aster help [export|list|search|show]
+aster review icon <identity> [--catalogue <provider>] [--output <root>]
+aster review collection <identity> [--catalogue <provider>] [--output <root>]
+aster help [export|review|list|search|show]
 aster version
 ```
 
@@ -49,6 +51,11 @@ Icon export without `--json` or `--output` writes one raw SVG document. JSON mod
 complete host-neutral plan for either subject. Collection export requires JSON or an output root.
 `--json` and `--output` are mutually exclusive shell concerns and never enter
 `AsterCommandInvocationType` together.
+
+Review currently returns a headless technical plan. Human and JSON presentation are available;
+static HTML serialisation and `--output` publication are not yet committed by the shell. The parser
+retains a requested review output root outside the structured invocation for that later host
+boundary, while the current executable rejects publication explicitly rather than ignoring it.
 
 The shell explicitly supplies `AsterCatalogue`. This is executable composition rather than an
 ambient default in `AsterCommands`.

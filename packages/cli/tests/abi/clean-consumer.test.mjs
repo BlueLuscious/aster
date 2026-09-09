@@ -159,6 +159,8 @@ test("imports the public package without source files or observable effects", ()
     "AsterCommands",
     "catalogueResultKinds",
     "exportTargets",
+    "reviewSubjects",
+    "reviewTargets",
   ]);
 });
 

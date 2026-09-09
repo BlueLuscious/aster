@@ -16,6 +16,7 @@ payloads to command-family collaborators:
 | --- | --- |
 | `CatalogueHumanOutputPresenter` | Presents catalogue, collection, icon, search, and show payloads. |
 | `ExportHumanOutputPresenter` | Presents raw icon SVG, export plans, and truthful publication summaries. |
+| `ReviewHumanOutputPresenter` | Presents deterministic headless review-plan summaries before static publication. |
 | `HelpHumanOutputPresenter` | Presents canonical command descriptors and usage forms. |
 | `HumanTextFormatter` | Formats shared counts and deterministic sequences. |
 | `ShellIdentityFormatter` | Formats portable provider, collection, and icon identities. |
