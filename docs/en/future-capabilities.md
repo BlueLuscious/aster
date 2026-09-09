@@ -25,16 +25,17 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | --- | --- | --- | --- |
 | 1 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics, and persistence together. |
 | 2 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 3 | `P2` | Evaluate selective Icons acquisition. | Measured package acquisition cost or consumer demand justifies a distribution product beyond subpath imports. |
-| 4 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 5 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 6 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
-| 7 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 8 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 9 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 10 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 11 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 12 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 3 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 4 | `P2` | Evaluate selective Icons acquisition. | Measured package acquisition cost or consumer demand justifies a distribution product beyond subpath imports. |
+| 5 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 6 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 7 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
+| 8 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 9 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 10 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 11 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 12 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 13 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
 
 ## Catalogue and command expansion
 
@@ -58,6 +59,34 @@ integration artefacts, and `import` adopts external artwork. Implemented `review
 disposable evidence and remains separate from every persistent source workflow.
 No command may silently install dependencies, overwrite files, infer ownership from a directory
 name, or move filesystem authority into a host-neutral command.
+
+## Review watch host
+
+Importance: **P2 - Conditional**
+
+The implemented `aster review` workflow deliberately publishes a finite, self-contained HTML
+document and terminates. Its static lifecycle is the complete supported contract; `--watch` is not
+an accepted option and no browser, server, source watcher, or TypeScript compiler belongs to the
+headless command kernel.
+
+Reconsider a persistent watch host only when repeated real icon or collection authoring shows that
+building the catalogue, replacing the owned review output, and refreshing it manually creates a
+material delay. Convenience alone is insufficient because ESM package reloads require more than a
+cache-busting root import: statically imported descendants can otherwise remain stale.
+
+Any accepted host must establish all of these boundaries together:
+
+- observe only a stable completion signal for built catalogue artefacts;
+- acquire each refreshed catalogue through an isolated process or worker;
+- reuse the existing review planner, serialiser, ownership marker, and safe replacement rules;
+- bind only to a loopback interface and define deterministic port-selection behaviour;
+- own refresh signalling, rebuild-failure recovery, termination, and resource cleanup;
+- keep browser launch optional and outside the programmatic command API;
+- preserve static review as independently usable and avoid adding compilation or source discovery.
+
+Prefer owned on-disk regeneration unless measured evidence proves that an in-memory document
+lifecycle materially improves authoring without weakening publication ownership. Do not add a
+general development server or framework dependency solely for this capability.
 
 ## Selective Icons acquisition
 

@@ -95,3 +95,21 @@ moves the unchanged owned target to a private backup, commits the complete stage
 the backup. A commit failure restores the previous review before reporting a sanitised failure.
 Unrelated destinations, interrupted stages, existing backups, and changed ownership evidence are
 never removed implicitly.
+
+## Static lifecycle
+
+Review is intentionally a finite command. It acquires one built catalogue snapshot, plans one
+document, publishes it when requested, and terminates without retaining a watcher, network server,
+browser process, or source compiler. `--watch` is therefore not part of the accepted grammar.
+
+A persistent host could not safely refresh a catalogue by adding a query to its root ESM import:
+the package's statically imported child modules would remain in the process module cache. A future
+watch capability would need an isolated process or worker for each accepted rebuild, a stable
+signal that built catalogue artefacts are complete, and a loopback-only refresh host with explicit
+port, shutdown, cleanup, and failure-recovery policies. It must remain outside the headless command
+kernel and must not inspect or compile TypeScript sources.
+
+The supported authoring loop is consequently explicit: build the catalogue package, run
+`aster review ... --replace`, and refresh or reopen the resulting `index.html`. The static workflow
+remains the complete review contract; [Future Capabilities](../../../future-capabilities.md)
+records the evidence required before persistent hosting is reconsidered.
