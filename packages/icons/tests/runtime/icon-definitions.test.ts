@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import type { IconDefinition } from "@aster/core";
+import type { CollectionDefinition, IconDefinition } from "@aster/core";
 import {
   AsterCollection,
   AsterCollections,
 } from "../../src/collections/index.js";
+import * as collections from "../../src/collections/index.js";
 import { AsterIcons } from "../../src/icons/index.js";
 import * as icons from "../../src/icons/index.js";
 
@@ -72,6 +73,18 @@ test("keeps named icon exports aligned with the complete icon index", () => {
   assert.ok(Object.isFrozen(AsterIcons));
 });
 
+test("keeps named collection exports aligned with the complete collection index", () => {
+  const exportedDefinitions = Object.entries(collections)
+    .filter(([symbol]) => symbol !== "AsterCollections")
+    .map(([, definition]) => definition as CollectionDefinition)
+    .sort((left, right) =>
+      left.identity.name.localeCompare(right.identity.name),
+    );
+
+  assert.deepEqual(AsterCollections, exportedDefinitions);
+  assert.ok(Object.isFrozen(AsterCollections));
+});
+
 test("keeps every definition aligned with shared authoring defaults", () => {
   const definitions = AsterIcons;
   const identities = new Set<string>();
@@ -133,8 +146,7 @@ test("keeps every definition aligned with shared authoring defaults", () => {
 test("retains the complete pilot through independent collection membership", () => {
   assert.equal(AsterCollection.identity.name, "aster");
   assert.deepEqual(AsterCollection.icons, AsterIcons);
-  assert.deepEqual(AsterCollections, [AsterCollection]);
-  assert.ok(Object.isFrozen(AsterCollections));
+  assert.ok(AsterCollections.includes(AsterCollection));
 
   for (const definition of AsterIcons) {
     assert.ok(AsterCollection.icons.includes(definition));

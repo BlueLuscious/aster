@@ -6,22 +6,34 @@ import { fileURLToPath } from "node:url";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const distributionRoot = resolve(packageRoot, "dist");
-const iconSubpaths = Object.freeze(
-  Object.fromEntries(
-    (await readdir(resolve(distributionRoot, "icons"), {
-      withFileTypes: true,
-    }))
-      .filter((entry) => entry.isFile() && entry.name.endsWith(".icon.js"))
-      .map((entry) => entry.name.slice(0, -".icon.js".length))
-      .sort((left, right) => left.localeCompare(right))
-      .map((subpath) => [
-        subpath,
-        subpath
-          .split("-")
-          .map((part) => `${part[0]?.toUpperCase()}${part.slice(1)}`)
-          .join(""),
-      ]),
-  ),
+async function collectDefinitionSubpaths(directory, suffix, symbolSuffix = "") {
+  return Object.freeze(
+    Object.fromEntries(
+      (await readdir(resolve(distributionRoot, directory), {
+        withFileTypes: true,
+      }))
+        .filter((entry) => entry.isFile() && entry.name.endsWith(suffix))
+        .map((entry) => entry.name.slice(0, -suffix.length))
+        .sort((left, right) => left.localeCompare(right))
+        .map((subpath) => [
+          subpath,
+          `${subpath
+            .split("-")
+            .map((part) => `${part[0]?.toUpperCase()}${part.slice(1)}`)
+            .join("")}${symbolSuffix}`,
+        ]),
+    ),
+  );
+}
+
+const iconSubpaths = await collectDefinitionSubpaths(
+  "icons",
+  ".icon.js",
+);
+const collectionSubpaths = await collectDefinitionSubpaths(
+  "collections",
+  ".collection.js",
+  "Collection",
 );
 
 async function collectDistributionFiles(extension) {
@@ -54,9 +66,12 @@ test("exposes the exact documented icon root and definition families", async () 
   assert.ok(Object.isFrozen(root.AsterIcons));
   assert.deepEqual(
     Object.keys(collections).sort(),
-    ["AsterCollection", "AsterCollections"],
+    ["AsterCollections", ...Object.values(collectionSubpaths)].sort(),
   );
-  assert.deepEqual(collections.AsterCollections, [collections.AsterCollection]);
+  assert.deepEqual(
+    collections.AsterCollections,
+    Object.values(collectionSubpaths).map((symbol) => collections[symbol]),
+  );
   assert.ok(Object.isFrozen(collections.AsterCollections));
 
   for (const [subpath, symbol] of Object.entries(iconSubpaths)) {
@@ -64,6 +79,14 @@ test("exposes the exact documented icon root and definition families", async () 
 
     assert.deepEqual(Object.keys(direct), [symbol]);
     assert.equal(direct[symbol], root[symbol]);
+    assert.equal(direct[symbol].identity.name, subpath);
+  }
+
+  for (const [subpath, symbol] of Object.entries(collectionSubpaths)) {
+    const direct = await import(`@aster/icons/collections/${subpath}`);
+
+    assert.deepEqual(Object.keys(direct), [symbol]);
+    assert.equal(direct[symbol], collections[symbol]);
     assert.equal(direct[symbol].identity.name, subpath);
   }
 

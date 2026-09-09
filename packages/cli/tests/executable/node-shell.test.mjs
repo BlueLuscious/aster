@@ -15,6 +15,7 @@ import process from "node:process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { AsterIcons } from "@aster/icons";
+import { AsterCollections } from "@aster/icons/collections";
 
 const executablePath = fileURLToPath(
   new URL("../../dist/shell/aster.js", import.meta.url),
@@ -56,7 +57,7 @@ test("renders list, search, show, and version as deterministic human text", () =
   assert.equal(listed.status, 0);
   assert.equal(
     listed.stdout,
-    `Catalogues:\n  aster (${AsterIcons.length} icons, 1 collection)\n`,
+    `Catalogues:\n  aster (${AsterIcons.length} icons, ${AsterCollections.length} ${AsterCollections.length === 1 ? "collection" : "collections"})\n`,
   );
   assert.match(searched.stdout, /^Results:\n  icon: aster\/camera/u);
   assert.match(shown.stdout, /^Icon: aster\/camera\nCatalogue: aster/u);
