@@ -49,6 +49,19 @@ Review renders each selected definition through public `@aster/svg` and construc
 timestamp, environment value, current directory, serialised HTML, or publication effect. Expected
 lookup and render failures expose no partial model.
 
+## Static review serialisation
+
+The internal review document serialiser transforms one complete accepted plan into byte-stable
+self-contained HTML. It composes the SVG markup already retained by the plan with fixed inline CSS,
+escaped technical metadata, semantic landmarks, contact-sheet navigation, representative visual
+samples, and non-destructive comparison guides. It performs no rendering reinterpretation,
+filesystem access, network request, browser launch, or process mutation.
+
+Serialisation is deliberately downstream of command execution: programmatic callers continue to
+receive the immutable technical model, while a host may choose when and whether to create the
+disposable document. The standalone executable does not publish that document until its dedicated
+output boundary is implemented.
+
 ## Standalone execution
 
 The private `aster` executable adapts process arguments to the same structured invocation used by

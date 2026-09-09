@@ -85,9 +85,10 @@ options become the same portable option record before command execution. Detaile
 ## Review isolation
 
 Headless review consumes the same catalogue-owned exact selection boundary as Export and renders
-only through public SVG. It returns a complete immutable technical model without serialising HTML,
-retaining host paths, or acquiring process, browser, or filesystem capabilities. Detailed
-ownership is documented by [CLI Review](review/index.md).
+only through public SVG. It returns a complete immutable technical model without retaining host
+paths or acquiring process, browser, or filesystem capabilities. A separate internal pure
+serialiser can convert that model into self-contained HTML without changing the public result.
+Detailed ownership is documented by [CLI Review](review/index.md).
 
 ## Conditional Flora seam
 

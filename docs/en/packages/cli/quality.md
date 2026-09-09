@@ -64,7 +64,7 @@ definitions, normalisers, queries, presenters, filesystem capabilities, or Node 
 | Command | Accepts structured invocations and contexts, dispatches seven commands, and returns immutable results. | None |
 | Catalogue | Loads explicit providers, isolates portable definitions, and performs deterministic discovery. | None |
 | Export | Selects exact catalogue definitions and produces complete immutable SVG artefact plans. | None |
-| Review | Selects exact catalogue definitions and produces complete immutable technical document plans. | None |
+| Review | Selects exact catalogue definitions, produces immutable technical plans, and serialises them into self-contained static HTML. | None |
 | Built-in provider | Dynamically acquires canonical `@aster/icons` definitions when explicitly loaded. | Package loading only |
 | Shell | Parses argv, presents output, maps process status, and composes output publication. | Node process and filesystem |
 
@@ -78,7 +78,7 @@ read process state, access the filesystem, or write output.
 | --- | --- |
 | `@aster/core` | Portable definition contracts, reconstruction, identity, metadata, presentation, and render-option vocabulary used by catalogue and export boundaries. |
 | `@aster/icons` | Canonical definitions supplied only by the explicit built-in provider through a dynamic import. |
-| `@aster/svg` | Public deterministic SVG rendering used to create export artefacts. |
+| `@aster/svg` | Public deterministic SVG rendering used to create export artefacts and review evidence. |
 
 Import, DOM, browser, framework, network, package-manager, Flora, and repository-tooling imports are
 absent from production source. Node imports occur only in the private shell entrypoint, output-path
@@ -122,6 +122,8 @@ repository workflows. It currently demonstrates:
   arrays, or retained provider-method mutation;
 - catalogue discovery, empty values, many-to-many membership, ambiguity, conflicts, and failures;
 - complete icon and collection export planning without partial artefacts;
+- deterministic self-contained review HTML, semantic navigation, offline assets, fixed visual
+  samples, and hostile-text escaping;
 - equivalent standalone and independent programmatic results;
 - human, JSON, and raw SVG presentation with deterministic streams and statuses;
 - output-path rejection, exclusive staging, absent-target publication, and current-stage cleanup;

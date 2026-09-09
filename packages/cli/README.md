@@ -19,8 +19,10 @@ pnpm exec aster review icon aster/camera --json
 ```
 
 The programmatic root returns complete immutable export and technical review plans and performs no
-filesystem effect. Only the standalone Node executable may publish supported output plans beneath
-an explicit absent output root; static review publication is not yet implemented.
+filesystem effect. The package includes deterministic self-contained review-document
+serialisation behind its internal boundary. Only the standalone Node executable may publish
+supported output plans beneath an explicit absent output root; static review publication is not
+yet implemented.
 
 See the [canonical package documentation](../../docs/en/packages/cli/index.md) for boundaries,
 contracts, and implemented behaviour.

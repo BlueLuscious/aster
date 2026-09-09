@@ -27,7 +27,7 @@ help metadata does not eagerly evaluate the built-in catalogue.
 | [Command Invocation](command/invocation/index.md) | Accepts untrusted programmatic requests through explicit command-owned normalisers. |
 | [Catalogue](catalogue/index.md) | Loads explicit providers and performs deterministic provider, collection, and icon discovery. |
 | [Export](export/index.md) | Selects exact catalogue definitions and constructs immutable host-neutral SVG artefact plans. |
-| [Review](review/index.md) | Constructs immutable host-neutral technical review plans through public SVG rendering. |
+| [Review](review/index.md) | Constructs immutable technical plans through public SVG rendering and serialises self-contained static review documents. |
 | [Shell](shell/index.md) | Adapts Node argv, presents human or JSON output, and commits documented process effects. |
 | [Shell Parsing](shell/parsing/index.md) | Adapts standalone argv through explicit command-owned parsers. |
 | [Shell Presentation](shell/presentation/index.md) | Produces deterministic human or JSON stream results. |
@@ -107,6 +107,8 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
   immutable plans;
 - exact review selection, deterministic technical evidence, contained SVG failures, and complete
   immutable plans;
+- byte-stable offline review documents, canonical contact-sheet order, semantic navigation, and
+  hostile authored-text containment;
 - exact shell render options, raw SVG redirection, and staged output-root publication.
 
 Built-executable integration tests additionally verify human and JSON presentation, exact stream

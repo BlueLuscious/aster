@@ -3,8 +3,9 @@
 Status: **Pre-release**
 
 The review feature converts one exact icon or collection from explicit catalogue providers into a
-complete immutable technical document plan. It is host-neutral: it does not serialise HTML, inspect
-argv, resolve an output root, access files, launch a browser, or mutate process state.
+complete immutable technical document plan. Its internal static serialiser can then convert that
+plan into self-contained HTML without inspecting argv, resolving an output root, accessing files,
+launching a browser, or mutating process state.
 
 ## Public contracts
 
@@ -22,7 +23,7 @@ argv, resolve an output root, access files, launch a browser, or mutate process 
 | `AsterReviewDocumentType` | Closed union of icon and collection technical models. | Discriminated by `reviewSubjects`. |
 | `AsterReviewSubjectType` | Closed `icon` or `collection` review subject union. | Derived from `reviewSubjects`. |
 | `reviewSubjects` | Immutable runtime authority for review value families. | Used by invocation, document, and plan discrimination. |
-| `reviewTargets` | Immutable runtime authority for planned review representations. | Currently contains only `html`; serialisation is a separate phase. |
+| `reviewTargets` | Immutable runtime authority for planned review representations. | Currently contains only `html`; publication remains a separate host effect. |
 
 ## Planning flow
 
@@ -48,6 +49,30 @@ metadata and canonically ordered complete member evidence; an empty collection p
 member sequence. Primitive families are unique and ASCII-ordered. No timestamp, host path,
 environment value, current directory, or publication destination enters the plan.
 
+## Static document serialisation
+
+`ReviewDocumentSerialiser` is the single internal HTML-document authority. It accepts only a
+complete `AsterReviewPlan` and returns deterministic HTML with LF line endings. It does not form
+part of the public package ABI; the standalone publication host composes it privately.
+
+Each icon detail presents identity, display name, tags, RTL policy, view box, node and primitive
+evidence, collection memberships, deprecation, replacement, licence, attribution, presentation
+policy, representative palettes, and a fixed 16, 24, 32, and 48 pixel size ladder. Grid and
+viewport-bound comparisons are review-only layers around the rendered SVG. A safe-area panel
+reports unavailable evidence because Core definitions retain no safe-area profile; the review
+does not invent collection authoring policy.
+
+Collection reviews present metadata, member count, a canonically ordered contact sheet, and
+anchored detail for every member. Empty collections retain an explicit empty state. Semantic
+header, navigation, main, section, article, definition-list, figure, details, and footer landmarks
+provide meaningful document structure. Navigation links and native details controls remain
+keyboard reachable.
+
+All CSS and SVG are inline. The document contains no scripts, external fonts, images, stylesheets,
+or network references. Fixed review CSS owns every visual value. Authored metadata is escaped for
+HTML text, rendered SVG enters only from public `@aster/svg`, and no authored value becomes CSS or
+raw markup. Equal plans produce byte-identical documents.
+
 ## Effects and failures
 
 Expected lookup failures retain existing catalogue diagnostics. Public SVG failures become the
@@ -55,7 +80,6 @@ existing `ASTER-CLI-007` render-failure family without leaking target details or
 Unexpected exceptions remain contained by the command kernel.
 
 The standalone parser accepts `review icon` and `review collection`, with optional `--catalogue`
-and shell-owned `--output`. Output never enters the programmatic invocation or plan. Static HTML
-serialisation and filesystem publication are not implemented by this boundary and remain separate
-host responsibilities; the current executable rejects requested publication rather than silently
-ignoring it.
+and shell-owned `--output`. Output never enters the programmatic invocation or plan. Filesystem
+publication is not yet implemented and remains a separate host responsibility; the current
+executable rejects requested publication rather than silently ignoring it.
