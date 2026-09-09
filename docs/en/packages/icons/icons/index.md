@@ -39,9 +39,10 @@ Every icon:
 - remains below the provisional primitive budget;
 - exports through `@aster/icons/<icon-slug>`.
 
-`AsterIcons` retains the canonical definitions in identity order. Registration in this index makes
-an icon available to complete-package consumers such as the built-in CLI catalogue without adding
-collection membership. It is a package-owned sequence, not a mutable runtime registry or source
+`AsterIcons` retains the canonical definitions in identity order. Catalogue source synchronisation
+generates this index from direct `*.icon.ts` modules, making each valid icon available to
+complete-package consumers such as the built-in CLI catalogue without adding collection
+membership. It is a package-owned sequence, not a mutable runtime registry or runtime source
 discovery service.
 
 Only `ArrowLeft` uses the `mirror` RTL policy. The remaining pilot identities preserve geometry in
@@ -64,3 +65,7 @@ does not import a collection, another icon, the root index, a manifest, a render
 
 Package ABI tests verify that direct and root imports preserve the same object identity, internal
 subpaths are rejected, and emitted ESM and declarations remain host independent.
+
+The generated barrel and aggregate index are versioned, deterministically reconstructable outputs.
+Their ownership and drift checks are documented by
+[Catalogue Source Tooling](../../../tooling/catalogue/index.md).

@@ -8,6 +8,10 @@ an isolated public subpath. It contains no renderer, framework, DOM, filesystem,
 catalogue dependency.
 The example below assumes `@aster/svg` is installed independently by the consumer.
 
+Canonical `*.icon.ts` and `*.collection.ts` modules are editable sources. Package builds
+deterministically synchronise their generated barrels and immutable aggregate indexes before
+compilation.
+
 ```ts
 import { ArrowLeft } from "@aster/icons/arrow-left";
 import { Svg } from "@aster/svg";

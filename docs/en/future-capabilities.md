@@ -116,10 +116,6 @@ and real consumer demand. A collection-package model must resolve icons shared b
 collections without accidental duplicate ownership. Selective CLI acquisition must define source
 integrity, provenance, updates, conflicts and removal before writing consumer files.
 
-If manual index and barrel maintenance becomes error-prone, consider deterministic repository-time
-generation from canonical icon modules. Generated indexes must retain a declared source of truth,
-verification and cleanup boundary; runtime filesystem scanning remains prohibited.
-
 ## Command-set extraction and Flora integration
 
 Importance: **P2 - Conditional**

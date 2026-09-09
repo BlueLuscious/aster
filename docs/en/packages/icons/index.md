@@ -34,6 +34,11 @@ several collections; a collection owns only its explicit member sequence. Canoni
 modules therefore aggregate existing icon values instead of generating, cloning or decorating
 them.
 
+The package build synchronises generated barrels and immutable aggregate indexes from direct
+canonical modules before TypeScript compilation. Authors never edit those generated files.
+Repository tooling performs this source maintenance without entering the package's production
+dependency graph or runtime.
+
 ## Dependency Boundary
 
 The only production dependency is public `@aster/core`.
@@ -69,8 +74,8 @@ import {
 ```
 
 `AsterCollections` enumerates every canonical collection independently from icon discovery. Adding
-a source module does not cause runtime filesystem discovery: package authors explicitly register
-each accepted definition in its corresponding index.
+a canonical source module updates its generated barrel and aggregate index during catalogue source
+synchronisation; runtime consumers never inspect the filesystem.
 
 The canonical collection can also be imported through its isolated subpath:
 
@@ -109,3 +114,5 @@ independent from their family index and sibling definitions.
 
 The package's authoring and SVG review relationship is defined by the
 [Aster Collection Authoring Workflow](../../collections/aster/authoring-workflow.md).
+Generated aggregate ownership and the exact package build loop are defined by
+[Catalogue Source Tooling](../../tooling/catalogue/index.md).

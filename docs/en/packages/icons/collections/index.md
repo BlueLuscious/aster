@@ -51,8 +51,10 @@ selected collection and its declared icon members. The icon-only package root do
 collections.
 
 `AsterCollections` supports complete package discovery without making a collection the owner of
-the icon catalogue. Registering or removing a collection changes derived membership only; it does
-not add or remove definitions from `AsterIcons`.
+the icon catalogue. Catalogue source synchronisation adds or removes canonical collection modules
+from this generated authority. Collection membership remains explicitly authored; changing a
+collection changes derived membership only and does not add or remove definitions from
+`AsterIcons`.
 
 Visual rationale and enforcement severity remain canonical in the
 [Aster Collection Design Contract](../../../collections/aster/design-contract.md).
