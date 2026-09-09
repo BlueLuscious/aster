@@ -19,6 +19,7 @@ export const commandLineTokens = Object.freeze({
     tag: "--tag",
     json: "--json",
     output: "--output",
+    replace: "--replace",
     size: "--size",
     colour: "--colour",
     fill: "--fill",

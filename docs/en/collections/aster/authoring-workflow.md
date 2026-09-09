@@ -91,9 +91,9 @@ without that membership and can be retained by additional collections without mu
 No derived collection SVG is committed by the current workflow. Persistent SVG distribution has
 an implemented `aster export` boundary that can return a headless plan, write one icon to stdout,
 or publish a complete collection beneath an explicit absent output root. Exported SVG remains
-derived and disposable rather than canonical collection source. Reproducible contact-sheet and
-visual-review composition remains deferred to `aster review`; that future command must own its
-outputs without moving filesystem authority into Icons, Core, or SVG.
+derived and disposable rather than canonical collection source. `aster review` now publishes a
+reproducible self-contained contact sheet and per-icon visual evidence while retaining filesystem
+authority in the standalone CLI host rather than Icons, Core, or SVG.
 
 ## Optional SVG Import
 

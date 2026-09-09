@@ -43,10 +43,24 @@ export class ReviewCommandLineParser implements ICommandLineCommandParser {
 
     let catalogue: string | undefined;
     let output: string | undefined;
+    let replace = false;
     const remaining = tokens.slice(3);
 
-    for (let index = 0; index < remaining.length; index += 2) {
+    for (let index = 0; index < remaining.length; index += 1) {
       const option = remaining[index];
+
+      if (option === commandLineTokens.options.replace) {
+        if (replace) {
+          throw new CommandLineError(
+            "option --replace cannot be repeated",
+            this.command,
+          );
+        }
+
+        replace = true;
+        continue;
+      }
+
       const value = remaining[index + 1];
 
       if (
@@ -68,6 +82,8 @@ export class ReviewCommandLineParser implements ICommandLineCommandParser {
         );
       }
 
+      index += 1;
+
       if (option === commandLineTokens.options.catalogue) {
         if (catalogue !== undefined) {
           throw new CommandLineError(
@@ -87,9 +103,9 @@ export class ReviewCommandLineParser implements ICommandLineCommandParser {
       }
     }
 
-    if (json && output !== undefined) {
+    if (json && (output !== undefined || replace)) {
       throw new CommandLineError(
-        "options --json and --output cannot be combined",
+        "option --json cannot be combined with review publication options",
         this.command,
       );
     }
@@ -103,6 +119,7 @@ export class ReviewCommandLineParser implements ICommandLineCommandParser {
       }),
       json,
       ...(output === undefined ? {} : { output }),
+      ...(replace ? { replace: true } : {}),
     });
   }
 }

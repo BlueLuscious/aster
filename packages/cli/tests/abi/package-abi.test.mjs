@@ -219,9 +219,11 @@ test("limits Node process authority and the manifest bridge to the private entry
     ["shell/aster.js", ["node:module", "node:process"]],
     ["shell/output/runtime/export-output-path.resolver.js", ["node:path"]],
     [
-      "shell/output/runtime/node-export-output-file-system.js",
+      "shell/output/runtime/node-output-file-system.js",
       ["node:fs/promises"],
     ],
+    ["shell/output/runtime/output-location.resolver.js", ["node:path"]],
+    ["shell/output/runtime/review-output-path.resolver.js", ["node:path"]],
   ]);
   assert.deepEqual(requireOwners, ["shell/aster.js"]);
 });

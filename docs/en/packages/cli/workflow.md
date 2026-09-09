@@ -58,9 +58,8 @@ samples, and non-destructive comparison guides. It performs no rendering reinter
 filesystem access, network request, browser launch, or process mutation.
 
 Serialisation is deliberately downstream of command execution: programmatic callers continue to
-receive the immutable technical model, while a host may choose when and whether to create the
-disposable document. The standalone executable does not publish that document until its dedicated
-output boundary is implemented.
+receive the immutable technical model, while the standalone host creates the disposable document
+only after complete planning succeeds.
 
 ## Standalone execution
 
@@ -71,7 +70,7 @@ programmatic hosts. It executes the complete host-neutral command before selecti
 | --- | --- |
 | Human | Writes deterministic help, discovery, version, summary, or failure text to the documented stream. |
 | JSON | Serialises the complete structured result as one compact document followed by one newline. |
-| Review summary | Describes one successful headless review plan without claiming HTML publication. |
+| Review publication | Serialises and commits one self-contained `index.html` beneath the default or explicit review root. |
 | Raw SVG | Writes one successful icon artefact directly to stdout. |
 | Output root | Publishes a complete successful export plan beneath one explicit absent destination. |
 
@@ -79,6 +78,11 @@ The output-root host resolves only canonical relative artefact paths. It creates
 stage, writes the complete tree, and performs one final rename to make the destination visible. It
 never silently replaces an existing destination. On a current-run failure it removes only the
 stage it owns and returns an Aster diagnostic without exposing native filesystem messages.
+
+Static review publication uses the same explicit current-directory and same-parent staging
+boundaries. It defaults to `aster-review`; `--output` selects another root. `--replace` moves only
+an unchanged target carrying exact Aster review ownership evidence through a private backup before
+committing the new stage. JSON review remains effect-free and rejects publication options.
 
 ## Authority boundaries
 

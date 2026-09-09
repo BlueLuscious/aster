@@ -58,7 +58,8 @@ The host-neutral production compilation uses ES2022 ESM without Node or DOM ambi
 referenced shell project consumes its emitted declarations and admits Node types only beneath
 `src/shell/`; it does not re-emit the host-neutral implementation. The shell acquires argv, writes
 stdout or stderr, sets process exit status, and privately composes the narrow filesystem authority
-required to publish complete export trees. It has no network, package-manager, Import, framework,
+required to publish complete export trees and static review documents. It has no network,
+package-manager, Import, framework,
 plugin-loader, or repository-tooling authority.
 
 ## Current package surface
@@ -109,6 +110,8 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
   immutable plans;
 - byte-stable offline review documents, canonical contact-sheet order, semantic navigation, and
   hostile authored-text containment;
+- absent-root review publication, exact ownership-gated replacement, staged commitment, and
+  rollback after replacement commit failure;
 - exact shell render options, raw SVG redirection, and staged output-root publication.
 
 Built-executable integration tests additionally verify human and JSON presentation, exact stream

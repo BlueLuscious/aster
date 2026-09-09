@@ -46,11 +46,12 @@ separate responsibility or demonstrated reuse.
 | Import adoption workflow | Proves an accepted imported definition renders byte-equivalent markup to its TypeScript-first equivalent. |
 | Isolated package consumer | Imports and renders using only publishable Core and SVG files, without repository sources. |
 | CLI export | Renders selected icon and collection definitions into complete immutable export plans through the public SVG root. |
-| Future review host | Deferred pressure only; no current review product depends on SVG. |
+| CLI static review | Renders selected definitions through the public SVG root before composing self-contained visual evidence. |
 
-`@aster/cli` depends on the public SVG root for export rendering. `@aster/icons`, `@aster/core`, and
-`@aster/import` do not depend on SVG. Import adopts external SVG into portable definitions; this
-package renders portable definitions towards SVG markup. Neither direction owns the other.
+`@aster/cli` depends on the public SVG root for export and static review rendering.
+`@aster/icons`, `@aster/core`, and `@aster/import` do not depend on SVG. Import adopts external SVG
+into portable definitions; this package renders portable definitions towards SVG markup. Neither
+direction owns the other.
 
 ## Distribution snapshot
 

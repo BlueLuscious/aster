@@ -101,7 +101,7 @@ command package requires an independent Flora or host consumer rather than depen
 | `list`, `search`, `show` | Explicit catalogue providers | Frozen discovery payload | Human or JSON output |
 | Icon export | Exact icon selection and render options | One immutable SVG artefact plan | Human, JSON, raw SVG, or output-root publication |
 | Collection export | Exact collection selection and complete membership resolution | Canonically ordered immutable SVG artefact plan | Human, JSON, or output-root publication |
-| Review | Exact icon or collection selection and public SVG rendering | Immutable technical document plan | Human or JSON presentation; static publication is not yet implemented |
+| Review | Exact icon or collection selection and public SVG rendering | Immutable technical document plan | JSON presentation or staged static HTML publication |
 
 The standalone shell uses the same structured command result as an independent programmatic host.
 Filesystem publication begins only after a complete successful plan exists. It stages an absent
@@ -124,6 +124,8 @@ repository workflows. It currently demonstrates:
 - complete icon and collection export planning without partial artefacts;
 - deterministic self-contained review HTML, semantic navigation, offline assets, fixed visual
   samples, and hostile-text escaping;
+- default and explicit review destinations, exact ownership checks, guarded replacement, and
+  previous-review restoration after commit failure;
 - equivalent standalone and independent programmatic results;
 - human, JSON, and raw SVG presentation with deterministic streams and statuses;
 - output-path rejection, exclusive staging, absent-target publication, and current-stage cleanup;

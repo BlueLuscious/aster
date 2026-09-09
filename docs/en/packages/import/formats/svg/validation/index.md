@@ -30,5 +30,6 @@ technical validation pass.
 
 Validation retains the portable Core `IconViewBox` directly. It does not allocate provisional grid
 values, stroke-width collections, located view-box wrappers or primitive bounds because no
-retained Import operation consumes them. Collection-specific review belongs to a future host
-policy rather than this source adapter.
+retained Import operation consumes them. Collection-specific review belongs to CLI host policy
+rather than this source adapter. The CLI review host derives its own non-canonical visual guides
+from accepted Core definitions and never widens Import validation metrics.

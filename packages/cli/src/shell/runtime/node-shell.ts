@@ -1,9 +1,15 @@
 import { asterCommandPayloadKinds } from "../../command/constants/aster-command-payload-kinds.constant.js";
+import { asterCommandNames } from "../../command/constants/aster-command-names.constant.js";
 import { AsterCatalogue, AsterCommands } from "../../index.js";
-import { ExportOutputError } from "../output/runtime/export-output.error.js";
+import { ReviewDocumentSerialiser } from "../../review/runtime/review-document.serialiser.js";
+import { reviewOutputSchema } from "../output/constants/review-output-schema.constant.js";
 import { ExportOutputPathResolver } from "../output/runtime/export-output-path.resolver.js";
 import { ExportOutputPublisher } from "../output/runtime/export-output.publisher.js";
-import { NodeExportOutputFileSystem } from "../output/runtime/node-export-output-file-system.js";
+import { NodeOutputFileSystem } from "../output/runtime/node-output-file-system.js";
+import { OutputError } from "../output/runtime/output.error.js";
+import { OutputLocationResolver } from "../output/runtime/output-location.resolver.js";
+import { ReviewOutputPathResolver } from "../output/runtime/review-output-path.resolver.js";
+import { ReviewOutputPublisher } from "../output/runtime/review-output.publisher.js";
 import { commandLineTokens } from "../parsing/constants/command-line-tokens.constant.js";
 import { CommandLineError } from "../parsing/runtime/command-line.error.js";
 import { CommandLineParser } from "../parsing/runtime/command-line.parser.js";
@@ -31,11 +37,31 @@ export class NodeShell {
   readonly #diagnostics = new ShellDiagnosticFactory();
 
   /**
+   * @description Shared private Node filesystem authority for standalone publishers.
+   */
+  readonly #fileSystem = new NodeOutputFileSystem();
+
+  /**
+   * @description Shared safe output-root resolution authority.
+   */
+  readonly #locations = new OutputLocationResolver();
+
+  /**
    * @description Private Node output composition applied only to complete export plans.
    */
-  readonly #publisher = new ExportOutputPublisher(
-    new NodeExportOutputFileSystem(),
+  readonly #exportPublisher = new ExportOutputPublisher(
+    this.#fileSystem,
+    this.#locations,
     new ExportOutputPathResolver(),
+  );
+
+  /**
+   * @description Private Node publication composition for complete static review plans.
+   */
+  readonly #reviewPublisher = new ReviewOutputPublisher(
+    this.#fileSystem,
+    new ReviewOutputPathResolver(this.#locations),
+    new ReviewDocumentSerialiser(),
   );
 
   /**
@@ -74,20 +100,28 @@ export class NodeShell {
    */
   async execute(argv: readonly string[]): Promise<TShellExecution> {
     const json = argv.includes(commandLineTokens.options.json);
+    let outputCommand:
+      | typeof asterCommandNames.export
+      | typeof asterCommandNames.review
+      | undefined;
 
     try {
       const parsed = this.#parser.parse(argv);
       const result = await AsterCommands.execute(parsed.invocation, this.#context);
 
       if (
-        parsed.output !== undefined
+        !parsed.json
         && result.ok
         && result.payload.kind === asterCommandPayloadKinds.review
       ) {
-        throw new CommandLineError(
-          "review output publication is not available",
-          commandLineTokens.commands.review,
+        outputCommand = asterCommandNames.review;
+        const publication = await this.#reviewPublisher.publish(
+          result.payload.plan,
+          this.#currentDirectory,
+          parsed.output ?? reviewOutputSchema.defaultRoot,
+          parsed.replace ?? false,
         );
+        return this.#output.presentReviewPublication(publication);
       }
 
       if (
@@ -95,7 +129,8 @@ export class NodeShell {
         && result.ok
         && result.payload.kind === asterCommandPayloadKinds.export
       ) {
-        const publication = await this.#publisher.publish(
+        outputCommand = asterCommandNames.export;
+        const publication = await this.#exportPublisher.publish(
           result.payload.plan,
           this.#currentDirectory,
           parsed.output,
@@ -107,9 +142,9 @@ export class NodeShell {
     } catch (error) {
       const result = error instanceof CommandLineError
         ? this.#diagnostics.usage(error)
-        : error instanceof ExportOutputError
-          ? this.#diagnostics.output(error)
-        : this.#diagnostics.unexpected();
+        : error instanceof OutputError && outputCommand !== undefined
+          ? this.#diagnostics.output(error, outputCommand)
+          : this.#diagnostics.unexpected();
       return this.#output.present(result, json);
     }
   }

@@ -88,7 +88,8 @@ Headless review consumes the same catalogue-owned exact selection boundary as Ex
 only through public SVG. It returns a complete immutable technical model without retaining host
 paths or acquiring process, browser, or filesystem capabilities. A separate internal pure
 serialiser can convert that model into self-contained HTML without changing the public result.
-Detailed ownership is documented by [CLI Review](review/index.md).
+The private Node host may publish that document to an absent root or explicitly replace an
+unchanged Aster-owned review. Detailed ownership is documented by [CLI Review](review/index.md).
 
 ## Conditional Flora seam
 

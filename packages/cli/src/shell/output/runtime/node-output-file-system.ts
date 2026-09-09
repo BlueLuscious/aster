@@ -1,16 +1,17 @@
 import {
   access,
   mkdir,
+  readFile,
   rename,
   rm,
   writeFile,
 } from "node:fs/promises";
-import type { IExportOutputFileSystem } from "../contracts/internal/export-output-file-system.contract.js";
+import type { IOutputFileSystem } from "../contracts/internal/output-file-system.contract.js";
 
 /**
- * @description Node filesystem adapter for private standalone export publication.
+ * @description Node filesystem adapter for private standalone output publication.
  */
-export class NodeExportOutputFileSystem implements IExportOutputFileSystem {
+export class NodeOutputFileSystem implements IOutputFileSystem {
   /**
    * @description Determines whether one path exists without hiding non-absence failures.
    * @param path - Absolute host path to inspect.
@@ -48,6 +49,15 @@ export class NodeExportOutputFileSystem implements IExportOutputFileSystem {
   }
 
   /**
+   * @description Reads one complete UTF-8 text file for ownership inspection.
+   * @param path - Absolute host file path.
+   * @returns Complete decoded text content.
+   */
+  async readText(path: string): Promise<string> {
+    return readFile(path, "utf8");
+  }
+
+  /**
    * @description Creates one absent UTF-8 file without overwriting an existing entry.
    * @param path - Absolute host file path.
    * @param content - Complete text content to retain.
@@ -58,18 +68,18 @@ export class NodeExportOutputFileSystem implements IExportOutputFileSystem {
   }
 
   /**
-   * @description Publishes one complete staged directory through a native rename.
-   * @param source - Existing absolute staging root.
-   * @param destination - Absent absolute output root.
-   * @returns A promise completed after publication.
+   * @description Publishes or relocates one complete directory through a native rename.
+   * @param source - Existing absolute directory.
+   * @param destination - Absent absolute destination.
+   * @returns A promise completed after relocation.
    */
   async renameDirectory(source: string, destination: string): Promise<void> {
     await rename(source, destination);
   }
 
   /**
-   * @description Removes one current-run staging tree without affecting sibling entries.
-   * @param path - Absolute staging root owned by the current publication attempt.
+   * @description Removes one current-run owned tree without affecting sibling entries.
+   * @param path - Absolute owned root.
    * @returns A promise completed after removal.
    */
   async removeDirectory(path: string): Promise<void> {

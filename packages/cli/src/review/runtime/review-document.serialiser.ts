@@ -2,6 +2,7 @@ import type { IconPresentation } from "@aster/core";
 import { CatalogueIdentityFormatter } from "../../catalogue/runtime/catalogue-identity.formatter.js";
 import { reviewSubjects } from "../constants/review-subjects.constant.js";
 import { reviewDocumentPresentation } from "../constants/review-document-presentation.constant.js";
+import { reviewDocumentSchema } from "../constants/review-document-schema.constant.js";
 import { reviewDocumentStyles } from "../constants/review-document-styles.constant.js";
 import type {
   AsterCollectionReviewDocument,
@@ -53,6 +54,7 @@ export class ReviewDocumentSerialiser {
       "<head>",
       '<meta charset="utf-8">',
       '<meta name="viewport" content="width=device-width, initial-scale=1">',
+      reviewDocumentSchema.ownershipMarker,
       `<title>${this.#html.text(title)} | Aster review</title>`,
       `<style>${reviewDocumentStyles}</style>`,
       "</head>",

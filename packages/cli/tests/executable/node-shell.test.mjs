@@ -37,6 +37,7 @@ test("renders default and selected human help without loading shell state", () =
   assert.match(complete.stdout, /^Aster commands:\n/u);
   assert.match(complete.stdout, /aster list catalogues/u);
   assert.match(complete.stdout, /--output <root>/u);
+  assert.match(complete.stdout, /--replace/u);
   assert.match(complete.stdout, /--stroke-width <number>/u);
   assert.match(complete.stdout, /--json  Emit one JSON result document\./u);
   assert.equal(selected.status, 0);
@@ -218,7 +219,7 @@ test("keeps JSON and output mutually exclusive before filesystem mutation", () =
   }
 });
 
-test("presents review plans without silently accepting unavailable publication", () => {
+test("publishes static reviews to default and explicit output roots", () => {
   const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-review-"));
 
   try {
@@ -228,7 +229,7 @@ test("presents review plans without silently accepting unavailable publication",
       "aster/camera",
       "--json",
     ], { cwd: root });
-    const unavailable = run([
+    const published = run([
       "review",
       "collection",
       "aster",
@@ -244,13 +245,79 @@ test("presents review plans without silently accepting unavailable publication",
     assert.equal(result.payload.plan.target, "html");
     assert.equal(result.payload.plan.document.kind, "icon");
 
-    assert.equal(unavailable.status, 2);
-    assert.equal(unavailable.stdout, "");
+    const defaulted = run([
+      "review",
+      "icon",
+      "aster/camera",
+    ], { cwd: root });
+
+    assert.equal(published.status, 0);
+    assert.equal(published.stderr, "");
     assert.equal(
-      unavailable.stderr,
-      "[ASTER-CLI-001] review output publication is not available\n",
+      published.stdout,
+      `Published Aster review to ${resolve(root, "review-site")}\n`,
     );
-    assert.throws(() => readFileSync(resolve(root, "review-site")));
+    assert.match(
+      readFileSync(resolve(root, "review-site/index.html"), "utf8"),
+      /<h1>Aster<\/h1>[\s\S]*id="contact-sheet"/u,
+    );
+    assert.equal(defaulted.status, 0);
+    assert.equal(
+      defaulted.stdout,
+      `Published Aster review to ${resolve(root, "aster-review")}\n`,
+    );
+    assert.match(
+      readFileSync(resolve(root, "aster-review/index.html"), "utf8"),
+      /<h1>Camera<\/h1>/u,
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("replaces only explicitly owned static review output", () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-review-replace-"));
+
+  try {
+    const initial = run([
+      "review",
+      "icon",
+      "aster/camera",
+      "--output",
+      "review-site",
+    ], { cwd: root });
+    const conflict = run([
+      "review",
+      "collection",
+      "aster",
+      "--output",
+      "review-site",
+    ], { cwd: root });
+    const replaced = run([
+      "review",
+      "collection",
+      "aster",
+      "--output",
+      "review-site",
+      "--replace",
+    ], { cwd: root });
+
+    assert.equal(initial.status, 0);
+    assert.equal(conflict.status, 1);
+    assert.equal(
+      conflict.stderr,
+      "[ASTER-CLI-009] output root already exists\n",
+    );
+    assert.equal(replaced.status, 0);
+    assert.equal(replaced.stderr, "");
+    assert.equal(
+      replaced.stdout,
+      `Replaced Aster review at ${resolve(root, "review-site")}\n`,
+    );
+    assert.match(
+      readFileSync(resolve(root, "review-site/index.html"), "utf8"),
+      /<h1>Aster<\/h1>/u,
+    );
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -380,6 +447,20 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
     "--size",
     "0",
   ]);
+  const repeatedReplace = run([
+    "review",
+    "icon",
+    "aster/camera",
+    "--replace",
+    "--replace",
+  ]);
+  const replaceJson = run([
+    "review",
+    "icon",
+    "aster/camera",
+    "--replace",
+    "--json",
+  ]);
 
   assert.equal(repeatedJson.status, 2);
   assert.equal(repeatedFilter.status, 2);
@@ -391,6 +472,8 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
   assert.equal(emptyOutput.status, 2);
   assert.equal(invalidNumber.status, 2);
   assert.equal(invalidDomain.status, 2);
+  assert.equal(repeatedReplace.status, 2);
+  assert.equal(replaceJson.status, 2);
 });
 
 test("imports the built programmatic root without executing the shell", () => {

@@ -26,10 +26,10 @@ export const asterCommandDescriptors = Object.freeze({
   }),
   review: Object.freeze({
     name: asterCommandNames.review,
-    summary: "Plan static technical and visual evidence for one icon or collection.",
+    summary: "Publish static technical and visual evidence for one icon or collection.",
     usage: Object.freeze([
-      "review icon <identity> [--catalogue <provider>] [--output <root>]",
-      "review collection <identity> [--catalogue <provider>] [--output <root>]",
+      "review icon <identity> [--catalogue <provider>] [--output <root>] [--replace]",
+      "review collection <identity> [--catalogue <provider>] [--output <root>] [--replace]",
     ]),
   }),
   search: Object.freeze({

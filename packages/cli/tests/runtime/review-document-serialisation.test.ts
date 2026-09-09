@@ -67,7 +67,7 @@ test("serialises byte-identical self-contained icon evidence", async () => {
   assert.doesNotMatch(first, /<script|<link|<img|@import|url\(/u);
 
   const digest = createHash("sha256").update(first).digest("hex");
-  assert.equal(digest, "5780db9a8938167e1a121c7dc56af940c63fcab8ac5a0dbb5e155fcf4fd0793b");
+  assert.equal(digest, "f0a1d322669a542662ba343bb54d4b0dc36c9564b06bca7b9a4292f21c7ebf69");
 });
 
 test("serialises collections in canonical navigable order", async () => {

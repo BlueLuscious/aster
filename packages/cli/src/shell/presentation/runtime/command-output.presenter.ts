@@ -2,6 +2,7 @@ import { commandDiagnosticSchema } from "../../../command/constants/command-diag
 import type { AsterCommandResultType } from "../../../command/types/index.js";
 import type { TShellExecution } from "../types/internal/shell-execution.type.js";
 import type { TExportOutputPublication } from "../../output/types/internal/export-output-publication.type.js";
+import type { TReviewOutputPublication } from "../../output/types/internal/review-output-publication.type.js";
 import { HumanOutputPresenter } from "./human-output.presenter.js";
 import { JsonOutputPresenter } from "./json-output.presenter.js";
 
@@ -29,6 +30,21 @@ export class CommandOutputPresenter {
   ): TShellExecution {
     return Object.freeze({
       stdout: `${this.#human.publication(publication)}\n`,
+      stderr: "",
+      exitCode: 0,
+    });
+  }
+
+  /**
+   * @description Presents one committed static review publication.
+   * @param publication - Immutable review publication evidence.
+   * @returns Human stdout summary and successful exit status.
+   */
+  presentReviewPublication(
+    publication: TReviewOutputPublication,
+  ): TShellExecution {
+    return Object.freeze({
+      stdout: `${this.#human.reviewPublication(publication)}\n`,
       stderr: "",
       exitCode: 0,
     });

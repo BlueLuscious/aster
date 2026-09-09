@@ -1,9 +1,21 @@
 import type { AsterReviewPlan } from "../../../review/contracts/index.js";
+import type { TReviewOutputPublication } from "../../output/types/internal/review-output-publication.type.js";
 
 /**
  * @description Renders headless review-plan evidence as deterministic human text.
  */
 export class ReviewHumanOutputPresenter {
+  /**
+   * @description Renders truthful destination evidence after static review publication.
+   * @param publication - Committed review publication evidence.
+   * @returns Plain deterministic publication summary without a final newline.
+   */
+  publication(publication: TReviewOutputPublication): string {
+    return publication.replaced
+      ? `Replaced Aster review at ${publication.targetRoot}`
+      : `Published Aster review to ${publication.targetRoot}`;
+  }
+
   /**
    * @description Renders one complete review plan before document publication exists.
    * @param plan - Immutable technical review plan.

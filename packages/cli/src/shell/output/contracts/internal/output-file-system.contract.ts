@@ -1,7 +1,7 @@
 /**
- * @description Narrow private filesystem authority required by export publication.
+ * @description Narrow private filesystem authority required by standalone output publishers.
  */
-export interface IExportOutputFileSystem {
+export interface IOutputFileSystem {
   /**
    * @description Determines whether one filesystem path currently exists.
    * @param path - Absolute host path to inspect.
@@ -22,6 +22,13 @@ export interface IExportOutputFileSystem {
    * @returns A promise completed after exclusive creation.
    */
   createDirectory(path: string): Promise<void>;
+
+  /**
+   * @description Reads one complete UTF-8 text file.
+   * @param path - Absolute host file path.
+   * @returns Complete decoded text content.
+   */
+  readText(path: string): Promise<string>;
 
   /**
    * @description Creates one absent UTF-8 text file without overwriting an entry.

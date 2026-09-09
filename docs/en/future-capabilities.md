@@ -40,21 +40,22 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 Importance: **P1 - High**
 
-The implemented `@aster/cli` already provides catalogue discovery, lookup, search, display, and
-deterministic SVG export through host-neutral commands and a standalone Node shell. Those current
-guarantees are documented by the [CLI package](packages/cli/index.md).
+The implemented `@aster/cli` already provides catalogue discovery, lookup, search, display,
+deterministic SVG export, and disposable static review publication through host-neutral commands
+and a standalone Node shell. Those current guarantees are documented by the
+[CLI package](packages/cli/index.md).
 
 The remaining command families require independent consumer policies:
 
 | Command family | Proposed responsibility | Activation evidence |
 | --- | --- | --- |
 | `add` | Integrate selected definitions through an explicit package, import, or vendoring policy. | One supported consumer-project strategy with conflict and ownership rules. |
-| `review` | Compose disposable technical and visual evidence through explicit render and output hosts. | One review format and lifecycle that adds value beyond tests and raw SVG export. |
 | `generate` | Produce selected manifests, barrels, wrappers, or target integrations. | One concrete generated target with canonical ownership and cleanup rules. |
 | `import` | Host external-source acquisition, reviewed Core metadata, adoption, and persistence. | The complete Import host boundary described below. |
 
-These commands remain distinct. `add` changes consumer integration, `review` creates disposable
-evidence, `generate` creates code or integration artefacts, and `import` adopts external artwork.
+These commands remain distinct. `add` changes consumer integration, `generate` creates code or
+integration artefacts, and `import` adopts external artwork. Implemented `review` creates
+disposable evidence and remains separate from every persistent source workflow.
 No command may silently install dependencies, overwrite files, infer ownership from a directory
 name, or move filesystem authority into a host-neutral command.
 

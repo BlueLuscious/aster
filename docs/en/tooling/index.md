@@ -19,9 +19,9 @@ The canonical documentation mirrors the real tooling feature roots:
 | [Workspace](workspace/index.md) | Owns guarded repository and package maintenance operations such as distribution cleanup. |
 
 User-facing project operations do not belong here. Persistent target export is implemented by
-`aster export`; disposable review composition remains a future `aster review` responsibility. The
-CLI may compose public package capabilities, but neither CLI nor any other published package
-imports repository tooling.
+`aster export`; disposable static review composition and publication are implemented by
+`aster review`. The CLI may compose public package capabilities, but neither CLI nor any other
+published package imports repository tooling.
 
 ## Runtime and dependencies
 

@@ -252,6 +252,7 @@ test("parses review output only as shell-owned publication intent", () => {
     "testing",
     "--output",
     "review-site",
+    "--replace",
   ]);
 
   assert.deepEqual(parsed, {
@@ -263,6 +264,7 @@ test("parses review output only as shell-owned publication intent", () => {
     },
     json: false,
     output: "review-site",
+    replace: true,
   });
   assert.equal("output" in parsed.invocation, false);
   assert.throws(

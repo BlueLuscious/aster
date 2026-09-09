@@ -5,7 +5,8 @@ import { join, resolve } from "node:path";
 import test from "node:test";
 import { ExportOutputPublisher } from "../../dist/shell/output/runtime/export-output.publisher.js";
 import { ExportOutputPathResolver } from "../../dist/shell/output/runtime/export-output-path.resolver.js";
-import { NodeExportOutputFileSystem } from "../../dist/shell/output/runtime/node-export-output-file-system.js";
+import { NodeOutputFileSystem } from "../../dist/shell/output/runtime/node-output-file-system.js";
+import { OutputLocationResolver } from "../../dist/shell/output/runtime/output-location.resolver.js";
 
 const svg = '<svg xmlns="http://www.w3.org/2000/svg"></svg>';
 
@@ -103,6 +104,7 @@ class AppearingTargetFileSystem extends FixtureFileSystem {
 function fixturePublisher(fileSystem) {
   return new ExportOutputPublisher(
     fileSystem,
+    new OutputLocationResolver(),
     new ExportOutputPathResolver(),
   );
 }
@@ -115,7 +117,7 @@ test("publishes complete nested trees beside absent targets deterministically", 
   const root = await temporaryDirectory();
 
   try {
-    const publisher = fixturePublisher(new NodeExportOutputFileSystem());
+    const publisher = fixturePublisher(new NodeOutputFileSystem());
     const exportPlan = plan(["aster/camera.svg", "aster/ui/close.svg"]);
     const first = await publisher.publish(exportPlan, root, "nested/first");
     const second = await publisher.publish(exportPlan, root, "nested/second");
@@ -147,7 +149,7 @@ test("rejects existing targets and interrupted stages without removing them", as
   const root = await temporaryDirectory();
 
   try {
-    const publisher = fixturePublisher(new NodeExportOutputFileSystem());
+    const publisher = fixturePublisher(new NodeOutputFileSystem());
     const target = resolve(root, "existing");
     const stage = resolve(root, ".interrupted.aster-stage");
     await mkdir(target);

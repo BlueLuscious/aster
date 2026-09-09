@@ -52,8 +52,9 @@ environment value, current directory, or publication destination enters the plan
 ## Static document serialisation
 
 `ReviewDocumentSerialiser` is the single internal HTML-document authority. It accepts only a
-complete `AsterReviewPlan` and returns deterministic HTML with LF line endings. It does not form
-part of the public package ABI; the standalone publication host composes it privately.
+complete `AsterReviewPlan` and returns deterministic HTML with LF line endings and exact Aster
+ownership evidence. It does not form part of the public package ABI; the standalone publication
+host composes it privately.
 
 Each icon detail presents identity, display name, tags, RTL policy, view box, node and primitive
 evidence, collection memberships, deprecation, replacement, licence, attribution, presentation
@@ -79,7 +80,18 @@ Expected lookup failures retain existing catalogue diagnostics. Public SVG failu
 existing `ASTER-CLI-007` render-failure family without leaking target details or a partial model.
 Unexpected exceptions remain contained by the command kernel.
 
-The standalone parser accepts `review icon` and `review collection`, with optional `--catalogue`
-and shell-owned `--output`. Output never enters the programmatic invocation or plan. Filesystem
-publication is not yet implemented and remains a separate host responsibility; the current
-executable rejects requested publication rather than silently ignoring it.
+The standalone parser accepts `review icon` and `review collection`, with optional `--catalogue`,
+shell-owned `--output`, and shell-owned `--replace`. Output and replacement authority never enter
+the programmatic invocation or plan.
+
+Human execution publishes `index.html` beneath `aster-review` by default or beneath the explicit
+`--output` root. A new publication requires an absent target. `--replace` permits replacement only
+when the existing `index.html` carries the exact Aster review marker and remains byte-identical
+through the replacement preflight. JSON mode returns the host-neutral plan and cannot be combined
+with publication options.
+
+The publisher writes the complete new document to a private sibling stage. For replacement, it
+moves the unchanged owned target to a private backup, commits the complete stage, and then removes
+the backup. A commit failure restores the previous review before reporting a sanitised failure.
+Unrelated destinations, interrupted stages, existing backups, and changed ownership evidence are
+never removed implicitly.

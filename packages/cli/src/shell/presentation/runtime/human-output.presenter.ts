@@ -1,6 +1,7 @@
 import { asterCommandPayloadKinds } from "../../../command/constants/aster-command-payload-kinds.constant.js";
 import type { AsterCommandResultType } from "../../../command/types/index.js";
 import type { TExportOutputPublication } from "../../output/types/internal/export-output-publication.type.js";
+import type { TReviewOutputPublication } from "../../output/types/internal/review-output-publication.type.js";
 import { CatalogueHumanOutputPresenter } from "./catalogue-human-output.presenter.js";
 import { ExportHumanOutputPresenter } from "./export-human-output.presenter.js";
 import { HelpHumanOutputPresenter } from "./help-human-output.presenter.js";
@@ -37,6 +38,15 @@ export class HumanOutputPresenter {
    */
   publication(publication: TExportOutputPublication): string {
     return this.#export.publication(publication);
+  }
+
+  /**
+   * @description Renders one committed static review destination.
+   * @param publication - Immutable review publication evidence.
+   * @returns Plain deterministic publication summary without a final newline.
+   */
+  reviewPublication(publication: TReviewOutputPublication): string {
+    return this.#review.publication(publication);
   }
 
   /**

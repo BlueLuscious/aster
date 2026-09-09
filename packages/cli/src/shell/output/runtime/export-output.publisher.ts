@@ -1,9 +1,10 @@
 import type { AsterExportPlan } from "../../../export/contracts/index.js";
-import { exportOutputErrorKinds } from "../constants/export-output-error-kinds.constant.js";
-import type { IExportOutputFileSystem } from "../contracts/internal/export-output-file-system.contract.js";
+import { outputErrorKinds } from "../constants/output-error-kinds.constant.js";
+import type { IOutputFileSystem } from "../contracts/internal/output-file-system.contract.js";
 import type { TExportOutputPublication } from "../types/internal/export-output-publication.type.js";
-import { ExportOutputError } from "./export-output.error.js";
+import { OutputError } from "./output.error.js";
 import { ExportOutputPathResolver } from "./export-output-path.resolver.js";
+import { OutputLocationResolver } from "./output-location.resolver.js";
 
 /**
  * @description Stages and publishes complete headless export plans under one absent output root.
@@ -12,7 +13,12 @@ export class ExportOutputPublisher {
   /**
    * @description Narrow filesystem authority supplied by the standalone host.
    */
-  readonly #fileSystem: IExportOutputFileSystem;
+  readonly #fileSystem: IOutputFileSystem;
+
+  /**
+   * @description Shared safe output-root resolver.
+   */
+  readonly #locations: OutputLocationResolver;
 
   /**
    * @description Safe host-path resolver supplied by the standalone composition.
@@ -22,13 +28,16 @@ export class ExportOutputPublisher {
   /**
    * @description Creates one publisher from explicit private host collaborators.
    * @param fileSystem - Narrow filesystem authority.
-   * @param paths - Safe output-path resolver.
+   * @param locations - Safe output-root resolver.
+   * @param paths - Safe logical artefact-path resolver.
    */
   constructor(
-    fileSystem: IExportOutputFileSystem,
+    fileSystem: IOutputFileSystem,
+    locations: OutputLocationResolver,
     paths: ExportOutputPathResolver,
   ) {
     this.#fileSystem = fileSystem;
+    this.#locations = locations;
     this.#paths = paths;
   }
 
@@ -44,7 +53,7 @@ export class ExportOutputPublisher {
     currentDirectory: string,
     outputRoot: string,
   ): Promise<TExportOutputPublication> {
-    const location = this.#paths.resolveLocation(currentDirectory, outputRoot);
+    const location = this.#locations.resolve(currentDirectory, outputRoot);
     const entries = this.#paths.resolveEntries(location.stageRoot, plan.artefacts);
 
     if (entries.length === 0) {
@@ -102,7 +111,7 @@ export class ExportOutputPublisher {
         }
       }
 
-      if (error instanceof ExportOutputError) {
+      if (error instanceof OutputError) {
         throw error;
       }
 
@@ -115,17 +124,17 @@ export class ExportOutputPublisher {
    * @param message - Shell-owned conflict explanation.
    * @returns Sanitised output error.
    */
-  #conflict(message: string): ExportOutputError {
-    return new ExportOutputError(exportOutputErrorKinds.conflict, message);
+  #conflict(message: string): OutputError {
+    return new OutputError(outputErrorKinds.conflict, message);
   }
 
   /**
    * @description Creates one stable output-operation failure without native exception evidence.
    * @returns Sanitised output error.
    */
-  #failure(): ExportOutputError {
-    return new ExportOutputError(
-      exportOutputErrorKinds.failure,
+  #failure(): OutputError {
+    return new OutputError(
+      outputErrorKinds.failure,
       "output publication failed",
     );
   }
