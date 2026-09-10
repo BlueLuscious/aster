@@ -70,6 +70,16 @@ remain independently defined under their own canonical identities, may exist wit
 may belong to Amellus and other collections simultaneously. Removing an icon from Amellus changes
 membership only; it does not remove or rename the icon.
 
+## Collection specification
+
+The [visual design contract](design-contract.md) defines Amellus canvas, grid, safe-area,
+presentation, geometry, minimum-size and RTL rules. The [initial inventory](inventory.md) defines
+the bounded semantic set, search vocabulary, adjacent-concept distinctions and representative
+stress coverage accepted for authorship.
+
+These documents govern future collection acceptance. They do not create definitions, membership
+or generated catalogue output merely by existing.
+
 ## Pilot relationship
 
 The sixteen Experimental Aster pilot icons are candidate inputs, not inherited members. Each may
