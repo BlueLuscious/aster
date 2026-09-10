@@ -7,6 +7,8 @@ is keyed by accepted curatorial identity and does not require one repository-lev
 
 The current collection set is:
 
+- [Amellus](amellus/index.md) is the accepted identity for the Proposed foundational minimalist
+  general-purpose collection.
 - [Aster](aster/index.md) is the Experimental pilot collection used to validate its provisional
   geometric outline language.
 
