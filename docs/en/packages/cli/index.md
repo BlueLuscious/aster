@@ -31,7 +31,7 @@ help metadata does not eagerly evaluate the built-in catalogue.
 | [Shell](shell/index.md) | Adapts Node argv, presents human or JSON output, and commits documented process effects. |
 | [Shell Parsing](shell/parsing/index.md) | Adapts standalone argv through explicit command-owned parsers. |
 | [Shell Presentation](shell/presentation/index.md) | Produces deterministic human or JSON stream results. |
-| [Shell Output](shell/output/index.md) | Publishes complete export trees through the private Node filesystem boundary. |
+| [Shell Output](shell/output/index.md) | Publishes complete export trees and static review documents through the private Node filesystem boundary. |
 
 [CLI Workflow](workflow.md) describes how these features compose from one structured invocation
 through immutable planning and optional standalone publication.
@@ -77,7 +77,7 @@ The package exposes only its root `"."`. It exports these types:
 - `CatalogueProviderResult`, `CatalogueIconResult`, and `CatalogueCollectionResult`;
 - `CatalogueResultKindType`;
 - `AsterExportArtefact`, `AsterExportPlan`, `AsterExportSubjectType`, `AsterExportOptionsType`, and
-  `AsterIconExportOptionsType`.
+  `AsterIconExportOptionsType`;
 - `AsterReviewIconEvidence`, `AsterIconReviewDocument`, `AsterCollectionReviewDocument`, and
   `AsterReviewPlan`;
 - `AsterReviewDocumentType` and `AsterReviewSubjectType`.

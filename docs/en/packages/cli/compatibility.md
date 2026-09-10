@@ -119,6 +119,9 @@ Package conformance builds the distribution and verifies:
   failures, and caller-controlled exceptions;
 - safe private output mapping, absent parents, existing targets, interrupted stages, filesystem
   failures, current-stage cleanup, empty-plan non-mutation, and deterministic fresh-root output;
+- complete review equivalence through standalone and programmatic hosts installed from packed
+  package artefacts;
+- self-contained review publication from a clean consumer without scripts or remote resources;
 - executable human, JSON, stream, diagnostic, and exit-status behaviour;
 - raw SVG redirection, exact export-option parsing, committed output summaries, and reserved
   output conflict and failure diagnostics.
