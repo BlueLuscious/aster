@@ -72,6 +72,11 @@ export class CliBaselineFixtureFactory {
           identity: identities.collection(AsterCollection.identity),
           options: Object.freeze({ size: 24 }),
         }),
+        reviewCollection: Object.freeze({
+          command: "review",
+          subject: "collection",
+          identity: identities.collection(AsterCollection.identity),
+        }),
       }),
       arguments: Object.freeze({
         help: Object.freeze(["help"]),
