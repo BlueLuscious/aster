@@ -6,6 +6,7 @@ export const asterCommandPayloadKinds = Object.freeze({
   catalogueList: "catalogue-list",
   collectionList: "collection-list",
   iconList: "icon-list",
+  review: "review",
   search: "search",
   iconShow: "icon-show",
   collectionShow: "collection-show",

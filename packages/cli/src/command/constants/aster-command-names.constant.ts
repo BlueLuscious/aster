@@ -4,6 +4,7 @@
 export const asterCommandNames = Object.freeze({
   export: "export",
   list: "list",
+  review: "review",
   search: "search",
   show: "show",
   help: "help",

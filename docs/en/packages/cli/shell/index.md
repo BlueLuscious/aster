@@ -30,7 +30,9 @@ aster export icon <identity> [--catalogue <provider>] [render-options] [--output
 aster export collection <identity> [--catalogue <provider>] [render-options] --output <root>
 aster export icon <identity> [--catalogue <provider>] [render-options] --json
 aster export collection <identity> [--catalogue <provider>] [render-options] --json
-aster help [export|list|search|show]
+aster review icon <identity> [--catalogue <provider>] [--output <root>] [--replace]
+aster review collection <identity> [--catalogue <provider>] [--output <root>] [--replace]
+aster help [export|review|list|search|show]
 aster version
 ```
 
@@ -50,6 +52,11 @@ complete host-neutral plan for either subject. Collection export requires JSON o
 `--json` and `--output` are mutually exclusive shell concerns and never enter
 `AsterCommandInvocationType` together.
 
+Review returns a headless technical plan. JSON presents that plan without effects. Human execution
+serialises and publishes static HTML beneath `aster-review` or an explicit `--output` root.
+`--replace` permits replacement only when the destination carries unchanged Aster review ownership
+evidence. Output roots and replacement intent remain outside the structured invocation.
+
 The shell explicitly supplies `AsterCatalogue`. This is executable composition rather than an
 ambient default in `AsterCommands`.
 
@@ -59,8 +66,9 @@ Human output is plain deterministic text with no terminal-width or mandatory ANS
 Successful human output is written to stdout. Expected human failures are written to stderr with
 their stable diagnostic code and any related values.
 
-Successful output publication writes only a committed destination and artefact-count summary. An
-empty collection writes an explicit non-publication summary because no output root is created.
+Successful export publication writes only a committed destination and artefact-count summary. An
+empty exported collection writes an explicit non-publication summary because no output root is
+created. Successful review publication reports whether it created or replaced its destination.
 The shell never prints SVG markup or a headless plan after claiming that the same result was
 published.
 
@@ -96,7 +104,7 @@ moving their host authority into the programmatic command API.
 | `CommandLineParser` | Dispatches argv adaptation to explicit command-owned parsers. |
 | `CommandOutputPresenter` | Selects human or JSON presentation, streams, and exit status. |
 | `ShellDiagnosticFactory` | Adapts parser, output-host, and unexpected shell faults into canonical command diagnostics. |
-| `NodeShell` | Executes the host-neutral command before optionally publishing its complete export plan. |
+| `NodeShell` | Executes the host-neutral command before optionally publishing its complete export or review plan. |
 
 The executable entrypoint is the only module that imports `node:process`. Node path and filesystem
 imports occur only in the private [Output](output/index.md) subfeature. The host-neutral compiler excludes the
@@ -104,6 +112,7 @@ complete shell tree. The referenced shell project consumes host-neutral declarat
 types, and emits only the private binary modules. Importing `@aster/cli` resolves only the
 side-effect-free programmatic root and never evaluates the entrypoint.
 
-Host-neutral command semantics remain authoritative in [CLI Command](../command/index.md) and
-[CLI Export](../export/index.md). [CLI Workflow](../workflow.md) defines how this private adapter
-composes them without transferring Node authority into the public root.
+Host-neutral command semantics remain authoritative in [CLI Command](../command/index.md),
+[CLI Export](../export/index.md), and [CLI Review](../review/index.md). [CLI Workflow](../workflow.md)
+defines how this private adapter composes them without transferring Node authority into the public
+root.

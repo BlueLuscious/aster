@@ -14,6 +14,8 @@ import { join, resolve } from "node:path";
 import process from "node:process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { AsterIcons } from "@aster/icons";
+import { AsterCollections } from "@aster/icons/collections";
 
 const executablePath = fileURLToPath(
   new URL("../../dist/shell/aster.js", import.meta.url),
@@ -37,6 +39,7 @@ test("renders default and selected human help without loading shell state", () =
   assert.match(complete.stdout, /^Aster commands:\n/u);
   assert.match(complete.stdout, /aster list catalogues/u);
   assert.match(complete.stdout, /--output <root>/u);
+  assert.match(complete.stdout, /--replace/u);
   assert.match(complete.stdout, /--stroke-width <number>/u);
   assert.match(complete.stdout, /--json  Emit one JSON result document\./u);
   assert.equal(selected.status, 0);
@@ -52,7 +55,10 @@ test("renders list, search, show, and version as deterministic human text", () =
   const version = run(["version"]);
 
   assert.equal(listed.status, 0);
-  assert.equal(listed.stdout, "Catalogues:\n  aster (16 icons, 1 collection)\n");
+  assert.equal(
+    listed.stdout,
+    `Catalogues:\n  aster (${AsterIcons.length} icons, ${AsterCollections.length} ${AsterCollections.length === 1 ? "collection" : "collections"})\n`,
+  );
   assert.match(searched.stdout, /^Results:\n  icon: aster\/camera/u);
   assert.match(shown.stdout, /^Icon: aster\/camera\nCatalogue: aster/u);
   assert.match(shown.stdout, /Collections: aster\n/u);
@@ -95,7 +101,7 @@ test("renders standalone options and one collection as a JSON export plan", () =
   const result = JSON.parse(collection.stdout);
   assert.equal(result.ok, true);
   assert.equal(result.payload.kind, "export");
-  assert.equal(result.payload.plan.artefacts.length, 16);
+  assert.equal(result.payload.plan.artefacts.length, AsterIcons.length);
 });
 
 test("delegates accepted presentation overrides to icon policy", () => {
@@ -140,7 +146,7 @@ test("publishes icon and collection plans relative to the explicit process direc
     assert.equal(collection.stderr, "");
     assert.equal(
       collection.stdout,
-      `Exported 16 SVG artefacts to ${resolve(root, "exports/collection")}\n`,
+      `Exported ${AsterIcons.length} SVG artefacts to ${resolve(root, "exports/collection")}\n`,
     );
     assert.match(
       readFileSync(resolve(root, "exports/icon/aster/camera.svg"), "utf8"),
@@ -213,6 +219,110 @@ test("keeps JSON and output mutually exclusive before filesystem mutation", () =
     assert.equal(JSON.parse(execution.stdout).diagnostic.category, "usage");
     assert.equal(JSON.parse(execution.stdout).diagnostic.code, "ASTER-CLI-001");
     assert.throws(() => readFileSync(resolve(root, "result")));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("publishes static reviews to default and explicit output roots", () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-review-"));
+
+  try {
+    const planned = run([
+      "review",
+      "icon",
+      "aster/camera",
+      "--json",
+    ], { cwd: root });
+    const published = run([
+      "review",
+      "collection",
+      "aster",
+      "--output",
+      "review-site",
+    ], { cwd: root });
+
+    assert.equal(planned.status, 0);
+    assert.equal(planned.stderr, "");
+    const result = JSON.parse(planned.stdout);
+    assert.equal(result.ok, true);
+    assert.equal(result.payload.kind, "review");
+    assert.equal(result.payload.plan.target, "html");
+    assert.equal(result.payload.plan.document.kind, "icon");
+
+    const defaulted = run([
+      "review",
+      "icon",
+      "aster/camera",
+    ], { cwd: root });
+
+    assert.equal(published.status, 0);
+    assert.equal(published.stderr, "");
+    assert.equal(
+      published.stdout,
+      `Published Aster review to ${resolve(root, "review-site")}\n`,
+    );
+    assert.match(
+      readFileSync(resolve(root, "review-site/index.html"), "utf8"),
+      /<h1>Aster<\/h1>[\s\S]*id="contact-sheet"/u,
+    );
+    assert.equal(defaulted.status, 0);
+    assert.equal(
+      defaulted.stdout,
+      `Published Aster review to ${resolve(root, "aster-review")}\n`,
+    );
+    assert.match(
+      readFileSync(resolve(root, "aster-review/index.html"), "utf8"),
+      /<h1>Camera<\/h1>/u,
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("replaces only explicitly owned static review output", () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-review-replace-"));
+
+  try {
+    const initial = run([
+      "review",
+      "icon",
+      "aster/camera",
+      "--output",
+      "review-site",
+    ], { cwd: root });
+    const conflict = run([
+      "review",
+      "collection",
+      "aster",
+      "--output",
+      "review-site",
+    ], { cwd: root });
+    const replaced = run([
+      "review",
+      "collection",
+      "aster",
+      "--output",
+      "review-site",
+      "--replace",
+    ], { cwd: root });
+
+    assert.equal(initial.status, 0);
+    assert.equal(conflict.status, 1);
+    assert.equal(
+      conflict.stderr,
+      "[ASTER-CLI-009] output root already exists\n",
+    );
+    assert.equal(replaced.status, 0);
+    assert.equal(replaced.stderr, "");
+    assert.equal(
+      replaced.stdout,
+      `Replaced Aster review at ${resolve(root, "review-site")}\n`,
+    );
+    assert.match(
+      readFileSync(resolve(root, "review-site/index.html"), "utf8"),
+      /<h1>Aster<\/h1>/u,
+    );
   } finally {
     rmSync(root, { recursive: true, force: true });
   }
@@ -342,6 +452,20 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
     "--size",
     "0",
   ]);
+  const repeatedReplace = run([
+    "review",
+    "icon",
+    "aster/camera",
+    "--replace",
+    "--replace",
+  ]);
+  const replaceJson = run([
+    "review",
+    "icon",
+    "aster/camera",
+    "--replace",
+    "--json",
+  ]);
 
   assert.equal(repeatedJson.status, 2);
   assert.equal(repeatedFilter.status, 2);
@@ -353,6 +477,8 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
   assert.equal(emptyOutput.status, 2);
   assert.equal(invalidNumber.status, 2);
   assert.equal(invalidDomain.status, 2);
+  assert.equal(repeatedReplace.status, 2);
+  assert.equal(replaceJson.status, 2);
 });
 
 test("imports the built programmatic root without executing the shell", () => {

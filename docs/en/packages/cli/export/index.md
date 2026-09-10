@@ -22,14 +22,14 @@ output root, read or write files, or mutate process state.
 | `AsterIconExportOptionsType` | Extends common export options with one icon's optional accessible label and title. | Accepted only by the icon invocation variant. |
 | `exportTargets` | Immutable runtime authority for supported export targets. | Currently contains only `svg`. |
 
-The internal `TExportSelection` type carries the exact provider, subject, requested identity, and
-canonically ordered definitions prepared for rendering. It separates catalogue lookup evidence
-from the public artefact plan and never becomes observable after a failed render.
+The internal shared catalogue selection carries the exact provider, subject, requested identity,
+canonically ordered definitions, and membership evidence. Export consumes that catalogue-owned
+selection without owning or duplicating exact lookup policy.
 
 ## Runtime composition
 
 `ExportOptionsNormaliser` validates, copies, and freezes the closed programmatic option record.
-`CatalogueExportSelector` loads accepted snapshots, applies an optional exact provider scope, and
+`CatalogueSubjectSelector` loads accepted snapshots, applies an optional exact provider scope, and
 resolves either one icon or every member of one collection from that same provider. It rejects an
 unavailable member rather than omitting it, even though snapshot acceptance already enforces that
 invariant. `ExportPathFormatter` derives paths only from portable identities.

@@ -21,6 +21,7 @@ private built host directly without process or package-manager cost.
 | Icon discovery | Complete provider loading, definition reconstruction, membership validation, canonical ordering, and result freezing. |
 | Icon export | Exact catalogue selection, one SVG render, artefact planning, and result freezing. |
 | Collection export | Complete membership resolution, sixteen SVG renders, canonical path ordering, artefact planning, and result freezing. |
+| Collection review | Complete membership resolution, sixteen SVG renders, technical evidence planning, and result freezing. |
 | Shell parsing | Minimal help and complete collection-export argv adaptation without process acquisition. |
 | JSON presentation | Complete structured-result serialisation and stream planning without process writes. |
 | Cold Node control | Fresh Node startup without Aster module evaluation. |
@@ -31,33 +32,35 @@ Filesystem publication and package-manager startup are excluded from timing beca
 host and storage conditions rather than command-domain execution. Their behaviour remains covered
 by deterministic conformance tests.
 
-## Initial evidence
+## Representative findings
 
 Three complete reports under Node `24.10.0` on Windows x64 produced these medians across report
 medians:
 
 | Scenario | Median elapsed time |
 | --- | ---: |
-| `cli.reference.core-revalidation` | 10,932 ns per operation |
-| `cli.reference.svg-render` | 21,071 ns per operation |
-| `cli.shell.parse-help` | 258 ns per operation |
-| `cli.shell.parse-collection-export` | 1,158 ns per operation |
-| `cli.shell.present-json` | 17,961 ns per operation |
-| `cli.command.help` | 4,388 ns per operation |
-| `cli.command.version` | 3,855 ns per operation |
-| `cli.catalogue.provider-load` | 6,932 ns per operation |
-| `cli.command.list-icons` | 492,594 ns per operation |
-| `cli.command.export-icon` | 558,947 ns per operation |
-| `cli.command.export-collection` | 914,240 ns per operation |
-| `cli.cold.node-control` | 41.39 ms per process |
-| `cli.cold.root-import` | 115.77 ms per process |
-| `cli.cold.executable-version` | 141.14 ms per process |
+| `cli.reference.core-revalidation` | 13,706 ns per operation |
+| `cli.reference.svg-render` | 22,639 ns per operation |
+| `cli.shell.parse-help` | 290 ns per operation |
+| `cli.shell.parse-collection-export` | 1,377 ns per operation |
+| `cli.shell.present-json` | 20,813 ns per operation |
+| `cli.command.help` | 4,357 ns per operation |
+| `cli.command.version` | 3,953 ns per operation |
+| `cli.catalogue.provider-load` | 20,370 ns per operation |
+| `cli.command.list-icons` | 467,887 ns per operation |
+| `cli.command.export-icon` | 569,496 ns per operation |
+| `cli.command.export-collection` | 1,098,570 ns per operation |
+| `cli.command.review-collection` | 911,430 ns per operation |
+| `cli.cold.node-control` | 43.74 ms per process |
+| `cli.cold.root-import` | 138.48 ms per process |
+| `cli.cold.executable-version` | 163.21 ms per process |
 
 The parser, presenter dispatch, invocation acceptance, context acceptance, result construction, and
 built-in provider adaptation do not expose an isolated material CLI-owned hotspot. Catalogue
 commands are dominated by strict portable-definition reconstruction and complete result isolation;
-export adds public SVG rendering proportional to selected artefacts. Cold startup is dominated by
-fresh Node startup and ESM graph acquisition rather than command execution.
+Export and Review add public SVG rendering proportional to selected definitions. Review planning
+remains comparable to collection Export without adding a material isolated hotspot. Cold startup
+is dominated by fresh Node startup and ESM graph acquisition rather than command execution.
 
 No runtime optimisation is retained from this investigation. Caching accepted snapshots,
 retaining mutable memoisation, trusting canonical object provenance, bundling private modules, or
@@ -66,17 +69,17 @@ a safe CLI-owned mechanism.
 
 ## Distribution evidence
 
-The measured native ES2022 ESM output contains 222 files and 256,485 unminified bytes:
+The measured native ES2022 ESM output contains 274 files and 327,317 unminified bytes:
 
-- 130 JavaScript modules totalling 183,742 bytes;
-- 92 declaration files totalling 72,743 bytes;
+- 160 JavaScript modules totalling 234,114 bytes;
+- 114 declaration files totalling 93,203 bytes;
 - one public root export;
 - one private `aster` binary mapping;
 - `sideEffects: false`;
 - exact Core, Icons, and SVG runtime dependencies;
 - the declared Node `>=24.10.0 <25` executable range.
 
-`pnpm pack --dry-run` admits 225 deliberate package files: the emitted distribution, manifest,
+`pnpm pack --dry-run` admits 277 deliberate package files: the emitted distribution, manifest,
 README, and licence. Conformance packs Core, Icons, SVG, and CLI into local tarballs, installs them
 with strict engine checking and no network dependency, executes the linked `aster` binary, imports
 the root, and exercises equivalent standalone and programmatic workflows. Empty JavaScript modules

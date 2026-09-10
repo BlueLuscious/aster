@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import * as AsterIcons from "@aster/icons";
+import { AsterIcons } from "@aster/icons";
+import { AsterCollection } from "@aster/icons/collections/aster";
 import { Svg } from "../../src/index.js";
 
 test("renders the complete real icon corpus deterministically", () => {
-  const { AsterCollection, ...individualExports } = AsterIcons;
-  const definitions = Object.values(individualExports);
+  const definitions = AsterIcons;
   const outputs = new Set<string>();
 
   assert.equal(definitions.length, AsterCollection.icons.length);

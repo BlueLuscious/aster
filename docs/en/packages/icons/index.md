@@ -2,9 +2,9 @@
 
 Status: **Experimental**
 
-`@aster/icons` owns canonical portable TypeScript icon definitions and the independently defined
-Experimental Aster collection. It exposes a convenience root, one isolated public subpath per
-icon, and one explicit collection subpath.
+`@aster/icons` owns canonical portable TypeScript icon definitions, independently defined
+collections, and explicit immutable indexes for complete package discovery. It exposes an
+icon-only convenience root, one isolated short subpath per icon, and a separate collection family.
 
 ## Responsibilities
 
@@ -13,11 +13,11 @@ The package:
 - authors each icon as one immutable `Icon.define(...)` value;
 - applies [shared internal authoring defaults](shared/index.md) without embedding collection
   membership;
-- exposes the [representative icon set](icons/index.md);
-- exposes the independent [Aster collection](collections/index.md);
+- exposes the [representative icon set](icons/index.md) and its `AsterIcons` index;
+- exposes the independent [Aster collection](collections/index.md) and `AsterCollections` index;
 - preserves canonical namespace, icon, and RTL identity;
 - retains effective artwork licence and attribution;
-- supports tree-shakable per-icon imports without a catalogue registry.
+- supports tree-shakable per-icon imports without an ambient catalogue registry.
 
 The package does not render SVG, create framework components, access DOM or filesystem APIs,
 import SVG sources, run Import, discover paths, or own repository tooling.
@@ -34,6 +34,11 @@ several collections; a collection owns only its explicit member sequence. Canoni
 modules therefore aggregate existing icon values instead of generating, cloning or decorating
 them.
 
+The package build synchronises generated barrels and immutable aggregate indexes from direct
+canonical modules before TypeScript compilation. Authors never edit those generated files.
+Repository tooling performs this source maintenance without entering the package's production
+dependency graph or runtime.
+
 ## Dependency Boundary
 
 The only production dependency is public `@aster/core`.
@@ -48,13 +53,31 @@ packages without changing this boundary.
 
 ## Public Exports
 
-The root re-exports the complete pilot as a convenience:
+The root re-exports named icon definitions and the complete immutable icon index:
 
 ```ts
-import { ArrowLeft, Search } from "@aster/icons";
+import {
+  ArrowLeft,
+  AsterIcons,
+  Search,
+} from "@aster/icons";
 ```
 
-The canonical collection can be imported from the root or its explicit subpath:
+`AsterIcons` enumerates every canonical icon independently from membership. Collections do not
+leak through the icon root; their complete family is explicit:
+
+```ts
+import {
+  AsterCollection,
+  AsterCollections,
+} from "@aster/icons/collections";
+```
+
+`AsterCollections` enumerates every canonical collection independently from icon discovery. Adding
+a canonical source module updates its generated barrel and aggregate index during catalogue source
+synchronisation; runtime consumers never inspect the filesystem.
+
+The canonical collection can also be imported through its isolated subpath:
 
 ```ts
 import { AsterCollection } from "@aster/icons/collections/aster";
@@ -67,8 +90,8 @@ import { ArrowLeft } from "@aster/icons/arrow-left";
 import { Search } from "@aster/icons/search";
 ```
 
-No manifest, global registry, renderer, generated wrapper, implementation path, or undeclared
-subpath is public. The package currently has no variants.
+No mutable registry, renderer, generated wrapper, implementation path, or undeclared subpath is
+public. The package currently has no variants.
 
 ## Execution Flow
 
@@ -85,5 +108,11 @@ value to a renderer or adapter.
 Importing `AsterCollection` evaluates the collection module and its declared members. The
 collection retains the same canonical icon objects and does not reconstruct or modify them.
 
+Importing the package root evaluates `AsterIcons` but no collection module. Importing
+`@aster/icons/collections` evaluates `AsterCollections`. Isolated definition subpaths remain
+independent from their family index and sibling definitions.
+
 The package's authoring and SVG review relationship is defined by the
 [Aster Collection Authoring Workflow](../../collections/aster/authoring-workflow.md).
+Generated aggregate ownership and the exact package build loop are defined by
+[Catalogue Source Tooling](../../tooling/catalogue/index.md).

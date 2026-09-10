@@ -8,10 +8,10 @@ composition, the explicit built-in `AsterCatalogue` provider, and the `aster` ex
 
 ## Current boundary
 
-The package root exposes public command, catalogue, and export contracts and types plus four frozen
-values.
+The package root exposes public command, catalogue, export, and review contracts and types plus six
+frozen values.
 `AsterCommands` validates structured invocations and explicit contexts, dispatches `list`,
-`search`, `show`, `export`, `help`, and `version`, and returns sanitised structured failures. It never
+`search`, `show`, `export`, `review`, `help`, and `version`, and returns sanitised structured failures. It never
 selects an ambient catalogue. Hosts pass providers explicitly in `AsterCommandContext`.
 
 `AsterCatalogue` adapts the canonical `@aster/icons` definitions into that provider boundary. It
@@ -27,10 +27,11 @@ help metadata does not eagerly evaluate the built-in catalogue.
 | [Command Invocation](command/invocation/index.md) | Accepts untrusted programmatic requests through explicit command-owned normalisers. |
 | [Catalogue](catalogue/index.md) | Loads explicit providers and performs deterministic provider, collection, and icon discovery. |
 | [Export](export/index.md) | Selects exact catalogue definitions and constructs immutable host-neutral SVG artefact plans. |
+| [Review](review/index.md) | Constructs immutable technical plans through public SVG rendering and serialises self-contained static review documents. |
 | [Shell](shell/index.md) | Adapts Node argv, presents human or JSON output, and commits documented process effects. |
 | [Shell Parsing](shell/parsing/index.md) | Adapts standalone argv through explicit command-owned parsers. |
 | [Shell Presentation](shell/presentation/index.md) | Produces deterministic human or JSON stream results. |
-| [Shell Output](shell/output/index.md) | Publishes complete export trees through the private Node filesystem boundary. |
+| [Shell Output](shell/output/index.md) | Publishes complete export trees and static review documents through the private Node filesystem boundary. |
 
 [CLI Workflow](workflow.md) describes how these features compose from one structured invocation
 through immutable planning and optional standalone publication.
@@ -47,7 +48,8 @@ and distribution comparison evidence.
 
 The command and catalogue domains depend on the public root of `@aster/core`, which validates and
 isolates portable icon and collection values. The built-in provider depends on `@aster/icons` and
-adapts `AsterCollection` without assigning catalogue ownership to Core.
+adapts its independent `AsterIcons` and `AsterCollections` indexes without assigning catalogue
+ownership to Core or one collection.
 
 The export domain depends directly on the public `@aster/svg` root. It renders accepted portable
 definitions without importing Import, filesystem services, or SVG implementation subpaths.
@@ -56,7 +58,8 @@ The host-neutral production compilation uses ES2022 ESM without Node or DOM ambi
 referenced shell project consumes its emitted declarations and admits Node types only beneath
 `src/shell/`; it does not re-emit the host-neutral implementation. The shell acquires argv, writes
 stdout or stderr, sets process exit status, and privately composes the narrow filesystem authority
-required to publish complete export trees. It has no network, package-manager, Import, framework,
+required to publish complete export trees and static review documents. It has no network,
+package-manager, Import, framework,
 plugin-loader, or repository-tooling authority.
 
 ## Current package surface
@@ -74,10 +77,14 @@ The package exposes only its root `"."`. It exports these types:
 - `CatalogueProviderResult`, `CatalogueIconResult`, and `CatalogueCollectionResult`;
 - `CatalogueResultKindType`;
 - `AsterExportArtefact`, `AsterExportPlan`, `AsterExportSubjectType`, `AsterExportOptionsType`, and
-  `AsterIconExportOptionsType`.
+  `AsterIconExportOptionsType`;
+- `AsterReviewIconEvidence`, `AsterIconReviewDocument`, `AsterCollectionReviewDocument`, and
+  `AsterReviewPlan`;
+- `AsterReviewDocumentType` and `AsterReviewSubjectType`.
 
-The root also exports the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, and
-`exportTargets` values. The package manifest maps the `aster` binary to its private built shell entrypoint. No
+The root also exports the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`,
+`exportTargets`, `reviewSubjects`, and `reviewTargets` values. The package manifest maps the `aster`
+binary to its private built shell entrypoint. No
 implementation subpath is public. [CLI Compatibility and Conformance](compatibility.md) owns the
 accepted surface, runtime support and dependency guarantees.
 
@@ -99,6 +106,12 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
 - mixed search fields, cross-provider ambiguity, snapshot conflicts, and unavailable providers;
 - exact export selection, option normalisation, deterministic SVG paths and contents, and complete
   immutable plans;
+- exact review selection, deterministic technical evidence, contained SVG failures, and complete
+  immutable plans;
+- byte-stable offline review documents, canonical contact-sheet order, semantic navigation, and
+  hostile authored-text containment;
+- absent-root review publication, exact ownership-gated replacement, staged commitment, and
+  rollback after replacement commit failure;
 - exact shell render options, raw SVG redirection, and staged output-root publication.
 
 Built-executable integration tests additionally verify human and JSON presentation, exact stream

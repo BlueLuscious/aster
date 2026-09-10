@@ -2,8 +2,9 @@
 
 Status: **Experimental**
 
-The `collections` feature owns independently identified immutable collection definitions. It
-currently exports `AsterCollection`.
+The `collections` feature owns independently identified immutable collection definitions.
+`AsterCollections` is the complete immutable package index and currently contains
+`AsterCollection`.
 
 Canonical modules use `<collection-slug>.collection.ts`. Public imports omit the role and retain
 `@aster/icons/collections/<collection-slug>`.
@@ -33,11 +34,27 @@ Core rejects duplicate logical identity only within one collection.
 ## Imports
 
 ```ts
+import {
+  AsterCollection,
+  AsterCollections,
+} from "@aster/icons/collections";
+```
+
+An isolated collection import avoids evaluating the complete collection index:
+
+```ts
 import { AsterCollection } from "@aster/icons/collections/aster";
 ```
 
-The package root also provides the collection as a convenience. Isolated per-icon imports never
-load it or any sibling icon.
+The family subpath provides complete collection discovery; the isolated subpath loads only the
+selected collection and its declared icon members. The icon-only package root does not expose
+collections.
+
+`AsterCollections` supports complete package discovery without making a collection the owner of
+the icon catalogue. Catalogue source synchronisation adds or removes canonical collection modules
+from this generated authority. Collection membership remains explicitly authored; changing a
+collection changes derived membership only and does not add or remove definitions from
+`AsterIcons`.
 
 Visual rationale and enforcement severity remain canonical in the
 [Aster Collection Design Contract](../../../collections/aster/design-contract.md).

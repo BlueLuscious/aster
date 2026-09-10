@@ -1,4 +1,4 @@
-import { AsterCollection } from "@aster/icons";
+import { AsterCollection } from "@aster/icons/collections/aster";
 
 /**
  * @description Prepares equivalent mutable and canonical Core benchmark inputs outside timed work.

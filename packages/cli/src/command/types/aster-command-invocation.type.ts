@@ -6,6 +6,7 @@ import type {
   AsterExportOptionsType,
   AsterIconExportOptionsType,
 } from "../../export/types/index.js";
+import type { AsterReviewSubjectType } from "../../review/types/index.js";
 
 /**
  * @description Closed structured invocation accepted by the initial Aster command set.
@@ -62,6 +63,27 @@ export type AsterCommandInvocationType =
        * @description Optional portable values applied uniformly to every member.
        */
       options?: AsterExportOptionsType;
+    }>
+  | Readonly<{
+      /**
+       * @description Selects deterministic static review planning.
+       */
+      command: typeof asterCommandNames.review;
+
+      /**
+       * @description Kind of portable value to review.
+       */
+      subject: AsterReviewSubjectType;
+
+      /**
+       * @description Canonical textual portable identity to review.
+       */
+      identity: string;
+
+      /**
+       * @description Optional exact catalogue-provider filter.
+       */
+      catalogue?: string;
     }>
   | Readonly<{
       /**

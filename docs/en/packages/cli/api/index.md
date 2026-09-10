@@ -3,7 +3,8 @@
 Status: **Pre-release**
 
 The API feature is the explicit composition root for the immutable host-neutral `AsterCommands`
-value. It wires command definitions, invocation normalisers, catalogue queries and export planning
+value. It wires command definitions, invocation normalisers, catalogue queries, export planning,
+and review planning
 without importing the standalone shell or selecting a catalogue provider implicitly.
 
 ## Public authority
@@ -15,7 +16,7 @@ const result = await AsterCommands.execute(invocation, context);
 ```
 
 Its `identity` is `aster`. Its descriptor sequence is a canonical immutable snapshot of the
-implemented `export`, `help`, `list`, `search`, `show`, and `version` definitions. Reading identity
+implemented `export`, `help`, `list`, `review`, `search`, `show`, and `version` definitions. Reading identity
 or descriptors loads no catalogue and executes no command.
 
 `execute()` accepts one structured invocation and one explicit `AsterCommandContext`. It delegates
@@ -46,4 +47,5 @@ exposes this value without executing the private `aster` entrypoint.
   sanitisation.
 - [CLI Catalogue](../catalogue/index.md) defines explicitly supplied provider capabilities.
 - [CLI Export](../export/index.md) defines immutable target artefact planning.
+- [CLI Review](../review/index.md) defines immutable technical review planning.
 - [CLI Workflow](../workflow.md) traces programmatic and standalone execution.

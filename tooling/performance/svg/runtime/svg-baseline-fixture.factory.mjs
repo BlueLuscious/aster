@@ -1,5 +1,5 @@
 import { Icon } from "@aster/core";
-import { AsterCollection } from "@aster/icons";
+import { AsterCollection } from "@aster/icons/collections/aster";
 
 /**
  * @description Prepares representative public SVG definitions and options outside timed work.

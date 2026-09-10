@@ -2,10 +2,12 @@ import { CatalogueListQuery } from "../catalogue/runtime/catalogue-list.query.js
 import { CatalogueLoader } from "../catalogue/runtime/catalogue.loader.js";
 import { CatalogueSearchQuery } from "../catalogue/runtime/catalogue-search.query.js";
 import { CatalogueShowQuery } from "../catalogue/runtime/catalogue-show.query.js";
+import { CatalogueSubjectSelector } from "../catalogue/runtime/catalogue-subject.selector.js";
 import { asterCommandDescriptors } from "../command/constants/aster-command-descriptors.constant.js";
 import { ExportCommandDefinition } from "../command/definition/export-command.definition.js";
 import { HelpCommandDefinition } from "../command/definition/help-command.definition.js";
 import { ListCommandDefinition } from "../command/definition/list-command.definition.js";
+import { ReviewCommandDefinition } from "../command/definition/review-command.definition.js";
 import { SearchCommandDefinition } from "../command/definition/search-command.definition.js";
 import { ShowCommandDefinition } from "../command/definition/show-command.definition.js";
 import { VersionCommandDefinition } from "../command/definition/version-command.definition.js";
@@ -13,11 +15,12 @@ import { CommandInvocationNormaliser } from "../command/invocation/runtime/comma
 import { ExportInvocationNormaliser } from "../command/invocation/runtime/export-invocation.normaliser.js";
 import { HelpInvocationNormaliser } from "../command/invocation/runtime/help-invocation.normaliser.js";
 import { ListInvocationNormaliser } from "../command/invocation/runtime/list-invocation.normaliser.js";
+import { ReviewInvocationNormaliser } from "../command/invocation/runtime/review-invocation.normaliser.js";
 import { SearchInvocationNormaliser } from "../command/invocation/runtime/search-invocation.normaliser.js";
 import { ShowInvocationNormaliser } from "../command/invocation/runtime/show-invocation.normaliser.js";
 import { VersionInvocationNormaliser } from "../command/invocation/runtime/version-invocation.normaliser.js";
-import { CatalogueExportSelector } from "../export/runtime/catalogue-export.selector.js";
 import { ExportPlanQuery } from "../export/runtime/export-plan.query.js";
+import { ReviewPlanQuery } from "../review/runtime/review-plan.query.js";
 import type {
   AsterCommandContext,
   AsterCommandSet,
@@ -34,6 +37,11 @@ import type {
 const catalogueLoader = new CatalogueLoader();
 
 /**
+ * @description Shared exact subject selector used by every identity-addressing command.
+ */
+const catalogueSelections = new CatalogueSubjectSelector(catalogueLoader);
+
+/**
  * @description Complete immutable descriptor sequence supplied to deterministic help.
  */
 const commandDescriptors = Object.freeze(Object.values(asterCommandDescriptors));
@@ -44,6 +52,7 @@ const commandDescriptors = Object.freeze(Object.values(asterCommandDescriptors))
 const commandInvocations = new CommandInvocationNormaliser([
   new ExportInvocationNormaliser(),
   new ListInvocationNormaliser(),
+  new ReviewInvocationNormaliser(),
   new SearchInvocationNormaliser(),
   new ShowInvocationNormaliser(),
   new HelpInvocationNormaliser(),
@@ -56,11 +65,14 @@ const commandInvocations = new CommandInvocationNormaliser([
 const commandKernel = new CommandKernel(
   [
     new ExportCommandDefinition(
-      new ExportPlanQuery(new CatalogueExportSelector(catalogueLoader)),
+      new ExportPlanQuery(catalogueSelections),
     ),
     new ListCommandDefinition(new CatalogueListQuery(catalogueLoader)),
+    new ReviewCommandDefinition(
+      new ReviewPlanQuery(catalogueSelections),
+    ),
     new SearchCommandDefinition(new CatalogueSearchQuery(catalogueLoader)),
-    new ShowCommandDefinition(new CatalogueShowQuery(catalogueLoader)),
+    new ShowCommandDefinition(new CatalogueShowQuery(catalogueSelections)),
     new HelpCommandDefinition(commandDescriptors),
     new VersionCommandDefinition(),
   ],

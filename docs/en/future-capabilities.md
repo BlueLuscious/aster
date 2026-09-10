@@ -25,42 +25,125 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | --- | --- | --- | --- |
 | 1 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics, and persistence together. |
 | 2 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 3 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 4 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 5 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
-| 6 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 7 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 8 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 9 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 10 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 11 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 3 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 4 | `P2` | Evaluate selective Icons acquisition. | Measured package acquisition cost or consumer demand justifies a distribution product beyond subpath imports. |
+| 5 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 6 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 7 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
+| 8 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 9 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 10 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 11 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 12 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 13 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
 
 ## Catalogue and command expansion
 
 Importance: **P1 - High**
 
-The implemented `@aster/cli` already provides catalogue discovery, lookup, search, display, and
-deterministic SVG export through host-neutral commands and a standalone Node shell. Those current
-guarantees are documented by the [CLI package](packages/cli/index.md).
+The implemented `@aster/cli` already provides catalogue discovery, lookup, search, display,
+deterministic SVG export, and disposable static review publication through host-neutral commands
+and a standalone Node shell. Those current guarantees are documented by the
+[CLI package](packages/cli/index.md).
 
 The remaining command families require independent consumer policies:
 
 | Command family | Proposed responsibility | Activation evidence |
 | --- | --- | --- |
 | `add` | Integrate selected definitions through an explicit package, import, or vendoring policy. | One supported consumer-project strategy with conflict and ownership rules. |
-| `review` | Compose disposable technical and visual evidence through explicit render and output hosts. | One review format and lifecycle that adds value beyond tests and raw SVG export. |
 | `generate` | Produce selected manifests, barrels, wrappers, or target integrations. | One concrete generated target with canonical ownership and cleanup rules. |
 | `import` | Host external-source acquisition, reviewed Core metadata, adoption, and persistence. | The complete Import host boundary described below. |
 
-These commands remain distinct. `add` changes consumer integration, `review` creates disposable
-evidence, `generate` creates code or integration artefacts, and `import` adopts external artwork.
+These commands remain distinct. `add` changes consumer integration, `generate` creates code or
+integration artefacts, and `import` adopts external artwork. Implemented `review` creates
+disposable evidence and remains separate from every persistent source workflow.
 No command may silently install dependencies, overwrite files, infer ownership from a directory
 name, or move filesystem authority into a host-neutral command.
 
-Before the first standalone icon or second collection becomes canonical, `@aster/icons` should
-expose independent immutable icon and collection indexes and the built-in CLI provider should
-adapt both. This preserves discovery of icons without collection membership and empty collections
-without assigning catalogue concerns to portable definitions.
+## Review watch host
+
+Importance: **P2 - Conditional**
+
+The implemented `aster review` workflow deliberately publishes a finite, self-contained HTML
+document and terminates. Its static lifecycle is the complete supported contract; `--watch` is not
+an accepted option and no browser, server, source watcher, or TypeScript compiler belongs to the
+headless command kernel.
+
+Reconsider a persistent watch host only when repeated real icon or collection authoring shows that
+building the catalogue, replacing the owned review output, and refreshing it manually creates a
+material delay. Convenience alone is insufficient because ESM package reloads require more than a
+cache-busting root import: statically imported descendants can otherwise remain stale.
+
+Any accepted host must establish all of these boundaries together:
+
+- observe only a stable completion signal for built catalogue artefacts;
+- acquire each refreshed catalogue through an isolated process or worker;
+- reuse the existing review planner, serialiser, ownership marker, and safe replacement rules;
+- bind only to a loopback interface and define deterministic port-selection behaviour;
+- own refresh signalling, rebuild-failure recovery, termination, and resource cleanup;
+- keep browser launch optional and outside the programmatic command API;
+- preserve static review as independently usable and avoid adding compilation or source discovery.
+
+Prefer owned on-disk regeneration unless measured evidence proves that an in-memory document
+lifecycle materially improves authoring without weakening publication ownership. Do not add a
+general development server or framework dependency solely for this capability.
+
+## Selective Icons acquisition
+
+Importance: **P2 - Conditional**
+
+The implemented `@aster/icons` export map already separates scalable public families:
+
+- `.` provides named icon definitions and the complete `AsterIcons` index;
+- `./*` maps short isolated icon imports to canonical `*.icon` modules;
+- `./collections` provides the complete `AsterCollections` family;
+- `./collections/*` maps isolated collection imports to canonical `*.collection` modules.
+
+These guarded pattern targets prevent manifest growth per definition while keeping constants,
+implementation modules and physical source paths inaccessible. The root deliberately remains an
+icon-only facade; complete collection discovery is opt-in.
+
+### Collection package boundary
+
+Collections currently remain inside `@aster/icons` because they are lightweight immutable
+aggregates of canonical icon definitions, share the same ownership and release maturity, and need
+no dependency that Icons does not already accept. The explicit `@aster/icons/collections` family
+keeps this placement from mixing collection exports into the icon root and provides a deliberate
+migration boundary if evidence later justifies another package.
+
+Do not create `@aster/collections` merely to mirror the source directory. A single collections
+package that depends on `@aster/icons` would separate API ownership and versioning, but npm would
+still acquire the complete Icons package. It therefore would not, by itself, provide selective
+collection downloads.
+
+Reconsider `@aster/collections` before the collection import family becomes a stable public
+guarantee when at least one of these conditions is observed:
+
+- collections require an independent release cadence or compatibility policy;
+- collection metadata, licensing, curation or tooling gains ownership distinct from icon
+  definitions;
+- consumers commonly use collection discovery without the complete icon facade;
+- another icon-definition provider must publish collections through the same product boundary;
+- measured package composition shows that a separate dependency graph materially improves real
+  consumers.
+
+If accepted, migrate through an explicit compatibility period rather than silently moving
+symbols. `@aster/icons/collections` may temporarily re-export the new authority, but the final
+dependency direction must avoid cycles and preserve one canonical owner for every definition and
+collection. If none of the triggers appears before the first supported release, retain collections
+inside `@aster/icons` and treat that location as the supported boundary.
+
+Package exports and package acquisition are separate concerns. Subpath imports can prevent
+unrelated modules from entering runtime evaluation or a consumer bundle, but installing one npm
+package still acquires its complete tarball. Downloading only selected icons or one collection
+requires a different distribution product, such as independently versioned collection packages or
+an explicit `aster add` vendoring workflow backed by a defined source and ownership policy.
+
+Do not split packages solely from an estimated future icon count. First measure packed size,
+installation cost, bundle behaviour, collection overlap, versioning pressure, licensing boundaries
+and real consumer demand. A collection-package model must resolve icons shared by several
+collections without accidental duplicate ownership. Selective CLI acquisition must define source
+integrity, provenance, updates, conflicts and removal before writing consumer files.
 
 ## Command-set extraction and Flora integration
 

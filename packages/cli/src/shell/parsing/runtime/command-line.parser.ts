@@ -6,6 +6,7 @@ import { CommandLineError } from "./command-line.error.js";
 import { ExportCommandLineParser } from "./export-command-line.parser.js";
 import { HelpCommandLineParser } from "./help-command-line.parser.js";
 import { ListCommandLineParser } from "./list-command-line.parser.js";
+import { ReviewCommandLineParser } from "./review-command-line.parser.js";
 import { SearchCommandLineParser } from "./search-command-line.parser.js";
 import { ShowCommandLineParser } from "./show-command-line.parser.js";
 import { VersionCommandLineParser } from "./version-command-line.parser.js";
@@ -26,6 +27,7 @@ export class CommandLineParser {
     const parsers: readonly ICommandLineCommandParser[] = [
       new ExportCommandLineParser(),
       new ListCommandLineParser(),
+      new ReviewCommandLineParser(),
       new SearchCommandLineParser(),
       new ShowCommandLineParser(),
       new HelpCommandLineParser(),

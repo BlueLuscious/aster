@@ -24,6 +24,14 @@ export const asterCommandDescriptors = Object.freeze({
       "list icons [--catalogue <provider>] [--collection <identity>] [--tag <tag>]...",
     ]),
   }),
+  review: Object.freeze({
+    name: asterCommandNames.review,
+    summary: "Publish static technical and visual evidence for one icon or collection.",
+    usage: Object.freeze([
+      "review icon <identity> [--catalogue <provider>] [--output <root>] [--replace]",
+      "review collection <identity> [--catalogue <provider>] [--output <root>] [--replace]",
+    ]),
+  }),
   search: Object.freeze({
     name: asterCommandNames.search,
     summary: "Search icons and collections in explicit catalogues.",

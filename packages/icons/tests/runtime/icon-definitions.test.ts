@@ -1,28 +1,14 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import type { IconDefinition } from "@aster/core";
-import { AsterCollection } from "../../src/collections/index.js";
+import type { CollectionDefinition, IconDefinition } from "@aster/core";
+import {
+  AsterCollection,
+  AsterCollections,
+} from "../../src/collections/index.js";
+import * as collections from "../../src/collections/index.js";
+import { AsterIcons } from "../../src/icons/index.js";
 import * as icons from "../../src/icons/index.js";
-
-const expectedSymbols = [
-  "ArrowLeft",
-  "Bell",
-  "Camera",
-  "Check",
-  "Close",
-  "Cloud",
-  "Folder",
-  "Heart",
-  "Home",
-  "Leaf",
-  "Lock",
-  "Plus",
-  "Search",
-  "Settings",
-  "Star",
-  "User",
-] as const;
 
 const presentationFields = [
   "fill",
@@ -75,13 +61,32 @@ function numericGeometryValues(definition: IconDefinition): readonly number[] {
   return values;
 }
 
-test("exports the exact representative pilot set", () => {
-  assert.deepEqual(Object.keys(icons).sort(), [...expectedSymbols].sort());
-  assert.equal(Object.keys(icons).length, 16);
+test("keeps named icon exports aligned with the complete icon index", () => {
+  const exportedDefinitions = Object.entries(icons)
+    .filter(([symbol]) => symbol !== "AsterIcons")
+    .map(([, definition]) => definition as IconDefinition)
+    .sort((left, right) =>
+      left.identity.name.localeCompare(right.identity.name),
+    );
+
+  assert.deepEqual(AsterIcons, exportedDefinitions);
+  assert.ok(Object.isFrozen(AsterIcons));
+});
+
+test("keeps named collection exports aligned with the complete collection index", () => {
+  const exportedDefinitions = Object.entries(collections)
+    .filter(([symbol]) => symbol !== "AsterCollections")
+    .map(([, definition]) => definition as CollectionDefinition)
+    .sort((left, right) =>
+      left.identity.name.localeCompare(right.identity.name),
+    );
+
+  assert.deepEqual(AsterCollections, exportedDefinitions);
+  assert.ok(Object.isFrozen(AsterCollections));
 });
 
 test("keeps every definition aligned with shared authoring defaults", () => {
-  const definitions = Object.values(icons);
+  const definitions = AsterIcons;
   const identities = new Set<string>();
 
   for (const definition of definitions) {
@@ -140,9 +145,10 @@ test("keeps every definition aligned with shared authoring defaults", () => {
 
 test("retains the complete pilot through independent collection membership", () => {
   assert.equal(AsterCollection.identity.name, "aster");
-  assert.deepEqual(AsterCollection.icons, Object.values(icons));
+  assert.deepEqual(AsterCollection.icons, AsterIcons);
+  assert.ok(AsterCollections.includes(AsterCollection));
 
-  for (const definition of Object.values(icons)) {
+  for (const definition of AsterIcons) {
     assert.ok(AsterCollection.icons.includes(definition));
   }
 

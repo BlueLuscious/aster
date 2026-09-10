@@ -21,10 +21,11 @@ its public declarations.
 The first supported ABI consists of:
 
 - the root package export and private `aster` binary mapping;
-- the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, and `exportTargets` values;
-- every public command, catalogue, and export contract and type exported through the root;
+- the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, `exportTargets`,
+  `reviewSubjects`, and `reviewTargets` values;
+- every public command, catalogue, export, and review contract and type exported through the root;
 - the `aster` command-set identity;
-- the `export`, `list`, `search`, `show`, `help`, and `version` invocation variants;
+- the `export`, `review`, `list`, `search`, `show`, `help`, and `version` invocation variants;
 - current payload and catalogue-result discriminators;
 - current diagnostic codes and categories;
 - deterministic ordering, canonicalisation, and expected-failure semantics.
@@ -81,6 +82,15 @@ can stage and publish that plan without changing the programmatic result contrac
 options become the same portable option record before command execution. Detailed ownership is documented by
 [CLI Export](export/index.md).
 
+## Review isolation
+
+Headless review consumes the same catalogue-owned exact selection boundary as Export and renders
+only through public SVG. It returns a complete immutable technical model without retaining host
+paths or acquiring process, browser, or filesystem capabilities. A separate internal pure
+serialiser can convert that model into self-contained HTML without changing the public result.
+The private Node host may publish that document to an absent root or explicitly replace an
+unchanged Aster-owned review. Detailed ownership is documented by [CLI Review](review/index.md).
+
 ## Conditional Flora seam
 
 The current `@aster/cli` package is a complete standalone product. It owns both the host-neutral
@@ -109,6 +119,9 @@ Package conformance builds the distribution and verifies:
   failures, and caller-controlled exceptions;
 - safe private output mapping, absent parents, existing targets, interrupted stages, filesystem
   failures, current-stage cleanup, empty-plan non-mutation, and deterministic fresh-root output;
+- complete review equivalence through standalone and programmatic hosts installed from packed
+  package artefacts;
+- self-contained review publication from a clean consumer without scripts or remote resources;
 - executable human, JSON, stream, diagnostic, and exit-status behaviour;
 - raw SVG redirection, exact export-option parsing, committed output summaries, and reserved
   output conflict and failure diagnostics.

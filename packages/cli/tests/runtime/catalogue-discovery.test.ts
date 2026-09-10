@@ -7,6 +7,8 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
+import { AsterIcons } from "@aster/icons";
+import { AsterCollections } from "@aster/icons/collections";
 import {
   AsterCatalogue,
   AsterCommands,
@@ -17,6 +19,7 @@ import type {
   CatalogueSnapshot,
 } from "../../src/catalogue/contracts/index.js";
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
+import { AsterCatalogueSnapshotFactory } from "../../src/catalogue/runtime/aster-catalogue-snapshot.factory.js";
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -38,11 +41,12 @@ test("exposes immutable catalogue result discriminators", () => {
 function createIcon(
   name: string,
   tags: readonly string[] = ["testing"],
+  data = "M1 1L23 23",
 ): IconDefinition {
   return Icon.define({
     identity: { namespace: "testing", name },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
-    nodes: [{ kind: "path", data: "M1 1L23 23" }],
+    nodes: [{ kind: "path", data }],
     metadata: {
       displayName: name
         .split("-")
@@ -100,19 +104,52 @@ test("discovers the explicit built-in Aster catalogue", async () => {
     { command: "list", subject: "catalogues" },
     context,
   );
+  const listedIcons = await AsterCommands.execute(
+    { command: "list", subject: "icons" },
+    context,
+  );
+  const listedCollections = await AsterCommands.execute(
+    { command: "list", subject: "collections" },
+    context,
+  );
   const shown = await AsterCommands.execute(
     { command: "show", subject: "icon", identity: "aster/camera" },
     context,
   );
 
   assert.equal(listed.ok, true);
+  assert.equal(listedIcons.ok, true);
+  assert.equal(listedCollections.ok, true);
   assert.equal(shown.ok, true);
 
   if (listed.ok && listed.payload.kind === "catalogue-list") {
     assert.deepEqual(listed.payload.catalogues, [
-      { identity: "aster", iconCount: 16, collectionCount: 1 },
+      {
+        identity: "aster",
+        iconCount: AsterIcons.length,
+        collectionCount: AsterCollections.length,
+      },
     ]);
     assert.ok(Object.isFrozen(listed.payload.catalogues));
+  }
+
+  if (listedIcons.ok && listedIcons.payload.kind === "icon-list") {
+    assert.deepEqual(
+      listedIcons.payload.icons.map((icon) => icon.identity),
+      AsterIcons.map((icon) => icon.identity),
+    );
+  }
+
+  if (
+    listedCollections.ok
+    && listedCollections.payload.kind === "collection-list"
+  ) {
+    assert.deepEqual(
+      listedCollections.payload.collections.map(
+        (collection) => collection.identity,
+      ),
+      AsterCollections.map((collection) => collection.identity),
+    );
   }
 
   if (shown.ok && shown.payload.kind === "icon-show") {
@@ -120,6 +157,60 @@ test("discovers the explicit built-in Aster catalogue", async () => {
     assert.deepEqual(shown.payload.icon.memberships, [{ name: "aster" }]);
     assert.ok(Object.isFrozen(shown.payload.icon));
   }
+});
+
+test("adapts independent canonical indexes with derived memberships", () => {
+  const standalone = createIcon("standalone");
+  const shared = createIcon("shared");
+  const zeta = createCollection("zeta", [shared]);
+  const alpha = createCollection("alpha", [shared]);
+  const empty = createCollection("empty", []);
+  const snapshot = new AsterCatalogueSnapshotFactory().create(
+    [shared, standalone],
+    [zeta, empty, alpha],
+  );
+
+  assert.deepEqual(
+    snapshot.icons.map((record) => record.definition.identity.name),
+    ["shared", "standalone"],
+  );
+  assert.deepEqual(
+    snapshot.icons[0]?.memberships.map((identity) => identity.name),
+    ["alpha", "zeta"],
+  );
+  assert.deepEqual(snapshot.icons[1]?.memberships, []);
+  assert.deepEqual(
+    snapshot.collections.map((record) => record.definition.identity.name),
+    ["alpha", "empty", "zeta"],
+  );
+  assert.ok(Object.isFrozen(snapshot));
+  assert.ok(Object.isFrozen(snapshot.icons));
+  assert.ok(Object.isFrozen(snapshot.icons[0]?.memberships));
+  assert.ok(Object.isFrozen(snapshot.collections));
+});
+
+test("rejects invalid canonical index relationships before snapshot loading", () => {
+  const factory = new AsterCatalogueSnapshotFactory();
+  const indexed = createIcon("shared");
+  const conflicting = createIcon("shared", ["testing"], "M2 2L22 22");
+  const missing = createIcon("missing");
+  const conflictingCollection = createCollection("conflicting", [conflicting]);
+  const unavailableCollection = createCollection("unavailable", [missing]);
+  const duplicateCollection = createCollection("duplicate", []);
+
+  assert.throws(() => factory.create([indexed, indexed], []), TypeError);
+  assert.throws(
+    () => factory.create([], [duplicateCollection, duplicateCollection]),
+    TypeError,
+  );
+  assert.throws(
+    () => factory.create([indexed], [unavailableCollection]),
+    TypeError,
+  );
+  assert.throws(
+    () => factory.create([indexed], [conflictingCollection]),
+    TypeError,
+  );
 });
 
 test("lists providers and standalone icons in canonical order", async () => {
@@ -375,7 +466,7 @@ test("executes help and version without loading catalogue providers", async () =
   if (help.ok && help.payload.kind === "help") {
     assert.deepEqual(
       help.payload.descriptors.map((descriptor) => descriptor.name),
-      ["export", "help", "list", "search", "show", "version"],
+      ["export", "help", "list", "review", "search", "show", "version"],
     );
   }
 });

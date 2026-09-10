@@ -21,12 +21,12 @@ provided explicitly to the kernel and never registered globally.
 
 | Type | Responsibility | Relations |
 | --- | --- | --- |
-| `AsterCommandNameType` | Closed identity union for `export`, `list`, `search`, `show`, `help`, and `version`. | Derived from the internal immutable command-name authority. |
+| `AsterCommandNameType` | Closed identity union for `export`, `review`, `list`, `search`, `show`, `help`, and `version`. | Derived from the internal immutable command-name authority. |
 | `AsterCommandListSubjectType` | Closed subject union for `catalogues`, `collections`, and `icons`. | Derived from the list branch of the immutable command-subject authority. |
 | `AsterCommandShowSubjectType` | Closed subject union for `icon` and `collection`. | Derived from the show branch of the immutable command-subject authority. |
 | `AsterCommandInvocationType` | Discriminated structured request union with command-specific subjects and filters. | Validated and isolated by the [Command Invocation](invocation/index.md) subfeature. |
 | `AsterCommandPayloadKindType` | Closed discriminator union for every current success payload. | Derived from the immutable payload-kind authority. |
-| `AsterCommandPayloadType` | Closed union of export, list, search, show, help, and version payloads. | Retains export plans, public catalogue results, or command descriptors according to its kind. |
+| `AsterCommandPayloadType` | Closed union of export, review, list, search, show, help, and version payloads. | Retains artefact plans, public catalogue results, or command descriptors according to its kind. |
 | `AsterCommandResultType` | Generic structured success or failure outcome. | Success defaults to `AsterCommandPayloadType`; failure retains `AsterCommandDiagnosticType`. |
 | `AsterCommandDiagnosticType` | Stable code, category, message, and optional related-value evidence. | Its categories and codes derive from one immutable runtime schema. |
 | `AsterCommandDiagnosticCodeType` | Closed stable diagnostic-code union. | Derived from the code branch of the immutable diagnostic schema. |
@@ -48,6 +48,10 @@ permit `@variant`.
 Export accepts an exact icon or collection identity, an optional provider filter, and a closed
 portable option record. Icon export additionally accepts `label` and `title`. The complete export
 contracts and execution flow are documented by [CLI Export](../export/index.md).
+
+Review accepts an exact icon or collection identity and an optional provider filter. It returns a
+technical plan without accepting host output state. Its contracts and execution flow are
+documented by [CLI Review](../review/index.md).
 
 The exact implemented standalone grammar is documented by [CLI Shell](../shell/index.md). Node
 token parsing and output publication are not part of the command kernel.

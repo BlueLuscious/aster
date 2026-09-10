@@ -13,15 +13,16 @@ The canonical documentation mirrors the real tooling feature roots:
 | Feature | Responsibility |
 | --- | --- |
 | [Architecture](architecture/index.md) | Verifies compiler, workspace, package dependency, and authored collection boundaries. |
+| [Catalogue](catalogue/index.md) | Synchronises generated Icons barrels and aggregate indexes from canonical definition modules. |
 | [Documentation](documentation/index.md) | Verifies the current canonical hierarchy, package mirroring, links, and local exclusions. |
 | [Performance](performance/index.md) | Provides development-only package comparison infrastructure and independent scenario runners. |
 | [Shared](shared/index.md) | Supplies narrow filesystem, path, directory, traversal, and strict JSON foundations used by multiple tooling features. |
 | [Workspace](workspace/index.md) | Owns guarded repository and package maintenance operations such as distribution cleanup. |
 
 User-facing project operations do not belong here. Persistent target export is implemented by
-`aster export`; disposable review composition remains a future `aster review` responsibility. The
-CLI may compose public package capabilities, but neither CLI nor any other published package
-imports repository tooling.
+`aster export`; disposable static review composition and publication are implemented by
+`aster review`. The CLI may compose public package capabilities, but neither CLI nor any other
+published package imports repository tooling.
 
 ## Runtime and dependencies
 
@@ -38,7 +39,7 @@ The private root owns shared development versions:
 
 | Dependency | Responsibility | Production status |
 | --- | --- | --- |
-| TypeScript | Compiles production packages and type tests. | Development only. |
+| TypeScript | Compiles production packages and type tests, and parses canonical catalogue modules during source synchronisation. | Development only. |
 | `tsx` | Adapts TypeScript tests to Node's built-in test runner. | Test only. |
 | `@types/node` | Types tests and repository tooling. | Excluded from portable production compilation. |
 
@@ -60,8 +61,9 @@ The private root exposes stable orchestration contracts:
 | Command | Contract |
 | --- | --- |
 | `pnpm build` | Build every real package in dependency order when it defines `build`. |
-| `pnpm check` | Run the implemented type, architecture, and documentation checks. |
+| `pnpm check` | Run catalogue drift, type, architecture, and documentation checks. |
 | `pnpm check:architecture` | Run the [architecture verifier](architecture/index.md). |
+| `pnpm check:catalogue` | Verify generated [catalogue sources](catalogue/index.md) without writing. |
 | `pnpm check:docs` | Run the [documentation verifier](documentation/index.md). |
 | `pnpm check:types` | Build and type-check every applicable package. |
 | `pnpm benchmark:core` | Run the development-only [Core comparison](performance/index.md). |
@@ -87,6 +89,7 @@ Every retained feature protects a current boundary:
 | Feature | Retained evidence |
 | --- | --- |
 | Architecture | Detects source, manifest, dependency, compiler, host-authority, and private-tooling boundary drift before publication. |
+| Catalogue | Detects stale aggregate sources and reconstructs them deterministically from canonical definition modules. |
 | Documentation | Detects broken local links, stale package mirroring, contributor-local references, and missing current entry points. |
 | Workspace | Deletes only a verified package's direct generated distribution through an explicit destructive policy. |
 | Performance | Produces reproducible package-specific comparison reports without CI thresholds or production dependencies. |

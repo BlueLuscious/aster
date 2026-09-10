@@ -13,9 +13,18 @@ import { basename, dirname, resolve } from "node:path";
 import process from "node:process";
 import test, { after, before } from "node:test";
 import { fileURLToPath } from "node:url";
+import { AsterCollection } from "@aster/icons/collections/aster";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const workspaceRoot = resolve(packageRoot, "../..");
+const expectedAsterCollectionPaths = Object.freeze(
+  AsterCollection.icons
+    .map(
+      (icon) =>
+        `${icon.identity.namespace}/${icon.identity.name}.svg`,
+    )
+    .sort((left, right) => left.localeCompare(right)),
+);
 let consumerRoot;
 
 function runPnpm(arguments_) {
@@ -159,6 +168,8 @@ test("imports the public package without source files or observable effects", ()
     "AsterCommands",
     "catalogueResultKinds",
     "exportTargets",
+    "reviewSubjects",
+    "reviewTargets",
   ]);
 });
 
@@ -246,28 +257,74 @@ test("returns the same complete export through standalone and programmatic hosts
 
   const result = JSON.parse(executable.stdout);
 
-  assert.equal(result.payload.plan.artefacts.length, 16);
+  assert.equal(
+    result.payload.plan.artefacts.length,
+    expectedAsterCollectionPaths.length,
+  );
   assert.deepEqual(
     result.payload.plan.artefacts.map((artefact) => artefact.path),
-    [
-      "aster/arrow-left.svg",
-      "aster/bell.svg",
-      "aster/camera.svg",
-      "aster/check.svg",
-      "aster/close.svg",
-      "aster/cloud.svg",
-      "aster/folder.svg",
-      "aster/heart.svg",
-      "aster/home.svg",
-      "aster/leaf.svg",
-      "aster/lock.svg",
-      "aster/plus.svg",
-      "aster/search.svg",
-      "aster/settings.svg",
-      "aster/star.svg",
-      "aster/user.svg",
-    ],
+    expectedAsterCollectionPaths,
   );
+});
+
+test("returns and publishes a complete review from the clean consumer", async () => {
+  const executable = runExecutable([
+    "review",
+    "collection",
+    "aster",
+    "--json",
+  ]);
+  const programmatic = runModule([
+    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    "const result = await AsterCommands.execute(",
+    "  {",
+    '    command: "review",',
+    '    subject: "collection",',
+    '    identity: "aster",',
+    "  },",
+    "  {",
+    "    catalogues: [AsterCatalogue],",
+    '    productName: "Aster",',
+    '    productVersion: "0.0.0",',
+    "  },",
+    ");",
+    'process.stdout.write(`${JSON.stringify(result)}\n`);',
+  ].join("\n"));
+
+  assert.equal(executable.status, 0);
+  assert.equal(executable.stderr, "");
+  assert.equal(programmatic.status, 0);
+  assert.equal(programmatic.stderr, "");
+  assert.equal(programmatic.stdout, executable.stdout);
+
+  const published = runExecutable([
+    "review",
+    "collection",
+    "aster",
+    "--output",
+    "review",
+  ]);
+
+  assert.equal(published.status, 0);
+  assert.equal(published.stderr, "");
+
+  const document = await readFile(
+    resolve(consumerRoot, "review", "index.html"),
+    "utf8",
+  );
+  const plan = JSON.parse(executable.stdout).payload.plan;
+
+  assert.match(
+    document,
+    /<meta name="aster-review-document" content="1">/u,
+  );
+  assert.doesNotMatch(document, /<script|https?:\/\/(?!www\.w3\.org\/2000\/svg)/u);
+
+  assert.equal(plan.document.icons.length, expectedAsterCollectionPaths.length);
+
+  for (const path of expectedAsterCollectionPaths) {
+    assert.ok(document.includes(path.slice(0, -4)));
+  }
 });
 
 test("publishes the complete planned collection from the clean consumer", async () => {

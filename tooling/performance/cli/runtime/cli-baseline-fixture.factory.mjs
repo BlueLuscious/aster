@@ -1,5 +1,5 @@
 import { AsterCatalogue, AsterCommands } from "@aster/cli";
-import { AsterCollection } from "@aster/icons";
+import { AsterCollection } from "@aster/icons/collections/aster";
 import { CatalogueIdentityFormatter } from "../../../../packages/cli/dist/catalogue/runtime/catalogue-identity.formatter.js";
 
 /**
@@ -71,6 +71,11 @@ export class CliBaselineFixtureFactory {
           subject: "collection",
           identity: identities.collection(AsterCollection.identity),
           options: Object.freeze({ size: 24 }),
+        }),
+        reviewCollection: Object.freeze({
+          command: "review",
+          subject: "collection",
+          identity: identities.collection(AsterCollection.identity),
         }),
       }),
       arguments: Object.freeze({

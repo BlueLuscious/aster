@@ -59,6 +59,10 @@ export const cliBaseline = Object.freeze({
       name: "cli.command.export-collection",
       operationsPerSample: 20,
     }),
+    reviewCollection: Object.freeze({
+      name: "cli.command.review-collection",
+      operationsPerSample: 20,
+    }),
   }),
   /** @description Stable cold-process scenario identities and expected output. */
   coldScenarios: Object.freeze({

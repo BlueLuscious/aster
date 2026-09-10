@@ -1,22 +1,21 @@
-import type { IconDefinition } from "@aster/core";
-import { CatalogueIdentityFormatter } from "../../catalogue/runtime/catalogue-identity.formatter.js";
-import { CatalogueLoader } from "../../catalogue/runtime/catalogue.loader.js";
-import { CatalogueQueryScope } from "../../catalogue/runtime/catalogue-query.scope.js";
-import type { TAcceptedCatalogue } from "../../catalogue/types/internal/accepted-catalogue.type.js";
-import { asterCommandNames } from "../../command/constants/aster-command-names.constant.js";
 import { asterCommandSubjects } from "../../command/constants/aster-command-subjects.constant.js";
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import type { AsterCommandContext } from "../../command/contracts/index.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
-import type { AsterCommandInvocationType } from "../../command/types/index.js";
+import type { AsterCommandShowSubjectType } from "../../command/types/index.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
 import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
-import type { TExportSelection } from "../types/internal/export-selection.type.js";
+import type { TAcceptedCatalogue } from "../types/internal/accepted-catalogue.type.js";
+import type { TCatalogueSelection } from "../types/internal/catalogue-selection.type.js";
+import type { TCatalogueSelectedIcon } from "../types/internal/catalogue-selected-icon.type.js";
+import { CatalogueIdentityFormatter } from "./catalogue-identity.formatter.js";
+import { CatalogueLoader } from "./catalogue.loader.js";
+import { CatalogueQueryScope } from "./catalogue-query.scope.js";
 
 /**
- * @description Resolves one exact icon or collection from accepted explicit catalogues.
+ * @description Resolves one exact portable subject for host-neutral catalogue consumers.
  */
-export class CatalogueExportSelector {
+export class CatalogueSubjectSelector {
   /**
    * @description Explicit provider loading and snapshot acceptance boundary.
    */
@@ -43,7 +42,7 @@ export class CatalogueExportSelector {
   readonly #strings = new AsciiStringComparator();
 
   /**
-   * @description Creates one export selector using the explicit shared catalogue loader.
+   * @description Creates one selector using the explicit shared catalogue loader.
    * @param loader - Provider loading and snapshot acceptance boundary.
    */
   constructor(loader: CatalogueLoader) {
@@ -51,65 +50,61 @@ export class CatalogueExportSelector {
   }
 
   /**
-   * @description Resolves one exact export subject and all required icon definitions.
-   * @param invocation - Canonical structured export request.
+   * @description Resolves one exact icon or collection and its required icon evidence.
+   * @param subject - Exact portable value family to resolve.
+   * @param identity - Canonical textual portable identity.
+   * @param catalogue - Optional exact provider filter.
    * @param context - Accepted explicit catalogue capabilities.
    * @returns One immutable selection or deterministic lookup failure.
    */
   async select(
-    invocation: Extract<
-      AsterCommandInvocationType,
-      { command: typeof asterCommandNames.export }
-    >,
+    subject: AsterCommandShowSubjectType,
+    identity: string,
+    catalogue: string | undefined,
     context: AsterCommandContext,
-  ): Promise<TAcceptanceResult<TExportSelection>> {
+  ): Promise<TAcceptanceResult<TCatalogueSelection>> {
     const loaded = await this.#loader.load(context.catalogues);
 
     if (!loaded.accepted) {
       return loaded;
     }
 
-    const scoped = this.#scope.selectCatalogues(
-      loaded.value,
-      invocation.catalogue,
-    );
+    const scoped = this.#scope.selectCatalogues(loaded.value, catalogue);
 
     if (!scoped.accepted) {
       return scoped;
     }
 
-    const selected = invocation.subject === asterCommandSubjects.export.icon
-      ? Object.freeze({
-          accepted: true,
-          value: this.#icons(scoped.value, invocation.identity),
-        } as const)
-      : this.#collections(scoped.value, invocation.identity);
+    const candidates = subject === asterCommandSubjects.show.icon
+      ? this.#icons(scoped.value, identity)
+      : this.#collections(scoped.value, identity);
 
-    if (!selected.accepted) {
-      return selected;
+    if (!candidates.accepted) {
+      return candidates;
     }
 
-    const candidates = selected.value;
-
-    if (candidates.length === 0) {
+    if (candidates.value.length === 0) {
       return this.#failure(
         commandDiagnosticSchema.categories.notFound,
         commandDiagnosticSchema.codes.notFound,
-        `identity ${invocation.identity} was not found`,
-        [invocation.identity],
+        `identity ${identity} was not found`,
+        [identity],
       );
     }
 
-    if (candidates.length > 1) {
+    if (candidates.value.length > 1) {
       return this.#failure(
         commandDiagnosticSchema.categories.ambiguous,
         commandDiagnosticSchema.codes.ambiguous,
-        `identity ${invocation.identity} is available from multiple catalogues`,
-        candidates.map((candidate) => candidate.catalogue),
+        `identity ${identity} is available from multiple catalogues`,
+        candidates.value.map((candidate) => candidate.catalogue),
       );
     }
 
-    return Object.freeze({ accepted: true, value: candidates[0] as TExportSelection });
+    return Object.freeze({
+      accepted: true,
+      value: candidates.value[0] as TCatalogueSelection,
+    });
   }
 
   /**
@@ -121,32 +116,36 @@ export class CatalogueExportSelector {
   #icons(
     catalogues: readonly TAcceptedCatalogue[],
     identity: string,
-  ): readonly TExportSelection[] {
-    return Object.freeze(catalogues.flatMap((catalogue) =>
-      catalogue.icons
+  ): TAcceptanceResult<readonly TCatalogueSelection[]> {
+    return Object.freeze({
+      accepted: true,
+      value: Object.freeze(catalogues.flatMap((catalogue) => catalogue.icons
         .filter((record) =>
           this.#identities.icon(record.definition.identity) === identity,
         )
         .map((record) => Object.freeze({
           catalogue: catalogue.identity,
-          subject: asterCommandSubjects.export.icon,
+          subject: asterCommandSubjects.show.icon,
           identity,
-          definitions: Object.freeze([record.definition]),
-        })),
-    ));
+          icons: Object.freeze([Object.freeze({
+            definition: record.definition,
+            memberships: record.memberships,
+          })]),
+        })))),
+    });
   }
 
   /**
-   * @description Selects exact collection candidates and resolves their provider-owned members.
+   * @description Selects collections and resolves every member against canonical icon records.
    * @param catalogues - Accepted provider scope.
    * @param identity - Canonical textual collection identity.
-   * @returns Immutable exact collection selections.
+   * @returns Immutable exact collection selections or inconsistent-provider failure.
    */
   #collections(
     catalogues: readonly TAcceptedCatalogue[],
     identity: string,
-  ): TAcceptanceResult<readonly TExportSelection[]> {
-    const selections: TExportSelection[] = [];
+  ): TAcceptanceResult<readonly TCatalogueSelection[]> {
+    const selections: TCatalogueSelection[] = [];
 
     for (const catalogue of catalogues) {
       const collection = catalogue.collections.find((record) =>
@@ -157,50 +156,48 @@ export class CatalogueExportSelector {
         continue;
       }
 
-      const iconsByIdentity = new Map(
-        catalogue.icons.map((record) => [
-          this.#identities.icon(record.definition.identity),
-          record.definition,
-        ]),
-      );
-      const definitions: IconDefinition[] = [];
+      const iconsByIdentity = new Map(catalogue.icons.map((record) => [
+        this.#identities.icon(record.definition.identity),
+        record,
+      ]));
+      const icons: TCatalogueSelectedIcon[] = [];
 
       for (const member of collection.definition.icons) {
-        const memberKey = this.#identities.icon(member.identity);
-        const definition = iconsByIdentity.get(memberKey);
+        const memberIdentity = this.#identities.icon(member.identity);
+        const record = iconsByIdentity.get(memberIdentity);
 
-        if (definition === undefined) {
+        if (record === undefined) {
           return Object.freeze({
             accepted: false,
             diagnostic: this.#diagnostics.create(
               commandDiagnosticSchema.categories.catalogueUnavailable,
               commandDiagnosticSchema.codes.catalogueUnavailable,
-              `collection ${identity} contains unavailable icon ${memberKey}`,
-              [catalogue.identity, memberKey],
+              `collection ${identity} contains unavailable icon ${memberIdentity}`,
+              [catalogue.identity, memberIdentity],
             ),
           });
         }
 
-        definitions.push(definition);
+        icons.push(Object.freeze({
+          definition: record.definition,
+          memberships: record.memberships,
+        }));
       }
 
-      definitions.sort((left, right) => {
-        const leftIdentity = this.#identities.icon(left.identity);
-        const rightIdentity = this.#identities.icon(right.identity);
-        return this.#strings.compare(leftIdentity, rightIdentity);
-      });
+      icons.sort((left, right) => this.#strings.compare(
+        this.#identities.icon(left.definition.identity),
+        this.#identities.icon(right.definition.identity),
+      ));
       selections.push(Object.freeze({
         catalogue: catalogue.identity,
-        subject: asterCommandSubjects.export.collection,
+        subject: asterCommandSubjects.show.collection,
         identity,
-        definitions: Object.freeze(definitions),
+        collection: collection.definition,
+        icons: Object.freeze(icons),
       }));
     }
 
-    return Object.freeze({
-      accepted: true,
-      value: Object.freeze(selections),
-    });
+    return Object.freeze({ accepted: true, value: Object.freeze(selections) });
   }
 
   /**
@@ -216,7 +213,7 @@ export class CatalogueExportSelector {
     code: "ASTER-CLI-004" | "ASTER-CLI-005",
     message: string,
     related: readonly string[],
-  ): TAcceptanceResult<TExportSelection> {
+  ): TAcceptanceResult<TCatalogueSelection> {
     return Object.freeze({
       accepted: false,
       diagnostic: this.#diagnostics.create(category, code, message, related),

@@ -12,9 +12,12 @@ present results, or access the filesystem.
 `--json` flag, selects the command identity, and delegates to one explicit
 `ICommandLineCommandParser`. Duplicate parser identities fail during construction.
 
-Dedicated parsers own the `export`, `list`, `search`, `show`, `help`, and `version` positional
+Dedicated parsers own the `export`, `review`, `list`, `search`, `show`, `help`, and `version` positional
 forms. `CommandLineOptionParser` owns common discovery filters, while
 `ExportCommandLineOptionParser` owns export render, accessibility, and destination options.
+`ReviewCommandLineParser` owns exact review subjects plus optional provider, shell-owned output,
+and ownership-gated replacement intent. `--replace` is a singleton flag and can target either the
+default or explicit review root. JSON cannot be combined with review publication options.
 `CommandLineError` carries stable parser evidence for shell diagnostic adaptation.
 
 No argument defaults to `help`. Unknown commands, duplicate singleton options, repeated `--json`,
@@ -25,10 +28,10 @@ execution. The accepted grammar is documented by [CLI Shell](../index.md).
 
 | Type | Responsibility |
 | --- | --- |
-| `TParsedCommandLine` | Carries the accepted host-neutral invocation plus shell-owned JSON and output-root selections. |
+| `TParsedCommandLine` | Carries the accepted host-neutral invocation plus shell-owned JSON, output-root, and replacement selections. |
 | `TParsedCommandOptions` | Accumulates catalogue, collection, and repeated tag filters for discovery parsers before invocation construction. |
 | `TParsedExportCommandOptions` | Accumulates export filters, render values, accessibility text, and shell-owned output root before final validation. |
 
 The two option types are private mutable parser assembly values. `TParsedCommandLine` is their
-immutable accepted result and prevents shell-only `--json` or `--output` state from entering the
-programmatic invocation contracts.
+immutable accepted result and prevents shell-only `--json`, `--output`, or `--replace` state from
+entering the programmatic invocation contracts.

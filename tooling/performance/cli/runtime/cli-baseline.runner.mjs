@@ -147,6 +147,15 @@ export class CliBaselineRunner {
             iterations,
           ),
       }),
+      Object.freeze({
+        ...cliBaseline.asyncScenarios.reviewCollection,
+        execute: (iterations) =>
+          this.#execute(
+            this.#fixtures.invocations.reviewCollection,
+            this.#fixtures.context,
+            iterations,
+          ),
+      }),
     ];
     const coldScenarios = [
       cliBaseline.coldScenarios.nodeControl,
@@ -311,6 +320,18 @@ export class CliBaselineRunner {
     const payload = result.payload;
 
     if ("plan" in payload) {
+      if ("document" in payload.plan) {
+        const document = payload.plan.document;
+        const icons = "icons" in document
+          ? document.icons
+          : [document.icon];
+
+        return payload.kind.length + icons.reduce(
+          (total, icon) => total + icon.markup.length,
+          0,
+        );
+      }
+
       return payload.kind.length + payload.plan.artefacts.reduce(
         (total, artefact) => total + artefact.path.length + artefact.content.length,
         0,

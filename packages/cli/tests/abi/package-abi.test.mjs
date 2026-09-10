@@ -36,6 +36,8 @@ test("exposes the exact documented immutable root value surface", async () => {
     "AsterCommands",
     "catalogueResultKinds",
     "exportTargets",
+    "reviewSubjects",
+    "reviewTargets",
   ]);
   assert.deepEqual(Object.keys(packageModule.AsterCommands), [
     "identity",
@@ -56,6 +58,13 @@ test("exposes the exact documented immutable root value surface", async () => {
   assert.ok(Object.isFrozen(packageModule.catalogueResultKinds));
   assert.deepEqual(packageModule.exportTargets, { svg: "svg" });
   assert.ok(Object.isFrozen(packageModule.exportTargets));
+  assert.deepEqual(packageModule.reviewSubjects, {
+    icon: "icon",
+    collection: "collection",
+  });
+  assert.deepEqual(packageModule.reviewTargets, { html: "html" });
+  assert.ok(Object.isFrozen(packageModule.reviewSubjects));
+  assert.ok(Object.isFrozen(packageModule.reviewTargets));
 });
 
 test("publishes the accepted root, executable, dependency, and declaration surface", async () => {
@@ -99,6 +108,8 @@ test("publishes the accepted root, executable, dependency, and declaration surfa
       'export type * from "./command/index.js";',
       'export { exportTargets } from "./export/index.js";',
       'export type * from "./export/index.js";',
+      'export { reviewSubjects, reviewTargets } from "./review/index.js";',
+      'export type * from "./review/index.js";',
       "",
     ].join("\n"),
   );
@@ -186,6 +197,7 @@ test("limits Node process authority and the manifest bridge to the private entry
       [...new Set(externalSpecifiers)]
         .filter((specifier) =>
           specifier === "@aster/core" || specifier === "@aster/icons"
+          || specifier === "@aster/icons/collections"
           || specifier === "@aster/svg"
         )
         .sort(),
@@ -207,9 +219,11 @@ test("limits Node process authority and the manifest bridge to the private entry
     ["shell/aster.js", ["node:module", "node:process"]],
     ["shell/output/runtime/export-output-path.resolver.js", ["node:path"]],
     [
-      "shell/output/runtime/node-export-output-file-system.js",
+      "shell/output/runtime/node-output-file-system.js",
       ["node:fs/promises"],
     ],
+    ["shell/output/runtime/output-location.resolver.js", ["node:path"]],
+    ["shell/output/runtime/review-output-path.resolver.js", ["node:path"]],
   ]);
   assert.deepEqual(requireOwners, ["shell/aster.js"]);
 });
@@ -222,10 +236,20 @@ test("acquires the built-in Icons catalogue only through its explicit lazy provi
     const source = await readFile(module, "utf8");
     const modulePath = relative(distributionRoot, module).replaceAll("\\", "/");
 
-    if (extractModuleSpecifiers(source).includes("@aster/icons")) {
+    const iconsSpecifiers = extractModuleSpecifiers(source).filter(
+      (specifier) => specifier === "@aster/icons"
+        || specifier === "@aster/icons/collections",
+    );
+
+    if (iconsSpecifiers.length > 0) {
       iconsOwners.push(modulePath);
-      assert.match(source, /await import\("@aster\/icons"\)/u);
-      assert.doesNotMatch(source, /from\s+["']@aster\/icons["']/u);
+      assert.deepEqual(iconsSpecifiers.sort(), [
+        "@aster/icons",
+        "@aster/icons/collections",
+      ]);
+      assert.match(source, /import\("@aster\/icons"\)/u);
+      assert.match(source, /import\("@aster\/icons\/collections"\)/u);
+      assert.doesNotMatch(source, /from\s+["']@aster\/icons(?:\/collections)?["']/u);
     }
   }
 

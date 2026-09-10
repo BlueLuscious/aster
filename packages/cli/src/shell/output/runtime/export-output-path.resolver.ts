@@ -1,9 +1,8 @@
 import { dirname, isAbsolute, relative, resolve } from "node:path";
 import type { AsterExportArtefact } from "../../../export/contracts/index.js";
-import { exportOutputErrorKinds } from "../constants/export-output-error-kinds.constant.js";
+import { outputErrorKinds } from "../constants/output-error-kinds.constant.js";
 import type { TExportOutputEntry } from "../types/internal/export-output-entry.type.js";
-import type { TExportOutputLocation } from "../types/internal/export-output-location.type.js";
-import { ExportOutputError } from "./export-output.error.js";
+import { OutputError } from "./output.error.js";
 
 /**
  * @description Resolves user-owned output roots and validates portable logical artefact paths.
@@ -18,41 +17,6 @@ export class ExportOutputPathResolver {
    * @description Windows device identities rejected to keep logical paths portable.
    */
   readonly #reservedSegmentPattern = /^(?:aux|con|nul|prn|com[1-9]|lpt[1-9])(?:\.|$)/iu;
-
-  /**
-   * @description Resolves one requested root and its deterministic private sibling stage.
-   * @param currentDirectory - Explicit host directory against which relative output is resolved.
-   * @param outputRoot - Explicit user-owned output directory.
-   * @returns Absolute same-parent output location.
-   */
-  resolveLocation(
-    currentDirectory: string,
-    outputRoot: string,
-  ): TExportOutputLocation {
-    if (
-      currentDirectory.length === 0
-      || !isAbsolute(currentDirectory)
-      || outputRoot.length === 0
-    ) {
-      throw this.#conflict(
-        "output root must be non-empty and current directory must be absolute",
-      );
-    }
-
-    const targetRoot = resolve(currentDirectory, outputRoot);
-    const parentRoot = dirname(targetRoot);
-    const targetName = targetRoot.slice(parentRoot.length).replace(/^[/\\]+/u, "");
-
-    if (targetName.length === 0 || targetRoot === parentRoot) {
-      throw this.#conflict("output root cannot identify a filesystem root");
-    }
-
-    return Object.freeze({
-      targetRoot,
-      parentRoot,
-      stageRoot: resolve(parentRoot, `.${targetName}.aster-stage`),
-    });
-  }
 
   /**
    * @description Maps every validated logical artefact beneath one private staging root.
@@ -135,7 +99,7 @@ export class ExportOutputPathResolver {
    * @param message - Shell-owned conflict explanation.
    * @returns Sanitised output error.
    */
-  #conflict(message: string): ExportOutputError {
-    return new ExportOutputError(exportOutputErrorKinds.conflict, message);
+  #conflict(message: string): OutputError {
+    return new OutputError(outputErrorKinds.conflict, message);
   }
 }

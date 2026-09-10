@@ -15,7 +15,12 @@ export type TParsedCommandLine = Readonly<{
   json: boolean;
 
   /**
-   * @description Optional export output root retained outside the host-neutral invocation.
+   * @description Optional command output root retained outside the host-neutral invocation.
    */
   output?: string;
+
+  /**
+   * @description Whether the shell may replace an output carrying exact Aster ownership evidence.
+   */
+  replace?: boolean;
 }>;

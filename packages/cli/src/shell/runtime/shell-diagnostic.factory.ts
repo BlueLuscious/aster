@@ -2,8 +2,8 @@ import { asterCommandNames } from "../../command/constants/aster-command-names.c
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { AsterCommandResultType } from "../../command/types/index.js";
-import { exportOutputErrorKinds } from "../output/constants/export-output-error-kinds.constant.js";
-import { ExportOutputError } from "../output/runtime/export-output.error.js";
+import { outputErrorKinds } from "../output/constants/output-error-kinds.constant.js";
+import { OutputError } from "../output/runtime/output.error.js";
 import { CommandLineError } from "../parsing/runtime/command-line.error.js";
 
 /**
@@ -35,13 +35,17 @@ export class ShellDiagnosticFactory {
   /**
    * @description Converts one sanitised output-host error into its reserved command diagnostic.
    * @param error - Private output conflict or operation failure.
-   * @returns Immutable failed export result suitable for human presentation.
+   * @param command - Command whose requested output effect failed.
+   * @returns Immutable failed result suitable for human presentation.
    */
-  output(error: ExportOutputError): AsterCommandResultType {
-    const conflict = error.kind === exportOutputErrorKinds.conflict;
+  output(
+    error: OutputError,
+    command: typeof asterCommandNames.export | typeof asterCommandNames.review,
+  ): AsterCommandResultType {
+    const conflict = error.kind === outputErrorKinds.conflict;
     return Object.freeze({
       ok: false,
-      command: asterCommandNames.export,
+      command,
       diagnostic: this.#diagnostics.create(
         conflict
           ? commandDiagnosticSchema.categories.outputConflict
