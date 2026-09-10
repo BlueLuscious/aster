@@ -122,6 +122,17 @@ test("adds and removes source modules without manual aggregate edits", async () 
       "src/collections/index.ts",
       "src/collections/constants/aster-collections.constant.ts",
     ]);
+    assert.doesNotMatch(
+      await readFile(resolve(root, "src/collections/index.ts"), "utf8"),
+      /SecondaryCollection/u,
+    );
+    assert.doesNotMatch(
+      await readFile(
+        resolve(root, "src/collections/constants/aster-collections.constant.ts"),
+        "utf8",
+      ),
+      /SecondaryCollection/u,
+    );
   } finally {
     await rm(root, { recursive: true, force: true });
   }

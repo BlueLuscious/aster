@@ -267,6 +267,66 @@ test("returns the same complete export through standalone and programmatic hosts
   );
 });
 
+test("returns and publishes a complete review from the clean consumer", async () => {
+  const executable = runExecutable([
+    "review",
+    "collection",
+    "aster",
+    "--json",
+  ]);
+  const programmatic = runModule([
+    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    "const result = await AsterCommands.execute(",
+    "  {",
+    '    command: "review",',
+    '    subject: "collection",',
+    '    identity: "aster",',
+    "  },",
+    "  {",
+    "    catalogues: [AsterCatalogue],",
+    '    productName: "Aster",',
+    '    productVersion: "0.0.0",',
+    "  },",
+    ");",
+    'process.stdout.write(`${JSON.stringify(result)}\n`);',
+  ].join("\n"));
+
+  assert.equal(executable.status, 0);
+  assert.equal(executable.stderr, "");
+  assert.equal(programmatic.status, 0);
+  assert.equal(programmatic.stderr, "");
+  assert.equal(programmatic.stdout, executable.stdout);
+
+  const published = runExecutable([
+    "review",
+    "collection",
+    "aster",
+    "--output",
+    "review",
+  ]);
+
+  assert.equal(published.status, 0);
+  assert.equal(published.stderr, "");
+
+  const document = await readFile(
+    resolve(consumerRoot, "review", "index.html"),
+    "utf8",
+  );
+  const plan = JSON.parse(executable.stdout).payload.plan;
+
+  assert.match(
+    document,
+    /<meta name="aster-review-document" content="1">/u,
+  );
+  assert.doesNotMatch(document, /<script|https?:\/\/(?!www\.w3\.org\/2000\/svg)/u);
+
+  assert.equal(plan.document.icons.length, expectedAsterCollectionPaths.length);
+
+  for (const path of expectedAsterCollectionPaths) {
+    assert.ok(document.includes(path.slice(0, -4)));
+  }
+});
+
 test("publishes the complete planned collection from the clean consumer", async () => {
   const planned = runExecutable([
     "export",
