@@ -4,10 +4,10 @@ Status: **Experimental**
 
 The `icons` feature contains one canonical TypeScript module and one named immutable value per
 authored icon. `AsterIcons` is the complete immutable package index over those independent values.
-The current corpus contains fifteen definitions accepted for foundational Amellus authorship and
-two additional collection-independent vertical-arrow definitions. Seven foundational candidates
-originate in the Experimental Aster pilot and eight close identified semantic gaps. Nine accepted
-Amellus concepts await primitive-first reauthoring and are not currently package exports.
+The current corpus contains seventeen of the twenty-six definitions accepted for foundational
+Amellus authorship. Seven foundational candidates originate in the Experimental Aster pilot,
+eight close identified semantic gaps, and two complete the directional-arrow family. Nine accepted
+concepts await structured-path authorship and are not package exports.
 
 Canonical source modules use `<icon-slug>.icon.ts`. The semantic role remains internal to the
 source layout: public imports omit it and retain `@aster/icons/<icon-slug>`.
@@ -53,10 +53,9 @@ discovery service.
 Only `ArrowLeft` and `ArrowRight` use the `mirror` RTL policy. The remaining identities preserve
 geometry in RTL because their metaphors do not represent logical horizontal movement.
 
-The Experimental `AsterCollection` retains its explicit seven-icon pilot membership. The eight new
-foundational definitions and two vertical arrows remain collection-independent until a collection
-composition is accepted; inclusion in `AsterIcons` provides package discovery and does not imply
-collection membership.
+The Experimental `AsterCollection` retains its explicit seven-icon pilot membership. The remaining
+ten authored definitions remain collection-independent until Amellus composition is accepted;
+inclusion in `AsterIcons` provides package discovery and does not imply collection membership.
 
 ## Metadata Scope
 

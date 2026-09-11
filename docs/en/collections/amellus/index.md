@@ -84,9 +84,9 @@ or generated catalogue output merely by existing.
 
 The original sixteen Experimental Aster pilot icons are candidate inputs, not inherited members.
 Seven primitive-first definitions remain in that collection. Nine former path-authored candidates
-were removed from package exports and await primitive-first reauthoring. Each candidate may still
-be retained unchanged, refined, kept independently, or removed after the Amellus visual language
-and inventory establish objective comparison criteria.
+and their visually weak polygon replacements were discarded. They await structured-path authorship
+for Amellus evaluation. Each candidate may still be retained, refined, kept independently, or
+removed after static review applies the Amellus visual language and inventory criteria.
 
 No compatibility promise, source alias or collection replacement relationship exists between
 `aster` and `amellus` merely because pilot artwork is considered. Amellus must not preserve weak,

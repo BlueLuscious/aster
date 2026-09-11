@@ -36,9 +36,9 @@ remains derived review or distribution output and Import remains an optional imp
 the same definitions remain directly usable without importing or consulting that collection.
 
 The [pilot reference set](reference-set.md) contains seven canonical Experimental definitions and
-records the current structural and curatorial evidence. Nine former path-authored definitions were
-removed pending primitive-first reauthoring for Amellus and are not retained as collection members
-or package exports.
+records the current structural and curatorial evidence. Nine former path-authored experiments and
+their visually weak polygon replacements were discarded pending structured-path authorship for
+Amellus.
 The collection is not release quality and must not be presented as an Active collection before
 curatorial and release evidence is accepted.
 

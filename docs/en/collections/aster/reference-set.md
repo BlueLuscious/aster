@@ -4,7 +4,7 @@ Status: **Experimental**
 
 The pilot retains seven canonical definitions in
 [`@aster/icons`](../../packages/icons/index.md). It provides a small primitive-first reference set
-while nine former path-authored definitions await reauthoring for Amellus.
+independently from the broader Amellus authorship inventory.
 
 ## Coverage
 
@@ -30,11 +30,11 @@ hypotheses to stable rules.
 
 ## Deferred concepts
 
-`bell`, `camera`, `cloud`, `folder`, `heart`, `home`, `leaf`, `lock` and `user` are no longer
-canonical definitions or Aster collection members. Their former path-based implementations carry
-no compatibility promise. The accepted Amellus inventory retains the concepts so each can be
-redesigned with portable structural primitives where possible and use a path only when no
-adequate primitive composition exists.
+`bell`, `camera`, `cloud`, `folder`, `heart`, `home`, `leaf`, `lock` and `user` are not canonical
+definitions or Aster collection members. Their discarded path strings and visually weak polygon
+experiments carry no compatibility promise. The accepted Amellus inventory retains these concepts
+until structured-path authorship can express their contours without making opaque raw path data the
+preferred editing surface.
 
 ## Semantic adjacency
 
