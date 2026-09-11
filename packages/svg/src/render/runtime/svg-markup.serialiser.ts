@@ -10,6 +10,8 @@ import {
 import { SvgRenderError } from "../../error/index.js";
 import type { ISvgRenderContext } from "../contracts/internal/index.js";
 import type { SvgMarkupType } from "../types/index.js";
+import { SvgNumberSerialiser } from "./svg-number.serialiser.js";
+import { SvgPathDataSerialiser } from "./svg-path-data.serialiser.js";
 import { SvgXmlCharacterValidator } from "./svg-xml-character.validator.js";
 
 /**
@@ -20,6 +22,16 @@ export class SvgMarkupSerialiser {
    * @description XML 1.0 character authority applied before escaping target values.
    */
   readonly #characterValidator = new SvgXmlCharacterValidator();
+
+  /**
+   * @description Canonical SVG number serialiser.
+   */
+  readonly #numberSerialiser = new SvgNumberSerialiser();
+
+  /**
+   * @description Structured portable path serialiser.
+   */
+  readonly #pathDataSerialiser = new SvgPathDataSerialiser();
 
   /**
    * @description Produces complete markup with canonical element and attribute ordering.
@@ -38,11 +50,17 @@ export class SvgMarkupSerialiser {
           definition.viewBox.width,
           definition.viewBox.height,
         ]
-          .map((value) => this.#number(value))
+          .map((value) => this.#numberSerialiser.serialise(value))
           .join(" "),
       ),
-      this.#attribute("width", this.#number(context.width)),
-      this.#attribute("height", this.#number(context.height)),
+      this.#attribute(
+        "width",
+        this.#numberSerialiser.serialise(context.width),
+      ),
+      this.#attribute(
+        "height",
+        this.#numberSerialiser.serialise(context.height),
+      ),
       ...(context.colour === undefined
         ? []
         : [this.#attribute("color", context.colour)]),
@@ -89,15 +107,21 @@ export class SvgMarkupSerialiser {
 
     switch (node.kind) {
       case iconNodeKinds.path:
-        return `<path${this.#attribute("d", node.data, `definition.nodes[${String(index)}].data`)}${presentationAttributes}/>`;
+        return `<path${this.#attribute(
+          "d",
+          this.#pathDataSerialiser.serialise(
+            node.commands,
+            `definition.nodes[${String(index)}].commands`,
+          ),
+        )}${presentationAttributes}/>`;
       case iconNodeKinds.circle:
-        return `<circle${this.#attribute("cx", this.#number(node.cx))}${this.#attribute("cy", this.#number(node.cy))}${this.#attribute("r", this.#number(node.radius))}${presentationAttributes}/>`;
+        return `<circle${this.#attribute("cx", this.#numberSerialiser.serialise(node.cx))}${this.#attribute("cy", this.#numberSerialiser.serialise(node.cy))}${this.#attribute("r", this.#numberSerialiser.serialise(node.radius))}${presentationAttributes}/>`;
       case iconNodeKinds.ellipse:
-        return `<ellipse${this.#attribute("cx", this.#number(node.cx))}${this.#attribute("cy", this.#number(node.cy))}${this.#attribute("rx", this.#number(node.radiusX))}${this.#attribute("ry", this.#number(node.radiusY))}${presentationAttributes}/>`;
+        return `<ellipse${this.#attribute("cx", this.#numberSerialiser.serialise(node.cx))}${this.#attribute("cy", this.#numberSerialiser.serialise(node.cy))}${this.#attribute("rx", this.#numberSerialiser.serialise(node.radiusX))}${this.#attribute("ry", this.#numberSerialiser.serialise(node.radiusY))}${presentationAttributes}/>`;
       case iconNodeKinds.rectangle:
-        return `<rect${this.#attribute("x", this.#number(node.x))}${this.#attribute("y", this.#number(node.y))}${this.#attribute("width", this.#number(node.width))}${this.#attribute("height", this.#number(node.height))}${node.radiusX === undefined ? "" : this.#attribute("rx", this.#number(node.radiusX))}${node.radiusY === undefined ? "" : this.#attribute("ry", this.#number(node.radiusY))}${presentationAttributes}/>`;
+        return `<rect${this.#attribute("x", this.#numberSerialiser.serialise(node.x))}${this.#attribute("y", this.#numberSerialiser.serialise(node.y))}${this.#attribute("width", this.#numberSerialiser.serialise(node.width))}${this.#attribute("height", this.#numberSerialiser.serialise(node.height))}${node.radiusX === undefined ? "" : this.#attribute("rx", this.#numberSerialiser.serialise(node.radiusX))}${node.radiusY === undefined ? "" : this.#attribute("ry", this.#numberSerialiser.serialise(node.radiusY))}${presentationAttributes}/>`;
       case iconNodeKinds.line:
-        return `<line${this.#attribute("x1", this.#number(node.x1))}${this.#attribute("y1", this.#number(node.y1))}${this.#attribute("x2", this.#number(node.x2))}${this.#attribute("y2", this.#number(node.y2))}${presentationAttributes}/>`;
+        return `<line${this.#attribute("x1", this.#numberSerialiser.serialise(node.x1))}${this.#attribute("y1", this.#numberSerialiser.serialise(node.y1))}${this.#attribute("x2", this.#numberSerialiser.serialise(node.x2))}${this.#attribute("y2", this.#numberSerialiser.serialise(node.y2))}${presentationAttributes}/>`;
       case iconNodeKinds.polyline:
         return `<polyline${this.#attribute("points", this.#points(node.points))}${presentationAttributes}/>`;
       case iconNodeKinds.polygon:
@@ -153,16 +177,28 @@ export class SvgMarkupSerialiser {
       this.#attribute("fill", presentation.fill),
       this.#attribute("fill-rule", presentation.fillRule),
       this.#attribute("stroke", presentation.stroke),
-      this.#attribute("stroke-width", this.#number(presentation.strokeWidth)),
+      this.#attribute(
+        "stroke-width",
+        this.#numberSerialiser.serialise(presentation.strokeWidth),
+      ),
       this.#attribute("stroke-linecap", presentation.strokeLineCap),
       this.#attribute("stroke-linejoin", presentation.strokeLineJoin),
       this.#attribute(
         "stroke-miterlimit",
-        this.#number(presentation.strokeMiterLimit),
+        this.#numberSerialiser.serialise(presentation.strokeMiterLimit),
       ),
-      this.#attribute("opacity", this.#number(presentation.opacity)),
-      this.#attribute("fill-opacity", this.#number(presentation.fillOpacity)),
-      this.#attribute("stroke-opacity", this.#number(presentation.strokeOpacity)),
+      this.#attribute(
+        "opacity",
+        this.#numberSerialiser.serialise(presentation.opacity),
+      ),
+      this.#attribute(
+        "fill-opacity",
+        this.#numberSerialiser.serialise(presentation.fillOpacity),
+      ),
+      this.#attribute(
+        "stroke-opacity",
+        this.#numberSerialiser.serialise(presentation.strokeOpacity),
+      ),
     ].join("");
   }
 
@@ -173,7 +209,10 @@ export class SvgMarkupSerialiser {
    */
   #points(points: readonly IconPoint[]): string {
     return points
-      .flatMap((point) => [this.#number(point.x), this.#number(point.y)])
+      .flatMap((point) => [
+        this.#numberSerialiser.serialise(point.x),
+        this.#numberSerialiser.serialise(point.y),
+      ])
       .join(" ");
   }
 
@@ -186,16 +225,7 @@ export class SvgMarkupSerialiser {
     const translation =
       2 * context.definition.viewBox.minX + context.definition.viewBox.width;
 
-    return `matrix(-1 0 0 1 ${this.#number(translation)} 0)`;
-  }
-
-  /**
-   * @description Serialises one finite number without locale dependence or negative zero.
-   * @param value - Canonical finite numeric value.
-   * @returns ECMAScript numeric string.
-   */
-  #number(value: number): string {
-    return String(Object.is(value, -0) ? 0 : value);
+    return `matrix(-1 0 0 1 ${this.#numberSerialiser.serialise(translation)} 0)`;
   }
 
   /**
