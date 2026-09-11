@@ -8,7 +8,10 @@ import {
   type IconDefinition,
 } from "@aster/core";
 import { AsterIcons } from "@aster/icons";
-import { AsterCollections } from "@aster/icons/collections";
+import {
+  AsterCollection,
+  AsterCollections,
+} from "@aster/icons/collections";
 import {
   AsterCatalogue,
   AsterCommands,
@@ -98,6 +101,10 @@ function createContext(
   };
 }
 
+const representativeIcon = AsterCollection.icons[0];
+assert.ok(representativeIcon);
+const representativeIdentity = `aster/${representativeIcon.identity.name}`;
+
 test("discovers the explicit built-in Aster catalogue", async () => {
   const context = createContext([AsterCatalogue]);
   const listed = await AsterCommands.execute(
@@ -113,7 +120,7 @@ test("discovers the explicit built-in Aster catalogue", async () => {
     context,
   );
   const shown = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "aster/camera" },
+    { command: "show", subject: "icon", identity: representativeIdentity },
     context,
   );
 
@@ -153,7 +160,10 @@ test("discovers the explicit built-in Aster catalogue", async () => {
   }
 
   if (shown.ok && shown.payload.kind === "icon-show") {
-    assert.equal(shown.payload.icon.metadata.displayName, "Camera");
+    assert.equal(
+      shown.payload.icon.metadata.displayName,
+      representativeIcon.metadata.displayName,
+    );
     assert.deepEqual(shown.payload.icon.memberships, [{ name: "aster" }]);
     assert.ok(Object.isFrozen(shown.payload.icon));
   }

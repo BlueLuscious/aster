@@ -5,45 +5,12 @@ import type {
 import {
   AsterIcons,
   ArrowLeft,
-  Bell,
-  Camera,
-  Check,
-  Close,
-  Cloud,
-  Folder,
-  Heart,
-  Home,
-  Leaf,
-  Lock,
-  Plus,
   Search,
-  Settings,
-  Star,
-  User,
 } from "../../src/index.js";
 import {
   AsterCollection,
   AsterCollections,
 } from "../../src/collections/index.js";
-
-const definitions = [
-  ArrowLeft,
-  Bell,
-  Camera,
-  Check,
-  Close,
-  Cloud,
-  Folder,
-  Heart,
-  Home,
-  Leaf,
-  Lock,
-  Plus,
-  Search,
-  Settings,
-  Star,
-  User,
-] satisfies readonly IconDefinition[];
 
 const directDefinition: IconDefinition = ArrowLeft;
 const directCollection: CollectionDefinition = AsterCollection;
@@ -65,7 +32,6 @@ AsterIcons.push(ArrowLeft);
 // @ts-expect-error Canonical collection indexes are immutable.
 AsterCollections.push(AsterCollection);
 
-void definitions;
 void directDefinition;
 void directCollection;
 void indexedDefinitions;

@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import test from "node:test";
 
 import { Collection, Icon } from "@aster/core";
+import { AsterCollection } from "@aster/icons/collections/aster";
 import {
   AsterCatalogue,
   AsterCommands,
@@ -23,6 +24,32 @@ const presentation = Object.freeze({
   }),
   overrides: Object.freeze([]),
 });
+
+const goldenIcon = Icon.define({
+  identity: { namespace: "testing", name: "golden" },
+  viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
+  nodes: [
+    { kind: "circle", cx: 12, cy: 12, radius: 8 },
+    { kind: "line", x1: 6, y1: 12, x2: 18, y2: 12 },
+  ],
+  metadata: {
+    displayName: "Golden",
+    tags: ["golden", "testing"],
+    rtl: "preserve",
+    presentation,
+    deprecated: false,
+  },
+});
+
+const goldenProvider: CatalogueProvider = {
+  identity: "testing",
+  async load() {
+    return {
+      icons: [{ definition: goldenIcon, memberships: [] }],
+      collections: [],
+    };
+  },
+};
 
 async function plan(
   subject: "icon" | "collection",
@@ -50,7 +77,7 @@ async function plan(
 
 test("serialises byte-identical self-contained icon evidence", async () => {
   const serialiser = new ReviewDocumentSerialiser();
-  const review = await plan("icon", "aster/camera");
+  const review = await plan("icon", "testing/golden", [goldenProvider]);
   const first = serialiser.serialise(review);
   const second = serialiser.serialise(review);
 
@@ -67,20 +94,21 @@ test("serialises byte-identical self-contained icon evidence", async () => {
   assert.doesNotMatch(first, /<script|<link|<img|@import|url\(/u);
 
   const digest = createHash("sha256").update(first).digest("hex");
-  assert.equal(digest, "f0a1d322669a542662ba343bb54d4b0dc36c9564b06bca7b9a4292f21c7ebf69");
+  assert.equal(digest, "b9b8b9ef99f37dd3516d7f3a6ba62350c2eebf0adbce856262724f5d65994850");
 });
 
 test("serialises collections in canonical navigable order", async () => {
   const serialiser = new ReviewDocumentSerialiser();
   const review = await plan("collection", "aster");
   const html = serialiser.serialise(review);
-  const arrow = html.indexOf('href="#icon-aster%2Farrow-left"');
-  const bell = html.indexOf('href="#icon-aster%2Fbell"');
-  const camera = html.indexOf('href="#icon-aster%2Fcamera"');
+  const positions = AsterCollection.icons.slice(0, 3).map((definition) =>
+    html.indexOf(
+      `href="#icon-${encodeURIComponent(`aster/${definition.identity.name}`)}"`,
+    ),
+  );
 
-  assert.ok(arrow > -1);
-  assert.ok(arrow < bell);
-  assert.ok(bell < camera);
+  assert.ok(positions.every((position) => position > -1));
+  assert.deepEqual(positions, [...positions].sort((left, right) => left - right));
   assert.match(html, /id="contact-sheet"/u);
   assert.match(html, /id="icon-details"/u);
   assert.match(html, /aria-label="Review sections"/u);

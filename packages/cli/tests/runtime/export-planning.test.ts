@@ -28,6 +28,11 @@ const context: AsterCommandContext = {
   productVersion: "0.0.0",
 };
 
+const representativeIcon = AsterCollection.icons[0];
+assert.ok(representativeIcon);
+const representativeIdentity = `aster/${representativeIcon.identity.name}`;
+const representativeLabel = representativeIcon.metadata.displayName;
+
 const presentation = Object.freeze({
   defaults: Object.freeze({
     fill: "none" as const,
@@ -118,14 +123,14 @@ test("plans one deterministic immutable icon SVG export", async () => {
   const first = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "aster/camera",
-    options: { size: 32, colour: "#123456", label: " Camera " },
+    identity: representativeIdentity,
+    options: { size: 32, colour: "#123456", label: ` ${representativeLabel} ` },
   }, context);
   const second = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "aster/camera",
-    options: { size: 32, colour: "#123456", label: "Camera" },
+    identity: representativeIdentity,
+    options: { size: 32, colour: "#123456", label: representativeLabel },
   }, context);
 
   assert.deepEqual(first, second);
@@ -135,13 +140,19 @@ test("plans one deterministic immutable icon SVG export", async () => {
     assert.equal(first.payload.plan.target, exportTargets.svg);
     assert.equal(first.payload.plan.subject, "icon");
     assert.equal(first.payload.plan.catalogue, "aster");
-    assert.equal(first.payload.plan.identity, "aster/camera");
+    assert.equal(first.payload.plan.identity, representativeIdentity);
     assert.equal(first.payload.plan.artefacts.length, 1);
-    assert.equal(first.payload.plan.artefacts[0]?.path, "aster/camera.svg");
+    assert.equal(
+      first.payload.plan.artefacts[0]?.path,
+      `${representativeIdentity}.svg`,
+    );
     assert.equal(first.payload.plan.artefacts[0]?.mediaType, "image/svg+xml");
     assert.match(first.payload.plan.artefacts[0]?.content ?? "", /^<svg /u);
     assert.match(first.payload.plan.artefacts[0]?.content ?? "", /width="32"/u);
-    assert.match(first.payload.plan.artefacts[0]?.content ?? "", /aria-label="Camera"/u);
+    assert.match(
+      first.payload.plan.artefacts[0]?.content ?? "",
+      new RegExp(`aria-label="${representativeLabel}"`, "u"),
+    );
     assert.ok(Object.isFrozen(first.payload));
     assert.ok(Object.isFrozen(first.payload.plan));
     assert.ok(Object.isFrozen(first.payload.plan.artefacts));
@@ -412,7 +423,7 @@ test("preserves unrelated target exceptions and sanitises caller invocation fail
   const result = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "aster/camera",
+    identity: representativeIdentity,
     options,
   } as never, context);
 

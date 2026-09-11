@@ -114,6 +114,13 @@ test("keeps every definition aligned with shared authoring defaults", () => {
     assert.equal(definition.metadata.licence, "ISC");
     assert.equal(definition.metadata.attribution, "BlueLuscious");
     assert.equal(definition.metadata.deprecated, false);
+    const tags = definition.metadata.tags;
+    assert.ok(tags);
+    assert.ok(
+      definition.identity.name
+        .split("-")
+        .every((part) => tags.includes(part)),
+    );
     assert.ok(definition.nodes.length > 0);
     assert.ok(definition.nodes.length <= 16);
 
@@ -135,21 +142,16 @@ test("keeps every definition aligned with shared authoring defaults", () => {
   }
 
   assert.equal(icons.ArrowLeft.metadata.rtl, "mirror");
-
-  for (const definition of definitions) {
-    if (definition !== icons.ArrowLeft) {
-      assert.equal(definition.metadata.rtl, "preserve");
-    }
-  }
+  assert.equal(icons.ArrowRight.metadata.rtl, "mirror");
 });
 
 test("retains the complete pilot through independent collection membership", () => {
   assert.equal(AsterCollection.identity.name, "aster");
-  assert.deepEqual(AsterCollection.icons, AsterIcons);
   assert.ok(AsterCollections.includes(AsterCollection));
+  assert.ok(AsterCollection.icons.length < AsterIcons.length);
 
-  for (const definition of AsterIcons) {
-    assert.ok(AsterCollection.icons.includes(definition));
+  for (const definition of AsterCollection.icons) {
+    assert.ok(AsterIcons.includes(definition));
   }
 
   assertDeeplyFrozen(AsterCollection);

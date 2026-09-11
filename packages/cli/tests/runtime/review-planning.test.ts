@@ -7,6 +7,7 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
+import { AsterCollection } from "@aster/icons/collections/aster";
 import {
   AsterCatalogue,
   AsterCommands,
@@ -85,11 +86,15 @@ function createContext(
   };
 }
 
+const representativeIcon = AsterCollection.icons[0];
+assert.ok(representativeIcon);
+const representativeIdentity = `aster/${representativeIcon.identity.name}`;
+
 test("plans immutable technical evidence for one standalone icon", async () => {
   const result = await AsterCommands.execute({
     command: "review",
     subject: "icon",
-    identity: "aster/camera",
+    identity: representativeIdentity,
   }, createContext([AsterCatalogue]));
 
   assert.equal(result.ok, true);
@@ -99,7 +104,7 @@ test("plans immutable technical evidence for one standalone icon", async () => {
     assert.equal(plan.target, reviewTargets.html);
     assert.equal(plan.subject, "icon");
     assert.equal(plan.catalogue, "aster");
-    assert.equal(plan.identity, "aster/camera");
+    assert.equal(plan.identity, representativeIdentity);
     assert.equal(plan.document.kind, "icon");
     assert.ok(Object.isFrozen(plan));
     assert.ok(Object.isFrozen(plan.document));
@@ -107,9 +112,15 @@ test("plans immutable technical evidence for one standalone icon", async () => {
     assert.equal("timestamp" in plan, false);
 
     if (plan.document.kind === "icon") {
-      assert.equal(plan.document.icon.identity.name, "camera");
-      assert.equal(plan.document.icon.nodeCount, 2);
-      assert.deepEqual(plan.document.icon.primitiveKinds, ["circle", "path"]);
+      assert.equal(
+        plan.document.icon.identity.name,
+        representativeIcon.identity.name,
+      );
+      assert.equal(plan.document.icon.nodeCount, representativeIcon.nodes.length);
+      assert.deepEqual(
+        plan.document.icon.primitiveKinds,
+        [...new Set(representativeIcon.nodes.map((node) => node.kind))].sort(),
+      );
       assert.deepEqual(plan.document.icon.memberships, [{ name: "aster" }]);
       assert.match(plan.document.icon.markup, /^<svg /u);
       assert.ok(Object.isFrozen(plan.document.icon));

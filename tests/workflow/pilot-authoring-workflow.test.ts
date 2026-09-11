@@ -3,7 +3,7 @@ import test from "node:test";
 
 import { IconImport, iconImportFormats } from "@aster/import";
 import { Icon, type IconDefinition, type IconMetadata } from "@aster/core";
-import { ArrowLeft } from "@aster/icons";
+import { AsterIcons, ArrowLeft } from "@aster/icons";
 import { AsterCollection } from "@aster/icons/collections/aster";
 import { Svg } from "@aster/svg";
 
@@ -149,10 +149,11 @@ test("adopts independent host-owned batches into renderable editable definitions
   );
 });
 
-test("renders every independently authored pilot icon distinctly", () => {
+test("renders every independently authored icon distinctly", () => {
   assert.deepEqual(ArrowLeft, authorArrowLeft());
-  const definitions = AsterCollection.icons;
+  const definitions = AsterIcons;
   const markup = definitions.map((definition) => Svg.render(definition));
   assert.ok(definitions.length > 0);
+  assert.ok(AsterCollection.icons.length < definitions.length);
   assert.equal(new Set(markup).size, definitions.length);
 });

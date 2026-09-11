@@ -15,12 +15,27 @@ import process from "node:process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { AsterIcons } from "@aster/icons";
-import { AsterCollections } from "@aster/icons/collections";
+import {
+  AsterCollection,
+  AsterCollections,
+} from "@aster/icons/collections";
 
 const executablePath = fileURLToPath(
   new URL("../../dist/shell/aster.js", import.meta.url),
 );
 const packageRootUrl = new URL("../../", import.meta.url);
+const representativeIcon = AsterCollection.icons[0];
+assert.ok(representativeIcon);
+const representativeName = representativeIcon.identity.name;
+const representativeIdentity = `aster/${representativeName}`;
+const representativeDisplayName = representativeIcon.metadata.displayName;
+const representativePath = `aster/${representativeName}.svg`;
+const representativeTag = representativeIcon.metadata.tags?.find((tag) =>
+  AsterIcons.every((icon) =>
+    icon === representativeIcon || !icon.metadata.tags?.includes(tag),
+  ),
+);
+assert.ok(representativeTag);
 
 function run(arguments_, options = {}) {
   return spawnSync(process.execPath, [executablePath, ...arguments_], {
@@ -50,8 +65,8 @@ test("renders default and selected human help without loading shell state", () =
 
 test("renders list, search, show, and version as deterministic human text", () => {
   const listed = run(["list", "catalogues"]);
-  const searched = run(["search", "photo"]);
-  const shown = run(["show", "icon", "aster/camera"]);
+  const searched = run(["search", representativeIdentity]);
+  const shown = run(["show", "icon", representativeIdentity]);
   const version = run(["version"]);
 
   assert.equal(listed.status, 0);
@@ -59,8 +74,14 @@ test("renders list, search, show, and version as deterministic human text", () =
     listed.stdout,
     `Catalogues:\n  aster (${AsterIcons.length} icons, ${AsterCollections.length} ${AsterCollections.length === 1 ? "collection" : "collections"})\n`,
   );
-  assert.match(searched.stdout, /^Results:\n  icon: aster\/camera/u);
-  assert.match(shown.stdout, /^Icon: aster\/camera\nCatalogue: aster/u);
+  assert.match(
+    searched.stdout,
+    new RegExp(`^Results:\\n  icon: ${representativeIdentity}`, "u"),
+  );
+  assert.match(
+    shown.stdout,
+    new RegExp(`^Icon: ${representativeIdentity}\\nCatalogue: aster`, "u"),
+  );
   assert.match(shown.stdout, /Collections: aster\n/u);
   assert.equal(version.stdout, "Aster 0.0.0\n");
 
@@ -74,7 +95,7 @@ test("renders standalone options and one collection as a JSON export plan", () =
   const icon = run([
     "export",
     "icon",
-    "aster/camera",
+    representativeIdentity,
     "--size",
     "32",
     "--colour",
@@ -82,9 +103,9 @@ test("renders standalone options and one collection as a JSON export plan", () =
     "--direction",
     "rtl",
     "--label",
-    "Camera",
+    representativeDisplayName,
     "--title",
-    "Camera icon",
+    `${representativeDisplayName} icon`,
   ]);
   const collection = run(["export", "collection", "aster", "--json"]);
 
@@ -93,22 +114,31 @@ test("renders standalone options and one collection as a JSON export plan", () =
   assert.match(icon.stdout, /^<svg /u);
   assert.match(icon.stdout, /width="32"/u);
   assert.match(icon.stdout, /color="#00ff00"/u);
-  assert.match(icon.stdout, /aria-label="Camera"/u);
-  assert.match(icon.stdout, /<title>Camera icon<\/title>/u);
+  assert.match(
+    icon.stdout,
+    new RegExp(`aria-label="${representativeDisplayName}"`, "u"),
+  );
+  assert.match(
+    icon.stdout,
+    new RegExp(`<title>${representativeDisplayName} icon</title>`, "u"),
+  );
   assert.equal(collection.status, 0);
   assert.equal(collection.stderr, "");
 
   const result = JSON.parse(collection.stdout);
   assert.equal(result.ok, true);
   assert.equal(result.payload.kind, "export");
-  assert.equal(result.payload.plan.artefacts.length, AsterIcons.length);
+  assert.equal(
+    result.payload.plan.artefacts.length,
+    AsterCollection.icons.length,
+  );
 });
 
 test("delegates accepted presentation overrides to icon policy", () => {
   const execution = run([
     "export",
     "icon",
-    "aster/camera",
+    representativeIdentity,
     "--fill",
     "none",
     "--stroke",
@@ -128,7 +158,7 @@ test("publishes icon and collection plans relative to the explicit process direc
 
   try {
     const icon = run(
-      ["export", "icon", "aster/camera", "--output", "exports/icon"],
+      ["export", "icon", representativeIdentity, "--output", "exports/icon"],
       { cwd: root },
     );
     const collection = run(
@@ -146,18 +176,18 @@ test("publishes icon and collection plans relative to the explicit process direc
     assert.equal(collection.stderr, "");
     assert.equal(
       collection.stdout,
-      `Exported ${AsterIcons.length} SVG artefacts to ${resolve(root, "exports/collection")}\n`,
+      `Exported ${AsterCollection.icons.length} SVG artefacts to ${resolve(root, "exports/collection")}\n`,
     );
     assert.match(
-      readFileSync(resolve(root, "exports/icon/aster/camera.svg"), "utf8"),
+      readFileSync(resolve(root, `exports/icon/${representativePath}`), "utf8"),
       /^<svg /u,
     );
     assert.equal(
       readFileSync(
-        resolve(root, "exports/collection/aster/camera.svg"),
+        resolve(root, `exports/collection/${representativePath}`),
         "utf8",
       ),
-      readFileSync(resolve(root, "exports/icon/aster/camera.svg"), "utf8"),
+      readFileSync(resolve(root, `exports/icon/${representativePath}`), "utf8"),
     );
   } finally {
     rmSync(root, { recursive: true, force: true });
@@ -172,11 +202,11 @@ test("maps output conflicts and filesystem failures to reserved diagnostics", ()
     writeFileSync(resolve(root, "blocker"), "not a directory", "utf8");
 
     const conflict = run(
-      ["export", "icon", "aster/camera", "--output", "existing"],
+      ["export", "icon", representativeIdentity, "--output", "existing"],
       { cwd: root },
     );
     const failure = run(
-      ["export", "icon", "aster/camera", "--output", "blocker/output"],
+      ["export", "icon", representativeIdentity, "--output", "blocker/output"],
       { cwd: root },
     );
 
@@ -206,7 +236,7 @@ test("keeps JSON and output mutually exclusive before filesystem mutation", () =
       [
         "export",
         "icon",
-        "aster/camera",
+        representativeIdentity,
         "--output",
         "result",
         "--json",
@@ -231,7 +261,7 @@ test("publishes static reviews to default and explicit output roots", () => {
     const planned = run([
       "review",
       "icon",
-      "aster/camera",
+      representativeIdentity,
       "--json",
     ], { cwd: root });
     const published = run([
@@ -253,7 +283,7 @@ test("publishes static reviews to default and explicit output roots", () => {
     const defaulted = run([
       "review",
       "icon",
-      "aster/camera",
+      representativeIdentity,
     ], { cwd: root });
 
     assert.equal(published.status, 0);
@@ -273,7 +303,7 @@ test("publishes static reviews to default and explicit output roots", () => {
     );
     assert.match(
       readFileSync(resolve(root, "aster-review/index.html"), "utf8"),
-      /<h1>Camera<\/h1>/u,
+      new RegExp(`<h1>${representativeDisplayName}</h1>`, "u"),
     );
   } finally {
     rmSync(root, { recursive: true, force: true });
@@ -287,7 +317,7 @@ test("replaces only explicitly owned static review output", () => {
     const initial = run([
       "review",
       "icon",
-      "aster/camera",
+      representativeIdentity,
       "--output",
       "review-site",
     ], { cwd: root });
@@ -330,12 +360,12 @@ test("replaces only explicitly owned static review output", () => {
 
 test("writes raw icon SVG through ordinary stdout redirection", () => {
   const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-redirection-"));
-  const destination = resolve(root, "camera.svg");
+  const destination = resolve(root, `${representativeName}.svg`);
   const descriptor = openSync(destination, "w");
 
   try {
     const execution = run(
-      ["export", "icon", "aster/camera"],
+      ["export", "icon", representativeIdentity],
       { cwd: root, stdio: ["ignore", descriptor, "pipe"] },
     );
     closeSync(descriptor);
@@ -354,8 +384,8 @@ test("writes raw icon SVG through ordinary stdout redirection", () => {
 });
 
 test("emits one stable JSON success document without terminal styling", () => {
-  const first = run(["list", "icons", "--tag", "photo", "--json"]);
-  const second = run(["--json", "list", "icons", "--tag", "photo"]);
+  const first = run(["list", "icons", "--tag", representativeTag, "--json"]);
+  const second = run(["--json", "list", "icons", "--tag", representativeTag]);
 
   assert.equal(first.status, 0);
   assert.equal(first.stderr, "");
@@ -368,7 +398,7 @@ test("emits one stable JSON success document without terminal styling", () => {
   assert.equal(result.payload.kind, "icon-list");
   assert.deepEqual(
     result.payload.icons.map((icon) => icon.identity.name),
-    ["camera"],
+    [representativeName],
   );
 });
 
@@ -411,7 +441,7 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
     "--catalogue",
     "aster",
   ]);
-  const extra = run(["search", "camera", "extra"]);
+  const extra = run(["search", "query", "extra"]);
   const collectionWithoutMode = run(["export", "collection", "aster"]);
   const collectionLabel = run([
     "export",
@@ -424,45 +454,45 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
   const repeatedOutput = run([
     "export",
     "icon",
-    "aster/camera",
+    representativeIdentity,
     "--output",
     "first",
     "--output",
     "second",
   ]);
-  const incomplete = run(["export", "icon", "aster/camera", "--size"]);
+  const incomplete = run(["export", "icon", representativeIdentity, "--size"]);
   const emptyOutput = run([
     "export",
     "icon",
-    "aster/camera",
+    representativeIdentity,
     "--output",
     "",
   ]);
   const invalidNumber = run([
     "export",
     "icon",
-    "aster/camera",
+    representativeIdentity,
     "--size",
     "0x20",
   ]);
   const invalidDomain = run([
     "export",
     "icon",
-    "aster/camera",
+    representativeIdentity,
     "--size",
     "0",
   ]);
   const repeatedReplace = run([
     "review",
     "icon",
-    "aster/camera",
+    representativeIdentity,
     "--replace",
     "--replace",
   ]);
   const replaceJson = run([
     "review",
     "icon",
-    "aster/camera",
+    representativeIdentity,
     "--replace",
     "--json",
   ]);

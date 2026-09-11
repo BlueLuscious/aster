@@ -95,7 +95,12 @@ test("exposes the exact documented icon root and definition families", async () 
   );
 
   assert.equal(AsterCollection, collections.AsterCollection);
-  assert.deepEqual(AsterCollection.icons, root.AsterIcons);
+  assert.ok(AsterCollection.icons.length < root.AsterIcons.length);
+  assert.ok(
+    AsterCollection.icons.every((definition) =>
+      root.AsterIcons.includes(definition),
+    ),
+  );
 });
 
 test("rejects implementation and undeclared internal subpaths", async () => {
