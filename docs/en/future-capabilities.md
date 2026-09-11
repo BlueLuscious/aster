@@ -23,17 +23,16 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 Importance: **P1 - High**
 
-With catalogue-independent test evidence established, replace opaque raw SVG path strings as the
-preferred authoring surface with a validated structured command model. The design must decide
-whether commands belong to the portable Core node contract or to an authoring boundary that
-deterministically compiles into the existing path node; it must not add subject-specific
-pseudo-primitives such as hearts, clouds or rounded polygons.
+With catalogue-independent test evidence established, replace opaque raw SVG path strings with a
+validated structured command model in the portable Core path contract. Commands remain canonical
+geometry rather than compiling immediately back into target-specific text; subject-specific
+pseudo-primitives such as hearts, clouds or rounded polygons remain excluded.
 
 The accepted model should represent only explicit path operations and finite operands, preserve
 command order, reject malformed sequences, remain deeply immutable, and serialise to deterministic
-SVG path data. SVG rendering and Import adoption must agree on the representation, while existing
-raw path compatibility must receive an explicit retain, migrate or remove decision before the
-contract changes.
+SVG path data. SVG rendering serialises that model, while Import translates accepted raw SVG syntax
+into it. The pre-release migration removes raw path strings from Core definitions instead of
+retaining two equivalent portable representations indefinitely.
 
 Use the nine deferred Amellus concepts as real acceptance evidence. The capability is complete only
 when their curved or compound contours are readable in TypeScript, deterministic in SVG, validated
