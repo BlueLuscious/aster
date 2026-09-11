@@ -1,26 +1,23 @@
-import { AsterCollection } from "@aster/icons/collections/aster";
+import { BenchmarkCatalogueFixtureFactory } from "../../shared/runtime/benchmark-catalogue-fixture.factory.mjs";
 
 /**
  * @description Prepares equivalent mutable and canonical Core benchmark inputs outside timed work.
  */
 export class CoreBaselineFixtureFactory {
   /**
-   * @description Creates one isolated scenario fixture matrix from the canonical pilot collection.
+   * @description Creates one isolated scenario fixture matrix from a stable synthetic catalogue.
    * @returns {import("../contracts/internal/core-baseline-fixtures.contract.mjs").ICoreBaselineFixtures} Prepared public Core inputs.
    */
   create() {
-    const canonicalIcons = AsterCollection.icons;
-    const firstIcon = canonicalIcons[0];
-
-    if (firstIcon === undefined) {
-      throw new TypeError("The Core benchmark requires at least one canonical icon.");
-    }
+    const catalogue = new BenchmarkCatalogueFixtureFactory().create();
+    const canonicalIcons = catalogue.icons;
+    const firstIcon = catalogue.icon;
 
     return Object.freeze({
       canonicalIcons,
       mutableIcons: this.#clone(canonicalIcons),
-      canonicalCollection: AsterCollection,
-      mutableCollection: this.#clone(AsterCollection),
+      canonicalCollection: catalogue.collection,
+      mutableCollection: this.#clone(catalogue.collection),
       emptyCollection: {
         identity: { namespace: "benchmark", name: "empty" },
         icons: [],

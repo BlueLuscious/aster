@@ -14,7 +14,9 @@ import { CoreBaselineRunner } from "../../tooling/performance/core/runtime/core-
 import { importBaseline } from "../../tooling/performance/import/constants/import-baseline.constant.mjs";
 import { ImportBaselineFixtureFactory } from "../../tooling/performance/import/runtime/import-baseline-fixture.factory.mjs";
 import { ImportBaselineRunner } from "../../tooling/performance/import/runtime/import-baseline.runner.mjs";
+import { benchmarkCatalogueFixture } from "../../tooling/performance/shared/constants/benchmark-catalogue-fixture.constant.mjs";
 import { BenchmarkRunner } from "../../tooling/performance/shared/runtime/benchmark.runner.mjs";
+import { BenchmarkCatalogueFixtureFactory } from "../../tooling/performance/shared/runtime/benchmark-catalogue-fixture.factory.mjs";
 import { NumericSampleStatistics } from "../../tooling/performance/shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../tooling/performance/shared/runtime/package-distribution.inspector.mjs";
 import { svgBaseline } from "../../tooling/performance/svg/constants/svg-baseline.constant.mjs";
@@ -24,6 +26,24 @@ import { NodeRepositoryFileSystem } from "../../tooling/shared/runtime/node-repo
 import { RepositoryFileWalker } from "../../tooling/shared/runtime/repository-file.walker.mjs";
 import { RepositoryJsonReader } from "../../tooling/shared/runtime/repository-json.reader.mjs";
 import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
+
+test("prepares one stable synthetic benchmark catalogue", () => {
+  const fixture = new BenchmarkCatalogueFixtureFactory().create();
+
+  assert.ok(Object.isFrozen(fixture));
+  assert.ok(Object.isFrozen(fixture.icons));
+  assert.ok(Object.isFrozen(fixture.collection));
+  assert.ok(Object.isFrozen(fixture.snapshot));
+  assert.equal(
+    fixture.icons.length,
+    benchmarkCatalogueFixture.corpusSize,
+  );
+  assert.equal(fixture.collection.icons.length, fixture.icons.length);
+  assert.equal(fixture.snapshot.icons.length, fixture.icons.length);
+  assert.equal(fixture.snapshot.collections.length, 1);
+  assert.equal(fixture.icon, fixture.icons[0]);
+  assert.equal(fixture.collection.identity.name, "benchmark");
+});
 
 test("prepares distinct mutable and canonical Core benchmark fixtures", () => {
   const fixtures = new CoreBaselineFixtureFactory().create();
@@ -75,7 +95,7 @@ test("runs the complete Core scenario matrix through public values", async () =>
   );
   const report = await runner.run();
 
-  assert.equal(report.schemaVersion, 2);
+  assert.equal(report.schemaVersion, 3);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
     Object.values(coreBaseline.scenarios).map((scenario) => scenario.name),
@@ -182,7 +202,10 @@ test("prepares independent immutable SVG benchmark fixtures", () => {
   assert.ok(Object.isFrozen(fixtures.escapingOptions));
   assert.equal(fixtures.minimalDefinition.nodes.length, 1);
   assert.equal(fixtures.primitivesDefinition.nodes.length, 7);
-  assert.ok(fixtures.corpusDefinitions.length > 0);
+  assert.equal(
+    fixtures.corpusDefinitions.length,
+    benchmarkCatalogueFixture.corpusSize,
+  );
   assert.equal(fixtures.pointSequenceDefinition.nodes[0]?.kind, "polyline");
   assert.equal(fixtures.pointSequenceDefinition.nodes[0]?.points.length, 128);
 });
@@ -217,7 +240,7 @@ test("runs the complete SVG scenario matrix through public values", async () => 
   );
   const report = await runner.run();
 
-  assert.equal(report.schemaVersion, 1);
+  assert.equal(report.schemaVersion, 2);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
     Object.values(svgBaseline.scenarios).map((scenario) => scenario.name),
@@ -336,11 +359,10 @@ test("prepares immutable CLI benchmark fixtures", () => {
   assert.ok(Object.isFrozen(fixtures));
   assert.ok(Object.isFrozen(fixtures.icon));
   assert.ok(Object.isFrozen(fixtures.context));
-  assert.ok(Object.isFrozen(fixtures.builtInContext));
   assert.ok(Object.isFrozen(fixtures.invocations));
   assert.ok(Object.isFrozen(fixtures.arguments));
-  assert.equal(fixtures.invocations.exportIcon.identity, "aster/arrow-left");
-  assert.equal(fixtures.invocations.reviewCollection.identity, "aster");
+  assert.equal(fixtures.invocations.exportIcon.identity, "benchmark/fixture-01");
+  assert.equal(fixtures.invocations.reviewCollection.identity, "benchmark");
   assert.equal(fixtures.context.catalogues[0]?.identity, "fixture");
 });
 
@@ -397,7 +419,7 @@ test("runs the complete CLI scenario matrix through explicit runners", async () 
   );
   const report = await runner.run();
 
-  assert.equal(report.schemaVersion, 1);
+  assert.equal(report.schemaVersion, 2);
   assert.deepEqual(
     synchronous.map((scenario) => scenario.name),
     Object.values(cliBaseline.scenarios).map((scenario) => scenario.name),
