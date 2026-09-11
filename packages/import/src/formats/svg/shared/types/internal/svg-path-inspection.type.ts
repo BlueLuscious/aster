@@ -1,3 +1,5 @@
+import type { TSvgPathSegment } from "./svg-path-segment.type.js";
+
 /**
  * @description Technical result of inspecting one authored SVG path-data value.
  */
@@ -8,7 +10,7 @@ export type TSvgPathInspection = {
   readonly valid: boolean;
 
   /**
-   * @description Number of explicitly authored supported commands.
+   * @description Number of expanded operations represented by the authored commands.
    */
   readonly commandCount: number;
 
@@ -18,7 +20,7 @@ export type TSvgPathInspection = {
   readonly hasDrawingOperation: boolean;
 
   /**
-   * @description Deterministic path spelling when the complete value is valid.
+   * @description Immutable source segments when the complete value is valid.
    */
-  readonly canonicalData?: string;
+  readonly segments?: readonly TSvgPathSegment[];
 };

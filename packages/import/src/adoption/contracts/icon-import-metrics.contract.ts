@@ -8,7 +8,7 @@ export interface IconImportMetrics {
   readonly primitiveCount: number;
 
   /**
-   * @description Number of accepted authored path commands.
+   * @description Number of portable path operations produced from accepted source.
    */
   readonly pathCommandCount: number;
 }
