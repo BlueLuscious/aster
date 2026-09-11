@@ -3,9 +3,9 @@
 Status: **Accepted for authorship**
 
 The initial Amellus inventory contains twenty-four deliberately bounded application concepts.
-Sixteen existing Experimental icons are candidates for refinement, not automatically accepted
-artwork. Eight additional concepts close essential navigation, action, status, media and
-communication gaps without turning the collection into an exhaustive catalogue.
+Seven existing Experimental icons and eight newly authored icons currently provide primitive-first
+candidates. Nine previously path-authored concepts await reauthoring and are not package exports.
+Two independently authored vertical arrows sit outside this collection inventory.
 
 ## Concepts
 
@@ -13,7 +13,7 @@ communication gaps without turning the collection into an exhaustive catalogue.
 | --- | --- | --- | --- | --- |
 | `arrow-left` | Navigation | Logical previous or backward movement, authored pointing left. | `arrow`, `back`, `left`, `navigation`, `previous` | Refine candidate. |
 | `arrow-right` | Navigation | Logical next or forward movement, authored pointing right. | `arrow`, `forward`, `navigation`, `next`, `right` | New. |
-| `home` | Navigation | Primary home or application landing destination. | `home`, `house`, `navigation`, `start` | Refine candidate. |
+| `home` | Navigation | Primary home or application landing destination. | `home`, `house`, `navigation`, `start` | Pending primitive-first reauthoring. |
 | `menu` | Navigation | Reveal or represent a primary application menu. | `hamburger`, `menu`, `navigation` | New. |
 | `check` | Action and status | Confirm, complete or indicate a successful state. | `check`, `complete`, `confirm`, `done`, `success` | Refine candidate. |
 | `close` | Action | Close, dismiss or cancel the current surface or operation. | `cancel`, `close`, `dismiss`, `remove`, `x` | Refine candidate. |
@@ -21,20 +21,20 @@ communication gaps without turning the collection into an exhaustive catalogue.
 | `plus` | Action | Add or create one item. | `add`, `create`, `new`, `plus` | Refine candidate. |
 | `search` | Action | Find or inspect catalogue or application content. | `find`, `lookup`, `search` | Refine candidate. |
 | `settings` | Action and navigation | Open configuration or preferences. | `configuration`, `preferences`, `settings` | Refine candidate. |
-| `heart` | Status | Mark affection, appreciation or a favourite relationship. | `favourite`, `heart`, `like`, `love` | Refine candidate. |
+| `heart` | Status | Mark affection, appreciation or a favourite relationship. | `favourite`, `heart`, `like`, `love` | Pending primitive-first reauthoring. |
 | `info` | Status | Present neutral explanatory information. | `about`, `help`, `info`, `information` | New. |
-| `lock` | Status and object | Represent locked, private or secured content. | `lock`, `privacy`, `secure`, `security` | Refine candidate. |
+| `lock` | Status and object | Represent locked, private or secured content. | `lock`, `privacy`, `secure`, `security` | Pending primitive-first reauthoring. |
 | `star` | Status | Mark a featured, saved or rated item. | `bookmark`, `favourite`, `featured`, `rating`, `star` | Refine candidate. |
 | `warning` | Status | Indicate a condition requiring attention without implying success. | `alert`, `attention`, `caution`, `warning` | New. |
-| `camera` | Media | Represent photographic capture or camera media. | `camera`, `media`, `photo`, `photograph` | Refine candidate. |
+| `camera` | Media | Represent photographic capture or camera media. | `camera`, `media`, `photo`, `photograph` | Pending primitive-first reauthoring. |
 | `pause` | Media | Temporarily suspend media or an active process. | `hold`, `media`, `pause`, `playback` | New. |
 | `play` | Media | Start or resume media or a runnable process. | `media`, `play`, `playback`, `start` | New. |
-| `bell` | Communication | Represent notifications and notification controls. | `alert`, `bell`, `notification` | Refine candidate. |
+| `bell` | Communication | Represent notifications and notification controls. | `alert`, `bell`, `notification` | Pending primitive-first reauthoring. |
 | `mail` | Communication | Represent an email message, inbox or written communication. | `email`, `envelope`, `inbox`, `mail`, `message` | New. |
-| `cloud` | Object | Represent remote or cloud-hosted content. | `cloud`, `remote`, `storage` | Refine candidate. |
-| `folder` | Object | Represent a directory or grouped file container. | `directory`, `files`, `folder` | Refine candidate. |
-| `leaf` | Object | Represent a leaf, nature or environmental concern. | `environment`, `leaf`, `nature`, `plant` | Refine candidate. |
-| `user` | Object and identity | Represent one person or user account. | `account`, `person`, `profile`, `user` | Refine candidate. |
+| `cloud` | Object | Represent remote or cloud-hosted content. | `cloud`, `remote`, `storage` | Pending primitive-first reauthoring. |
+| `folder` | Object | Represent a directory or grouped file container. | `directory`, `files`, `folder` | Pending primitive-first reauthoring. |
+| `leaf` | Object | Represent a leaf, nature or environmental concern. | `environment`, `leaf`, `nature`, `plant` | Pending primitive-first reauthoring. |
+| `user` | Object and identity | Represent one person or user account. | `account`, `person`, `profile`, `user` | Pending primitive-first reauthoring. |
 
 Search aliases are tags, not additional icon identities or public export names. Every identity
 remains independent from Amellus membership and may join other collections.

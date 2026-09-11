@@ -35,8 +35,10 @@ remains derived review or distribution output and Import remains an optional imp
 `AsterCollection` separately retains the accepted icon definitions as explicit membership data;
 the same definitions remain directly usable without importing or consulting that collection.
 
-The [pilot reference set](reference-set.md) contains sixteen canonical Experimental definitions
-and records the current structural and curatorial evidence.
+The [pilot reference set](reference-set.md) contains seven canonical Experimental definitions and
+records the current structural and curatorial evidence. Nine former path-authored definitions were
+removed pending primitive-first reauthoring for Amellus and are not retained as collection members
+or package exports.
 The collection is not release quality and must not be presented as an Active collection before
 curatorial and release evidence is accepted.
 

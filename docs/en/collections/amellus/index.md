@@ -82,10 +82,11 @@ or generated catalogue output merely by existing.
 
 ## Pilot relationship
 
-The sixteen Experimental Aster pilot icons are candidate inputs, not inherited members. Each may
+The original sixteen Experimental Aster pilot icons are candidate inputs, not inherited members.
+Seven primitive-first definitions remain in that collection. Nine former path-authored candidates
+were removed from package exports and await primitive-first reauthoring. Each candidate may still
 be retained unchanged, refined, kept independently, or removed after the Amellus visual language
-and inventory establish objective comparison criteria. The Experimental `aster` collection
-continues to own its current membership until that disposition is explicit.
+and inventory establish objective comparison criteria.
 
 No compatibility promise, source alias or collection replacement relationship exists between
 `aster` and `amellus` merely because pilot artwork is considered. Amellus must not preserve weak,

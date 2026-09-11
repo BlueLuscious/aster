@@ -22,7 +22,7 @@ representative pilot:
 | Tags | `interface-icons`, `outline-icons` |
 | Artwork licence | ISC |
 | Attribution | BlueLuscious |
-| Members | The sixteen canonical pilot icon objects |
+| Members | The seven retained canonical pilot icon objects |
 
 The collection does not own member geometry, presentation, licence, attribution, tags, RTL
 behaviour, or lifecycle. Those values remain intrinsic to each icon. Membership neither changes

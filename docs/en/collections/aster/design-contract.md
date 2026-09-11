@@ -121,10 +121,11 @@ The pilot uses these icon roles to test the contract:
 | --- | --- |
 | `arrow-left` | Diagonal rhythm, open terminals, directionality, and optical centring. |
 | `search` | Circular geometry, tangent transition, and mixed curve-line balance. |
-| `home` | Symmetry, preferred angles, structural joins, and negative space. |
-| `user` | Nested curves, circular proportion, and minimum-size separation. |
-| `heart` | Organic curves and optical rather than purely mathematical balance. |
+| `check` | Unequal diagonals and open-terminal rhythm. |
+| `close` | Diagonal symmetry and crossing strokes. |
+| `plus` | Primary axes and equal stroke extent. |
 | `settings` | Detail and complexity limits under a familiar metaphor. |
+| `star` | Repeated points, polygon rhythm, and near-safe-area extents. |
 
 Additional pilot subjects may broaden coverage, but they do not replace these roles without a
 curatorial record.
