@@ -52,11 +52,12 @@ definitions with equal identity because it owns no global registry.
 Duplicate identities, unavailable replacement targets, and replacement cycles require a complete
 catalogue or publication unit and remain responsibilities of the consumer that owns that set.
 
-## Path-data scope
+## Path-command scope
 
-Core trims path data and requires non-empty text. Canonical TypeScript authors own reviewed path
-syntax directly. Full SVG path parsing, canonical rewriting, and source-span diagnostics for
-external inputs belong to the optional Import SVG adapter before Core construction.
+Core validates structured absolute path commands and contour sequencing before construction. It
+does not contain an SVG parser, accept textual path syntax or own target-specific serialisation.
+External-source ingestion translates accepted syntax into the portable command model before Core
+construction.
 
 ## Isolation
 

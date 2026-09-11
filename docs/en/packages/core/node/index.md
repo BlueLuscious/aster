@@ -21,7 +21,7 @@ target. Root SVG and structural group elements are source or target structure, n
 | Contract | Geometry |
 | --- | --- |
 | `IconPoint` | One finite named `x` and `y` coordinate pair. |
-| `IconPathNode` | Non-empty path data supplied by an authoritative ingestion boundary. |
+| `IconPathNode` | Ordered non-empty sequence of canonical absolute path commands. |
 | `IconPathMoveCommand` | Absolute starting coordinate for one path contour. |
 | `IconPathLineCommand` | Absolute endpoint for one straight segment. |
 | `IconPathCubicBezierCommand` | Absolute endpoint and two control coordinates for one cubic curve. |
@@ -68,19 +68,19 @@ deeply freeze node and point sequences before the package claims immutable accep
 
 | Class | Responsibility | Relations |
 | --- | --- | --- |
-| `IconNodeNormaliser` | Validates the closed discriminator union, geometry, presentation, and paint order before cloning and freezing every node. | Uses `IconPresentationNormaliser` and `IconPointSequenceNormaliser`. |
+| `IconNodeNormaliser` | Validates the closed discriminator union, geometry, presentation, and paint order before cloning and freezing every node. | Delegates path and point-sequence semantics to their dedicated normalisers. |
+| `IconPathCommandNormaliser` | Validates exact command shapes, finite operands and contour sequencing before cloning and freezing the complete path. | Produces the commands retained by path nodes. |
 | `IconPointSequenceNormaliser` | Validates point cardinality, exact point fields, and finite coordinates before creating a deeply frozen sequence. | Produces the points retained by polyline and polygon nodes. |
 
-Core trims `IconPathNode.data` and requires non-empty text. It deliberately does not parse SVG
-path grammar. A canonical TypeScript author remains responsible for supplying reviewed path data;
-an external-source workflow must validate and canonicalise that syntax before calling
-`Icon.define()`.
+Every path sequence starts with a move and every contour contains at least one drawing command.
+A move may begin another contour only after the previous contour has drawn geometry. Closure is
+valid only after drawing and must be followed by a new move or the end of the sequence. Open
+contours remain valid.
 
-The public structured command family defines the replacement portable geometry vocabulary before
-the path-node runtime migration. It contains no SVG letters, relative commands, repeated operand
-groups or shorthand control semantics. Until `IconPathNode` adopts its readonly command sequence,
-these standalone contracts do not make a command array valid node input and raw path data remains
-the current definition shape.
+Core accepts finite absolute coordinates and rotations, non-negative arc radii and boolean arc
+flags. It canonicalises negative zero, rejects unknown or executable state, reconstructs every
+command as plain data and deeply freezes the retained sequence. SVG letters, relative commands,
+repeated operand groups, shorthand control semantics and textual path parsing remain outside Core.
 
 A new node kind requires a demonstrated portable source and consumer, deterministic validation
 and target rules, safety evidence, and an explicit compatibility assessment. Core does not expand
