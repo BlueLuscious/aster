@@ -55,6 +55,15 @@ test("exposes the exact documented icon root and definition families", async () 
   const root = await import("@aster/icons");
   const collections = await import("@aster/icons/collections");
 
+  assert.ok(
+    Object.keys(iconSubpaths).length > 0,
+    "Expected at least one emitted icon definition subpath.",
+  );
+  assert.ok(
+    Object.keys(collectionSubpaths).length > 0,
+    "Expected at least one emitted collection definition subpath.",
+  );
+
   assert.deepEqual(
     Object.keys(root).sort(),
     ["AsterIcons", ...Object.values(iconSubpaths)].sort(),
@@ -88,28 +97,30 @@ test("exposes the exact documented icon root and definition families", async () 
     assert.deepEqual(Object.keys(direct), [symbol]);
     assert.equal(direct[symbol], collections[symbol]);
     assert.equal(direct[symbol].identity.name, subpath);
+    assert.ok(
+      direct[symbol].icons.every((definition) =>
+        root.AsterIcons.includes(definition),
+      ),
+      `Expected every ${subpath} member in the complete icon index.`,
+    );
   }
-
-  const { AsterCollection } = await import(
-    "@aster/icons/collections/aster"
-  );
-
-  assert.equal(AsterCollection, collections.AsterCollection);
-  assert.ok(AsterCollection.icons.length < root.AsterIcons.length);
-  assert.ok(
-    AsterCollection.icons.every((definition) =>
-      root.AsterIcons.includes(definition),
-    ),
-  );
 });
 
 test("rejects implementation and undeclared internal subpaths", async () => {
+  const [iconSubpath] = Object.keys(iconSubpaths);
+  const [collectionSubpath] = Object.keys(collectionSubpaths);
+  assert.ok(iconSubpath, "Expected one icon subpath for rejection evidence.");
+  assert.ok(
+    collectionSubpath,
+    "Expected one collection subpath for rejection evidence.",
+  );
+
   await assert.rejects(
-    import("@aster/icons/icons/arrow-left.icon.js"),
+    import(`@aster/icons/icons/${iconSubpath}.icon.js`),
     (error) => error?.code === "ERR_MODULE_NOT_FOUND",
   );
   await assert.rejects(
-    import("@aster/icons/collections/aster.collection.js"),
+    import(`@aster/icons/collections/${collectionSubpath}.collection.js`),
     (error) => error?.code === "ERR_MODULE_NOT_FOUND",
   );
   await assert.rejects(
