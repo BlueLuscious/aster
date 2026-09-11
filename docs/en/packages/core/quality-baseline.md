@@ -10,24 +10,26 @@ Current findings remain in [Core Quality](quality.md).
 
 ## Representative evidence
 
-The baseline uses public APIs and the current `@aster/icons` pilot rather than Core implementation
-classes or synthetic private contracts. All mutable clones and collection variants are prepared
-before timing begins.
+The schema-version-three baseline uses public Core APIs and a fixed sixteen-definition synthetic
+catalogue rather than Core implementation classes or product artwork. All canonical values,
+mutable clones and collection variants are prepared before timing begins.
 
 | Workload | Evidence | Pressure represented |
 | --- | --- | --- |
-| Mutable icon construction | Round-robin `Icon.define()` over mutable clones of all pilot icons. | Structurally varied authored input, geometry validation, presentation normalisation, reconstruction, and deep freezing. |
-| Canonical icon construction | Round-robin `Icon.define()` over the canonical frozen pilot icons. | Complete revalidation and independent reconstruction of already canonical definitions. |
+| Mutable icon construction | Round-robin `Icon.define()` over mutable clones of the fixed corpus. | Structurally varied authored input, geometry validation, presentation normalisation, reconstruction, and deep freezing. |
+| Canonical icon construction | Round-robin `Icon.define()` over the canonical fixed corpus. | Complete revalidation and independent reconstruction of already canonical definitions. |
 | Empty collection construction | `Collection.define()` over a valid collection with no members. | Fixed collection validation, identity, metadata, allocation, and freezing cost. |
-| Single canonical member | `Collection.define()` over one canonical frozen pilot icon. | Per-member revalidation, duplicate identity, canonical comparison, and retention cost. |
-| Complete mutable collection | `Collection.define()` over mutable clones of all sixteen pilot icons. | Complete member reconstruction and duplicate detection without canonical identity retention. |
-| Complete canonical collection | `Collection.define()` over the canonical sixteen-member pilot collection. | Complete revalidation, canonical comparison, identity retention, ordering, and collection freezing. |
+| Single canonical member | `Collection.define()` over one canonical frozen synthetic icon. | Per-member revalidation, duplicate identity, canonical comparison, and retention cost. |
+| Complete mutable collection | `Collection.define()` over mutable clones of all sixteen synthetic icons. | Complete member reconstruction and duplicate detection without canonical identity retention. |
+| Complete canonical collection | `Collection.define()` over the canonical sixteen-member synthetic collection. | Complete revalidation, canonical comparison, identity retention, ordering, and collection freezing. |
 
 Mutable and canonical variants are structurally equivalent. Their comparison distinguishes input
 state and retention pressure; it does not grant provenance or permit a validation shortcut.
 
 ## Investigation baseline
 
+The following schema-version-two findings used the former product pilot and remain historical
+investigation evidence; they are not directly comparable with schema-version-three reports.
 Three complete reports captured under the same Node, operating-system, architecture, hardware,
 scenario, and workspace conditions produced these medians across report medians:
 
@@ -85,8 +87,8 @@ Run the development-only comparison from a clean workspace:
 pnpm benchmark:core
 ```
 
-The command builds only Core and the real Icons corpus before running Node with explicit
-garbage-collection access. It prints schema-version-two JSON to standard output and writes no
+The command builds only Core before running Node with explicit garbage-collection access. It
+prints schema-version-three JSON to standard output and writes no
 artefact. The report contains:
 
 - Node, operating-system, and architecture identity;

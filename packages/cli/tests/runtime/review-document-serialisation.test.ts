@@ -3,9 +3,7 @@ import { createHash } from "node:crypto";
 import test from "node:test";
 
 import { Collection, Icon } from "@aster/core";
-import { AsterCollection } from "@aster/icons/collections/aster";
 import {
-  AsterCatalogue,
   AsterCommands,
   type AsterReviewPlan,
 } from "../../src/index.js";
@@ -54,7 +52,7 @@ const goldenProvider: CatalogueProvider = {
 async function plan(
   subject: "icon" | "collection",
   identity: string,
-  catalogues: readonly CatalogueProvider[] = [AsterCatalogue],
+  catalogues: readonly CatalogueProvider[],
 ): Promise<AsterReviewPlan> {
   const result = await AsterCommands.execute({
     command: "review",
@@ -98,12 +96,39 @@ test("serialises byte-identical self-contained icon evidence", async () => {
 });
 
 test("serialises collections in canonical navigable order", async () => {
+  const alpha = Icon.define({
+    ...goldenIcon,
+    identity: { namespace: "testing", name: "alpha" },
+    metadata: { ...goldenIcon.metadata, displayName: "Alpha" },
+  });
+  const zeta = Icon.define({
+    ...goldenIcon,
+    identity: { namespace: "testing", name: "zeta" },
+    metadata: { ...goldenIcon.metadata, displayName: "Zeta" },
+  });
+  const collection = Collection.define({
+    identity: { namespace: "testing", name: "ordered" },
+    icons: [zeta, alpha],
+    metadata: { displayName: "Ordered" },
+  });
+  const provider: CatalogueProvider = {
+    identity: "testing",
+    async load() {
+      return {
+        icons: [
+          { definition: zeta, memberships: [collection.identity] },
+          { definition: alpha, memberships: [collection.identity] },
+        ],
+        collections: [{ definition: collection }],
+      };
+    },
+  };
   const serialiser = new ReviewDocumentSerialiser();
-  const review = await plan("collection", "aster");
+  const review = await plan("collection", "testing/ordered", [provider]);
   const html = serialiser.serialise(review);
-  const positions = AsterCollection.icons.slice(0, 3).map((definition) =>
+  const positions = [alpha, zeta].map((definition) =>
     html.indexOf(
-      `href="#icon-${encodeURIComponent(`aster/${definition.identity.name}`)}"`,
+      `href="#icon-${encodeURIComponent(`testing/${definition.identity.name}`)}"`,
     ),
   );
 

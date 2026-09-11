@@ -8,14 +8,13 @@ import {
   Search,
 } from "../../src/index.js";
 import {
-  AsterCollection,
   AsterCollections,
 } from "../../src/collections/index.js";
 
 const directDefinition: IconDefinition = ArrowLeft;
-const directCollection: CollectionDefinition = AsterCollection;
 const indexedDefinitions: readonly IconDefinition[] = AsterIcons;
 const indexedCollections: readonly CollectionDefinition[] = AsterCollections;
+declare const collectionDefinition: CollectionDefinition;
 
 // @ts-expect-error Canonical definitions are immutable.
 directDefinition.identity.name = "changed";
@@ -30,10 +29,9 @@ const markup = Search.svg;
 AsterIcons.push(ArrowLeft);
 
 // @ts-expect-error Canonical collection indexes are immutable.
-AsterCollections.push(AsterCollection);
+AsterCollections.push(collectionDefinition);
 
 void directDefinition;
-void directCollection;
 void indexedDefinitions;
 void indexedCollections;
 void component;

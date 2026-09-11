@@ -17,6 +17,7 @@ Repository filesystem, path, strict JSON, and deterministic traversal capabiliti
 | `NumericSampleStatistics` | Calculates median, minimum, and maximum observations without mutating samples. |
 | `BenchmarkConfigurationValidator` | Enforces shared positive operation and sample-count controls. |
 | `BenchmarkRunner` | Applies one warm-up, sampling, heap-pressure, checksum, and aggregation methodology to synchronous or asynchronous operations without overlapping samples or scenarios. |
+| `BenchmarkCatalogueFixtureFactory` | Creates the fixed synthetic icon corpus, collection, and provider snapshot shared by catalogue-sensitive package scenarios. |
 | `PackageDistributionInspector` | Reports emitted JavaScript, declarations, bytes, exports, and side-effect metadata. |
 
 Closed methodology defaults and emitted-file vocabulary live in shared immutable constants. Narrow
@@ -28,6 +29,11 @@ does not construct Node adapters internally.
 operations, median high-resolution elapsed nanoseconds per operation, and median non-negative heap
 growth after explicit pre-sample collection. Package baselines may define scenario operation counts
 but cannot silently redefine those shared report meanings.
+
+`benchmarkCatalogueFixture` fixes the shared synthetic corpus at sixteen definitions. Changing its
+scale or construction semantics requires an explicit report schema revision because it invalidates
+direct historical comparison. Product icons and collections never serve as benchmark fixtures;
+ordinary catalogue growth therefore cannot alter Core, SVG, or CLI operation inputs.
 
 ## Internal contracts
 
@@ -43,8 +49,9 @@ but cannot silently redefine those shared report meanings.
 | `ICliProcessHost` | Runs one fresh Node process and returns elapsed time, status and complete streams for cold CLI evidence. |
 
 Fixture contracts prevent source acquisition, parsing, catalogue loading and value construction
-from entering timed loops accidentally. They remain package-baseline-specific because their data
-has no useful cross-package semantic contract.
+from entering timed loops accidentally. Package contracts remain baseline-specific, while the
+shared synthetic catalogue contract carries only the cross-package values whose identical scale is
+deliberate measurement evidence.
 
 ## Package runtime composition
 
@@ -78,9 +85,9 @@ Run:
 pnpm benchmark:core
 ```
 
-The command builds Core and its real Icons corpus, prepares mutable and canonical fixture variants
-outside timed loops, runs Node with explicit garbage-collection access, prints one JSON report,
-and writes no artefact. Exact scenarios, interpretation, and acceptance rules are defined by the
+The command builds Core, prepares mutable and canonical variants of the fixed synthetic corpus
+outside timed loops, runs Node with explicit garbage-collection access, prints one JSON report and
+writes no artefact. Exact scenarios, interpretation, and acceptance rules are defined by the
 [Core Quality Baseline](../../packages/core/quality-baseline.md).
 
 ## SVG comparison
@@ -91,7 +98,7 @@ Run:
 pnpm benchmark:svg
 ```
 
-The command builds Core, the real Icons corpus, and SVG before measuring public rendering and
+The command builds Core and SVG before measuring the fixed synthetic corpus, public rendering and
 distribution. Exact scenarios, attribution, retained decisions, and acceptance rules are defined
 by the [SVG Quality Baseline](../../packages/svg/quality-baseline.md).
 
@@ -104,8 +111,8 @@ pnpm benchmark:cli
 ```
 
 The command builds Core, Icons, SVG, and CLI before measuring synchronous shell adaptation,
-asynchronous programmatic commands, fresh Node startup, and emitted distribution evidence. Exact
-scenarios, attribution, and acceptance rules are defined by the
+asynchronous programmatic commands over a fixed synthetic provider, fresh Node startup, and emitted
+distribution evidence. Exact scenarios, attribution, and acceptance rules are defined by the
 [CLI Quality Baseline](../../packages/cli/quality-baseline.md).
 
 ## Import comparison

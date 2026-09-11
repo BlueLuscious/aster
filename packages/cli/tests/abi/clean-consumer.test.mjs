@@ -13,15 +13,48 @@ import { basename, dirname, resolve } from "node:path";
 import process from "node:process";
 import test, { after, before } from "node:test";
 import { fileURLToPath } from "node:url";
-import { AsterCollection } from "@aster/icons/collections/aster";
+import { AsterIcons } from "@aster/icons";
+import { AsterCollections } from "@aster/icons/collections";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const workspaceRoot = resolve(packageRoot, "../..");
-const expectedAsterCollectionPaths = Object.freeze(
-  AsterCollection.icons
+assert.ok(AsterIcons.length > 0, "Expected the packed icon family to be non-empty.");
+assert.ok(
+  AsterCollections.length > 0,
+  "Expected the packed collection family to be non-empty.",
+);
+const representativeCollection = AsterCollections.find(
+  (collection) => collection.icons.length > 0,
+);
+assert.ok(
+  representativeCollection,
+  "Expected one non-empty collection for packed CLI conformance.",
+);
+const representativeCollectionIdentity = `${
+  representativeCollection.identity.namespace === undefined
+    ? ""
+    : `${representativeCollection.identity.namespace}/`
+}${representativeCollection.identity.name}`;
+const representativeCollectionLiteral = JSON.stringify(
+  representativeCollectionIdentity,
+);
+const taggedIcon = AsterIcons.find(
+  (icon) => (icon.metadata.tags?.length ?? 0) > 0,
+);
+assert.ok(taggedIcon, "Expected one tagged icon for packed CLI conformance.");
+const representativeTag = taggedIcon.metadata.tags?.[0];
+assert.ok(representativeTag, "Expected one representative packed icon tag.");
+const representativeTagLiteral = JSON.stringify(representativeTag);
+const expectedCollectionPaths = Object.freeze(
+  representativeCollection.icons
     .map(
-      (icon) =>
-        `${icon.identity.namespace}/${icon.identity.name}.svg`,
+      (icon) => `${
+        icon.identity.namespace === undefined
+          ? ""
+          : `${icon.identity.namespace}/`
+      }${icon.identity.name}${
+        icon.identity.variant === undefined ? "" : `@${icon.identity.variant}`
+      }.svg`,
     )
     .sort((left, right) => left.localeCompare(right)),
 );
@@ -185,7 +218,7 @@ test("returns the same result through the executable and an independent plugin h
     "list",
     "icons",
     "--tag",
-    "photo",
+    representativeTag,
     "--json",
   ]);
   const programmatic = runModule([
@@ -194,7 +227,7 @@ test("returns the same result through the executable and an independent plugin h
     'const plugin = plugins.get("aster");',
     "if (plugin === undefined) throw new TypeError(\"Missing Aster plugin\");",
     "const result = await plugin.execute(",
-    '  { command: "list", subject: "icons", tags: ["photo"] },',
+    `  { command: "list", subject: "icons", tags: [${representativeTagLiteral}] },`,
     "  {",
     "    catalogues: [AsterCatalogue],",
     '    productName: "Aster",',
@@ -209,13 +242,14 @@ test("returns the same result through the executable and an independent plugin h
   assert.equal(programmatic.status, 0);
   assert.equal(programmatic.stderr, "");
   assert.equal(programmatic.stdout, executable.stdout);
+  assert.ok(JSON.parse(executable.stdout).payload.icons.length > 0);
 });
 
 test("returns the same complete export through standalone and programmatic hosts", () => {
   const executable = runExecutable([
     "export",
     "collection",
-    "aster",
+    representativeCollectionIdentity,
     "--size",
     "32",
     "--colour",
@@ -233,7 +267,7 @@ test("returns the same complete export through standalone and programmatic hosts
     "  {",
     '    command: "export",',
     '    subject: "collection",',
-    '    identity: "aster",',
+    `    identity: ${representativeCollectionLiteral},`,
     "    options: {",
     "      size: 32,",
     '      colour: "#123456",',
@@ -259,11 +293,11 @@ test("returns the same complete export through standalone and programmatic hosts
 
   assert.equal(
     result.payload.plan.artefacts.length,
-    expectedAsterCollectionPaths.length,
+    expectedCollectionPaths.length,
   );
   assert.deepEqual(
     result.payload.plan.artefacts.map((artefact) => artefact.path),
-    expectedAsterCollectionPaths,
+    expectedCollectionPaths,
   );
 });
 
@@ -271,7 +305,7 @@ test("returns and publishes a complete review from the clean consumer", async ()
   const executable = runExecutable([
     "review",
     "collection",
-    "aster",
+    representativeCollectionIdentity,
     "--json",
   ]);
   const programmatic = runModule([
@@ -280,7 +314,7 @@ test("returns and publishes a complete review from the clean consumer", async ()
     "  {",
     '    command: "review",',
     '    subject: "collection",',
-    '    identity: "aster",',
+    `    identity: ${representativeCollectionLiteral},`,
     "  },",
     "  {",
     "    catalogues: [AsterCatalogue],",
@@ -300,7 +334,7 @@ test("returns and publishes a complete review from the clean consumer", async ()
   const published = runExecutable([
     "review",
     "collection",
-    "aster",
+    representativeCollectionIdentity,
     "--output",
     "review",
   ]);
@@ -320,9 +354,9 @@ test("returns and publishes a complete review from the clean consumer", async ()
   );
   assert.doesNotMatch(document, /<script|https?:\/\/(?!www\.w3\.org\/2000\/svg)/u);
 
-  assert.equal(plan.document.icons.length, expectedAsterCollectionPaths.length);
+  assert.equal(plan.document.icons.length, expectedCollectionPaths.length);
 
-  for (const path of expectedAsterCollectionPaths) {
+  for (const path of expectedCollectionPaths) {
     assert.ok(document.includes(path.slice(0, -4)));
   }
 });
@@ -331,7 +365,7 @@ test("publishes the complete planned collection from the clean consumer", async 
   const planned = runExecutable([
     "export",
     "collection",
-    "aster",
+    representativeCollectionIdentity,
     "--size",
     "20",
     "--json",
@@ -339,7 +373,7 @@ test("publishes the complete planned collection from the clean consumer", async 
   const published = runExecutable([
     "export",
     "collection",
-    "aster",
+    representativeCollectionIdentity,
     "--size",
     "20",
     "--output",

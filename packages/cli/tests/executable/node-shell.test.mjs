@@ -15,27 +15,63 @@ import process from "node:process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { AsterIcons } from "@aster/icons";
-import {
-  AsterCollection,
-  AsterCollections,
-} from "@aster/icons/collections";
+import { AsterCollections } from "@aster/icons/collections";
 
 const executablePath = fileURLToPath(
   new URL("../../dist/shell/aster.js", import.meta.url),
 );
 const packageRootUrl = new URL("../../", import.meta.url);
-const representativeIcon = AsterCollection.icons[0];
-assert.ok(representativeIcon);
-const representativeName = representativeIcon.identity.name;
-const representativeIdentity = `aster/${representativeName}`;
-const representativeDisplayName = representativeIcon.metadata.displayName;
-const representativePath = `aster/${representativeName}.svg`;
-const representativeTag = representativeIcon.metadata.tags?.find((tag) =>
-  AsterIcons.every((icon) =>
-    icon === representativeIcon || !icon.metadata.tags?.includes(tag),
-  ),
+assert.ok(AsterIcons.length > 0, "Expected the executable icon family to be non-empty.");
+assert.ok(
+  AsterCollections.length > 0,
+  "Expected the executable collection family to be non-empty.",
 );
-assert.ok(representativeTag);
+const representativeCollection = AsterCollections.find(
+  (collection) => collection.icons.length > 0,
+);
+assert.ok(
+  representativeCollection,
+  "Expected one non-empty collection for executable conformance.",
+);
+const representativeIcon = representativeCollection.icons[0];
+assert.ok(representativeIcon, "Expected one representative collection member.");
+const representativeCollectionIdentity = `${
+  representativeCollection.identity.namespace === undefined
+    ? ""
+    : `${representativeCollection.identity.namespace}/`
+}${representativeCollection.identity.name}`;
+const representativeCollectionDisplayName =
+  representativeCollection.metadata.displayName;
+const representativeName = representativeIcon.identity.name;
+const representativeIdentity = `${
+  representativeIcon.identity.namespace === undefined
+    ? ""
+    : `${representativeIcon.identity.namespace}/`
+}${representativeName}${
+  representativeIcon.identity.variant === undefined
+    ? ""
+    : `@${representativeIcon.identity.variant}`
+}`;
+const representativeDisplayName = representativeIcon.metadata.displayName;
+const representativePath = `${representativeIdentity}.svg`;
+const representativeMemberships = AsterCollections
+  .filter((collection) => collection.icons.includes(representativeIcon))
+  .map((collection) => `${
+    collection.identity.namespace === undefined
+      ? ""
+      : `${collection.identity.namespace}/`
+  }${collection.identity.name}`)
+  .sort((left, right) => left.localeCompare(right));
+const taggedIcon = AsterIcons.find(
+  (icon) => (icon.metadata.tags?.length ?? 0) > 0,
+);
+assert.ok(taggedIcon, "Expected one tagged icon for executable filtering.");
+const representativeTag = taggedIcon.metadata.tags?.[0];
+assert.ok(representativeTag, "Expected one representative icon tag.");
+const expectedTaggedIconNames = AsterIcons
+  .filter((icon) => icon.metadata.tags?.includes(representativeTag))
+  .map((icon) => icon.identity.name)
+  .sort((left, right) => left.localeCompare(right));
 
 function run(arguments_, options = {}) {
   return spawnSync(process.execPath, [executablePath, ...arguments_], {
@@ -82,7 +118,9 @@ test("renders list, search, show, and version as deterministic human text", () =
     shown.stdout,
     new RegExp(`^Icon: ${representativeIdentity}\\nCatalogue: aster`, "u"),
   );
-  assert.match(shown.stdout, /Collections: aster\n/u);
+  assert.ok(
+    shown.stdout.includes(`Collections: ${representativeMemberships.join(", ")}\n`),
+  );
   assert.equal(version.stdout, "Aster 0.0.0\n");
 
   for (const execution of [listed, searched, shown, version]) {
@@ -107,7 +145,12 @@ test("renders standalone options and one collection as a JSON export plan", () =
     "--title",
     `${representativeDisplayName} icon`,
   ]);
-  const collection = run(["export", "collection", "aster", "--json"]);
+  const collection = run([
+    "export",
+    "collection",
+    representativeCollectionIdentity,
+    "--json",
+  ]);
 
   assert.equal(icon.status, 0);
   assert.equal(icon.stderr, "");
@@ -130,7 +173,7 @@ test("renders standalone options and one collection as a JSON export plan", () =
   assert.equal(result.payload.kind, "export");
   assert.equal(
     result.payload.plan.artefacts.length,
-    AsterCollection.icons.length,
+    representativeCollection.icons.length,
   );
 });
 
@@ -162,7 +205,13 @@ test("publishes icon and collection plans relative to the explicit process direc
       { cwd: root },
     );
     const collection = run(
-      ["export", "collection", "aster", "--output", "exports/collection"],
+      [
+        "export",
+        "collection",
+        representativeCollectionIdentity,
+        "--output",
+        "exports/collection",
+      ],
       { cwd: root },
     );
 
@@ -176,7 +225,7 @@ test("publishes icon and collection plans relative to the explicit process direc
     assert.equal(collection.stderr, "");
     assert.equal(
       collection.stdout,
-      `Exported ${AsterCollection.icons.length} SVG artefacts to ${resolve(root, "exports/collection")}\n`,
+      `Exported ${representativeCollection.icons.length} SVG artefacts to ${resolve(root, "exports/collection")}\n`,
     );
     assert.match(
       readFileSync(resolve(root, `exports/icon/${representativePath}`), "utf8"),
@@ -267,7 +316,7 @@ test("publishes static reviews to default and explicit output roots", () => {
     const published = run([
       "review",
       "collection",
-      "aster",
+      representativeCollectionIdentity,
       "--output",
       "review-site",
     ], { cwd: root });
@@ -292,10 +341,14 @@ test("publishes static reviews to default and explicit output roots", () => {
       published.stdout,
       `Published Aster review to ${resolve(root, "review-site")}\n`,
     );
-    assert.match(
-      readFileSync(resolve(root, "review-site/index.html"), "utf8"),
-      /<h1>Aster<\/h1>[\s\S]*id="contact-sheet"/u,
+    const collectionReview = readFileSync(
+      resolve(root, "review-site/index.html"),
+      "utf8",
     );
+    assert.ok(
+      collectionReview.includes(`<h1>${representativeCollectionDisplayName}</h1>`),
+    );
+    assert.match(collectionReview, /id="contact-sheet"/u);
     assert.equal(defaulted.status, 0);
     assert.equal(
       defaulted.stdout,
@@ -324,14 +377,14 @@ test("replaces only explicitly owned static review output", () => {
     const conflict = run([
       "review",
       "collection",
-      "aster",
+      representativeCollectionIdentity,
       "--output",
       "review-site",
     ], { cwd: root });
     const replaced = run([
       "review",
       "collection",
-      "aster",
+      representativeCollectionIdentity,
       "--output",
       "review-site",
       "--replace",
@@ -349,9 +402,10 @@ test("replaces only explicitly owned static review output", () => {
       replaced.stdout,
       `Replaced Aster review at ${resolve(root, "review-site")}\n`,
     );
-    assert.match(
-      readFileSync(resolve(root, "review-site/index.html"), "utf8"),
-      /<h1>Aster<\/h1>/u,
+    assert.ok(
+      readFileSync(resolve(root, "review-site/index.html"), "utf8").includes(
+        `<h1>${representativeCollectionDisplayName}</h1>`,
+      ),
     );
   } finally {
     rmSync(root, { recursive: true, force: true });
@@ -398,7 +452,7 @@ test("emits one stable JSON success document without terminal styling", () => {
   assert.equal(result.payload.kind, "icon-list");
   assert.deepEqual(
     result.payload.icons.map((icon) => icon.identity.name),
-    [representativeName],
+    expectedTaggedIconNames,
   );
 });
 
@@ -442,11 +496,15 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
     "aster",
   ]);
   const extra = run(["search", "query", "extra"]);
-  const collectionWithoutMode = run(["export", "collection", "aster"]);
+  const collectionWithoutMode = run([
+    "export",
+    "collection",
+    representativeCollectionIdentity,
+  ]);
   const collectionLabel = run([
     "export",
     "collection",
-    "aster",
+    representativeCollectionIdentity,
     "--label",
     "Collection",
     "--json",
@@ -509,19 +567,4 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
   assert.equal(invalidDomain.status, 2);
   assert.equal(repeatedReplace.status, 2);
   assert.equal(replaceJson.status, 2);
-});
-
-test("imports the built programmatic root without executing the shell", () => {
-  const imported = spawnSync(
-    process.execPath,
-    ["--input-type=module", "--eval", 'await import("@aster/cli");'],
-    {
-      cwd: fileURLToPath(packageRootUrl),
-      encoding: "utf8",
-    },
-  );
-
-  assert.equal(imported.status, 0);
-  assert.equal(imported.stdout, "");
-  assert.equal(imported.stderr, "");
 });

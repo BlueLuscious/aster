@@ -8,10 +8,7 @@ import {
   type IconDefinition,
 } from "@aster/core";
 import { AsterIcons } from "@aster/icons";
-import {
-  AsterCollection,
-  AsterCollections,
-} from "@aster/icons/collections";
+import { AsterCollections } from "@aster/icons/collections";
 import {
   AsterCatalogue,
   AsterCommands,
@@ -101,9 +98,29 @@ function createContext(
   };
 }
 
-const representativeIcon = AsterCollection.icons[0];
-assert.ok(representativeIcon);
-const representativeIdentity = `aster/${representativeIcon.identity.name}`;
+assert.ok(
+  AsterIcons.length > 0,
+  "Expected the Aster icon catalogue to be non-empty.",
+);
+assert.ok(
+  AsterCollections.length > 0,
+  "Expected the Aster collection catalogue to be non-empty.",
+);
+const representativeIcon = AsterIcons[0];
+assert.ok(representativeIcon, "Expected one representative Aster icon.");
+const representativeIdentity = `${
+  representativeIcon.identity.namespace === undefined
+    ? ""
+    : `${representativeIcon.identity.namespace}/`
+}${representativeIcon.identity.name}${
+  representativeIcon.identity.variant === undefined
+    ? ""
+    : `@${representativeIcon.identity.variant}`
+}`;
+const representativeMemberships = AsterCollections
+  .filter((collection) => collection.icons.includes(representativeIcon))
+  .map((collection) => collection.identity)
+  .sort((left, right) => left.name.localeCompare(right.name));
 
 test("discovers the explicit built-in Aster catalogue", async () => {
   const context = createContext([AsterCatalogue]);
@@ -164,7 +181,7 @@ test("discovers the explicit built-in Aster catalogue", async () => {
       shown.payload.icon.metadata.displayName,
       representativeIcon.metadata.displayName,
     );
-    assert.deepEqual(shown.payload.icon.memberships, [{ name: "aster" }]);
+    assert.deepEqual(shown.payload.icon.memberships, representativeMemberships);
     assert.ok(Object.isFrozen(shown.payload.icon));
   }
 });

@@ -8,7 +8,10 @@ test("renders the complete real icon corpus deterministically", () => {
   const definitions = AsterIcons;
   const outputs = new Set<string>();
 
-  assert.ok(definitions.length > 0);
+  assert.ok(
+    definitions.length > 0,
+    "Expected the Aster icon corpus to be non-empty.",
+  );
 
   for (const icon of definitions) {
     const scenarios = [

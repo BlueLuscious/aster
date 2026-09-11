@@ -148,13 +148,29 @@ test("preserves caller-controlled Proxy failures at every public boundary", () =
 });
 
 test("rejects sparse and cyclic authored structures deterministically", () => {
+  const sparseRequests = new Array<IconAdoptionRequest>(1);
   const sparseSourceIds = new Array<string>(1);
+  const extendedRequests = [request("extended-array")];
+  Object.defineProperty(extendedRequests, "sideState", {
+    enumerable: true,
+    value: true,
+  });
   const adopted = IconImport.adopt(request());
   assert.equal(adopted.successful, true);
   if (!adopted.successful) {
     throw new Error("Expected accepted hardening adoption.");
   }
 
+  assert.throws(
+    () => IconImport.adoptMany(sparseRequests),
+    (error: unknown) =>
+      error instanceof IconImportError && error.path === "requests[0]",
+  );
+  assert.throws(
+    () => IconImport.adoptMany(extendedRequests),
+    (error: unknown) =>
+      error instanceof IconImportError && error.path === "requests.sideState",
+  );
   assert.throws(
     () => IconImport.emit({
       definition: adopted.value.definition,

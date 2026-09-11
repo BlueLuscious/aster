@@ -1,6 +1,6 @@
-import { AsterCatalogue, AsterCommands } from "@aster/cli";
-import { AsterCollection } from "@aster/icons/collections/aster";
+import { AsterCommands } from "@aster/cli";
 import { CatalogueIdentityFormatter } from "../../../../packages/cli/dist/catalogue/runtime/catalogue-identity.formatter.js";
+import { BenchmarkCatalogueFixtureFactory } from "../../shared/runtime/benchmark-catalogue-fixture.factory.mjs";
 
 /**
  * @description Prepares representative immutable CLI inputs outside measured operations.
@@ -11,27 +11,9 @@ export class CliBaselineFixtureFactory {
    * @returns {import("../contracts/internal/cli-baseline-fixtures.contract.mjs").ICliBaselineFixtures} Prepared CLI inputs.
    */
   create() {
-    const icon = AsterCollection.icons[0];
-
-    if (icon === undefined) {
-      throw new TypeError("The CLI baseline requires one canonical icon.");
-    }
-
+    const catalogue = new BenchmarkCatalogueFixtureFactory().create();
+    const { collection, icon, snapshot } = catalogue;
     const identities = new CatalogueIdentityFormatter();
-
-    const snapshot = Object.freeze({
-      icons: Object.freeze(
-        AsterCollection.icons.map((definition) =>
-          Object.freeze({
-            definition,
-            memberships: Object.freeze([AsterCollection.identity]),
-          }),
-        ),
-      ),
-      collections: Object.freeze([
-        Object.freeze({ definition: AsterCollection }),
-      ]),
-    });
     const provider = Object.freeze({
       identity: "fixture",
       /**
@@ -51,11 +33,6 @@ export class CliBaselineFixtureFactory {
     return Object.freeze({
       icon,
       context,
-      builtInContext: Object.freeze({
-        catalogues: Object.freeze([AsterCatalogue]),
-        productName: "Aster",
-        productVersion: "0.0.0",
-      }),
       invocations: Object.freeze({
         help: Object.freeze({ command: "help" }),
         version: Object.freeze({ command: "version" }),
@@ -69,13 +46,13 @@ export class CliBaselineFixtureFactory {
         exportCollection: Object.freeze({
           command: "export",
           subject: "collection",
-          identity: identities.collection(AsterCollection.identity),
+          identity: identities.collection(collection.identity),
           options: Object.freeze({ size: 24 }),
         }),
         reviewCollection: Object.freeze({
           command: "review",
           subject: "collection",
-          identity: identities.collection(AsterCollection.identity),
+          identity: identities.collection(collection.identity),
         }),
       }),
       arguments: Object.freeze({
@@ -83,7 +60,7 @@ export class CliBaselineFixtureFactory {
         collectionExport: Object.freeze([
           "export",
           "collection",
-          identities.collection(AsterCollection.identity),
+          identities.collection(collection.identity),
           "--size",
           "24",
           "--json",

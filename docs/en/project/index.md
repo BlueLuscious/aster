@@ -88,5 +88,7 @@ until their activation conditions are met in [Future Capabilities](../future-cap
   review evidence.
 - [Future Capabilities](../future-capabilities.md) records proposals and activation triggers; it
   does not define current product guarantees.
+- [Testing Policy](testing.md) defines transversal evidence roles, ownership, catalogue
+  independence, isolation, and repository verification.
 - [Versioning and Releases](versioning.md) owns cross-package maturity, compatibility, and release
   coordination.

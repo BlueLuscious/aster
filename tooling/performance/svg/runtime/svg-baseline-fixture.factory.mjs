@@ -1,5 +1,5 @@
 import { Icon } from "@aster/core";
-import { AsterCollection } from "@aster/icons/collections/aster";
+import { BenchmarkCatalogueFixtureFactory } from "../../shared/runtime/benchmark-catalogue-fixture.factory.mjs";
 
 /**
  * @description Prepares representative public SVG definitions and options outside timed work.
@@ -10,6 +10,7 @@ export class SvgBaselineFixtureFactory {
    * @returns {import("../contracts/internal/svg-baseline-fixtures.contract.mjs").ISvgBaselineFixtures} Prepared public SVG inputs.
    */
   create() {
+    const catalogue = new BenchmarkCatalogueFixtureFactory().create();
     const minimalDefinition = this.#definition("minimal", [
       Object.freeze({ kind: "circle", cx: 12, cy: 12, radius: 4 }),
     ]);
@@ -53,7 +54,7 @@ export class SvgBaselineFixtureFactory {
           ]),
         }),
       ]),
-      corpusDefinitions: AsterCollection.icons,
+      corpusDefinitions: catalogue.icons,
       overrideDefinition: Icon.define({
         ...minimalDefinition,
         identity: { namespace: "benchmark", name: "overrides" },

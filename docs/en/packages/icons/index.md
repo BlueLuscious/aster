@@ -116,3 +116,4 @@ The package's authoring and SVG review relationship is defined by the
 [Aster Collection Authoring Workflow](../../collections/aster/authoring-workflow.md).
 Generated aggregate ownership and the exact package build loop are defined by
 [Catalogue Source Tooling](../../tooling/catalogue/index.md).
+Current package, catalogue and distribution evidence is defined by [Icons Quality](quality.md).
