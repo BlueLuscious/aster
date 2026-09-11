@@ -7,9 +7,7 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
-import { AsterCollection } from "@aster/icons/collections/aster";
 import {
-  AsterCatalogue,
   AsterCommands,
   exportTargets,
 } from "../../src/index.js";
@@ -21,17 +19,6 @@ import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { asterCommandSubjects } from "../../src/command/constants/aster-command-subjects.constant.js";
 import { SvgExportArtefactFactory } from "../../src/export/runtime/svg-export-artefact.factory.js";
 import type { TCatalogueSelection } from "../../src/catalogue/types/internal/catalogue-selection.type.js";
-
-const context: AsterCommandContext = {
-  catalogues: [AsterCatalogue],
-  productName: "Aster",
-  productVersion: "0.0.0",
-};
-
-const representativeIcon = AsterCollection.icons[0];
-assert.ok(representativeIcon);
-const representativeIdentity = `aster/${representativeIcon.identity.name}`;
-const representativeLabel = representativeIcon.metadata.displayName;
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -119,6 +106,22 @@ function createSnapshot(
   };
 }
 
+const representativeIcon = createIcon("representative", {
+  namespace: "testing",
+});
+const representativeCollection = createCollection(
+  "representatives",
+  [representativeIcon],
+);
+const representativeIdentity = "testing/representative";
+const representativeLabel = representativeIcon.metadata.displayName;
+const context = createContext([
+  createProvider(
+    "testing",
+    createSnapshot([representativeIcon], [representativeCollection]),
+  ),
+]);
+
 test("plans one deterministic immutable icon SVG export", async () => {
   const first = await AsterCommands.execute({
     command: "export",
@@ -139,7 +142,7 @@ test("plans one deterministic immutable icon SVG export", async () => {
   if (first.ok && first.payload.kind === "export") {
     assert.equal(first.payload.plan.target, exportTargets.svg);
     assert.equal(first.payload.plan.subject, "icon");
-    assert.equal(first.payload.plan.catalogue, "aster");
+    assert.equal(first.payload.plan.catalogue, "testing");
     assert.equal(first.payload.plan.identity, representativeIdentity);
     assert.equal(first.payload.plan.artefacts.length, 1);
     assert.equal(
@@ -164,7 +167,7 @@ test("plans collection members in canonical path order", async () => {
   const result = await AsterCommands.execute({
     command: "export",
     subject: "collection",
-    identity: "aster",
+    identity: "testing/representatives",
   }, context);
 
   assert.equal(result.ok, true);
@@ -172,7 +175,7 @@ test("plans collection members in canonical path order", async () => {
   if (result.ok && result.payload.kind === "export") {
     const paths = result.payload.plan.artefacts.map((artefact) => artefact.path);
     assert.equal(result.payload.plan.subject, "collection");
-    assert.equal(paths.length, AsterCollection.icons.length);
+    assert.equal(paths.length, representativeCollection.icons.length);
     assert.deepEqual(paths, [...paths].sort());
     assert.equal(new Set(paths).size, paths.length);
   }
@@ -182,7 +185,7 @@ test("preserves existing exact lookup failures for export", async () => {
   const result = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "aster/missing",
+    identity: "testing/missing",
   }, context);
 
   assert.equal(result.ok, false);

@@ -7,9 +7,7 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
-import { AsterCollection } from "@aster/icons/collections/aster";
 import {
-  AsterCatalogue,
   AsterCommands,
   reviewTargets,
 } from "../../src/index.js";
@@ -86,16 +84,26 @@ function createContext(
   };
 }
 
-const representativeIcon = AsterCollection.icons[0];
-assert.ok(representativeIcon);
-const representativeIdentity = `aster/${representativeIcon.identity.name}`;
+const representativeIcon = createIcon("representative");
+const representativeCollection = createCollection(
+  "representatives",
+  [representativeIcon],
+);
+const representativeIdentity = "testing/representative";
+const representativeContext = createContext([createProvider("testing", {
+  icons: [{
+    definition: representativeIcon,
+    memberships: [representativeCollection.identity],
+  }],
+  collections: [{ definition: representativeCollection }],
+})]);
 
-test("plans immutable technical evidence for one standalone icon", async () => {
+test("plans immutable technical evidence for one icon", async () => {
   const result = await AsterCommands.execute({
     command: "review",
     subject: "icon",
     identity: representativeIdentity,
-  }, createContext([AsterCatalogue]));
+  }, representativeContext);
 
   assert.equal(result.ok, true);
 
@@ -103,7 +111,7 @@ test("plans immutable technical evidence for one standalone icon", async () => {
     const { plan } = result.payload;
     assert.equal(plan.target, reviewTargets.html);
     assert.equal(plan.subject, "icon");
-    assert.equal(plan.catalogue, "aster");
+    assert.equal(plan.catalogue, "testing");
     assert.equal(plan.identity, representativeIdentity);
     assert.equal(plan.document.kind, "icon");
     assert.ok(Object.isFrozen(plan));
@@ -121,7 +129,10 @@ test("plans immutable technical evidence for one standalone icon", async () => {
         plan.document.icon.primitiveKinds,
         [...new Set(representativeIcon.nodes.map((node) => node.kind))].sort(),
       );
-      assert.deepEqual(plan.document.icon.memberships, [{ name: "aster" }]);
+      assert.deepEqual(
+        plan.document.icon.memberships,
+        [representativeCollection.identity],
+      );
       assert.match(plan.document.icon.markup, /^<svg /u);
       assert.ok(Object.isFrozen(plan.document.icon));
       assert.ok(Object.isFrozen(plan.document.icon.primitiveKinds));

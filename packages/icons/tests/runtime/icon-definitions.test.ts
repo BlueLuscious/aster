@@ -2,10 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import type { CollectionDefinition, IconDefinition } from "@aster/core";
-import {
-  AsterCollection,
-  AsterCollections,
-} from "../../src/collections/index.js";
+import { AsterCollections } from "../../src/collections/index.js";
 import * as collections from "../../src/collections/index.js";
 import { AsterIcons } from "../../src/icons/index.js";
 import * as icons from "../../src/icons/index.js";
@@ -89,6 +86,11 @@ test("keeps every definition aligned with shared authoring defaults", () => {
   const definitions = AsterIcons;
   const identities = new Set<string>();
 
+  assert.ok(
+    definitions.length > 0,
+    "Expected the Aster icon index to be non-empty.",
+  );
+
   for (const definition of definitions) {
     assert.equal(definition.identity.namespace, "aster");
     assert.equal(identities.has(definition.identity.name), false);
@@ -145,14 +147,20 @@ test("keeps every definition aligned with shared authoring defaults", () => {
   assert.equal(icons.ArrowRight.metadata.rtl, "mirror");
 });
 
-test("retains the complete pilot through independent collection membership", () => {
-  assert.equal(AsterCollection.identity.name, "aster");
-  assert.ok(AsterCollections.includes(AsterCollection));
-  assert.ok(AsterCollection.icons.length < AsterIcons.length);
+test("keeps collection membership within the independent icon index", () => {
+  assert.ok(
+    AsterCollections.length > 0,
+    "Expected the Aster collection index to be non-empty.",
+  );
 
-  for (const definition of AsterCollection.icons) {
-    assert.ok(AsterIcons.includes(definition));
+  for (const collection of AsterCollections) {
+    for (const definition of collection.icons) {
+      assert.ok(
+        AsterIcons.includes(definition),
+        `Expected ${definition.identity.name} from ${collection.identity.name} in the icon index.`,
+      );
+    }
+
+    assertDeeplyFrozen(collection);
   }
-
-  assertDeeplyFrozen(AsterCollection);
 });
