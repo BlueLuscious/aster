@@ -44,7 +44,7 @@
     "test": "pnpm run test:tooling && pnpm --recursive --if-present run test && pnpm run test:workflow",
     "test:workflow": "pnpm run build && tsx --test --test-isolation=none tests/workflow/*.test.ts",
     "test:tooling": "node --test --test-isolation=none tests/tooling/*.test.mjs",
-    "verify": "pnpm run check && pnpm run test && pnpm run build"
+    "verify": "pnpm run check && pnpm run test"
   },
   "devDependencies": {
     "@aster/import": "workspace:*",
