@@ -12,7 +12,7 @@ The package exposes only the root subpath. Its runtime values are:
 
 - `Collection` and `Icon`;
 - `iconDirections` and `iconRtlPolicies`;
-- `iconNodeKinds`;
+- `iconNodeKinds` and `iconPathCommandKinds`;
 - `iconPaintSchema`, `iconPresentationOverrideOrder`, and `iconTechnicalPresentation`;
 - `IconDefinitionError`.
 
@@ -22,6 +22,9 @@ Its public type surface comprises:
 - `IconApi`, `IconDefinition`, `IconIdentity`, `IconViewBox`, and `IconMetadata`;
 - `IconPoint`, `IconPathNode`, `IconCircleNode`, `IconEllipseNode`, `IconRectNode`,
   `IconLineNode`, `IconPolylineNode`, `IconPolygonNode`, and `IconNodeType`;
+- `IconPathMoveCommand`, `IconPathLineCommand`, `IconPathCubicBezierCommand`,
+  `IconPathQuadraticBezierCommand`, `IconPathArcCommand`, `IconPathCloseCommand`, and
+  `IconPathCommandType`;
 - `IconPresentation`, `IconPresentationPolicy`, `IconPaintType`, `IconFillRuleType`,
   `IconStrokeLineCapType`, `IconStrokeLineJoinType`, and `IconPresentationOverrideType`;
 - `IconRenderOptions`, `IconDirectionType`, and `IconRtlPolicyType`.
@@ -49,6 +52,7 @@ authority.
 | --- | --- | --- |
 | `Icon` and `Collection` | Portable domain authorities | Every canonical definition enters the ecosystem through their frozen `define()` operations. |
 | `iconNodeKinds` | Portable domain authority | SVG dispatches portable node kinds through this closed vocabulary. |
+| `iconPathCommandKinds` | Portable domain authority | Structured path contracts narrow absolute geometry without importing SVG command letters. |
 | `iconDirections` and `iconRtlPolicies` | Portable domain authorities | SVG resolves direction and RTL behaviour without owning either vocabulary. |
 | `iconPaintSchema` | Portable domain authority | Core validation and SVG option normalisation share its accepted paint grammar. |
 | `iconPresentationOverrideOrder` | Portable domain authority | Core and SVG require the same deterministic presentation override order. |
