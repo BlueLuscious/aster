@@ -5,6 +5,8 @@ import { iconPathCommandKinds } from "../constants/icon-path-command-kinds.const
 
 /**
  * @description Validates, canonicalises, and isolates portable path command sequences.
+ * @remarks The normaliser owns portable contour ordering and command shape. It does not parse or
+ * retain syntax belonging to an external vector format.
  */
 export class IconPathCommandNormaliser {
   /**

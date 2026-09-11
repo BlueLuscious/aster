@@ -13,7 +13,8 @@ export interface IconPathNode extends IconPresentation {
 
   /**
    * @description Ordered non-empty sequence of canonical absolute path commands.
-   * @remarks Every contour starts with a move and contains at least one drawing command.
+   * @remarks Every contour starts with a move, contains at least one drawing command and may end
+   * with one close. A closed contour must be followed by a new move or the end of the sequence.
    */
   readonly commands: readonly IconPathCommandType[];
 }

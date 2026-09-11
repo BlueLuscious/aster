@@ -9,6 +9,8 @@ import type {
 
 /**
  * @description Closed union of absolute portable path commands.
+ * @remarks Relative coordinates, repeated operand groups and shorthand controls belong to source
+ * formats and must be expanded before entering a canonical definition.
  */
 export type IconPathCommandType =
   | IconPathMoveCommand
