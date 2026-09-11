@@ -47,7 +47,10 @@ export class ExportPlanQuery {
   async execute(
     invocation: Extract<
       AsterCommandInvocationType,
-      { command: typeof asterCommandNames.export }
+      {
+        /** @description Export-command discriminator used for invocation narrowing. */
+        command: typeof asterCommandNames.export;
+      }
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {

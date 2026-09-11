@@ -11,7 +11,10 @@ export class StructuredDataInspector {
   ownDataMember(
     value: unknown,
     key: string,
-  ): Readonly<{ value: unknown }> | undefined {
+  ): Readonly<{
+    /** @description Safely snapshotted own data-member value. */
+    value: unknown;
+  }> | undefined {
     if (typeof value !== "object" || value === null || Array.isArray(value)) {
       return undefined;
     }

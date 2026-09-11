@@ -168,7 +168,10 @@ export class CommandContextNormaliser {
   #dataMember(
     value: object,
     key: string,
-  ): Readonly<{ value: unknown }> | undefined {
+  ): Readonly<{
+    /** @description Safely resolved public data-member value. */
+    value: unknown;
+  }> | undefined {
     let owner: object | null = value;
     const visited = new Set<object>();
 
