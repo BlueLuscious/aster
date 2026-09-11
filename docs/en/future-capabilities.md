@@ -19,23 +19,65 @@ tooling, collection, or [project documentation](project/index.md), not to this r
 Priority expresses importance rather than implementation order. A capability still waits for its
 stated prerequisite and evidence even when it has a higher priority than unrelated work.
 
+## Repository test-data hardening
+
+Importance: **P1 - High**
+
+Before structured-path work resumes foundational authorship, audit package, workflow, tooling and
+performance tests so ordinary catalogue growth cannot invalidate unrelated evidence. Tests that
+exercise the real catalogue must derive representatives, counts, identities, paths and membership
+from `AsterIcons` and `AsterCollections`, and must fail explicitly when either required family is
+empty.
+
+Concrete icon or collection literals remain appropriate when their exact semantics are the subject
+of the test, such as RTL mirroring, parser grammar, ABI examples, deterministic serialisation or
+known geometric boundaries. Feature-unit tests should otherwise own synthetic fixtures rather than
+couple themselves to production artwork. Benchmarks should own stable purpose-built fixtures when
+catalogue evolution would make historical measurements incomparable.
+
+The hardening must not weaken exact assertions for discriminators, schema versions, status codes,
+security boundaries or expected fixture sizes. Its purpose is to remove accidental catalogue
+coupling, not to make tests pass regardless of behaviour.
+
+## Structured path authoring
+
+Importance: **P1 - High**
+
+After test-data hardening, replace opaque raw SVG path strings as the preferred authoring surface
+with a validated structured command model. The design must decide whether commands belong to the
+portable Core node contract or to an authoring boundary that deterministically compiles into the
+existing path node; it must not add subject-specific pseudo-primitives such as hearts, clouds or
+rounded polygons.
+
+The accepted model should represent only explicit path operations and finite operands, preserve
+command order, reject malformed sequences, remain deeply immutable, and serialise to deterministic
+SVG path data. SVG rendering and Import adoption must agree on the representation, while existing
+raw path compatibility must receive an explicit retain, migrate or remove decision before the
+contract changes.
+
+Use the nine deferred Amellus concepts as real acceptance evidence. The capability is complete only
+when their curved or compound contours are readable in TypeScript, deterministic in SVG, validated
+without browser or DOM authority, and materially clearer than hand-maintained `d` strings.
+
 ## Recommended sequence
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics, and persistence together. |
-| 2 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 3 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 4 | `P2` | Evaluate selective Icons acquisition. | Measured package acquisition cost or consumer demand justifies a distribution product beyond subpath imports. |
-| 5 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 6 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 7 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
-| 8 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 9 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 10 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 11 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 12 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 13 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 1 | `P1` | Harden repository test data and catalogue independence. | The current real catalogue and its consumers provide migration evidence. |
+| 2 | `P1` | Introduce structured path authoring. | Catalogue-sensitive tests no longer depend on specific production artwork. |
+| 3 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics, and persistence together. |
+| 4 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 5 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 6 | `P2` | Evaluate selective Icons acquisition. | Measured package acquisition cost or consumer demand justifies a distribution product beyond subpath imports. |
+| 7 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 8 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 9 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
+| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 11 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 12 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 13 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 14 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 15 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
 
 ## Catalogue and command expansion
 
