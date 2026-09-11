@@ -2,23 +2,22 @@ import { Icon } from "@aster/core";
 import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster cloud icon.
+ * @description Canonical portable definition for the Aster info icon.
  */
-export const Cloud = Icon.define({
+export const Info = Icon.define({
   identity: {
     namespace: asterIconAuthoring.namespace,
-    name: "cloud",
+    name: "info",
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
-    {
-      kind: "path",
-      data: "M7 19h11a4 4 0 0 0 .5-8A6.5 6.5 0 0 0 6 10a4.5 4.5 0 0 0 1 9z",
-    },
+    { kind: "circle", cx: 12, cy: 12, radius: 9 },
+    { kind: "circle", cx: 12, cy: 7, radius: 0.5 },
+    { kind: "line", x1: 12, y1: 11, x2: 12, y2: 17 },
   ],
   metadata: {
-    displayName: "Cloud",
-    tags: ["cloud", "storage", "weather"],
+    displayName: "Info",
+    tags: ["about", "help", "info", "information"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

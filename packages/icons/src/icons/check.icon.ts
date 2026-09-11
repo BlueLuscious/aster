@@ -22,7 +22,7 @@ export const Check = Icon.define({
   ],
   metadata: {
     displayName: "Check",
-    tags: ["accept", "check", "confirm", "success"],
+    tags: ["check", "complete", "confirm", "done", "success"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

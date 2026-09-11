@@ -2,29 +2,28 @@ import { Icon } from "@aster/core";
 import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster camera icon.
+ * @description Canonical portable definition for the Aster arrow-up icon.
  */
-export const Camera = Icon.define({
+export const ArrowUp = Icon.define({
   identity: {
     namespace: asterIconAuthoring.namespace,
-    name: "camera",
+    name: "arrow-up",
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
+    { kind: "line", x1: 12, y1: 20, x2: 12, y2: 4 },
     {
-      kind: "path",
-      data: "M8 6.5L9.5 4h5L16 6.5h3a2 2 0 0 1 2 2v9a2.5 2.5 0 0 1-2.5 2.5h-13A2.5 2.5 0 0 1 3 17.5v-9a2 2 0 0 1 2-2z",
-    },
-    {
-      kind: "circle",
-      cx: 12,
-      cy: 13,
-      radius: 3.5,
+      kind: "polyline",
+      points: [
+        { x: 6, y: 10 },
+        { x: 12, y: 4 },
+        { x: 18, y: 10 },
+      ],
     },
   ],
   metadata: {
-    displayName: "Camera",
-    tags: ["camera", "media", "photo"],
+    displayName: "Arrow Up",
+    tags: ["arrow", "navigation", "top", "up"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

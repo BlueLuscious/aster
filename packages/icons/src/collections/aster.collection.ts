@@ -1,21 +1,12 @@
 import { Collection } from "@aster/core";
 import {
   ArrowLeft,
-  Bell,
-  Camera,
   Check,
   Close,
-  Cloud,
-  Folder,
-  Heart,
-  Home,
-  Leaf,
-  Lock,
   Plus,
   Search,
   Settings,
   Star,
-  User,
 } from "../icons/index.js";
 
 /**
@@ -27,21 +18,12 @@ export const AsterCollection = Collection.define({
   },
   icons: [
     ArrowLeft,
-    Bell,
-    Camera,
     Check,
     Close,
-    Cloud,
-    Folder,
-    Heart,
-    Home,
-    Leaf,
-    Lock,
     Plus,
     Search,
     Settings,
     Star,
-    User,
   ],
   metadata: {
     displayName: "Aster",

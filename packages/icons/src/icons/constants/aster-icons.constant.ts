@@ -2,42 +2,44 @@
 // Canonical definition modules are the source of truth. Do not edit manually.
 
 import type { IconDefinition } from "@aster/core";
+import { ArrowDown } from "../arrow-down.icon.js";
 import { ArrowLeft } from "../arrow-left.icon.js";
-import { Bell } from "../bell.icon.js";
-import { Camera } from "../camera.icon.js";
+import { ArrowRight } from "../arrow-right.icon.js";
+import { ArrowUp } from "../arrow-up.icon.js";
 import { Check } from "../check.icon.js";
 import { Close } from "../close.icon.js";
-import { Cloud } from "../cloud.icon.js";
-import { Folder } from "../folder.icon.js";
-import { Heart } from "../heart.icon.js";
-import { Home } from "../home.icon.js";
-import { Leaf } from "../leaf.icon.js";
-import { Lock } from "../lock.icon.js";
+import { Download } from "../download.icon.js";
+import { Info } from "../info.icon.js";
+import { Mail } from "../mail.icon.js";
+import { Menu } from "../menu.icon.js";
+import { Pause } from "../pause.icon.js";
+import { Play } from "../play.icon.js";
 import { Plus } from "../plus.icon.js";
 import { Search } from "../search.icon.js";
 import { Settings } from "../settings.icon.js";
 import { Star } from "../star.icon.js";
-import { User } from "../user.icon.js";
+import { Warning } from "../warning.icon.js";
 
 /**
  * @description Complete immutable index of canonical Aster icon definitions.
  * @remarks Collection membership is intentionally independent from this discovery authority.
  */
 export const AsterIcons: readonly IconDefinition[] = Object.freeze([
+  ArrowDown,
   ArrowLeft,
-  Bell,
-  Camera,
+  ArrowRight,
+  ArrowUp,
   Check,
   Close,
-  Cloud,
-  Folder,
-  Heart,
-  Home,
-  Leaf,
-  Lock,
+  Download,
+  Info,
+  Mail,
+  Menu,
+  Pause,
+  Play,
   Plus,
   Search,
   Settings,
   Star,
-  User,
+  Warning,
 ]);

@@ -2,23 +2,29 @@ import { Icon } from "@aster/core";
 import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster heart icon.
+ * @description Canonical portable definition for the Aster warning icon.
  */
-export const Heart = Icon.define({
+export const Warning = Icon.define({
   identity: {
     namespace: asterIconAuthoring.namespace,
-    name: "heart",
+    name: "warning",
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
     {
-      kind: "path",
-      data: "M12 21S3 15.5 3 9.5C3 6 5.5 4 8 4c2 0 3.5 1 4 2.5C13 5 14.5 4 16 4c2.5 0 5 2 5 5.5C21 15.5 12 21 12 21z",
+      kind: "polygon",
+      points: [
+        { x: 12, y: 3 },
+        { x: 22, y: 21 },
+        { x: 2, y: 21 },
+      ],
     },
+    { kind: "line", x1: 12, y1: 9, x2: 12, y2: 14.5 },
+    { kind: "line", x1: 12, y1: 17.5, x2: 12, y2: 18.5 },
   ],
   metadata: {
-    displayName: "Heart",
-    tags: ["favourite", "heart", "like"],
+    displayName: "Warning",
+    tags: ["alert", "attention", "caution", "warning"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

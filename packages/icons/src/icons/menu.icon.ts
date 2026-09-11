@@ -2,27 +2,22 @@ import { Icon } from "@aster/core";
 import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster leaf icon.
+ * @description Canonical portable definition for the Aster menu icon.
  */
-export const Leaf = Icon.define({
+export const Menu = Icon.define({
   identity: {
     namespace: asterIconAuthoring.namespace,
-    name: "leaf",
+    name: "menu",
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
-    {
-      kind: "path",
-      data: "M20.5 3.5C12 3.5 5 7.5 5 14a6 6 0 0 0 6 6c6.5 0 9.5-7 9.5-16.5z",
-    },
-    {
-      kind: "path",
-      data: "M7 18c3-4 6.5-7 11-10.5",
-    },
+    { kind: "line", x1: 4, y1: 6, x2: 20, y2: 6 },
+    { kind: "line", x1: 4, y1: 12, x2: 20, y2: 12 },
+    { kind: "line", x1: 4, y1: 18, x2: 20, y2: 18 },
   ],
   metadata: {
-    displayName: "Leaf",
-    tags: ["eco", "leaf", "nature", "plant"],
+    displayName: "Menu",
+    tags: ["hamburger", "menu", "navigation"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

@@ -2,23 +2,36 @@ import { Icon } from "@aster/core";
 import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster folder icon.
+ * @description Canonical portable definition for the Aster mail icon.
  */
-export const Folder = Icon.define({
+export const Mail = Icon.define({
   identity: {
     namespace: asterIconAuthoring.namespace,
-    name: "folder",
+    name: "mail",
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
     {
-      kind: "path",
-      data: "M3 7a2 2 0 0 1 2-2h5l2 2h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z",
+      kind: "rect",
+      x: 3,
+      y: 5,
+      width: 18,
+      height: 14,
+      radiusX: 2,
+      radiusY: 2,
+    },
+    {
+      kind: "polyline",
+      points: [
+        { x: 4, y: 7 },
+        { x: 12, y: 13 },
+        { x: 20, y: 7 },
+      ],
     },
   ],
   metadata: {
-    displayName: "Folder",
-    tags: ["directory", "files", "folder"],
+    displayName: "Mail",
+    tags: ["email", "envelope", "inbox", "mail", "message"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

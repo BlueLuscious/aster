@@ -11,23 +11,12 @@ export const Search = Icon.define({
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
-    {
-      kind: "circle",
-      cx: 10.5,
-      cy: 10.5,
-      radius: 6.5,
-    },
-    {
-      kind: "line",
-      x1: 15,
-      y1: 15,
-      x2: 21,
-      y2: 21,
-    },
+    { kind: "circle", cx: 10.5, cy: 10.5, radius: 6 },
+    { kind: "line", x1: 15, y1: 15, x2: 21, y2: 21 },
   ],
   metadata: {
     displayName: "Search",
-    tags: ["find", "search"],
+    tags: ["find", "lookup", "search"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

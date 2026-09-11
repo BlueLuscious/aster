@@ -2,30 +2,29 @@ import { Icon } from "@aster/core";
 import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster bell icon.
+ * @description Canonical portable definition for the Aster download icon.
  */
-export const Bell = Icon.define({
+export const Download = Icon.define({
   identity: {
     namespace: asterIconAuthoring.namespace,
-    name: "bell",
+    name: "download",
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
+    { kind: "line", x1: 12, y1: 3, x2: 12, y2: 15 },
     {
-      kind: "path",
-      data: "M5 18h14l-1.5-2v-5.5a5.5 5.5 0 0 0-11 0V16z",
+      kind: "polyline",
+      points: [
+        { x: 7, y: 10 },
+        { x: 12, y: 15 },
+        { x: 17, y: 10 },
+      ],
     },
-    {
-      kind: "line",
-      x1: 10,
-      y1: 20,
-      x2: 14,
-      y2: 20,
-    },
+    { kind: "line", x1: 5, y1: 20, x2: 19, y2: 20 },
   ],
   metadata: {
-    displayName: "Bell",
-    tags: ["alert", "bell", "notification"],
+    displayName: "Download",
+    tags: ["download", "save", "transfer"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

@@ -11,18 +11,8 @@ export const Settings = Icon.define({
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
-    {
-      kind: "circle",
-      cx: 12,
-      cy: 12,
-      radius: 7,
-    },
-    {
-      kind: "circle",
-      cx: 12,
-      cy: 12,
-      radius: 3,
-    },
+    { kind: "circle", cx: 12, cy: 12, radius: 7 },
+    { kind: "circle", cx: 12, cy: 12, radius: 3 },
     { kind: "line", x1: 12, y1: 3, x2: 12, y2: 5 },
     { kind: "line", x1: 12, y1: 19, x2: 12, y2: 21 },
     { kind: "line", x1: 3, y1: 12, x2: 5, y2: 12 },
