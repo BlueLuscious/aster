@@ -20,7 +20,40 @@ function createInput() {
       height: 24,
     },
     nodes: [
-      { kind: "path", data: " M2 12h20 " },
+      {
+        kind: "path",
+        commands: [
+          { kind: "move", x: 2, y: 12 },
+          { kind: "line", x: 4, y: 12 },
+          {
+            kind: "cubic-bezier",
+            x: 8,
+            y: 4,
+            control1X: 4,
+            control1Y: 8,
+            control2X: 6,
+            control2Y: 4,
+          },
+          {
+            kind: "quadratic-bezier",
+            x: 16,
+            y: 4,
+            controlX: 12,
+            controlY: 1,
+          },
+          {
+            kind: "arc",
+            x: 22,
+            y: 12,
+            radiusX: 6,
+            radiusY: 8,
+            rotation: 0,
+            largeArc: false,
+            sweep: true,
+          },
+          { kind: "close" },
+        ],
+      },
       { kind: "circle", cx: 12, cy: 12, radius: 3, fill: "#ABC" },
       { kind: "ellipse", cx: 12, cy: 12, radiusX: 6, radiusY: 4 },
       {
@@ -111,7 +144,10 @@ test("normalises all primitives into deterministic canonical data", () => {
   assert.equal(JSON.stringify(first), JSON.stringify(second));
   assert.equal(Object.is(first.viewBox.minX, -0), false);
   assert.equal(first.nodes[0]?.kind, "path");
-  assert.equal(first.nodes[0]?.kind === "path" ? first.nodes[0].data : undefined, "M2 12h20");
+  assert.equal(
+    first.nodes[0]?.kind === "path" ? first.nodes[0].commands.length : 0,
+    6,
+  );
   assert.equal(first.nodes[1]?.fill, "#aabbcc");
   assert.equal(first.metadata.displayName, "Shape Sampler");
   assert.equal(first.metadata.licence, "CC-BY-4.0");
@@ -125,10 +161,15 @@ test("deeply freezes retained data and isolates caller-owned input", () => {
   const accepted = definitionFactory.create(input);
 
   input.identity.name = "changed";
+  input.nodes[0]?.commands?.push({ kind: "line", x: 12, y: 12 });
   input.nodes[5]?.points?.push({ x: 14, y: 12 });
   input.metadata.presentation.defaults.stroke = "#ffffff";
 
   assert.equal(accepted.identity.name, "shape-sampler");
+  assert.equal(
+    accepted.nodes[0]?.kind === "path" ? accepted.nodes[0].commands.length : 0,
+    6,
+  );
   assert.equal(accepted.nodes[5]?.kind === "polyline" ? accepted.nodes[5].points.length : 0, 2);
   assert.equal(accepted.metadata.presentation.defaults.stroke, "#aabbcc");
   assertDeeplyFrozen(accepted);
@@ -205,11 +246,14 @@ test("accepts the specified numeric boundaries and canonicalises nested negative
     radiusX: -0,
   });
   Object.assign(input.nodes[5]?.points?.[0] ?? {}, { x: -0 });
+  Object.assign(input.nodes[0]?.commands?.[0] ?? {}, { x: -0 });
+  Object.assign(input.nodes[0]?.commands?.[4] ?? {}, { radiusX: -0 });
 
   const accepted = definitionFactory.create(input);
   const circle = accepted.nodes[1];
   const rectangle = accepted.nodes[3];
   const polyline = accepted.nodes[5];
+  const path = accepted.nodes[0];
 
   assert.equal(accepted.viewBox.minX, -Number.MAX_VALUE);
   assert.equal(accepted.viewBox.width, Number.MIN_VALUE);
@@ -224,6 +268,13 @@ test("accepts the specified numeric boundaries and canonicalises nested negative
   assert.equal(Object.is(rectangle.radiusX, -0), false);
   assert.ok(polyline?.kind === "polyline");
   assert.equal(Object.is(polyline.points[0]?.x, -0), false);
+  assert.ok(path?.kind === "path");
+  const move = path.commands[0];
+  assert.ok(move?.kind === "move");
+  assert.equal(Object.is(move.x, -0), false);
+  const arc = path.commands[4];
+  assert.ok(arc?.kind === "arc");
+  assert.equal(Object.is(arc.radiusX, -0), false);
 });
 
 test("rejects numbers outside each declared numeric domain", () => {
@@ -234,6 +285,13 @@ test("rejects numbers outside each declared numeric domain", () => {
   const infiniteRadius = createInput();
   Object.assign(infiniteRadius.nodes[1] ?? {}, { radius: Number.POSITIVE_INFINITY });
   expectDefinitionError(infiniteRadius, "definition.nodes[1].radius");
+
+  const negativeArcRadius = createInput();
+  Object.assign(negativeArcRadius.nodes[0]?.commands?.[4] ?? {}, { radiusX: -1 });
+  expectDefinitionError(
+    negativeArcRadius,
+    "definition.nodes[0].commands[4].radiusX",
+  );
 
   const negativeRectangleWidth = createInput();
   Object.assign(negativeRectangleWidth.nodes[3] ?? {}, { width: -1 });

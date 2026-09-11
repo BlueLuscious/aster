@@ -3,6 +3,7 @@ import type {
   IconPathArcCommand,
   IconPathCommandType,
   IconPathCubicBezierCommand,
+  IconPathNode,
 } from "../../src/index.js";
 
 const commands: readonly IconPathCommandType[] = [
@@ -52,6 +53,16 @@ function endpoint(command: IconPathCommandType): readonly [number, number] | und
 
 const cubic: IconPathCubicBezierCommand = commands[2] as IconPathCubicBezierCommand;
 const arc: IconPathArcCommand = commands[4] as IconPathArcCommand;
+const pathNode: IconPathNode = {
+  kind: "path",
+  commands,
+};
+
+const rawPathNode: IconPathNode = {
+  kind: "path",
+  // @ts-expect-error Raw SVG path data is not a portable Core definition shape.
+  data: "M2 12H20",
+};
 
 // @ts-expect-error Portable command sequences are readonly.
 commands.push({ kind: iconPathCommandKinds.close });
@@ -90,3 +101,5 @@ void arc.largeArc;
 void relativeMove;
 void incompleteCubic;
 void numericArcFlag;
+void pathNode;
+void rawPathNode;

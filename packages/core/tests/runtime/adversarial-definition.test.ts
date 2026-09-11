@@ -109,6 +109,36 @@ test("rejects symbolic, hidden, and accessor-owned fields", () => {
     "definition.metadata.displayName",
   );
   assert.equal(reads, 0);
+
+  const nodeKindAccessor = createInput();
+  Object.defineProperty(nodeKindAccessor.nodes[0], "kind", {
+    configurable: true,
+    enumerable: true,
+    get() {
+      reads += 1;
+      return "circle";
+    },
+  });
+  expectDefinitionError(
+    () => Icon.define(nodeKindAccessor as never),
+    "definition.nodes[0].kind",
+  );
+  assert.equal(reads, 0);
+
+  const presentationAccessor = createInput();
+  Object.defineProperty(presentationAccessor.nodes[0], "fill", {
+    configurable: true,
+    enumerable: true,
+    get() {
+      reads += 1;
+      return "none";
+    },
+  });
+  expectDefinitionError(
+    () => Icon.define(presentationAccessor as never),
+    "definition.nodes[0].fill",
+  );
+  assert.equal(reads, 0);
 });
 
 test("rejects sparse arrays and arrays with authored properties", () => {
