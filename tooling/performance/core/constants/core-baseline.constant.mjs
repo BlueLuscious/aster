@@ -3,7 +3,7 @@
  */
 export const coreBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
-  schemaVersion: 3,
+  schemaVersion: 4,
   /** @description Measured public package identity. */
   packageName: "@aster/core",
   /** @description Workspace-relative measured package root. */
@@ -21,6 +21,27 @@ export const coreBaseline = Object.freeze({
     iconCanonical: Object.freeze({
       /** @description Stable report scenario identity. */
       name: "core.icon.define.canonical",
+      /** @description Public operations executed per sample. */
+      operationsPerSample: 2_000,
+    }),
+    /** @description Straight structured path construction scenario. */
+    pathStraight: Object.freeze({
+      /** @description Stable report scenario identity. */
+      name: "core.icon.define.path-straight",
+      /** @description Public operations executed per sample. */
+      operationsPerSample: 2_000,
+    }),
+    /** @description Curved structured path construction scenario. */
+    pathCurved: Object.freeze({
+      /** @description Stable report scenario identity. */
+      name: "core.icon.define.path-curved",
+      /** @description Public operations executed per sample. */
+      operationsPerSample: 2_000,
+    }),
+    /** @description Compound structured path construction scenario. */
+    pathCompound: Object.freeze({
+      /** @description Stable report scenario identity. */
+      name: "core.icon.define.path-compound",
       /** @description Public operations executed per sample. */
       operationsPerSample: 2_000,
     }),

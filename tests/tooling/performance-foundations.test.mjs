@@ -62,6 +62,9 @@ test("prepares distinct mutable and canonical Core benchmark fixtures", () => {
     fixtures.singleCanonicalCollection.icons[0],
     fixtures.canonicalIcons[0],
   );
+  assert.equal(fixtures.straightPath.nodes[0]?.commands.length, 2);
+  assert.equal(fixtures.curvedPath.nodes[0]?.commands.length, 4);
+  assert.equal(fixtures.compoundPath.nodes[0]?.commands.length, 8);
 });
 
 test("runs the complete Core scenario matrix through public values", async () => {
@@ -95,20 +98,23 @@ test("runs the complete Core scenario matrix through public values", async () =>
   );
   const report = await runner.run();
 
-  assert.equal(report.schemaVersion, 3);
+  assert.equal(report.schemaVersion, 4);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
     Object.values(coreBaseline.scenarios).map((scenario) => scenario.name),
   );
   assert.equal(measured[0]?.checksum, measured[1]?.checksum);
-  assert.equal(measured[2]?.checksum, 10);
-  assert.equal(measured[3]?.checksum, 34);
+  assert.equal(measured[2]?.checksum, 4);
+  assert.equal(measured[3]?.checksum, 8);
+  assert.equal(measured[4]?.checksum, 16);
+  assert.equal(measured[5]?.checksum, 10);
+  assert.equal(measured[6]?.checksum, 34);
   const completeCollectionChecksum =
     2 *
     (fixtures.canonicalCollection.icons.length +
       fixtures.canonicalCollection.identity.name.length);
-  assert.equal(measured[4]?.checksum, completeCollectionChecksum);
-  assert.equal(measured[5]?.checksum, completeCollectionChecksum);
+  assert.equal(measured[7]?.checksum, completeCollectionChecksum);
+  assert.equal(measured[8]?.checksum, completeCollectionChecksum);
   assert.deepEqual(report.distribution, { packagePath: "packages/core" });
 });
 

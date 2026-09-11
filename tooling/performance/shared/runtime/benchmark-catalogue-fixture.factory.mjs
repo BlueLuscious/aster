@@ -93,7 +93,15 @@ export class BenchmarkCatalogueFixtureFactory {
       case 0:
         return [{ kind: "circle", cx: 12, cy: 12, radius: 3 + (index % 6) }];
       case 1:
-        return [{ kind: "path", data: `M${2 + (index % 3)} 12h${16 - (index % 3)}` }];
+        return [
+          {
+            kind: "path",
+            commands: [
+              { kind: "move", x: 2 + (index % 3), y: 12 },
+              { kind: "line", x: 18, y: 12 },
+            ],
+          },
+        ];
       case 2:
         return [
           { kind: "line", x1: 3, y1: 12, x2: 21, y2: 12 },
