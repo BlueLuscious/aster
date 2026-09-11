@@ -11,8 +11,9 @@ collections, or make TypeScript source a universal Aster requirement.
 
 ## Comparison Evidence
 
-The representative `arrow-left` workflow exercises the same identity, geometry, metadata, and
-presentation policy in both directions:
+An isolated representative `arrow-left` workflow exercises the same identity, geometry, metadata,
+and presentation policy in both directions without asserting equality with current product
+artwork:
 
 ```text
 TypeScript definition --> @aster/svg --> deterministic review markup
@@ -21,8 +22,10 @@ SVG geometry + reviewed Core metadata --> @aster/import --> editable portable de
 ```
 
 The repository workflow test verifies that both authoring paths produce the same deeply
-normalised portable definition. It also verifies deterministic TypeScript-to-SVG rendering and a
-correction from an off-grid visual-review finding back to the authored TypeScript geometry.
+normalised portable definition and deterministic TypeScript-to-SVG rendering. Independent batch
+adoption proves that host-owned source families do not share state. A separate catalogue workflow
+discovers one non-empty canonical collection, plans its complete export through the public CLI and
+compares every planned artefact with direct public SVG rendering.
 
 Run the complete comparison evidence with:
 
