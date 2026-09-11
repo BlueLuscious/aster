@@ -18,6 +18,8 @@ import type {
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { CommandLineError } from "../../src/shell/parsing/runtime/command-line.error.js";
 import { CommandLineParser } from "../../src/shell/parsing/runtime/command-line.parser.js";
+import { ReviewDocumentFactory } from "../../src/review/runtime/review-document.factory.js";
+import type { TCatalogueSelection } from "../../src/catalogue/types/internal/catalogue-selection.type.js";
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -28,23 +30,50 @@ const presentation = Object.freeze({
   overrides: Object.freeze([]),
 });
 
-function createIcon(name: string, data = "M1 1L23 23"): IconDefinition {
+function createIcon(name: string, displayName = name): IconDefinition {
   return Icon.define({
     identity: { namespace: "testing", name },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [
-      { kind: "path", data },
+      {
+        kind: "path",
+        commands: [
+          { kind: "move", x: 1, y: 1 },
+          { kind: "line", x: 23, y: 23 },
+        ],
+      },
       { kind: "circle", cx: 12, cy: 12, radius: 2 },
-      { kind: "path", data: "M4 4L20 20" },
+      {
+        kind: "path",
+        commands: [
+          { kind: "move", x: 4, y: 4 },
+          { kind: "line", x: 20, y: 20 },
+        ],
+      },
     ],
     metadata: {
-      displayName: name,
+      displayName,
       tags: ["testing", name],
       rtl: "preserve",
       presentation,
       deprecated: false,
     },
   });
+}
+
+function createMalformedIcon(name: string): IconDefinition {
+  const accepted = createIcon(name);
+
+  return {
+    ...accepted,
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: 0, y: 0 },
+        { kind: "line", x: Number.NaN, y: 1 },
+      ],
+    }],
+  } as IconDefinition;
 }
 
 function createCollection(
@@ -237,26 +266,26 @@ test("retains exact missing, ambiguous, and explicit-provider selection semantic
 });
 
 test("contains SVG failures and malformed review invocations", async () => {
-  const invalid = createIcon("invalid", "M0 0\u0000");
-  const context = createContext([createProvider("testing", {
-    icons: [{ definition: invalid, memberships: [] }],
-    collections: [],
-  })]);
-  const failed = await AsterCommands.execute({
-    command: "review",
+  const invalid = createMalformedIcon("invalid");
+  const selection: TCatalogueSelection = Object.freeze({
+    catalogue: "testing",
     subject: "icon",
     identity: "testing/invalid",
-  }, context);
+    icons: Object.freeze([
+      Object.freeze({ definition: invalid, memberships: Object.freeze([]) }),
+    ]),
+  });
+  const failed = new ReviewDocumentFactory().create(selection);
   const malformed = await AsterCommands.execute({
     command: "review",
     subject: "icons",
     identity: "testing/invalid",
-  } as never, context);
+  } as never, representativeContext);
 
-  assert.equal(failed.ok, false);
+  assert.equal(failed.accepted, false);
   assert.equal(malformed.ok, false);
 
-  if (!failed.ok && !malformed.ok) {
+  if (!failed.accepted && !malformed.ok) {
     assert.equal(failed.diagnostic.code, "ASTER-CLI-007");
     assert.deepEqual(failed.diagnostic.related, ["testing/invalid"]);
     assert.doesNotMatch(failed.diagnostic.message, /XML 1\.0|definition\.nodes/u);

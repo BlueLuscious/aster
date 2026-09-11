@@ -144,7 +144,13 @@ test("escapes hostile authored text and explicit attribute contexts", async () =
   const icon = Icon.define({
     identity: { namespace: "testing", name: "hostile" },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
-    nodes: [{ kind: "path", data: "M1 1L23 23" }],
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: 1, y: 1 },
+        { kind: "line", x: 23, y: 23 },
+      ],
+    }],
     metadata: {
       displayName: dangerous,
       tags: ["safe-tag"],
