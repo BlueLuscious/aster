@@ -15,6 +15,10 @@ without acquiring host authority or replacing TypeScript-first authorship.
 8. `IconImport.adoptMany()` composes a non-empty batch, rejects collisions and returns canonical
    identity order without partial output.
 
+For path geometry, the SVG adapter validates authored source syntax and translates relative,
+shorthand and repeated commands into Core's absolute structured command sequence. Raw `d` text
+does not cross the format-neutral draft boundary.
+
 The host decides whether and where to persist emitted content. Import never reads directories,
 writes files, replaces existing source, tracks stale output or controls process status.
 
@@ -27,6 +31,11 @@ batch calls so their membership, naming, review and commit boundaries do not lea
 The emitted module imports only `@aster/core`. Once retained as canonical authored source, it
 compiles, imports and renders through `@aster/svg` without `@aster/import`, the original SVG or
 external metadata files.
+
+Path nodes are emitted as structured command objects. Re-importing equivalent compact SVG and
+authoring those same canonical commands in TypeScript therefore produce byte-equivalent SVG when
+rendered with the same definition metadata and options; exact preservation of source spelling is
+not promised.
 
 Repository conformance exercises both direct TypeScript-first authorship and adopted editable
 modules through the built Core, Import and SVG package roots. Independent host-owned batches are

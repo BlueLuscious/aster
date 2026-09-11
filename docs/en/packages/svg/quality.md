@@ -30,7 +30,7 @@ resolved through the package export map.
 | Definition boundary | Public Core `Icon.define()` reconstruction | Implemented |
 | Option acceptance | `SvgRenderOptionsNormaliser` and SVG-owned closed field schema | Implemented with exact reflective isolation |
 | Render transaction | `SvgRenderer` | Implemented with explicit Core-error translation |
-| Markup production | `SvgMarkupSerialiser` and SVG-owned XML character validator | Implemented with exact XML 1.0 conformance |
+| Markup production | `SvgMarkupSerialiser`, structured-path serialisation and SVG-owned XML character validation | Implemented with exact path and XML conformance |
 | Failure identity | Frozen public `SvgRenderError` with static and instance code | Implemented |
 
 The runtime classes are cohesive state-free authorities despite their method counts. Splitting
@@ -56,8 +56,8 @@ direction owns the other.
 ## Distribution snapshot
 
 The package emits native ES2022 ESM with one public root export and `sideEffects: false`.
-The unminified TypeScript distribution contains 19 JavaScript modules totalling 27,315 bytes and
-19 declaration files totalling 7,609 bytes. Its sole production dependency is the public
+The unminified TypeScript distribution contains 22 JavaScript modules totalling 32,335 bytes and
+22 declaration files totalling 9,232 bytes. Its sole production dependency is the public
 `@aster/core` package root. These values are inspection evidence, not fixed compatibility or
 performance promises.
 
@@ -72,7 +72,7 @@ and recognised reverse dependency restrictions.
 Existing runtime evidence covers:
 
 - exact representative standalone markup and stable attribute order;
-- opaque path-data serialisation without parser duplication or geometry repair;
+- deterministic structured-path serialisation without source-parser duplication or geometry repair;
 - every portable geometry kind and complete presentation output order;
 - authorised presentation precedence and hexadecimal paint canonicalisation;
 - the complete decorative, labelled, titled, semantic, and conflicting accessibility matrix;
