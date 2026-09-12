@@ -23,6 +23,10 @@ contracts and rejected mutation. Catalogue source tooling separately proves that
 `.icon.ts` and `.collection.ts` modules deterministically regenerate their barrels and aggregate
 indexes.
 
+For path nodes, the same corpus evidence traverses every structured command operand, enforces the
+shared half-unit authoring grid and rejects definitions that exceed the collection command budget.
+Raw SVG path text is not accepted as authored catalogue data.
+
 ## Distribution evidence
 
 ABI tests build the package and verify exact root, per-icon, collection-family and per-collection

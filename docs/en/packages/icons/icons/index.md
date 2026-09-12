@@ -4,10 +4,9 @@ Status: **Experimental**
 
 The `icons` feature contains one canonical TypeScript module and one named immutable value per
 authored icon. `AsterIcons` is the complete immutable package index over those independent values.
-The current corpus contains seventeen of the twenty-six definitions accepted for foundational
-Amellus authorship. Seven foundational candidates originate in the Experimental Aster pilot,
-eight close identified semantic gaps, and two complete the directional-arrow family. Nine accepted
-concepts await structured-path authorship and are not package exports.
+The current corpus contains all twenty-six definitions accepted for foundational Amellus
+authorship. Seventeen definitions remain primitive-first. Nine use structured absolute path
+commands, combined with clearer primitives where appropriate, and contain no raw SVG path text.
 
 Canonical source modules use `<icon-slug>.icon.ts`. The semantic role remains internal to the
 source layout: public imports omit it and retain `@aster/icons/<icon-slug>`.
@@ -20,10 +19,18 @@ source layout: public imports omit it and retain `@aster/icons/<icon-slug>`.
 | `ArrowLeft` | `aster/arrow-left` | Directionality, diagonals, open terminals, and RTL mirroring. |
 | `ArrowRight` | `aster/arrow-right` | Opposing logical direction, diagonals, open terminals, and RTL mirroring. |
 | `ArrowUp` | `aster/arrow-up` | Opposing vertical direction, diagonals, open terminals, and preserved RTL orientation. |
+| `Bell` | `aster/bell` | Curved enclosure, detached baseline, symmetry, and minimum-size spacing. |
+| `Camera` | `aster/camera` | Rounded structured enclosure, circular lens, and mixed geometry. |
 | `Check` | `aster/check` | Unequal diagonals and open-terminal rhythm. |
 | `Close` | `aster/close` | Diagonal symmetry and crossing strokes. |
+| `Cloud` | `aster/cloud` | Connected elliptical arcs, organic balance, and closed contour continuity. |
 | `Download` | `aster/download` | Vertical movement, open terminals, and receiving baseline. |
+| `Folder` | `aster/folder` | Asymmetric tab, rounded enclosure, and grouped-container metaphor. |
+| `Heart` | `aster/heart` | Symmetric cubic curves, organic tension, and pointed lower convergence. |
+| `Home` | `aster/home` | Primitive roof, structured enclosure, centred entrance, and negative space. |
 | `Info` | `aster/info` | Circular enclosure, minimum-size spacing, and detached detail. |
+| `Leaf` | `aster/leaf` | Organic cubic contour, internal vein, and deliberate asymmetry. |
+| `Lock` | `aster/lock` | Rounded rectangular body, curved shackle, and enclosed negative space. |
 | `Mail` | `aster/mail` | Rounded enclosure, diagonal rhythm, and message metaphor. |
 | `Menu` | `aster/menu` | Parallel rhythm, equal stroke extent, and open terminals. |
 | `Pause` | `aster/pause` | Parallel vertical symmetry and media distinction. |
@@ -32,6 +39,7 @@ source layout: public imports omit it and retain `@aster/icons/<icon-slug>`.
 | `Search` | `aster/search` | Circle-line transition and diagonal handle. |
 | `Settings` | `aster/settings` | Highest primitive count and radial detail budget. |
 | `Star` | `aster/star` | Repeated points, polygon rhythm, and near-safe-area extents. |
+| `User` | `aster/user` | Circular head, curved shoulders, symmetry, and minimum-size recognition. |
 | `Warning` | `aster/warning` | Triangular enclosure, vertical detail, and minimum-size spacing. |
 
 Every icon:
@@ -41,7 +49,7 @@ Every icon:
 - uses geometry values on the provisional half-unit grid;
 - resolves ISC licence and BlueLuscious attribution;
 - is deeply frozen by Core;
-- remains below the provisional primitive budget;
+- remains below the provisional primitive and structured-command budgets;
 - exports through `@aster/icons/<icon-slug>`.
 
 `AsterIcons` retains the canonical definitions in identity order. Catalogue source synchronisation
@@ -54,7 +62,7 @@ Only `ArrowLeft` and `ArrowRight` use the `mirror` RTL policy. The remaining ide
 geometry in RTL because their metaphors do not represent logical horizontal movement.
 
 The Experimental `AsterCollection` retains its explicit seven-icon pilot membership. The remaining
-ten authored definitions remain collection-independent until Amellus composition is accepted;
+nineteen authored definitions remain collection-independent until Amellus composition is accepted;
 inclusion in `AsterIcons` provides package discovery and does not imply collection membership.
 
 ## Metadata Scope
