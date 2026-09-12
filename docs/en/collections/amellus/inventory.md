@@ -8,6 +8,9 @@ structured absolute path commands where curves, compound contours or rounded enc
 geometry clearer. The structured definitions replace visually weak polygon experiments without
 restoring raw SVG path strings to TypeScript authorship.
 
+`AmellusCollection` retains the complete inventory in the semantic order below. Membership does
+not alter icon identity, metadata or availability through the independent icon index.
+
 ## Concepts
 
 | Identity | Primary role | Canonical meaning | Search tags and aliases | Source disposition |

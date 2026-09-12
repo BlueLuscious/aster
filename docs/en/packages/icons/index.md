@@ -14,7 +14,8 @@ The package:
 - applies [shared internal authoring defaults](shared/index.md) without embedding collection
   membership;
 - exposes the [representative icon set](icons/index.md) and its `AsterIcons` index;
-- exposes the independent [Aster collection](collections/index.md) and `AsterCollections` index;
+- exposes independent [canonical collections](collections/index.md) and the `AsterCollections`
+  index;
 - preserves canonical namespace, icon, and RTL identity;
 - retains effective artwork licence and attribution;
 - supports tree-shakable per-icon imports without an ambient catalogue registry.
@@ -68,6 +69,7 @@ leak through the icon root; their complete family is explicit:
 
 ```ts
 import {
+  AmellusCollection,
   AsterCollection,
   AsterCollections,
 } from "@aster/icons/collections";
@@ -77,9 +79,10 @@ import {
 a canonical source module updates its generated barrel and aggregate index during catalogue source
 synchronisation; runtime consumers never inspect the filesystem.
 
-The canonical collection can also be imported through its isolated subpath:
+Each canonical collection can also be imported through its isolated subpath:
 
 ```ts
+import { AmellusCollection } from "@aster/icons/collections/amellus";
 import { AsterCollection } from "@aster/icons/collections/aster";
 ```
 
@@ -105,8 +108,8 @@ Importing one icon:
 It does not evaluate a sibling icon or the package root. Consumers explicitly pass the resulting
 value to a renderer or adapter.
 
-Importing `AsterCollection` evaluates the collection module and its declared members. The
-collection retains the same canonical icon objects and does not reconstruct or modify them.
+Importing an isolated collection evaluates its module and declared members. The collection retains
+the same canonical icon objects and does not reconstruct or modify them.
 
 Importing the package root evaluates `AsterIcons` but no collection module. Importing
 `@aster/icons/collections` evaluates `AsterCollections`. Isolated definition subpaths remain

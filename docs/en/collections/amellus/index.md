@@ -12,15 +12,16 @@ Collection lifecycle: **Proposed**
 | Canonical slug | `amellus` |
 | Botanical identity | *Aster amellus* L. |
 | Catalogue identity | `{ name: "amellus" }` |
-| Intended module | `amellus.collection.ts` |
-| Intended public subpath | `@aster/icons/collections/amellus` |
+| Canonical module | `amellus.collection.ts` |
+| Public subpath | `@aster/icons/collections/amellus` |
 | Curator and original artwork author | BlueLuscious |
 | Intended artwork licence | [ISC](../../../../LICENSE) |
 | Lifecycle | Proposed until visual, technical, provenance and curatorial acceptance is complete. |
 
 `Amellus` is the frozen identity for Aster's foundational minimalist general-purpose collection.
-The identity reserves a collection name and product boundary; it does not assert that an
-`AmellusCollection` definition, its inventory, or any release-quality artwork already exists.
+`AmellusCollection` now retains the complete accepted inventory through the portable Core
+collection boundary. Its Proposed lifecycle still makes no release-quality or stable artwork
+promise before visual and release evidence is accepted.
 
 ## Naming decision
 
@@ -77,16 +78,17 @@ presentation, geometry, minimum-size and RTL rules. The [initial inventory](inve
 the bounded semantic set, search vocabulary, adjacent-concept distinctions and representative
 stress coverage accepted for authorship.
 
-These documents govern future collection acceptance. They do not create definitions, membership
-or generated catalogue output merely by existing.
+These documents govern collection acceptance but do not create definitions, membership or
+generated catalogue output merely by existing. The canonical TypeScript collection module is the
+membership authority.
 
 ## Pilot relationship
 
-The original sixteen Experimental Aster pilot icons are candidate inputs, not inherited members.
-Seven primitive-first definitions remain in that collection. Nine former raw-path candidates and
-their visually weak polygon replacements were discarded, then independently reauthored through
-portable structured commands and reviewed against the Amellus visual language. Their existence
-still does not grant Amellus membership before collection composition and curatorial acceptance.
+The original Experimental Aster pilot does not own Amellus membership. Seven primitive-first
+definitions belong to both collections through the same independent icon values. Nine former
+raw-path candidates and their visually weak polygon replacements were discarded, then
+independently reauthored through portable structured commands. All twenty-six accepted definitions
+now belong to Amellus through explicit composition rather than inheritance from the pilot.
 
 No compatibility promise, source alias or collection replacement relationship exists between
 `aster` and `amellus` merely because pilot artwork is considered. Amellus must not preserve weak,
@@ -109,6 +111,6 @@ authority and explicit curatorial acceptance before inclusion. Botanical taxonom
 the collection name only: their text and images are not artwork sources and confer no artwork
 licence on Amellus.
 
-Promotion from Proposed requires a documented visual language, bounded inventory, complete
-canonical definitions, collection composition, static review, pilot disposition, package
-conformance and release evidence. Documentation alone does not promote the collection.
+Promotion from Proposed requires static visual review, pilot disposition, package conformance and
+release evidence in addition to the accepted visual language, inventory, canonical definitions and
+collection composition. Documentation alone does not promote the collection.

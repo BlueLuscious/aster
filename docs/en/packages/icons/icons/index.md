@@ -61,9 +61,10 @@ discovery service.
 Only `ArrowLeft` and `ArrowRight` use the `mirror` RTL policy. The remaining identities preserve
 geometry in RTL because their metaphors do not represent logical horizontal movement.
 
-The Experimental `AsterCollection` retains its explicit seven-icon pilot membership. The remaining
-nineteen authored definitions remain collection-independent until Amellus composition is accepted;
-inclusion in `AsterIcons` provides package discovery and does not imply collection membership.
+`AmellusCollection` explicitly retains all twenty-six definitions. The Experimental
+`AsterCollection` independently retains its seven-icon pilot subset, so those values demonstrate
+multi-collection membership without acquiring mutable reverse links. Inclusion in `AsterIcons`
+still provides package discovery only and never implies membership in a future collection.
 
 ## Metadata Scope
 

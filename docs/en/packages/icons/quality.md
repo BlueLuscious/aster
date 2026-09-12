@@ -11,8 +11,13 @@ stable artwork or compatibility promise.
 
 Runtime tests discover every canonical icon and collection from generated immutable indexes. They
 require both families to be non-empty, reconstruct every definition through public `@aster/core`,
-verify deep immutability and uniqueness, and validate bidirectional collection membership without
-assuming a fixed catalogue count or collection identity.
+verify deep immutability and uniqueness, and validate collection membership against the independent
+icon index without assuming a fixed catalogue count or collection identity.
+
+Collection-specific evidence separately protects Amellus's accepted twenty-six-member semantic
+order, metadata, complete icon-index membership and independence from additional or reduced test
+collections. This exact evidence belongs to the collection contract rather than the generic
+catalogue-growth tests.
 
 Identity-specific assertions remain only where the identity carries the behaviour under test.
 Declared directional arrow pairs therefore retain exact RTL and relationship evidence; generic
@@ -32,7 +37,8 @@ Raw SVG path text is not accepted as authored catalogue data.
 ABI tests build the package and verify exact root, per-icon, collection-family and per-collection
 exports against discovered canonical source modules. They also verify declarations, ESM loading,
 object identity across import routes, `sideEffects: false`, dependency confinement to public
-`@aster/core`, and rejection of implementation subpaths.
+`@aster/core`, rejection of implementation subpaths and isolated collection dependencies on only
+their explicitly declared icon modules.
 
 The exact exported subpath set is intentional distribution evidence even though its membership
 grows with the catalogue. The test derives that set from canonical modules rather than maintaining
