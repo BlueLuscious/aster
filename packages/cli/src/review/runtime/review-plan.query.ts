@@ -47,7 +47,10 @@ export class ReviewPlanQuery {
   async execute(
     invocation: Extract<
       AsterCommandInvocationType,
-      { command: typeof asterCommandNames.review }
+      {
+        /** @description Review-command discriminator used for invocation narrowing. */
+        command: typeof asterCommandNames.review;
+      }
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {

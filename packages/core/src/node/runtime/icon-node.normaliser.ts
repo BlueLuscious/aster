@@ -4,6 +4,7 @@ import { IconPresentationNormaliser } from "../../presentation/runtime/icon-pres
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
 import { iconNodeKinds } from "../constants/icon-node-kinds.constant.js";
+import { IconPathCommandNormaliser } from "./icon-path-command.normaliser.js";
 import { IconPointSequenceNormaliser } from "./icon-point-sequence.normaliser.js";
 
 /**
@@ -19,6 +20,11 @@ export class IconNodeNormaliser {
    * @description Explicit node presentation normaliser.
    */
   readonly #presentationNormaliser = new IconPresentationNormaliser();
+
+  /**
+   * @description Structured path command sequence normaliser.
+   */
+  readonly #pathCommandNormaliser = new IconPathCommandNormaliser();
 
   /**
    * @description Coordinate sequence normaliser.
@@ -53,13 +59,17 @@ export class IconNodeNormaliser {
   #normaliseNode(value: unknown, path: string): IconNodeType {
     const record = this.#validator.record(value, path);
     const presentation = this.#normaliseNodePresentation(record, path);
+    const kind = this.#validator.dataProperty(record, "kind", `${path}.kind`);
 
-    switch (record.kind) {
+    switch (kind) {
       case iconNodeKinds.path:
-        this.#acceptNodeFields(record, ["kind", "data"], path);
+        this.#acceptNodeFields(record, ["kind", "commands"], path);
         return Object.freeze({
           kind: iconNodeKinds.path,
-          data: this.#validator.text(record.data, `${path}.data`),
+          commands: this.#pathCommandNormaliser.normaliseSequence(
+            record.commands,
+            `${path}.commands`,
+          ),
           ...presentation,
         });
       case iconNodeKinds.circle:
@@ -175,8 +185,12 @@ export class IconNodeNormaliser {
     const input: Record<string, unknown> = {};
 
     for (const field of iconPresentationFields) {
-      if (field in record) {
-        input[field] = record[field];
+      if (Object.hasOwn(record, field)) {
+        input[field] = this.#validator.dataProperty(
+          record,
+          field,
+          `${path}.${field}`,
+        );
       }
     }
 

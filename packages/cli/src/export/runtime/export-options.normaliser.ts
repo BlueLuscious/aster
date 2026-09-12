@@ -184,6 +184,7 @@ export class ExportOptionsNormaliser {
    * @description Creates one structured usage rejection for malformed export options.
    * @param message - Deterministic explanation of the violated option contract.
    * @returns Immutable rejected acceptance result.
+   * @typeParam Value - Export option family rejected before acceptance.
    */
   #invalid<Value>(message: string): TAcceptanceResult<Value> {
     return Object.freeze({

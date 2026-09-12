@@ -50,7 +50,13 @@ export class CatalogueListQuery {
    * @returns Structured immutable list result.
    */
   async execute(
-    invocation: Extract<AsterCommandInvocationType, { command: typeof asterCommandNames.list }>,
+    invocation: Extract<
+      AsterCommandInvocationType,
+      {
+        /** @description List-command discriminator used for invocation narrowing. */
+        command: typeof asterCommandNames.list;
+      }
+    >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
     const loaded = await this.#loader.load(context.catalogues);

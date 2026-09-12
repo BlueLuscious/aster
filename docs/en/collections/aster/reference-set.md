@@ -28,13 +28,13 @@ explicit collection membership, deterministic rendering, and distinct output at 
 These checks do not promote safe-area, occupied-area, optical, curve-quality or minimum-size
 hypotheses to stable rules.
 
-## Deferred concepts
+## Independent structured concepts
 
-`bell`, `camera`, `cloud`, `folder`, `heart`, `home`, `leaf`, `lock` and `user` are not canonical
-definitions or Aster collection members. Their discarded path strings and visually weak polygon
-experiments carry no compatibility promise. The accepted Amellus inventory retains these concepts
-until structured-path authorship can express their contours without making opaque raw path data the
-preferred editing surface.
+`bell`, `camera`, `cloud`, `folder`, `heart`, `home`, `leaf`, `lock` and `user` are canonical
+definitions but are not Aster collection members. Their current modules use structured portable
+commands and clear primitives instead of the discarded raw path strings and visually weak polygon
+experiments. Those discarded representations carry no compatibility promise, and the independent
+definitions do not expand this pilot's membership or visual contract.
 
 ## Semantic adjacency
 

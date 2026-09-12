@@ -51,6 +51,11 @@ dimensions. Nodes form a non-empty ordered sequence from the closed portable geo
 Metadata resolves display information, intrinsic tags, RTL policy, presentation policy, licensing,
 deprecation, and optional replacement identity.
 
+Path nodes retain structured absolute commands rather than target-specific SVG text. Their command
+sequences validate exact shapes, finite operands and contour ordering before each command and the
+sequence are cloned and frozen. Textual path parsing and target serialisation remain consumer
+responsibilities.
+
 Canonicalisation includes trimming accepted text, normalising negative zero, expanding and
 lowercasing hexadecimal colours, ordering closed presentation capabilities, and cloning retained
 arrays and objects. The returned graph is deeply frozen and no mutable authored array or nested

@@ -37,8 +37,8 @@ the same definitions remain directly usable without importing or consulting that
 
 The [pilot reference set](reference-set.md) contains seven canonical Experimental definitions and
 records the current structural and curatorial evidence. Nine former path-authored experiments and
-their visually weak polygon replacements were discarded pending structured-path authorship for
-Amellus.
+their visually weak polygon replacements were discarded. Their independently reauthored
+structured definitions belong to the wider icon catalogue, not to this collection.
 The collection is not release quality and must not be presented as an Active collection before
 curatorial and release evidence is accepted.
 

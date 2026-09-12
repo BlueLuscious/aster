@@ -7,7 +7,7 @@ import { svgPathCommandParameterCounts } from "../constants/svg-path-command-par
 import { svgPathCommands } from "../constants/svg-path-commands.constant.js";
 
 /**
- * @description Validates SVG path grammar and extracts canonical data and retained command facts.
+ * @description Validates SVG path grammar and extracts immutable source command facts.
  */
 export class SvgPathDataInspector {
   /**
@@ -47,8 +47,12 @@ export class SvgPathDataInspector {
       return this.#invalid();
     }
 
-    const segments: TSvgPathSegment[] = [];
-    let current: TSvgPathSegment | undefined;
+    const segments: {
+      authoredCommand: string;
+      command: TSvgPathCommand;
+      values: number[];
+    }[] = [];
+    let current: (typeof segments)[number] | undefined;
 
     for (const token of tokens) {
       if (typeof token === "string") {
@@ -77,7 +81,9 @@ export class SvgPathDataInspector {
       return this.#invalid();
     }
 
-    let hasDrawingOperation = false;
+    let commandCount = 0;
+    let contourStarted = false;
+    let contourDrawn = false;
 
     for (let index = 0; index < segments.length; index += 1) {
       const segment = segments[index];
@@ -98,42 +104,58 @@ export class SvgPathDataInspector {
       }
 
       if (
-        index > 0 &&
-        segments[index - 1]?.command === svgPathCommands.close &&
-        segment.command !== svgPathCommands.move
-      ) {
-        return this.#invalid();
-      }
-
-      if (
         segment.command === svgPathCommands.arc &&
         !this.#validArcParameters(segment.values)
       ) {
         return this.#invalid();
       }
 
-      if (
-        (segment.command !== svgPathCommands.move &&
-          segment.command !== svgPathCommands.close) ||
-        (segment.command === svgPathCommands.move &&
-          segment.values.length > 2)
-      ) {
-        hasDrawingOperation = true;
-      }
+      const operationCount =
+        parameterCount === 0 ? 1 : segment.values.length / parameterCount;
+      commandCount += operationCount;
 
+      if (segment.command === svgPathCommands.move) {
+        if (contourStarted && !contourDrawn) {
+          return this.#invalid();
+        }
+
+        contourStarted = true;
+        contourDrawn = operationCount > 1;
+      } else if (segment.command === svgPathCommands.close) {
+        if (!contourStarted || !contourDrawn) {
+          return this.#invalid();
+        }
+
+        contourStarted = false;
+        contourDrawn = false;
+      } else {
+        if (!contourStarted) {
+          return this.#invalid();
+        }
+
+        contourDrawn = true;
+      }
     }
+
+    if (contourStarted && !contourDrawn) {
+      return this.#invalid();
+    }
+
+    const acceptedSegments = Object.freeze(
+      segments.map((segment) =>
+        Object.freeze({
+          authoredCommand: segment.authoredCommand,
+          command: segment.command,
+          values: Object.freeze(segment.values),
+        }),
+      ),
+    );
 
     return Object.freeze({
       valid: true,
-      commandCount: segments.length,
-      hasDrawingOperation,
-      canonicalData: segments
-        .map((segment) =>
-          segment.values.length === 0
-            ? segment.authoredCommand
-            : `${segment.authoredCommand} ${segment.values.join(" ")}`,
-        )
-        .join(" "),
+      commandCount,
+      hasDrawingOperation: true,
+      segments: acceptedSegments satisfies readonly TSvgPathSegment[],
     });
   }
 
@@ -252,7 +274,7 @@ export class SvgPathDataInspector {
 
   /**
    * @description Creates the canonical malformed path inspection result.
-   * @returns Frozen invalid inspection with no advisory facts.
+   * @returns Frozen invalid inspection with no retained source segments.
    */
   #invalid(): TSvgPathInspection {
     return Object.freeze({

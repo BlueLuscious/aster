@@ -34,7 +34,6 @@ function createIcon(
   options: Readonly<{
     namespace?: string;
     variant?: string;
-    data?: string;
   }> = {},
 ): IconDefinition {
   return Icon.define({
@@ -46,7 +45,13 @@ function createIcon(
       ...(options.variant === undefined ? {} : { variant: options.variant }),
     },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
-    nodes: [{ kind: "path", data: options.data ?? "M1 1L23 23" }],
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: 1, y: 1 },
+        { kind: "line", x: 23, y: 23 },
+      ],
+    }],
     metadata: {
       displayName: name,
       rtl: "preserve",
@@ -54,6 +59,21 @@ function createIcon(
       deprecated: false,
     },
   });
+}
+
+function createMalformedIcon(name: string): IconDefinition {
+  const accepted = createIcon(name, { namespace: "testing" });
+
+  return {
+    ...accepted,
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: 0, y: 0 },
+        { kind: "line", x: Number.NaN, y: 1 },
+      ],
+    }],
+  } as IconDefinition;
 }
 
 function createCollection(
@@ -345,37 +365,31 @@ test("rejects unavailable collection members without exposing a partial plan", a
 
 test("translates SVG failures without exposing target messages or partial artefacts", async () => {
   const valid = createIcon("alpha-valid", { namespace: "testing" });
-  const invalid = createIcon("zeta-invalid-xml", {
-    namespace: "testing",
-    data: "M0 0\u0000",
-  });
-  const collection = createCollection("render-failure", [valid, invalid]);
-  const provider = createProvider(
-    "testing",
-    createSnapshot([invalid, valid], [collection]),
-  );
-  const result = await AsterCommands.execute({
-    command: "export",
-    subject: "collection",
+  const invalid = createMalformedIcon("zeta-invalid-definition");
+  const selection: TCatalogueSelection = Object.freeze({
+    catalogue: "testing",
+    subject: asterCommandSubjects.export.collection,
     identity: "testing/render-failure",
-  }, createContext([provider]));
+    icons: Object.freeze([
+      Object.freeze({ definition: valid, memberships: Object.freeze([]) }),
+      Object.freeze({ definition: invalid, memberships: Object.freeze([]) }),
+    ]),
+  });
+  const result = new SvgExportArtefactFactory().create(selection, undefined);
 
-  assert.equal(result.ok, false);
+  assert.equal(result.accepted, false);
 
-  if (!result.ok) {
+  if (!result.accepted) {
     assert.equal(result.diagnostic.code, "ASTER-CLI-007");
     assert.equal(result.diagnostic.category, "render-failure");
-    assert.deepEqual(result.diagnostic.related, ["testing/zeta-invalid-xml.svg"]);
+    assert.deepEqual(result.diagnostic.related, ["testing/zeta-invalid-definition.svg"]);
     assert.doesNotMatch(result.diagnostic.message, /XML 1\.0|definition\.nodes/u);
-    assert.equal("payload" in result, false);
+    assert.equal("value" in result, false);
   }
 });
 
 test("preflights path collisions before attempting SVG rendering", () => {
-  const invalid = createIcon("collision", {
-    namespace: "testing",
-    data: "M0 0\u0000",
-  });
+  const invalid = createIcon("collision", { namespace: "testing" });
   const selection: TCatalogueSelection = Object.freeze({
     catalogue: "testing",
     subject: asterCommandSubjects.export.collection,

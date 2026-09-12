@@ -57,6 +57,21 @@ export class CoreBaselineRunner {
           this.#defineIcons(this.#fixtures.canonicalIcons, iterations),
       }),
       Object.freeze({
+        ...coreBaseline.scenarios.pathStraight,
+        execute: (iterations) =>
+          this.#defineIcon(this.#fixtures.straightPath, iterations),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.pathCurved,
+        execute: (iterations) =>
+          this.#defineIcon(this.#fixtures.curvedPath, iterations),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.pathCompound,
+        execute: (iterations) =>
+          this.#defineIcon(this.#fixtures.compoundPath, iterations),
+      }),
+      Object.freeze({
         ...coreBaseline.scenarios.collectionEmpty,
         execute: (iterations) =>
           this.#defineCollection(this.#fixtures.emptyCollection, iterations),
@@ -123,6 +138,29 @@ export class CoreBaselineRunner {
 
       const definition = Icon.define(source);
       checksum = (checksum + definition.nodes.length) >>> 0;
+    }
+
+    return checksum;
+  }
+
+  /**
+   * @description Reconstructs one structured-path icon repeatedly through the public API.
+   * @param {import("@aster/core").IconDefinition} source - Prepared valid icon input.
+   * @param {number} iterations - Number of public API operations to execute.
+   * @returns {number} Deterministic checksum preventing discarded scenario results.
+   */
+  #defineIcon(source, iterations) {
+    let checksum = 0;
+
+    for (let index = 0; index < iterations; index += 1) {
+      const definition = Icon.define(source);
+      const node = definition.nodes[0];
+
+      if (node?.kind !== "path") {
+        throw new TypeError("The Core path scenario requires path geometry.");
+      }
+
+      checksum = (checksum + node.commands.length) >>> 0;
     }
 
     return checksum;

@@ -2,7 +2,7 @@
 
 Technical validation checks the view box, supported geometry, finite numeric domains, path data,
 presentation and the closed attribute subset. It retains only the validated view box, primitive
-count and path-command count consumed by the imported draft.
+count and expanded path-operation count consumed by the imported draft.
 
 Validation receives only a complete parser-neutral document. The preceding
 [parser trust boundary](../parser/index.md) owns XML capabilities, parser limits and exact lexical

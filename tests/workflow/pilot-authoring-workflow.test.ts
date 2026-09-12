@@ -104,6 +104,52 @@ test("adopts equivalent SVG into editable TypeScript and the same portable defin
   assert.equal(Svg.render(adopted), Svg.render(authorArrowLeft()));
 });
 
+test("round trips equivalent structured and compact SVG paths", () => {
+  const authored = Icon.define({
+    identity: { namespace: "workflow", name: "compound-path" },
+    viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: 2, y: 2 },
+        { kind: "line", x: 10, y: 2 },
+        { kind: "line", x: 10, y: 10 },
+        { kind: "close" },
+        { kind: "move", x: 14, y: 14 },
+        { kind: "line", x: 22, y: 14 },
+        { kind: "line", x: 22, y: 22 },
+        { kind: "close" },
+      ],
+    }],
+    metadata: {
+      ...arrowMetadata,
+      displayName: "Compound Path",
+    },
+  });
+  const result = IconImport.adopt({
+    source: {
+      format: iconImportFormats.svg,
+      sourceId: "workflow/input/compound-path.svg",
+      identity: authored.identity,
+      content:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h8v8zM14 14l8 0 0 8z"/></svg>',
+    },
+    metadata: authored.metadata,
+  });
+
+  assert.equal(result.successful, true, JSON.stringify(result.diagnostics));
+
+  if (!result.successful) {
+    throw new Error("Expected successful structured path adoption.");
+  }
+
+  const adopted = Icon.define(readAdoptedDefinition(result.value.module.content));
+  assert.deepEqual(adopted, authored);
+  assert.equal(Svg.render(adopted), Svg.render(authored));
+  assert.match(result.value.module.content, /"commands": \[/u);
+  assert.doesNotMatch(result.value.module.content, /"data":/u);
+});
+
 test("adopts independent host-owned batches into renderable editable definitions", () => {
   const flora = IconImport.adoptMany([
     adoptionRequest("flora", "leaf", '<path d="M4 20C4 10 10 4 20 4"/>'),

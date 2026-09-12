@@ -12,7 +12,10 @@ const require = createRequire(import.meta.url);
 /**
  * @description Installed package manifest containing the canonical executable version.
  */
-const manifest = require("../../package.json") as Readonly<{ version: unknown }>;
+const manifest = require("../../package.json") as Readonly<{
+  /** @description Candidate installed package version read from manifest data. */
+  version: unknown;
+}>;
 
 if (typeof manifest.version !== "string" || manifest.version.length === 0) {
   throw new TypeError("Invalid installed Aster CLI package version");

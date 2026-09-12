@@ -83,10 +83,10 @@ or generated catalogue output merely by existing.
 ## Pilot relationship
 
 The original sixteen Experimental Aster pilot icons are candidate inputs, not inherited members.
-Seven primitive-first definitions remain in that collection. Nine former path-authored candidates
-and their visually weak polygon replacements were discarded. They await structured-path authorship
-for Amellus evaluation. Each candidate may still be retained, refined, kept independently, or
-removed after static review applies the Amellus visual language and inventory criteria.
+Seven primitive-first definitions remain in that collection. Nine former raw-path candidates and
+their visually weak polygon replacements were discarded, then independently reauthored through
+portable structured commands and reviewed against the Amellus visual language. Their existence
+still does not grant Amellus membership before collection composition and curatorial acceptance.
 
 No compatibility promise, source alias or collection replacement relationship exists between
 `aster` and `amellus` merely because pilot artwork is considered. Amellus must not preserve weak,

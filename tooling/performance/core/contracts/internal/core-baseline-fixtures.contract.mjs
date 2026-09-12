@@ -7,6 +7,9 @@
  * @property {import("@aster/core").CollectionDefinition} mutableCollection - Structurally equivalent mutable complete collection input.
  * @property {import("@aster/core").CollectionDefinition} emptyCollection - Mutable valid collection without members.
  * @property {import("@aster/core").CollectionDefinition} singleCanonicalCollection - Mutable collection retaining one canonical member candidate.
+ * @property {import("@aster/core").IconDefinition} straightPath - Mutable straight-path definition.
+ * @property {import("@aster/core").IconDefinition} curvedPath - Mutable curved-path definition.
+ * @property {import("@aster/core").IconDefinition} compoundPath - Mutable compound-path definition.
  */
 
 export {};

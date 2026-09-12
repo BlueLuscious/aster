@@ -72,6 +72,11 @@ authority. Failures raised by caller-controlled reflection itself preserve their
 order, resolves complete presentation for each node, maps portable nodes to SVG geometry, escapes
 target text, and joins all content into one compact string.
 
+For path nodes, `SvgPathDataSerialiser` maps Core's absolute structured commands to target-owned
+uppercase SVG letters and canonical numeric operands. It emits expanded operations with single
+ASCII-space separators. SVG does not accept raw path strings and does not duplicate Import's
+relative-coordinate or shorthand grammar.
+
 `SvgXmlCharacterValidator` first applies the exact XML 1.0 code-point repertoire to option text and
 every source value that enters markup. It accepts valid supplementary pairs, rejects isolated
 surrogates and excluded code points, and reports the logical option or definition path without

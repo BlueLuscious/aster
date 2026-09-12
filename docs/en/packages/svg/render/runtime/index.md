@@ -13,11 +13,13 @@ implementation subpath and retains no definition, catalogue, host, or render res
 | `SvgRenderOptionsNormaliser` | Validates the closed option object and resolves viewport, presentation overrides, accessibility, and direction. | Produces `ISvgRenderContext`; raises `SvgRenderError`. |
 | `ISvgRenderContext` | Carries the accepted immutable values required for one render operation. | Contains the isolated Core definition and accepted option effects. |
 | `SvgMarkupSerialiser` | Traverses portable nodes and emits canonical complete markup. | Consumes only `ISvgRenderContext`. |
+| `SvgPathDataSerialiser` | Maps Core path commands to deterministic uppercase expanded SVG path data. | Consumes Core command discriminators and SVG-owned command letters. |
+| `SvgNumberSerialiser` | Produces locale-independent canonical numeric spelling. | Shared by geometry, presentation and path serialisation. |
 | `SvgXmlCharacterValidator` | Enforces the exact XML 1.0 character repertoire over JavaScript code points. | Used by option acceptance and markup serialisation; raises `SvgRenderError`. |
 | `svgRenderOptionsSchema` | Owns the closed option fields used by this target boundary. | Used only during SVG option acceptance. |
 | `svgXmlCharacterRanges` | Owns the immutable XML 1.0 code-point boundaries. | Prevents Core-valid text from producing malformed target markup. |
 
-Core's public `iconNodeKinds`, `iconDirections`, `iconRtlPolicies`, `iconPaintSchema`,
+Core's public `iconNodeKinds`, `iconPathCommandKinds`, `iconDirections`, `iconRtlPolicies`, `iconPaintSchema`,
 `iconPresentationOverrideOrder`, and `iconTechnicalPresentation` values are the runtime
 authorities used by this composition. SVG does not copy those portable vocabularies or import
 private Core paths.
@@ -37,9 +39,11 @@ private Core paths.
    source path.
 7. `SvgMarkupSerialiser` resolves technical defaults, icon defaults, node values, and
    authorised caller overrides for each node.
-8. It emits geometry in paint order, places optional title content first, and wraps mirror-policy
+8. `SvgPathDataSerialiser` emits structured path commands as uppercase absolute operations without
+   importing or duplicating SVG source parsing.
+9. The markup serialiser emits geometry in paint order, places optional title content first, and wraps mirror-policy
    RTL geometry exactly once.
-9. The complete string is returned only after successful serialisation.
+10. The complete string is returned only after successful serialisation.
 
 All intermediate values are local to the call. Equivalent accepted calls therefore produce the
 same bytes, and no failure can return partial markup.

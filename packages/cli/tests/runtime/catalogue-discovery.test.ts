@@ -41,12 +41,18 @@ test("exposes immutable catalogue result discriminators", () => {
 function createIcon(
   name: string,
   tags: readonly string[] = ["testing"],
-  data = "M1 1L23 23",
+  inset = 1,
 ): IconDefinition {
   return Icon.define({
     identity: { namespace: "testing", name },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
-    nodes: [{ kind: "path", data }],
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: inset, y: inset },
+        { kind: "line", x: 24 - inset, y: 24 - inset },
+      ],
+    }],
     metadata: {
       displayName: name
         .split("-")
@@ -219,7 +225,7 @@ test("adapts independent canonical indexes with derived memberships", () => {
 test("rejects invalid canonical index relationships before snapshot loading", () => {
   const factory = new AsterCatalogueSnapshotFactory();
   const indexed = createIcon("shared");
-  const conflicting = createIcon("shared", ["testing"], "M2 2L22 22");
+  const conflicting = createIcon("shared", ["testing"], 2);
   const missing = createIcon("missing");
   const conflictingCollection = createCollection("conflicting", [conflicting]);
   const unavailableCollection = createCollection("unavailable", [missing]);

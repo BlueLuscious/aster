@@ -30,7 +30,10 @@ function createDefinition(): IconDefinition {
     nodes: [
       {
         kind: "path",
-        data: 'M2 8h20"',
+        commands: [
+          { kind: "move", x: 2, y: 8 },
+          { kind: "line", x: 22, y: 8 },
+        ],
         fill: "#abc",
       },
     ],
@@ -92,7 +95,7 @@ test("renders exact golden markup with accepted presentation precedence", () => 
 
   assert.equal(
     markup,
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="32" height="32" color="#aabbcc" role="img" aria-label="Visible &quot;shape&quot; &amp; state"><title>Shape &lt;preview&gt;</title><path d="M2 8h20&quot;" fill="#445566" fill-rule="nonzero" stroke="#112233" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" opacity="1" fill-opacity="1" stroke-opacity="1"/></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="32" height="32" color="#aabbcc" role="img" aria-label="Visible &quot;shape&quot; &amp; state"><title>Shape &lt;preview&gt;</title><path d="M 2 8 L 22 8" fill="#445566" fill-rule="nonzero" stroke="#112233" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" opacity="1" fill-opacity="1" stroke-opacity="1"/></svg>',
   );
 });
 
@@ -109,7 +112,13 @@ test("serialises every portable primitive in paint and attribute order", () => {
       height: 20,
     },
     nodes: [
-      { kind: "path", data: "M0 0h1" },
+      {
+        kind: "path",
+        commands: [
+          { kind: "move", x: 0, y: 0 },
+          { kind: "line", x: 1, y: 0 },
+        ],
+      },
       { kind: "circle", cx: 4, cy: 5, radius: 2 },
       { kind: "ellipse", cx: 8, cy: 9, radiusX: 3, radiusY: 2 },
       {
@@ -152,7 +161,61 @@ test("serialises every portable primitive in paint and attribute order", () => {
 
   assert.equal(
     Svg.render(definition),
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 1 28 20" width="28" height="20" aria-hidden="true" focusable="false"><path d="M0 0h1"${presentation}/><circle cx="4" cy="5" r="2"${presentation}/><ellipse cx="8" cy="9" rx="3" ry="2"${presentation}/><rect x="1" y="2" width="6" height="7" rx="1" ry="2"${presentation}/><line x1="0" y1="1" x2="2" y2="3"${presentation}/><polyline points="0 1 2 3"${presentation}/><polygon points="0 1 2 3 4 5"${presentation}/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 1 28 20" width="28" height="20" aria-hidden="true" focusable="false"><path d="M 0 0 L 1 0"${presentation}/><circle cx="4" cy="5" r="2"${presentation}/><ellipse cx="8" cy="9" rx="3" ry="2"${presentation}/><rect x="1" y="2" width="6" height="7" rx="1" ry="2"${presentation}/><line x1="0" y1="1" x2="2" y2="3"${presentation}/><polyline points="0 1 2 3"${presentation}/><polygon points="0 1 2 3 4 5"${presentation}/></svg>`,
+  );
+});
+
+test("serialises every structured path command in canonical expanded form", () => {
+  const definition = Icon.define({
+    identity: { namespace: "testing", name: "structured-path" },
+    viewBox: { minX: 0, minY: 0, width: 32, height: 32 },
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: -0, y: 1 },
+        { kind: "line", x: 3, y: 4 },
+        {
+          kind: "cubic-bezier",
+          control1X: 5,
+          control1Y: 6,
+          control2X: 7,
+          control2Y: 8,
+          x: 9,
+          y: 10,
+        },
+        {
+          kind: "quadratic-bezier",
+          controlX: 11,
+          controlY: 12,
+          x: 13,
+          y: 14,
+        },
+        {
+          kind: "arc",
+          radiusX: 2,
+          radiusY: 3,
+          rotation: 45,
+          largeArc: false,
+          sweep: true,
+          x: 18,
+          y: 20,
+        },
+        { kind: "close" },
+        { kind: "move", x: 24, y: 24 },
+        { kind: "line", x: 28, y: 28 },
+      ],
+    }],
+    metadata: {
+      displayName: "Structured Path",
+      rtl: "preserve",
+      presentation: { defaults: {}, overrides: [] },
+      deprecated: false,
+    },
+  });
+
+  assert.match(
+    Svg.render(definition),
+    /<path d="M 0 1 L 3 4 C 5 6 7 8 9 10 Q 11 12 13 14 A 2 3 45 0 1 18 20 Z M 24 24 L 28 28"/u,
   );
 });
 
@@ -254,23 +317,6 @@ test("translates Core error identities and preserves unrelated caller failures",
   assert.equal(
     translated.message,
     "ASTER-SVG-001 at caller.definition: expected a valid portable icon definition.",
-  );
-});
-
-test("rejects a Core-valid value that cannot enter XML markup", () => {
-  const definition = Icon.define({
-    ...createDefinition(),
-    nodes: [
-      {
-        kind: "path",
-        data: "M0 0\u0000",
-      },
-    ],
-  });
-
-  expectRenderError(
-    () => Svg.render(definition),
-    "definition.nodes[0].data",
   );
 });
 
@@ -539,35 +585,26 @@ test("enforces icon-owned viewport boundaries and canonical dimensions", () => {
 
 test("accepts the exact XML 1.0 repertoire and escapes each output context", () => {
   const allowedCharacters = "\t\n\r\u007f\u0085\ufdd0\ue000\ufffd\u{10000}\u{1ffff}\u{10ffff}";
-  const definition = Icon.define({
-    ...createDefinition(),
-    nodes: [
-      {
-        kind: "path",
-        data: `M0 0${allowedCharacters}Z`,
-      },
-    ],
-  });
-  const label = 'Label\tline\nreturn\r & < > "';
-  const title = 'Title\tline\nreturn\r & < > "';
-  const markup = Svg.render(definition, {
+  const label = `Label${allowedCharacters} & < > "`;
+  const title = `Title${allowedCharacters} & < > "`;
+  const markup = Svg.render(createDefinition(), {
     label,
     title,
   });
 
-  assert.match(
-    markup,
-    / aria-label="Label&#9;line&#10;return&#13; &amp; &lt; &gt; &quot;">/u,
-  );
-  assert.ok(markup.includes('<title>Title\tline\nreturn\r &amp; &lt; &gt; "</title>'));
   assert.ok(
     markup.includes(
-      `d="M0 0&#9;&#10;&#13;\u007f\u0085\ufdd0\ue000\ufffd\u{10000}\u{1ffff}\u{10ffff}Z"`,
+      `aria-label="Label&#9;&#10;&#13;\u007f\u0085\ufdd0\ue000\ufffd\u{10000}\u{1ffff}\u{10ffff} &amp; &lt; &gt; &quot;"`,
+    ),
+  );
+  assert.ok(
+    markup.includes(
+      `<title>Title${allowedCharacters} &amp; &lt; &gt; "</title>`,
     ),
   );
 });
 
-test("rejects every XML 1.0 character gap with the source path", () => {
+test("rejects every XML 1.0 character gap with its logical option path", () => {
   const invalidCharacters = [
     "\u0000",
     "\u0008",
@@ -581,27 +618,13 @@ test("rejects every XML 1.0 character gap with the source path", () => {
   ];
 
   for (const character of invalidCharacters) {
-    const definition = Icon.define({
-      ...createDefinition(),
-      nodes: [
-        {
-          kind: "path",
-          data: `M0 0${character}Z`,
-        },
-      ],
-    });
     const error = expectRenderError(
-      () => Svg.render(definition),
-      "definition.nodes[0].data",
+      () => Svg.render(createDefinition(), { title: `Invalid${character}title` }),
+      "options.title",
     );
 
     assert.match(error.message, /unsupported by XML 1\.0/u);
   }
-
-  expectRenderError(
-    () => Svg.render(createDefinition(), { title: "Invalid\ud800title" }),
-    "options.title",
-  );
 });
 
 test("serialises canonical numeric boundaries without locale dependence", () => {

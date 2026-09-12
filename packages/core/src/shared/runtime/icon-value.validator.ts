@@ -51,8 +51,33 @@ export class IconValueValidator {
         throw new IconDefinitionError(fieldPath, "unsupported field");
       }
 
-      this.#enumerableDataProperty(value, field, fieldPath);
+      this.dataProperty(value, field, fieldPath);
     }
+  }
+
+  /**
+   * @description Reads one own enumerable data property without invoking authored accessors.
+   * @param value - Object that owns the inspected property.
+   * @param field - Own string property key.
+   * @param path - Logical property path.
+   * @returns Authored data-property value.
+   */
+  dataProperty(
+    value: object,
+    field: string,
+    path: string,
+  ): unknown {
+    const descriptor = Object.getOwnPropertyDescriptor(value, field);
+
+    if (
+      descriptor === undefined ||
+      !descriptor.enumerable ||
+      !("value" in descriptor)
+    ) {
+      throw new IconDefinitionError(path, "expected an enumerable data field");
+    }
+
+    return descriptor.value;
   }
 
   /**
@@ -178,7 +203,7 @@ export class IconValueValidator {
         throw new IconDefinitionError(`${path}.${field}`, "unsupported field");
       }
 
-      this.#enumerableDataProperty(value, field, `${path}[${index}]`);
+      this.dataProperty(value, field, `${path}[${index}]`);
       elementCount += 1;
     }
 
@@ -194,28 +219,5 @@ export class IconValueValidator {
     }
 
     return value;
-  }
-
-  /**
-   * @description Requires one own property to use canonical enumerable data semantics.
-   * @param value - Object that owns the inspected property.
-   * @param field - Own string property key.
-   * @param path - Logical property path.
-   * @returns Nothing.
-   */
-  #enumerableDataProperty(
-    value: object,
-    field: string,
-    path: string,
-  ): void {
-    const descriptor = Object.getOwnPropertyDescriptor(value, field);
-
-    if (
-      descriptor === undefined ||
-      !descriptor.enumerable ||
-      !("value" in descriptor)
-    ) {
-      throw new IconDefinitionError(path, "expected an enumerable data field");
-    }
   }
 }

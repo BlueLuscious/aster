@@ -47,6 +47,16 @@ function numericGeometryValues(definition: IconDefinition): readonly number[] {
         }
       }
 
+      if (field === "commands" && Array.isArray(value)) {
+        for (const command of value) {
+          for (const operand of Object.values(command)) {
+            if (typeof operand === "number") {
+              values.push(operand);
+            }
+          }
+        }
+      }
+
       if (field === "data" && typeof value === "string") {
         values.push(
           ...(value.match(/-?(?:\d+(?:\.\d+)?|\.\d+)/gu) ?? []).map(Number),
@@ -125,6 +135,12 @@ test("keeps every definition aligned with shared authoring defaults", () => {
     );
     assert.ok(definition.nodes.length > 0);
     assert.ok(definition.nodes.length <= 16);
+    assert.ok(
+      definition.nodes.reduce(
+        (count, node) => count + (node.kind === "path" ? node.commands.length : 0),
+        0,
+      ) <= 64,
+    );
 
     for (const node of definition.nodes) {
       for (const field of presentationFields) {

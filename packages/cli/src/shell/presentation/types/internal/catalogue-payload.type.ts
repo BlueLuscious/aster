@@ -7,6 +7,7 @@ import type { AsterCommandPayloadType } from "../../../../command/types/index.js
 export type TCataloguePayload = Extract<
   AsterCommandPayloadType,
   {
+    /** @description Catalogue-owned payload discriminator accepted by human presentation. */
     kind:
       | typeof asterCommandPayloadKinds.catalogueList
       | typeof asterCommandPayloadKinds.collectionList

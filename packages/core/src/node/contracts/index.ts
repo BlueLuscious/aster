@@ -1,7 +1,13 @@
 export type { IconCircleNode } from "./icon-circle-node.contract.js";
 export type { IconEllipseNode } from "./icon-ellipse-node.contract.js";
 export type { IconLineNode } from "./icon-line-node.contract.js";
+export type { IconPathArcCommand } from "./icon-path-arc-command.contract.js";
+export type { IconPathCloseCommand } from "./icon-path-close-command.contract.js";
+export type { IconPathCubicBezierCommand } from "./icon-path-cubic-bezier-command.contract.js";
+export type { IconPathLineCommand } from "./icon-path-line-command.contract.js";
+export type { IconPathMoveCommand } from "./icon-path-move-command.contract.js";
 export type { IconPathNode } from "./icon-path-node.contract.js";
+export type { IconPathQuadraticBezierCommand } from "./icon-path-quadratic-bezier-command.contract.js";
 export type { IconPoint } from "./icon-point.contract.js";
 export type { IconPolygonNode } from "./icon-polygon-node.contract.js";
 export type { IconPolylineNode } from "./icon-polyline-node.contract.js";

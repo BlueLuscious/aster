@@ -1,7 +1,7 @@
 import type { TSvgPathCommand } from "./svg-path-command.type.js";
 
 /**
- * @description Internal accepted SVG path segment with authored command casing and mutable parameters.
+ * @description Internal accepted SVG path segment with authored command casing and finite parameters.
  */
 export type TSvgPathSegment = {
   /**
@@ -15,7 +15,7 @@ export type TSvgPathSegment = {
   readonly command: TSvgPathCommand;
 
   /**
-   * @description Parsed finite parameters accumulated for the segment.
+   * @description Immutable finite parameters retained for the authored command.
    */
-  readonly values: number[];
+  readonly values: readonly number[];
 };
