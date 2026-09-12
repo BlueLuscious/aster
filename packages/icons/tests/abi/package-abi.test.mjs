@@ -172,6 +172,29 @@ test("keeps every per-icon module isolated from sibling definitions", async () =
   }
 });
 
+test("keeps every per-collection module isolated from catalogue indexes", async () => {
+  for (const subpath of Object.keys(collectionSubpaths)) {
+    const source = await readFile(
+      resolve(distributionRoot, `collections/${subpath}.collection.js`),
+      "utf8",
+    );
+    const specifiers = extractModuleSpecifiers(source);
+
+    assert.equal(specifiers[0], "@aster/core");
+    assert.ok(
+      specifiers.slice(1).every((specifier) =>
+        /^\.\.\/icons\/[a-z0-9]+(?:-[a-z0-9]+)*\.icon\.js$/u.test(specifier),
+      ),
+      `Expected ${subpath} to import only its declared icon modules.`,
+    );
+    assert.equal(new Set(specifiers).size, specifiers.length);
+    assert.doesNotMatch(
+      source,
+      /(?:icons\/index|collections\/index|aster-collections|catalogue|registry)/gu,
+    );
+  }
+});
+
 test("emits host-independent side-effect-free ESM", async () => {
   const declarations = await collectDistributionFiles(".d.ts");
   const modules = await collectDistributionFiles(".js");

@@ -2,6 +2,7 @@
 // Canonical definition modules are the source of truth. Do not edit manually.
 
 import type { CollectionDefinition } from "@aster/core";
+import { AmellusCollection } from "../amellus.collection.js";
 import { AsterCollection } from "../aster.collection.js";
 
 /**
@@ -9,5 +10,6 @@ import { AsterCollection } from "../aster.collection.js";
  * @remarks Icon discovery remains independent from collection membership and collection count.
  */
 export const AsterCollections: readonly CollectionDefinition[] = Object.freeze([
+  AmellusCollection,
   AsterCollection,
 ]);
