@@ -2,5 +2,4 @@
 // Canonical definition modules are the source of truth. Do not edit manually.
 
 export { AmellusCollection } from "./amellus.collection.js";
-export { AsterCollection } from "./aster.collection.js";
 export { AsterCollections } from "./constants/aster-collections.constant.js";

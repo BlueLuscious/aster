@@ -3,7 +3,6 @@
 
 import type { CollectionDefinition } from "@aster/core";
 import { AmellusCollection } from "../amellus.collection.js";
-import { AsterCollection } from "../aster.collection.js";
 
 /**
  * @description Complete immutable index of canonical Aster collection definitions.
@@ -11,5 +10,4 @@ import { AsterCollection } from "../aster.collection.js";
  */
 export const AsterCollections: readonly CollectionDefinition[] = Object.freeze([
   AmellusCollection,
-  AsterCollection,
 ]);
