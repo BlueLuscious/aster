@@ -114,3 +114,29 @@ licence on Amellus.
 Promotion from Proposed requires static visual review, pilot disposition, package conformance and
 release evidence in addition to the accepted visual language, inventory, canonical definitions and
 collection composition. Documentation alone does not promote the collection.
+
+## Static visual acceptance
+
+The complete twenty-six-icon collection has passed static visual review using the canonical
+catalogue and SVG rendering workflow. Evidence covered `16px`, `24px`, `32px` and `48px` sizes;
+light, dark and transparent backgrounds; neutral and contrasting foreground colours; construction
+grids; and view-box bounds.
+
+The review accepted the following findings:
+
+- all icons retain recognisable silhouettes and usable negative space at the `16px` minimum;
+- the `1.5`-unit outline weight, round terminals and round joins remain coherent across primitive
+  and structured-path geometry;
+- arrows, action marks, media controls, status enclosures and object metaphors remain distinct when
+  compared as related families;
+- curved and organic forms remain deliberate, without visible polygonal stepping, cusps or
+  accidental flat sections;
+- detached details in `bell`, `info` and `warning` remain associated with their enclosing forms;
+- visible geometry remains within the view box after stroke expansion and uses the nominal safe
+  area consistently;
+- `arrow-left` and `arrow-right` remain exact directional counterparts and mirror under RTL, while
+  vertical arrows and non-directional subjects preserve their authored geometry.
+
+No collection-level exception or canonical geometry correction was required. This visual
+acceptance satisfies the collection's review requirement but does not promote its lifecycle beyond
+Proposed until pilot disposition and final technical acceptance are complete.
