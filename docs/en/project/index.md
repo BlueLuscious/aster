@@ -16,7 +16,7 @@ target used to present it.
 | Boundary | Maturity | Project role |
 | --- | --- | --- |
 | [`@aster/core`](../packages/core/index.md) | Pre-release | Defines and constructs the portable icon and collection model. |
-| [`@aster/icons`](../packages/icons/index.md) | Experimental | Publishes canonical TypeScript-first icons and explicit collection aggregates. |
+| [`@aster/icons`](../packages/icons/index.md) | Pre-release | Publishes canonical TypeScript-first icons and explicit collection aggregates. |
 | [`@aster/svg`](../packages/svg/index.md) | Pre-release | Renders portable definitions as deterministic standalone SVG markup. |
 | [`@aster/cli`](../packages/cli/index.md) | Pre-release | Provides host-neutral catalogue commands and a thin standalone Node executable. |
 | [`@aster/import`](../packages/import/index.md) | Private | Adopts explicit external sources into portable definitions and editable TypeScript. |
@@ -63,8 +63,8 @@ by each owning package rather than repeated here.
 
 ## Maturity and releases
 
-Aster has no stable public release. Public package manifests remain at `0.0.0`, Icons is an
-experimental catalogue, and Import is deliberately private. Current package and workflow checks
+Aster has no stable public release. Public package manifests remain at `0.0.0`, Icons contains its
+first accepted collection, and Import is deliberately private. Current package and workflow checks
 prove development conformance but do not constitute a compatibility promise to external
 consumers.
 
@@ -88,5 +88,7 @@ until their activation conditions are met in [Future Capabilities](../future-cap
   review evidence.
 - [Future Capabilities](../future-capabilities.md) records proposals and activation triggers; it
   does not define current product guarantees.
+- [Testing Policy](testing.md) defines transversal evidence roles, ownership, catalogue
+  independence, isolation, and repository verification.
 - [Versioning and Releases](versioning.md) owns cross-package maturity, compatibility, and release
   coordination.

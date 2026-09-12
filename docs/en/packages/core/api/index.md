@@ -95,6 +95,7 @@ The exact runtime value surface is:
 - `iconDirections`;
 - `iconNodeKinds`;
 - `iconPaintSchema`;
+- `iconPathCommandKinds`;
 - `iconPresentationOverrideOrder`;
 - `iconRtlPolicies`;
 - `iconTechnicalPresentation`.

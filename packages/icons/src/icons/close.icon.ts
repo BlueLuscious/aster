@@ -11,24 +11,12 @@ export const Close = Icon.define({
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
-    {
-      kind: "line",
-      x1: 5,
-      y1: 5,
-      x2: 19,
-      y2: 19,
-    },
-    {
-      kind: "line",
-      x1: 19,
-      y1: 5,
-      x2: 5,
-      y2: 19,
-    },
+    { kind: "line", x1: 5, y1: 5, x2: 19, y2: 19 },
+    { kind: "line", x1: 19, y1: 5, x2: 5, y2: 19 },
   ],
   metadata: {
     displayName: "Close",
-    tags: ["cancel", "close", "dismiss", "remove"],
+    tags: ["cancel", "close", "dismiss", "remove", "x"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

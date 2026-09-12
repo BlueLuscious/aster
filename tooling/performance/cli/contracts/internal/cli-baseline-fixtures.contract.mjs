@@ -8,9 +8,6 @@ export class ICliBaselineFixtures {
   /** @description Explicit context backed by an already acquired immutable snapshot. */
   context;
 
-  /** @description Context using the lazy built-in Icons provider. */
-  builtInContext;
-
   /** @description Closed representative structured invocations. */
   invocations;
 

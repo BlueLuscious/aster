@@ -13,15 +13,26 @@ export const Bell = Icon.define({
   nodes: [
     {
       kind: "path",
-      data: "M5 18h14l-1.5-2v-5.5a5.5 5.5 0 0 0-11 0V16z",
+      commands: [
+        { kind: "move", x: 5, y: 18 },
+        { kind: "line", x: 6.5, y: 16 },
+        { kind: "line", x: 6.5, y: 10.5 },
+        {
+          kind: "arc",
+          radiusX: 5.5,
+          radiusY: 5.5,
+          rotation: 0,
+          largeArc: false,
+          sweep: true,
+          x: 17.5,
+          y: 10.5,
+        },
+        { kind: "line", x: 17.5, y: 16 },
+        { kind: "line", x: 19, y: 18 },
+        { kind: "close" },
+      ],
     },
-    {
-      kind: "line",
-      x1: 10,
-      y1: 20,
-      x2: 14,
-      y2: 20,
-    },
+    { kind: "line", x1: 10, y1: 20, x2: 14, y2: 20 },
   ],
   metadata: {
     displayName: "Bell",

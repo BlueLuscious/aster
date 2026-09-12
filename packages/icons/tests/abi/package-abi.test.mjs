@@ -55,6 +55,15 @@ test("exposes the exact documented icon root and definition families", async () 
   const root = await import("@aster/icons");
   const collections = await import("@aster/icons/collections");
 
+  assert.ok(
+    Object.keys(iconSubpaths).length > 0,
+    "Expected at least one emitted icon definition subpath.",
+  );
+  assert.ok(
+    Object.keys(collectionSubpaths).length > 0,
+    "Expected at least one emitted collection definition subpath.",
+  );
+
   assert.deepEqual(
     Object.keys(root).sort(),
     ["AsterIcons", ...Object.values(iconSubpaths)].sort(),
@@ -88,23 +97,30 @@ test("exposes the exact documented icon root and definition families", async () 
     assert.deepEqual(Object.keys(direct), [symbol]);
     assert.equal(direct[symbol], collections[symbol]);
     assert.equal(direct[symbol].identity.name, subpath);
+    assert.ok(
+      direct[symbol].icons.every((definition) =>
+        root.AsterIcons.includes(definition),
+      ),
+      `Expected every ${subpath} member in the complete icon index.`,
+    );
   }
-
-  const { AsterCollection } = await import(
-    "@aster/icons/collections/aster"
-  );
-
-  assert.equal(AsterCollection, collections.AsterCollection);
-  assert.deepEqual(AsterCollection.icons, root.AsterIcons);
 });
 
 test("rejects implementation and undeclared internal subpaths", async () => {
+  const [iconSubpath] = Object.keys(iconSubpaths);
+  const [collectionSubpath] = Object.keys(collectionSubpaths);
+  assert.ok(iconSubpath, "Expected one icon subpath for rejection evidence.");
+  assert.ok(
+    collectionSubpath,
+    "Expected one collection subpath for rejection evidence.",
+  );
+
   await assert.rejects(
-    import("@aster/icons/icons/arrow-left.icon.js"),
+    import(`@aster/icons/icons/${iconSubpath}.icon.js`),
     (error) => error?.code === "ERR_MODULE_NOT_FOUND",
   );
   await assert.rejects(
-    import("@aster/icons/collections/aster.collection.js"),
+    import(`@aster/icons/collections/${collectionSubpath}.collection.js`),
     (error) => error?.code === "ERR_MODULE_NOT_FOUND",
   );
   await assert.rejects(
@@ -153,6 +169,29 @@ test("keeps every per-icon module isolated from sibling definitions", async () =
       "@aster/core",
     ]);
     assert.doesNotMatch(source, /(?:icons\/index|manifest|catalogue|registry)/gu);
+  }
+});
+
+test("keeps every per-collection module isolated from catalogue indexes", async () => {
+  for (const subpath of Object.keys(collectionSubpaths)) {
+    const source = await readFile(
+      resolve(distributionRoot, `collections/${subpath}.collection.js`),
+      "utf8",
+    );
+    const specifiers = extractModuleSpecifiers(source);
+
+    assert.equal(specifiers[0], "@aster/core");
+    assert.ok(
+      specifiers.slice(1).every((specifier) =>
+        /^\.\.\/icons\/[a-z0-9]+(?:-[a-z0-9]+)*\.icon\.js$/u.test(specifier),
+      ),
+      `Expected ${subpath} to import only its declared icon modules.`,
+    );
+    assert.equal(new Set(specifiers).size, specifiers.length);
+    assert.doesNotMatch(
+      source,
+      /(?:icons\/index|collections\/index|aster-collections|catalogue|registry)/gu,
+    );
   }
 });
 

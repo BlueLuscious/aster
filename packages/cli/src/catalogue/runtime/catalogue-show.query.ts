@@ -44,7 +44,13 @@ export class CatalogueShowQuery {
    * @returns Structured immutable exact result or lookup failure.
    */
   async execute(
-    invocation: Extract<AsterCommandInvocationType, { command: typeof asterCommandNames.show }>,
+    invocation: Extract<
+      AsterCommandInvocationType,
+      {
+        /** @description Show-command discriminator used for invocation narrowing. */
+        command: typeof asterCommandNames.show;
+      }
+    >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
     const selected = await this.#selections.select(

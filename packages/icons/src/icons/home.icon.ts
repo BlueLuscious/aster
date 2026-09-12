@@ -21,12 +21,21 @@ export const Home = Icon.define({
     },
     {
       kind: "path",
-      data: "M5 9.5V21h4v-6h6v6h4V9.5",
+      commands: [
+        { kind: "move", x: 5, y: 9.5 },
+        { kind: "line", x: 5, y: 21 },
+        { kind: "line", x: 9, y: 21 },
+        { kind: "line", x: 9, y: 15 },
+        { kind: "line", x: 15, y: 15 },
+        { kind: "line", x: 15, y: 21 },
+        { kind: "line", x: 19, y: 21 },
+        { kind: "line", x: 19, y: 9.5 },
+      ],
     },
   ],
   metadata: {
     displayName: "Home",
-    tags: ["home", "house", "navigation"],
+    tags: ["home", "house", "navigation", "start"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

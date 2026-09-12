@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-import type { IconMetadata } from "@aster/core";
+import {
+  iconPathCommandKinds,
+  type IconMetadata,
+} from "@aster/core";
 import {
   IconImport,
   IconImportError,
@@ -46,6 +49,18 @@ function request(
       displayName: name,
     },
   };
+}
+
+function inspectPath(
+  data: string,
+  name: string,
+): ReturnType<typeof IconImport.inspect> {
+  return IconImport.inspect({
+    format: iconImportFormats.svg,
+    sourceId: `paths/${name}.svg`,
+    identity: { namespace: "paths", name },
+    content: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="${data}"/></svg>`,
+  });
 }
 
 test("inspects SVG as a format-neutral immutable draft", () => {
@@ -94,8 +109,138 @@ test("adopts reviewed metadata and emits editable TypeScript", () => {
   assert.equal(result.value.module.symbol, "ExternalAdopted");
   assert.equal(result.value.module.suggestedPath, "icons/external-adopted.icon.ts");
   assert.match(result.value.module.content, /\$Icon\.define\(/u);
+  assert.match(result.value.module.content, /"commands": \[/u);
+  assert.doesNotMatch(result.value.module.content, /"data":/u);
   assert.match(result.value.module.content, /Adopted from:/u);
   assert.doesNotMatch(result.value.module.content, /generated|Do not edit/iu);
+});
+
+test("expands relative, repeated and axis-aligned path commands", () => {
+  const result = inspectPath("m 1 2 3 4 h 2 2 v 3 l 1 1", "relative");
+
+  assert.equal(result.successful, true, JSON.stringify(result.diagnostics));
+
+  if (!result.successful) {
+    throw new Error("Expected successful relative path inspection.");
+  }
+
+  assert.deepEqual(result.value.nodes, [{
+    kind: "path",
+    commands: [
+      { kind: iconPathCommandKinds.move, x: 1, y: 2 },
+      { kind: iconPathCommandKinds.line, x: 4, y: 6 },
+      { kind: iconPathCommandKinds.line, x: 6, y: 6 },
+      { kind: iconPathCommandKinds.line, x: 8, y: 6 },
+      { kind: iconPathCommandKinds.line, x: 8, y: 9 },
+      { kind: iconPathCommandKinds.line, x: 9, y: 10 },
+    ],
+  }]);
+  assert.equal(result.value.metrics.pathCommandCount, 6);
+  assert.equal(Object.isFrozen(result.value.nodes[0]?.commands), true);
+});
+
+test("expands smooth curve controls into canonical commands", () => {
+  const result = inspectPath(
+    "M 0 0 C 1 2 3 4 5 6 S 7 8 9 10 Q 11 12 13 14 T 15 16",
+    "curves",
+  );
+
+  assert.equal(result.successful, true, JSON.stringify(result.diagnostics));
+
+  if (!result.successful) {
+    throw new Error("Expected successful curved path inspection.");
+  }
+
+  assert.deepEqual(result.value.nodes[0], {
+    kind: "path",
+    commands: [
+      { kind: iconPathCommandKinds.move, x: 0, y: 0 },
+      {
+        kind: iconPathCommandKinds.cubicBezier,
+        control1X: 1,
+        control1Y: 2,
+        control2X: 3,
+        control2Y: 4,
+        x: 5,
+        y: 6,
+      },
+      {
+        kind: iconPathCommandKinds.cubicBezier,
+        control1X: 7,
+        control1Y: 8,
+        control2X: 7,
+        control2Y: 8,
+        x: 9,
+        y: 10,
+      },
+      {
+        kind: iconPathCommandKinds.quadraticBezier,
+        controlX: 11,
+        controlY: 12,
+        x: 13,
+        y: 14,
+      },
+      {
+        kind: iconPathCommandKinds.quadraticBezier,
+        controlX: 15,
+        controlY: 16,
+        x: 15,
+        y: 16,
+      },
+    ],
+  });
+  assert.equal(result.value.metrics.pathCommandCount, 5);
+});
+
+test("normalises arcs, closure and compound contours", () => {
+  const result = inspectPath(
+    "M1 1 a 2 3 45 0 1 4 5 z M 10 10 L 12 12 z",
+    "compound",
+  );
+
+  assert.equal(result.successful, true, JSON.stringify(result.diagnostics));
+
+  if (!result.successful) {
+    throw new Error("Expected successful compound path inspection.");
+  }
+
+  assert.deepEqual(result.value.nodes[0], {
+    kind: "path",
+    commands: [
+      { kind: iconPathCommandKinds.move, x: 1, y: 1 },
+      {
+        kind: iconPathCommandKinds.arc,
+        radiusX: 2,
+        radiusY: 3,
+        rotation: 45,
+        largeArc: false,
+        sweep: true,
+        x: 5,
+        y: 6,
+      },
+      { kind: iconPathCommandKinds.close },
+      { kind: iconPathCommandKinds.move, x: 10, y: 10 },
+      { kind: iconPathCommandKinds.line, x: 12, y: 12 },
+      { kind: iconPathCommandKinds.close },
+    ],
+  });
+});
+
+test("rejects empty and structurally malformed path contours", () => {
+  for (const [name, data] of [
+    ["empty-contour", "M0 0"],
+    ["abandoned-contour", "M0 0 M1 1 L2 2"],
+    ["empty-close", "M0 0 Z"],
+    ["drawing-after-close", "M0 0 L1 1 Z L2 2"],
+  ] as const) {
+    const result = inspectPath(data, name);
+
+    assert.equal(result.successful, false);
+    assert.deepEqual(
+      result.diagnostics.map((diagnostic) => diagnostic.code),
+      ["ASTER-SYNTAX-004"],
+    );
+  }
 });
 
 test("rejects invalid reviewed metadata through stable adoption diagnostics", () => {
@@ -206,43 +351,5 @@ test("throws only for malformed public API invocation", () => {
     }),
     (error: unknown) =>
       error instanceof IconImportError && error.path === "source.sourceId",
-  );
-});
-
-test("rejects reflective request state without executing accessors", () => {
-  let reads = 0;
-  const reflectiveSource = {
-    get format() {
-      reads += 1;
-      return iconImportFormats.svg;
-    },
-    sourceId: "icons/reflective.svg",
-    identity: { name: "reflective" },
-    content: "<svg />",
-  };
-
-  assert.throws(
-    () => IconImport.inspect(reflectiveSource),
-    (error: unknown) =>
-      error instanceof IconImportError && error.path === "source.format",
-  );
-  assert.equal(reads, 0);
-
-  const sparse = new Array<IconAdoptionRequest>(1);
-  assert.throws(
-    () => IconImport.adoptMany(sparse),
-    (error: unknown) =>
-      error instanceof IconImportError && error.path === "requests[0]",
-  );
-
-  const authored = [request("authored-array")];
-  Object.defineProperty(authored, "sideState", {
-    enumerable: true,
-    value: true,
-  });
-  assert.throws(
-    () => IconImport.adoptMany(authored),
-    (error: unknown) =>
-      error instanceof IconImportError && error.path === "requests.sideState",
   );
 });

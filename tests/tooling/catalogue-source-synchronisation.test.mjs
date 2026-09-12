@@ -22,8 +22,8 @@ async function createPackageFixture() {
     "utf8",
   );
   await writeFile(
-    resolve(root, "src/collections/aster.collection.ts"),
-    "export const AsterCollection = {};\n",
+    resolve(root, "src/collections/sample.collection.ts"),
+    "export const SampleCollection = {};\n",
     "utf8",
   );
 

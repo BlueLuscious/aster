@@ -9,9 +9,9 @@ respective [package documentation](../packages/index.md).
 ## Current maturity
 
 Aster has no stable public release or compatibility commitment to external consumers. Every
-package manifest currently uses `0.0.0`; `@aster/icons` remains experimental and `@aster/import`
-is private. Repository conformance proves the current implementation against its documented
-boundaries but does not turn those versions into published releases.
+package manifest currently uses `0.0.0`; `@aster/icons` has an accepted pre-release catalogue and
+`@aster/import` is private. Repository conformance proves the current implementation against its
+documented boundaries but does not turn those versions into published releases.
 
 ## Version ownership
 

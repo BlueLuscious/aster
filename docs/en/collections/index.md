@@ -5,13 +5,13 @@ Status: **Accepted**
 This directory documents Aster's real curated collection set. Collection-specific documentation
 is keyed by accepted curatorial identity and does not require one repository-level source root.
 
-The current collection set is:
+The current collection set contains [Amellus](amellus/index.md), Aster's Active foundational
+minimalist general-purpose collection. Its canonical definitions, visual language, provenance,
+licensing, static review and package conformance are accepted for a first pre-release.
 
-- [Aster](aster/index.md) is the Experimental pilot collection used to validate its provisional
-  geometric outline language.
-
-No release-quality collection exists yet. A documented Experimental identity does not imply that
-canonical icon sources, distribution, or Active lifecycle requirements have been accepted.
+Active collection status does not imply that the exporting package has been published or that its
+public compatibility surface is stable. Project release maturity remains independently governed
+by [Versioning and Releases](../project/versioning.md).
 
 ## Collection authority
 
@@ -20,11 +20,11 @@ named curator, lifecycle, artwork licence, intended use and provisional visual c
 directory records curatorial evidence; it does not create a package, source root, catalogue or
 distribution by existing.
 
-An Experimental collection may test its visual language and reference set before publication.
-When it accepts canonical authoring, its documentation must identify exactly one editable source
-authority and distinguish every derived artefact. Promotion to Active additionally requires
-reviewed canonical icons, provenance, licensing, technical and visual evidence, a supported
-distribution boundary and an accepted release posture.
+A Proposed collection may test its visual language and reference set before publication. When it
+accepts canonical authoring, its documentation must identify exactly one editable source authority
+and distinguish every derived artefact. Promotion to Active additionally requires reviewed
+canonical icons, provenance, licensing, technical and visual evidence, a supported distribution
+boundary and an accepted release posture.
 
 Catalogue size is not maturity or quality evidence. A smaller coherent collection with reviewed
 geometry, provenance, and visual behaviour is preferable to unreviewed expansion.

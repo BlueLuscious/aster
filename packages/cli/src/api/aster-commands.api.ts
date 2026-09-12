@@ -83,7 +83,9 @@ const commandKernel = new CommandKernel(
  * @description Immutable public host-neutral composition for executing initial Aster commands.
  */
 export const AsterCommands: AsterCommandSet = Object.freeze({
+  /** @description Stable identity of the built-in Aster command set. */
   identity: commandKernel.identity,
+  /** @description Immutable descriptors for every built-in Aster command. */
   descriptors: commandKernel.descriptors,
 
   /**

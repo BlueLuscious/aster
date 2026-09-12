@@ -1,41 +1,39 @@
 # Canonical Collections
 
-Status: **Experimental**
+Status: **Accepted**
 
 The `collections` feature owns independently identified immutable collection definitions.
-`AsterCollections` is the complete immutable package index and currently contains
-`AsterCollection`.
+`AsterCollections` is the complete immutable package index and currently contains the accepted
+`AmellusCollection` authority.
 
 Canonical modules use `<collection-slug>.collection.ts`. Public imports omit the role and retain
 `@aster/icons/collections/<collection-slug>`.
 
-## `AsterCollection`
+## `AmellusCollection`
 
-`AsterCollection` is constructed through public `Collection.define(...)` and retains the complete
-representative pilot:
+`AmellusCollection` is constructed through public `Collection.define(...)` and explicitly retains
+the complete twenty-six-icon foundational inventory in accepted semantic order:
 
 | Field | Value |
-| --- | --- | --- |
-| Identity | `aster` |
-| Display name | Aster |
-| Description | Geometric outline interface icons. |
-| Tags | `interface-icons`, `outline-icons` |
+| --- | --- |
+| Identity | `amellus` |
+| Display name | Amellus |
+| Description | Minimalist general-purpose outline icons for application interfaces. |
+| Tags | `application-icons`, `general-purpose`, `interface-icons`, `minimalist`, `outline-icons` |
 | Artwork licence | ISC |
 | Attribution | BlueLuscious |
-| Members | The sixteen canonical pilot icon objects |
+| Members | All twenty-six canonical foundational icon objects |
 
-The collection does not own member geometry, presentation, licence, attribution, tags, RTL
-behaviour, or lifecycle. Those values remain intrinsic to each icon. Membership neither changes
-an icon nor appears in `IconIdentity`.
-
-The same canonical icon may be retained by another collection with identical object identity.
-Core rejects duplicate logical identity only within one collection.
+The explicit member list is curated independently from `AsterIcons`. Adding another canonical icon
+to the package therefore does not silently add it to Amellus. The same canonical icon may later be
+retained by another collection with identical object identity and without acquiring a mutable
+reverse membership link. Core rejects duplicate logical identity only within one collection.
 
 ## Imports
 
 ```ts
 import {
-  AsterCollection,
+  AmellusCollection,
   AsterCollections,
 } from "@aster/icons/collections";
 ```
@@ -43,7 +41,7 @@ import {
 An isolated collection import avoids evaluating the complete collection index:
 
 ```ts
-import { AsterCollection } from "@aster/icons/collections/aster";
+import { AmellusCollection } from "@aster/icons/collections/amellus";
 ```
 
 The family subpath provides complete collection discovery; the isolated subpath loads only the
@@ -57,4 +55,4 @@ collection changes derived membership only and does not add or remove definition
 `AsterIcons`.
 
 Visual rationale and enforcement severity remain canonical in the
-[Aster Collection Design Contract](../../../collections/aster/design-contract.md).
+[Amellus Visual Design Contract](../../../collections/amellus/design-contract.md).

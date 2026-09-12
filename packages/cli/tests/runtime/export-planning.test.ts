@@ -7,9 +7,7 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
-import { AsterCollection } from "@aster/icons/collections/aster";
 import {
-  AsterCatalogue,
   AsterCommands,
   exportTargets,
 } from "../../src/index.js";
@@ -21,12 +19,6 @@ import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { asterCommandSubjects } from "../../src/command/constants/aster-command-subjects.constant.js";
 import { SvgExportArtefactFactory } from "../../src/export/runtime/svg-export-artefact.factory.js";
 import type { TCatalogueSelection } from "../../src/catalogue/types/internal/catalogue-selection.type.js";
-
-const context: AsterCommandContext = {
-  catalogues: [AsterCatalogue],
-  productName: "Aster",
-  productVersion: "0.0.0",
-};
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -42,7 +34,6 @@ function createIcon(
   options: Readonly<{
     namespace?: string;
     variant?: string;
-    data?: string;
   }> = {},
 ): IconDefinition {
   return Icon.define({
@@ -54,7 +45,13 @@ function createIcon(
       ...(options.variant === undefined ? {} : { variant: options.variant }),
     },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
-    nodes: [{ kind: "path", data: options.data ?? "M1 1L23 23" }],
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: 1, y: 1 },
+        { kind: "line", x: 23, y: 23 },
+      ],
+    }],
     metadata: {
       displayName: name,
       rtl: "preserve",
@@ -62,6 +59,21 @@ function createIcon(
       deprecated: false,
     },
   });
+}
+
+function createMalformedIcon(name: string): IconDefinition {
+  const accepted = createIcon(name, { namespace: "testing" });
+
+  return {
+    ...accepted,
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: 0, y: 0 },
+        { kind: "line", x: Number.NaN, y: 1 },
+      ],
+    }],
+  } as IconDefinition;
 }
 
 function createCollection(
@@ -114,18 +126,34 @@ function createSnapshot(
   };
 }
 
+const representativeIcon = createIcon("representative", {
+  namespace: "testing",
+});
+const representativeCollection = createCollection(
+  "representatives",
+  [representativeIcon],
+);
+const representativeIdentity = "testing/representative";
+const representativeLabel = representativeIcon.metadata.displayName;
+const context = createContext([
+  createProvider(
+    "testing",
+    createSnapshot([representativeIcon], [representativeCollection]),
+  ),
+]);
+
 test("plans one deterministic immutable icon SVG export", async () => {
   const first = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "aster/camera",
-    options: { size: 32, colour: "#123456", label: " Camera " },
+    identity: representativeIdentity,
+    options: { size: 32, colour: "#123456", label: ` ${representativeLabel} ` },
   }, context);
   const second = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "aster/camera",
-    options: { size: 32, colour: "#123456", label: "Camera" },
+    identity: representativeIdentity,
+    options: { size: 32, colour: "#123456", label: representativeLabel },
   }, context);
 
   assert.deepEqual(first, second);
@@ -134,14 +162,20 @@ test("plans one deterministic immutable icon SVG export", async () => {
   if (first.ok && first.payload.kind === "export") {
     assert.equal(first.payload.plan.target, exportTargets.svg);
     assert.equal(first.payload.plan.subject, "icon");
-    assert.equal(first.payload.plan.catalogue, "aster");
-    assert.equal(first.payload.plan.identity, "aster/camera");
+    assert.equal(first.payload.plan.catalogue, "testing");
+    assert.equal(first.payload.plan.identity, representativeIdentity);
     assert.equal(first.payload.plan.artefacts.length, 1);
-    assert.equal(first.payload.plan.artefacts[0]?.path, "aster/camera.svg");
+    assert.equal(
+      first.payload.plan.artefacts[0]?.path,
+      `${representativeIdentity}.svg`,
+    );
     assert.equal(first.payload.plan.artefacts[0]?.mediaType, "image/svg+xml");
     assert.match(first.payload.plan.artefacts[0]?.content ?? "", /^<svg /u);
     assert.match(first.payload.plan.artefacts[0]?.content ?? "", /width="32"/u);
-    assert.match(first.payload.plan.artefacts[0]?.content ?? "", /aria-label="Camera"/u);
+    assert.match(
+      first.payload.plan.artefacts[0]?.content ?? "",
+      new RegExp(`aria-label="${representativeLabel}"`, "u"),
+    );
     assert.ok(Object.isFrozen(first.payload));
     assert.ok(Object.isFrozen(first.payload.plan));
     assert.ok(Object.isFrozen(first.payload.plan.artefacts));
@@ -153,7 +187,7 @@ test("plans collection members in canonical path order", async () => {
   const result = await AsterCommands.execute({
     command: "export",
     subject: "collection",
-    identity: "aster",
+    identity: "testing/representatives",
   }, context);
 
   assert.equal(result.ok, true);
@@ -161,7 +195,7 @@ test("plans collection members in canonical path order", async () => {
   if (result.ok && result.payload.kind === "export") {
     const paths = result.payload.plan.artefacts.map((artefact) => artefact.path);
     assert.equal(result.payload.plan.subject, "collection");
-    assert.equal(paths.length, AsterCollection.icons.length);
+    assert.equal(paths.length, representativeCollection.icons.length);
     assert.deepEqual(paths, [...paths].sort());
     assert.equal(new Set(paths).size, paths.length);
   }
@@ -171,7 +205,7 @@ test("preserves existing exact lookup failures for export", async () => {
   const result = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "aster/missing",
+    identity: "testing/missing",
   }, context);
 
   assert.equal(result.ok, false);
@@ -331,37 +365,31 @@ test("rejects unavailable collection members without exposing a partial plan", a
 
 test("translates SVG failures without exposing target messages or partial artefacts", async () => {
   const valid = createIcon("alpha-valid", { namespace: "testing" });
-  const invalid = createIcon("zeta-invalid-xml", {
-    namespace: "testing",
-    data: "M0 0\u0000",
-  });
-  const collection = createCollection("render-failure", [valid, invalid]);
-  const provider = createProvider(
-    "testing",
-    createSnapshot([invalid, valid], [collection]),
-  );
-  const result = await AsterCommands.execute({
-    command: "export",
-    subject: "collection",
+  const invalid = createMalformedIcon("zeta-invalid-definition");
+  const selection: TCatalogueSelection = Object.freeze({
+    catalogue: "testing",
+    subject: asterCommandSubjects.export.collection,
     identity: "testing/render-failure",
-  }, createContext([provider]));
+    icons: Object.freeze([
+      Object.freeze({ definition: valid, memberships: Object.freeze([]) }),
+      Object.freeze({ definition: invalid, memberships: Object.freeze([]) }),
+    ]),
+  });
+  const result = new SvgExportArtefactFactory().create(selection, undefined);
 
-  assert.equal(result.ok, false);
+  assert.equal(result.accepted, false);
 
-  if (!result.ok) {
+  if (!result.accepted) {
     assert.equal(result.diagnostic.code, "ASTER-CLI-007");
     assert.equal(result.diagnostic.category, "render-failure");
-    assert.deepEqual(result.diagnostic.related, ["testing/zeta-invalid-xml.svg"]);
+    assert.deepEqual(result.diagnostic.related, ["testing/zeta-invalid-definition.svg"]);
     assert.doesNotMatch(result.diagnostic.message, /XML 1\.0|definition\.nodes/u);
-    assert.equal("payload" in result, false);
+    assert.equal("value" in result, false);
   }
 });
 
 test("preflights path collisions before attempting SVG rendering", () => {
-  const invalid = createIcon("collision", {
-    namespace: "testing",
-    data: "M0 0\u0000",
-  });
+  const invalid = createIcon("collision", { namespace: "testing" });
   const selection: TCatalogueSelection = Object.freeze({
     catalogue: "testing",
     subject: asterCommandSubjects.export.collection,
@@ -412,7 +440,7 @@ test("preserves unrelated target exceptions and sanitises caller invocation fail
   const result = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "aster/camera",
+    identity: representativeIdentity,
     options,
   } as never, context);
 

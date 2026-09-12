@@ -86,7 +86,10 @@ export class ExportCommandLineParser implements ICommandLineCommandParser {
     });
     const invocation: Extract<
       AsterCommandInvocationType,
-      { command: typeof asterCommandNames.export }
+      {
+        /** @description Export-command discriminator used for invocation narrowing. */
+        command: typeof asterCommandNames.export;
+      }
     > = {
       command: this.command,
       subject,

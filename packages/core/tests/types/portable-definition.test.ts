@@ -24,7 +24,10 @@ const presentationPolicy: IconPresentationPolicy = {
 const nodes: readonly IconNodeType[] = [
   {
     kind: "path",
-    data: "M2 12h20",
+    commands: [
+      { kind: "move", x: 2, y: 12 },
+      { kind: "line", x: 22, y: 12 },
+    ],
   },
   {
     kind: "circle",

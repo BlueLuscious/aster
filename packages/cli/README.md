@@ -14,9 +14,9 @@ pnpm exec aster list icons
 pnpm exec aster search camera --json
 pnpm exec aster show icon aster/camera
 pnpm exec aster export icon aster/camera
-pnpm exec aster export collection aster --output ./icons
+pnpm exec aster export collection amellus --output ./icons
 pnpm exec aster review icon aster/camera --json
-pnpm exec aster review collection aster --output ./aster-review
+pnpm exec aster review collection amellus --output ./aster-review
 ```
 
 The programmatic root returns complete immutable export and technical review plans and performs no

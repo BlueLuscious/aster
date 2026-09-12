@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { IconImport, iconImportFormats } from "@aster/import";
+import { AsterCatalogue, AsterCommands } from "@aster/cli";
 import { Icon, type IconDefinition, type IconMetadata } from "@aster/core";
-import { ArrowLeft } from "@aster/icons";
-import { AsterCollection } from "@aster/icons/collections/aster";
+import { AsterIcons } from "@aster/icons";
+import { AsterCollections } from "@aster/icons/collections";
+import { IconImport, iconImportFormats } from "@aster/import";
 import { Svg } from "@aster/svg";
 
 const arrowMetadata: IconMetadata = {
@@ -28,12 +29,12 @@ const arrowMetadata: IconMetadata = {
   deprecated: false,
 };
 
-function authorArrowLeft(shaftStartX = 4): IconDefinition {
+function authorArrowLeft(): IconDefinition {
   return Icon.define({
-    identity: { namespace: "aster", name: "arrow-left" },
+    identity: { namespace: "workflow", name: "arrow-left" },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [
-      { kind: "line", x1: 20, y1: 12, x2: shaftStartX, y2: 12 },
+      { kind: "line", x1: 20, y1: 12, x2: 4, y2: 12 },
       {
         kind: "polyline",
         points: [
@@ -83,8 +84,8 @@ test("adopts equivalent SVG into editable TypeScript and the same portable defin
   const result = IconImport.adopt({
     source: {
       format: iconImportFormats.svg,
-      sourceId: "workflow/aster/svg/arrow-left.svg",
-      identity: { namespace: "aster", name: "arrow-left" },
+      sourceId: "workflow/input/arrow-left.svg",
+      identity: { namespace: "workflow", name: "arrow-left" },
       content:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="10 6 4 12 10 18"/></svg>',
     },
@@ -103,12 +104,50 @@ test("adopts equivalent SVG into editable TypeScript and the same portable defin
   assert.equal(Svg.render(adopted), Svg.render(authorArrowLeft()));
 });
 
-test("corrects an off-grid review finding in canonical TypeScript source", () => {
-  const draft = Svg.render(authorArrowLeft(3.75));
-  const corrected = Svg.render(authorArrowLeft());
-  assert.match(draft, /x2="3\.75"/u);
-  assert.doesNotMatch(corrected, /3\.75/u);
-  assert.match(corrected, /x2="4"/u);
+test("round trips equivalent structured and compact SVG paths", () => {
+  const authored = Icon.define({
+    identity: { namespace: "workflow", name: "compound-path" },
+    viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: 2, y: 2 },
+        { kind: "line", x: 10, y: 2 },
+        { kind: "line", x: 10, y: 10 },
+        { kind: "close" },
+        { kind: "move", x: 14, y: 14 },
+        { kind: "line", x: 22, y: 14 },
+        { kind: "line", x: 22, y: 22 },
+        { kind: "close" },
+      ],
+    }],
+    metadata: {
+      ...arrowMetadata,
+      displayName: "Compound Path",
+    },
+  });
+  const result = IconImport.adopt({
+    source: {
+      format: iconImportFormats.svg,
+      sourceId: "workflow/input/compound-path.svg",
+      identity: authored.identity,
+      content:
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 2h8v8zM14 14l8 0 0 8z"/></svg>',
+    },
+    metadata: authored.metadata,
+  });
+
+  assert.equal(result.successful, true, JSON.stringify(result.diagnostics));
+
+  if (!result.successful) {
+    throw new Error("Expected successful structured path adoption.");
+  }
+
+  const adopted = Icon.define(readAdoptedDefinition(result.value.module.content));
+  assert.deepEqual(adopted, authored);
+  assert.equal(Svg.render(adopted), Svg.render(authored));
+  assert.match(result.value.module.content, /"commands": \[/u);
+  assert.doesNotMatch(result.value.module.content, /"data":/u);
 });
 
 test("adopts independent host-owned batches into renderable editable definitions", () => {
@@ -149,10 +188,42 @@ test("adopts independent host-owned batches into renderable editable definitions
   );
 });
 
-test("renders every independently authored pilot icon distinctly", () => {
-  assert.deepEqual(ArrowLeft, authorArrowLeft());
-  const definitions = AsterCollection.icons;
-  const markup = definitions.map((definition) => Svg.render(definition));
-  assert.ok(definitions.length > 0);
-  assert.equal(new Set(markup).size, definitions.length);
+test("plans one discovered collection through CLI and SVG boundaries", async () => {
+  assert.ok(
+    AsterIcons.length > 0,
+    "Expected the canonical icon index to be non-empty.",
+  );
+  assert.ok(
+    AsterCollections.length > 0,
+    "Expected the canonical collection index to be non-empty.",
+  );
+  const collection = AsterCollections.find(
+    (candidate) => candidate.icons.length > 0,
+  );
+  assert.ok(collection, "Expected one non-empty canonical collection.");
+  const identity = `${
+    collection.identity.namespace === undefined
+      ? ""
+      : `${collection.identity.namespace}/`
+  }${collection.identity.name}`;
+  const result = await AsterCommands.execute(
+    { command: "export", subject: "collection", identity },
+    {
+      catalogues: [AsterCatalogue],
+      productName: "Aster",
+      productVersion: "0.0.0",
+    },
+  );
+
+  assert.equal(result.ok, true, JSON.stringify(result, null, 2));
+
+  if (!result.ok || result.payload.kind !== "export") {
+    throw new Error("Expected successful canonical collection export planning.");
+  }
+
+  assert.equal(result.payload.plan.artefacts.length, collection.icons.length);
+  assert.deepEqual(
+    result.payload.plan.artefacts.map((artefact) => artefact.content).sort(),
+    collection.icons.map((definition) => Svg.render(definition)).sort(),
+  );
 });

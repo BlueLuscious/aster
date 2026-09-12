@@ -8,16 +8,16 @@ performance threshold. Current package findings remain in [CLI Quality](quality.
 
 ## Representative evidence
 
-Prepared immutable inputs keep fixture construction outside timed operations. Programmatic
-scenarios use the public package roots; shell parsing and presentation scenarios exercise the
-private built host directly without process or package-manager cost.
+The schema-version-two baseline prepares a fixed synthetic catalogue outside timed operations.
+Programmatic scenarios use the public package roots; shell parsing and presentation scenarios
+exercise the private built host directly without process or package-manager cost.
 
 | Workload | Pressure represented |
 | --- | --- |
 | Core revalidation reference | Portable definition reconstruction necessarily performed while accepting catalogue snapshots. |
 | SVG rendering reference | Public rendering necessarily performed while constructing SVG export artefacts. |
 | Help and version | Invocation acceptance, context acceptance, dispatch, result construction, and freezing without catalogue acquisition. |
-| Built-in provider load | Lazy Icons module acquisition and immutable snapshot adaptation without catalogue queries. |
+| Prepared provider load | Asynchronous provider invocation and immutable snapshot return without catalogue queries. |
 | Icon discovery | Complete provider loading, definition reconstruction, membership validation, canonical ordering, and result freezing. |
 | Icon export | Exact catalogue selection, one SVG render, artefact planning, and result freezing. |
 | Collection export | Complete membership resolution, sixteen SVG renders, canonical path ordering, artefact planning, and result freezing. |
@@ -55,8 +55,10 @@ medians:
 | `cli.cold.root-import` | 138.48 ms per process |
 | `cli.cold.executable-version` | 163.21 ms per process |
 
-The parser, presenter dispatch, invocation acceptance, context acceptance, result construction, and
-built-in provider adaptation do not expose an isolated material CLI-owned hotspot. Catalogue
+These findings belong to schema version one, which used the former product catalogue, and are not
+directly comparable with schema-version-two reports. The parser, presenter dispatch, invocation
+acceptance, context acceptance, result construction, and
+provider adaptation do not expose an isolated material CLI-owned hotspot. Catalogue
 commands are dominated by strict portable-definition reconstruction and complete result isolation;
 Export and Review add public SVG rendering proportional to selected definitions. Review planning
 remains comparable to collection Export without adding a material isolated hotspot. Cold startup
@@ -95,7 +97,7 @@ pnpm benchmark:cli
 ```
 
 The command builds Core, Icons, SVG, and CLI, then runs Node with explicit garbage-collection
-access. It prints schema-version-one JSON and writes no artefact. Reports include environment,
+access. It prints schema-version-two JSON and writes no artefact. Reports include environment,
 synchronous and asynchronous operation samples, heap-pressure indicators, deterministic
 checksums, fresh-process samples, emitted files and bytes, exports, side effects, engine range,
 binary mapping, and dependencies.

@@ -41,12 +41,18 @@ test("exposes immutable catalogue result discriminators", () => {
 function createIcon(
   name: string,
   tags: readonly string[] = ["testing"],
-  data = "M1 1L23 23",
+  inset = 1,
 ): IconDefinition {
   return Icon.define({
     identity: { namespace: "testing", name },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
-    nodes: [{ kind: "path", data }],
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: inset, y: inset },
+        { kind: "line", x: 24 - inset, y: 24 - inset },
+      ],
+    }],
     metadata: {
       displayName: name
         .split("-")
@@ -98,6 +104,30 @@ function createContext(
   };
 }
 
+assert.ok(
+  AsterIcons.length > 0,
+  "Expected the Aster icon catalogue to be non-empty.",
+);
+assert.ok(
+  AsterCollections.length > 0,
+  "Expected the Aster collection catalogue to be non-empty.",
+);
+const representativeIcon = AsterIcons[0];
+assert.ok(representativeIcon, "Expected one representative Aster icon.");
+const representativeIdentity = `${
+  representativeIcon.identity.namespace === undefined
+    ? ""
+    : `${representativeIcon.identity.namespace}/`
+}${representativeIcon.identity.name}${
+  representativeIcon.identity.variant === undefined
+    ? ""
+    : `@${representativeIcon.identity.variant}`
+}`;
+const representativeMemberships = AsterCollections
+  .filter((collection) => collection.icons.includes(representativeIcon))
+  .map((collection) => collection.identity)
+  .sort((left, right) => left.name.localeCompare(right.name));
+
 test("discovers the explicit built-in Aster catalogue", async () => {
   const context = createContext([AsterCatalogue]);
   const listed = await AsterCommands.execute(
@@ -113,7 +143,7 @@ test("discovers the explicit built-in Aster catalogue", async () => {
     context,
   );
   const shown = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "aster/camera" },
+    { command: "show", subject: "icon", identity: representativeIdentity },
     context,
   );
 
@@ -153,8 +183,11 @@ test("discovers the explicit built-in Aster catalogue", async () => {
   }
 
   if (shown.ok && shown.payload.kind === "icon-show") {
-    assert.equal(shown.payload.icon.metadata.displayName, "Camera");
-    assert.deepEqual(shown.payload.icon.memberships, [{ name: "aster" }]);
+    assert.equal(
+      shown.payload.icon.metadata.displayName,
+      representativeIcon.metadata.displayName,
+    );
+    assert.deepEqual(shown.payload.icon.memberships, representativeMemberships);
     assert.ok(Object.isFrozen(shown.payload.icon));
   }
 });
@@ -192,7 +225,7 @@ test("adapts independent canonical indexes with derived memberships", () => {
 test("rejects invalid canonical index relationships before snapshot loading", () => {
   const factory = new AsterCatalogueSnapshotFactory();
   const indexed = createIcon("shared");
-  const conflicting = createIcon("shared", ["testing"], "M2 2L22 22");
+  const conflicting = createIcon("shared", ["testing"], 2);
   const missing = createIcon("missing");
   const conflictingCollection = createCollection("conflicting", [conflicting]);
   const unavailableCollection = createCollection("unavailable", [missing]);

@@ -3,7 +3,7 @@
  * @typedef {object} ISvgBaselineFixtures
  * @property {import("@aster/core").IconDefinition} minimalDefinition - Canonical single-node definition.
  * @property {import("@aster/core").IconDefinition} primitivesDefinition - Canonical complete primitive matrix.
- * @property {readonly import("@aster/core").IconDefinition[]} corpusDefinitions - Canonical real icon corpus.
+ * @property {readonly import("@aster/core").IconDefinition[]} corpusDefinitions - Canonical fixed-size synthetic icon corpus.
  * @property {import("@aster/core").IconDefinition} overrideDefinition - Canonical override-authorising definition.
  * @property {import("@aster/core").IconDefinition} rtlDefinition - Canonical mirror-policy definition.
  * @property {import("@aster/core").IconDefinition} escapingDefinition - Canonical escaping-pressure definition.

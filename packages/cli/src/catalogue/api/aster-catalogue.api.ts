@@ -13,6 +13,7 @@ const asterCatalogueProvider = new AsterCatalogueProvider();
  * @description Immutable explicit provider for canonical `@aster/icons` catalogue discovery.
  */
 export const AsterCatalogue: CatalogueProvider = Object.freeze({
+  /** @description Stable identity of the canonical Aster catalogue provider. */
   identity: asterCatalogueProvider.identity,
 
   /**

@@ -8,16 +8,16 @@ threshold. Current package findings remain in [SVG Quality](quality.md).
 
 ## Representative evidence
 
-The baseline uses only public `@aster/core`, `@aster/icons`, and `@aster/svg` roots. Definitions and
-options are prepared and frozen before timing begins, while every complete markup result enters a
-deterministic checksum.
+The schema-version-two baseline uses only public `@aster/core` and `@aster/svg` roots. A fixed
+sixteen-definition synthetic corpus, specialised definitions and options are prepared and frozen
+before timing begins, while every complete markup result enters a deterministic checksum.
 
 | Workload | Pressure represented |
 | --- | --- |
 | Core revalidation reference | Public reconstruction necessarily performed at the start of every SVG render. |
 | Minimal icon | Fixed option, presentation, node, escaping, and complete-document cost. |
 | Every primitive | Node dispatch, complete presentation, geometry attributes, and document composition. |
-| Real corpus | Round-robin rendering across every canonical Aster icon shape. |
+| Fixed corpus | Round-robin rendering across sixteen canonical synthetic definitions. |
 | Semantic accessibility | Label, title, accessible-name, escaping, and semantic root attributes. |
 | Authorised overrides | Complete option normalisation and presentation override precedence. |
 | RTL mirroring | Direction policy, translation, title ordering, and generated group composition. |
@@ -29,8 +29,9 @@ SVG permission to bypass revalidation or trust canonical object provenance.
 
 ## Initial evidence and attribution
 
-Three complete reports under Node `24.10.0` on Windows x64 produced these medians across report
-medians:
+The following schema-version-one findings used the former product corpus and remain historical
+investigation evidence; they are not directly comparable with schema-version-two reports. Three
+complete reports under Node `24.10.0` on Windows x64 produced these medians across report medians:
 
 | Scenario | Initial median |
 | --- | ---: |
@@ -65,7 +66,7 @@ Three equivalent control and candidate reports produced:
 | Core revalidation reference | 7,055 ns | 6,830 ns | 3.2% faster |
 | Minimal icon | 21,728 ns | 12,629 ns | 41.9% faster |
 | Every primitive | 98,342 ns | 55,209 ns | 43.9% faster |
-| Real corpus | 38,653 ns | 22,486 ns | 41.8% faster |
+| Former product corpus | 38,653 ns | 22,486 ns | 41.8% faster |
 | Semantic accessibility | 23,722 ns | 15,121 ns | 36.3% faster |
 | Authorised overrides | 24,064 ns | 15,161 ns | 37.0% faster |
 | RTL mirroring | 21,675 ns | 13,460 ns | 37.9% faster |
@@ -90,7 +91,7 @@ medians across report medians:
 | Core revalidation reference | 6,923 ns | 679 bytes |
 | Minimal icon | 12,727 ns | 690 bytes |
 | Every primitive | 56,738 ns | 456 bytes |
-| Real corpus | 23,305 ns | 1,540 bytes |
+| Former product corpus | 23,305 ns | 1,540 bytes |
 | Semantic accessibility | 15,928 ns | 1,387 bytes |
 | Authorised overrides | 15,331 ns | 2,720 bytes |
 | RTL mirroring | 14,270 ns | 1,370 bytes |
@@ -108,8 +109,8 @@ Run the development-only comparison from a clean workspace:
 pnpm benchmark:svg
 ```
 
-The command builds Core, Icons, and SVG, runs Node with explicit garbage-collection access, prints
-schema-version-one JSON, and writes no artefact. Reports include environment identity, methodology,
+The command builds Core and SVG, runs Node with explicit garbage-collection access, prints
+schema-version-two JSON, and writes no artefact. Reports include environment identity, methodology,
 timing, heap pressure, checksums, emitted modules and declarations, bytes, exports, and side-effect
 metadata.
 

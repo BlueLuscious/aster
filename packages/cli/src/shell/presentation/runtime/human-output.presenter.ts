@@ -54,7 +54,15 @@ export class HumanOutputPresenter {
    * @param result - Structured immutable successful command result.
    * @returns Plain deterministic success text.
    */
-  success(result: Extract<AsterCommandResultType, { ok: true }>): string {
+  success(
+    result: Extract<
+      AsterCommandResultType,
+      {
+        /** @description Successful-result discriminator used for outcome narrowing. */
+        ok: true;
+      }
+    >,
+  ): string {
     const payload = result.payload;
 
     switch (payload.kind) {
@@ -81,7 +89,15 @@ export class HumanOutputPresenter {
    * @param result - Structured immutable failed command result.
    * @returns Plain deterministic diagnostic text.
    */
-  failure(result: Extract<AsterCommandResultType, { ok: false }>): string {
+  failure(
+    result: Extract<
+      AsterCommandResultType,
+      {
+        /** @description Failed-result discriminator used for outcome narrowing. */
+        ok: false;
+      }
+    >,
+  ): string {
     const related = result.diagnostic.related;
     return [
       `[${result.diagnostic.code}] ${result.diagnostic.message}`,

@@ -20,7 +20,7 @@ export class SvgPrimitiveNormaliser {
   readonly #numberParser = new SvgNumberParser();
 
   /**
-   * @description Deterministic validated path-data normaliser.
+   * @description Deterministic SVG-to-Core path-command normaliser.
    */
   readonly #pathNormaliser = new SvgPathDataNormaliser();
 
@@ -38,7 +38,7 @@ export class SvgPrimitiveNormaliser {
       case svgSourceElementNames.path:
         return {
           kind: svgSourceElementNames.path,
-          data: this.#pathNormaliser.normalise(
+          commands: this.#pathNormaliser.normalise(
             this.#required(element, svgSourceAttributeNames.pathData),
           ),
           ...presentation,

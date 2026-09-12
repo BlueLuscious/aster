@@ -32,7 +32,7 @@ An icon filename `<icon-slug>.icon.ts` must export exactly one constant whose na
 form of `<icon-slug>`. For example, `arrow-left.icon.ts` exports `ArrowLeft`.
 
 A collection filename `<collection-slug>.collection.ts` follows the same conversion and appends
-`Collection`. For example, `aster.collection.ts` exports `AsterCollection`.
+`Collection`. For example, `amellus.collection.ts` exports `AmellusCollection`.
 
 Slugs use lowercase ASCII alphanumeric segments separated by one hyphen. Invalid TypeScript,
 missing exports, additional exported constants, aggregate-name collisions and distinct slugs that

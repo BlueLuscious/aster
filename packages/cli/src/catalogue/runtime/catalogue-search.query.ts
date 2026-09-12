@@ -66,7 +66,13 @@ export class CatalogueSearchQuery {
    * @returns Structured immutable mixed search result.
    */
   async execute(
-    invocation: Extract<AsterCommandInvocationType, { command: typeof asterCommandNames.search }>,
+    invocation: Extract<
+      AsterCommandInvocationType,
+      {
+        /** @description Search-command discriminator used for invocation narrowing. */
+        command: typeof asterCommandNames.search;
+      }
+    >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
     const loaded = await this.#loader.load(context.catalogues);

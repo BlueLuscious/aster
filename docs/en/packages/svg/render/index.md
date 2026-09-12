@@ -63,10 +63,12 @@ Portable nodes map directly and retain paint order:
 | `polyline` | `polyline` | `points` |
 | `polygon` | `polygon` | `points` |
 
-Path data is an opaque, non-empty portable value whose grammar must be validated by its
-authoritative ingestion or authoring workflow. SVG validates its XML character representation and
-escapes it as an attribute, but does not duplicate Import's path parser or repair invalid geometry.
-The ownership boundary is defined by [Core Node](../../core/node/index.md).
+Path nodes carry Core-owned structured commands. SVG maps them to uppercase absolute command
+letters, expands every operation, separates letters and operands with one ASCII space, writes arc
+flags as `0` or `1`, and separates command groups with one ASCII space. It does not parse source
+path syntax, resolve relative coordinates or implement shorthand rules. Those source concerns
+belong to Import; the portable ownership boundary is defined by
+[Core Node](../../core/node/index.md).
 
 Presentation follows geometry attributes in this order:
 
@@ -90,8 +92,8 @@ does not rely on inherited fill or stroke to approximate this precedence.
 ## Numeric and text form
 
 Finite numbers use locale-independent ECMAScript string form after canonicalising negative zero
-to zero. Coordinate sequences use one ASCII space between numbers. `viewBox` follows the same
-four-number form.
+to zero. Path operands, point sequences and `viewBox` coordinates use one ASCII space between
+numbers.
 
 The accepted XML 1.0 character repertoire is exactly tab, line feed, carriage return,
 `U+0020-U+D7FF`, `U+E000-U+FFFD`, and `U+10000-U+10FFFF`. Valid supplementary characters and XML

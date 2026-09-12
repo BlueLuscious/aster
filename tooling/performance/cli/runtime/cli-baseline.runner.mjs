@@ -286,15 +286,15 @@ export class CliBaselineRunner {
   }
 
   /**
-   * @description Measures explicit built-in provider acquisition independently from queries.
+   * @description Measures explicit prepared-provider acquisition independently from queries.
    * @param {number} iterations - Number of provider loads to execute.
    * @returns {Promise<number>} Deterministic checksum over acquired snapshot cardinality.
    */
   async #loadProvider(iterations) {
-    const provider = this.#fixtures.builtInContext.catalogues[0];
+    const provider = this.#fixtures.context.catalogues[0];
 
     if (provider === undefined) {
-      throw new TypeError("The CLI baseline requires the built-in catalogue provider.");
+      throw new TypeError("The CLI baseline requires one prepared catalogue provider.");
     }
 
     let checksum = 0;

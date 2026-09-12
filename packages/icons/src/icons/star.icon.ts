@@ -29,7 +29,7 @@ export const Star = Icon.define({
   ],
   metadata: {
     displayName: "Star",
-    tags: ["favourite", "rating", "star"],
+    tags: ["bookmark", "favourite", "featured", "rating", "star"],
     rtl: "preserve",
     presentation: asterIconAuthoring.presentation,
     licence: asterIconAuthoring.licence,

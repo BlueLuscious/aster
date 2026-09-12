@@ -1,5 +1,5 @@
 import { Icon } from "@aster/core";
-import { AsterCollection } from "@aster/icons/collections/aster";
+import { BenchmarkCatalogueFixtureFactory } from "../../shared/runtime/benchmark-catalogue-fixture.factory.mjs";
 
 /**
  * @description Prepares representative public SVG definitions and options outside timed work.
@@ -10,6 +10,7 @@ export class SvgBaselineFixtureFactory {
    * @returns {import("../contracts/internal/svg-baseline-fixtures.contract.mjs").ISvgBaselineFixtures} Prepared public SVG inputs.
    */
   create() {
+    const catalogue = new BenchmarkCatalogueFixtureFactory().create();
     const minimalDefinition = this.#definition("minimal", [
       Object.freeze({ kind: "circle", cx: 12, cy: 12, radius: 4 }),
     ]);
@@ -17,7 +18,13 @@ export class SvgBaselineFixtureFactory {
     return Object.freeze({
       minimalDefinition,
       primitivesDefinition: this.#definition("primitives", [
-        Object.freeze({ kind: "path", data: "M2 12h20" }),
+        Object.freeze({
+          kind: "path",
+          commands: Object.freeze([
+            Object.freeze({ kind: "move", x: 2, y: 12 }),
+            Object.freeze({ kind: "line", x: 22, y: 12 }),
+          ]),
+        }),
         Object.freeze({ kind: "circle", cx: 12, cy: 12, radius: 4 }),
         Object.freeze({
           kind: "ellipse",
@@ -53,7 +60,7 @@ export class SvgBaselineFixtureFactory {
           ]),
         }),
       ]),
-      corpusDefinitions: AsterCollection.icons,
+      corpusDefinitions: catalogue.icons,
       overrideDefinition: Icon.define({
         ...minimalDefinition,
         identity: { namespace: "benchmark", name: "overrides" },
@@ -79,7 +86,6 @@ export class SvgBaselineFixtureFactory {
       escapingDefinition: Icon.define({
         ...minimalDefinition,
         identity: { namespace: "benchmark", name: "escaping" },
-        nodes: [{ kind: "path", data: 'M2 12h20"<&\t\n\r' }],
         metadata: {
           ...minimalDefinition.metadata,
           displayName: "Benchmark Escaping",

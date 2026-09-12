@@ -19,9 +19,10 @@ import { Svg } from "@aster/svg";
 const markup = Svg.render(ArrowLeft);
 ```
 
-The collection remains Experimental while its representative set and visual rules are reviewed.
-See the [canonical package documentation](../../docs/en/packages/icons/index.md) and
-[Aster collection authority](../../docs/en/collections/aster/index.md).
+The package currently provides the accepted Amellus foundational collection. See the
+[canonical package documentation](../../docs/en/packages/icons/index.md),
+[authoring workflow](../../docs/en/packages/icons/workflow.md) and
+[Amellus collection authority](../../docs/en/collections/amellus/index.md).
 
 ## Licence
 

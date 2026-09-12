@@ -68,6 +68,7 @@ test("exposes the exact immutable root value surface", async () => {
     "iconDirections",
     "iconNodeKinds",
     "iconPaintSchema",
+    "iconPathCommandKinds",
     "iconPresentationOverrideOrder",
     "iconRtlPolicies",
     "iconTechnicalPresentation",
@@ -78,6 +79,15 @@ test("exposes the exact immutable root value surface", async () => {
   assert.ok(Object.isFrozen(packageModule.Icon));
   assert.ok(Object.isFrozen(packageModule.iconDirections));
   assert.ok(Object.isFrozen(packageModule.iconNodeKinds));
+  assert.deepEqual(packageModule.iconPathCommandKinds, {
+    move: "move",
+    line: "line",
+    cubicBezier: "cubic-bezier",
+    quadraticBezier: "quadratic-bezier",
+    arc: "arc",
+    close: "close",
+  });
+  assert.ok(Object.isFrozen(packageModule.iconPathCommandKinds));
   assert.ok(Object.isFrozen(packageModule.iconPaintSchema));
   assert.ok(Object.isFrozen(packageModule.iconPaintSchema.keywords));
   assert.ok(Object.isFrozen(packageModule.IconDefinitionError));

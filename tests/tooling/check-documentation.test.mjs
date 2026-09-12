@@ -61,8 +61,8 @@ test("accepts collection documentation without a prescribed source root", async 
   try {
     await writeDocument(
       root,
-      "docs/en/collections/aster/index.md",
-      "# Aster Collection\n",
+      "docs/en/collections/sample/index.md",
+      "# Sample Collection\n",
     );
 
     const result = await verifyDocumentation(root);

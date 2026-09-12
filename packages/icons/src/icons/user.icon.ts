@@ -11,15 +11,30 @@ export const User = Icon.define({
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
-    {
-      kind: "circle",
-      cx: 12,
-      cy: 8,
-      radius: 4,
-    },
+    { kind: "circle", cx: 12, cy: 8, radius: 4 },
     {
       kind: "path",
-      data: "M4 21c0-4.5 3.5-7 8-7s8 2.5 8 7",
+      commands: [
+        { kind: "move", x: 4, y: 21 },
+        {
+          kind: "cubic-bezier",
+          control1X: 4,
+          control1Y: 16.5,
+          control2X: 7.5,
+          control2Y: 14,
+          x: 12,
+          y: 14,
+        },
+        {
+          kind: "cubic-bezier",
+          control1X: 16.5,
+          control1Y: 14,
+          control2X: 20,
+          control2Y: 16.5,
+          x: 20,
+          y: 21,
+        },
+      ],
     },
   ],
   metadata: {

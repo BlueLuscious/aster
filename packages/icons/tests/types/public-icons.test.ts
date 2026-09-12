@@ -5,50 +5,16 @@ import type {
 import {
   AsterIcons,
   ArrowLeft,
-  Bell,
-  Camera,
-  Check,
-  Close,
-  Cloud,
-  Folder,
-  Heart,
-  Home,
-  Leaf,
-  Lock,
-  Plus,
   Search,
-  Settings,
-  Star,
-  User,
 } from "../../src/index.js";
 import {
-  AsterCollection,
   AsterCollections,
 } from "../../src/collections/index.js";
 
-const definitions = [
-  ArrowLeft,
-  Bell,
-  Camera,
-  Check,
-  Close,
-  Cloud,
-  Folder,
-  Heart,
-  Home,
-  Leaf,
-  Lock,
-  Plus,
-  Search,
-  Settings,
-  Star,
-  User,
-] satisfies readonly IconDefinition[];
-
 const directDefinition: IconDefinition = ArrowLeft;
-const directCollection: CollectionDefinition = AsterCollection;
 const indexedDefinitions: readonly IconDefinition[] = AsterIcons;
 const indexedCollections: readonly CollectionDefinition[] = AsterCollections;
+declare const collectionDefinition: CollectionDefinition;
 
 // @ts-expect-error Canonical definitions are immutable.
 directDefinition.identity.name = "changed";
@@ -63,11 +29,9 @@ const markup = Search.svg;
 AsterIcons.push(ArrowLeft);
 
 // @ts-expect-error Canonical collection indexes are immutable.
-AsterCollections.push(AsterCollection);
+AsterCollections.push(collectionDefinition);
 
-void definitions;
 void directDefinition;
-void directCollection;
 void indexedDefinitions;
 void indexedCollections;
 void component;

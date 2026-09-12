@@ -2,10 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import type { CollectionDefinition, IconDefinition } from "@aster/core";
-import {
-  AsterCollection,
-  AsterCollections,
-} from "../../src/collections/index.js";
+import { AsterCollections } from "../../src/collections/index.js";
 import * as collections from "../../src/collections/index.js";
 import { AsterIcons } from "../../src/icons/index.js";
 import * as icons from "../../src/icons/index.js";
@@ -50,6 +47,16 @@ function numericGeometryValues(definition: IconDefinition): readonly number[] {
         }
       }
 
+      if (field === "commands" && Array.isArray(value)) {
+        for (const command of value) {
+          for (const operand of Object.values(command)) {
+            if (typeof operand === "number") {
+              values.push(operand);
+            }
+          }
+        }
+      }
+
       if (field === "data" && typeof value === "string") {
         values.push(
           ...(value.match(/-?(?:\d+(?:\.\d+)?|\.\d+)/gu) ?? []).map(Number),
@@ -89,6 +96,11 @@ test("keeps every definition aligned with shared authoring defaults", () => {
   const definitions = AsterIcons;
   const identities = new Set<string>();
 
+  assert.ok(
+    definitions.length > 0,
+    "Expected the Aster icon index to be non-empty.",
+  );
+
   for (const definition of definitions) {
     assert.equal(definition.identity.namespace, "aster");
     assert.equal(identities.has(definition.identity.name), false);
@@ -114,8 +126,21 @@ test("keeps every definition aligned with shared authoring defaults", () => {
     assert.equal(definition.metadata.licence, "ISC");
     assert.equal(definition.metadata.attribution, "BlueLuscious");
     assert.equal(definition.metadata.deprecated, false);
+    const tags = definition.metadata.tags;
+    assert.ok(tags);
+    assert.ok(
+      definition.identity.name
+        .split("-")
+        .every((part) => tags.includes(part)),
+    );
     assert.ok(definition.nodes.length > 0);
     assert.ok(definition.nodes.length <= 16);
+    assert.ok(
+      definition.nodes.reduce(
+        (count, node) => count + (node.kind === "path" ? node.commands.length : 0),
+        0,
+      ) <= 64,
+    );
 
     for (const node of definition.nodes) {
       for (const field of presentationFields) {
@@ -135,22 +160,23 @@ test("keeps every definition aligned with shared authoring defaults", () => {
   }
 
   assert.equal(icons.ArrowLeft.metadata.rtl, "mirror");
-
-  for (const definition of definitions) {
-    if (definition !== icons.ArrowLeft) {
-      assert.equal(definition.metadata.rtl, "preserve");
-    }
-  }
+  assert.equal(icons.ArrowRight.metadata.rtl, "mirror");
 });
 
-test("retains the complete pilot through independent collection membership", () => {
-  assert.equal(AsterCollection.identity.name, "aster");
-  assert.deepEqual(AsterCollection.icons, AsterIcons);
-  assert.ok(AsterCollections.includes(AsterCollection));
+test("keeps collection membership within the independent icon index", () => {
+  assert.ok(
+    AsterCollections.length > 0,
+    "Expected the Aster collection index to be non-empty.",
+  );
 
-  for (const definition of AsterIcons) {
-    assert.ok(AsterCollection.icons.includes(definition));
+  for (const collection of AsterCollections) {
+    for (const definition of collection.icons) {
+      assert.ok(
+        AsterIcons.includes(definition),
+        `Expected ${definition.identity.name} from ${collection.identity.name} in the icon index.`,
+      );
+    }
+
+    assertDeeplyFrozen(collection);
   }
-
-  assertDeeplyFrozen(AsterCollection);
 });

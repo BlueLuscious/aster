@@ -75,12 +75,25 @@ The private root exposes stable orchestration contracts:
 | `pnpm test:tooling` | Run fixture-based conformance for repository tools. |
 | `pnpm test:workflow` | Run implemented cross-package workflows through public roots. |
 | `pnpm clean` | Delegate to each package's guarded cleanup contract. |
-| `pnpm verify` | Run checks, tests, and builds as the complete repository gate. |
+| `pnpm verify` | Run checks and the complete test graph as the repository gate; owned subcommands build every inspected output. |
 
 Root commands remain stable while internal implementations can be replaced. `pnpm lint`,
 `pnpm format`, and `pnpm format:check` remain reserved delegators, but they are excluded from
 `pnpm check` while no package implements them. Empty delegated matches are not repository evidence;
 objective linting and formatting remain deferred until an accepted implementation exists.
+
+## Verification orchestration
+
+The transversal evidence roles, selection rules and isolation requirements are defined by the
+[Aster Testing Policy](../project/testing.md). Tooling owns command composition, while each package
+or workflow continues to own the freshness of the output it inspects.
+
+ABI, executable, clean-consumer and global workflow commands therefore retain their direct build
+prerequisites and remain valid when invoked independently. `pnpm verify` does not append a second
+workspace build after `pnpm test`: the final global workflow command has already rebuilt every
+package, and no later operation mutates package source or distribution output. Other repeated
+builds remain deliberate isolation costs until an explicit shared-output lifecycle can preserve
+standalone command correctness.
 
 ## Retention audit
 

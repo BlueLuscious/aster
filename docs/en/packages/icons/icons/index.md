@@ -1,33 +1,46 @@
 # Canonical Icon Definitions
 
-Status: **Experimental**
+Status: **Accepted**
 
 The `icons` feature contains one canonical TypeScript module and one named immutable value per
-pilot icon. `AsterIcons` is the complete immutable package index over those independent values.
+authored icon. `AsterIcons` is the complete immutable package index over those independent values.
+The current corpus contains all twenty-six definitions accepted for foundational Amellus
+membership. Seventeen definitions remain primitive-first. Nine use structured absolute path
+commands, combined with clearer primitives where appropriate, and contain no raw SVG path text.
 
 Canonical source modules use `<icon-slug>.icon.ts`. The semantic role remains internal to the
 source layout: public imports omit it and retain `@aster/icons/<icon-slug>`.
 
-## Representative Set
+## Authored corpus
 
 | Symbol | Identity | Primary contract coverage |
 | --- | --- | --- |
+| `ArrowDown` | `aster/arrow-down` | Vertical direction, diagonals, open terminals, and preserved RTL orientation. |
 | `ArrowLeft` | `aster/arrow-left` | Directionality, diagonals, open terminals, and RTL mirroring. |
-| `Bell` | `aster/bell` | Curved enclosure, optical balance, and detached detail. |
-| `Camera` | `aster/camera` | Nested circular detail and asymmetric structural contour. |
+| `ArrowRight` | `aster/arrow-right` | Opposing logical direction, diagonals, open terminals, and RTL mirroring. |
+| `ArrowUp` | `aster/arrow-up` | Opposing vertical direction, diagonals, open terminals, and preserved RTL orientation. |
+| `Bell` | `aster/bell` | Curved enclosure, detached baseline, symmetry, and minimum-size spacing. |
+| `Camera` | `aster/camera` | Rounded structured enclosure, circular lens, and mixed geometry. |
 | `Check` | `aster/check` | Unequal diagonals and open-terminal rhythm. |
 | `Close` | `aster/close` | Diagonal symmetry and crossing strokes. |
-| `Cloud` | `aster/cloud` | Compound organic curves and silhouette recognition. |
-| `Folder` | `aster/folder` | Asymmetric contour and familiar object metaphor. |
-| `Heart` | `aster/heart` | Organic curves and optical symmetry. |
-| `Home` | `aster/home` | Preferred angles, symmetry, doorway negative space, and mixed primitives. |
-| `Leaf` | `aster/leaf` | Organic asymmetry and internal directional contour. |
-| `Lock` | `aster/lock` | Nested negative space, curves, and rectangular structure. |
+| `Cloud` | `aster/cloud` | Connected elliptical arcs, organic balance, and closed contour continuity. |
+| `Download` | `aster/download` | Vertical movement, open terminals, and receiving baseline. |
+| `Folder` | `aster/folder` | Asymmetric tab, rounded enclosure, and grouped-container metaphor. |
+| `Heart` | `aster/heart` | Symmetric cubic curves, organic tension, and pointed lower convergence. |
+| `Home` | `aster/home` | Primitive roof, structured enclosure, centred entrance, and negative space. |
+| `Info` | `aster/info` | Circular enclosure, minimum-size spacing, and detached detail. |
+| `Leaf` | `aster/leaf` | Organic cubic contour, internal vein, and deliberate asymmetry. |
+| `Lock` | `aster/lock` | Rounded rectangular body, curved shackle, and enclosed negative space. |
+| `Mail` | `aster/mail` | Rounded enclosure, diagonal rhythm, and message metaphor. |
+| `Menu` | `aster/menu` | Parallel rhythm, equal stroke extent, and open terminals. |
+| `Pause` | `aster/pause` | Parallel vertical symmetry and media distinction. |
+| `Play` | `aster/play` | Closed directional geometry and media distinction. |
 | `Plus` | `aster/plus` | Primary axes and equal stroke extent. |
 | `Search` | `aster/search` | Circle-line transition and diagonal handle. |
 | `Settings` | `aster/settings` | Highest primitive count and radial detail budget. |
 | `Star` | `aster/star` | Repeated points, polygon rhythm, and near-safe-area extents. |
-| `User` | `aster/user` | Nested curves and minimum-size separation. |
+| `User` | `aster/user` | Circular head, curved shoulders, symmetry, and minimum-size recognition. |
+| `Warning` | `aster/warning` | Triangular enclosure, vertical detail, and minimum-size spacing. |
 
 Every icon:
 
@@ -36,7 +49,7 @@ Every icon:
 - uses geometry values on the provisional half-unit grid;
 - resolves ISC licence and BlueLuscious attribution;
 - is deeply frozen by Core;
-- remains below the provisional primitive budget;
+- remains below the provisional primitive and structured-command budgets;
 - exports through `@aster/icons/<icon-slug>`.
 
 `AsterIcons` retains the canonical definitions in identity order. Catalogue source synchronisation
@@ -45,12 +58,17 @@ complete-package consumers such as the built-in CLI catalogue without adding col
 membership. It is a package-owned sequence, not a mutable runtime registry or runtime source
 discovery service.
 
-Only `ArrowLeft` uses the `mirror` RTL policy. The remaining pilot identities preserve geometry in
-RTL because their metaphors are not directional.
+Only `ArrowLeft` and `ArrowRight` use the `mirror` RTL policy. The remaining identities preserve
+geometry in RTL because their metaphors do not represent logical horizontal movement.
+
+`AmellusCollection` explicitly retains all twenty-six definitions. Inclusion in `AsterIcons`
+provides package discovery only and never implies Amellus membership or membership in a future
+collection. Core and package tests prove that the same immutable definition may be retained by
+multiple independently constructed collections without acquiring mutable reverse links.
 
 ## Metadata Scope
 
-The pilot retains display name, RTL policy, presentation policy, licence, attribution,
+The corpus retains display name, RTL policy, presentation policy, licence, attribution,
 deprecation state, replacement relationship semantics, and intrinsic search tags supported by
 Core.
 

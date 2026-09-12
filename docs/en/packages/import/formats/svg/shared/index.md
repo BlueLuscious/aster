@@ -14,6 +14,10 @@ The shared internal types remain narrowly tied to those authorities:
 - `TSvgNumericDomain` and `TSvgPresentationNumericDomain` derive the finite numeric policies used
   by geometry and presentation validation.
 - `TSvgPathCommand` derives the accepted path-command vocabulary.
-- `TSvgPathSegment` retains one parsed command with its finite parameters.
-- `TSvgPathInspection` contains canonical path data and computed command evidence needed by
-  validation and normalisation.
+- `TSvgPathSegment` retains one authored command, its casing and its immutable finite parameters.
+- `TSvgPathInspection` contains immutable source segments and expanded operation-count evidence
+  needed by validation and normalisation.
+
+These types do not become portable path contracts. They retain SVG-specific commands such as
+horizontal, vertical and smooth curves only long enough for normalisation to translate them into
+Core's smaller absolute command vocabulary.

@@ -11,13 +11,7 @@ export const ArrowLeft = Icon.define({
   },
   viewBox: asterIconAuthoring.viewBox,
   nodes: [
-    {
-      kind: "line",
-      x1: 20,
-      y1: 12,
-      x2: 4,
-      y2: 12,
-    },
+    { kind: "line", x1: 20, y1: 12, x2: 4, y2: 12 },
     {
       kind: "polyline",
       points: [
