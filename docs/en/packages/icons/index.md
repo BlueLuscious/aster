@@ -1,6 +1,6 @@
 # @aster/icons
 
-Status: **Experimental**
+Status: **Accepted**
 
 `@aster/icons` owns canonical portable TypeScript icon definitions, independently defined
 collections, and explicit immutable indexes for complete package discovery. It exposes an
@@ -70,7 +70,6 @@ leak through the icon root; their complete family is explicit:
 ```ts
 import {
   AmellusCollection,
-  AsterCollection,
   AsterCollections,
 } from "@aster/icons/collections";
 ```
@@ -83,7 +82,6 @@ Each canonical collection can also be imported through its isolated subpath:
 
 ```ts
 import { AmellusCollection } from "@aster/icons/collections/amellus";
-import { AsterCollection } from "@aster/icons/collections/aster";
 ```
 
 Per-icon subpaths are the authoritative minimal imports:
@@ -116,7 +114,7 @@ Importing the package root evaluates `AsterIcons` but no collection module. Impo
 independent from their family index and sibling definitions.
 
 The package's authoring and SVG review relationship is defined by the
-[Aster Collection Authoring Workflow](../../collections/aster/authoring-workflow.md).
+[Icons Authoring Workflow](workflow.md).
 Generated aggregate ownership and the exact package build loop are defined by
 [Catalogue Source Tooling](../../tooling/catalogue/index.md).
 Current package, catalogue and distribution evidence is defined by [Icons Quality](quality.md).

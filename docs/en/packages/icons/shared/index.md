@@ -1,6 +1,6 @@
 # Icons Shared Authoring
 
-Status: **Experimental**
+Status: **Accepted**
 
 The shared feature owns the immutable `asterIconAuthoring` defaults used by every canonical Aster
 icon module. It is an internal authoring authority, not a public package export or a universal

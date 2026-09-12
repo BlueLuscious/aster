@@ -1,11 +1,11 @@
 # Icons Quality
 
-Status: **Experimental**
+Status: **Accepted**
 
 `@aster/icons` quality evidence protects canonical authored definitions, independent collection
-composition, generated catalogue sources and the package's distributable public surface. The
-catalogue remains experimental, so this evidence establishes current correctness rather than a
-stable artwork or compatibility promise.
+composition, generated catalogue sources and the package's distributable public surface. This
+evidence accepts the current pre-release boundary and artwork without creating a stable-version
+compatibility promise.
 
 ## Source evidence
 

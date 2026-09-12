@@ -11,7 +11,7 @@ The current package set is:
 | --- | --- | --- |
 | [`@aster/core`](core/index.md) | Pre-release | Independent portable icon and collection definitions, immutable construction, and render-neutral contracts. |
 | [`@aster/import`](import/index.md) | Private | Host-independent adoption of external icon sources into portable definitions and editable TypeScript. |
-| [`@aster/icons`](icons/index.md) | Experimental | Canonical portable icons and opt-in collection aggregates for the Aster pilot. |
+| [`@aster/icons`](icons/index.md) | Pre-release | Accepted canonical portable icons and the opt-in Amellus collection aggregate. |
 | [`@aster/svg`](svg/index.md) | Pre-release | Hardened framework-independent standalone SVG rendering. |
 | [`@aster/cli`](cli/index.md) | Pre-release | Host-neutral command execution, explicit catalogue discovery, deterministic SVG export planning, and a thin standalone Node output host. |
 

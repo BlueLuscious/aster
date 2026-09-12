@@ -1,6 +1,6 @@
 # Amellus Initial Inventory
 
-Status: **Accepted for authorship**
+Status: **Accepted**
 
 The initial Amellus inventory contains twenty-six deliberately bounded application concepts. Every
 concept has an independent canonical definition: seventeen remain primitive-first, while nine use

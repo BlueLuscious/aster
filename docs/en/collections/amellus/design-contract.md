@@ -1,6 +1,6 @@
 # Amellus Visual Design Contract
 
-Status: **Accepted for initial authorship**
+Status: **Accepted**
 
 This contract defines the visual language for the first Amellus inventory. It governs collection
 membership rather than all Aster icons: an independently authored icon may exist outside Amellus
@@ -119,6 +119,6 @@ Each exception must identify the icon, affected rule, visible reason, `16px` and
 and curator decision. Repeated equivalent exceptions trigger review of this contract rather than
 copied waivers.
 
-The representative stress set is defined in the [initial inventory](inventory.md). It must cover
-curves, diagonals, symmetry, enclosures, detached details and mixed primitives before the visual
-language can be promoted beyond initial authorship.
+The representative stress set is defined in the [initial inventory](inventory.md). It covers
+curves, diagonals, symmetry, enclosures, detached details and mixed primitives, and remains the
+required evidence whenever the accepted visual language changes.

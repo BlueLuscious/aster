@@ -1,8 +1,8 @@
 # Amellus Collection
 
-Status: **Accepted identity**
+Status: **Accepted**
 
-Collection lifecycle: **Proposed**
+Collection lifecycle: **Active**
 
 ## Identity
 
@@ -15,13 +15,13 @@ Collection lifecycle: **Proposed**
 | Canonical module | `amellus.collection.ts` |
 | Public subpath | `@aster/icons/collections/amellus` |
 | Curator and original artwork author | BlueLuscious |
-| Intended artwork licence | [ISC](../../../../LICENSE) |
-| Lifecycle | Proposed until visual, technical, provenance and curatorial acceptance is complete. |
+| Artwork licence | [ISC](../../../../LICENSE) |
+| Lifecycle | Active foundational collection accepted for pre-release distribution. |
 
 `Amellus` is the frozen identity for Aster's foundational minimalist general-purpose collection.
 `AmellusCollection` now retains the complete accepted inventory through the portable Core
-collection boundary. Its Proposed lifecycle still makes no release-quality or stable artwork
-promise before visual and release evidence is accepted.
+collection boundary. Its Active lifecycle accepts the current artwork and collection contract for
+pre-release distribution without creating a stable-version compatibility promise.
 
 ## Naming decision
 
@@ -76,27 +76,35 @@ membership only; it does not remove or rename the icon.
 The [visual design contract](design-contract.md) defines Amellus canvas, grid, safe-area,
 presentation, geometry, minimum-size and RTL rules. The [initial inventory](inventory.md) defines
 the bounded semantic set, search vocabulary, adjacent-concept distinctions and representative
-stress coverage accepted for authorship.
+stress coverage accepted for the collection.
 
 These documents govern collection acceptance but do not create definitions, membership or
 generated catalogue output merely by existing. The canonical TypeScript collection module is the
 membership authority.
 
-## Pilot relationship
+## Pilot disposition
 
-The original Experimental Aster pilot does not own Amellus membership. Seven primitive-first
-definitions belong to both collections through the same independent icon values. Nine former
-raw-path candidates and their visually weak polygon replacements were discarded, then
-independently reauthored through portable structured commands. All twenty-six accepted definitions
-now belong to Amellus through explicit composition rather than inheritance from the pilot.
+The unpublished Experimental Aster collection has been removed. Its seven primitive-first icons
+were classified individually and retained as independent definitions in Amellus:
 
-No compatibility promise, source alias or collection replacement relationship exists between
-`aster` and `amellus` merely because pilot artwork is considered. Amellus must not preserve weak,
-redundant or out-of-scope artwork to maintain an unpublished experimental surface.
+| Icon | Disposition |
+| --- | --- |
+| `arrow-left` | Refined and retained with explicit logical RTL mirroring. |
+| `check` | Refined and retained as the asymmetric confirmation action. |
+| `close` | Retained as the centred diagonal dismissal action. |
+| `plus` | Retained as the centred orthogonal addition action. |
+| `search` | Refined and retained with its circle-and-handle construction. |
+| `settings` | Refined and retained as the collection's radial complexity case. |
+| `star` | Refined and retained as the geometric favourite and rating mark. |
+
+No pilot-only icon remains standalone or requires removal. Nine former raw-path candidates and
+their visually weak polygon replacements were discarded before being independently reauthored
+through portable structured commands for Amellus. The removed collection has no compatibility
+promise, alias or replacement export because it was never released.
 
 ## Provenance and acceptance evidence
 
-Original Amellus artwork is intended to be authored and curated by BlueLuscious under ISC. Each
+Original Amellus artwork is authored and curated by BlueLuscious under ISC. Each
 accepted icon must retain:
 
 - one canonical editable TypeScript definition and its independent portable identity;
@@ -111,9 +119,9 @@ authority and explicit curatorial acceptance before inclusion. Botanical taxonom
 the collection name only: their text and images are not artwork sources and confer no artwork
 licence on Amellus.
 
-Promotion from Proposed requires static visual review, pilot disposition, package conformance and
-release evidence in addition to the accepted visual language, inventory, canonical definitions and
-collection composition. Documentation alone does not promote the collection.
+The accepted provenance, artwork licence, attribution, static visual review, package conformance
+and pilot disposition support the Active pre-release lifecycle. Publication and stable-version
+compatibility remain separate project release decisions.
 
 ## Static visual acceptance
 
@@ -137,6 +145,6 @@ The review accepted the following findings:
 - `arrow-left` and `arrow-right` remain exact directional counterparts and mirror under RTL, while
   vertical arrows and non-directional subjects preserve their authored geometry.
 
-No collection-level exception or canonical geometry correction was required. This visual
-acceptance satisfies the collection's review requirement but does not promote its lifecycle beyond
-Proposed until pilot disposition and final technical acceptance are complete.
+No collection-level exception or canonical geometry correction was required. Together with the
+completed provenance, pilot disposition and technical conformance evidence, this visual acceptance
+supports the collection's Active lifecycle.

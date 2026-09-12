@@ -1,11 +1,11 @@
 # Canonical Icon Definitions
 
-Status: **Experimental**
+Status: **Accepted**
 
 The `icons` feature contains one canonical TypeScript module and one named immutable value per
 authored icon. `AsterIcons` is the complete immutable package index over those independent values.
 The current corpus contains all twenty-six definitions accepted for foundational Amellus
-authorship. Seventeen definitions remain primitive-first. Nine use structured absolute path
+membership. Seventeen definitions remain primitive-first. Nine use structured absolute path
 commands, combined with clearer primitives where appropriate, and contain no raw SVG path text.
 
 Canonical source modules use `<icon-slug>.icon.ts`. The semantic role remains internal to the
@@ -61,10 +61,10 @@ discovery service.
 Only `ArrowLeft` and `ArrowRight` use the `mirror` RTL policy. The remaining identities preserve
 geometry in RTL because their metaphors do not represent logical horizontal movement.
 
-`AmellusCollection` explicitly retains all twenty-six definitions. The Experimental
-`AsterCollection` independently retains its seven-icon pilot subset, so those values demonstrate
-multi-collection membership without acquiring mutable reverse links. Inclusion in `AsterIcons`
-still provides package discovery only and never implies membership in a future collection.
+`AmellusCollection` explicitly retains all twenty-six definitions. Inclusion in `AsterIcons`
+provides package discovery only and never implies Amellus membership or membership in a future
+collection. Core and package tests prove that the same immutable definition may be retained by
+multiple independently constructed collections without acquiring mutable reverse links.
 
 ## Metadata Scope
 
