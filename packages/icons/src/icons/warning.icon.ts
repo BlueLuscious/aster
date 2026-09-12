@@ -20,7 +20,7 @@ export const Warning = Icon.define({
       ],
     },
     { kind: "line", x1: 12, y1: 9, x2: 12, y2: 14.5 },
-    { kind: "line", x1: 12, y1: 17.5, x2: 12, y2: 18.5 },
+    { kind: "circle", cx: 12, cy: 18, radius: 0.5 },
   ],
   metadata: {
     displayName: "Warning",
