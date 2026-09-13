@@ -120,6 +120,31 @@ files. A nested source therefore never exposes a platform path separator in gene
 output is absent or stale. Root `pnpm check` runs the read-only check before any build so CI cannot
 silently accept uncommitted generated drift.
 
+## Source migration boundary
+
+The accepted nested layout has a reproducible pre-migration baseline. It maps each retained flat
+icon source to `src/glyphs/<initial>/<name>/<name>.icon.ts` and each collection to
+`src/collections/<initial>/<name>/<name>.collection.ts`. The mapping is derived from logical
+identity, never from collection membership, and requires one unique destination for every source.
+It does not move files or change supported imports.
+
+Distribution changes must follow this order:
+
+1. capture the current source inventory, package export map, supported imports, portable values,
+   collection membership and rendered SVG evidence;
+2. generate and verify stable public facades while the current sources and exports remain intact;
+3. route supported package subpaths through those facades;
+4. move canonical sources and update only their private relative references;
+5. regenerate all owned outputs and compare the resulting definitions, membership, SVG and imports
+   with the baseline;
+6. remove obsolete generated outputs only after the complete replacement plan passes.
+
+Cleanup is deliberately finite. Before the dedicated generated root becomes authoritative, only
+`src/icons/index.ts`, `src/icons/constants/aster-icons.constant.ts`,
+`src/collections/index.ts` and `src/collections/constants/aster-collections.constant.ts` are
+recognised legacy generated outputs. Tooling must never recursively delete from a canonical icon
+or collection source root.
+
 ## Runtime Boundary
 
 Generated outputs are ordinary side-effect-free ESM sources. `@aster/icons`, `@aster/cli` and all

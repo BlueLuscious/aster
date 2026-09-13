@@ -35,6 +35,13 @@ one constant ending in `Collection`, and import only public `@aster/core` plus t
 declared icon modules. Catalogue tooling also validates the accepted nested initial-and-name source
 layout without making physical directories public.
 
+The current flat icon and collection roots remain transitional until stable generated public
+facades exist. A migration baseline assigns every current icon exactly one
+`src/glyphs/<initial>/<name>/<name>.icon.ts` destination and the Amellus source its independent
+`src/collections/a/amellus/amellus.collection.ts` destination. Authors must not move these sources
+piecemeal: package subpaths are preserved first through generated facades, then all canonical
+sources move as one verified change.
+
 Every icon module:
 
 - creates one immutable definition through public `@aster/core`;
