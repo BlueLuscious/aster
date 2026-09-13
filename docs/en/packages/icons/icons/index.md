@@ -42,9 +42,9 @@ source layout: public imports omit it and retain `@aster/icons/<icon-slug>`.
 | `User` | `aster/user` | Circular head, curved shoulders, symmetry, and minimum-size recognition. |
 | `Warning` | `aster/warning` | Triangular enclosure, vertical detail, and minimum-size spacing. |
 
-Every icon:
+Every current icon:
 
-- uses the shared internal `asterIconAuthoring` viewBox and presentation policy;
+- composes internal `asterOriginalIconAuthorship` and `amellusIconAuthoringProfile` authorities;
 - contains no node-specific paint or stroke exceptions;
 - uses geometry values on the provisional half-unit grid;
 - resolves ISC licence and BlueLuscious attribution;
@@ -78,8 +78,10 @@ isolated icon module.
 
 ## Isolation
 
-An icon module imports only public `@aster/core` authority and the internal authoring constant. It
-does not import a collection, another icon, the root index, a manifest, a renderer, or Import.
+An icon module imports only public `@aster/core` authority and its applicable internal authoring
+authorities. It does not import a collection, another icon, the root index, a manifest, a renderer,
+or Import. The [authoring boundary](../authoring/index.md) allows another visual family or artwork
+owner to supply different inputs without changing Amellus or original Aster authorship.
 
 Package ABI tests verify that direct and root imports preserve the same object identity, internal
 subpaths are rejected, and emitted ESM and declarations remain host independent.

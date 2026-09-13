@@ -11,8 +11,8 @@ icon-only convenience root, one isolated short subpath per icon, and a separate 
 The package:
 
 - authors each icon as one immutable `Icon.define(...)` value;
-- applies [shared internal authoring defaults](shared/index.md) without embedding collection
-  membership;
+- composes [original authorship and visual authoring authorities](authoring/index.md) without
+  embedding collection membership;
 - exposes the [representative icon set](icons/index.md) and its `AsterIcons` index;
 - exposes independent [canonical collections](collections/index.md) and the `AsterCollections`
   index;
@@ -99,7 +99,7 @@ public. The package currently has no variants.
 Importing one icon:
 
 1. loads its isolated definition module;
-2. reads immutable icon-authoring defaults;
+2. composes applicable immutable authorship and visual-profile inputs;
 3. delegates construction to public `@aster/core`;
 4. returns one deeply frozen portable definition.
 

@@ -37,7 +37,8 @@ icon modules.
 Every icon module:
 
 - creates one immutable definition through public `@aster/core`;
-- imports package-owned authoring defaults rather than copying shared policy;
+- composes applicable package-owned authorship and visual-profile authorities rather than copying
+  shared policy;
 - owns its intrinsic display name, tags, RTL policy, presentation, effective artwork licence,
   attribution, deprecation state and replacement relationship;
 - remains independent from collections, renderers, Import, frameworks, DOM and filesystem APIs;
