@@ -13,7 +13,7 @@ The canonical documentation mirrors the real tooling feature roots:
 | Feature | Responsibility |
 | --- | --- |
 | [Architecture](architecture/index.md) | Verifies compiler, workspace, package dependency, and authored collection boundaries. |
-| [Catalogue](catalogue/index.md) | Synchronises generated Icons barrels and aggregate indexes from canonical definition modules. |
+| [Catalogue](catalogue/index.md) | Recursively validates canonical Icons sources and synchronises generated barrels and aggregate indexes. |
 | [Documentation](documentation/index.md) | Verifies the current canonical hierarchy, package mirroring, links, and local exclusions. |
 | [Performance](performance/index.md) | Provides development-only package comparison infrastructure and independent scenario runners. |
 | [Shared](shared/index.md) | Supplies narrow filesystem, path, directory, traversal, and strict JSON foundations used by multiple tooling features. |
@@ -102,7 +102,7 @@ Every retained feature protects a current boundary:
 | Feature | Retained evidence |
 | --- | --- |
 | Architecture | Detects source, manifest, dependency, compiler, host-authority, and private-tooling boundary drift before publication. |
-| Catalogue | Detects stale aggregate sources and reconstructs them deterministically from canonical definition modules. |
+| Catalogue | Detects source, relationship and aggregate drift and reconstructs generated outputs deterministically. |
 | Documentation | Detects broken local links, stale package mirroring, contributor-local references, and missing current entry points. |
 | Workspace | Deletes only a verified package's direct generated distribution through an explicit destructive policy. |
 | Performance | Produces reproducible package-specific comparison reports without CI thresholds or production dependencies. |

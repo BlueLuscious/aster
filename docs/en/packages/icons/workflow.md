@@ -29,10 +29,11 @@ their geometry.
 
 ## Canonical modules
 
-An icon source uses `src/icons/<icon-slug>.icon.ts` and exports exactly one PascalCase constant.
-A collection source uses `src/collections/<collection-slug>.collection.ts`, exports exactly one
-constant ending in `Collection`, and imports only public `@aster/core` plus its directly declared
-icon modules.
+Current icon sources use `src/icons/<icon-slug>.icon.ts` and export exactly one PascalCase constant.
+Current collection sources use `src/collections/<collection-slug>.collection.ts`, export exactly
+one constant ending in `Collection`, and import only public `@aster/core` plus their directly
+declared icon modules. Catalogue tooling also validates the accepted nested initial-and-name source
+layout without making physical directories public.
 
 Every icon module:
 
@@ -45,15 +46,17 @@ Every icon module:
 - becomes available through the package root and its isolated `@aster/icons/<icon-slug>` subpath
   after catalogue synchronisation.
 
-The package currently has no variants. A variant layout and public subpath require an explicit
-source-generation and distribution decision before variant modules are introduced.
+The package currently has no variants. Tooling can distinguish a separate glyph such as
+`camera-retro` from a `retro` rendition of `camera`, validate nested variant identity and reject
+their derived-symbol collisions. Variant package subpaths remain unsupported until the public
+distribution surface provides generated facades.
 
 ## Catalogue synchronisation
 
 The package build runs the private catalogue synchroniser before TypeScript compilation. It
-discovers direct canonical icon and collection modules, validates filename-to-symbol ownership,
-and deterministically reconstructs the generated barrels and immutable `AsterIcons` and
-`AsterCollections` indexes.
+discovers canonical icon and collection modules recursively, validates path, identity, symbol and
+membership ownership, and deterministically reconstructs the generated barrels and immutable
+`AsterIcons` and `AsterCollections` indexes.
 
 Authors add or remove a canonical module, update any explicit collection membership, and run:
 

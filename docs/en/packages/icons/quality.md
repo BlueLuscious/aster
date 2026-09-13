@@ -24,9 +24,9 @@ Declared directional arrow pairs therefore retain exact RTL and relationship evi
 validity, membership and discovery do not select a named icon or collection.
 
 Compile-time tests verify root indexes, isolated icon imports, collection-family imports, immutable
-contracts and rejected mutation. Catalogue source tooling separately proves that canonical
-`.icon.ts` and `.collection.ts` modules deterministically regenerate their barrels and aggregate
-indexes.
+contracts and rejected mutation. Catalogue source tooling separately proves recursive canonical
+`.icon.ts` and `.collection.ts` discovery, nested variant mapping, collection-reference integrity,
+and deterministic barrel and aggregate regeneration.
 
 For path nodes, the same corpus evidence traverses every structured command operand, enforces the
 shared half-unit authoring grid and rejects definitions that exceed the collection command budget.
