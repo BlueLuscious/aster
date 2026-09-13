@@ -1,19 +1,20 @@
-import ts from "typescript";
-
-import { repositoryEntryKinds } from "../../shared/constants/repository-entry-kinds.constant.mjs";
 import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
 /**
- * @description Discovers and validates direct canonical catalogue source modules.
+ * @description Coordinates recursive discovery and validation for canonical catalogue modules.
  */
 export class CatalogueSourceModuleInspector {
   /**
-   * @description Canonical lowercase source slug grammar.
+   * @description Canonical source text acquisition capability.
+   * @type {import("../contracts/internal/catalogue-source-file-system.contract.mjs").ICatalogueSourceFileSystem}
    */
-  static #slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
-
-  /** @type {import("../contracts/internal/catalogue-source-file-system.contract.mjs").ICatalogueSourceFileSystem} */
   #fileSystem;
+
+  /**
+   * @description Deterministic recursive file traversal capability.
+   * @type {import("../../shared/runtime/repository-file.walker.mjs").RepositoryFileWalker}
+   */
+  #files;
 
   /**
    * @description Repository path composition capability.
@@ -22,60 +23,97 @@ export class CatalogueSourceModuleInspector {
   #paths;
 
   /**
-   * @description Creates one canonical source-module inspector.
-   * @param {import("../contracts/internal/catalogue-source-file-system.contract.mjs").ICatalogueSourceFileSystem} fileSystem - Source acquisition capability.
-   * @param {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver} paths - Repository path capability.
+   * @description Canonical source-layout normalisation authority.
+   * @type {import("./catalogue-source-layout.normaliser.mjs").CatalogueSourceLayoutNormaliser}
    */
-  constructor(fileSystem, paths) {
+  #layouts;
+
+  /**
+   * @description Canonical TypeScript source inspection authority.
+   * @type {import("./catalogue-source-syntax.inspector.mjs").CatalogueSourceSyntaxInspector}
+   */
+  #syntax;
+
+  /**
+   * @description Creates one canonical source-module discovery coordinator.
+   * @param {import("../contracts/internal/catalogue-source-file-system.contract.mjs").ICatalogueSourceFileSystem} fileSystem - Source acquisition capability.
+   * @param {import("../../shared/runtime/repository-file.walker.mjs").RepositoryFileWalker} files - Deterministic recursive source traversal capability.
+   * @param {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver} paths - Repository path capability.
+   * @param {import("./catalogue-source-layout.normaliser.mjs").CatalogueSourceLayoutNormaliser} layouts - Canonical source-layout normaliser.
+   * @param {import("./catalogue-source-syntax.inspector.mjs").CatalogueSourceSyntaxInspector} syntax - Canonical TypeScript source inspector.
+   */
+  constructor(fileSystem, files, paths, layouts, syntax) {
     this.#fileSystem = fileSystem;
+    this.#files = files;
     this.#paths = paths;
+    this.#layouts = layouts;
+    this.#syntax = syntax;
   }
 
   /**
-   * @description Discovers one configured family and validates each expected exported constant.
+   * @description Discovers one configured family and rejects identity or symbol ambiguity.
    * @param {string} packageRoot - Absolute package root.
    * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Canonical source-family configuration.
    * @returns {Promise<readonly import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule[]>} Canonically ordered source modules.
    */
   async inspect(packageRoot, family) {
-    const sourceRoot = this.#paths.resolve(
-      packageRoot,
-      family.sourceDirectory,
+    const sourceRoot = this.#paths.resolve(packageRoot, family.sourceDirectory);
+    const sourcePaths = [
+      ...(await this.#files.collect(sourceRoot, (sourcePath) =>
+        this.#acceptsSourcePath(sourceRoot, sourcePath, family),
+      )),
+    ].sort((left, right) =>
+      this.#compareText(
+        this.#paths.display(sourceRoot, left),
+        this.#paths.display(sourceRoot, right),
+      ),
     );
-    const entries = (await this.#fileSystem.entries(sourceRoot))
-      .filter(
-        (entry) =>
-          entry.kind === repositoryEntryKinds.file &&
-          entry.name.endsWith(family.sourceSuffix),
-      )
-      .sort((left, right) =>
-        left.name < right.name ? -1 : left.name > right.name ? 1 : 0,
-      );
     const modules = [];
+    const identities = new Set();
     const symbols = new Set();
 
-    for (const entry of entries) {
-      const slug = entry.name.slice(0, -family.sourceSuffix.length);
+    for (const sourcePath of sourcePaths) {
+      const identity = this.#layouts.normalise(
+        this.#paths.display(sourceRoot, sourcePath),
+        family,
+      );
+      const identityKey = JSON.stringify([identity.name, identity.variant]);
 
-      if (!CatalogueSourceModuleInspector.#slugPattern.test(slug)) {
+      if (identities.has(identityKey)) {
         throw new CatalogueSourceError(
-          `Invalid canonical catalogue source filename: ${entry.name}`,
+          `Duplicate canonical catalogue source identity: ${this.#displayIdentity(identity)}`,
         );
       }
 
-      const symbol = `${this.#pascalCase(slug)}${family.symbolSuffix}`;
-      const sourcePath = this.#paths.resolve(sourceRoot, entry.name);
+      if (
+        identity.symbol === family.authorityName ||
+        symbols.has(identity.symbol)
+      ) {
+        throw new CatalogueSourceError(
+          `Ambiguous canonical catalogue source symbol: ${identity.symbol}`,
+        );
+      }
+
       const source = await this.#fileSystem.readText(sourcePath);
-      this.#assertExportedConstant(sourcePath, source, symbol);
+      const memberReferences = this.#syntax.inspect(
+        sourcePath,
+        source,
+        family,
+        identity,
+      );
 
-      if (symbol === family.authorityName || symbols.has(symbol)) {
-        throw new CatalogueSourceError(
-          `Ambiguous canonical catalogue source symbol: ${symbol}`,
-        );
-      }
-
-      symbols.add(symbol);
-      modules.push(Object.freeze({ slug, symbol }));
+      identities.add(identityKey);
+      symbols.add(identity.symbol);
+      modules.push(
+        Object.freeze({
+          name: identity.name,
+          variant: identity.variant,
+          symbol: identity.symbol,
+          sourcePath,
+          relativePath: this.#paths.display(packageRoot, sourcePath),
+          memberReferences,
+        }),
+      );
     }
 
     if (modules.length === 0) {
@@ -84,72 +122,53 @@ export class CatalogueSourceModuleInspector {
       );
     }
 
-    return Object.freeze(modules);
-  }
-
-  /**
-   * @description Converts one canonical kebab-case slug to its expected PascalCase symbol.
-   * @param {string} slug - Valid canonical source slug.
-   * @returns {string} Expected source export symbol stem.
-   */
-  #pascalCase(slug) {
-    return slug
-      .split("-")
-      .map((part) => `${part[0].toUpperCase()}${part.slice(1)}`)
-      .join("");
-  }
-
-  /**
-   * @description Requires exactly one exported constant matching the filename-owned symbol.
-   * @param {string} sourcePath - Source path used for stable failure context.
-   * @param {string} source - Exact TypeScript source.
-   * @param {string} expectedSymbol - Filename-derived canonical export symbol.
-   * @returns {void}
-   */
-  #assertExportedConstant(sourcePath, source, expectedSymbol) {
-    const sourceFile = ts.createSourceFile(
-      sourcePath,
-      source,
-      ts.ScriptTarget.ESNext,
-      true,
-      ts.ScriptKind.TS,
+    return Object.freeze(
+      modules.sort(
+        (left, right) =>
+          this.#compareText(left.name, right.name) ||
+          this.#compareText(left.variant ?? "", right.variant ?? ""),
+      ),
     );
-    const exportedConstants = [];
+  }
 
-    if (sourceFile.parseDiagnostics.length > 0) {
-      throw new CatalogueSourceError(
-        `Invalid TypeScript catalogue source: ${sourcePath}`,
-      );
+  /**
+   * @description Selects canonical-role files while excluding reserved generated directories.
+   * @param {string} sourceRoot - Absolute configured source-family root.
+   * @param {string} sourcePath - Candidate absolute source path.
+   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
+   * @returns {boolean} Whether the candidate belongs to canonical inspection.
+   */
+  #acceptsSourcePath(sourceRoot, sourcePath, family) {
+    if (!sourcePath.endsWith(family.sourceSuffix)) {
+      return false;
     }
 
-    for (const statement of sourceFile.statements) {
-      if (!ts.isVariableStatement(statement)) {
-        continue;
-      }
+    const relativePath = this.#paths.display(sourceRoot, sourcePath);
 
-      const exported = statement.modifiers?.some(
-        (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
-      );
-      const constant = (statement.declarationList.flags & ts.NodeFlags.Const) !== 0;
+    return !family.excludedDirectories.some(
+      (directory) =>
+        relativePath === directory || relativePath.startsWith(`${directory}/`),
+    );
+  }
 
-      if (!exported || !constant) {
-        continue;
-      }
+  /**
+   * @description Presents one logical identity in stable diagnostic form.
+   * @param {import("../contracts/internal/catalogue-source-identity.contract.mjs").ICatalogueSourceIdentity} identity - Logical identity to present.
+   * @returns {string} Stable name and optional variant representation.
+   */
+  #displayIdentity(identity) {
+    return identity.variant === undefined
+      ? identity.name
+      : `${identity.name}@${identity.variant}`;
+  }
 
-      for (const declaration of statement.declarationList.declarations) {
-        if (ts.isIdentifier(declaration.name)) {
-          exportedConstants.push(declaration.name.text);
-        }
-      }
-    }
-
-    if (
-      exportedConstants.length !== 1 ||
-      exportedConstants[0] !== expectedSymbol
-    ) {
-      throw new CatalogueSourceError(
-        `${sourcePath} must export exactly one constant named ${expectedSymbol}.`,
-      );
-    }
+  /**
+   * @description Compares canonical text without host locale dependence.
+   * @param {string} left - First canonical text.
+   * @param {string} right - Second canonical text.
+   * @returns {number} Negative, zero or positive ordinal relation.
+   */
+  #compareText(left, right) {
+    return left < right ? -1 : left > right ? 1 : 0;
   }
 }

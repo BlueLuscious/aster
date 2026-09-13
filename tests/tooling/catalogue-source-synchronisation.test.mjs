@@ -1,10 +1,49 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, readFile, rm, unlink, writeFile } from "node:fs/promises";
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  unlink,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 
 import { synchroniseIconsCatalogue } from "../../tooling/catalogue/synchronise-icons-catalogue.mjs";
+
+function pascalCase(slug) {
+  return slug
+    .split("-")
+    .map((part) => `${part[0].toUpperCase()}${part.slice(1)}`)
+    .join("");
+}
+
+function iconSource(name, variant) {
+  const symbol = `${pascalCase(name)}${
+    variant === undefined ? "" : pascalCase(variant)
+  }`;
+  const variantProperty = variant === undefined ? "" : `, variant: "${variant}"`;
+
+  return [
+    `export const ${symbol} = Icon.define({`,
+    `  identity: { name: "${name}"${variantProperty} },`,
+    "});",
+    "",
+  ].join("\n");
+}
+
+function collectionSource(name, imports = [], members = []) {
+  return [
+    ...imports,
+    ...(imports.length === 0 ? [] : [""]),
+    `export const ${pascalCase(name)}Collection = Collection.define({`,
+    `  identity: { name: "${name}" },`,
+    `  icons: [${members.join(", ")}],`,
+    "});\n",
+  ].join("\n");
+}
 
 async function createPackageFixture() {
   const root = await mkdtemp(join(tmpdir(), "aster-catalogue-source-"));
@@ -13,17 +52,21 @@ async function createPackageFixture() {
   await mkdir(resolve(root, "src/collections/constants"), { recursive: true });
   await writeFile(
     resolve(root, "src/icons/alpha-icon.icon.ts"),
-    "export const AlphaIcon = {};\n",
+    iconSource("alpha-icon"),
     "utf8",
   );
   await writeFile(
     resolve(root, "src/icons/zeta.icon.ts"),
-    "export const Zeta = {};\n",
+    iconSource("zeta"),
     "utf8",
   );
   await writeFile(
     resolve(root, "src/collections/sample.collection.ts"),
-    "export const SampleCollection = {};\n",
+    collectionSource(
+      "sample",
+      ['import { AlphaIcon } from "../icons/alpha-icon.icon.js";'],
+      ["AlphaIcon"],
+    ),
     "utf8",
   );
 
@@ -74,7 +117,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
   try {
     await synchroniseIconsCatalogue(root);
     const sourcePath = resolve(root, "src/icons/middle.icon.ts");
-    await writeFile(sourcePath, "export const Middle = {};\n", "utf8");
+    await writeFile(sourcePath, iconSource("middle"), "utf8");
 
     const added = await synchroniseIconsCatalogue(root);
     assert.deepEqual(added.changedPaths, [
@@ -103,7 +146,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
     );
     await writeFile(
       collectionPath,
-      "export const SecondaryCollection = {};\n",
+      collectionSource("secondary"),
       "utf8",
     );
     const collectionAdded = await synchroniseIconsCatalogue(root);
@@ -138,15 +181,134 @@ test("adds and removes source modules without manual aggregate edits", async () 
   }
 });
 
+test("discovers nested base icons, variants and collections with portable specifiers", async () => {
+  const root = await createPackageFixture();
+
+  try {
+    const cameraRoot = resolve(root, "src/icons/c/camera");
+    const retroRoot = resolve(root, "src/icons/c/camera-retro");
+    const archiveRoot = resolve(root, "src/collections/a/archive");
+    await mkdir(cameraRoot, { recursive: true });
+    await mkdir(retroRoot, { recursive: true });
+    await mkdir(archiveRoot, { recursive: true });
+    await writeFile(
+      resolve(cameraRoot, "camera.icon.ts"),
+      iconSource("camera"),
+      "utf8",
+    );
+    await writeFile(
+      resolve(cameraRoot, "camera-stippled.icon.ts"),
+      iconSource("camera", "stippled"),
+      "utf8",
+    );
+    await writeFile(
+      resolve(retroRoot, "camera-retro.icon.ts"),
+      iconSource("camera-retro"),
+      "utf8",
+    );
+    await writeFile(
+      resolve(archiveRoot, "archive.collection.ts"),
+      collectionSource(
+        "archive",
+        [
+          'import { CameraStippled } from "../../../icons/c/camera/camera-stippled.icon.js";',
+        ],
+        ["CameraStippled"],
+      ),
+      "utf8",
+    );
+    await writeFile(
+      resolve(root, "src/icons/constants/ignored.icon.ts"),
+      "not valid TypeScript",
+      "utf8",
+    );
+    await writeFile(resolve(cameraRoot, "notes.ts"), "ignored\n", "utf8");
+
+    await synchroniseIconsCatalogue(root);
+
+    const iconBarrel = await readFile(
+      resolve(root, "src/icons/index.ts"),
+      "utf8",
+    );
+    const iconAuthority = await readFile(
+      resolve(root, "src/icons/constants/aster-icons.constant.ts"),
+      "utf8",
+    );
+    const collectionBarrel = await readFile(
+      resolve(root, "src/collections/index.ts"),
+      "utf8",
+    );
+
+    assert.match(
+      iconBarrel,
+      /export \{ Camera \} from "\.\/c\/camera\/camera\.icon\.js";/u,
+    );
+    assert.match(
+      iconBarrel,
+      /export \{ CameraStippled \} from "\.\/c\/camera\/camera-stippled\.icon\.js";/u,
+    );
+    assert.match(
+      iconBarrel,
+      /export \{ CameraRetro \} from "\.\/c\/camera-retro\/camera-retro\.icon\.js";/u,
+    );
+    assert.match(
+      iconAuthority,
+      /import \{ CameraStippled \} from "\.\.\/c\/camera\/camera-stippled\.icon\.js";/u,
+    );
+    assert.match(
+      collectionBarrel,
+      /export \{ ArchiveCollection \} from "\.\/a\/archive\/archive\.collection\.js";/u,
+    );
+    assert.doesNotMatch(iconBarrel, /ignored|notes/u);
+
+    await unlink(resolve(retroRoot, "camera-retro.icon.ts"));
+    const removed = await synchroniseIconsCatalogue(root);
+
+    assert.deepEqual(removed.changedPaths, [
+      "src/icons/index.ts",
+      "src/icons/constants/aster-icons.constant.ts",
+    ]);
+    assert.doesNotMatch(
+      await readFile(resolve(root, "src/icons/index.ts"), "utf8"),
+      /CameraRetro/u,
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects removed icons retained by canonical collections before writing", async () => {
+  const root = await createPackageFixture();
+
+  try {
+    await synchroniseIconsCatalogue(root);
+    const collectionBarrelPath = resolve(root, "src/collections/index.ts");
+    const collectionBarrel = await readFile(collectionBarrelPath, "utf8");
+    await unlink(resolve(root, "src/icons/alpha-icon.icon.ts"));
+
+    await assert.rejects(
+      synchroniseIconsCatalogue(root),
+      /contains dangling icon reference/u,
+    );
+    assert.equal(await readFile(collectionBarrelPath, "utf8"), collectionBarrel);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("rejects invalid, malformed and ambiguous canonical modules before writing", async () => {
   const cases = [
     {
-      files: [["Bad.icon.ts", "export const Bad = {};\n"]],
-      pattern: /Invalid canonical catalogue source filename/u,
+      files: [["Bad.icon.ts", iconSource("bad")]],
+      pattern: /Invalid canonical catalogue source name/u,
     },
     {
-      files: [["wrong.icon.ts", "export const Other = {};\n"]],
+      files: [["wrong.icon.ts", "export const Other = Icon.define({});\n"]],
       pattern: /must export exactly one constant named Wrong/u,
+    },
+    {
+      files: [["plain.icon.ts", "export const Plain = {};\n"]],
+      pattern: /must initialise Icon\.define/u,
     },
     {
       files: [["broken.icon.ts", "export const Broken = {;\n"]],
@@ -154,14 +316,43 @@ test("rejects invalid, malformed and ambiguous canonical modules before writing"
     },
     {
       files: [
-        ["foo-1.icon.ts", "export const Foo1 = {};\n"],
-        ["foo1.icon.ts", "export const Foo1 = {};\n"],
+        ["foo-1.icon.ts", iconSource("foo-1")],
+        ["foo1.icon.ts", iconSource("foo1")],
       ],
       pattern: /Ambiguous canonical catalogue source symbol/u,
     },
     {
-      files: [["aster-icons.icon.ts", "export const AsterIcons = {};\n"]],
+      files: [["aster-icons.icon.ts", iconSource("aster-icons")]],
       pattern: /Ambiguous canonical catalogue source symbol/u,
+    },
+    {
+      files: [[
+        "c/camera/camera.icon.ts",
+        'export const Camera = Icon.define({ identity: { name: "photograph" } });\n',
+      ]],
+      pattern: /identity must match camera/u,
+    },
+    {
+      files: [[
+        "c/camera/camera-filled.icon.ts",
+        'export const CameraFilled = Icon.define({ identity: { name: "camera", variant: "outline" } });\n',
+      ]],
+      pattern: /identity must match camera@filled/u,
+    },
+    {
+      files: [["x/camera/camera.icon.ts", iconSource("camera")]],
+      pattern: /Invalid canonical catalogue source initial directory/u,
+    },
+    {
+      files: [
+        ["c/camera/camera-retro.icon.ts", iconSource("camera", "retro")],
+        ["c/camera-retro/camera-retro.icon.ts", iconSource("camera-retro")],
+      ],
+      pattern: /Ambiguous canonical catalogue source symbol: CameraRetro/u,
+    },
+    {
+      files: [["a/alpha-icon/alpha-icon.icon.ts", iconSource("alpha-icon")]],
+      pattern: /Duplicate canonical catalogue source identity: alpha-icon/u,
     },
   ];
 
@@ -170,7 +361,9 @@ test("rejects invalid, malformed and ambiguous canonical modules before writing"
 
     try {
       for (const [name, content] of fixture.files) {
-        await writeFile(resolve(root, "src/icons", name), content, "utf8");
+        const sourcePath = resolve(root, "src/icons", name);
+        await mkdir(dirname(sourcePath), { recursive: true });
+        await writeFile(sourcePath, content, "utf8");
       }
 
       await assert.rejects(

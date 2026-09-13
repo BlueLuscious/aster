@@ -2,7 +2,10 @@
  * @description Plans, verifies and writes deterministic aggregate catalogue source files.
  */
 export class CatalogueSourceSynchroniser {
-  /** @type {import("../contracts/internal/catalogue-source-file-system.contract.mjs").ICatalogueSourceFileSystem} */
+  /**
+   * @description Generated source persistence capability.
+   * @type {import("../contracts/internal/catalogue-source-file-system.contract.mjs").ICatalogueSourceFileSystem}
+   */
   #fileSystem;
 
   /**
@@ -23,7 +26,16 @@ export class CatalogueSourceSynchroniser {
    */
   #paths;
 
-  /** @type {readonly import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily[]} */
+  /**
+   * @description Cross-family source relationship inspector.
+   * @type {import("./catalogue-source-relationship.inspector.mjs").CatalogueSourceRelationshipInspector}
+   */
+  #relationships;
+
+  /**
+   * @description Ordered immutable catalogue source-family configurations.
+   * @type {readonly import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily[]}
+   */
   #families;
 
   /**
@@ -32,13 +44,15 @@ export class CatalogueSourceSynchroniser {
    * @param {import("./catalogue-source-module.inspector.mjs").CatalogueSourceModuleInspector} modules - Canonical source-module inspector.
    * @param {import("./catalogue-source.serialiser.mjs").CatalogueSourceSerialiser} serialiser - Generated source serialiser.
    * @param {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver} paths - Repository path capability.
+   * @param {import("./catalogue-source-relationship.inspector.mjs").CatalogueSourceRelationshipInspector} relationships - Cross-family relationship inspector.
    * @param {readonly import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily[]} families - Ordered catalogue source-family configurations.
    */
-  constructor(fileSystem, modules, serialiser, paths, families) {
+  constructor(fileSystem, modules, serialiser, paths, relationships, families) {
     this.#fileSystem = fileSystem;
     this.#modules = modules;
     this.#serialiser = serialiser;
     this.#paths = paths;
+    this.#relationships = relationships;
     this.#families = Object.freeze([...families]);
   }
 
@@ -81,9 +95,16 @@ export class CatalogueSourceSynchroniser {
    */
   async #plan(packageRoot) {
     const outputs = [];
+    const inspections = [];
 
     for (const family of this.#families) {
       const modules = await this.#modules.inspect(packageRoot, family);
+      inspections.push(Object.freeze({ family, modules }));
+    }
+
+    this.#relationships.validate(inspections);
+
+    for (const { family, modules } of inspections) {
       outputs.push(
         Object.freeze({
           path: this.#paths.resolve(packageRoot, family.barrelPath),

@@ -1,3 +1,5 @@
+import { posix } from "node:path";
+
 /**
  * @description Serialises deterministic catalogue barrels and aggregate authorities.
  */
@@ -29,7 +31,7 @@ export class CatalogueSourceSerialiser {
   barrel(family, modules) {
     const definitions = modules.map(
       (module) =>
-        `export { ${module.symbol} } from "./${module.slug}${family.sourceSuffix.slice(0, -3)}.js";`,
+        `export { ${module.symbol} } from "${this.#moduleSpecifier(family.barrelPath, module.relativePath)}";`,
     );
     const authorityBase = family.authorityPath
       .split("/")
@@ -48,10 +50,24 @@ export class CatalogueSourceSerialiser {
   authority(family, modules) {
     const imports = modules.map(
       (module) =>
-        `import { ${module.symbol} } from "../${module.slug}${family.sourceSuffix.slice(0, -3)}.js";`,
+        `import { ${module.symbol} } from "${this.#moduleSpecifier(family.authorityPath, module.relativePath)}";`,
     );
     const members = modules.map((module) => `  ${module.symbol},`);
 
     return `${this.#header}import type { ${family.definitionType} } from "@aster/core";\n${imports.join("\n")}\n\n/**\n * @description ${family.authorityDescription}\n * @remarks ${family.authorityRemarks}\n */\nexport const ${family.authorityName}: readonly ${family.definitionType}[] = Object.freeze([\n${members.join("\n")}\n]);\n`;
+  }
+
+  /**
+   * @description Relates one generated output to one canonical TypeScript source as a portable ESM specifier.
+   * @param {string} outputPath - Slash-separated package-relative generated output path.
+   * @param {string} sourcePath - Slash-separated package-relative canonical source path.
+   * @returns {string} Relative ESM module specifier with a JavaScript extension.
+   */
+  #moduleSpecifier(outputPath, sourcePath) {
+    const relativePath = posix
+      .relative(posix.dirname(outputPath), sourcePath)
+      .replace(/\.ts$/u, ".js");
+
+    return relativePath.startsWith(".") ? relativePath : `./${relativePath}`;
   }
 }

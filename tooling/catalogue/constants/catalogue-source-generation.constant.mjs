@@ -1,3 +1,5 @@
+import { catalogueSourceFamilyKinds } from "./catalogue-source-family-kinds.constant.mjs";
+
 /**
  * @description Immutable catalogue source-generation ownership and family configuration.
  */
@@ -9,12 +11,18 @@ export const catalogueSourceGeneration = Object.freeze({
   /** @description Canonical source families and their generated outputs. */
   families: Object.freeze([
     Object.freeze({
+      /** @description Semantic family used to apply icon identity and layout rules. */
+      kind: catalogueSourceFamilyKinds.icon,
       /** @description Directory containing canonical icon modules. */
       sourceDirectory: "src/icons",
       /** @description Filename suffix identifying canonical icon modules. */
       sourceSuffix: ".icon.ts",
       /** @description Symbol suffix appended after slug conversion. */
       symbolSuffix: "",
+      /** @description Public Core factory expected in canonical icon modules. */
+      definitionFactory: "Icon",
+      /** @description Reserved source-root directories excluded from canonical discovery. */
+      excludedDirectories: Object.freeze(["constants"]),
       /** @description Generated icon barrel path. */
       barrelPath: "src/icons/index.ts",
       /** @description Generated icon authority path. */
@@ -31,12 +39,18 @@ export const catalogueSourceGeneration = Object.freeze({
         "Collection membership is intentionally independent from this discovery authority.",
     }),
     Object.freeze({
+      /** @description Semantic family used to apply collection identity and layout rules. */
+      kind: catalogueSourceFamilyKinds.collection,
       /** @description Directory containing canonical collection modules. */
       sourceDirectory: "src/collections",
       /** @description Filename suffix identifying canonical collection modules. */
       sourceSuffix: ".collection.ts",
       /** @description Symbol suffix appended after slug conversion. */
       symbolSuffix: "Collection",
+      /** @description Public Core factory expected in canonical collection modules. */
+      definitionFactory: "Collection",
+      /** @description Reserved source-root directories excluded from canonical discovery. */
+      excludedDirectories: Object.freeze(["constants"]),
       /** @description Generated collection barrel path. */
       barrelPath: "src/collections/index.ts",
       /** @description Generated collection authority path. */
