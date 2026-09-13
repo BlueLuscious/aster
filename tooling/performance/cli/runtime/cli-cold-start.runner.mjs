@@ -15,7 +15,7 @@ export class CliColdStartRunner {
 
   /**
    * @description Creates one CLI cold-start runner.
-   * @param {import("../contracts/internal/cli-process-host.contract.mjs").ICliProcessHost} processHost - Fresh Node process capability.
+   * @param {import("../../shared/contracts/internal/process-host.contract.mjs").IProcessHost} processHost - Fresh Node process capability.
    * @param {import("../../shared/runtime/numeric-sample.statistics.mjs").NumericSampleStatistics} statistics - Numeric sample aggregation authority.
    * @param {number} [sampleCount] - Number of retained process samples.
    */

@@ -3,6 +3,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
+import { pathToFileURL } from "node:url";
 
 import { cliBaseline } from "../../tooling/performance/cli/constants/cli-baseline.constant.mjs";
 import { CliBaselineFixtureFactory } from "../../tooling/performance/cli/runtime/cli-baseline-fixture.factory.mjs";
@@ -14,9 +15,13 @@ import { CoreBaselineRunner } from "../../tooling/performance/core/runtime/core-
 import { importBaseline } from "../../tooling/performance/import/constants/import-baseline.constant.mjs";
 import { ImportBaselineFixtureFactory } from "../../tooling/performance/import/runtime/import-baseline-fixture.factory.mjs";
 import { ImportBaselineRunner } from "../../tooling/performance/import/runtime/import-baseline.runner.mjs";
+import { iconsBaseline } from "../../tooling/performance/icons/constants/icons-baseline.constant.mjs";
+import { IconsBaselineRunner } from "../../tooling/performance/icons/runtime/icons-baseline.runner.mjs";
 import { benchmarkCatalogueFixture } from "../../tooling/performance/shared/constants/benchmark-catalogue-fixture.constant.mjs";
 import { BenchmarkRunner } from "../../tooling/performance/shared/runtime/benchmark.runner.mjs";
 import { BenchmarkCatalogueFixtureFactory } from "../../tooling/performance/shared/runtime/benchmark-catalogue-fixture.factory.mjs";
+import { ModuleImportProbe } from "../../tooling/performance/shared/runtime/module-import.probe.mjs";
+import { ModuleImportRunner } from "../../tooling/performance/shared/runtime/module-import.runner.mjs";
 import { NumericSampleStatistics } from "../../tooling/performance/shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../tooling/performance/shared/runtime/package-distribution.inspector.mjs";
 import { svgBaseline } from "../../tooling/performance/svg/constants/svg-baseline.constant.mjs";
@@ -475,6 +480,128 @@ test("measures cold CLI processes only after validating their contract", () => {
       stdoutBytes: 6,
     },
   );
+});
+
+test("measures stable fresh module evaluation evidence", () => {
+  const processTimings = [30, 10, 20];
+  const importTimings = [300, 100, 200];
+  const requests = [];
+  const runner = new ModuleImportRunner(
+    {
+      execute(request) {
+        requests.push(request);
+
+        return Object.freeze({
+          elapsedNanoseconds: processTimings.shift(),
+          status: 0,
+          stdout: JSON.stringify({
+            specifier: "@fixture/package/value",
+            exports: ["Fixture"],
+            evaluatedModules: ["value.js"],
+            importNanoseconds: importTimings.shift(),
+          }),
+          stderr: "",
+        });
+      },
+    },
+    new NumericSampleStatistics(),
+    "fixture/module-import-probe.mjs",
+    3,
+  );
+
+  assert.deepEqual(
+    runner.measure({
+      name: "fixture.import",
+      specifier: "@fixture/package/value",
+      packagePath: "fixture/package",
+    }),
+    {
+      name: "fixture.import",
+      specifier: "@fixture/package/value",
+      samples: 3,
+      medianProcessNanoseconds: 20,
+      minimumProcessNanoseconds: 10,
+      maximumProcessNanoseconds: 30,
+      medianImportNanoseconds: 200,
+      minimumImportNanoseconds: 100,
+      maximumImportNanoseconds: 300,
+      evaluatedModuleCount: 1,
+      evaluatedModules: ["value.js"],
+      exports: ["Fixture"],
+    },
+  );
+  assert.deepEqual(
+    requests,
+    Array.from({ length: 3 }, () => ({
+      executablePath: "fixture/module-import-probe.mjs",
+      arguments: ["@fixture/package/value", "fixture/package"],
+    })),
+  );
+});
+
+test("records only evaluated modules beneath the probed distribution", async () => {
+  const root = await mkdtemp(join(tmpdir(), "aster-module-import-probe-"));
+
+  try {
+    await mkdir(resolve(root, "dist"), { recursive: true });
+    await writeFile(
+      resolve(root, "dist", "shared.js"),
+      "export const Shared = true;\n",
+      "utf8",
+    );
+    await writeFile(
+      resolve(root, "dist", "entry.js"),
+      'export { Shared } from "./shared.js";\n',
+      "utf8",
+    );
+
+    const specifier = pathToFileURL(resolve(root, "dist", "entry.js")).href;
+    const evidence = await new ModuleImportProbe().inspect(specifier, root);
+
+    assert.deepEqual(evidence, {
+      specifier,
+      exports: ["Shared"],
+      evaluatedModules: ["entry.js", "shared.js"],
+      importNanoseconds: evidence.importNanoseconds,
+    });
+    assert.ok(evidence.importNanoseconds >= 0);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("runs the complete Icons distribution scenario matrix", async () => {
+  const measured = [];
+  const runner = new IconsBaselineRunner(
+    {
+      measure(scenario) {
+        measured.push(scenario);
+        return Object.freeze({ name: scenario.name });
+      },
+    },
+    {
+      async inspect(packagePath) {
+        return Object.freeze({ packagePath });
+      },
+    },
+    {
+      environment() {
+        return Object.freeze({ fixture: true });
+      },
+    },
+    "fixture/icons",
+  );
+  const report = await runner.run();
+
+  assert.equal(report.schemaVersion, 1);
+  assert.equal(report.package, "@aster/icons");
+  assert.deepEqual(
+    measured.map(({ name, specifier }) => ({ name, specifier })),
+    Object.values(iconsBaseline.scenarios),
+  );
+  assert.ok(measured.every(({ packagePath }) => packagePath === "fixture/icons"));
+  assert.deepEqual(report.distribution, { packagePath: "packages/icons" });
+  assert.deepEqual(report.environment, { fixture: true });
 });
 
 test("inspects an isolated emitted-package fixture deterministically", async () => {

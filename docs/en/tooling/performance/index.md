@@ -19,6 +19,9 @@ Repository filesystem, path, strict JSON, and deterministic traversal capabiliti
 | `BenchmarkRunner` | Applies one warm-up, sampling, heap-pressure, checksum, and aggregation methodology to synchronous or asynchronous operations without overlapping samples or scenarios. |
 | `BenchmarkCatalogueFixtureFactory` | Creates the fixed synthetic icon corpus, collection, and provider snapshot shared by catalogue-sensitive package scenarios. |
 | `PackageDistributionInspector` | Reports emitted JavaScript, declarations, bytes, exports, and side-effect metadata. |
+| `NodeProcessHost` | Executes one fresh Node process from an explicit repository root and captures complete timing, status and streams. |
+| `ModuleImportProbe` | Instruments one emitted package boundary inside a disposable process and records modules whose markers execute. |
+| `ModuleImportRunner` | Repeats one public import in fresh processes, validates stable exports and evaluated modules, and summarises process and import timings. |
 
 Closed methodology defaults and emitted-file vocabulary live in shared immutable constants. Narrow
 internal contracts describe the host, scenario, and distribution-inspection capabilities. The
@@ -46,7 +49,7 @@ ordinary catalogue growth therefore cannot alter Core, SVG, or CLI operation inp
 | `ISvgBaselineFixtures` | Carries prepared definitions and options for primitive, corpus, override, RTL, escaping and point-sequence SVG scenarios. |
 | `IImportBaselineFixtures` | Carries prepared accepted, rejected, editor, scale, operation and batch Import values plus explicit sizes. |
 | `ICliBaselineFixtures` | Carries the prepared icon, contexts, invocations, argv sequences and command authority used by CLI scenarios. |
-| `ICliProcessHost` | Runs one fresh Node process and returns elapsed time, status and complete streams for cold CLI evidence. |
+| `IProcessHost` | Runs one fresh Node process and returns elapsed time, status and complete streams for package comparison evidence. |
 
 Fixture contracts prevent source acquisition, parsing, catalogue loading and value construction
 from entering timed loops accidentally. Package contracts remain baseline-specific, while the
@@ -58,9 +61,8 @@ deliberate measurement evidence.
 | Class family | Responsibility |
 | --- | --- |
 | `CoreBaselineFixtureFactory`, `SvgBaselineFixtureFactory`, `ImportBaselineFixtureFactory`, `CliBaselineFixtureFactory` | Prepare complete package-specific public values and scale evidence outside timed work. |
-| `CoreBaselineFactory`, `SvgBaselineFactory`, `ImportBaselineFactory`, `CliBaselineFactory` | Compose fresh package runners from shared repository and benchmark capabilities. |
-| `CoreBaselineRunner`, `SvgBaselineRunner`, `ImportBaselineRunner`, `CliBaselineRunner` | Own each package's independent scenario matrix and final immutable report. |
-| `NodeCliProcessHost` | Executes one fresh Node process from an explicit repository root and captures complete timing, status and streams. |
+| `CoreBaselineFactory`, `SvgBaselineFactory`, `IconsBaselineFactory`, `ImportBaselineFactory`, `CliBaselineFactory` | Compose fresh package runners from shared repository and benchmark capabilities. |
+| `CoreBaselineRunner`, `SvgBaselineRunner`, `IconsBaselineRunner`, `ImportBaselineRunner`, `CliBaselineRunner` | Own each package's independent scenario matrix and final immutable report. |
 | `CliColdStartRunner` | Repeats cold root-import and executable scenarios, validates their exact process contract and summarises timings. |
 
 Each package owns an independent runner, factory, and command. `CoreBaselineFactory` composes the
@@ -73,9 +75,9 @@ definition, emission, adoption, rejection, batch and distribution evidence. Any 
 follows the same isolation, reuses shared capabilities, and never edits a global scenario registry
 or imports another package baseline's configuration.
 
-The CLI baseline owns a narrow fresh-process host and runner because cold root import and
-executable startup cannot be measured by an in-process operation loop. That adapter remains
-CLI-specific until another package demonstrates the same process contract.
+The shared process host exists because both CLI cold-start and Icons module-evaluation evidence
+require isolated Node processes. CLI retains only its cold-start policy; Icons owns its public
+specifier scenarios while the shared import runner and disposable probe own generic measurement.
 
 ## Core comparison
 
@@ -101,6 +103,19 @@ pnpm benchmark:svg
 The command builds Core and SVG before measuring the fixed synthetic corpus, public rendering and
 distribution. Exact scenarios, attribution, retained decisions, and acceptance rules are defined
 by the [SVG Quality Baseline](../../packages/svg/quality-baseline.md).
+
+## Icons comparison
+
+Run:
+
+```sh
+pnpm benchmark:icons
+```
+
+The command builds Core and Icons before measuring fresh-process root, isolated-icon and
+isolated-collection imports plus emitted distribution. Exact scenarios, module instrumentation,
+findings and acceptance rules are defined by the
+[Icons Quality Baseline](../../packages/icons/quality-baseline.md).
 
 ## CLI comparison
 

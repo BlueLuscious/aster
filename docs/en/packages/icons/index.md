@@ -118,3 +118,5 @@ The package's authoring and SVG review relationship is defined by the
 Generated aggregate ownership and the exact package build loop are defined by
 [Catalogue Source Tooling](../../tooling/catalogue/index.md).
 Current package, catalogue and distribution evidence is defined by [Icons Quality](quality.md).
+Fresh-process import evaluation and emitted-size evidence is defined by the
+[Icons Quality Baseline](quality-baseline.md).

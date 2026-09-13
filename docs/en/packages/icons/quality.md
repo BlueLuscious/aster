@@ -65,6 +65,11 @@ without changing their observable values must reproduce the existing hashes exac
 can be retired after the nested layout and generated public facades have passed their final
 equivalence comparison.
 
+Fresh-process module evaluation and emitted distribution are measured independently by the
+[Icons Quality Baseline](quality-baseline.md). It distinguishes unavoidable collection-member
+evaluation from package-root aggregation and supplies the control evidence for distribution
+changes.
+
 These consumers prove catalogue interoperability without granting Icons rendering, command-line,
 filesystem or repository-tooling authority. The transversal selection and exactness rules are
 defined by the [Aster Testing Policy](../../project/testing.md).

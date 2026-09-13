@@ -2,9 +2,9 @@ import { spawnSync } from "node:child_process";
 import process from "node:process";
 
 /**
- * @description Executes fresh Node processes for CLI cold-start comparison evidence.
+ * @description Executes fresh Node processes for development-only package comparisons.
  */
-export class NodeCliProcessHost {
+export class NodeProcessHost {
   /** @description Absolute repository root used for package and executable resolution. */
   #repositoryRoot;
 
@@ -18,7 +18,7 @@ export class NodeCliProcessHost {
 
   /**
    * @description Executes one fresh Node process and captures complete observable evidence.
-   * @param {{ executablePath?: string, arguments: readonly string[] }} request - Cold process request.
+   * @param {{ executablePath?: string, arguments: readonly string[] }} request - Fresh process request.
    * @returns {{ elapsedNanoseconds: number, status: number | null, stdout: string, stderr: string }} Process evidence.
    */
   execute(request) {
