@@ -120,6 +120,19 @@ files. A nested source therefore never exposes a platform path separator in gene
 output is absent or stale. Root `pnpm check` runs the read-only check before any build so CI cannot
 silently accept uncommitted generated drift.
 
+## Publication safety
+
+The synchroniser completes discovery, path and syntax validation, symbol-collision checks and
+cross-family membership validation before replacing any generated file. A rejected source set
+therefore preserves all four existing outputs. Check-only execution reports every missing or stale
+path without creating a file.
+
+Catalogue tooling owns no review document, backup, stage, cache or temporary source. Successful
+synchronisation writes only changed complete contents at the four declared output paths. The
+current four-file replacement is recoverable rather than a filesystem transaction across the
+whole set: an interrupted process is followed by `check:catalogue`, which reports every incomplete
+or stale output, and deterministic regeneration restores the set.
+
 ## Source migration boundary
 
 The accepted nested layout has a reproducible pre-migration baseline. It maps each retained flat

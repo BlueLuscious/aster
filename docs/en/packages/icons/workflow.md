@@ -58,6 +58,39 @@ The package currently has no variants. Tooling can distinguish a separate glyph 
 their derived-symbol collisions. Variant package subpaths remain unsupported until the public
 distribution surface provides generated facades.
 
+## Authoring procedures
+
+### Add a base icon
+
+Until generated facades protect public paths, new distributable base icons remain direct modules
+at `src/icons/<name>.icon.ts`. To add one:
+
+1. choose a canonical lowercase kebab-case glyph name and export its PascalCase symbol;
+2. call `Icon.define(...)` with complete identity, view box, nodes and metadata;
+3. compose the applicable authorship and visual profile explicitly;
+4. add the imported definition to each intended collection's explicit `icons` sequence;
+5. run the package build, inspect `aster review` evidence and run complete verification.
+
+Omitting step 4 leaves a valid standalone icon. No generated barrel, aggregate index or test
+inventory is edited manually.
+
+### Add a collection
+
+Before collection facades exist, a new distributable collection remains a direct
+`src/collections/<name>.collection.ts` module. It exports `<Name>Collection`, imports each member
+from its canonical icon module, declares collection-owned metadata and retains members in its
+intentional semantic order. Catalogue synchronisation discovers it automatically; authors do not
+edit `AsterCollections` or the collection barrel.
+
+### Add a rendition
+
+Do not add a distributable rendition during the transitional flat export layout. The accepted
+canonical form is `<name>-<variant>.icon.ts`, sharing the base glyph `name` and declaring the
+rendition in `identity.variant`; its eventual source is
+`src/glyphs/<initial>/<name>/<name>-<variant>.icon.ts` and its public path is
+`@aster/icons/<name>/<variant>`. Recursive tooling fixtures already enforce this identity and
+symbol mapping, but stable generated facades must exist before a real rendition enters the package.
+
 ## Catalogue synchronisation
 
 The package build runs the private catalogue synchroniser before TypeScript compilation. It

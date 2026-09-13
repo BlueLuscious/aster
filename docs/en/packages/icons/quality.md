@@ -26,7 +26,8 @@ validity, membership and discovery do not select a named icon or collection.
 Compile-time tests verify root indexes, isolated icon imports, collection-family imports, immutable
 contracts and rejected mutation. Catalogue source tooling separately proves recursive canonical
 `.icon.ts` and `.collection.ts` discovery, nested variant mapping, collection-reference integrity,
-and deterministic barrel and aggregate regeneration.
+and deterministic barrel and aggregate regeneration. It also proves that check-only execution
+creates no output and that rejected source relationships preserve every existing generated file.
 
 For path nodes, the same corpus evidence traverses every structured command operand, enforces the
 shared half-unit authoring grid and rejects definitions that exceed the collection command budget.
