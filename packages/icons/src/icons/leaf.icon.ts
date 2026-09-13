@@ -1,15 +1,20 @@
 import { Icon } from "@aster/core";
-import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
+import {
+  amellusIconAuthoringProfile,
+} from "../authoring/constants/amellus-icon-authoring-profile.constant.js";
+import {
+  asterOriginalIconAuthorship,
+} from "../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
  * @description Canonical portable definition for the Aster leaf icon.
  */
 export const Leaf = Icon.define({
   identity: {
-    namespace: asterIconAuthoring.namespace,
+    namespace: asterOriginalIconAuthorship.namespace,
     name: "leaf",
   },
-  viewBox: asterIconAuthoring.viewBox,
+  viewBox: amellusIconAuthoringProfile.viewBox,
   nodes: [
     {
       kind: "path",
@@ -65,9 +70,9 @@ export const Leaf = Icon.define({
     displayName: "Leaf",
     tags: ["environment", "leaf", "nature", "plant"],
     rtl: "preserve",
-    presentation: asterIconAuthoring.presentation,
-    licence: asterIconAuthoring.licence,
-    attribution: asterIconAuthoring.attribution,
+    presentation: amellusIconAuthoringProfile.presentation,
+    licence: asterOriginalIconAuthorship.licence,
+    attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,
   },
 });

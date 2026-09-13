@@ -1,15 +1,20 @@
 import { Icon } from "@aster/core";
-import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
+import {
+  amellusIconAuthoringProfile,
+} from "../authoring/constants/amellus-icon-authoring-profile.constant.js";
+import {
+  asterOriginalIconAuthorship,
+} from "../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
  * @description Canonical portable definition for the Aster mail icon.
  */
 export const Mail = Icon.define({
   identity: {
-    namespace: asterIconAuthoring.namespace,
+    namespace: asterOriginalIconAuthorship.namespace,
     name: "mail",
   },
-  viewBox: asterIconAuthoring.viewBox,
+  viewBox: amellusIconAuthoringProfile.viewBox,
   nodes: [
     {
       kind: "rect",
@@ -33,9 +38,9 @@ export const Mail = Icon.define({
     displayName: "Mail",
     tags: ["email", "envelope", "inbox", "mail", "message"],
     rtl: "preserve",
-    presentation: asterIconAuthoring.presentation,
-    licence: asterIconAuthoring.licence,
-    attribution: asterIconAuthoring.attribution,
+    presentation: amellusIconAuthoringProfile.presentation,
+    licence: asterOriginalIconAuthorship.licence,
+    attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,
   },
 });

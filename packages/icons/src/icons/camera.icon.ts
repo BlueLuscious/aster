@@ -1,15 +1,20 @@
 import { Icon } from "@aster/core";
-import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
+import {
+  amellusIconAuthoringProfile,
+} from "../authoring/constants/amellus-icon-authoring-profile.constant.js";
+import {
+  asterOriginalIconAuthorship,
+} from "../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
  * @description Canonical portable definition for the Aster camera icon.
  */
 export const Camera = Icon.define({
   identity: {
-    namespace: asterIconAuthoring.namespace,
+    namespace: asterOriginalIconAuthorship.namespace,
     name: "camera",
   },
-  viewBox: asterIconAuthoring.viewBox,
+  viewBox: amellusIconAuthoringProfile.viewBox,
   nodes: [
     {
       kind: "path",
@@ -60,9 +65,9 @@ export const Camera = Icon.define({
     displayName: "Camera",
     tags: ["camera", "media", "photo", "photograph"],
     rtl: "preserve",
-    presentation: asterIconAuthoring.presentation,
-    licence: asterIconAuthoring.licence,
-    attribution: asterIconAuthoring.attribution,
+    presentation: amellusIconAuthoringProfile.presentation,
+    licence: asterOriginalIconAuthorship.licence,
+    attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,
   },
 });

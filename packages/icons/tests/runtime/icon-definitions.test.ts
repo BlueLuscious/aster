@@ -2,6 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import type { CollectionDefinition, IconDefinition } from "@aster/core";
+import {
+  amellusIconAuthoringProfile,
+} from "../../src/authoring/constants/amellus-icon-authoring-profile.constant.js";
+import {
+  asterOriginalIconAuthorship,
+} from "../../src/authoring/constants/aster-original-icon-authorship.constant.js";
 import { AsterCollections } from "../../src/collections/index.js";
 import * as collections from "../../src/collections/index.js";
 import { AsterIcons } from "../../src/icons/index.js";
@@ -92,7 +98,7 @@ test("keeps named collection exports aligned with the complete collection index"
   assert.ok(Object.isFrozen(AsterCollections));
 });
 
-test("keeps every definition aligned with shared authoring defaults", () => {
+test("composes original authorship and the Amellus visual profile", () => {
   const definitions = AsterIcons;
   const identities = new Set<string>();
 
@@ -102,29 +108,25 @@ test("keeps every definition aligned with shared authoring defaults", () => {
   );
 
   for (const definition of definitions) {
-    assert.equal(definition.identity.namespace, "aster");
+    assert.equal(
+      definition.identity.namespace,
+      asterOriginalIconAuthorship.namespace,
+    );
     assert.equal(identities.has(definition.identity.name), false);
     identities.add(definition.identity.name);
-    assert.deepEqual(definition.viewBox, {
-      minX: 0,
-      minY: 0,
-      width: 24,
-      height: 24,
-    });
-    assert.deepEqual(definition.metadata.presentation, {
-      defaults: {
-        fill: "none",
-        stroke: "currentColor",
-        strokeWidth: 1.5,
-        strokeLineCap: "round",
-        strokeLineJoin: "round",
-      },
-      overrides: [],
-      defaultSize: 24,
-      minimumSize: 16,
-    });
-    assert.equal(definition.metadata.licence, "ISC");
-    assert.equal(definition.metadata.attribution, "BlueLuscious");
+    assert.deepEqual(definition.viewBox, amellusIconAuthoringProfile.viewBox);
+    assert.deepEqual(
+      definition.metadata.presentation,
+      amellusIconAuthoringProfile.presentation,
+    );
+    assert.equal(
+      definition.metadata.licence,
+      asterOriginalIconAuthorship.licence,
+    );
+    assert.equal(
+      definition.metadata.attribution,
+      asterOriginalIconAuthorship.attribution,
+    );
     assert.equal(definition.metadata.deprecated, false);
     const tags = definition.metadata.tags;
     assert.ok(tags);

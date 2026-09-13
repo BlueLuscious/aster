@@ -165,7 +165,8 @@ test("keeps every per-icon module isolated from sibling definitions", async () =
     const specifiers = extractModuleSpecifiers(source);
 
     assert.deepEqual(specifiers.sort(), [
-      "../shared/constants/aster-icon-authoring.constant.js",
+      "../authoring/constants/amellus-icon-authoring-profile.constant.js",
+      "../authoring/constants/aster-original-icon-authorship.constant.js",
       "@aster/core",
     ]);
     assert.doesNotMatch(source, /(?:icons\/index|manifest|catalogue|registry)/gu);

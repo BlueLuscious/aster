@@ -1,15 +1,20 @@
 import { Icon } from "@aster/core";
-import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
+import {
+  amellusIconAuthoringProfile,
+} from "../authoring/constants/amellus-icon-authoring-profile.constant.js";
+import {
+  asterOriginalIconAuthorship,
+} from "../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
  * @description Canonical portable definition for the Aster arrow-right icon.
  */
 export const ArrowRight = Icon.define({
   identity: {
-    namespace: asterIconAuthoring.namespace,
+    namespace: asterOriginalIconAuthorship.namespace,
     name: "arrow-right",
   },
-  viewBox: asterIconAuthoring.viewBox,
+  viewBox: amellusIconAuthoringProfile.viewBox,
   nodes: [
     { kind: "line", x1: 4, y1: 12, x2: 20, y2: 12 },
     {
@@ -25,9 +30,9 @@ export const ArrowRight = Icon.define({
     displayName: "Arrow Right",
     tags: ["arrow", "forward", "navigation", "next", "right"],
     rtl: "mirror",
-    presentation: asterIconAuthoring.presentation,
-    licence: asterIconAuthoring.licence,
-    attribution: asterIconAuthoring.attribution,
+    presentation: amellusIconAuthoringProfile.presentation,
+    licence: asterOriginalIconAuthorship.licence,
+    attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,
   },
 });

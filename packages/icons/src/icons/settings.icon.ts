@@ -1,15 +1,20 @@
 import { Icon } from "@aster/core";
-import { asterIconAuthoring } from "../shared/constants/aster-icon-authoring.constant.js";
+import {
+  amellusIconAuthoringProfile,
+} from "../authoring/constants/amellus-icon-authoring-profile.constant.js";
+import {
+  asterOriginalIconAuthorship,
+} from "../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
  * @description Canonical portable definition for the Aster settings icon.
  */
 export const Settings = Icon.define({
   identity: {
-    namespace: asterIconAuthoring.namespace,
+    namespace: asterOriginalIconAuthorship.namespace,
     name: "settings",
   },
-  viewBox: asterIconAuthoring.viewBox,
+  viewBox: amellusIconAuthoringProfile.viewBox,
   nodes: [
     { kind: "circle", cx: 12, cy: 12, radius: 7 },
     { kind: "circle", cx: 12, cy: 12, radius: 3 },
@@ -26,9 +31,9 @@ export const Settings = Icon.define({
     displayName: "Settings",
     tags: ["configuration", "preferences", "settings"],
     rtl: "preserve",
-    presentation: asterIconAuthoring.presentation,
-    licence: asterIconAuthoring.licence,
-    attribution: asterIconAuthoring.attribution,
+    presentation: amellusIconAuthoringProfile.presentation,
+    licence: asterOriginalIconAuthorship.licence,
+    attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,
   },
 });

@@ -4,16 +4,12 @@ import type {
 } from "@aster/core";
 
 /**
- * @description Immutable authoring defaults shared by canonical Aster icon definitions.
+ * @description Immutable visual authoring profile shared by icons curated for Amellus.
+ * @remarks The profile describes intrinsic icon input and is never applied or overridden by the
+ * collection definition at composition time.
  */
-export const asterIconAuthoring = Object.freeze({
-  /** @description Canonical namespace assigned to every Aster-authored icon identity. */
-  namespace: "aster",
-  /** @description Licence identifier shared by the canonical Aster icon catalogue. */
-  licence: "ISC",
-  /** @description Attribution recorded by every canonical Aster icon definition. */
-  attribution: "BlueLuscious",
-  /** @description Canonical coordinate system used to author Aster icons. */
+export const amellusIconAuthoringProfile = Object.freeze({
+  /** @description Canonical coordinate system used to author Amellus icon artwork. */
   viewBox: Object.freeze({
     /** @description Horizontal origin of the canonical coordinate system. */
     minX: 0,
@@ -24,7 +20,7 @@ export const asterIconAuthoring = Object.freeze({
     /** @description Height of the canonical coordinate system. */
     height: 24,
   }) satisfies IconViewBox,
-  /** @description Shared rendering policy applied by canonical Aster icons. */
+  /** @description Presentation and size policy authored into each Amellus icon definition. */
   presentation: Object.freeze({
     /** @description Default portable presentation inherited by authored icon nodes. */
     defaults: Object.freeze({
@@ -39,11 +35,11 @@ export const asterIconAuthoring = Object.freeze({
       /** @description Default shape used where stroke segments meet. */
       strokeLineJoin: "round",
     }),
-    /** @description Ordered presentation overrides applied after the shared defaults. */
+    /** @description Ordered presentation overrides accepted from consumers. */
     overrides: Object.freeze([]),
-    /** @description Preferred consumer-facing icon size. */
+    /** @description Preferred consumer-facing size for Amellus artwork. */
     defaultSize: 24,
-    /** @description Smallest consumer-facing size recommended by the collection. */
+    /** @description Smallest consumer-facing size recommended for Amellus artwork. */
     minimumSize: 16,
   }) satisfies IconPresentationPolicy,
 });
