@@ -35,8 +35,9 @@ several collections; a collection owns only its explicit member sequence. Canoni
 modules therefore aggregate existing icon values instead of generating, cloning or decorating
 them.
 
-The package build synchronises generated barrels and immutable aggregate indexes from direct
-canonical modules before TypeScript compilation. Authors never edit those generated files.
+The package build synchronises generated barrels, immutable aggregate indexes and stable public
+definition facades from canonical modules before TypeScript compilation. Authors never edit those
+generated files.
 Repository tooling performs this source maintenance without entering the package's production
 dependency graph or runtime.
 
@@ -84,21 +85,23 @@ Each canonical collection can also be imported through its isolated subpath:
 import { AmellusCollection } from "@aster/icons/collections/amellus";
 ```
 
-Per-icon subpaths are the authoritative minimal imports:
+Per-icon subpaths are the authoritative minimal imports and resolve through generated facades that
+do not expose the canonical source layout:
 
 ```ts
 import { ArrowLeft } from "@aster/icons/arrow-left";
 import { Search } from "@aster/icons/search";
 ```
 
-No mutable registry, renderer, generated wrapper, implementation path, or undeclared subpath is
-public. The package currently has no variants.
+No mutable registry, renderer, generated implementation path, physical source path or undeclared
+subpath is public. The package currently has no variants, but the export surface accepts
+`@aster/icons/<name>/<variant>` once a canonical rendition exists.
 
 ## Execution Flow
 
 Importing one icon:
 
-1. loads its isolated definition module;
+1. loads its minimal generated facade and isolated definition module;
 2. composes applicable immutable authorship and visual-profile inputs;
 3. delegates construction to public `@aster/core`;
 4. returns one deeply frozen portable definition.

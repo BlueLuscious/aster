@@ -27,7 +27,9 @@ Compile-time tests verify root indexes, isolated icon imports, collection-family
 contracts and rejected mutation. Catalogue source tooling separately proves recursive canonical
 `.icon.ts` and `.collection.ts` discovery, nested variant mapping, collection-reference integrity,
 and deterministic barrel and aggregate regeneration. It also proves that check-only execution
-creates no output and that rejected source relationships preserve every existing generated file.
+creates no output, stable facade paths survive canonical source movement, obsolete facades are
+removed through one owned-directory publication, and rejected source relationships preserve every
+existing generated file.
 
 For path nodes, the same corpus evidence traverses every structured command operand, enforces the
 shared half-unit authoring grid and rejects definitions that exceed the collection command budget.
@@ -38,12 +40,16 @@ Raw SVG path text is not accepted as authored catalogue data.
 ABI tests build the package and verify exact root, per-icon, collection-family and per-collection
 exports against discovered canonical source modules. They also verify declarations, ESM loading,
 object identity across import routes, `sideEffects: false`, dependency confinement to public
-`@aster/core`, rejection of implementation subpaths and isolated collection dependencies on only
-their explicitly declared icon modules.
+`@aster/core`, exact minimal facade modules, rejection of implementation subpaths and isolated
+collection dependencies on only their explicitly declared icon modules.
 
 The exact exported subpath set is intentional distribution evidence even though its membership
 grows with the catalogue. The test derives that set from canonical modules rather than maintaining
 a second handwritten icon or collection inventory.
+
+A clean consumer receives only packed-style `package.json` and `dist` trees for Core and Icons. It
+compiles isolated icon and collection imports through published declarations, then executes the
+emitted JavaScript through the same subpaths without any workspace source file.
 
 ## Cross-package evidence
 
@@ -77,7 +83,7 @@ defined by the [Aster Testing Policy](../../project/testing.md).
 ## Retained boundary
 
 - Canonical TypeScript modules remain the editable source of truth.
-- Generated indexes are deterministic artefacts and are never edited manually.
+- Generated indexes and public facades are deterministic artefacts and are never edited manually.
 - Package tests fail explicitly when required icon or collection families are empty.
 - Generic tests remain independent from current catalogue counts, ordering, identities and artwork.
 - Exact identities remain only where public routing or icon-owned semantics require them.

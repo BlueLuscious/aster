@@ -9,8 +9,8 @@ catalogue dependency.
 The example below assumes `@aster/svg` is installed independently by the consumer.
 
 Canonical `*.icon.ts` and `*.collection.ts` modules are editable sources. Package builds
-deterministically synchronise their generated barrels and immutable aggregate indexes before
-compilation.
+deterministically synchronise their generated barrels, immutable aggregate indexes and stable
+public facades before compilation.
 
 ```ts
 import { ArrowLeft } from "@aster/icons/arrow-left";

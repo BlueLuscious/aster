@@ -23,9 +23,9 @@ render or review through @aster/svg and @aster/cli
 ```
 
 The TypeScript module retains geometry, portable identity, presentation and runtime metadata in
-one reviewable authority. Generated barrels and aggregate indexes provide discovery but never
-become editable sources. A collection references existing icon values and neither clones nor owns
-their geometry.
+one reviewable authority. Generated barrels, aggregate indexes and public facades provide
+distribution or discovery but never become editable sources. A collection references existing
+icon values and neither clones nor owns their geometry.
 
 ## Canonical modules
 
@@ -35,8 +35,8 @@ one constant ending in `Collection`, and import only public `@aster/core` plus t
 declared icon modules. Catalogue tooling also validates the accepted nested initial-and-name source
 layout without making physical directories public.
 
-The current flat icon and collection roots remain transitional until stable generated public
-facades exist. A migration baseline assigns every current icon exactly one
+The current flat icon and collection roots remain transitional behind stable generated public
+facades. A migration baseline assigns every current icon exactly one
 `src/glyphs/<initial>/<name>/<name>.icon.ts` destination and the Amellus source its independent
 `src/collections/a/amellus/amellus.collection.ts` destination. Authors must not move these sources
 piecemeal: package subpaths are preserved first through generated facades, then all canonical
@@ -53,17 +53,17 @@ Every icon module:
 - becomes available through the package root and its isolated `@aster/icons/<icon-slug>` subpath
   after catalogue synchronisation.
 
-The package currently has no variants. Tooling can distinguish a separate glyph such as
-`camera-retro` from a `retro` rendition of `camera`, validate nested variant identity and reject
-their derived-symbol collisions. Variant package subpaths remain unsupported until the public
-distribution surface provides generated facades.
+The package currently has no variants. Tooling distinguishes a separate glyph such as
+`camera-retro` from a `retro` rendition of `camera`, validates nested variant identity and rejects
+their derived-symbol collisions. Generated facades support variant package subpaths without making
+the nested canonical source path public.
 
 ## Authoring procedures
 
 ### Add a base icon
 
-Until generated facades protect public paths, new distributable base icons remain direct modules
-at `src/icons/<name>.icon.ts`. To add one:
+Until the canonical source migration, new distributable base icons remain direct modules at
+`src/icons/<name>.icon.ts`; synchronisation generates their stable public facade. To add one:
 
 1. choose a canonical lowercase kebab-case glyph name and export its PascalCase symbol;
 2. call `Icon.define(...)` with complete identity, view box, nodes and metadata;
@@ -76,27 +76,27 @@ inventory is edited manually.
 
 ### Add a collection
 
-Before collection facades exist, a new distributable collection remains a direct
-`src/collections/<name>.collection.ts` module. It exports `<Name>Collection`, imports each member
+A new distributable collection currently remains a direct `src/collections/<name>.collection.ts`
+module behind a generated public facade. It exports `<Name>Collection`, imports each member
 from its canonical icon module, declares collection-owned metadata and retains members in its
 intentional semantic order. Catalogue synchronisation discovers it automatically; authors do not
 edit `AsterCollections` or the collection barrel.
 
 ### Add a rendition
 
-Do not add a distributable rendition during the transitional flat export layout. The accepted
-canonical form is `<name>-<variant>.icon.ts`, sharing the base glyph `name` and declaring the
-rendition in `identity.variant`; its eventual source is
-`src/glyphs/<initial>/<name>/<name>-<variant>.icon.ts` and its public path is
-`@aster/icons/<name>/<variant>`. Recursive tooling fixtures already enforce this identity and
-symbol mapping, but stable generated facades must exist before a real rendition enters the package.
+The accepted rendition source is currently
+`src/icons/<initial>/<name>/<name>-<variant>.icon.ts`, sharing the base glyph `name` and declaring
+the rendition in `identity.variant`. Its migration destination is
+`src/glyphs/<initial>/<name>/<name>-<variant>.icon.ts` and its stable public path is
+`@aster/icons/<name>/<variant>`. Recursive tooling and generated facades enforce this identity,
+symbol and public-path mapping.
 
 ## Catalogue synchronisation
 
 The package build runs the private catalogue synchroniser before TypeScript compilation. It
 discovers canonical icon and collection modules recursively, validates path, identity, symbol and
-membership ownership, and deterministically reconstructs the generated barrels and immutable
-`AsterIcons` and `AsterCollections` indexes.
+membership ownership, and deterministically reconstructs the generated barrels, immutable
+`AsterIcons` and `AsterCollections` indexes and isolated public facades.
 
 Authors add or remove a canonical module, update any explicit collection membership, and run:
 
