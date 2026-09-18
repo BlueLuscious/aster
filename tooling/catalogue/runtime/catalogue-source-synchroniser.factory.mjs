@@ -1,6 +1,7 @@
 import { RepositoryFileWalker } from "../../shared/runtime/repository-file.walker.mjs";
 import { RepositoryPathResolver } from "../../shared/runtime/repository-path.resolver.mjs";
 import { catalogueSourceGeneration } from "../constants/catalogue-source-generation.constant.mjs";
+import { CatalogueSourceFacadePlanner } from "./catalogue-source-facade.planner.mjs";
 import { CatalogueSourceLayoutNormaliser } from "./catalogue-source-layout.normaliser.mjs";
 import { CatalogueSourceModuleInspector } from "./catalogue-source-module.inspector.mjs";
 import { CatalogueSourceRelationshipInspector } from "./catalogue-source-relationship.inspector.mjs";
@@ -21,6 +22,9 @@ export class CatalogueSourceSynchroniserFactory {
     const fileSystem = new NodeCatalogueSourceFileSystem();
     const paths = new RepositoryPathResolver();
     const files = new RepositoryFileWalker(fileSystem, paths);
+    const serialiser = new CatalogueSourceSerialiser(
+      catalogueSourceGeneration.command,
+    );
 
     return new CatalogueSourceSynchroniser(
       fileSystem,
@@ -31,10 +35,17 @@ export class CatalogueSourceSynchroniserFactory {
         new CatalogueSourceLayoutNormaliser(),
         new CatalogueSourceSyntaxInspector(),
       ),
-      new CatalogueSourceSerialiser(catalogueSourceGeneration.command),
+      serialiser,
+      new CatalogueSourceFacadePlanner(
+        serialiser,
+        paths,
+        catalogueSourceGeneration.reservedIconNames,
+      ),
       paths,
       new CatalogueSourceRelationshipInspector(paths),
+      files,
       catalogueSourceGeneration.families,
+      catalogueSourceGeneration.facadeRoot,
     );
   }
 }

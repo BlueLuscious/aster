@@ -110,12 +110,12 @@ const sourceMigrationBaseline = Object.freeze({
       import: "./dist/collections/index.js",
     }),
     "./collections/*": Object.freeze({
-      types: "./dist/collections/*.collection.d.ts",
-      import: "./dist/collections/*.collection.js",
+      types: "./dist/generated/facades/collections/*.d.ts",
+      import: "./dist/generated/facades/collections/*.js",
     }),
     "./*": Object.freeze({
-      types: "./dist/icons/*.icon.d.ts",
-      import: "./dist/icons/*.icon.js",
+      types: "./dist/generated/facades/icons/*.d.ts",
+      import: "./dist/generated/facades/icons/*.js",
     }),
   }),
   digests: Object.freeze({

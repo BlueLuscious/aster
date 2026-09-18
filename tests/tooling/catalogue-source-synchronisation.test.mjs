@@ -3,6 +3,7 @@ import {
   mkdir,
   mkdtemp,
   readFile,
+  readdir,
   rm,
   unlink,
   writeFile,
@@ -11,6 +12,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 
+import { NodeCatalogueSourceFileSystem } from "../../tooling/catalogue/runtime/node-catalogue-source-file-system.mjs";
 import { synchroniseIconsCatalogue } from "../../tooling/catalogue/synchronise-icons-catalogue.mjs";
 
 const generatedOutputPaths = Object.freeze({
@@ -19,6 +21,10 @@ const generatedOutputPaths = Object.freeze({
   collectionBarrel: "src/collections/index.ts",
   collectionAuthority:
     "src/collections/constants/aster-collections.constant.ts",
+  alphaIconFacade: "src/generated/facades/icons/alpha-icon.ts",
+  zetaFacade: "src/generated/facades/icons/zeta.ts",
+  sampleCollectionFacade:
+    "src/generated/facades/collections/sample.ts",
 });
 
 const completeGeneratedOutputPaths = Object.freeze(
@@ -122,7 +128,7 @@ test("synchronises canonical modules deterministically and reports drift", async
     const generated = await synchroniseIconsCatalogue(root);
 
     assert.deepEqual(generated.changedPaths, completeGeneratedOutputPaths);
-    assert.equal(generated.outputCount, 4);
+    assert.equal(generated.outputCount, completeGeneratedOutputPaths.length);
 
     const iconBarrelPath = resolve(root, generatedOutputPaths.iconBarrel);
     const iconBarrel = await readFile(iconBarrelPath, "utf8");
@@ -132,6 +138,21 @@ test("synchronises canonical modules deterministically and reports drift", async
       iconBarrel.indexOf("AlphaIcon") < iconBarrel.indexOf("Zeta"),
     );
     assert.match(iconBarrel, /export \{ AsterIcons \}/u);
+
+    assert.match(
+      await readFile(
+        resolve(root, generatedOutputPaths.alphaIconFacade),
+        "utf8",
+      ),
+      /export \{ AlphaIcon \} from "\.\.\/\.\.\/\.\.\/icons\/alpha-icon\.icon\.js";/u,
+    );
+    assert.match(
+      await readFile(
+        resolve(root, generatedOutputPaths.sampleCollectionFacade),
+        "utf8",
+      ),
+      /export \{ SampleCollection \} from "\.\.\/\.\.\/\.\.\/collections\/sample\.collection\.js";/u,
+    );
 
     const current = await synchroniseIconsCatalogue(root, true);
     assert.deepEqual(current.changedPaths, []);
@@ -160,6 +181,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
     assert.deepEqual(added.changedPaths, [
       generatedOutputPaths.iconBarrel,
       generatedOutputPaths.iconAuthority,
+      "src/generated/facades/icons/middle.ts",
     ]);
     assert.match(
       await readFile(resolve(root, generatedOutputPaths.iconBarrel), "utf8"),
@@ -171,10 +193,14 @@ test("adds and removes source modules without manual aggregate edits", async () 
     assert.deepEqual(removed.changedPaths, [
       generatedOutputPaths.iconBarrel,
       generatedOutputPaths.iconAuthority,
+      "src/generated/facades/icons/middle.ts",
     ]);
     assert.doesNotMatch(
       await readFile(resolve(root, generatedOutputPaths.iconBarrel), "utf8"),
       /Middle/u,
+    );
+    await assert.rejects(
+      readFile(resolve(root, "src/generated/facades/icons/middle.ts"), "utf8"),
     );
 
     const collectionPath = resolve(
@@ -190,6 +216,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
     assert.deepEqual(collectionAdded.changedPaths, [
       generatedOutputPaths.collectionBarrel,
       generatedOutputPaths.collectionAuthority,
+      "src/generated/facades/collections/secondary.ts",
     ]);
     assert.match(
       await readFile(
@@ -204,6 +231,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
     assert.deepEqual(collectionRemoved.changedPaths, [
       generatedOutputPaths.collectionBarrel,
       generatedOutputPaths.collectionAuthority,
+      "src/generated/facades/collections/secondary.ts",
     ]);
     assert.doesNotMatch(
       await readFile(
@@ -211,6 +239,12 @@ test("adds and removes source modules without manual aggregate edits", async () 
         "utf8",
       ),
       /SecondaryCollection/u,
+    );
+    await assert.rejects(
+      readFile(
+        resolve(root, "src/generated/facades/collections/secondary.ts"),
+        "utf8",
+      ),
     );
     assert.doesNotMatch(
       await readFile(
@@ -302,6 +336,27 @@ test("discovers nested base icons, variants and collections with portable specif
       collectionBarrel,
       /export \{ ArchiveCollection \} from "\.\/a\/archive\/archive\.collection\.js";/u,
     );
+    assert.match(
+      await readFile(
+        resolve(root, "src/generated/facades/icons/camera.ts"),
+        "utf8",
+      ),
+      /export \{ Camera \} from "\.\.\/\.\.\/\.\.\/icons\/c\/camera\/camera\.icon\.js";/u,
+    );
+    assert.match(
+      await readFile(
+        resolve(root, "src/generated/facades/icons/camera/stippled.ts"),
+        "utf8",
+      ),
+      /export \{ CameraStippled \} from "\.\.\/\.\.\/\.\.\/\.\.\/icons\/c\/camera\/camera-stippled\.icon\.js";/u,
+    );
+    assert.match(
+      await readFile(
+        resolve(root, "src/generated/facades/collections/archive.ts"),
+        "utf8",
+      ),
+      /export \{ ArchiveCollection \} from "\.\.\/\.\.\/\.\.\/collections\/a\/archive\/archive\.collection\.js";/u,
+    );
     assert.doesNotMatch(iconBarrel, /ignored|notes/u);
 
     await unlink(resolve(retroRoot, "camera-retro.icon.ts"));
@@ -310,10 +365,69 @@ test("discovers nested base icons, variants and collections with portable specif
     assert.deepEqual(removed.changedPaths, [
       generatedOutputPaths.iconBarrel,
       generatedOutputPaths.iconAuthority,
+      "src/generated/facades/icons/camera-retro.ts",
     ]);
     assert.doesNotMatch(
       await readFile(resolve(root, generatedOutputPaths.iconBarrel), "utf8"),
       /CameraRetro/u,
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("keeps public facade paths stable when canonical sources move", async () => {
+  const root = await createPackageFixture();
+
+  try {
+    await synchroniseIconsCatalogue(root);
+    const facadePath = resolve(root, generatedOutputPaths.zetaFacade);
+    const flatFacade = await readFile(facadePath, "utf8");
+    const nestedRoot = resolve(root, "src/icons/z/zeta");
+    await mkdir(nestedRoot, { recursive: true });
+    await writeFile(
+      resolve(nestedRoot, "zeta.icon.ts"),
+      iconSource("zeta"),
+      "utf8",
+    );
+    await unlink(resolve(root, "src/icons/zeta.icon.ts"));
+
+    const moved = await synchroniseIconsCatalogue(root);
+    const nestedFacade = await readFile(facadePath, "utf8");
+
+    assert.deepEqual(moved.changedPaths, [
+      generatedOutputPaths.iconBarrel,
+      generatedOutputPaths.iconAuthority,
+      generatedOutputPaths.zetaFacade,
+    ]);
+    assert.notEqual(nestedFacade, flatFacade);
+    assert.match(
+      nestedFacade,
+      /export \{ Zeta \} from "\.\.\/\.\.\/\.\.\/icons\/z\/zeta\/zeta\.icon\.js";/u,
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("reports and removes obsolete facade files as one owned directory", async () => {
+  const root = await createPackageFixture();
+
+  try {
+    await synchroniseIconsCatalogue(root);
+    const obsoletePath = "src/generated/facades/icons/obsolete.ts";
+    await writeFile(resolve(root, obsoletePath), "stale\n", "utf8");
+
+    const drift = await synchroniseIconsCatalogue(root, true);
+    assert.deepEqual(drift.changedPaths, [obsoletePath]);
+    assert.equal(await readFile(resolve(root, obsoletePath), "utf8"), "stale\n");
+
+    const synchronised = await synchroniseIconsCatalogue(root);
+    assert.deepEqual(synchronised.changedPaths, [obsoletePath]);
+    await assert.rejects(readFile(resolve(root, obsoletePath), "utf8"));
+    assert.deepEqual(
+      await readdir(resolve(root, "src/generated")),
+      ["facades"],
     );
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -333,6 +447,54 @@ test("rejects removed icons retained by canonical collections before writing", a
       /contains dangling icon reference/u,
     );
     assert.deepEqual(await readGeneratedOutputs(root), outputs);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects reserved public subpaths before replacing existing outputs", async () => {
+  const root = await createPackageFixture();
+
+  try {
+    await synchroniseIconsCatalogue(root);
+    const outputs = await readGeneratedOutputs(root);
+    await writeFile(
+      resolve(root, "src/icons/manifest.icon.ts"),
+      iconSource("manifest"),
+      "utf8",
+    );
+
+    await assert.rejects(
+      synchroniseIconsCatalogue(root),
+      /collides with a reserved public subpath/u,
+    );
+    assert.deepEqual(await readGeneratedOutputs(root), outputs);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects generated directory entries outside the owned facade root", async () => {
+  const root = await mkdtemp(join(tmpdir(), "aster-catalogue-publication-"));
+  const facadeRoot = resolve(root, "facades");
+  const retainedPath = resolve(facadeRoot, "retained.ts");
+  const escapedPath = resolve(root, "escaped.ts");
+  const fileSystem = new NodeCatalogueSourceFileSystem();
+
+  try {
+    await mkdir(facadeRoot, { recursive: true });
+    await writeFile(retainedPath, "retained\n", "utf8");
+
+    await assert.rejects(
+      fileSystem.replaceDirectory(
+        facadeRoot,
+        [Object.freeze({ relativePath: "../escaped.ts", content: "unsafe\n" })],
+      ),
+      /escapes its owned root/u,
+    );
+    assert.equal(await readFile(retainedPath, "utf8"), "retained\n");
+    await assert.rejects(readFile(escapedPath, "utf8"));
+    assert.deepEqual(await readdir(root), ["facades"]);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -366,6 +528,10 @@ test("rejects invalid, malformed and ambiguous canonical modules before writing"
     {
       files: [["aster-icons.icon.ts", iconSource("aster-icons")]],
       pattern: /Ambiguous canonical catalogue source symbol/u,
+    },
+    {
+      files: [["manifest.icon.ts", iconSource("manifest")]],
+      pattern: /collides with a reserved public subpath/u,
     },
     {
       files: [[

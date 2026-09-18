@@ -8,6 +8,10 @@ export const catalogueSourceGeneration = Object.freeze({
   command: "pnpm --dir packages/icons run generate:catalogue",
   /** @description Argument selecting read-only synchronisation verification. */
   checkArgument: "--check",
+  /** @description Exclusively owned root containing generated public definition facades. */
+  facadeRoot: "src/generated/facades",
+  /** @description Icon names reserved by package-level public subpath families. */
+  reservedIconNames: Object.freeze(["collections", "dynamic", "manifest"]),
   /** @description Canonical source families and their generated outputs. */
   families: Object.freeze([
     Object.freeze({
@@ -25,6 +29,8 @@ export const catalogueSourceGeneration = Object.freeze({
       excludedDirectories: Object.freeze(["constants"]),
       /** @description Generated icon barrel path. */
       barrelPath: "src/icons/index.ts",
+      /** @description Directory containing generated public icon facades. */
+      facadeDirectory: "src/generated/facades/icons",
       /** @description Generated icon authority path. */
       authorityPath: "src/icons/constants/aster-icons.constant.ts",
       /** @description Generated icon authority symbol. */
@@ -53,6 +59,8 @@ export const catalogueSourceGeneration = Object.freeze({
       excludedDirectories: Object.freeze(["constants"]),
       /** @description Generated collection barrel path. */
       barrelPath: "src/collections/index.ts",
+      /** @description Directory containing generated public collection facades. */
+      facadeDirectory: "src/generated/facades/collections",
       /** @description Generated collection authority path. */
       authorityPath:
         "src/collections/constants/aster-collections.constant.ts",

@@ -58,6 +58,16 @@ export class CatalogueSourceSerialiser {
   }
 
   /**
+   * @description Serialises one generated public definition facade.
+   * @param {string} outputPath - Package-relative generated facade path.
+   * @param {import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule} module - Canonical source module exposed by the facade.
+   * @returns {string} Complete deterministic TypeScript re-export facade.
+   */
+  facade(outputPath, module) {
+    return `${this.#header}export { ${module.symbol} } from "${this.#moduleSpecifier(outputPath, module.relativePath)}";\n`;
+  }
+
+  /**
    * @description Relates one generated output to one canonical TypeScript source as a portable ESM specifier.
    * @param {string} outputPath - Slash-separated package-relative generated output path.
    * @param {string} sourcePath - Slash-separated package-relative canonical source path.

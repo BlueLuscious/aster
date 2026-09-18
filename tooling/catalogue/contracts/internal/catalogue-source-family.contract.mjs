@@ -8,6 +8,7 @@
  * @property {string} definitionFactory - Public Core factory expected at the canonical export.
  * @property {readonly string[]} excludedDirectories - Reserved source-root directories excluded from discovery.
  * @property {string} barrelPath - Package-relative generated barrel path.
+ * @property {string} facadeDirectory - Package-relative generated public facade directory.
  * @property {string} authorityPath - Package-relative generated aggregate authority path.
  * @property {string} authorityName - Exported aggregate authority symbol.
  * @property {string} definitionType - Public Core definition contract retained by the aggregate.
