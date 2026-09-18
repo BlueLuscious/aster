@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { Collection } from "@aster/core";
-import { AmellusCollection } from "../../src/collections/amellus.collection.js";
+import { AmellusCollection } from "../../src/collections/a/amellus/amellus.collection.js";
 import { AsterIcons } from "../../src/icons/index.js";
 
 const amellusInventory = [

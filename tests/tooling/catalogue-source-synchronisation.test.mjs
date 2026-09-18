@@ -65,24 +65,36 @@ function collectionSource(name, imports = [], members = []) {
 
 async function createPackageFixture() {
   const root = await mkdtemp(join(tmpdir(), "aster-catalogue-source-"));
+  const alphaPath = resolve(
+    root,
+    "src/glyphs/a/alpha-icon/alpha-icon.icon.ts",
+  );
+  const zetaPath = resolve(root, "src/glyphs/z/zeta/zeta.icon.ts");
+  const samplePath = resolve(
+    root,
+    "src/collections/s/sample/sample.collection.ts",
+  );
 
-  await mkdir(resolve(root, "src/icons/constants"), { recursive: true });
-  await mkdir(resolve(root, "src/collections/constants"), { recursive: true });
+  await mkdir(dirname(alphaPath), { recursive: true });
+  await mkdir(dirname(zetaPath), { recursive: true });
+  await mkdir(dirname(samplePath), { recursive: true });
   await writeFile(
-    resolve(root, "src/icons/alpha-icon.icon.ts"),
+    alphaPath,
     iconSource("alpha-icon"),
     "utf8",
   );
   await writeFile(
-    resolve(root, "src/icons/zeta.icon.ts"),
+    zetaPath,
     iconSource("zeta"),
     "utf8",
   );
   await writeFile(
-    resolve(root, "src/collections/sample.collection.ts"),
+    samplePath,
     collectionSource(
       "sample",
-      ['import { AlphaIcon } from "../icons/alpha-icon.icon.js";'],
+      [
+        'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+      ],
       ["AlphaIcon"],
     ),
     "utf8",
@@ -144,14 +156,14 @@ test("synchronises canonical modules deterministically and reports drift", async
         resolve(root, generatedOutputPaths.alphaIconFacade),
         "utf8",
       ),
-      /export \{ AlphaIcon \} from "\.\.\/\.\.\/\.\.\/icons\/alpha-icon\.icon\.js";/u,
+      /export \{ AlphaIcon \} from "\.\.\/\.\.\/\.\.\/glyphs\/a\/alpha-icon\/alpha-icon\.icon\.js";/u,
     );
     assert.match(
       await readFile(
         resolve(root, generatedOutputPaths.sampleCollectionFacade),
         "utf8",
       ),
-      /export \{ SampleCollection \} from "\.\.\/\.\.\/\.\.\/collections\/sample\.collection\.js";/u,
+      /export \{ SampleCollection \} from "\.\.\/\.\.\/\.\.\/collections\/s\/sample\/sample\.collection\.js";/u,
     );
 
     const current = await synchroniseIconsCatalogue(root, true);
@@ -174,7 +186,8 @@ test("adds and removes source modules without manual aggregate edits", async () 
 
   try {
     await synchroniseIconsCatalogue(root);
-    const sourcePath = resolve(root, "src/icons/middle.icon.ts");
+    const sourcePath = resolve(root, "src/glyphs/m/middle/middle.icon.ts");
+    await mkdir(dirname(sourcePath), { recursive: true });
     await writeFile(sourcePath, iconSource("middle"), "utf8");
 
     const added = await synchroniseIconsCatalogue(root);
@@ -205,8 +218,9 @@ test("adds and removes source modules without manual aggregate edits", async () 
 
     const collectionPath = resolve(
       root,
-      "src/collections/secondary.collection.ts",
+      "src/collections/s/secondary/secondary.collection.ts",
     );
+    await mkdir(dirname(collectionPath), { recursive: true });
     await writeFile(
       collectionPath,
       collectionSource("secondary"),
@@ -262,8 +276,8 @@ test("discovers nested base icons, variants and collections with portable specif
   const root = await createPackageFixture();
 
   try {
-    const cameraRoot = resolve(root, "src/icons/c/camera");
-    const retroRoot = resolve(root, "src/icons/c/camera-retro");
+    const cameraRoot = resolve(root, "src/glyphs/c/camera");
+    const retroRoot = resolve(root, "src/glyphs/c/camera-retro");
     const archiveRoot = resolve(root, "src/collections/a/archive");
     await mkdir(cameraRoot, { recursive: true });
     await mkdir(retroRoot, { recursive: true });
@@ -288,15 +302,10 @@ test("discovers nested base icons, variants and collections with portable specif
       collectionSource(
         "archive",
         [
-          'import { CameraStippled } from "../../../icons/c/camera/camera-stippled.icon.js";',
+          'import { CameraStippled } from "../../../glyphs/c/camera/camera-stippled.icon.js";',
         ],
         ["CameraStippled"],
       ),
-      "utf8",
-    );
-    await writeFile(
-      resolve(root, "src/icons/constants/ignored.icon.ts"),
-      "not valid TypeScript",
       "utf8",
     );
     await writeFile(resolve(cameraRoot, "notes.ts"), "ignored\n", "utf8");
@@ -318,19 +327,19 @@ test("discovers nested base icons, variants and collections with portable specif
 
     assert.match(
       iconBarrel,
-      /export \{ Camera \} from "\.\/c\/camera\/camera\.icon\.js";/u,
+      /export \{ Camera \} from "\.\.\/glyphs\/c\/camera\/camera\.icon\.js";/u,
     );
     assert.match(
       iconBarrel,
-      /export \{ CameraStippled \} from "\.\/c\/camera\/camera-stippled\.icon\.js";/u,
+      /export \{ CameraStippled \} from "\.\.\/glyphs\/c\/camera\/camera-stippled\.icon\.js";/u,
     );
     assert.match(
       iconBarrel,
-      /export \{ CameraRetro \} from "\.\/c\/camera-retro\/camera-retro\.icon\.js";/u,
+      /export \{ CameraRetro \} from "\.\.\/glyphs\/c\/camera-retro\/camera-retro\.icon\.js";/u,
     );
     assert.match(
       iconAuthority,
-      /import \{ CameraStippled \} from "\.\.\/c\/camera\/camera-stippled\.icon\.js";/u,
+      /import \{ CameraStippled \} from "\.\.\/\.\.\/glyphs\/c\/camera\/camera-stippled\.icon\.js";/u,
     );
     assert.match(
       collectionBarrel,
@@ -341,14 +350,14 @@ test("discovers nested base icons, variants and collections with portable specif
         resolve(root, "src/generated/facades/icons/camera.ts"),
         "utf8",
       ),
-      /export \{ Camera \} from "\.\.\/\.\.\/\.\.\/icons\/c\/camera\/camera\.icon\.js";/u,
+      /export \{ Camera \} from "\.\.\/\.\.\/\.\.\/glyphs\/c\/camera\/camera\.icon\.js";/u,
     );
     assert.match(
       await readFile(
         resolve(root, "src/generated/facades/icons/camera/stippled.ts"),
         "utf8",
       ),
-      /export \{ CameraStippled \} from "\.\.\/\.\.\/\.\.\/\.\.\/icons\/c\/camera\/camera-stippled\.icon\.js";/u,
+      /export \{ CameraStippled \} from "\.\.\/\.\.\/\.\.\/\.\.\/glyphs\/c\/camera\/camera-stippled\.icon\.js";/u,
     );
     assert.match(
       await readFile(
@@ -376,35 +385,25 @@ test("discovers nested base icons, variants and collections with portable specif
   }
 });
 
-test("keeps public facade paths stable when canonical sources move", async () => {
+test("rejects transitional flat source paths before writing", async () => {
   const root = await createPackageFixture();
 
   try {
-    await synchroniseIconsCatalogue(root);
-    const facadePath = resolve(root, generatedOutputPaths.zetaFacade);
-    const flatFacade = await readFile(facadePath, "utf8");
-    const nestedRoot = resolve(root, "src/icons/z/zeta");
-    await mkdir(nestedRoot, { recursive: true });
+    const flatPath = resolve(root, "src/glyphs/flat.icon.ts");
     await writeFile(
-      resolve(nestedRoot, "zeta.icon.ts"),
-      iconSource("zeta"),
+      flatPath,
+      iconSource("flat"),
       "utf8",
     );
-    await unlink(resolve(root, "src/icons/zeta.icon.ts"));
 
-    const moved = await synchroniseIconsCatalogue(root);
-    const nestedFacade = await readFile(facadePath, "utf8");
-
-    assert.deepEqual(moved.changedPaths, [
-      generatedOutputPaths.iconBarrel,
-      generatedOutputPaths.iconAuthority,
-      generatedOutputPaths.zetaFacade,
-    ]);
-    assert.notEqual(nestedFacade, flatFacade);
-    assert.match(
-      nestedFacade,
-      /export \{ Zeta \} from "\.\.\/\.\.\/\.\.\/icons\/z\/zeta\/zeta\.icon\.js";/u,
+    await assert.rejects(
+      synchroniseIconsCatalogue(root),
+      /Invalid canonical catalogue source path/u,
     );
+
+    for (const path of completeGeneratedOutputPaths) {
+      await assert.rejects(readFile(resolve(root, path), "utf8"));
+    }
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -440,7 +439,9 @@ test("rejects removed icons retained by canonical collections before writing", a
   try {
     await synchroniseIconsCatalogue(root);
     const outputs = await readGeneratedOutputs(root);
-    await unlink(resolve(root, "src/icons/alpha-icon.icon.ts"));
+    await unlink(
+      resolve(root, "src/glyphs/a/alpha-icon/alpha-icon.icon.ts"),
+    );
 
     await assert.rejects(
       synchroniseIconsCatalogue(root),
@@ -458,8 +459,13 @@ test("rejects reserved public subpaths before replacing existing outputs", async
   try {
     await synchroniseIconsCatalogue(root);
     const outputs = await readGeneratedOutputs(root);
+    const manifestPath = resolve(
+      root,
+      "src/glyphs/m/manifest/manifest.icon.ts",
+    );
+    await mkdir(dirname(manifestPath), { recursive: true });
     await writeFile(
-      resolve(root, "src/icons/manifest.icon.ts"),
+      manifestPath,
       iconSource("manifest"),
       "utf8",
     );
@@ -503,34 +509,40 @@ test("rejects generated directory entries outside the owned facade root", async 
 test("rejects invalid, malformed and ambiguous canonical modules before writing", async () => {
   const cases = [
     {
-      files: [["Bad.icon.ts", iconSource("bad")]],
+      files: [["b/Bad/Bad.icon.ts", iconSource("bad")]],
       pattern: /Invalid canonical catalogue source name/u,
     },
     {
-      files: [["wrong.icon.ts", "export const Other = Icon.define({});\n"]],
+      files: [[
+        "w/wrong/wrong.icon.ts",
+        "export const Other = Icon.define({});\n",
+      ]],
       pattern: /must export exactly one constant named Wrong/u,
     },
     {
-      files: [["plain.icon.ts", "export const Plain = {};\n"]],
+      files: [["p/plain/plain.icon.ts", "export const Plain = {};\n"]],
       pattern: /must initialise Icon\.define/u,
     },
     {
-      files: [["broken.icon.ts", "export const Broken = {;\n"]],
+      files: [["b/broken/broken.icon.ts", "export const Broken = {;\n"]],
       pattern: /Invalid TypeScript catalogue source/u,
     },
     {
       files: [
-        ["foo-1.icon.ts", iconSource("foo-1")],
-        ["foo1.icon.ts", iconSource("foo1")],
+        ["f/foo-1/foo-1.icon.ts", iconSource("foo-1")],
+        ["f/foo1/foo1.icon.ts", iconSource("foo1")],
       ],
       pattern: /Ambiguous canonical catalogue source symbol/u,
     },
     {
-      files: [["aster-icons.icon.ts", iconSource("aster-icons")]],
+      files: [[
+        "a/aster-icons/aster-icons.icon.ts",
+        iconSource("aster-icons"),
+      ]],
       pattern: /Ambiguous canonical catalogue source symbol/u,
     },
     {
-      files: [["manifest.icon.ts", iconSource("manifest")]],
+      files: [["m/manifest/manifest.icon.ts", iconSource("manifest")]],
       pattern: /collides with a reserved public subpath/u,
     },
     {
@@ -558,10 +570,6 @@ test("rejects invalid, malformed and ambiguous canonical modules before writing"
       ],
       pattern: /Ambiguous canonical catalogue source symbol: CameraRetro/u,
     },
-    {
-      files: [["a/alpha-icon/alpha-icon.icon.ts", iconSource("alpha-icon")]],
-      pattern: /Duplicate canonical catalogue source identity: alpha-icon/u,
-    },
   ];
 
   for (const fixture of cases) {
@@ -569,7 +577,7 @@ test("rejects invalid, malformed and ambiguous canonical modules before writing"
 
     try {
       for (const [name, content] of fixture.files) {
-        const sourcePath = resolve(root, "src/icons", name);
+        const sourcePath = resolve(root, "src/glyphs", name);
         await mkdir(dirname(sourcePath), { recursive: true });
         await writeFile(sourcePath, content, "utf8");
       }

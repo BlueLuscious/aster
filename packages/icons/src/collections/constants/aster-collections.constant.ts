@@ -2,7 +2,7 @@
 // Canonical definition modules are the source of truth. Do not edit manually.
 
 import type { CollectionDefinition } from "@aster/core";
-import { AmellusCollection } from "../amellus.collection.js";
+import { AmellusCollection } from "../a/amellus/amellus.collection.js";
 
 /**
  * @description Complete immutable index of canonical Aster collection definitions.

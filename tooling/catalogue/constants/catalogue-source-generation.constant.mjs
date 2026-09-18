@@ -18,7 +18,7 @@ export const catalogueSourceGeneration = Object.freeze({
       /** @description Semantic family used to apply icon identity and layout rules. */
       kind: catalogueSourceFamilyKinds.icon,
       /** @description Directory containing canonical icon modules. */
-      sourceDirectory: "src/icons",
+      sourceDirectory: "src/glyphs",
       /** @description Filename suffix identifying canonical icon modules. */
       sourceSuffix: ".icon.ts",
       /** @description Symbol suffix appended after slug conversion. */
@@ -26,7 +26,7 @@ export const catalogueSourceGeneration = Object.freeze({
       /** @description Public Core factory expected in canonical icon modules. */
       definitionFactory: "Icon",
       /** @description Reserved source-root directories excluded from canonical discovery. */
-      excludedDirectories: Object.freeze(["constants"]),
+      excludedDirectories: Object.freeze([]),
       /** @description Generated icon barrel path. */
       barrelPath: "src/icons/index.ts",
       /** @description Directory containing generated public icon facades. */

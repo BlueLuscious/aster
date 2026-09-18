@@ -2,7 +2,7 @@ import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family
 import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
 /**
- * @description Normalises flat transitional and nested canonical source paths to logical identity.
+ * @description Normalises nested canonical source paths to logical identity.
  */
 export class CatalogueSourceLayoutNormaliser {
   /** @description Package-owned icon and collection name grammar. */
@@ -21,20 +21,12 @@ export class CatalogueSourceLayoutNormaliser {
     const segments = relativePath.split("/");
     const filename = segments.at(-1);
     const stem = filename.slice(0, -family.sourceSuffix.length);
-    let name;
-    let variant;
-
-    if (segments.length === 1) {
-      name = stem;
-      this.#assertName(name, relativePath);
-    } else {
-      ({ name, variant } = this.#normaliseNested(
-        segments,
-        stem,
-        relativePath,
-        family,
-      ));
-    }
+    const { name, variant } = this.#normaliseNested(
+      segments,
+      stem,
+      relativePath,
+      family,
+    );
 
     return Object.freeze({
       name,

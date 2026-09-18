@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { readFile, readdir } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import { dirname, posix, resolve } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 
@@ -11,29 +11,73 @@ const generatedHeader = [
   "// Canonical definition modules are the source of truth. Do not edit manually.",
   "",
 ].join("\n");
-async function collectDefinitionSubpaths(directory, suffix, symbolSuffix = "") {
+function pascalCase(slug) {
+  return slug
+    .split("-")
+    .map((part) => `${part[0]?.toUpperCase()}${part.slice(1)}`)
+    .join("");
+}
+
+async function collectDefinitionSubpaths(
+  directory,
+  suffix,
+  symbolSuffix = "",
+  supportsVariants = false,
+) {
   return Object.freeze(
     Object.fromEntries(
       (await readdir(resolve(distributionRoot, directory), {
-        withFileTypes: true,
+        recursive: true,
       }))
-        .filter((entry) => entry.isFile() && entry.name.endsWith(suffix))
-        .map((entry) => entry.name.slice(0, -suffix.length))
-        .sort((left, right) => left.localeCompare(right))
-        .map((subpath) => [
-          subpath,
-          `${subpath
-            .split("-")
-            .map((part) => `${part[0]?.toUpperCase()}${part.slice(1)}`)
-            .join("")}${symbolSuffix}`,
-        ]),
+        .map((entry) => entry.replaceAll("\\", "/"))
+        .filter((entry) => entry.endsWith(suffix))
+        .map((entry) => {
+          const segments = entry.split("/");
+          const name = segments.at(-2);
+          const stem = segments.at(-1).slice(0, -suffix.length);
+          const variant = supportsVariants && stem !== name
+            ? stem.slice(`${name}-`.length)
+            : undefined;
+          const subpath = variant === undefined
+            ? name
+            : `${name}/${variant}`;
+
+          return [
+            subpath,
+            `${pascalCase(name)}${
+              variant === undefined ? "" : pascalCase(variant)
+            }${symbolSuffix}`,
+          ];
+        })
+        .sort(([left], [right]) => left.localeCompare(right)),
     ),
   );
 }
 
+function iconDistributionPath(subpath) {
+  const [name, variant] = subpath.split("/");
+  const filename = variant === undefined
+    ? `${name}.icon.js`
+    : `${name}-${variant}.icon.js`;
+
+  return `glyphs/${name[0]}/${name}/${filename}`;
+}
+
+function collectionDistributionPath(name) {
+  return `collections/${name[0]}/${name}/${name}.collection.js`;
+}
+
+function moduleSpecifier(fromPath, targetPath) {
+  const relation = posix.relative(posix.dirname(fromPath), targetPath);
+
+  return relation.startsWith(".") ? relation : `./${relation}`;
+}
+
 const iconSubpaths = await collectDefinitionSubpaths(
-  "icons",
+  "glyphs",
   ".icon.js",
+  "",
+  true,
 );
 const collectionSubpaths = await collectDefinitionSubpaths(
   "collections",
@@ -164,14 +208,14 @@ test("publishes only scalable icon and collection export families", async () => 
 test("keeps every per-icon module isolated from sibling definitions", async () => {
   for (const subpath of Object.keys(iconSubpaths)) {
     const source = await readFile(
-      resolve(distributionRoot, `icons/${subpath}.icon.js`),
+      resolve(distributionRoot, iconDistributionPath(subpath)),
       "utf8",
     );
     const specifiers = extractModuleSpecifiers(source);
 
     assert.deepEqual(specifiers.sort(), [
-      "../authoring/constants/amellus-icon-authoring-profile.constant.js",
-      "../authoring/constants/aster-original-icon-authorship.constant.js",
+      "../../../authoring/constants/amellus-icon-authoring-profile.constant.js",
+      "../../../authoring/constants/aster-original-icon-authorship.constant.js",
       "@aster/core",
     ]);
     assert.doesNotMatch(source, /(?:icons\/index|manifest|catalogue|registry)/gu);
@@ -180,8 +224,10 @@ test("keeps every per-icon module isolated from sibling definitions", async () =
 
 test("routes public definition subpaths through minimal generated facades", async () => {
   for (const [subpath, symbol] of Object.entries(iconSubpaths)) {
+    const facadePath = `generated/facades/icons/${subpath}.js`;
+    const targetPath = iconDistributionPath(subpath);
     const source = await readFile(
-      resolve(distributionRoot, `generated/facades/icons/${subpath}.js`),
+      resolve(distributionRoot, facadePath),
       "utf8",
     );
     const declaration = await readFile(
@@ -189,19 +235,21 @@ test("routes public definition subpaths through minimal generated facades", asyn
       "utf8",
     );
     const expectedRuntime =
-      `${generatedHeader}export { ${symbol} } from "../../../icons/${subpath}.icon.js";\n`;
+      `${generatedHeader}export { ${symbol} } from "${moduleSpecifier(facadePath, targetPath)}";\n`;
     const expectedDeclaration =
-      `export { ${symbol} } from "../../../icons/${subpath}.icon.js";\n`;
+      `export { ${symbol} } from "${moduleSpecifier(facadePath, targetPath)}";\n`;
 
     assert.equal(source, expectedRuntime);
     assert.equal(declaration, expectedDeclaration);
   }
 
   for (const [subpath, symbol] of Object.entries(collectionSubpaths)) {
+    const facadePath = `generated/facades/collections/${subpath}.js`;
+    const targetPath = collectionDistributionPath(subpath);
     const source = await readFile(
       resolve(
         distributionRoot,
-        `generated/facades/collections/${subpath}.js`,
+        facadePath,
       ),
       "utf8",
     );
@@ -213,9 +261,9 @@ test("routes public definition subpaths through minimal generated facades", asyn
       "utf8",
     );
     const expectedRuntime =
-      `${generatedHeader}export { ${symbol} } from "../../../collections/${subpath}.collection.js";\n`;
+      `${generatedHeader}export { ${symbol} } from "${moduleSpecifier(facadePath, targetPath)}";\n`;
     const expectedDeclaration =
-      `export { ${symbol} } from "../../../collections/${subpath}.collection.js";\n`;
+      `export { ${symbol} } from "${moduleSpecifier(facadePath, targetPath)}";\n`;
 
     assert.equal(source, expectedRuntime);
     assert.equal(declaration, expectedDeclaration);
@@ -225,7 +273,7 @@ test("routes public definition subpaths through minimal generated facades", asyn
 test("keeps every per-collection module isolated from catalogue indexes", async () => {
   for (const subpath of Object.keys(collectionSubpaths)) {
     const source = await readFile(
-      resolve(distributionRoot, `collections/${subpath}.collection.js`),
+      resolve(distributionRoot, collectionDistributionPath(subpath)),
       "utf8",
     );
     const specifiers = extractModuleSpecifiers(source);
@@ -233,7 +281,7 @@ test("keeps every per-collection module isolated from catalogue indexes", async 
     assert.equal(specifiers[0], "@aster/core");
     assert.ok(
       specifiers.slice(1).every((specifier) =>
-        /^\.\.\/icons\/[a-z0-9]+(?:-[a-z0-9]+)*\.icon\.js$/u.test(specifier),
+        /^\.\.\/\.\.\/\.\.\/glyphs\/[a-z]\/([a-z0-9]+(?:-[a-z0-9]+)*)\/\1\.icon\.js$/u.test(specifier),
       ),
       `Expected ${subpath} to import only its declared icon modules.`,
     );

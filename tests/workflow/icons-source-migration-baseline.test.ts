@@ -84,8 +84,8 @@ const sourceMigrationBaseline = Object.freeze({
       return Object.freeze({
         identity: `aster/${name}`,
         symbol,
-        sourcePath: `src/icons/${name}.icon.ts`,
-        destinationPath: `src/glyphs/${name[0]}/${name}/${name}.icon.ts`,
+        previousPath: `src/icons/${name}.icon.ts`,
+        sourcePath: `src/glyphs/${name[0]}/${name}/${name}.icon.ts`,
         publicSpecifier: `@aster/icons/${name}`,
       });
     }),
@@ -94,8 +94,8 @@ const sourceMigrationBaseline = Object.freeze({
     Object.freeze({
       identity: "amellus",
       symbol: "AmellusCollection",
-      sourcePath: "src/collections/amellus.collection.ts",
-      destinationPath: "src/collections/a/amellus/amellus.collection.ts",
+      previousPath: "src/collections/amellus.collection.ts",
+      sourcePath: "src/collections/a/amellus/amellus.collection.ts",
       publicSpecifier: "@aster/icons/collections/amellus",
       members: amellusMembers,
     }),
@@ -180,16 +180,20 @@ async function collectCanonicalSources(
   );
 }
 
-test("fixes one collision-free destination for every retained canonical source", async () => {
-  const iconSources = await collectCanonicalSources("src/icons", ".icon.ts");
+test("places every retained canonical source at its collision-free destination", async () => {
+  const iconSources = await collectCanonicalSources("src/glyphs", ".icon.ts");
+  const obsoleteIconSources = await collectCanonicalSources(
+    "src/icons",
+    ".icon.ts",
+  );
   const collectionSources = await collectCanonicalSources(
     "src/collections",
     ".collection.ts",
   );
-  const destinations = [
-    ...sourceMigrationBaseline.icons.map(({ destinationPath }) => destinationPath),
+  const sourcePaths = [
+    ...sourceMigrationBaseline.icons.map(({ sourcePath }) => sourcePath),
     ...sourceMigrationBaseline.collections.map(
-      ({ destinationPath }) => destinationPath,
+      ({ sourcePath }) => sourcePath,
     ),
   ];
 
@@ -197,32 +201,37 @@ test("fixes one collision-free destination for every retained canonical source",
     iconSources,
     sourceMigrationBaseline.icons.map(({ sourcePath }) => sourcePath),
   );
+  assert.deepEqual(obsoleteIconSources, []);
   assert.deepEqual(
     collectionSources,
     sourceMigrationBaseline.collections.map(({ sourcePath }) => sourcePath),
   );
-  assert.equal(new Set(destinations).size, destinations.length);
+  assert.equal(new Set(sourcePaths).size, sourcePaths.length);
 
   for (const icon of sourceMigrationBaseline.icons) {
     const name = icon.identity.slice("aster/".length);
 
     assert.equal(
-      icon.destinationPath,
+      icon.sourcePath,
       `src/glyphs/${name[0]}/${name}/${name}.icon.ts`,
     );
+    await assert.rejects(readFile(resolve(packageRoot, icon.previousPath), "utf8"));
   }
 
   for (const collection of sourceMigrationBaseline.collections) {
     const name = collection.identity;
 
     assert.equal(
-      collection.destinationPath,
+      collection.sourcePath,
       `src/collections/${name[0]}/${name}/${name}.collection.ts`,
+    );
+    await assert.rejects(
+      readFile(resolve(packageRoot, collection.previousPath), "utf8"),
     );
   }
 });
 
-test("retains the exact pre-migration definitions, membership and rendered SVG", () => {
+test("retains the exact baseline definitions, membership and rendered SVG", () => {
   const namedIcons = Object.entries(iconExports)
     .filter(([symbol]) => symbol !== "AsterIcons")
     .map(([symbol, definition]) => ({
@@ -277,7 +286,7 @@ test("retains the exact pre-migration definitions, membership and rendered SVG",
   assert.deepEqual(actualDigests, sourceMigrationBaseline.digests);
 });
 
-test("retains the complete supported package and import surface before migration", async () => {
+test("retains the complete supported package and import surface after migration", async () => {
   const manifest = JSON.parse(
     await readFile(resolve(packageRoot, "package.json"), "utf8"),
   ) as { exports: unknown };
