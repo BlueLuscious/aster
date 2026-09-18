@@ -29,18 +29,11 @@ icon values and neither clones nor owns their geometry.
 
 ## Canonical modules
 
-Current icon sources use `src/icons/<icon-slug>.icon.ts` and export exactly one PascalCase constant.
-Current collection sources use `src/collections/<collection-slug>.collection.ts`, export exactly
-one constant ending in `Collection`, and import only public `@aster/core` plus their directly
-declared icon modules. Catalogue tooling also validates the accepted nested initial-and-name source
-layout without making physical directories public.
-
-The current flat icon and collection roots remain transitional behind stable generated public
-facades. A migration baseline assigns every current icon exactly one
-`src/glyphs/<initial>/<name>/<name>.icon.ts` destination and the Amellus source its independent
-`src/collections/a/amellus/amellus.collection.ts` destination. Authors must not move these sources
-piecemeal: package subpaths are preserved first through generated facades, then all canonical
-sources move as one verified change.
+Icon sources use `src/glyphs/<initial>/<name>/<name>.icon.ts` and export exactly one PascalCase
+constant. Collection sources use
+`src/collections/<initial>/<name>/<name>.collection.ts`, export exactly one constant ending in
+`Collection`, and import only public `@aster/core` plus their directly declared icon modules.
+Generated facades keep these physical directories private and preserve logical public subpaths.
 
 Every icon module:
 
@@ -62,8 +55,9 @@ the nested canonical source path public.
 
 ### Add a base icon
 
-Until the canonical source migration, new distributable base icons remain direct modules at
-`src/icons/<name>.icon.ts`; synchronisation generates their stable public facade. To add one:
+Create a distributable base icon at
+`src/glyphs/<initial>/<name>/<name>.icon.ts`; synchronisation generates its stable public facade.
+To add one:
 
 1. choose a canonical lowercase kebab-case glyph name and export its PascalCase symbol;
 2. call `Icon.define(...)` with complete identity, view box, nodes and metadata;
@@ -76,18 +70,18 @@ inventory is edited manually.
 
 ### Add a collection
 
-A new distributable collection currently remains a direct `src/collections/<name>.collection.ts`
-module behind a generated public facade. It exports `<Name>Collection`, imports each member
-from its canonical icon module, declares collection-owned metadata and retains members in its
-intentional semantic order. Catalogue synchronisation discovers it automatically; authors do not
-edit `AsterCollections` or the collection barrel.
+A new distributable collection lives at
+`src/collections/<initial>/<name>/<name>.collection.ts` behind a generated public facade. It
+exports `<Name>Collection`, imports each member from its canonical icon module, declares
+collection-owned metadata and retains members in its intentional semantic order. Catalogue
+synchronisation discovers it automatically; authors do not edit `AsterCollections` or the
+collection barrel.
 
 ### Add a rendition
 
-The accepted rendition source is currently
-`src/icons/<initial>/<name>/<name>-<variant>.icon.ts`, sharing the base glyph `name` and declaring
-the rendition in `identity.variant`. Its migration destination is
-`src/glyphs/<initial>/<name>/<name>-<variant>.icon.ts` and its stable public path is
+The accepted rendition source is
+`src/glyphs/<initial>/<name>/<name>-<variant>.icon.ts`, sharing the base glyph `name` and declaring
+the rendition in `identity.variant`. Its stable public path is
 `@aster/icons/<name>/<variant>`. Recursive tooling and generated facades enforce this identity,
 symbol and public-path mapping.
 

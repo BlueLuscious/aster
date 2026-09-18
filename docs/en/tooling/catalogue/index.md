@@ -10,7 +10,7 @@ source.
 
 ## Ownership
 
-Canonical `src/icons/**/*.icon.ts` and `src/collections/**/*.collection.ts` modules remain the
+Canonical `src/glyphs/**/*.icon.ts` and `src/collections/**/*.collection.ts` modules remain the
 editable sources of truth. The synchroniser exclusively owns:
 
 - `src/icons/index.ts`;
@@ -32,40 +32,38 @@ manifest and loader output roots.
 ## Source Convention
 
 Only files with exact canonical roles are discovered recursively beneath their configured roots.
-The generated `constants/` directories, barrels, unsupported files and non-file directory entries
-are excluded explicitly.
+The glyph root contains no generated subtree. The collection `constants/` directory, generated
+barrel, unsupported files and non-file directory entries do not enter canonical discovery.
 
 An icon filename `<icon-slug>.icon.ts` must export exactly one constant whose name is the PascalCase
 form of `<icon-slug>`. For example, `arrow-left.icon.ts` exports `ArrowLeft`.
 
-The inspector accepts direct base modules and the nested identity layout:
+The inspector accepts only the nested identity layout:
 
 ```text
-src/icons/<name>.icon.ts
-src/icons/<initial>/<name>/<name>.icon.ts
-src/icons/<initial>/<name>/<name>-<variant>.icon.ts
+src/glyphs/<initial>/<name>/<name>.icon.ts
+src/glyphs/<initial>/<name>/<name>-<variant>.icon.ts
 ```
 
 Nested base and variant examples export `Camera`, `CameraStippled`, `CameraRetro` and
 `CameraRetroFilled` from:
 
 ```text
-src/icons/c/camera/camera.icon.ts
-src/icons/c/camera/camera-stippled.icon.ts
-src/icons/c/camera-retro/camera-retro.icon.ts
-src/icons/c/camera-retro/camera-retro-filled.icon.ts
+src/glyphs/c/camera/camera.icon.ts
+src/glyphs/c/camera/camera-stippled.icon.ts
+src/glyphs/c/camera-retro/camera-retro.icon.ts
+src/glyphs/c/camera-retro/camera-retro-filled.icon.ts
 ```
 
 The first directory must equal the first ASCII lowercase letter of the complete icon name. A base
 filename repeats that name exactly. A variant filename appends one canonical variant slug, and its
-`Icon.define(...)` identity must declare the same `name` and `variant`. Direct modules represent
-base definitions only.
+`Icon.define(...)` identity must declare the same `name` and `variant`.
 
 A collection filename `<collection-slug>.collection.ts` follows the same conversion and appends
 `Collection`. For example, `amellus.collection.ts` exports `AmellusCollection`.
 
-Collections may equivalently use
-`src/collections/<initial>/<name>/<name>.collection.ts`; they do not have variants. Their explicit
+Collections use `src/collections/<initial>/<name>/<name>.collection.ts`; they do not have variants.
+Their explicit
 `icons` sequence may contain only identifiers acquired through named relative imports. Every member
 specifier and imported symbol must resolve to one icon discovered in the same complete inspection.
 Removing a referenced icon, pointing at an aggregate, or spelling its exported symbol incorrectly
@@ -148,24 +146,12 @@ aggregate outputs remain independently recoverable: an interrupted process is fo
 `check:catalogue`, which reports every incomplete or stale output, and deterministic regeneration
 restores the set.
 
-## Source migration boundary
+## Canonical source boundary
 
-The accepted nested layout has a reproducible pre-migration baseline. It maps each retained flat
-icon source to `src/glyphs/<initial>/<name>/<name>.icon.ts` and each collection to
-`src/collections/<initial>/<name>/<name>.collection.ts`. The mapping is derived from logical
-identity, never from collection membership, and requires one unique destination for every source.
-It does not move files or change supported imports.
-
-Distribution changes must follow this order:
-
-1. capture the current source inventory, package export map, supported imports, portable values,
-   collection membership and rendered SVG evidence;
-2. generate and verify stable public facades while the current sources and exports remain intact;
-3. route supported package subpaths through those facades;
-4. move canonical sources and update only their private relative references;
-5. regenerate all owned outputs and compare the resulting definitions, membership, SVG and imports
-   with the baseline;
-6. remove obsolete generated outputs only after the complete replacement plan passes.
+Each icon source lives beneath `src/glyphs/<initial>/<name>/`, independently from collection
+membership. Each collection source lives beneath `src/collections/<initial>/<name>/`. Generated
+facades preserve logical public subpaths without exposing either physical root. Transitional
+aggregate outputs alone remain beneath `src/icons`; no canonical definition may be authored there.
 
 Cleanup is deliberately finite. The synchroniser may replace only its
 `src/generated/facades` root; it must never recursively delete from a canonical icon or collection
@@ -177,9 +163,9 @@ surface is retired.
 Generated outputs are ordinary side-effect-free ESM sources. `@aster/icons`, `@aster/cli` and all
 consumers import immutable values without accessing Node, tooling paths or the filesystem.
 
-Conformance covers deterministic regeneration, idempotence, drift detection, flat and nested
-addition and removal, stable facades across source movement, variant mapping, reserved public
-subpaths, stale facade cleanup, reserved-directory exclusion, syntax and identity failure,
-duplicate identity, symbol ambiguity and dangling collection membership. Package and CLI tests
+Conformance covers deterministic regeneration, idempotence, drift detection, nested addition and
+removal, rejection of transitional flat sources, variant mapping, reserved public subpaths, stale
+facade cleanup, syntax and identity failure, symbol ambiguity and dangling collection membership.
+Package and CLI tests
 derive counts and paths from canonical authorities while retaining exact identity, ordering,
 membership and isolated-subpath checks.

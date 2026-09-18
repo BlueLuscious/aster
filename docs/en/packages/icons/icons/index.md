@@ -53,7 +53,7 @@ Every current icon:
 - exports through `@aster/icons/<icon-slug>`.
 
 `AsterIcons` retains the canonical definitions in identity order. Catalogue source synchronisation
-generates this index from direct `*.icon.ts` modules, making each valid icon available to
+generates this index from nested canonical `*.icon.ts` modules, making each valid icon available to
 complete-package consumers such as the built-in CLI catalogue without adding collection
 membership. It is a package-owned sequence, not a mutable runtime registry or runtime source
 discovery service.
