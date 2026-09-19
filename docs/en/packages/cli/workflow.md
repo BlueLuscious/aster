@@ -18,8 +18,8 @@ The command composition performs this flow:
 1. Inspect the command discriminator and delegate to its command-owned invocation normaliser.
 2. Validate and normalise the explicit context without consulting ambient state.
 3. Select the exact command definition from the closed command authority.
-4. Load only the catalogue providers required by that command.
-5. Validate, isolate, freeze, and canonically order retained catalogue values.
+4. Discover metadata only for commands that require catalogue state.
+5. Validate, isolate, freeze, and canonically order retained discovery values.
 6. Execute discovery, help, version, export, or review behaviour.
 7. Return one immutable structured success or sanitised failure result.
 
@@ -29,9 +29,10 @@ does not execute this workflow.
 
 ## Export planning
 
-For `export`, the host-neutral path selects one exact icon or collection from the accepted
-catalogue snapshot. It delegates rendering to the public `@aster/svg` root and constructs a
-complete immutable `AsterExportPlan` before returning success.
+For `export`, the host-neutral path currently reconstructs the complete accepted provider state
+before selecting one exact icon or collection. This transitional bridge preserves behaviour while
+exact definition resolution is integrated. It delegates rendering to the public `@aster/svg` root
+and constructs a complete immutable `AsterExportPlan` before returning success.
 
 An icon produces one logical SVG artefact. A collection resolves every declared member before
 rendering and then orders all artefacts by canonical relative path. Selection, path collisions,
@@ -40,7 +41,8 @@ not import `@aster/import`, inspect source files, or acquire filesystem authorit
 
 ## Review planning
 
-For `review`, the host-neutral path uses the same exact catalogue selector as Export. An icon
+For `review`, the host-neutral path uses the same transitional complete-definition selector as
+Export. An icon
 selection retains its independent collection memberships. A collection selection resolves and
 canonically orders every declared member, while an empty collection remains a valid empty model.
 

@@ -75,7 +75,7 @@ Provider and membership guarantees are owned by the
 
 ## Export isolation
 
-Headless export consumes only accepted catalogue snapshots and the public SVG renderer. It returns
+Headless export consumes only accepted catalogue definitions and the public SVG renderer. It returns
 complete immutable logical artefacts and acquires no process or filesystem capability. The shell
 may present a raw single-icon SVG or serialise the same structured plan. Its private output host
 can stage and publish that plan without changing the programmatic result contract. Shell render

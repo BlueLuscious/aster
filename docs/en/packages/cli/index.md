@@ -14,9 +14,10 @@ frozen values.
 `search`, `show`, `export`, `review`, `help`, and `version`, and returns sanitised structured failures. It never
 selects an ambient catalogue. Hosts pass providers explicitly in `AsterCommandContext`.
 
-`AsterCatalogue` adapts the canonical `@aster/icons` definitions into that provider boundary. It
-loads the icon package only when a catalogue command executes; importing `@aster/cli` or reading
-help metadata does not eagerly evaluate the built-in catalogue.
+`AsterCatalogue` adapts canonical `@aster/icons` manifests and exact loaders into that provider
+boundary. Metadata commands evaluate only manifest modules; complete definitions remain behind
+explicit exact-loader capabilities. Importing `@aster/cli` or reading help metadata does not
+evaluate Icons.
 
 ## Features
 
@@ -46,11 +47,11 @@ and distribution comparison evidence.
 
 ## Dependency boundary
 
-The command and catalogue domains depend on the public root of `@aster/core`, which validates and
-isolates portable icon and collection values. The built-in provider depends on `@aster/icons` and
-deliberately invokes both complete exact-loader families without assigning catalogue ownership to
-Core or one collection. This bridge preserves the current complete-snapshot contract; it does not
-make every command definition-lazy.
+The command and catalogue domains depend on the public root of `@aster/core` for portable identity,
+metadata, and definition contracts. The built-in provider consumes the public
+`@aster/icons/manifest` subpath for discovery and reserves `@aster/icons/dynamic` for exact
+definition loading. CLI owns query, acceptance, and diagnostic behaviour without copying the Icons
+inventory or assigning catalogue ownership to Core.
 
 The export domain depends directly on the public `@aster/svg` root. It renders accepted portable
 definitions without importing Import, filesystem services, or SVG implementation subpaths.
@@ -73,8 +74,9 @@ The package exposes only its root `"."`. It exports these types:
   `AsterCommandResultType`;
 - `AsterCommandDiagnosticType`, `AsterCommandDiagnosticCodeType`, and
   `AsterCommandDiagnosticCategoryType`;
-- `CatalogueProvider`, `CatalogueSnapshot`, `CatalogueIconRecord`, and
-  `CatalogueCollectionRecord`;
+- `CatalogueProvider`, `CatalogueDiscovery`, `CatalogueDiscoveryIconRecord`,
+  `CatalogueDiscoveryCollectionRecord`, and `CatalogueIconMetadata`;
+- transitional `CatalogueSnapshot`, `CatalogueIconRecord`, and `CatalogueCollectionRecord`;
 - `CatalogueProviderResult`, `CatalogueIconResult`, and `CatalogueCollectionResult`;
 - `CatalogueResultKindType`;
 - `AsterExportArtefact`, `AsterExportPlan`, `AsterExportSubjectType`, `AsterExportOptionsType`, and
@@ -104,7 +106,8 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
 - explicit built-in discovery and lazy provider loading;
 - empty and standalone catalogue values, canonical ordering, and exact filters;
 - many-to-many membership without duplicated icon identity;
-- mixed search fields, cross-provider ambiguity, snapshot conflicts, and unavailable providers;
+- mixed search fields, cross-provider ambiguity, discovery conflicts, and unavailable providers;
+- zero definition-loader invocation across list, search, and show;
 - exact export selection, option normalisation, deterministic SVG paths and contents, and complete
   immutable plans;
 - exact review selection, deterministic technical evidence, contained SVG failures, and complete

@@ -98,9 +98,9 @@ never removed implicitly.
 
 ## Static lifecycle
 
-Review is intentionally a finite command. It acquires one built catalogue snapshot, plans one
-document, publishes it when requested, and terminates without retaining a watcher, network server,
-browser process, or source compiler. `--watch` is therefore not part of the accepted grammar.
+Review is intentionally a finite command. It acquires accepted provider state, plans one document,
+publishes it when requested, and terminates without retaining a watcher, network server, browser
+process, or source compiler. `--watch` is therefore not part of the accepted grammar.
 
 A persistent host could not safely refresh a catalogue by adding a query to its root ESM import:
 the package's statically imported child modules would remain in the process module cache. A future
