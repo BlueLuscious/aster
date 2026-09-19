@@ -11,6 +11,16 @@ import {
   AsterCollections,
 } from "../../src/collections/index.js";
 import type {
+  CollectionDefinitionLoader,
+  CollectionDefinitionLoaderMap,
+  IconDefinitionLoader,
+  IconDefinitionLoaderMap,
+} from "../../src/dynamic/index.js";
+import {
+  AsterCollectionLoaders,
+  AsterIconLoaders,
+} from "../../src/dynamic/index.js";
+import type {
   CollectionManifestEntry,
   IconManifestEntry,
 } from "../../src/manifest/index.js";
@@ -25,6 +35,13 @@ const indexedCollections: readonly CollectionDefinition[] = AsterCollections;
 const iconManifest: readonly IconManifestEntry[] = AsterIconManifest;
 const collectionManifest: readonly CollectionManifestEntry[] =
   AsterCollectionManifest;
+const iconLoaders: IconDefinitionLoaderMap = AsterIconLoaders;
+const collectionLoaders: CollectionDefinitionLoaderMap =
+  AsterCollectionLoaders;
+const iconLoader: IconDefinitionLoader | undefined =
+  AsterIconLoaders["aster/arrow-left"];
+const collectionLoader: CollectionDefinitionLoader | undefined =
+  AsterCollectionLoaders.amellus;
 declare const collectionDefinition: CollectionDefinition;
 
 // @ts-expect-error Canonical definitions are immutable.
@@ -51,10 +68,20 @@ AsterIconManifest[0].key = "changed";
 // @ts-expect-error Canonical collection membership is immutable.
 AsterCollectionManifest[0].members.push("aster/changed");
 
+// @ts-expect-error Canonical loader maps are immutable.
+AsterIconLoaders["aster/changed"] = iconLoader;
+
+// @ts-expect-error Canonical loader maps are immutable.
+AsterCollectionLoaders.changed = collectionLoader;
+
 void directDefinition;
 void indexedDefinitions;
 void indexedCollections;
 void iconManifest;
 void collectionManifest;
+void iconLoaders;
+void collectionLoaders;
+void iconLoader;
+void collectionLoader;
 void component;
 void markup;

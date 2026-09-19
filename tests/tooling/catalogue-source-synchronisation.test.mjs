@@ -22,6 +22,7 @@ const generatedOutputPaths = Object.freeze({
   collectionAuthority:
     "src/collections/constants/aster-collections.constant.ts",
   manifest: "src/generated/manifest/index.ts",
+  dynamic: "src/generated/dynamic/index.ts",
   alphaIconFacade: "src/generated/facades/icons/alpha-icon.ts",
   zetaFacade: "src/generated/facades/icons/zeta.ts",
   sampleCollectionFacade:
@@ -200,6 +201,24 @@ test("synchronises canonical modules deterministically and reports drift", async
       manifest,
       /\b(?:nodes|viewBox|presentation|Icon\.define|Collection\.define)\b/u,
     );
+    const dynamic = await readFile(
+      resolve(root, generatedOutputPaths.dynamic),
+      "utf8",
+    );
+    assert.match(dynamic, /export const AsterIconLoaders/u);
+    assert.match(dynamic, /export const AsterCollectionLoaders/u);
+    assert.match(dynamic, /"alpha-icon": Object\.freeze/u);
+    assert.match(dynamic, /"fixture\/zeta": Object\.freeze/u);
+    assert.match(dynamic, /"sample": Object\.freeze/u);
+    assert.match(
+      dynamic,
+      /import\("\.\.\/facades\/icons\/alpha-icon\.js"\)/u,
+    );
+    assert.match(
+      dynamic,
+      /import\("\.\.\/facades\/collections\/sample\.js"\)/u,
+    );
+    assert.doesNotMatch(dynamic, /(?:glyphs|collections\/s\/sample)/u);
 
     const current = await synchroniseIconsCatalogue(root, true);
     assert.deepEqual(current.changedPaths, []);
@@ -230,6 +249,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
       generatedOutputPaths.iconBarrel,
       generatedOutputPaths.iconAuthority,
       generatedOutputPaths.manifest,
+      generatedOutputPaths.dynamic,
       "src/generated/facades/icons/middle.ts",
     ]);
     assert.match(
@@ -243,11 +263,16 @@ test("adds and removes source modules without manual aggregate edits", async () 
       generatedOutputPaths.iconBarrel,
       generatedOutputPaths.iconAuthority,
       generatedOutputPaths.manifest,
+      generatedOutputPaths.dynamic,
       "src/generated/facades/icons/middle.ts",
     ]);
     assert.doesNotMatch(
       await readFile(resolve(root, generatedOutputPaths.iconBarrel), "utf8"),
       /Middle/u,
+    );
+    assert.doesNotMatch(
+      await readFile(resolve(root, generatedOutputPaths.dynamic), "utf8"),
+      /middle/u,
     );
     await assert.rejects(
       readFile(resolve(root, "src/generated/facades/icons/middle.ts"), "utf8"),
@@ -268,6 +293,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
       generatedOutputPaths.collectionBarrel,
       generatedOutputPaths.collectionAuthority,
       generatedOutputPaths.manifest,
+      generatedOutputPaths.dynamic,
       "src/generated/facades/collections/secondary.ts",
     ]);
     assert.match(
@@ -284,6 +310,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
       generatedOutputPaths.collectionBarrel,
       generatedOutputPaths.collectionAuthority,
       generatedOutputPaths.manifest,
+      generatedOutputPaths.dynamic,
       "src/generated/facades/collections/secondary.ts",
     ]);
     assert.doesNotMatch(
@@ -305,6 +332,10 @@ test("adds and removes source modules without manual aggregate edits", async () 
         "utf8",
       ),
       /SecondaryCollection/u,
+    );
+    assert.doesNotMatch(
+      await readFile(resolve(root, generatedOutputPaths.dynamic), "utf8"),
+      /secondary/u,
     );
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -332,7 +363,10 @@ test("refreshes imported manifest authorities between synchronisations", async (
       "utf8",
     );
 
-    assert.deepEqual(refreshed.changedPaths, [generatedOutputPaths.manifest]);
+    assert.deepEqual(refreshed.changedPaths, [
+      generatedOutputPaths.manifest,
+      generatedOutputPaths.dynamic,
+    ]);
     assert.match(manifest, /key: "updated\/zeta"/u);
     assert.match(manifest, /licence: "CC0-1\.0"/u);
     assert.doesNotMatch(manifest, /key: "fixture\/zeta"/u);
@@ -393,6 +427,10 @@ test("discovers nested base icons, variants and collections with portable specif
       resolve(root, generatedOutputPaths.collectionBarrel),
       "utf8",
     );
+    const dynamic = await readFile(
+      resolve(root, generatedOutputPaths.dynamic),
+      "utf8",
+    );
 
     assert.match(
       iconBarrel,
@@ -436,6 +474,15 @@ test("discovers nested base icons, variants and collections with portable specif
       /export \{ ArchiveCollection \} from "\.\.\/\.\.\/\.\.\/collections\/a\/archive\/archive\.collection\.js";/u,
     );
     assert.doesNotMatch(iconBarrel, /ignored|notes/u);
+    assert.match(
+      dynamic,
+      /"camera@stippled": Object\.freeze/u,
+    );
+    assert.match(
+      dynamic,
+      /import\("\.\.\/facades\/icons\/camera\/stippled\.js"\)/u,
+    );
+    assert.match(dynamic, /"archive": Object\.freeze/u);
 
     await unlink(resolve(retroRoot, "camera-retro.icon.ts"));
     const removed = await synchroniseIconsCatalogue(root);
@@ -444,11 +491,16 @@ test("discovers nested base icons, variants and collections with portable specif
       generatedOutputPaths.iconBarrel,
       generatedOutputPaths.iconAuthority,
       generatedOutputPaths.manifest,
+      generatedOutputPaths.dynamic,
       "src/generated/facades/icons/camera-retro.ts",
     ]);
     assert.doesNotMatch(
       await readFile(resolve(root, generatedOutputPaths.iconBarrel), "utf8"),
       /CameraRetro/u,
+    );
+    assert.doesNotMatch(
+      await readFile(resolve(root, generatedOutputPaths.dynamic), "utf8"),
+      /camera-retro/u,
     );
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -496,7 +548,7 @@ test("reports and removes obsolete facade files as one owned directory", async (
     await assert.rejects(readFile(resolve(root, obsoletePath), "utf8"));
     assert.deepEqual(
       await readdir(resolve(root, "src/generated")),
-      ["facades", "manifest"],
+      ["dynamic", "facades", "manifest"],
     );
   } finally {
     await rm(root, { recursive: true, force: true });

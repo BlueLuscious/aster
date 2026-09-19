@@ -113,6 +113,10 @@ const sourceMigrationBaseline = Object.freeze({
       types: "./dist/manifest/index.d.ts",
       import: "./dist/manifest/index.js",
     }),
+    "./dynamic": Object.freeze({
+      types: "./dist/dynamic/index.d.ts",
+      import: "./dist/dynamic/index.js",
+    }),
     "./collections/*": Object.freeze({
       types: "./dist/generated/facades/collections/*.d.ts",
       import: "./dist/generated/facades/collections/*.js",

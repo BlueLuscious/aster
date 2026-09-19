@@ -134,10 +134,12 @@ test("exposes the exact documented icon root and definition families", async () 
 
   for (const [subpath, symbol] of Object.entries(iconSubpaths)) {
     const direct = await import(`@aster/icons/${subpath}`);
+    const [name, variant] = subpath.split("/");
 
     assert.deepEqual(Object.keys(direct), [symbol]);
     assert.equal(direct[symbol], root[symbol]);
-    assert.equal(direct[symbol].identity.name, subpath);
+    assert.equal(direct[symbol].identity.name, name);
+    assert.equal(direct[symbol].identity.variant, variant);
   }
 
   for (const [subpath, symbol] of Object.entries(collectionSubpaths)) {
@@ -178,7 +180,7 @@ test("rejects implementation and undeclared internal subpaths", async () => {
   );
 });
 
-test("publishes only scalable icon and collection export families", async () => {
+test("publishes only accepted scalable export families", async () => {
   const manifest = JSON.parse(
     await readFile(resolve(packageRoot, "package.json"), "utf8"),
   );
@@ -186,6 +188,7 @@ test("publishes only scalable icon and collection export families", async () => 
     ".",
     "./collections",
     "./manifest",
+    "./dynamic",
     "./collections/*",
     "./*",
   ];
@@ -200,6 +203,10 @@ test("publishes only scalable icon and collection export families", async () => 
   assert.deepEqual(manifest.exports["./manifest"], {
     types: "./dist/manifest/index.d.ts",
     import: "./dist/manifest/index.js",
+  });
+  assert.deepEqual(manifest.exports["./dynamic"], {
+    types: "./dist/dynamic/index.d.ts",
+    import: "./dist/dynamic/index.js",
   });
   assert.deepEqual(manifest.exports["./collections/*"], {
     types: "./dist/generated/facades/collections/*.d.ts",
@@ -238,6 +245,48 @@ test("exposes only metadata through the isolated manifest subpath", async () => 
     generatedSource,
     /\b(?:nodes|viewBox|presentation|Icon\.define|Collection\.define)\b/u,
   );
+});
+
+test("exposes exact asynchronous loaders without eager definitions", async () => {
+  const dynamic = await import("@aster/icons/dynamic");
+  const manifest = await import("@aster/icons/manifest");
+  const publicSource = await readFile(
+    resolve(distributionRoot, "dynamic/index.js"),
+    "utf8",
+  );
+  const generatedSource = await readFile(
+    resolve(distributionRoot, "generated/dynamic/index.js"),
+    "utf8",
+  );
+  const specifiers = extractModuleSpecifiers(generatedSource);
+
+  assert.deepEqual(Object.keys(dynamic).sort(), [
+    "AsterCollectionLoaders",
+    "AsterIconLoaders",
+  ]);
+  assert.deepEqual(
+    Object.keys(dynamic.AsterIconLoaders),
+    manifest.AsterIconManifest.map(({ key }) => key),
+  );
+  assert.deepEqual(
+    Object.keys(dynamic.AsterCollectionLoaders),
+    manifest.AsterCollectionManifest.map(({ key }) => key),
+  );
+  assert.deepEqual(extractModuleSpecifiers(publicSource), [
+    "../generated/dynamic/index.js",
+  ]);
+  assert.ok(specifiers.length > 0);
+  assert.ok(
+    specifiers.every((specifier) => specifier.startsWith("../facades/")),
+  );
+  assert.doesNotMatch(generatedSource, /(?:glyphs\/|collections\/[a-z]\/)/u);
+
+  const cameraLoader = dynamic.AsterIconLoaders["aster/camera"];
+  const amellusLoader = dynamic.AsterCollectionLoaders.amellus;
+  assert.ok(cameraLoader);
+  assert.ok(amellusLoader);
+  assert.equal((await cameraLoader()).identity.name, "camera");
+  assert.equal((await amellusLoader()).identity.name, "amellus");
 });
 
 test("keeps every per-icon module isolated from sibling definitions", async () => {

@@ -43,5 +43,12 @@ export const iconsBaseline = Object.freeze({
       /** @description Public package specifier under measurement. */
       specifier: "@aster/icons/manifest",
     }),
+    /** @description Exact asynchronous definition-loader map import. */
+    dynamic: Object.freeze({
+      /** @description Stable report scenario identity. */
+      name: "icons.import.dynamic",
+      /** @description Public package specifier under measurement. */
+      specifier: "@aster/icons/dynamic",
+    }),
   }),
 });

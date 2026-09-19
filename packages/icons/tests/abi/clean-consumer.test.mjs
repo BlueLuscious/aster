@@ -6,6 +6,7 @@ import {
   mkdir,
   mkdtemp,
   rm,
+  unlink,
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -54,15 +55,22 @@ after(async () => {
 test("resolves isolated runtime and declaration facades without source files", async () => {
   const source = [
     'import type { CollectionDefinition, IconDefinition } from "@aster/core";',
+    'import type { CollectionDefinitionLoader, IconDefinitionLoader } from "@aster/icons/dynamic";',
     'import type { CollectionManifestEntry, IconManifestEntry } from "@aster/icons/manifest";',
     'import { Camera } from "@aster/icons/camera";',
     'import { AmellusCollection } from "@aster/icons/collections/amellus";',
     'import { AsterCollectionManifest, AsterIconManifest } from "@aster/icons/manifest";',
+    'import { AsterCollectionLoaders, AsterIconLoaders } from "@aster/icons/dynamic";',
     "const icon: IconDefinition = Camera;",
     "const collection: CollectionDefinition = AmellusCollection;",
     "const iconEntry: IconManifestEntry | undefined = AsterIconManifest.find(({ key }) => key === \"aster/camera\");",
     "const collectionEntry: CollectionManifestEntry | undefined = AsterCollectionManifest.find(({ key }) => key === \"amellus\");",
-    "export const result = `${icon.identity.name}:${collection.identity.name}:${iconEntry?.symbol}:${collectionEntry?.symbol}`;",
+    'const iconLoader: IconDefinitionLoader | undefined = AsterIconLoaders["aster/camera"];',
+    "const collectionLoader: CollectionDefinitionLoader | undefined = AsterCollectionLoaders.amellus;",
+    'if (iconLoader === undefined || collectionLoader === undefined) throw new Error("Expected loaders.");',
+    "const loadedIcon = await iconLoader();",
+    "const loadedCollection = await collectionLoader();",
+    "export const result = `${icon.identity.name}:${collection.identity.name}:${iconEntry?.symbol}:${collectionEntry?.symbol}:${loadedIcon.identity.name}:${loadedCollection.identity.name}`;",
     "",
   ].join("\n");
   await writeFile(resolve(consumerRoot, "consumer.ts"), source, "utf8");
@@ -111,5 +119,41 @@ test("resolves isolated runtime and declaration facades without source files", a
 
   assert.equal(executed.status, 0);
   assert.equal(executed.stderr, "");
-  assert.equal(executed.stdout, "camera:amellus:Camera:AmellusCollection");
+  assert.equal(
+    executed.stdout,
+    "camera:amellus:Camera:AmellusCollection:camera:amellus",
+  );
+});
+
+test("preserves native dynamic-import rejection details", async () => {
+  await unlink(
+    resolve(
+      consumerRoot,
+      "node_modules/@aster/icons/dist/generated/facades/icons/camera.js",
+    ),
+  );
+  const executed = spawnSync(
+    process.execPath,
+    [
+      "--input-type=module",
+      "--eval",
+      [
+        'const { AsterIconLoaders } = await import("@aster/icons/dynamic");',
+        'const loader = AsterIconLoaders["aster/camera"];',
+        "try {",
+        "  await loader();",
+        "} catch (error) {",
+        "  process.stdout.write(JSON.stringify({ name: error.name, code: error.code }));",
+        "}",
+      ].join("\n"),
+    ],
+    { cwd: consumerRoot, encoding: "utf8" },
+  );
+
+  assert.equal(executed.status, 0);
+  assert.equal(executed.stderr, "");
+  assert.deepEqual(JSON.parse(executed.stdout), {
+    name: "Error",
+    code: "ERR_MODULE_NOT_FOUND",
+  });
 });
