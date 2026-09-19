@@ -23,8 +23,8 @@ render or review through @aster/svg and @aster/cli
 ```
 
 The TypeScript module retains geometry, portable identity, presentation and runtime metadata in
-one reviewable authority. Generated barrels, aggregate indexes and public facades provide
-distribution or discovery but never become editable sources. A collection references existing
+one reviewable authority. Generated manifests, loader maps and public facades provide distribution
+or discovery but never become editable sources. A collection references existing
 icon values and neither clones nor owns their geometry.
 
 ## Canonical modules
@@ -45,13 +45,14 @@ Every icon module:
 - owns its intrinsic display name, tags, RTL policy, presentation, effective artwork licence,
   attribution, deprecation state and replacement relationship;
 - remains independent from collections, renderers, Import, frameworks, DOM and filesystem APIs;
-- becomes available through the package root and its isolated `@aster/icons/<icon-slug>` subpath
-  after catalogue synchronisation.
+- becomes available through its isolated `@aster/icons/<icon-slug>` subpath after catalogue
+  synchronisation.
 
 The package currently has no variants. Tooling distinguishes a separate glyph such as
-`camera-retro` from a `retro` rendition of `camera`, validates nested variant identity and rejects
-their derived-symbol collisions. Generated facades support variant package subpaths without making
-the nested canonical source path public.
+`camera-retro` from a `retro` rendition of `camera` and validates nested variant identity.
+Distinct public subpaths may expose the same derived symbol because no aggregate barrel combines
+their module scopes. Generated facades support variant package subpaths without making the nested
+canonical source path public.
 
 ## Authoring procedures
 
@@ -67,7 +68,7 @@ To add one:
 4. add the imported definition to each intended collection's explicit `icons` sequence;
 5. run the package build, inspect `aster review` evidence and run complete verification.
 
-Omitting step 4 leaves a valid standalone icon. No generated barrel, aggregate index or test
+Omitting step 4 leaves a valid standalone icon. No generated manifest, loader map, facade or test
 inventory is edited manually.
 
 ### Add a collection
@@ -76,8 +77,8 @@ A new distributable collection lives at
 `src/collections/<initial>/<name>/<name>.collection.ts` behind a generated public facade. It
 exports `<Name>Collection`, imports each member from its canonical icon module, declares
 collection-owned metadata and retains members in its intentional semantic order. Catalogue
-synchronisation discovers it automatically; authors do not edit `AsterCollections` or the
-collection barrel.
+synchronisation discovers it automatically; authors do not edit distribution manifests, loader
+maps or public facades.
 
 ### Add a rendition
 
@@ -92,8 +93,7 @@ symbol and public-path mapping.
 The package build runs the private catalogue synchroniser before TypeScript compilation. It
 discovers canonical icon and collection modules recursively, validates path, identity, symbol,
 static manifest metadata and membership ownership, and deterministically reconstructs the
-generated barrels, immutable `AsterIcons` and `AsterCollections` indexes, metadata-only manifest
-exact dynamic loader maps and isolated public facades.
+metadata-only manifest, exact dynamic loader maps and isolated public facades.
 
 Authors add or remove a canonical module, update any explicit collection membership, and run:
 

@@ -39,10 +39,10 @@ measurement fixtures remain exact because changing their values changes the test
 
 ## Catalogue independence
 
-Tests that exercise the real catalogue derive representatives, identities, membership and counts
-from the canonical `AsterIcons` and `AsterCollections` indexes. A suite that requires catalogue
-evidence rejects an empty required family explicitly rather than silently passing or selecting a
-named product value.
+Tests that exercise the real catalogue derive discovery evidence from manifests and load complete
+definitions only through explicit exact loaders. A suite that requires catalogue evidence rejects
+an empty required family explicitly rather than silently passing or selecting a named product
+value.
 
 Exact icon identities remain valid in tests of identity-specific semantics, including declared RTL
 relationships, stable public subpaths and deliberately selected semantic pairs. Synthetic fixtures

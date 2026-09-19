@@ -3,8 +3,8 @@
 Status: **Accepted**
 
 The `catalogue` tooling feature recursively discovers canonical `@aster/icons` TypeScript sources,
-validates their identities and relationships, and synchronises aggregate outputs, metadata-only
-distribution data, exact dynamic loaders and public definition facades. It is private
+validates their identities and relationships, and synchronises metadata-only distribution data,
+exact dynamic loaders and public definition facades. It is private
 repository infrastructure, not runtime discovery, a public package API, or an icon-authoring
 source.
 
@@ -13,10 +13,6 @@ source.
 Canonical `src/glyphs/**/*.icon.ts` and `src/collections/**/*.collection.ts` modules remain the
 editable sources of truth. The synchroniser exclusively owns:
 
-- `src/icons/index.ts`;
-- `src/icons/constants/aster-icons.constant.ts`;
-- `src/collections/index.ts`;
-- `src/collections/constants/aster-collections.constant.ts`;
 - `src/generated/manifest/index.ts`;
 - `src/generated/dynamic/index.ts`;
 - `src/generated/facades/icons/**/*.ts`;
@@ -34,8 +30,8 @@ and dynamic-loader output roots.
 ## Source Convention
 
 Only files with exact canonical roles are discovered recursively beneath their configured roots.
-The glyph root contains no generated subtree. The collection `constants/` directory, generated
-barrel, unsupported files and non-file directory entries do not enter canonical discovery.
+The glyph root contains no generated subtree. Unsupported files and non-file directory entries do
+not enter canonical discovery.
 
 An icon filename `<icon-slug>.icon.ts` must export exactly one constant whose name is the PascalCase
 form of `<icon-slug>`. For example, `arrow-left.icon.ts` exports `ArrowLeft`.
@@ -68,16 +64,16 @@ Collections use `src/collections/<initial>/<name>/<name>.collection.ts`; they do
 Their explicit
 `icons` sequence may contain only identifiers acquired through named relative imports. Every member
 specifier and imported symbol must resolve to one icon discovered in the same complete inspection.
-Removing a referenced icon, pointing at an aggregate, or spelling its exported symbol incorrectly
+Removing a referenced icon, pointing outside canonical sources, or spelling its exported symbol incorrectly
 therefore fails before generated outputs are touched.
 
 Names begin with one ASCII lowercase letter and continue with lowercase alphanumeric segments
 separated by one hyphen. Variants use portable Core slug syntax. Every canonical export must call
 its configured public `Icon.define(...)` or `Collection.define(...)` factory with a direct object
 whose literal identity agrees with its path. Invalid layout or TypeScript, mismatched identities,
-missing exports, additional exported constants, duplicate identities, dangling members,
-aggregate-name collisions and distinct identities that produce the same symbol are rejected before
-any generated file is written.
+missing exports, additional exported constants, duplicate identities and dangling members are
+rejected before any generated file is written. Distinct public subpaths may expose the same symbol
+because their module scopes never converge in an aggregate barrel.
 
 The icon names `collections`, `dynamic` and `manifest` are reserved because those first-level
 subpaths belong to collection or integration families. A base icon therefore cannot shadow them.
@@ -170,8 +166,8 @@ execution reports every missing, stale or obsolete path without creating or remo
 Catalogue tooling owns no review document, cache or temporary canonical source. Facade publication
 writes a complete adjacent stage, moves the previous facade root to a unique backup, publishes the
 stage and removes the backup. A failed publication restores the previous root; successful
-publication removes obsolete facade files and directories as one owned set. The four transitional
-aggregate outputs, generated manifest and dynamic map remain independently recoverable: an
+publication removes obsolete facade files and directories as one owned set. The generated
+manifest and dynamic map remain independently recoverable: an
 interrupted process is followed by
 `check:catalogue`, which reports every incomplete or stale output, and deterministic regeneration
 restores the set.
@@ -180,13 +176,12 @@ restores the set.
 
 Each icon source lives beneath `src/glyphs/<initial>/<name>/`, independently from collection
 membership. Each collection source lives beneath `src/collections/<initial>/<name>/`. Generated
-facades preserve logical public subpaths without exposing either physical root. Transitional
-aggregate outputs alone remain beneath `src/icons`; no canonical definition may be authored there.
+facades preserve logical public subpaths without exposing either physical root. No compatibility
+barrel or aggregate definition index is generated.
 
 Cleanup is deliberately finite. The synchroniser may replace only its
 `src/generated/facades` root; it must never recursively delete from a canonical icon or collection
-source root. The four transitional barrels and authorities remain explicit paths until their eager
-surface is retired. The manifest remains a separate fixed output because it has a distinct public
+source root. The manifest remains a separate fixed output because it has a distinct public
 contract and lifecycle from minimal definition facades. The dynamic map is another fixed output;
 its lazy imports resolve those facades without owning their publication lifecycle.
 
@@ -194,14 +189,13 @@ its lazy imports resolve those facades without owning their publication lifecycl
 
 Generated outputs are ordinary side-effect-free ESM sources. The emitted manifest has no runtime
 imports because its contract imports are type-only. The emitted dynamic map has only deferred
-imports of generated definition facades. `@aster/icons`, `@aster/cli` and all consumers
-import immutable values without accessing Node, tooling paths or the filesystem.
+imports of generated definition facades. `@aster/cli` and all consumers import immutable values
+without accessing Node, tooling paths or the filesystem.
 
 Conformance covers deterministic regeneration, idempotence, drift detection, nested addition and
 removal, stale manifest and loader removal, rejection of transitional flat sources, variant mapping,
 reserved public subpaths, stale facade cleanup, syntax and identity failure, static imported
-authorities, rejected executable or cyclic metadata, manifest-loader key equivalence, symbol
-ambiguity and dangling collection membership.
-Package and CLI tests
-derive counts and paths from canonical authorities while retaining exact identity, ordering,
-membership and isolated-subpath checks.
+authorities, rejected executable or cyclic metadata, manifest-loader key equivalence and dangling
+collection membership. Package and CLI tests derive discovery from manifests and resolve complete
+definitions through exact loaders while retaining identity, ordering, membership and
+isolated-subpath checks.

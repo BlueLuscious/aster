@@ -30,9 +30,8 @@ catalogue results until explicit lookup rules resolve or reject them.
 
 ## Public API
 
-`AsterCatalogue` is the explicit built-in `CatalogueProvider`. Its snapshot adapts
-`AsterIcons` from the `@aster/icons` root and `AsterCollections` from the explicit
-`@aster/icons/collections` family. It derives sorted memberships from every collection while
+`AsterCatalogue` is the explicit built-in `CatalogueProvider`. Its snapshot deliberately invokes
+both exact loader maps from `@aster/icons/dynamic`. It derives sorted memberships from every collection while
 preserving standalone icons and empty collections. Duplicate indexed identities, unknown members,
 and members that are not the indexed canonical definition reject provider loading.
 The provider does not register itself globally or become a default inside `AsterCommands`; a

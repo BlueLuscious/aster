@@ -93,16 +93,15 @@ general development server or framework dependency solely for this capability.
 
 Importance: **P0 - Required**
 
-The current `@aster/icons` surface is suitable for its small pre-release catalogue but retains two
-package-wide eager indexes. Importing the root evaluates `AsterIcons`; importing the collection
-root evaluates `AsterCollections` and their member definitions. Adding definitions also requires
-generated flat aggregates whose physical organisation will become cumbersome as the catalogue
-grows. This surface must not become a supported compatibility promise.
+The accepted `@aster/icons` distribution uses canonical nested sources, stable generated facades,
+metadata-only manifests and exact asynchronous loader maps. Package-wide definition roots and
+flat aggregates are not public compatibility promises; normal imports therefore never evaluate a
+complete definition family by default.
 
-Canonical nested sources, stable generated facades, metadata-only manifests and exact asynchronous
-loader maps are now accepted. The remaining required work is to migrate repository consumers,
-retire eager indexes and verify the final distribution without preserving those aggregates as a
-compatibility promise.
+The remaining required work is final distribution conformance and genuinely lazy CLI consumption.
+The current built-in CLI provider deliberately invokes every loader to preserve its complete
+snapshot contract until command workflows can separate metadata discovery from exact definition
+resolution.
 
 The required replacement has four independent concerns:
 
@@ -135,12 +134,13 @@ stale generated outputs deterministically. Physical initial directories must nev
 public imports. An icon remains independent and may be injected into zero, one or several
 collections; a collection cannot override member geometry, presentation or authorship.
 
-`@aster/cli` retains the catalogue abstraction. Its built-in provider composes Icons manifests and
-loaders: listing and searching use metadata alone, while showing, exporting or reviewing resolves
-only the selected complete definition. `@aster/icons` therefore exposes distribution primitives,
-not an `AsterIconCatalogue` object. Do not create a generic catalogue package until multiple real
-providers, remote registries or another independent consumer require a separately versioned
-engine.
+`@aster/cli` retains the catalogue abstraction. Its built-in provider must eventually compose
+Icons manifests and loaders so listing and searching use metadata alone, while showing, exporting
+or reviewing resolves only the selected complete definition. Until that redesign, it deliberately
+invokes every loader behind its complete-snapshot contract. `@aster/icons` therefore exposes
+distribution primitives, not an `AsterIconCatalogue` object. Do not create a generic catalogue
+package until multiple real providers, remote registries or another independent consumer require
+a separately versioned engine.
 
 Runtime isolation does not provide selective npm acquisition. Dynamic imports can prevent
 unrelated definitions from being evaluated and can preserve separate bundler chunks, but

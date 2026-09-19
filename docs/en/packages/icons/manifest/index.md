@@ -70,7 +70,7 @@ future remote registry or `aster add` workflow possible without changing canonic
 
 ## Verification
 
-Runtime evidence compares every manifest record with the current canonical definition indexes,
+Runtime evidence compares every manifest record with definitions resolved through exact loaders,
 checks canonical ordering and recursively verifies immutability. Catalogue tooling tests cover
 deterministic creation, drift, additions, removals, static imported authorities, rejected executable
 syntax, cycles and stale-record cleanup. ABI and clean-consumer tests verify the exact

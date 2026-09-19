@@ -48,8 +48,9 @@ and distribution comparison evidence.
 
 The command and catalogue domains depend on the public root of `@aster/core`, which validates and
 isolates portable icon and collection values. The built-in provider depends on `@aster/icons` and
-adapts its independent `AsterIcons` and `AsterCollections` indexes without assigning catalogue
-ownership to Core or one collection.
+deliberately invokes both complete exact-loader families without assigning catalogue ownership to
+Core or one collection. This bridge preserves the current complete-snapshot contract; it does not
+make every command definition-lazy.
 
 The export domain depends directly on the public `@aster/svg` root. It renders accepted portable
 definitions without importing Import, filesystem services, or SVG implementation subpaths.

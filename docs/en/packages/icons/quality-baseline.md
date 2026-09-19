@@ -16,7 +16,6 @@ import time and complete process time without modifying package source or emitte
 
 | Workload | Pressure represented |
 | --- | --- |
-| Root import | Current package-wide icon barrel and immutable `AsterIcons` aggregate. |
 | Isolated icon import | One definition plus its directly shared authorship and visual-profile authorities. |
 | Isolated collection import | One complete collection plus every member it explicitly retains. |
 | Manifest import | Metadata-only discovery without complete icon or collection definitions. |
@@ -29,20 +28,32 @@ separately from the instrumented dynamic import interval.
 
 ## Representative findings
 
-Three complete reports under Node `24.10.0` on Windows x64 produced these medians across report
-medians:
+Three pre-migration reports under Node `24.10.0` on Windows x64 produced these historical medians
+across report medians:
 
 | Scenario | Evaluated Icons modules | Median import time | Median process time |
 | --- | ---: | ---: | ---: |
-| `icons.import.root` | 31 | 58.44 ms | 110.13 ms |
+| Retired aggregate-root baseline | 31 | 58.44 ms | 110.13 ms |
 | `icons.import.isolated-icon` | 3 | 26.79 ms | 77.80 ms |
 | `icons.import.isolated-collection` | 29 | 57.74 ms | 108.70 ms |
 
-The isolated Camera import evaluates only its definition and the two shared authoring authorities.
-The Amellus import necessarily evaluates its collection, the same two authorities and all
-twenty-six explicitly retained members. The package root evaluates every current icon, both
+The former package root evaluated every current icon, both
 authoring authorities, its generated barrel and aggregate constant even though no collection was
-requested. This establishes the eager root cost that later distribution changes must remove.
+requested. That historical baseline justified removing the aggregate root; it is no longer an
+executable public scenario.
+
+After facade generation and eager-surface retirement, current deterministic module evidence is:
+
+| Scenario | Evaluated Icons modules |
+| --- | ---: |
+| `icons.import.isolated-icon` | 4 |
+| `icons.import.isolated-collection` | 30 |
+| `icons.import.manifest` | 2 |
+| `icons.import.dynamic` | 2 |
+
+The isolated Camera import evaluates its facade, definition and two shared authoring authorities.
+The Amellus import necessarily evaluates its facade, collection, the same two authorities and all
+twenty-six explicitly retained members. Neither import evaluates an unrelated definition.
 
 After introducing the accepted metadata-only integration, a fresh manifest probe evaluates exactly
 `manifest/index.js` and `generated/manifest/index.js`. It evaluates no canonical icon, collection or
@@ -59,17 +70,18 @@ correctness evidence; elapsed time remains informative supporting evidence affec
 
 ## Distribution evidence
 
-The measured native ES2022 ESM output contains 68 files and 55,087 unminified bytes:
+The current native ES2022 ESM output contains 136 files and 79,559 unminified bytes:
 
-- 34 JavaScript modules totalling 46,468 bytes;
-- 34 declaration files totalling 8,619 bytes;
-- root, isolated-icon, collection-family and isolated-collection export patterns;
+- 68 JavaScript modules totalling 64,997 bytes;
+- 68 declaration files totalling 14,562 bytes;
+- isolated-icon, isolated-collection, manifest and dynamic export patterns;
+- explicit blocked aggregate-root and bare collection-family entries;
 - `sideEffects: false`;
 - public `@aster/core` as the only runtime dependency.
 
-These figures describe the pre-migration package and form a comparison point, not a size budget.
-Generated facade, manifest and loader responsibilities may increase emitted file count while still
-reducing unrelated runtime evaluation.
+The pre-migration control contained 68 files and 55,087 bytes. The accepted facade, manifest and
+loader responsibilities increase emitted file count while removing default package-wide runtime
+evaluation. Neither figure is a size budget.
 
 ## Reproduction
 
@@ -79,8 +91,8 @@ Run:
 pnpm benchmark:icons
 ```
 
-The command builds Core and Icons, starts fresh probe processes for the root, isolated icon,
-isolated collection, manifest and dynamic imports, prints schema-version-one JSON
+The command builds Core and Icons, starts fresh probe processes for isolated icon, isolated
+collection, manifest and dynamic imports, prints schema-version-one JSON
 and writes no artefact. Reports include environment identity, complete evaluated-module lists,
 public exports, import and process samples, emitted files and bytes, export keys, side effects and
 dependencies.

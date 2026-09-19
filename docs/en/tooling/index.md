@@ -13,7 +13,7 @@ The canonical documentation mirrors the real tooling feature roots:
 | Feature | Responsibility |
 | --- | --- |
 | [Architecture](architecture/index.md) | Verifies compiler, workspace, package dependency, and authored collection boundaries. |
-| [Catalogue](catalogue/index.md) | Recursively validates canonical Icons sources and synchronises generated barrels and aggregate indexes. |
+| [Catalogue](catalogue/index.md) | Recursively validates canonical Icons sources and synchronises manifests, loaders and public facades. |
 | [Documentation](documentation/index.md) | Verifies the current canonical hierarchy, package mirroring, links, and local exclusions. |
 | [Performance](performance/index.md) | Provides development-only package comparison infrastructure and independent scenario runners. |
 | [Shared](shared/index.md) | Supplies narrow filesystem, path, directory, traversal, and strict JSON foundations used by multiple tooling features. |

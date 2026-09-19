@@ -9,7 +9,7 @@ geometry clearer. The structured definitions replace visually weak polygon exper
 restoring raw SVG path strings to TypeScript authorship.
 
 `AmellusCollection` retains the complete inventory in the semantic order below. Membership does
-not alter icon identity, metadata or availability through the independent icon index.
+not alter icon identity, metadata or availability through independent icon distribution.
 
 ## Concepts
 
