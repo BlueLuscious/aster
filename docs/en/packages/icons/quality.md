@@ -26,6 +26,8 @@ validity, membership and discovery do not select a named icon or collection.
 Compile-time tests verify root indexes, isolated icon imports, collection-family imports, immutable
 contracts, manifest contracts and rejected mutation. Runtime tests compare every metadata-only
 manifest entry with canonical definitions, reject embedded geometry and verify deep freezing.
+They also require loader and manifest keys to agree exactly, freeze every loader and resolve every
+loader to the canonical exported object.
 Catalogue source tooling separately proves recursive canonical
 `.icon.ts` and `.collection.ts` discovery, nested variant mapping, collection-reference integrity,
 and deterministic barrel, aggregate and manifest regeneration. It also proves that check-only execution
@@ -40,8 +42,8 @@ Raw SVG path text is not accepted as authored catalogue data.
 
 ## Distribution evidence
 
-ABI tests build the package and verify exact root, per-icon, collection-family, per-collection and
-manifest exports against discovered canonical source modules. They also verify declarations, ESM loading,
+ABI tests build the package and verify exact root, per-icon, collection-family, per-collection,
+manifest and dynamic exports against discovered canonical source modules. They also verify declarations, ESM loading,
 object identity across import routes, `sideEffects: false`, dependency confinement to public
 `@aster/core`, exact minimal facade modules, rejection of implementation subpaths and isolated
 collection dependencies on only their explicitly declared icon modules.
@@ -51,8 +53,10 @@ grows with the catalogue. The test derives that set from canonical modules rathe
 a second handwritten icon or collection inventory.
 
 A clean consumer receives only packed-style `package.json` and `dist` trees for Core and Icons. It
-compiles isolated icon, collection and manifest imports through published declarations, then
+compiles isolated icon, collection, manifest and dynamic imports through published declarations, then
 executes the emitted JavaScript through the same subpaths without any workspace source file.
+Separate failure evidence removes one copied facade and verifies that loader invocation preserves
+the native `ERR_MODULE_NOT_FOUND` rejection.
 
 ## Cross-package evidence
 
@@ -86,8 +90,8 @@ defined by the [Aster Testing Policy](../../project/testing.md).
 ## Retained boundary
 
 - Canonical TypeScript modules remain the editable source of truth.
-- Generated indexes, manifest data and public facades are deterministic artefacts and are never
-  edited manually.
+- Generated indexes, manifest data, dynamic loaders and public facades are deterministic artefacts
+  and are never edited manually.
 - Package tests fail explicitly when required icon or collection families are empty.
 - Generic tests remain independent from current catalogue counts, ordering, identities and artwork.
 - Exact identities remain only where public routing or icon-owned semantics require them.

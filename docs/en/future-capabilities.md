@@ -99,6 +99,11 @@ root evaluates `AsterCollections` and their member definitions. Adding definitio
 generated flat aggregates whose physical organisation will become cumbersome as the catalogue
 grows. This surface must not become a supported compatibility promise.
 
+Canonical nested sources, stable generated facades, metadata-only manifests and exact asynchronous
+loader maps are now accepted. The remaining required work is to migrate repository consumers,
+retire eager indexes and verify the final distribution without preserving those aggregates as a
+compatibility promise.
+
 The required replacement has four independent concerns:
 
 - canonical sources are organised by initial and logical icon concept while identity remains

@@ -5,7 +5,7 @@ Status: **Accepted**
 `@aster/icons` owns canonical portable TypeScript icon definitions, independently defined
 collections, explicit immutable indexes for complete package discovery, and a lightweight
 metadata-only manifest. It exposes an icon-only convenience root, one isolated short subpath per
-icon, a separate collection family and isolated discovery metadata.
+icon, a separate collection family, isolated discovery metadata and exact asynchronous loaders.
 
 ## Responsibilities
 
@@ -18,6 +18,7 @@ The package:
 - exposes independent [canonical collections](collections/index.md) and the `AsterCollections`
   index;
 - exposes the [distribution manifest](manifest/index.md) without loading complete definitions;
+- exposes [dynamic definition loaders](dynamic/index.md) without eager definition evaluation;
 - preserves canonical namespace, icon, and RTL identity;
 - retains effective artwork licence and attribution;
 - supports tree-shakable per-icon imports without an ambient catalogue registry.
@@ -108,6 +109,17 @@ This subpath exposes immutable identities, symbols, discovery metadata and colle
 It does not contain or evaluate geometry, presentation policy or complete definitions. Its exact
 contracts and generation boundary are defined by the [Icons Distribution Manifest](manifest/index.md).
 
+Identities selected at runtime resolve through generated loader maps:
+
+```ts
+import { AsterIconLoaders } from "@aster/icons/dynamic";
+
+const camera = await AsterIconLoaders["aster/camera"]?.();
+```
+
+Unknown keys return `undefined`. Invoked loader failures remain native dynamic-import rejections;
+Icons adds no lookup exception or diagnostic adaptation.
+
 No mutable registry, renderer, generated implementation path, physical source path or undeclared
 subpath is public. The package currently has no variants, but the export surface accepts
 `@aster/icons/<name>/<variant>` once a canonical rendition exists.
@@ -133,6 +145,9 @@ independent from their family index and sibling definitions.
 
 Importing `@aster/icons/manifest` evaluates only its public entrypoint and generated data module.
 Consumers that need a definition import its stable icon or collection subpath separately.
+
+Importing `@aster/icons/dynamic` evaluates only its public entrypoint and generated loader map.
+Invoking a loader evaluates its exact facade and required definition graph.
 
 The package's authoring and SVG review relationship is defined by the
 [Icons Authoring Workflow](workflow.md).
