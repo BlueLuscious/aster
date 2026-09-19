@@ -1,16 +1,15 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import {
-  cp,
-  copyFile,
   mkdir,
   mkdtemp,
+  readdir,
   rm,
   unlink,
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { dirname, resolve } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 import process from "node:process";
 import test, { after, before } from "node:test";
 import { fileURLToPath } from "node:url";
@@ -19,37 +18,153 @@ const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const workspaceRoot = resolve(packageRoot, "../..");
 let consumerRoot;
 
-async function copyPublishedPackage(name) {
-  const sourceRoot = resolve(workspaceRoot, "packages", name);
-  const targetRoot = resolve(consumerRoot, "node_modules", "@aster", name);
+function runPnpm(arguments_) {
+  const options = {
+    cwd: workspaceRoot,
+    encoding: "utf8",
+  };
+  const pnpmExecutable = process.env.npm_execpath;
 
-  await mkdir(targetRoot, { recursive: true });
-  await Promise.all([
-    copyFile(
-      resolve(sourceRoot, "package.json"),
-      resolve(targetRoot, "package.json"),
+  if (pnpmExecutable !== undefined) {
+    return spawnSync(
+      process.execPath,
+      [pnpmExecutable, ...arguments_],
+      options,
+    );
+  }
+
+  if (process.platform !== "win32") {
+    return spawnSync("pnpm", arguments_, options);
+  }
+
+  const command = [
+    "pnpm",
+    ...arguments_.map(
+      (argument) => `"${argument.replaceAll('"', '""')}"`,
     ),
-    cp(resolve(sourceRoot, "dist"), resolve(targetRoot, "dist"), {
-      recursive: true,
-    }),
+  ].join(" ");
+
+  return spawnSync(command, { ...options, shell: true });
+}
+
+function assertSuccessfulProcess(result, operation) {
+  assert.equal(result.error, undefined, `${operation} could not start`);
+  assert.equal(
+    result.status,
+    0,
+    `${operation}: stdout=${result.stdout} stderr=${result.stderr}`,
+  );
+}
+
+async function packPublishedPackage(name, tarballRoot) {
+  const packed = runPnpm([
+    "--dir",
+    resolve(workspaceRoot, "packages", name),
+    "pack",
+    "--pack-destination",
+    tarballRoot,
+    "--json",
   ]);
+
+  assertSuccessfulProcess(packed, `pack @aster/${name}`);
+
+  return basename(JSON.parse(packed.stdout).filename);
+}
+
+async function collectRelativeFiles(root, directory = root) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    const path = resolve(directory, entry.name);
+
+    if (entry.isDirectory()) {
+      files.push(...(await collectRelativeFiles(root, path)));
+    } else if (entry.isFile()) {
+      files.push(relative(root, path).replaceAll("\\", "/"));
+    }
+  }
+
+  return files.sort((left, right) => left.localeCompare(right));
 }
 
 before(async () => {
   consumerRoot = await mkdtemp(resolve(tmpdir(), "aster-icons-consumer-"));
+  const tarballRoot = resolve(consumerRoot, "tarballs");
+
+  await mkdir(tarballRoot, { recursive: true });
+  const packageNames = ["core", "icons"];
+  const filenames = Object.fromEntries(
+    await Promise.all(
+      packageNames.map(async (name) => [
+        name,
+        await packPublishedPackage(name, tarballRoot),
+      ]),
+    ),
+  );
+  const packageSpecifications = Object.fromEntries(
+    packageNames.map((name) => [
+      `@aster/${name}`,
+      `file:./tarballs/${filenames[name]}`,
+    ]),
+  );
   await writeFile(
     resolve(consumerRoot, "package.json"),
-    `${JSON.stringify({ private: true, type: "module" })}\n`,
+    `${JSON.stringify({
+      private: true,
+      type: "module",
+      dependencies: packageSpecifications,
+      pnpm: { overrides: packageSpecifications },
+    })}\n`,
     "utf8",
   );
-  await Promise.all([
-    copyPublishedPackage("core"),
-    copyPublishedPackage("icons"),
+  await writeFile(
+    resolve(consumerRoot, ".npmrc"),
+    "engine-strict=true\n",
+    "utf8",
+  );
+  const installed = runPnpm([
+    "--dir",
+    consumerRoot,
+    "install",
+    "--offline",
+    "--ignore-scripts",
+    "--frozen-lockfile=false",
   ]);
+
+  assertSuccessfulProcess(installed, "install packed Aster packages");
 });
 
 after(async () => {
   await rm(consumerRoot, { recursive: true, force: true });
+});
+
+test("packs every emitted file without repository source", async () => {
+  const sourceDistributionFiles = (await collectRelativeFiles(
+    resolve(packageRoot, "dist"),
+  )).map((path) => `dist/${path}`);
+  const installedFiles = await collectRelativeFiles(
+    resolve(consumerRoot, "node_modules/@aster/icons"),
+  );
+
+  assert.deepEqual(installedFiles, [
+    ...sourceDistributionFiles,
+    "LICENSE",
+    "package.json",
+    "README.md",
+  ].sort((left, right) => left.localeCompare(right)));
+  assert.ok(
+    installedFiles.some((path) =>
+      path.startsWith("dist/generated/facades/icons/")
+    ),
+  );
+  assert.ok(
+    installedFiles.some((path) =>
+      path.startsWith("dist/generated/facades/collections/")
+    ),
+  );
+  assert.equal(installedFiles.some((path) => path.startsWith("src/")), false);
+  assert.equal(installedFiles.some((path) => path.startsWith("tests/")), false);
 });
 
 test("resolves isolated runtime and declaration facades without source files", async () => {
