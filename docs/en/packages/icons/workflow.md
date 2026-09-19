@@ -34,6 +34,7 @@ constant. Collection sources use
 `src/collections/<initial>/<name>/<name>.collection.ts`, export exactly one constant ending in
 `Collection`, and import only public `@aster/core` plus their directly declared icon modules.
 Generated facades keep these physical directories private and preserve logical public subpaths.
+The generated distribution manifest derives data-only discovery records from the same modules.
 
 Every icon module:
 
@@ -88,9 +89,10 @@ symbol and public-path mapping.
 ## Catalogue synchronisation
 
 The package build runs the private catalogue synchroniser before TypeScript compilation. It
-discovers canonical icon and collection modules recursively, validates path, identity, symbol and
-membership ownership, and deterministically reconstructs the generated barrels, immutable
-`AsterIcons` and `AsterCollections` indexes and isolated public facades.
+discovers canonical icon and collection modules recursively, validates path, identity, symbol,
+static manifest metadata and membership ownership, and deterministically reconstructs the
+generated barrels, immutable `AsterIcons` and `AsterCollections` indexes, metadata-only manifest
+and isolated public facades.
 
 Authors add or remove a canonical module, update any explicit collection membership, and run:
 

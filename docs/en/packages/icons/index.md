@@ -3,8 +3,9 @@
 Status: **Accepted**
 
 `@aster/icons` owns canonical portable TypeScript icon definitions, independently defined
-collections, and explicit immutable indexes for complete package discovery. It exposes an
-icon-only convenience root, one isolated short subpath per icon, and a separate collection family.
+collections, explicit immutable indexes for complete package discovery, and a lightweight
+metadata-only manifest. It exposes an icon-only convenience root, one isolated short subpath per
+icon, a separate collection family and isolated discovery metadata.
 
 ## Responsibilities
 
@@ -16,6 +17,7 @@ The package:
 - exposes the [representative icon set](icons/index.md) and its `AsterIcons` index;
 - exposes independent [canonical collections](collections/index.md) and the `AsterCollections`
   index;
+- exposes the [distribution manifest](manifest/index.md) without loading complete definitions;
 - preserves canonical namespace, icon, and RTL identity;
 - retains effective artwork licence and attribution;
 - supports tree-shakable per-icon imports without an ambient catalogue registry.
@@ -35,9 +37,9 @@ several collections; a collection owns only its explicit member sequence. Canoni
 modules therefore aggregate existing icon values instead of generating, cloning or decorating
 them.
 
-The package build synchronises generated barrels, immutable aggregate indexes and stable public
-definition facades from canonical modules before TypeScript compilation. Authors never edit those
-generated files.
+The package build synchronises generated barrels, immutable aggregate indexes, the metadata-only
+manifest and stable public definition facades from canonical modules before TypeScript compilation.
+Authors never edit those generated files.
 Repository tooling performs this source maintenance without entering the package's production
 dependency graph or runtime.
 
@@ -93,6 +95,19 @@ import { ArrowLeft } from "@aster/icons/arrow-left";
 import { Search } from "@aster/icons/search";
 ```
 
+Search and catalogue inspection use the isolated metadata-only manifest:
+
+```ts
+import {
+  AsterCollectionManifest,
+  AsterIconManifest,
+} from "@aster/icons/manifest";
+```
+
+This subpath exposes immutable identities, symbols, discovery metadata and collection member keys.
+It does not contain or evaluate geometry, presentation policy or complete definitions. Its exact
+contracts and generation boundary are defined by the [Icons Distribution Manifest](manifest/index.md).
+
 No mutable registry, renderer, generated implementation path, physical source path or undeclared
 subpath is public. The package currently has no variants, but the export surface accepts
 `@aster/icons/<name>/<variant>` once a canonical rendition exists.
@@ -115,6 +130,9 @@ the same canonical icon objects and does not reconstruct or modify them.
 Importing the package root evaluates `AsterIcons` but no collection module. Importing
 `@aster/icons/collections` evaluates `AsterCollections`. Isolated definition subpaths remain
 independent from their family index and sibling definitions.
+
+Importing `@aster/icons/manifest` evaluates only its public entrypoint and generated data module.
+Consumers that need a definition import its stable icon or collection subpath separately.
 
 The package's authoring and SVG review relationship is defined by the
 [Icons Authoring Workflow](workflow.md).

@@ -19,6 +19,7 @@ import time and complete process time without modifying package source or emitte
 | Root import | Current package-wide icon barrel and immutable `AsterIcons` aggregate. |
 | Isolated icon import | One definition plus its directly shared authorship and visual-profile authorities. |
 | Isolated collection import | One complete collection plus every member it explicitly retains. |
+| Manifest import | Metadata-only discovery without complete icon or collection definitions. |
 | Emitted distribution | JavaScript, declarations, bytes, export keys, side effects and dependencies. |
 
 Core modules and Node internals are excluded from module counts because this baseline attributes
@@ -41,6 +42,11 @@ The Amellus import necessarily evaluates its collection, the same two authoritie
 twenty-six explicitly retained members. The package root evaluates every current icon, both
 authoring authorities, its generated barrel and aggregate constant even though no collection was
 requested. This establishes the eager root cost that later distribution changes must remove.
+
+After introducing the accepted metadata-only integration, a fresh manifest probe evaluates exactly
+`manifest/index.js` and `generated/manifest/index.js`. It evaluates no canonical icon, collection or
+authoring-authority module. Timing remains non-contractual; this exact two-module boundary is the
+relevant correctness evidence.
 
 No timing optimisation follows from these observations alone. Module-set isolation is the primary
 correctness evidence; elapsed time remains informative supporting evidence affected by host state.
@@ -67,7 +73,8 @@ Run:
 pnpm benchmark:icons
 ```
 
-The command builds Core and Icons, starts fresh probe processes, prints schema-version-one JSON
+The command builds Core and Icons, starts fresh probe processes for the root, isolated icon,
+isolated collection and manifest imports, prints schema-version-one JSON
 and writes no artefact. Reports include environment identity, complete evaluated-module lists,
 public exports, import and process samples, emitted files and bytes, export keys, side effects and
 dependencies.

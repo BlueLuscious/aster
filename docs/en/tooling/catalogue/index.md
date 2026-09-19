@@ -3,8 +3,8 @@
 Status: **Accepted**
 
 The `catalogue` tooling feature recursively discovers canonical `@aster/icons` TypeScript sources,
-validates their identities and relationships, and synchronises aggregate outputs and public
-definition facades. It is private
+validates their identities and relationships, and synchronises aggregate outputs, metadata-only
+distribution data and public definition facades. It is private
 repository infrastructure, not runtime discovery, a public package API, or an icon-authoring
 source.
 
@@ -17,6 +17,7 @@ editable sources of truth. The synchroniser exclusively owns:
 - `src/icons/constants/aster-icons.constant.ts`;
 - `src/collections/index.ts`;
 - `src/collections/constants/aster-collections.constant.ts`;
+- `src/generated/manifest/index.ts`;
 - `src/generated/facades/icons/**/*.ts`;
 - `src/generated/facades/collections/*.ts`.
 
@@ -26,8 +27,8 @@ headers identify the reconstruction command and prohibit manual editing.
 
 Collection membership remains authored inside each canonical collection module. Synchronisation
 does not infer membership, alter icon definitions or create collections from directories.
-The facade root contains only minimal named re-exports and remains independent from future
-manifest and loader output roots.
+The facade root contains only minimal named re-exports and remains independent from the manifest
+output root and future loader outputs.
 
 ## Source Convention
 
@@ -83,6 +84,11 @@ Each accepted base icon generates `src/generated/facades/icons/<name>.ts`; each 
 `src/generated/facades/icons/<name>/<variant>.ts`; and each collection generates
 `src/generated/facades/collections/<name>.ts`.
 
+Every accepted source also contributes one metadata-only record to
+`src/generated/manifest/index.ts`. The manifest retains complete identities, public symbols,
+searchable metadata and ordered collection member keys, but never geometry, presentation policy or
+complete definitions.
+
 ## Composition
 
 ```text
@@ -94,22 +100,34 @@ RepositoryFileWalker --> CatalogueSourceModuleInspector
                               v             v
                   CatalogueSourceLayout  CatalogueSourceSyntax
                          Normaliser             Inspector
+                                                   |
+                                                   v
+                                 CatalogueSourceManifestInspector
+                                                   |
+                                                   v
+                                   CatalogueSourceValueResolver
                               \             /
                                v           v
                     CatalogueSourceRelationshipInspector
                                   |
-                                  v
-                     CatalogueSourceSynchroniser
-                                  |
-                                  v
-                       CatalogueSourceSerialiser
+                   CatalogueSourceSynchroniser
+                         |              |
+                         v              v
+             CatalogueSourceFacade   CatalogueSourceManifest
+                    Planner                  Planner
+                         \              /
+                          v            v
+                    CatalogueSourceSerialiser
 ```
 
 The module inspector coordinates acquisition only. The layout normaliser owns physical-path to
 identity and symbol mapping; the syntax inspector owns TypeScript factory, literal identity and
-membership extraction; and the relationship inspector owns cross-family reference integrity. The
+membership extraction; the manifest inspector owns metadata shape; the value resolver statically
+interprets its finite data-only TypeScript subset; and the relationship inspector owns cross-family
+reference integrity. The facade and manifest planners own their distinct output projections. The
 synchroniser builds the complete immutable inspection set before asking the serialiser for any
-output, so source failures cannot partially replace generated files.
+output, so source failures cannot partially replace generated files. Static document and value
+caches are scoped to one complete synchronisation and cleared before the next inspection.
 
 ## Workflow
 
@@ -121,8 +139,9 @@ Package authors:
 
 The build runs `generate:catalogue` before compilation. Generation walks entries deterministically,
 normalises host paths to slash-separated records, validates every source family and cross-family
-relationship, serialises portable relative specifiers with LF line endings, and writes only changed
-independent outputs. It replaces the complete facade root through adjacent stage and rollback
+relationship, statically extracts distribution metadata, serialises portable relative specifiers
+with LF line endings, and writes only changed independent outputs. It replaces the complete facade
+root through adjacent stage and rollback
 directories only when facade content or membership changes. A nested source therefore never
 exposes a platform path separator in generated TypeScript.
 
@@ -142,7 +161,7 @@ Catalogue tooling owns no review document, cache or temporary canonical source. 
 writes a complete adjacent stage, moves the previous facade root to a unique backup, publishes the
 stage and removes the backup. A failed publication restores the previous root; successful
 publication removes obsolete facade files and directories as one owned set. The four transitional
-aggregate outputs remain independently recoverable: an interrupted process is followed by
+aggregate outputs and generated manifest remain independently recoverable: an interrupted process is followed by
 `check:catalogue`, which reports every incomplete or stale output, and deterministic regeneration
 restores the set.
 
@@ -156,16 +175,19 @@ aggregate outputs alone remain beneath `src/icons`; no canonical definition may 
 Cleanup is deliberately finite. The synchroniser may replace only its
 `src/generated/facades` root; it must never recursively delete from a canonical icon or collection
 source root. The four transitional barrels and authorities remain explicit paths until their eager
-surface is retired.
+surface is retired. The manifest remains a separate fixed output because it has a distinct public
+contract and lifecycle from minimal definition facades.
 
 ## Runtime Boundary
 
-Generated outputs are ordinary side-effect-free ESM sources. `@aster/icons`, `@aster/cli` and all
-consumers import immutable values without accessing Node, tooling paths or the filesystem.
+Generated outputs are ordinary side-effect-free ESM sources. The emitted manifest has no runtime
+imports because its contract imports are type-only. `@aster/icons`, `@aster/cli` and all consumers
+import immutable values without accessing Node, tooling paths or the filesystem.
 
 Conformance covers deterministic regeneration, idempotence, drift detection, nested addition and
-removal, rejection of transitional flat sources, variant mapping, reserved public subpaths, stale
-facade cleanup, syntax and identity failure, symbol ambiguity and dangling collection membership.
+removal, stale manifest record removal, rejection of transitional flat sources, variant mapping,
+reserved public subpaths, stale facade cleanup, syntax and identity failure, static imported
+authorities, rejected executable or cyclic metadata, symbol ambiguity and dangling collection membership.
 Package and CLI tests
 derive counts and paths from canonical authorities while retaining exact identity, ordering,
 membership and isolated-subpath checks.
