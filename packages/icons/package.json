@@ -14,18 +14,10 @@
   "bugs": {
     "url": "https://github.com/BlueLuscious/aster/issues"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
-    },
-    "./collections": {
-      "types": "./dist/collections/index.d.ts",
-      "import": "./dist/collections/index.js"
-    },
+    ".": null,
+    "./collections": null,
     "./manifest": {
       "types": "./dist/manifest/index.d.ts",
       "import": "./dist/manifest/index.js"

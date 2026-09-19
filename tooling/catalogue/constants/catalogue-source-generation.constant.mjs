@@ -31,22 +31,8 @@ export const catalogueSourceGeneration = Object.freeze({
       definitionFactory: "Icon",
       /** @description Reserved source-root directories excluded from canonical discovery. */
       excludedDirectories: Object.freeze([]),
-      /** @description Generated icon barrel path. */
-      barrelPath: "src/icons/index.ts",
       /** @description Directory containing generated public icon facades. */
       facadeDirectory: "src/generated/facades/icons",
-      /** @description Generated icon authority path. */
-      authorityPath: "src/icons/constants/aster-icons.constant.ts",
-      /** @description Generated icon authority symbol. */
-      authorityName: "AsterIcons",
-      /** @description Core definition type imported by the generated authority. */
-      definitionType: "IconDefinition",
-      /** @description Generated authority JSDoc description. */
-      authorityDescription:
-        "Complete immutable index of canonical Aster icon definitions.",
-      /** @description Generated authority JSDoc remarks. */
-      authorityRemarks:
-        "Collection membership is intentionally independent from this discovery authority.",
     }),
     Object.freeze({
       /** @description Semantic family used to apply collection identity and layout rules. */
@@ -61,23 +47,8 @@ export const catalogueSourceGeneration = Object.freeze({
       definitionFactory: "Collection",
       /** @description Reserved source-root directories excluded from canonical discovery. */
       excludedDirectories: Object.freeze(["constants"]),
-      /** @description Generated collection barrel path. */
-      barrelPath: "src/collections/index.ts",
       /** @description Directory containing generated public collection facades. */
       facadeDirectory: "src/generated/facades/collections",
-      /** @description Generated collection authority path. */
-      authorityPath:
-        "src/collections/constants/aster-collections.constant.ts",
-      /** @description Generated collection authority symbol. */
-      authorityName: "AsterCollections",
-      /** @description Core definition type imported by the generated authority. */
-      definitionType: "CollectionDefinition",
-      /** @description Generated authority JSDoc description. */
-      authorityDescription:
-        "Complete immutable index of canonical Aster collection definitions.",
-      /** @description Generated authority JSDoc remarks. */
-      authorityRemarks:
-        "Icon discovery remains independent from collection membership and collection count.",
     }),
   ]),
 });

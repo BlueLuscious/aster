@@ -59,7 +59,7 @@ export class CatalogueSourceModuleInspector {
   }
 
   /**
-   * @description Discovers one configured family and rejects identity or symbol ambiguity.
+   * @description Discovers one configured family and rejects canonical identity ambiguity.
    * @param {string} packageRoot - Absolute package root.
    * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Canonical source-family configuration.
    * @returns {Promise<readonly import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule[]>} Canonically ordered source modules.
@@ -78,7 +78,6 @@ export class CatalogueSourceModuleInspector {
     );
     const modules = [];
     const identities = new Set();
-    const symbols = new Set();
 
     for (const sourcePath of sourcePaths) {
       const identity = this.#layouts.normalise(
@@ -93,15 +92,6 @@ export class CatalogueSourceModuleInspector {
         );
       }
 
-      if (
-        identity.symbol === family.authorityName ||
-        symbols.has(identity.symbol)
-      ) {
-        throw new CatalogueSourceError(
-          `Ambiguous canonical catalogue source symbol: ${identity.symbol}`,
-        );
-      }
-
       const source = await this.#fileSystem.readText(sourcePath);
       const syntax = await this.#syntax.inspect(
         sourcePath,
@@ -111,7 +101,6 @@ export class CatalogueSourceModuleInspector {
       );
 
       identities.add(identityKey);
-      symbols.add(identity.symbol);
       modules.push(
         Object.freeze({
           name: identity.name,

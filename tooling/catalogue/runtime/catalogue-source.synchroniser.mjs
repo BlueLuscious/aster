@@ -167,21 +167,6 @@ export class CatalogueSourceSynchroniser {
 
     this.#relationships.validate(inspections);
 
-    for (const { family, modules } of inspections) {
-      outputs.push(
-        Object.freeze({
-          path: this.#paths.resolve(packageRoot, family.barrelPath),
-          relativePath: family.barrelPath,
-          content: this.#serialiser.barrel(family, modules),
-        }),
-        Object.freeze({
-          path: this.#paths.resolve(packageRoot, family.authorityPath),
-          relativePath: family.authorityPath,
-          content: this.#serialiser.authority(family, modules),
-        }),
-      );
-    }
-
     outputs.push(this.#manifest.plan(packageRoot, inspections));
     outputs.push(this.#dynamic.plan(packageRoot, inspections));
 

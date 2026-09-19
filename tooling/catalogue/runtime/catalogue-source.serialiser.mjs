@@ -1,7 +1,7 @@
 import { posix } from "node:path";
 
 /**
- * @description Serialises deterministic catalogue barrels, authorities, facades and integrations.
+ * @description Serialises deterministic catalogue facades and integration artefacts.
  */
 export class CatalogueSourceSerialiser {
   /**
@@ -20,41 +20,6 @@ export class CatalogueSourceSerialiser {
       "",
       "",
     ].join("\n");
-  }
-
-  /**
-   * @description Serialises one generated definition barrel.
-   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
-   * @param {readonly import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule[]} modules - Canonically ordered source modules.
-   * @returns {string} Complete deterministic TypeScript barrel.
-   */
-  barrel(family, modules) {
-    const definitions = modules.map(
-      (module) =>
-        `export { ${module.symbol} } from "${this.#moduleSpecifier(family.barrelPath, module.relativePath)}";`,
-    );
-    const authorityBase = family.authorityPath
-      .split("/")
-      .at(-1)
-      .slice(0, -3);
-
-    return `${this.#header}${definitions.join("\n")}\nexport { ${family.authorityName} } from "./constants/${authorityBase}.js";\n`;
-  }
-
-  /**
-   * @description Serialises one generated immutable aggregate authority.
-   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
-   * @param {readonly import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule[]} modules - Canonically ordered source modules.
-   * @returns {string} Complete deterministic TypeScript authority module.
-   */
-  authority(family, modules) {
-    const imports = modules.map(
-      (module) =>
-        `import { ${module.symbol} } from "${this.#moduleSpecifier(family.authorityPath, module.relativePath)}";`,
-    );
-    const members = modules.map((module) => `  ${module.symbol},`);
-
-    return `${this.#header}import type { ${family.definitionType} } from "@aster/core";\n${imports.join("\n")}\n\n/**\n * @description ${family.authorityDescription}\n * @remarks ${family.authorityRemarks}\n */\nexport const ${family.authorityName}: readonly ${family.definitionType}[] = Object.freeze([\n${members.join("\n")}\n]);\n`;
   }
 
   /**

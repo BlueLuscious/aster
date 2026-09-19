@@ -12,7 +12,7 @@ import type {
 import { CatalogueIdentityFormatter } from "./catalogue-identity.formatter.js";
 
 /**
- * @description Adapts canonical Icons indexes into one deterministic built-in catalogue snapshot.
+ * @description Adapts complete canonical Icons definitions into one deterministic built-in catalogue snapshot.
  */
 export class AsterCatalogueSnapshotFactory {
   /**
@@ -26,9 +26,9 @@ export class AsterCatalogueSnapshotFactory {
   readonly #identities = new CatalogueIdentityFormatter();
 
   /**
-   * @description Creates one snapshot from independent canonical icon and collection indexes.
-   * @param icons - Complete canonical icon index.
-   * @param collections - Complete canonical collection index.
+   * @description Creates one snapshot from independent canonical icon and collection sequences.
+   * @param icons - Complete canonical icon definitions.
+   * @param collections - Complete canonical collection definitions.
    * @returns Deeply immutable records with memberships derived from collection contents.
    */
   create(
