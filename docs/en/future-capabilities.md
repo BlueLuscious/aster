@@ -89,58 +89,27 @@ Prefer owned on-disk regeneration unless measured evidence proves that an in-mem
 lifecycle materially improves authoring without weakening publication ownership. Do not add a
 general development server or framework dependency solely for this capability.
 
-## Scalable Icons authoring and runtime distribution
+## Lazy CLI catalogue integration
 
 Importance: **P0 - Required**
 
-The current `@aster/icons` surface is suitable for its small pre-release catalogue but retains two
-package-wide eager indexes. Importing the root evaluates `AsterIcons`; importing the collection
-root evaluates `AsterCollections` and their member definitions. Adding definitions also requires
-generated flat aggregates whose physical organisation will become cumbersome as the catalogue
-grows. This surface must not become a supported compatibility promise.
+The scalable `@aster/icons` authoring and distribution boundary is accepted and documented by the
+[Icons package](packages/icons/index.md). Its isolated definition subpaths, metadata-only manifests
+and exact asynchronous loaders are the foundation for genuinely lazy CLI consumption.
 
-The required replacement has four independent concerns:
+The built-in CLI provider currently invokes every generated loader to satisfy its complete-snapshot
+contract. Replace that compatibility bridge so:
 
-- canonical sources are organised by initial and logical icon concept while identity remains
-  independent from physical directories and collection membership;
-- original Aster authorship is separate from collection-specific visual authoring profiles, so
-  Amellus presentation defaults do not become universal package policy;
-- normal consumers import one base icon, variant or collection through stable generated subpaths;
-- advanced integrations use lightweight manifests and dynamic loader maps without evaluating
-  unrelated definitions.
+- `list` and `search` consume only manifest metadata;
+- `show`, `export` and `review` resolve only the selected icon or collection;
+- collection resolution evaluates only that collection and its explicit members;
+- provider absence and loader rejection remain deterministic command diagnostics;
+- `help` and `version` retain zero Icons acquisition or evaluation;
+- CLI owns query and diagnostic behaviour without copying Icons inventory or source discovery.
 
-The intended public families are:
-
-```text
-@aster/icons/<icon>
-@aster/icons/<icon>/<variant>
-@aster/icons/collections/<collection>
-@aster/icons/manifest
-@aster/icons/dynamic
-```
-
-The package root must not become an artificial runtime API or re-export every definition merely
-for convenience. `manifest` owns immutable searchable identities, variants, tags and membership
-references without geometry. `dynamic` owns generated asynchronous loaders keyed by canonical
-identity. Neither surface owns catalogue query behaviour.
-
-Repository tooling must recursively discover canonical `*.icon.ts` and `*.collection.ts` sources,
-validate collisions and references, generate public facades, manifests and loaders, and remove
-stale generated outputs deterministically. Physical initial directories must never appear in
-public imports. An icon remains independent and may be injected into zero, one or several
-collections; a collection cannot override member geometry, presentation or authorship.
-
-`@aster/cli` retains the catalogue abstraction. Its built-in provider composes Icons manifests and
-loaders: listing and searching use metadata alone, while showing, exporting or reviewing resolves
-only the selected complete definition. `@aster/icons` therefore exposes distribution primitives,
-not an `AsterIconCatalogue` object. Do not create a generic catalogue package until multiple real
-providers, remote registries or another independent consumer require a separately versioned
-engine.
-
-Runtime isolation does not provide selective npm acquisition. Dynamic imports can prevent
-unrelated definitions from being evaluated and can preserve separate bundler chunks, but
-installing `@aster/icons` still acquires every file included in its tarball. That separate concern
-belongs to selective acquisition.
+This integration must consume the existing public `manifest` and `dynamic` subpaths rather than
+introducing an `AsterIconCatalogue` object, package-root aggregate or generic catalogue package.
+Selective npm acquisition remains the separate capability below.
 
 ## Selective Icons acquisition
 

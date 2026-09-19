@@ -14,25 +14,25 @@
   "bugs": {
     "url": "https://github.com/BlueLuscious/aster/issues"
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "sideEffects": false,
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+    ".": null,
+    "./collections": null,
+    "./manifest": {
+      "types": "./dist/manifest/index.d.ts",
+      "import": "./dist/manifest/index.js"
     },
-    "./collections": {
-      "types": "./dist/collections/index.d.ts",
-      "import": "./dist/collections/index.js"
+    "./dynamic": {
+      "types": "./dist/dynamic/index.d.ts",
+      "import": "./dist/dynamic/index.js"
     },
     "./collections/*": {
-      "types": "./dist/collections/*.collection.d.ts",
-      "import": "./dist/collections/*.collection.js"
+      "types": "./dist/generated/facades/collections/*.d.ts",
+      "import": "./dist/generated/facades/collections/*.js"
     },
     "./*": {
-      "types": "./dist/icons/*.icon.d.ts",
-      "import": "./dist/icons/*.icon.js"
+      "types": "./dist/generated/facades/icons/*.d.ts",
+      "import": "./dist/generated/facades/icons/*.js"
     }
   },
   "publishConfig": {

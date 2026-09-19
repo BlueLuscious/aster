@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import {
   closeSync,
@@ -14,19 +14,34 @@ import { join, resolve } from "node:path";
 import process from "node:process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { AsterIcons } from "@aster/icons";
-import { AsterCollections } from "@aster/icons/collections";
+import {
+  AsterCollectionLoaders,
+  AsterIconLoaders,
+} from "@aster/icons/dynamic";
+
+const asterIconDefinitions = await Promise.all(
+  Object.values(AsterIconLoaders).map((loader) => {
+    assert.ok(loader);
+    return loader();
+  }),
+);
+const asterCollectionDefinitions = await Promise.all(
+  Object.values(AsterCollectionLoaders).map((loader) => {
+    assert.ok(loader);
+    return loader();
+  }),
+);
 
 const executablePath = fileURLToPath(
   new URL("../../dist/shell/aster.js", import.meta.url),
 );
 const packageRootUrl = new URL("../../", import.meta.url);
-assert.ok(AsterIcons.length > 0, "Expected the executable icon family to be non-empty.");
+assert.ok(asterIconDefinitions.length > 0, "Expected the executable icon family to be non-empty.");
 assert.ok(
-  AsterCollections.length > 0,
+  asterCollectionDefinitions.length > 0,
   "Expected the executable collection family to be non-empty.",
 );
-const representativeCollection = AsterCollections.find(
+const representativeCollection = asterCollectionDefinitions.find(
   (collection) => collection.icons.length > 0,
 );
 assert.ok(
@@ -54,7 +69,7 @@ const representativeIdentity = `${
 }`;
 const representativeDisplayName = representativeIcon.metadata.displayName;
 const representativePath = `${representativeIdentity}.svg`;
-const representativeMemberships = AsterCollections
+const representativeMemberships = asterCollectionDefinitions
   .filter((collection) => collection.icons.includes(representativeIcon))
   .map((collection) => `${
     collection.identity.namespace === undefined
@@ -62,13 +77,13 @@ const representativeMemberships = AsterCollections
       : `${collection.identity.namespace}/`
   }${collection.identity.name}`)
   .sort((left, right) => left.localeCompare(right));
-const taggedIcon = AsterIcons.find(
+const taggedIcon = asterIconDefinitions.find(
   (icon) => (icon.metadata.tags?.length ?? 0) > 0,
 );
 assert.ok(taggedIcon, "Expected one tagged icon for executable filtering.");
 const representativeTag = taggedIcon.metadata.tags?.[0];
 assert.ok(representativeTag, "Expected one representative icon tag.");
-const expectedTaggedIconNames = AsterIcons
+const expectedTaggedIconNames = asterIconDefinitions
   .filter((icon) => icon.metadata.tags?.includes(representativeTag))
   .map((icon) => icon.identity.name)
   .sort((left, right) => left.localeCompare(right));
@@ -108,7 +123,7 @@ test("renders list, search, show, and version as deterministic human text", () =
   assert.equal(listed.status, 0);
   assert.equal(
     listed.stdout,
-    `Catalogues:\n  aster (${AsterIcons.length} icons, ${AsterCollections.length} ${AsterCollections.length === 1 ? "collection" : "collections"})\n`,
+    `Catalogues:\n  aster (${asterIconDefinitions.length} icons, ${asterCollectionDefinitions.length} ${asterCollectionDefinitions.length === 1 ? "collection" : "collections"})\n`,
   );
   assert.match(
     searched.stdout,

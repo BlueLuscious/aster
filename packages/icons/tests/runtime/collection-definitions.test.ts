@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { Collection } from "@aster/core";
-import { AmellusCollection } from "../../src/collections/amellus.collection.js";
-import { AsterIcons } from "../../src/icons/index.js";
+import { AmellusCollection } from "../../src/collections/a/amellus/amellus.collection.js";
+import { AsterIconLoaders } from "../../src/dynamic/index.js";
 
 const amellusInventory = [
   "arrow-left",
@@ -53,14 +53,19 @@ test("composes the exact Amellus inventory in accepted semantic order", () => {
     attribution: "BlueLuscious",
   });
   assert.ok(
-    AmellusCollection.icons.every((definition) => AsterIcons.includes(definition)),
+    AmellusCollection.icons.every((definition) =>
+      Object.hasOwn(
+        AsterIconLoaders,
+        `${definition.identity.namespace}/${definition.identity.name}`,
+      )
+    ),
   );
   assert.ok(Object.isFrozen(AmellusCollection));
   assert.ok(Object.isFrozen(AmellusCollection.icons));
   assert.ok(Object.isFrozen(AmellusCollection.metadata));
 });
 
-test("keeps icon identity independent from collection membership", () => {
+test("keeps icon identity independent from collection membership", async () => {
   const retained = AmellusCollection.icons[0];
   const omitted = AmellusCollection.icons[1];
   assert.ok(retained);
@@ -80,6 +85,14 @@ test("keeps icon identity independent from collection membership", () => {
   assert.equal(additionalCollection.icons[0], retained);
   assert.equal(retained.identity, retainedIdentity);
   assert.equal(reducedCollection.icons.includes(retained), false);
-  assert.equal(AsterIcons.includes(retained), true);
-  assert.equal(AsterIcons.includes(omitted), true);
+  const retainedLoader = AsterIconLoaders[
+    `${retained.identity.namespace}/${retained.identity.name}`
+  ];
+  const omittedLoader = AsterIconLoaders[
+    `${omitted.identity.namespace}/${omitted.identity.name}`
+  ];
+  assert.ok(retainedLoader);
+  assert.ok(omittedLoader);
+  assert.equal(await retainedLoader(), retained);
+  assert.equal(await omittedLoader(), omitted);
 });

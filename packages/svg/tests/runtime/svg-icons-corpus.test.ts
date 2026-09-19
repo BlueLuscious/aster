@@ -1,11 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { AsterIcons } from "@aster/icons";
+import { AsterIconLoaders } from "@aster/icons/dynamic";
 import { Svg } from "../../src/index.js";
 
-test("renders the complete real icon corpus deterministically", () => {
-  const definitions = AsterIcons;
+test("renders the complete real icon corpus deterministically", async () => {
+  const definitions = await Promise.all(
+    Object.values(AsterIconLoaders).map((loader) => {
+      assert.ok(loader);
+      return loader();
+    }),
+  );
   const outputs = new Set<string>();
 
   assert.ok(

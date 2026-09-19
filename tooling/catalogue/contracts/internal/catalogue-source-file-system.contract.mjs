@@ -9,6 +9,7 @@
  * @property {(path: string) => Promise<readonly IRepositoryDirectoryEntry[]>} entries - Reads immediate directory entries.
  * @property {(path: string) => Promise<string>} readText - Reads one UTF-8 text file.
  * @property {(path: string, content: string) => Promise<void>} writeText - Replaces one generated UTF-8 text file.
+ * @property {(path: string, files: readonly { relativePath: string, content: string }[]) => Promise<void>} replaceDirectory - Publishes one complete generated directory with rollback protection.
  */
 
 export {};

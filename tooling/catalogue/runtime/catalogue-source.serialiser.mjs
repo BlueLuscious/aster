@@ -1,7 +1,7 @@
 import { posix } from "node:path";
 
 /**
- * @description Serialises deterministic catalogue barrels and aggregate authorities.
+ * @description Serialises deterministic catalogue facades and integration artefacts.
  */
 export class CatalogueSourceSerialiser {
   /**
@@ -23,38 +23,154 @@ export class CatalogueSourceSerialiser {
   }
 
   /**
-   * @description Serialises one generated definition barrel.
-   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
-   * @param {readonly import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule[]} modules - Canonically ordered source modules.
-   * @returns {string} Complete deterministic TypeScript barrel.
+   * @description Serialises one generated public definition facade.
+   * @param {string} outputPath - Package-relative generated facade path.
+   * @param {import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule} module - Canonical source module exposed by the facade.
+   * @returns {string} Complete deterministic TypeScript re-export facade.
    */
-  barrel(family, modules) {
-    const definitions = modules.map(
-      (module) =>
-        `export { ${module.symbol} } from "${this.#moduleSpecifier(family.barrelPath, module.relativePath)}";`,
-    );
-    const authorityBase = family.authorityPath
-      .split("/")
-      .at(-1)
-      .slice(0, -3);
-
-    return `${this.#header}${definitions.join("\n")}\nexport { ${family.authorityName} } from "./constants/${authorityBase}.js";\n`;
+  facade(outputPath, module) {
+    return `${this.#header}export { ${module.symbol} } from "${this.#moduleSpecifier(outputPath, module.relativePath)}";\n`;
   }
 
   /**
-   * @description Serialises one generated immutable aggregate authority.
-   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
-   * @param {readonly import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule[]} modules - Canonically ordered source modules.
-   * @returns {string} Complete deterministic TypeScript authority module.
+   * @description Serialises complete metadata-only icon and collection manifests.
+   * @param {readonly object[]} icons - Canonically ordered icon manifest records.
+   * @param {readonly object[]} collections - Canonically ordered collection manifest records.
+   * @returns {string} Complete deterministic TypeScript manifest module.
    */
-  authority(family, modules) {
-    const imports = modules.map(
-      (module) =>
-        `import { ${module.symbol} } from "${this.#moduleSpecifier(family.authorityPath, module.relativePath)}";`,
+  manifest(icons, collections) {
+    const iconRecords = icons.map((record) => this.#iconManifestRecord(record));
+    const collectionRecords = collections.map((record) =>
+      this.#collectionManifestRecord(record),
     );
-    const members = modules.map((module) => `  ${module.symbol},`);
 
-    return `${this.#header}import type { ${family.definitionType} } from "@aster/core";\n${imports.join("\n")}\n\n/**\n * @description ${family.authorityDescription}\n * @remarks ${family.authorityRemarks}\n */\nexport const ${family.authorityName}: readonly ${family.definitionType}[] = Object.freeze([\n${members.join("\n")}\n]);\n`;
+    return `${this.#header}import type {\n  CollectionManifestEntry,\n  IconManifestEntry,\n} from "../../manifest/contracts/index.js";\n\n/**\n * @description Complete immutable metadata-only index of distributed Aster icon definitions.\n */\nexport const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([\n${iconRecords.join("\n")}\n]);\n\n/**\n * @description Complete immutable metadata-only index of distributed Aster collections.\n */\nexport const AsterCollectionManifest: readonly CollectionManifestEntry[] = Object.freeze([\n${collectionRecords.join("\n")}\n]);\n`;
+  }
+
+  /**
+   * @description Serialises exact asynchronous icon and collection loader maps.
+   * @param {string} outputPath - Package-relative generated dynamic-loader path.
+   * @param {readonly { key: string, symbol: string, facadePath: string }[]} icons - Canonically ordered icon loader records.
+   * @param {readonly { key: string, symbol: string, facadePath: string }[]} collections - Canonically ordered collection loader records.
+   * @returns {string} Complete deterministic TypeScript dynamic-loader module.
+   */
+  dynamic(outputPath, icons, collections) {
+    const iconRecords = icons.map((record) =>
+      this.#loaderRecord(outputPath, record),
+    );
+    const collectionRecords = collections.map((record) =>
+      this.#loaderRecord(outputPath, record),
+    );
+
+    return `${this.#header}import type {\n  CollectionDefinitionLoaderMap,\n  IconDefinitionLoaderMap,\n} from "../../dynamic/contracts/index.js";\n\n/**\n * @description Immutable exact asynchronous loaders for distributed Aster icon definitions.\n */\nexport const AsterIconLoaders: IconDefinitionLoaderMap = Object.freeze({\n${iconRecords.join("\n")}\n});\n\n/**\n * @description Immutable exact asynchronous loaders for distributed Aster collections.\n */\nexport const AsterCollectionLoaders: CollectionDefinitionLoaderMap = Object.freeze({\n${collectionRecords.join("\n")}\n});\n`;
+  }
+
+  /**
+   * @description Serialises one frozen loader targeting a generated public definition facade.
+   * @param {string} outputPath - Package-relative generated dynamic-loader path.
+   * @param {{ key: string, symbol: string, facadePath: string }} record - Validated loader record.
+   * @returns {string} Deterministic TypeScript loader property.
+   */
+  #loaderRecord(outputPath, record) {
+    const specifier = this.#moduleSpecifier(outputPath, record.facadePath);
+
+    return `  ${JSON.stringify(record.key)}: Object.freeze(\n    () => import(${JSON.stringify(specifier)}).then(({ ${record.symbol} }) => ${record.symbol}),\n  ),`;
+  }
+
+  /**
+   * @description Serialises one deeply frozen icon manifest record.
+   * @param {object} record - Validated icon manifest record.
+   * @returns {string} Deterministic TypeScript record expression.
+   */
+  #iconManifestRecord(record) {
+    const fields = [
+      `  key: ${JSON.stringify(record.key)},`,
+      `  identity: ${this.#identity(record.identity, 2)},`,
+      `  symbol: ${JSON.stringify(record.symbol)},`,
+      `  displayName: ${JSON.stringify(record.displayName)},`,
+      ...(record.tags === undefined
+        ? []
+        : [`  tags: ${this.#stringArray(record.tags, 2)},`]),
+      `  rtl: ${JSON.stringify(record.rtl)},`,
+      ...(record.licence === undefined
+        ? []
+        : [`  licence: ${JSON.stringify(record.licence)},`]),
+      ...(record.attribution === undefined
+        ? []
+        : [`  attribution: ${JSON.stringify(record.attribution)},`]),
+      `  deprecated: ${record.deprecated},`,
+      ...(record.replacedBy === undefined
+        ? []
+        : [`  replacedBy: ${this.#identity(record.replacedBy, 2)},`]),
+    ];
+
+    return `  Object.freeze({\n${fields.map((field) => `  ${field}`).join("\n")}\n  }),`;
+  }
+
+  /**
+   * @description Serialises one deeply frozen collection manifest record.
+   * @param {object} record - Validated collection manifest record.
+   * @returns {string} Deterministic TypeScript record expression.
+   */
+  #collectionManifestRecord(record) {
+    const metadataFields = [
+      `displayName: ${JSON.stringify(record.metadata.displayName)},`,
+      ...(record.metadata.description === undefined
+        ? []
+        : [`description: ${JSON.stringify(record.metadata.description)},`]),
+      ...(record.metadata.tags === undefined
+        ? []
+        : [`tags: ${this.#stringArray(record.metadata.tags, 3)},`]),
+      ...(record.metadata.licence === undefined
+        ? []
+        : [`licence: ${JSON.stringify(record.metadata.licence)},`]),
+      ...(record.metadata.attribution === undefined
+        ? []
+        : [`attribution: ${JSON.stringify(record.metadata.attribution)},`]),
+    ];
+    const metadata = `Object.freeze({\n${metadataFields.map((field) => `      ${field}`).join("\n")}\n    })`;
+
+    return `  Object.freeze({\n    key: ${JSON.stringify(record.key)},\n    identity: ${this.#identity(record.identity, 2)},\n    symbol: ${JSON.stringify(record.symbol)},\n    metadata: ${metadata},\n    members: ${this.#stringArray(record.members, 2)},\n  }),`;
+  }
+
+  /**
+   * @description Serialises one deeply frozen icon or collection identity.
+   * @param {{ namespace?: string, name: string, variant?: string }} identity - Complete portable identity.
+   * @param {number} indentation - Base indentation depth for nested fields.
+   * @returns {string} Deterministic TypeScript identity expression.
+   */
+  #identity(identity, indentation) {
+    const prefix = "  ".repeat(indentation);
+    const fields = [
+      ...(identity.namespace === undefined
+        ? []
+        : [`namespace: ${JSON.stringify(identity.namespace)},`]),
+      `name: ${JSON.stringify(identity.name)},`,
+      ...(identity.variant === undefined
+        ? []
+        : [`variant: ${JSON.stringify(identity.variant)},`]),
+    ];
+
+    return `Object.freeze({\n${fields.map((field) => `${prefix}  ${field}`).join("\n")}\n${prefix}})`;
+  }
+
+  /**
+   * @description Serialises one immutable string sequence.
+   * @param {readonly string[]} values - Ordered string values.
+   * @param {number} indentation - Base indentation depth for a multiline sequence.
+   * @returns {string} Deterministic TypeScript frozen-array expression.
+   */
+  #stringArray(values, indentation) {
+    const serialised = values.map((value) => JSON.stringify(value));
+    const inline = `Object.freeze([${serialised.join(", ")}])`;
+
+    if (inline.length <= 88) {
+      return inline;
+    }
+
+    const prefix = "  ".repeat(indentation);
+
+    return `Object.freeze([\n${serialised.map((value) => `${prefix}  ${value},`).join("\n")}\n${prefix}])`;
   }
 
   /**
