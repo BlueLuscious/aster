@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
@@ -7,8 +7,10 @@ import {
   Icon,
   type IconDefinition,
 } from "@aster/core";
-import { AsterIcons } from "@aster/icons";
-import { AsterCollections } from "@aster/icons/collections";
+import {
+  AsterCollectionLoaders,
+  AsterIconLoaders,
+} from "@aster/icons/dynamic";
 import {
   AsterCatalogue,
   AsterCommands,
@@ -20,6 +22,19 @@ import type {
 } from "../../src/catalogue/contracts/index.js";
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { AsterCatalogueSnapshotFactory } from "../../src/catalogue/runtime/aster-catalogue-snapshot.factory.js";
+
+const asterIconDefinitions = await Promise.all(
+  Object.values(AsterIconLoaders).map((loader) => {
+    assert.ok(loader);
+    return loader();
+  }),
+);
+const asterCollectionDefinitions = await Promise.all(
+  Object.values(AsterCollectionLoaders).map((loader) => {
+    assert.ok(loader);
+    return loader();
+  }),
+);
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -105,14 +120,14 @@ function createContext(
 }
 
 assert.ok(
-  AsterIcons.length > 0,
+  asterIconDefinitions.length > 0,
   "Expected the Aster icon catalogue to be non-empty.",
 );
 assert.ok(
-  AsterCollections.length > 0,
+  asterCollectionDefinitions.length > 0,
   "Expected the Aster collection catalogue to be non-empty.",
 );
-const representativeIcon = AsterIcons[0];
+const representativeIcon = asterIconDefinitions[0];
 assert.ok(representativeIcon, "Expected one representative Aster icon.");
 const representativeIdentity = `${
   representativeIcon.identity.namespace === undefined
@@ -123,7 +138,7 @@ const representativeIdentity = `${
     ? ""
     : `@${representativeIcon.identity.variant}`
 }`;
-const representativeMemberships = AsterCollections
+const representativeMemberships = asterCollectionDefinitions
   .filter((collection) => collection.icons.includes(representativeIcon))
   .map((collection) => collection.identity)
   .sort((left, right) => left.name.localeCompare(right.name));
@@ -156,8 +171,8 @@ test("discovers the explicit built-in Aster catalogue", async () => {
     assert.deepEqual(listed.payload.catalogues, [
       {
         identity: "aster",
-        iconCount: AsterIcons.length,
-        collectionCount: AsterCollections.length,
+        iconCount: asterIconDefinitions.length,
+        collectionCount: asterCollectionDefinitions.length,
       },
     ]);
     assert.ok(Object.isFrozen(listed.payload.catalogues));
@@ -166,7 +181,7 @@ test("discovers the explicit built-in Aster catalogue", async () => {
   if (listedIcons.ok && listedIcons.payload.kind === "icon-list") {
     assert.deepEqual(
       listedIcons.payload.icons.map((icon) => icon.identity),
-      AsterIcons.map((icon) => icon.identity),
+      asterIconDefinitions.map((icon) => icon.identity),
     );
   }
 
@@ -178,7 +193,7 @@ test("discovers the explicit built-in Aster catalogue", async () => {
       listedCollections.payload.collections.map(
         (collection) => collection.identity,
       ),
-      AsterCollections.map((collection) => collection.identity),
+      asterCollectionDefinitions.map((collection) => collection.identity),
     );
   }
 
@@ -192,7 +207,7 @@ test("discovers the explicit built-in Aster catalogue", async () => {
   }
 });
 
-test("adapts independent canonical indexes with derived memberships", () => {
+test("adapts independent canonical definitions with derived memberships", () => {
   const standalone = createIcon("standalone");
   const shared = createIcon("shared");
   const zeta = createCollection("zeta", [shared]);
@@ -222,7 +237,7 @@ test("adapts independent canonical indexes with derived memberships", () => {
   assert.ok(Object.isFrozen(snapshot.collections));
 });
 
-test("rejects invalid canonical index relationships before snapshot loading", () => {
+test("rejects invalid canonical definition relationships before snapshot loading", () => {
   const factory = new AsterCatalogueSnapshotFactory();
   const indexed = createIcon("shared");
   const conflicting = createIcon("shared", ["testing"], 2);

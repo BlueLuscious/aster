@@ -71,10 +71,10 @@ a safe CLI-owned mechanism.
 
 ## Distribution evidence
 
-The measured native ES2022 ESM output contains 274 files and 327,317 unminified bytes:
+The measured native ES2022 ESM output contains 274 files and 345,415 unminified bytes:
 
-- 160 JavaScript modules totalling 234,114 bytes;
-- 114 declaration files totalling 93,203 bytes;
+- 160 JavaScript modules totalling 243,973 bytes;
+- 114 declaration files totalling 101,442 bytes;
 - one public root export;
 - one private `aster` binary mapping;
 - `sideEffects: false`;
@@ -121,7 +121,8 @@ committed.
 
 ## Tooling boundary
 
-CLI owns its fixture factory, operation runner, cold-start runner, Node process adapter, composition
-factory, and command. One generic runner measures synchronous or asynchronous scenario results
-sequentially while statistics, heap, clock, repository, and distribution capabilities remain
-shared private tooling. Neither layer is shipped by CLI or imported by production packages.
+CLI owns its fixture factory, operation runner, cold-start policy, composition factory and command.
+The Node process adapter is shared private tooling because Icons import evaluation now requires the
+same fresh-process capability. One generic runner measures synchronous or asynchronous scenario
+results sequentially while statistics, heap, clock, repository and distribution capabilities
+remain shared. Neither layer is shipped by CLI or imported by production packages.

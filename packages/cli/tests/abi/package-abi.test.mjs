@@ -196,8 +196,8 @@ test("limits Node process authority and the manifest bridge to the private entry
       [...new Set(externalSpecifiers)].sort(),
       [...new Set(externalSpecifiers)]
         .filter((specifier) =>
-          specifier === "@aster/core" || specifier === "@aster/icons"
-          || specifier === "@aster/icons/collections"
+          specifier === "@aster/core"
+          || specifier === "@aster/icons/dynamic"
           || specifier === "@aster/svg"
         )
         .sort(),
@@ -237,19 +237,14 @@ test("acquires the built-in Icons catalogue only through its explicit lazy provi
     const modulePath = relative(distributionRoot, module).replaceAll("\\", "/");
 
     const iconsSpecifiers = extractModuleSpecifiers(source).filter(
-      (specifier) => specifier === "@aster/icons"
-        || specifier === "@aster/icons/collections",
+      (specifier) => specifier === "@aster/icons/dynamic",
     );
 
     if (iconsSpecifiers.length > 0) {
       iconsOwners.push(modulePath);
-      assert.deepEqual(iconsSpecifiers.sort(), [
-        "@aster/icons",
-        "@aster/icons/collections",
-      ]);
-      assert.match(source, /import\("@aster\/icons"\)/u);
-      assert.match(source, /import\("@aster\/icons\/collections"\)/u);
-      assert.doesNotMatch(source, /from\s+["']@aster\/icons(?:\/collections)?["']/u);
+      assert.deepEqual(iconsSpecifiers, ["@aster/icons/dynamic"]);
+      assert.match(source, /import\(\s*"@aster\/icons\/dynamic"\s*\)/u);
+      assert.doesNotMatch(source, /from\s+["']@aster\/icons\/dynamic["']/u);
     }
   }
 

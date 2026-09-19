@@ -1,11 +1,34 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import type { CollectionDefinition, IconDefinition } from "@aster/core";
-import { AsterCollections } from "../../src/collections/index.js";
-import * as collections from "../../src/collections/index.js";
-import { AsterIcons } from "../../src/icons/index.js";
-import * as icons from "../../src/icons/index.js";
+import type { IconDefinition } from "@aster/core";
+import {
+  amellusIconAuthoringProfile,
+} from "../../src/authoring/constants/amellus-icon-authoring-profile.constant.js";
+import {
+  asterOriginalIconAuthorship,
+} from "../../src/authoring/constants/aster-original-icon-authorship.constant.js";
+import {
+  AsterCollectionLoaders,
+  AsterIconLoaders,
+} from "../../src/dynamic/index.js";
+
+const iconDefinitions = Object.freeze(
+  await Promise.all(
+    Object.values(AsterIconLoaders).map((loader) => {
+      assert.ok(loader);
+      return loader();
+    }),
+  ),
+);
+const collectionDefinitions = Object.freeze(
+  await Promise.all(
+    Object.values(AsterCollectionLoaders).map((loader) => {
+      assert.ok(loader);
+      return loader();
+    }),
+  ),
+);
 
 const presentationFields = [
   "fill",
@@ -68,63 +91,35 @@ function numericGeometryValues(definition: IconDefinition): readonly number[] {
   return values;
 }
 
-test("keeps named icon exports aligned with the complete icon index", () => {
-  const exportedDefinitions = Object.entries(icons)
-    .filter(([symbol]) => symbol !== "AsterIcons")
-    .map(([, definition]) => definition as IconDefinition)
-    .sort((left, right) =>
-      left.identity.name.localeCompare(right.identity.name),
-    );
-
-  assert.deepEqual(AsterIcons, exportedDefinitions);
-  assert.ok(Object.isFrozen(AsterIcons));
-});
-
-test("keeps named collection exports aligned with the complete collection index", () => {
-  const exportedDefinitions = Object.entries(collections)
-    .filter(([symbol]) => symbol !== "AsterCollections")
-    .map(([, definition]) => definition as CollectionDefinition)
-    .sort((left, right) =>
-      left.identity.name.localeCompare(right.identity.name),
-    );
-
-  assert.deepEqual(AsterCollections, exportedDefinitions);
-  assert.ok(Object.isFrozen(AsterCollections));
-});
-
-test("keeps every definition aligned with shared authoring defaults", () => {
-  const definitions = AsterIcons;
+test("composes original authorship and the Amellus visual profile", () => {
+  const definitions = iconDefinitions;
   const identities = new Set<string>();
 
   assert.ok(
     definitions.length > 0,
-    "Expected the Aster icon index to be non-empty.",
+    "Expected the Aster icon loader family to be non-empty.",
   );
 
   for (const definition of definitions) {
-    assert.equal(definition.identity.namespace, "aster");
+    assert.equal(
+      definition.identity.namespace,
+      asterOriginalIconAuthorship.namespace,
+    );
     assert.equal(identities.has(definition.identity.name), false);
     identities.add(definition.identity.name);
-    assert.deepEqual(definition.viewBox, {
-      minX: 0,
-      minY: 0,
-      width: 24,
-      height: 24,
-    });
-    assert.deepEqual(definition.metadata.presentation, {
-      defaults: {
-        fill: "none",
-        stroke: "currentColor",
-        strokeWidth: 1.5,
-        strokeLineCap: "round",
-        strokeLineJoin: "round",
-      },
-      overrides: [],
-      defaultSize: 24,
-      minimumSize: 16,
-    });
-    assert.equal(definition.metadata.licence, "ISC");
-    assert.equal(definition.metadata.attribution, "BlueLuscious");
+    assert.deepEqual(definition.viewBox, amellusIconAuthoringProfile.viewBox);
+    assert.deepEqual(
+      definition.metadata.presentation,
+      amellusIconAuthoringProfile.presentation,
+    );
+    assert.equal(
+      definition.metadata.licence,
+      asterOriginalIconAuthorship.licence,
+    );
+    assert.equal(
+      definition.metadata.attribution,
+      asterOriginalIconAuthorship.attribution,
+    );
     assert.equal(definition.metadata.deprecated, false);
     const tags = definition.metadata.tags;
     assert.ok(tags);
@@ -159,21 +154,29 @@ test("keeps every definition aligned with shared authoring defaults", () => {
     assertDeeplyFrozen(definition);
   }
 
-  assert.equal(icons.ArrowLeft.metadata.rtl, "mirror");
-  assert.equal(icons.ArrowRight.metadata.rtl, "mirror");
+  assert.equal(
+    definitions.find(({ identity }) => identity.name === "arrow-left")
+      ?.metadata.rtl,
+    "mirror",
+  );
+  assert.equal(
+    definitions.find(({ identity }) => identity.name === "arrow-right")
+      ?.metadata.rtl,
+    "mirror",
+  );
 });
 
-test("keeps collection membership within the independent icon index", () => {
+test("keeps collection membership within the independent icon loaders", () => {
   assert.ok(
-    AsterCollections.length > 0,
-    "Expected the Aster collection index to be non-empty.",
+    collectionDefinitions.length > 0,
+    "Expected the Aster collection loader family to be non-empty.",
   );
 
-  for (const collection of AsterCollections) {
+  for (const collection of collectionDefinitions) {
     for (const definition of collection.icons) {
       assert.ok(
-        AsterIcons.includes(definition),
-        `Expected ${definition.identity.name} from ${collection.identity.name} in the icon index.`,
+        iconDefinitions.includes(definition),
+        `Expected ${definition.identity.name} from ${collection.identity.name} in the icon loader family.`,
       );
     }
 

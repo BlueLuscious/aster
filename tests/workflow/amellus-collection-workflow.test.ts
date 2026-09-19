@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { AsterCatalogue, AsterCommands } from "@aster/cli";
-import { AsterIcons } from "@aster/icons";
 import { AmellusCollection } from "@aster/icons/collections/amellus";
+import { AsterIconManifest } from "@aster/icons/manifest";
 
 const commandContext = Object.freeze({
   catalogues: Object.freeze([AsterCatalogue]),
@@ -51,7 +51,7 @@ test("exposes Amellus through every collection-neutral CLI workflow", async () =
 
   assert.deepEqual(
     listed.payload.icons.map((result) => result.identity.name).sort(),
-    AsterIcons.map((definition) => definition.identity.name).sort(),
+    AsterIconManifest.map(({ identity }) => identity.name).sort(),
   );
   assert.deepEqual(
     searched.payload.results.map((result) => result.identity.name),

@@ -7,8 +7,8 @@ queries. None of these classes is exported through a package subpath.
 
 | Class | Responsibility |
 | --- | --- |
-| `AsterCatalogueProvider` | Lazily acquires the independent canonical Icons indexes. |
-| `AsterCatalogueSnapshotFactory` | Validates indexed identity-to-object relations and derives one deterministic built-in snapshot. |
+| `AsterCatalogueProvider` | Lazily acquires and deliberately invokes both complete canonical Icons loader families. |
+| `AsterCatalogueSnapshotFactory` | Validates complete identity-to-object relations and derives one deterministic built-in snapshot. |
 | `CatalogueLoader` | Orders and invokes explicit providers once per query and returns accepted snapshots or one deterministic failure. |
 | `CatalogueSnapshotNormaliser` | Validates, isolates, cross-checks, orders, and freezes one snapshot. |
 | `CatalogueRecordNormaliser` | Accepts individual icon and collection records and resolves membership identities. |
@@ -40,10 +40,10 @@ The loader retains no catalogue cache or global registry. Every command executio
 complete snapshot from every selected explicit provider. Search aliases and provider provenance
 remain outside Core definitions.
 
-The built-in snapshot factory indexes every canonical icon independently, derives memberships from
+The built-in snapshot factory records every loaded canonical icon independently, derives memberships from
 all canonical collections, and orders both record families before returning the provider snapshot.
-It rejects duplicate indexed identities, unavailable collection members and a member object that
-differs from the canonical indexed definition. This source-authority check belongs to the built-in
+It rejects duplicate identities, unavailable collection members and a member object that differs
+from the canonical loaded definition. This source-authority check belongs to the built-in
 provider; generic provider snapshots continue through the complete loader acceptance boundary.
 
 Provider order is normalised through locale-independent ASCII comparison before loading. A
