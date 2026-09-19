@@ -14,14 +14,59 @@ export class CliBaselineFixtureFactory {
     const catalogue = new BenchmarkCatalogueFixtureFactory().create();
     const { collection, icon, snapshot } = catalogue;
     const identities = new CatalogueIdentityFormatter();
+    const iconsByIdentity = new Map(snapshot.icons.map((record) => [
+      identities.icon(record.definition.identity),
+      record.definition,
+    ]));
+    const collectionsByIdentity = new Map(snapshot.collections.map((record) => [
+      identities.collection(record.definition.identity),
+      record.definition,
+    ]));
+    const discovery = Object.freeze({
+      icons: Object.freeze(snapshot.icons.map((record) => Object.freeze({
+        identity: record.definition.identity,
+        metadata: Object.freeze({
+          displayName: record.definition.metadata.displayName,
+          ...(record.definition.metadata.tags === undefined
+            ? {}
+            : { tags: record.definition.metadata.tags }),
+          rtl: record.definition.metadata.rtl,
+          deprecated: record.definition.metadata.deprecated,
+        }),
+        memberships: record.memberships,
+      }))),
+      collections: Object.freeze(snapshot.collections.map((record) => Object.freeze({
+        identity: record.definition.identity,
+        metadata: record.definition.metadata,
+        icons: Object.freeze(
+          record.definition.icons.map((member) => member.identity),
+        ),
+      }))),
+    });
     const provider = Object.freeze({
       identity: "fixture",
       /**
-       * @description Returns the already acquired immutable fixture snapshot.
-       * @returns {Promise<object>} Prepared catalogue snapshot.
+       * @description Returns already acquired immutable fixture discovery metadata.
+       * @returns {Promise<object>} Prepared catalogue discovery.
        */
-      async load() {
-        return snapshot;
+      async discover() {
+        return discovery;
+      },
+      /**
+       * @description Resolves one exact prepared icon definition.
+       * @param {import("@aster/core").IconIdentity} identity - Selected icon identity.
+       * @returns {Promise<import("@aster/core").IconDefinition | undefined>} Prepared definition or no value.
+       */
+      async loadIcon(identity) {
+        return iconsByIdentity.get(identities.icon(identity));
+      },
+      /**
+       * @description Resolves one exact prepared collection definition.
+       * @param {import("@aster/core").CollectionIdentity} identity - Selected collection identity.
+       * @returns {Promise<import("@aster/core").CollectionDefinition | undefined>} Prepared definition or no value.
+       */
+      async loadCollection(identity) {
+        return collectionsByIdentity.get(identities.collection(identity));
       },
     });
     const context = Object.freeze({

@@ -5,7 +5,7 @@ export class ICliBaselineFixtures {
   /** @description Canonical representative icon definition. */
   icon;
 
-  /** @description Explicit context backed by an already acquired immutable snapshot. */
+  /** @description Explicit context backed by prepared discovery and exact definitions. */
   context;
 
   /** @description Closed representative structured invocations. */

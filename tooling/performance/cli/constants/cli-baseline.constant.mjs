@@ -3,7 +3,7 @@
  */
 export const cliBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
-  schemaVersion: 3,
+  schemaVersion: 4,
   /** @description Measured public package identity. */
   packageName: "@aster/cli",
   /** @description Workspace-relative measured package root. */
@@ -64,10 +64,10 @@ export const cliBaseline = Object.freeze({
       /** @description Public operations executed per sample. */
       operationsPerSample: 500,
     }),
-    /** @description Prepared catalogue provider acquisition scenario. */
-    providerLoad: Object.freeze({
+    /** @description Prepared catalogue provider discovery scenario. */
+    providerDiscovery: Object.freeze({
       /** @description Stable report scenario identity. */
-      name: "cli.catalogue.provider-load",
+      name: "cli.catalogue.provider-discovery",
       /** @description Public operations executed per sample. */
       operationsPerSample: 100,
     }),

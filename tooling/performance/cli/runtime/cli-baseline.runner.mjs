@@ -125,8 +125,8 @@ export class CliBaselineRunner {
           ),
       }),
       Object.freeze({
-        ...cliBaseline.asyncScenarios.providerLoad,
-        execute: (iterations) => this.#loadProvider(iterations),
+        ...cliBaseline.asyncScenarios.providerDiscovery,
+        execute: (iterations) => this.#discoverProvider(iterations),
       }),
       Object.freeze({
         ...cliBaseline.asyncScenarios.listIcons,
@@ -306,11 +306,11 @@ export class CliBaselineRunner {
   }
 
   /**
-   * @description Measures explicit prepared-provider acquisition independently from queries.
-   * @param {number} iterations - Number of provider loads to execute.
-   * @returns {Promise<number>} Deterministic checksum over acquired snapshot cardinality.
+   * @description Measures explicit prepared-provider discovery independently from queries.
+   * @param {number} iterations - Number of provider discoveries to execute.
+   * @returns {Promise<number>} Deterministic checksum over discovered record cardinality.
    */
-  async #loadProvider(iterations) {
+  async #discoverProvider(iterations) {
     const provider = this.#fixtures.context.catalogues[0];
 
     if (provider === undefined) {
@@ -320,8 +320,12 @@ export class CliBaselineRunner {
     let checksum = 0;
 
     for (let index = 0; index < iterations; index += 1) {
-      const snapshot = await provider.load();
-      checksum = (checksum + snapshot.icons.length + snapshot.collections.length) >>> 0;
+      const discovery = await provider.discover();
+      checksum = (
+        checksum
+        + discovery.icons.length
+        + discovery.collections.length
+      ) >>> 0;
     }
 
     return checksum;

@@ -440,7 +440,7 @@ test("runs the complete CLI scenario matrix through explicit runners", async () 
   );
   const report = await runner.run();
 
-  assert.equal(report.schemaVersion, 3);
+  assert.equal(report.schemaVersion, 4);
   assert.deepEqual(
     synchronous.map((scenario) => scenario.name),
     Object.values(cliBaseline.scenarios).map((scenario) => scenario.name),
