@@ -13,6 +13,7 @@ import type {
 } from "../../src/catalogue/contracts/index.js";
 import { HtmlContentEscaper } from "../../src/review/runtime/html-content.escaper.js";
 import { ReviewDocumentSerialiser } from "../../src/review/runtime/review-document.serialiser.js";
+import { createCatalogueProvider } from "./catalogue-provider.fixture.js";
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -39,15 +40,10 @@ const goldenIcon = Icon.define({
   },
 });
 
-const goldenProvider: CatalogueProvider = {
-  identity: "testing",
-  async load() {
-    return {
-      icons: [{ definition: goldenIcon, memberships: [] }],
-      collections: [],
-    };
-  },
-};
+const goldenProvider = createCatalogueProvider("testing", {
+  icons: [{ definition: goldenIcon, memberships: [] }],
+  collections: [],
+});
 
 async function plan(
   subject: "icon" | "collection",
@@ -111,18 +107,13 @@ test("serialises collections in canonical navigable order", async () => {
     icons: [zeta, alpha],
     metadata: { displayName: "Ordered" },
   });
-  const provider: CatalogueProvider = {
-    identity: "testing",
-    async load() {
-      return {
-        icons: [
-          { definition: zeta, memberships: [collection.identity] },
-          { definition: alpha, memberships: [collection.identity] },
-        ],
-        collections: [{ definition: collection }],
-      };
-    },
-  };
+  const provider = createCatalogueProvider("testing", {
+    icons: [
+      { definition: zeta, memberships: [collection.identity] },
+      { definition: alpha, memberships: [collection.identity] },
+    ],
+    collections: [{ definition: collection }],
+  });
   const serialiser = new ReviewDocumentSerialiser();
   const review = await plan("collection", "testing/ordered", [provider]);
   const html = serialiser.serialise(review);
@@ -172,12 +163,7 @@ test("escapes hostile authored text and explicit attribute contexts", async () =
     icons: [{ definition: icon, memberships: [collection.identity] }],
     collections: [{ definition: collection }],
   };
-  const provider: CatalogueProvider = {
-    identity: "testing",
-    async load() {
-      return snapshot;
-    },
-  };
+  const provider = createCatalogueProvider("testing", snapshot);
   const serialiser = new ReviewDocumentSerialiser();
   const html = serialiser.serialise(
     await plan("collection", "testing/hostile", [provider]),
@@ -203,12 +189,10 @@ test("renders an explicit empty collection state", async () => {
     icons: [],
     metadata: { displayName: "Empty" },
   });
-  const provider: CatalogueProvider = {
-    identity: "testing",
-    async load() {
-      return { icons: [], collections: [{ definition: collection }] };
-    },
-  };
+  const provider = createCatalogueProvider("testing", {
+    icons: [],
+    collections: [{ definition: collection }],
+  });
   const html = new ReviewDocumentSerialiser().serialise(
     await plan("collection", "testing/empty", [provider]),
   );

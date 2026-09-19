@@ -8,33 +8,22 @@ import {
   type IconDefinition,
 } from "@aster/core";
 import {
-  AsterCollectionLoaders,
-  AsterIconLoaders,
-} from "@aster/icons/dynamic";
+  AsterCollectionManifest,
+  AsterIconManifest,
+} from "@aster/icons/manifest";
 import {
   AsterCatalogue,
   AsterCommands,
   catalogueResultKinds,
 } from "../../src/index.js";
 import type {
+  CatalogueDiscovery,
   CatalogueProvider,
   CatalogueSnapshot,
 } from "../../src/catalogue/contracts/index.js";
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { AsterCatalogueSnapshotFactory } from "../../src/catalogue/runtime/aster-catalogue-snapshot.factory.js";
-
-const asterIconDefinitions = await Promise.all(
-  Object.values(AsterIconLoaders).map((loader) => {
-    assert.ok(loader);
-    return loader();
-  }),
-);
-const asterCollectionDefinitions = await Promise.all(
-  Object.values(AsterCollectionLoaders).map((loader) => {
-    assert.ok(loader);
-    return loader();
-  }),
-);
+import { createCatalogueProvider } from "./catalogue-provider.fixture.js";
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -100,13 +89,11 @@ function createProvider(
   snapshot: CatalogueSnapshot,
   onLoad?: () => void,
 ): CatalogueProvider {
-  return {
+  return createCatalogueProvider(
     identity,
-    async load() {
-      onLoad?.();
-      return snapshot;
-    },
-  };
+    snapshot,
+    onLoad === undefined ? {} : { onDiscover: onLoad },
+  );
 }
 
 function createContext(
@@ -120,26 +107,18 @@ function createContext(
 }
 
 assert.ok(
-  asterIconDefinitions.length > 0,
+  AsterIconManifest.length > 0,
   "Expected the Aster icon catalogue to be non-empty.",
 );
 assert.ok(
-  asterCollectionDefinitions.length > 0,
+  AsterCollectionManifest.length > 0,
   "Expected the Aster collection catalogue to be non-empty.",
 );
-const representativeIcon = asterIconDefinitions[0];
+const representativeIcon = AsterIconManifest[0];
 assert.ok(representativeIcon, "Expected one representative Aster icon.");
-const representativeIdentity = `${
-  representativeIcon.identity.namespace === undefined
-    ? ""
-    : `${representativeIcon.identity.namespace}/`
-}${representativeIcon.identity.name}${
-  representativeIcon.identity.variant === undefined
-    ? ""
-    : `@${representativeIcon.identity.variant}`
-}`;
-const representativeMemberships = asterCollectionDefinitions
-  .filter((collection) => collection.icons.includes(representativeIcon))
+const representativeIdentity = representativeIcon.key;
+const representativeMemberships = AsterCollectionManifest
+  .filter((collection) => collection.members.includes(representativeIcon.key))
   .map((collection) => collection.identity)
   .sort((left, right) => left.name.localeCompare(right.name));
 
@@ -171,8 +150,8 @@ test("discovers the explicit built-in Aster catalogue", async () => {
     assert.deepEqual(listed.payload.catalogues, [
       {
         identity: "aster",
-        iconCount: asterIconDefinitions.length,
-        collectionCount: asterCollectionDefinitions.length,
+        iconCount: AsterIconManifest.length,
+        collectionCount: AsterCollectionManifest.length,
       },
     ]);
     assert.ok(Object.isFrozen(listed.payload.catalogues));
@@ -181,7 +160,7 @@ test("discovers the explicit built-in Aster catalogue", async () => {
   if (listedIcons.ok && listedIcons.payload.kind === "icon-list") {
     assert.deepEqual(
       listedIcons.payload.icons.map((icon) => icon.identity),
-      asterIconDefinitions.map((icon) => icon.identity),
+      AsterIconManifest.map((icon) => icon.identity),
     );
   }
 
@@ -193,17 +172,96 @@ test("discovers the explicit built-in Aster catalogue", async () => {
       listedCollections.payload.collections.map(
         (collection) => collection.identity,
       ),
-      asterCollectionDefinitions.map((collection) => collection.identity),
+      AsterCollectionManifest.map((collection) => collection.identity),
     );
   }
 
   if (shown.ok && shown.payload.kind === "icon-show") {
     assert.equal(
       shown.payload.icon.metadata.displayName,
-      representativeIcon.metadata.displayName,
+      representativeIcon.displayName,
     );
     assert.deepEqual(shown.payload.icon.memberships, representativeMemberships);
+    assert.equal("presentation" in shown.payload.icon.metadata, false);
     assert.ok(Object.isFrozen(shown.payload.icon));
+  }
+});
+
+test("executes every discovery workflow without invoking definition loaders", async () => {
+  const icon = createIcon("metadata-only");
+  const collection = createCollection("metadata-only", [icon]);
+  let discoveries = 0;
+  let iconLoads = 0;
+  let collectionLoads = 0;
+  const provider = createCatalogueProvider("testing", {
+    icons: [{ definition: icon, memberships: [collection.identity] }],
+    collections: [{ definition: collection }],
+  }, {
+    onDiscover: () => discoveries += 1,
+    onLoadIcon: () => iconLoads += 1,
+    onLoadCollection: () => collectionLoads += 1,
+  });
+  const context = createContext([provider]);
+  const invocations = [
+    { command: "list", subject: "catalogues" },
+    { command: "list", subject: "collections" },
+    { command: "list", subject: "icons" },
+    { command: "search", query: "metadata" },
+    { command: "show", subject: "icon", identity: "testing/metadata-only" },
+    { command: "show", subject: "collection", identity: "testing/metadata-only" },
+  ] as const;
+
+  for (const invocation of invocations) {
+    const result = await AsterCommands.execute(invocation, context);
+    assert.equal(result.ok, true);
+  }
+
+  assert.equal(discoveries, invocations.length);
+  assert.equal(iconLoads, 0);
+  assert.equal(collectionLoads, 0);
+});
+
+test("isolates mutable discovery records before exposing command results", async () => {
+  const source = {
+    icons: [{
+      identity: { namespace: "testing", name: "mutable" },
+      metadata: {
+        displayName: "Mutable",
+        tags: ["mutable"],
+        rtl: "preserve",
+        deprecated: false,
+      },
+      memberships: [],
+    }],
+    collections: [],
+  };
+  const provider: CatalogueProvider = {
+    identity: "testing",
+    async discover() {
+      return source as CatalogueDiscovery;
+    },
+    async loadIcon() {
+      throw new Error("unexpected icon load");
+    },
+    async loadCollection() {
+      throw new Error("unexpected collection load");
+    },
+  };
+  const result = await AsterCommands.execute(
+    { command: "show", subject: "icon", identity: "testing/mutable" },
+    createContext([provider]),
+  );
+
+  source.icons[0]!.metadata.displayName = "Changed";
+  source.icons[0]!.metadata.tags.push("changed");
+
+  assert.equal(result.ok, true);
+
+  if (result.ok && result.payload.kind === "icon-show") {
+    assert.equal(result.payload.icon.metadata.displayName, "Mutable");
+    assert.deepEqual(result.payload.icon.metadata.tags, ["mutable"]);
+    assert.ok(Object.isFrozen(result.payload.icon.metadata));
+    assert.ok(Object.isFrozen(result.payload.icon.metadata.tags));
   }
 });
 
@@ -436,7 +494,7 @@ test("reports cross-provider ambiguity and supports exact provider filtering", a
   }
 });
 
-test("rejects conflicting and inconsistent provider snapshots", async () => {
+test("rejects conflicting and inconsistent provider discoveries", async () => {
   const icon = createIcon("duplicate");
   const duplicateProvider = createProvider("duplicate", {
     icons: [
@@ -452,6 +510,30 @@ test("rejects conflicting and inconsistent provider snapshots", async () => {
     }],
     collections: [],
   });
+  const presentationProvider: CatalogueProvider = {
+    identity: "presentation",
+    async discover() {
+      return {
+        icons: [{
+          identity: { namespace: "testing", name: "presentation" },
+          metadata: {
+            displayName: "Presentation",
+            rtl: "preserve",
+            deprecated: false,
+            presentation,
+          },
+          memberships: [],
+        }],
+        collections: [],
+      } as unknown as CatalogueDiscovery;
+    },
+    async loadIcon() {
+      throw new Error("unexpected icon load");
+    },
+    async loadCollection() {
+      throw new Error("unexpected collection load");
+    },
+  };
 
   const duplicate = await AsterCommands.execute(
     { command: "list", subject: "icons" },
@@ -461,21 +543,33 @@ test("rejects conflicting and inconsistent provider snapshots", async () => {
     { command: "list", subject: "icons" },
     createContext([missingCollectionProvider]),
   );
+  const leakedPresentation = await AsterCommands.execute(
+    { command: "show", subject: "icon", identity: "testing/presentation" },
+    createContext([presentationProvider]),
+  );
 
   assert.equal(duplicate.ok, false);
   assert.equal(inconsistent.ok, false);
+  assert.equal(leakedPresentation.ok, false);
 
-  if (!duplicate.ok && !inconsistent.ok) {
+  if (!duplicate.ok && !inconsistent.ok && !leakedPresentation.ok) {
     assert.equal(duplicate.diagnostic.code, "ASTER-CLI-003");
     assert.equal(inconsistent.diagnostic.code, "ASTER-CLI-006");
+    assert.equal(leakedPresentation.diagnostic.code, "ASTER-CLI-006");
   }
 });
 
 test("sanitises provider failures and rejects unavailable filters", async () => {
   const failingProvider: CatalogueProvider = {
     identity: "failing",
-    async load() {
+    async discover() {
       throw new Error("native provider secret");
+    },
+    async loadIcon() {
+      throw new Error("unexpected icon load");
+    },
+    async loadCollection() {
+      throw new Error("unexpected collection load");
     },
   };
   const failed = await AsterCommands.execute(

@@ -1,12 +1,12 @@
-import type { CollectionDefinition } from "@aster/core";
 import { catalogueResultKinds } from "../constants/catalogue-result-kinds.constant.js";
 import type {
   CatalogueCollectionResult,
-  CatalogueIconRecord,
+  CatalogueDiscoveryCollectionRecord,
+  CatalogueDiscoveryIconRecord,
   CatalogueIconResult,
   CatalogueProviderResult,
 } from "../contracts/index.js";
-import type { TAcceptedCatalogue } from "../types/internal/accepted-catalogue.type.js";
+import type { TAcceptedCatalogueDiscovery } from "../types/internal/accepted-catalogue-discovery.type.js";
 
 /**
  * @description Projects accepted provider records into immutable public discovery results.
@@ -17,7 +17,7 @@ export class CatalogueResultFactory {
    * @param catalogue - Accepted provider catalogue.
    * @returns Immutable provider identity and record counts.
    */
-  provider(catalogue: TAcceptedCatalogue): CatalogueProviderResult {
+  provider(catalogue: TAcceptedCatalogueDiscovery): CatalogueProviderResult {
     return Object.freeze({
       identity: catalogue.identity,
       iconCount: catalogue.icons.length,
@@ -31,32 +31,35 @@ export class CatalogueResultFactory {
    * @param record - Accepted icon record.
    * @returns Immutable icon identity, metadata, and membership evidence.
    */
-  icon(catalogue: string, record: CatalogueIconRecord): CatalogueIconResult {
+  icon(
+    catalogue: string,
+    record: CatalogueDiscoveryIconRecord,
+  ): CatalogueIconResult {
     return Object.freeze({
       kind: catalogueResultKinds.icon,
       catalogue,
-      identity: record.definition.identity,
-      metadata: record.definition.metadata,
+      identity: record.identity,
+      metadata: record.metadata,
       memberships: Object.freeze([...record.memberships]),
     });
   }
 
   /**
-   * @description Creates one collection result from an accepted portable definition.
+   * @description Creates one collection result from accepted discovery metadata.
    * @param catalogue - Supplying provider identity.
-   * @param definition - Accepted portable collection.
+   * @param record - Accepted collection discovery record.
    * @returns Immutable collection identity, metadata, and member evidence.
    */
   collection(
     catalogue: string,
-    definition: CollectionDefinition,
+    record: CatalogueDiscoveryCollectionRecord,
   ): CatalogueCollectionResult {
     return Object.freeze({
       kind: catalogueResultKinds.collection,
       catalogue,
-      identity: definition.identity,
-      metadata: definition.metadata,
-      icons: Object.freeze(definition.icons.map((icon) => icon.identity)),
+      identity: record.identity,
+      metadata: record.metadata,
+      icons: Object.freeze([...record.icons]),
     });
   }
 }

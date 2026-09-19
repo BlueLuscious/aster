@@ -7,17 +7,17 @@ import type {
   AsterCommandInvocationType,
   AsterCommandResultType,
 } from "../../command/types/index.js";
+import { CatalogueDiscoverySelector } from "./catalogue-discovery.selector.js";
 import { CatalogueResultFactory } from "./catalogue-result.factory.js";
-import { CatalogueSubjectSelector } from "./catalogue-subject.selector.js";
 
 /**
  * @description Executes exact icon and collection lookup with explicit ambiguity handling.
  */
 export class CatalogueShowQuery {
   /**
-   * @description Shared exact portable-value selection boundary.
+   * @description Shared exact metadata selection boundary.
    */
-  readonly #selections: CatalogueSubjectSelector;
+  readonly #selections: CatalogueDiscoverySelector;
 
   /**
    * @description Accepted catalogue-record result projector.
@@ -31,9 +31,9 @@ export class CatalogueShowQuery {
 
   /**
    * @description Creates one exact lookup query using the shared selection boundary.
-   * @param selections - Exact provider and portable-value selection authority.
+   * @param selections - Exact provider and discovery-record selection authority.
    */
-  constructor(selections: CatalogueSubjectSelector) {
+  constructor(selections: CatalogueDiscoverySelector) {
     this.#selections = selections;
   }
 
@@ -65,7 +65,7 @@ export class CatalogueShowQuery {
     }
 
     if (invocation.subject === asterCommandSubjects.show.icon) {
-      const icon = selected.value.icons[0];
+      const icon = selected.value.icon;
 
       if (icon === undefined) {
         throw new TypeError("Missing selected icon result");

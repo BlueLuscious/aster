@@ -19,6 +19,7 @@ import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { asterCommandSubjects } from "../../src/command/constants/aster-command-subjects.constant.js";
 import { SvgExportArtefactFactory } from "../../src/export/runtime/svg-export-artefact.factory.js";
 import type { TCatalogueSelection } from "../../src/catalogue/types/internal/catalogue-selection.type.js";
+import { createCatalogueProvider } from "./catalogue-provider.fixture.js";
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -91,12 +92,7 @@ function createProvider(
   identity: string,
   snapshot: CatalogueSnapshot,
 ): CatalogueProvider {
-  return {
-    identity,
-    async load() {
-      return snapshot;
-    },
-  };
+  return createCatalogueProvider(identity, snapshot);
 }
 
 function createContext(
@@ -338,8 +334,14 @@ test("rejects unavailable collection members without exposing a partial plan", a
   }, createContext([provider]));
   const malformedProvider: CatalogueProvider = {
     identity: "malformed",
-    async load() {
-      return { icons: [] } as unknown as CatalogueSnapshot;
+    async discover() {
+      return { icons: [] } as unknown as import("../../src/index.js").CatalogueDiscovery;
+    },
+    async loadIcon() {
+      return undefined;
+    },
+    async loadCollection() {
+      return undefined;
     },
   };
   const malformed = await AsterCommands.execute({

@@ -1,6 +1,12 @@
 import type {
+  CollectionDefinition,
+  CollectionIdentity,
+  IconDefinition,
+  IconIdentity,
+} from "@aster/core";
+import type {
+  CatalogueDiscovery,
   CatalogueProvider,
-  CatalogueSnapshot,
 } from "../contracts/index.js";
 import { AsterCatalogueProvider } from "../runtime/aster-catalogue.provider.js";
 
@@ -17,10 +23,30 @@ export const AsterCatalogue: CatalogueProvider = Object.freeze({
   identity: asterCatalogueProvider.identity,
 
   /**
-   * @description Loads one isolated immutable snapshot of canonical Aster definitions.
-   * @returns Complete built-in Aster catalogue snapshot.
+   * @description Discovers isolated canonical Aster metadata without definition evaluation.
+   * @returns Complete built-in Aster discovery metadata.
    */
-  async load(): Promise<CatalogueSnapshot> {
-    return asterCatalogueProvider.load();
+  async discover(): Promise<CatalogueDiscovery> {
+    return asterCatalogueProvider.discover();
+  },
+
+  /**
+   * @description Loads one exact canonical Aster icon definition.
+   * @param identity - Complete selected icon identity.
+   * @returns Canonical definition or no value when unavailable.
+   */
+  async loadIcon(identity: IconIdentity): Promise<IconDefinition | undefined> {
+    return asterCatalogueProvider.loadIcon(identity);
+  },
+
+  /**
+   * @description Loads one exact canonical Aster collection definition.
+   * @param identity - Complete selected collection identity.
+   * @returns Canonical definition or no value when unavailable.
+   */
+  async loadCollection(
+    identity: CollectionIdentity,
+  ): Promise<CollectionDefinition | undefined> {
+    return asterCatalogueProvider.loadCollection(identity);
   },
 });

@@ -1,6 +1,12 @@
 import type {
+  CollectionDefinition,
+  CollectionIdentity,
+  IconDefinition,
+  IconIdentity,
+} from "@aster/core";
+import type {
+  CatalogueDiscovery,
   CatalogueProvider,
-  CatalogueSnapshot,
 } from "../../catalogue/contracts/index.js";
 import { CanonicalIdentityValidator } from "../../shared/runtime/canonical-identity.validator.js";
 import { StructuredDataInspector } from "../../shared/runtime/structured-data.inspector.js";
@@ -65,7 +71,7 @@ export class CommandContextNormaliser {
 
       if (provider === undefined) {
         return this.#invalid(
-          "expected each catalogue provider to expose a canonical identity and load method",
+          "expected each catalogue provider to expose canonical discovery and definition loaders",
         );
       }
 
@@ -132,29 +138,63 @@ export class CommandContextNormaliser {
     }
 
     const identityMember = this.#dataMember(value, "identity");
-    const loadMember = this.#dataMember(value, "load");
+    const discoverMember = this.#dataMember(value, "discover");
+    const loadIconMember = this.#dataMember(value, "loadIcon");
+    const loadCollectionMember = this.#dataMember(value, "loadCollection");
 
     if (
       identityMember === undefined
-      || loadMember === undefined
+      || discoverMember === undefined
+      || loadIconMember === undefined
+      || loadCollectionMember === undefined
       || !this.#identities.slug(identityMember.value)
-      || typeof loadMember.value !== "function"
+      || typeof discoverMember.value !== "function"
+      || typeof loadIconMember.value !== "function"
+      || typeof loadCollectionMember.value !== "function"
     ) {
       return undefined;
     }
 
     const identity = identityMember.value;
-    const load = loadMember.value;
+    const discover = discoverMember.value;
+    const loadIcon = loadIconMember.value;
+    const loadCollection = loadCollectionMember.value;
 
     return Object.freeze({
       identity,
 
       /**
-       * @description Invokes the snapshotted provider capability with its original receiver.
-       * @returns Provider-owned snapshot candidate for strict downstream acceptance.
+       * @description Invokes snapshotted discovery with its original receiver.
+       * @returns Provider-owned discovery candidate for strict downstream acceptance.
        */
-      async load(): Promise<CatalogueSnapshot> {
-        return Reflect.apply(load, value, []) as Promise<CatalogueSnapshot>;
+      async discover(): Promise<CatalogueDiscovery> {
+        return Reflect.apply(discover, value, []) as Promise<CatalogueDiscovery>;
+      },
+
+      /**
+       * @description Invokes the snapshotted exact icon loader with its original receiver.
+       * @param selectedIdentity - Complete selected icon identity.
+       * @returns Provider-owned definition candidate or no value.
+       */
+      async loadIcon(
+        selectedIdentity: IconIdentity,
+      ): Promise<IconDefinition | undefined> {
+        return Reflect.apply(loadIcon, value, [selectedIdentity]) as Promise<
+          IconDefinition | undefined
+        >;
+      },
+
+      /**
+       * @description Invokes the snapshotted exact collection loader with its original receiver.
+       * @param selectedIdentity - Complete selected collection identity.
+       * @returns Provider-owned definition candidate or no value.
+       */
+      async loadCollection(
+        selectedIdentity: CollectionIdentity,
+      ): Promise<CollectionDefinition | undefined> {
+        return Reflect.apply(loadCollection, value, [selectedIdentity]) as Promise<
+          CollectionDefinition | undefined
+        >;
       },
     });
   }

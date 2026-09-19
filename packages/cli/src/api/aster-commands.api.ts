@@ -1,4 +1,5 @@
 import { CatalogueListQuery } from "../catalogue/runtime/catalogue-list.query.js";
+import { CatalogueDiscoverySelector } from "../catalogue/runtime/catalogue-discovery.selector.js";
 import { CatalogueLoader } from "../catalogue/runtime/catalogue.loader.js";
 import { CatalogueSearchQuery } from "../catalogue/runtime/catalogue-search.query.js";
 import { CatalogueShowQuery } from "../catalogue/runtime/catalogue-show.query.js";
@@ -42,6 +43,11 @@ const catalogueLoader = new CatalogueLoader();
 const catalogueSelections = new CatalogueSubjectSelector(catalogueLoader);
 
 /**
+ * @description Shared exact metadata selector used by discovery-only show commands.
+ */
+const catalogueDiscoverySelections = new CatalogueDiscoverySelector(catalogueLoader);
+
+/**
  * @description Complete immutable descriptor sequence supplied to deterministic help.
  */
 const commandDescriptors = Object.freeze(Object.values(asterCommandDescriptors));
@@ -72,7 +78,7 @@ const commandKernel = new CommandKernel(
       new ReviewPlanQuery(catalogueSelections),
     ),
     new SearchCommandDefinition(new CatalogueSearchQuery(catalogueLoader)),
-    new ShowCommandDefinition(new CatalogueShowQuery(catalogueSelections)),
+    new ShowCommandDefinition(new CatalogueShowQuery(catalogueDiscoverySelections)),
     new HelpCommandDefinition(commandDescriptors),
     new VersionCommandDefinition(),
   ],

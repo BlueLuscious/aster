@@ -22,7 +22,7 @@ import { CatalogueResultFactory } from "./catalogue-result.factory.js";
  */
 export class CatalogueSearchQuery {
   /**
-   * @description Explicit provider loading and snapshot acceptance boundary.
+   * @description Explicit provider discovery and metadata acceptance boundary.
    */
   readonly #loader: CatalogueLoader;
 
@@ -53,7 +53,7 @@ export class CatalogueSearchQuery {
 
   /**
    * @description Creates one search query using the explicit shared provider loader.
-   * @param loader - Provider loading and snapshot acceptance boundary.
+   * @param loader - Provider discovery and metadata acceptance boundary.
    */
   constructor(loader: CatalogueLoader) {
     this.#loader = loader;
@@ -75,7 +75,7 @@ export class CatalogueSearchQuery {
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
-    const loaded = await this.#loader.load(context.catalogues);
+    const loaded = await this.#loader.discover(context.catalogues);
 
     if (!loaded.accepted) {
       return this.#commandResults.failure(asterCommandNames.search, loaded.diagnostic);
@@ -100,11 +100,11 @@ export class CatalogueSearchQuery {
       for (const record of catalogue.icons) {
         if (
           this.#scope.matchesCollection(record, invocation.collection) &&
-          this.#scope.matchesTags(record.definition.metadata.tags, invocation.tags) &&
+          this.#scope.matchesTags(record.metadata.tags, invocation.tags) &&
           this.#matchesTerms([
-            this.#identities.icon(record.definition.identity),
-            record.definition.metadata.displayName.toLowerCase(),
-            ...(record.definition.metadata.tags ?? []),
+            this.#identities.icon(record.identity),
+            record.metadata.displayName.toLowerCase(),
+            ...(record.metadata.tags ?? []),
             ...(record.searchTerms ?? []),
           ], terms)
         ) {
@@ -113,19 +113,19 @@ export class CatalogueSearchQuery {
       }
 
       for (const record of catalogue.collections) {
-        const identity = this.#identities.collection(record.definition.identity);
+        const identity = this.#identities.collection(record.identity);
 
         if (
           (invocation.collection === undefined || invocation.collection === identity) &&
-          this.#scope.matchesTags(record.definition.metadata.tags, invocation.tags) &&
+          this.#scope.matchesTags(record.metadata.tags, invocation.tags) &&
           this.#matchesTerms([
             identity,
-            record.definition.metadata.displayName.toLowerCase(),
-            ...(record.definition.metadata.tags ?? []),
+            record.metadata.displayName.toLowerCase(),
+            ...(record.metadata.tags ?? []),
             ...(record.searchTerms ?? []),
           ], terms)
         ) {
-          results.push(this.#catalogueResults.collection(catalogue.identity, record.definition));
+          results.push(this.#catalogueResults.collection(catalogue.identity, record));
         }
       }
     }

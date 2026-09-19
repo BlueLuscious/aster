@@ -63,7 +63,7 @@ export class CatalogueSubjectSelector {
     catalogue: string | undefined,
     context: AsterCommandContext,
   ): Promise<TAcceptanceResult<TCatalogueSelection>> {
-    const loaded = await this.#loader.load(context.catalogues);
+    const loaded = await this.#loader.loadDefinitions(context.catalogues);
 
     if (!loaded.accepted) {
       return loaded;

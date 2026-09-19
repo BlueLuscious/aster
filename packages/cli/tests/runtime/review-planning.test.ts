@@ -20,6 +20,7 @@ import { CommandLineError } from "../../src/shell/parsing/runtime/command-line.e
 import { CommandLineParser } from "../../src/shell/parsing/runtime/command-line.parser.js";
 import { ReviewDocumentFactory } from "../../src/review/runtime/review-document.factory.js";
 import type { TCatalogueSelection } from "../../src/catalogue/types/internal/catalogue-selection.type.js";
+import { createCatalogueProvider } from "./catalogue-provider.fixture.js";
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -95,12 +96,7 @@ function createProvider(
   identity: string,
   snapshot: CatalogueSnapshot,
 ): CatalogueProvider {
-  return {
-    identity,
-    async load() {
-      return snapshot;
-    },
-  };
+  return createCatalogueProvider(identity, snapshot);
 }
 
 function createContext(

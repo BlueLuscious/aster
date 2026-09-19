@@ -46,7 +46,9 @@ test("exposes the exact documented immutable root value surface", async () => {
   ]);
   assert.deepEqual(Object.keys(packageModule.AsterCatalogue), [
     "identity",
-    "load",
+    "discover",
+    "loadIcon",
+    "loadCollection",
   ]);
   assert.deepEqual(packageModule.catalogueResultKinds, {
     icon: "icon",
@@ -198,6 +200,7 @@ test("limits Node process authority and the manifest bridge to the private entry
         .filter((specifier) =>
           specifier === "@aster/core"
           || specifier === "@aster/icons/dynamic"
+          || specifier === "@aster/icons/manifest"
           || specifier === "@aster/svg"
         )
         .sort(),
@@ -228,7 +231,7 @@ test("limits Node process authority and the manifest bridge to the private entry
   assert.deepEqual(requireOwners, ["shell/aster.js"]);
 });
 
-test("acquires the built-in Icons catalogue only through its explicit lazy provider", async () => {
+test("acquires built-in Icons manifests and definitions only through its lazy provider", async () => {
   const modules = await collectDistributionFiles(".js");
   const iconsOwners = [];
 
@@ -237,14 +240,21 @@ test("acquires the built-in Icons catalogue only through its explicit lazy provi
     const modulePath = relative(distributionRoot, module).replaceAll("\\", "/");
 
     const iconsSpecifiers = extractModuleSpecifiers(source).filter(
-      (specifier) => specifier === "@aster/icons/dynamic",
+      (specifier) =>
+        specifier === "@aster/icons/dynamic"
+        || specifier === "@aster/icons/manifest",
     );
 
     if (iconsSpecifiers.length > 0) {
       iconsOwners.push(modulePath);
-      assert.deepEqual(iconsSpecifiers, ["@aster/icons/dynamic"]);
+      assert.deepEqual(iconsSpecifiers.sort(), [
+        "@aster/icons/dynamic",
+        "@aster/icons/manifest",
+      ]);
       assert.match(source, /import\(\s*"@aster\/icons\/dynamic"\s*\)/u);
+      assert.match(source, /import\(\s*"@aster\/icons\/manifest"\s*\)/u);
       assert.doesNotMatch(source, /from\s+["']@aster\/icons\/dynamic["']/u);
+      assert.doesNotMatch(source, /from\s+["']@aster\/icons\/manifest["']/u);
     }
   }
 
