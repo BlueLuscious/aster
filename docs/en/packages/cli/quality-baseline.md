@@ -89,29 +89,31 @@ The control Icons set includes its dynamic entry point and generated loader map,
 definitions, the Amellus collection facade and definition, and both authoring authorities. This
 is the accepted pre-migration control.
 
-Schema version four retains the same five fresh-process probes after manifest-backed discovery:
+Schema version four retains the same five fresh-process probes after manifest-backed discovery and
+exact command migration:
 
 | Workflow | Stable result | CLI modules | Icons modules |
 | --- | --- | ---: | ---: |
-| `list icons` | `success:icon-list` | 69 | 2 |
-| `search camera` | `success:search` | 69 | 2 |
-| `show icon aster/camera` | `success:icon-show` | 69 | 2 |
-| `export icon aster/camera` | `success:export` | 69 | 60 |
-| `review icon aster/camera` | `success:review` | 69 | 60 |
+| `list icons` | `success:icon-list` | 71 | 2 |
+| `search camera` | `success:search` | 71 | 2 |
+| `show icon aster/camera` | `success:icon-show` | 71 | 2 |
+| `export icon aster/camera` | `success:export` | 71 | 8 |
+| `review icon aster/camera` | `success:review` | 71 | 8 |
 
 The two discovery modules are `manifest/index.js` and `generated/manifest/index.js`. No icon
 facade, glyph definition, collection definition, authoring authority, or dynamic-loader module is
-evaluated by list, search, or show. Export and Review deliberately retain the complete-definition
-bridge at this stage; their 60-module result is migration evidence, not an accepted lazy target.
-Exact evaluated module sets, rather than elapsed time, remain the deterministic comparison
-authority.
+evaluated by list, search, or show. Export and Review evaluate the manifest pair, dynamic-loader
+entry points, the exact camera facade and definition, and its two authoring authorities. Their
+eight-module result replaces the immediately preceding 60-module eager bridge evidence without
+changing command output. Exact evaluated module sets, rather than elapsed time, remain the
+deterministic comparison authority.
 
 ## Distribution evidence
 
-The measured native ES2022 ESM output contains 310 files and 421,309 unminified bytes:
+The measured native ES2022 ESM output contains 310 files and 416,275 unminified bytes:
 
-- 178 JavaScript modules totalling 299,381 bytes;
-- 132 declaration files totalling 121,928 bytes;
+- 178 JavaScript modules totalling 294,088 bytes;
+- 132 declaration files totalling 122,187 bytes;
 - one public root export;
 - one private `aster` binary mapping;
 - `sideEffects: false`;

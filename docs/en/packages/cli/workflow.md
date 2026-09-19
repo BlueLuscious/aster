@@ -20,8 +20,9 @@ The command composition performs this flow:
 3. Select the exact command definition from the closed command authority.
 4. Discover metadata only for commands that require catalogue state.
 5. Validate, isolate, freeze, and canonically order retained discovery values.
-6. Execute discovery, help, version, export, or review behaviour.
-7. Return one immutable structured success or sanitised failure result.
+6. Resolve one exact definition only when Export or Review requires it.
+7. Execute discovery, help, version, export, or review behaviour.
+8. Return one immutable structured success or sanitised failure result.
 
 Provider registration order, locale, filesystem enumeration, and current directory do not alter
 accepted command results. `help` and `version` do not load providers. Importing the package root
@@ -29,10 +30,11 @@ does not execute this workflow.
 
 ## Export planning
 
-For `export`, the host-neutral path currently reconstructs the complete accepted provider state
-before selecting one exact icon or collection. This transitional bridge preserves behaviour while
-exact definition resolution is integrated. It delegates rendering to the public `@aster/svg` root
-and constructs a complete immutable `AsterExportPlan` before returning success.
+For `export`, the host-neutral path first selects one exact metadata record and only then invokes
+that provider's exact icon or collection loader. The loaded value is reconstructed through Core
+and checked against discovery before rendering is allowed. Export delegates rendering to the
+public `@aster/svg` root and constructs a complete immutable `AsterExportPlan` before returning
+success.
 
 An icon produces one logical SVG artefact. A collection resolves every declared member before
 rendering and then orders all artefacts by canonical relative path. Selection, path collisions,
@@ -41,10 +43,10 @@ not import `@aster/import`, inspect source files, or acquire filesystem authorit
 
 ## Review planning
 
-For `review`, the host-neutral path uses the same transitional complete-definition selector as
-Export. An icon
-selection retains its independent collection memberships. A collection selection resolves and
-canonically orders every declared member, while an empty collection remains a valid empty model.
+For `review`, the host-neutral path uses the same metadata-first exact-definition selector as
+Export. An icon selection retains its independent collection memberships. A collection selection
+loads one complete collection, validates every declared member against discovery, and canonically
+orders its evidence, while an empty collection remains a valid empty model.
 
 Review renders each selected definition through public `@aster/svg` and constructs one immutable
 `AsterReviewPlan` containing only portable technical evidence. The plan contains no output root,

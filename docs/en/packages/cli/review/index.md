@@ -30,6 +30,8 @@ launching a browser, or mutating process state.
 `ReviewPlanQuery` delegates exact lookup to the shared catalogue subject selector also used by
 Export. This preserves provider filtering, unavailable-provider, not-found, ambiguity, collection
 membership, and canonical ordering semantics without a review-specific lookup implementation.
+Selection accepts metadata before invoking one exact icon or collection loader, and no plan is
+constructed until the complete definition agrees with that discovery evidence.
 
 ```text
 structured review invocation

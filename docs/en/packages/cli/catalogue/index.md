@@ -20,8 +20,8 @@ providers from installed packages or the filesystem.
 | `CatalogueCollectionResult` | Reports one collection identity, metadata, provider, and member identities. | Returned by collection list, search, and exact show. |
 
 `CatalogueSnapshot`, `CatalogueIconRecord`, and `CatalogueCollectionRecord` remain transitional
-complete-definition contracts while Export and Review migrate to exact loading. They are not
-returned by `CatalogueProvider` and discovery commands do not consume them.
+complete-definition contracts pending legacy removal. They are not returned by
+`CatalogueProvider`, and no command workflow consumes them.
 
 ## Public types and authorities
 
@@ -43,8 +43,8 @@ loader result for an identity promised by discovery is provider failure, not `no
 The internal exact resolver reconstructs loaded values through Core and requires their identity,
 metadata, and collection membership to agree with accepted discovery. Icon resolution invokes one
 icon loader. Collection resolution invokes one collection loader and consumes only the members
-carried by that definition; it does not issue redundant member loader calls. Export and Review have
-not yet migrated to this resolver and retain their documented transitional bridge.
+carried by that definition; it does not issue redundant member loader calls. Export and Review use
+this metadata-first exact-resolution path before constructing any plan.
 
 Context acceptance snapshots all three callable capabilities without invoking them and preserves
 the original receiver required by class implementations. Each discovery command then:

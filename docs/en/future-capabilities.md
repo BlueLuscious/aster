@@ -100,7 +100,7 @@ and exact asynchronous loaders are the foundation for genuinely lazy CLI consump
 The built-in CLI provider now discovers accepted metadata through Icons manifests. `list`,
 `search`, and `show` evaluate no complete definitions. Exact icon and collection resolution now
 validates selected loader results through Core and against accepted discovery without retaining a
-cache. The remaining complete-definition command bridge must be replaced so:
+cache. `export` and `review` now use that metadata-first exact-resolution boundary, so:
 
 - `list`, `search` and `show` continue consuming only manifest metadata;
 - `export` and `review` resolve only the selected icon or collection;
@@ -108,6 +108,9 @@ cache. The remaining complete-definition command bridge must be replaced so:
 - provider absence and loader rejection remain deterministic command diagnostics;
 - `help` and `version` retain zero Icons acquisition or evaluation;
 - CLI owns query and diagnostic behaviour without copying Icons inventory or source discovery.
+
+The obsolete complete-snapshot contracts, normaliser, and loader bridge remain isolated for one
+compatibility-led removal pass. They no longer participate in command execution.
 
 This integration must consume the existing public `manifest` and `dynamic` subpaths rather than
 introducing an `AsterIconCatalogue` object, package-root aggregate or generic catalogue package.
