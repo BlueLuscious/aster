@@ -2,12 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import type {
-  CollectionDefinition,
-  IconDefinition,
   IconIdentity,
 } from "@aster/core";
-import * as collectionExports from "../../src/collections/index.js";
-import * as iconExports from "../../src/icons/index.js";
+import {
+  AsterCollectionLoaders,
+  AsterIconLoaders,
+} from "../../src/dynamic/index.js";
 import {
   AsterCollectionManifest,
   AsterIconManifest,
@@ -20,6 +20,18 @@ import {
  */
 function iconKey(identity: IconIdentity): string {
   return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}${identity.variant === undefined ? "" : `@${identity.variant}`}`;
+}
+
+/**
+ * @description Converts one canonical kebab-case slug to its public PascalCase symbol segment.
+ * @param slug - Canonical identity slug.
+ * @returns Public symbol segment.
+ */
+function symbolSegment(slug: string): string {
+  return slug
+    .split("-")
+    .map((part) => `${part[0]?.toUpperCase()}${part.slice(1)}`)
+    .join("");
 }
 
 /**
@@ -39,17 +51,22 @@ function assertDeeplyFrozen(value: unknown): void {
   }
 }
 
-test("publishes exact metadata-only icon and collection records", () => {
-  const icons = Object.entries(iconExports)
-    .filter(([symbol]) => symbol !== "AsterIcons")
-    .map(([symbol, value]) => {
-      const definition = value as IconDefinition;
+test("publishes exact metadata-only icon and collection records", async () => {
+  const icons = await Promise.all(
+    AsterIconManifest.map(async ({ key }) => {
+      const loader = AsterIconLoaders[key];
+      assert.ok(loader);
+      const definition = await loader();
       const { metadata } = definition;
 
       return {
         key: iconKey(definition.identity),
         identity: definition.identity,
-        symbol,
+        symbol: `${symbolSegment(definition.identity.name)}${
+          definition.identity.variant === undefined
+            ? ""
+            : symbolSegment(definition.identity.variant)
+        }`,
         displayName: metadata.displayName,
         ...(metadata.tags === undefined ? {} : { tags: metadata.tags }),
         rtl: metadata.rtl,
@@ -62,24 +79,25 @@ test("publishes exact metadata-only icon and collection records", () => {
           ? {}
           : { replacedBy: metadata.replacedBy }),
       };
-    })
-    .sort((left, right) => left.key.localeCompare(right.key));
-  const collections = Object.entries(collectionExports)
-    .filter(([symbol]) => symbol !== "AsterCollections")
-    .map(([symbol, value]) => {
-      const definition = value as CollectionDefinition;
+    }),
+  );
+  const collections = await Promise.all(
+    AsterCollectionManifest.map(async ({ key }) => {
+      const loader = AsterCollectionLoaders[key];
+      assert.ok(loader);
+      const definition = await loader();
 
       return {
         key: `${definition.identity.namespace === undefined
           ? ""
           : `${definition.identity.namespace}/`}${definition.identity.name}`,
         identity: definition.identity,
-        symbol,
+        symbol: `${symbolSegment(definition.identity.name)}Collection`,
         metadata: definition.metadata,
         members: definition.icons.map((icon) => iconKey(icon.identity)),
       };
-    })
-    .sort((left, right) => left.key.localeCompare(right.key));
+    }),
+  );
 
   assert.deepEqual(AsterIconManifest, icons);
   assert.deepEqual(AsterCollectionManifest, collections);

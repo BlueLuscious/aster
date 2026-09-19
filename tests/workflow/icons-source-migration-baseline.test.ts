@@ -6,9 +6,34 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import type { CollectionDefinition, IconDefinition } from "@aster/core";
-import * as iconExports from "@aster/icons";
-import * as collectionExports from "@aster/icons/collections";
+import {
+  AsterCollectionLoaders,
+  AsterIconLoaders,
+} from "@aster/icons/dynamic";
+import {
+  AsterCollectionManifest,
+  AsterIconManifest,
+} from "@aster/icons/manifest";
 import { Svg } from "@aster/svg";
+
+const iconExports = Object.fromEntries(
+  await Promise.all(
+    AsterIconManifest.map(async ({ key, symbol }) => {
+      const loader = AsterIconLoaders[key];
+      assert.ok(loader);
+      return [symbol, await loader()] as const;
+    }),
+  ),
+);
+const collectionExports = Object.fromEntries(
+  await Promise.all(
+    AsterCollectionManifest.map(async ({ key, symbol }) => {
+      const loader = AsterCollectionLoaders[key];
+      assert.ok(loader);
+      return [symbol, await loader()] as const;
+    }),
+  ),
+);
 
 const packageRoot = resolve(
   dirname(fileURLToPath(import.meta.url)),
@@ -101,14 +126,8 @@ const sourceMigrationBaseline = Object.freeze({
     }),
   ]),
   packageExports: Object.freeze({
-    ".": Object.freeze({
-      types: "./dist/index.d.ts",
-      import: "./dist/index.js",
-    }),
-    "./collections": Object.freeze({
-      types: "./dist/collections/index.d.ts",
-      import: "./dist/collections/index.js",
-    }),
+    ".": null,
+    "./collections": null,
     "./manifest": Object.freeze({
       types: "./dist/manifest/index.d.ts",
       import: "./dist/manifest/index.js",
@@ -190,10 +209,6 @@ async function collectCanonicalSources(
 
 test("places every retained canonical source at its collision-free destination", async () => {
   const iconSources = await collectCanonicalSources("src/glyphs", ".icon.ts");
-  const obsoleteIconSources = await collectCanonicalSources(
-    "src/icons",
-    ".icon.ts",
-  );
   const collectionSources = await collectCanonicalSources(
     "src/collections",
     ".collection.ts",
@@ -209,12 +224,24 @@ test("places every retained canonical source at its collision-free destination",
     iconSources,
     sourceMigrationBaseline.icons.map(({ sourcePath }) => sourcePath),
   );
-  assert.deepEqual(obsoleteIconSources, []);
+  await assert.rejects(readdir(resolve(packageRoot, "src/icons")));
   assert.deepEqual(
     collectionSources,
     sourceMigrationBaseline.collections.map(({ sourcePath }) => sourcePath),
   );
   assert.equal(new Set(sourcePaths).size, sourcePaths.length);
+  await assert.rejects(
+    readFile(resolve(packageRoot, "src/collections/index.ts"), "utf8"),
+  );
+  await assert.rejects(
+    readFile(
+      resolve(
+        packageRoot,
+        "src/collections/constants/aster-collections.constant.ts",
+      ),
+      "utf8",
+    ),
+  );
 
   for (const icon of sourceMigrationBaseline.icons) {
     const name = icon.identity.slice("aster/".length);
@@ -241,7 +268,6 @@ test("places every retained canonical source at its collision-free destination",
 
 test("retains the exact baseline definitions, membership and rendered SVG", () => {
   const namedIcons = Object.entries(iconExports)
-    .filter(([symbol]) => symbol !== "AsterIcons")
     .map(([symbol, definition]) => ({
       identity: identityOf(definition as IconDefinition),
       symbol,
@@ -249,7 +275,6 @@ test("retains the exact baseline definitions, membership and rendered SVG", () =
     }))
     .sort((left, right) => compareText(left.identity, right.identity));
   const namedCollections = Object.entries(collectionExports)
-    .filter(([symbol]) => symbol !== "AsterCollections")
     .map(([symbol, definition]) => ({
       identity: (definition as CollectionDefinition).identity.name,
       symbol,
@@ -302,17 +327,11 @@ test("retains the complete supported package and import surface after migration"
   assert.deepEqual(manifest.exports, sourceMigrationBaseline.packageExports);
   assert.deepEqual(
     Object.keys(iconExports).sort(),
-    [
-      "AsterIcons",
-      ...sourceMigrationBaseline.icons.map(({ symbol }) => symbol),
-    ].sort(),
+    sourceMigrationBaseline.icons.map(({ symbol }) => symbol).sort(),
   );
   assert.deepEqual(
     Object.keys(collectionExports).sort(),
-    [
-      "AsterCollections",
-      ...sourceMigrationBaseline.collections.map(({ symbol }) => symbol),
-    ].sort(),
+    sourceMigrationBaseline.collections.map(({ symbol }) => symbol).sort(),
   );
 
   for (const icon of sourceMigrationBaseline.icons) {

@@ -100,9 +100,8 @@ function extractModuleSpecifiers(source) {
     .filter((specifier) => specifier !== undefined);
 }
 
-test("exposes the exact documented icon root and definition families", async () => {
-  const root = await import("@aster/icons");
-  const collections = await import("@aster/icons/collections");
+test("exposes exact definition families without aggregate roots", async () => {
+  const dynamic = await import("@aster/icons/dynamic");
 
   assert.ok(
     Object.keys(iconSubpaths).length > 0,
@@ -113,46 +112,48 @@ test("exposes the exact documented icon root and definition families", async () 
     "Expected at least one emitted collection definition subpath.",
   );
 
-  assert.deepEqual(
-    Object.keys(root).sort(),
-    ["AsterIcons", ...Object.values(iconSubpaths)].sort(),
+  await assert.rejects(
+    import("@aster/icons"),
+    (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
-  assert.deepEqual(
-    root.AsterIcons,
-    Object.values(iconSubpaths).map((symbol) => root[symbol]),
+  await assert.rejects(
+    import("@aster/icons/collections"),
+    (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
-  assert.ok(Object.isFrozen(root.AsterIcons));
-  assert.deepEqual(
-    Object.keys(collections).sort(),
-    ["AsterCollections", ...Object.values(collectionSubpaths)].sort(),
+  await assert.rejects(readFile(resolve(distributionRoot, "index.js"), "utf8"));
+  await assert.rejects(
+    readFile(resolve(distributionRoot, "collections/index.js"), "utf8"),
   );
-  assert.deepEqual(
-    collections.AsterCollections,
-    Object.values(collectionSubpaths).map((symbol) => collections[symbol]),
-  );
-  assert.ok(Object.isFrozen(collections.AsterCollections));
 
   for (const [subpath, symbol] of Object.entries(iconSubpaths)) {
     const direct = await import(`@aster/icons/${subpath}`);
     const [name, variant] = subpath.split("/");
+    const key = `aster/${name}${variant === undefined ? "" : `@${variant}`}`;
+    const loader = dynamic.AsterIconLoaders[key];
 
+    assert.ok(loader);
     assert.deepEqual(Object.keys(direct), [symbol]);
-    assert.equal(direct[symbol], root[symbol]);
+    assert.equal(direct[symbol], await loader());
     assert.equal(direct[symbol].identity.name, name);
     assert.equal(direct[symbol].identity.variant, variant);
   }
 
   for (const [subpath, symbol] of Object.entries(collectionSubpaths)) {
     const direct = await import(`@aster/icons/collections/${subpath}`);
+    const loader = dynamic.AsterCollectionLoaders[subpath];
 
+    assert.ok(loader);
     assert.deepEqual(Object.keys(direct), [symbol]);
-    assert.equal(direct[symbol], collections[symbol]);
+    assert.equal(direct[symbol], await loader());
     assert.equal(direct[symbol].identity.name, subpath);
     assert.ok(
       direct[symbol].icons.every((definition) =>
-        root.AsterIcons.includes(definition),
+        Object.hasOwn(
+          dynamic.AsterIconLoaders,
+          `${definition.identity.namespace}/${definition.identity.name}`,
+        ),
       ),
-      `Expected every ${subpath} member in the complete icon index.`,
+      `Expected every ${subpath} member to have one exact icon loader.`,
     );
   }
 });
@@ -194,12 +195,10 @@ test("publishes only accepted scalable export families", async () => {
   ];
 
   assert.deepEqual(Object.keys(manifest.exports), expectedExportKeys);
-  assert.equal(manifest.exports["."].import, "./dist/index.js");
-  assert.equal(manifest.exports["."].types, "./dist/index.d.ts");
-  assert.deepEqual(manifest.exports["./collections"], {
-    types: "./dist/collections/index.d.ts",
-    import: "./dist/collections/index.js",
-  });
+  assert.equal(manifest.exports["."], null);
+  assert.equal(manifest.exports["./collections"], null);
+  assert.equal(Object.hasOwn(manifest, "main"), false);
+  assert.equal(Object.hasOwn(manifest, "types"), false);
   assert.deepEqual(manifest.exports["./manifest"], {
     types: "./dist/manifest/index.d.ts",
     import: "./dist/manifest/index.js",

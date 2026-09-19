@@ -15,13 +15,6 @@ export const iconsBaseline = Object.freeze({
   sampleCount: 7,
   /** @description Stable public import scenarios measured before distribution changes. */
   scenarios: Object.freeze({
-    /** @description Current package-wide icon root import. */
-    root: Object.freeze({
-      /** @description Stable report scenario identity. */
-      name: "icons.import.root",
-      /** @description Public package specifier under measurement. */
-      specifier: "@aster/icons",
-    }),
     /** @description Representative isolated icon import. */
     isolatedIcon: Object.freeze({
       /** @description Stable report scenario identity. */

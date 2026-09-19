@@ -1,15 +1,8 @@
 import type {
-  CollectionDefinition,
   IconDefinition,
 } from "@aster/core";
-import {
-  AsterIcons,
-  ArrowLeft,
-  Search,
-} from "../../src/index.js";
-import {
-  AsterCollections,
-} from "../../src/collections/index.js";
+import { ArrowLeft } from "../../src/generated/facades/icons/arrow-left.js";
+import { Search } from "../../src/generated/facades/icons/search.js";
 import type {
   CollectionDefinitionLoader,
   CollectionDefinitionLoaderMap,
@@ -30,8 +23,6 @@ import {
 } from "../../src/manifest/index.js";
 
 const directDefinition: IconDefinition = ArrowLeft;
-const indexedDefinitions: readonly IconDefinition[] = AsterIcons;
-const indexedCollections: readonly CollectionDefinition[] = AsterCollections;
 const iconManifest: readonly IconManifestEntry[] = AsterIconManifest;
 const collectionManifest: readonly CollectionManifestEntry[] =
   AsterCollectionManifest;
@@ -42,7 +33,6 @@ const iconLoader: IconDefinitionLoader | undefined =
   AsterIconLoaders["aster/arrow-left"];
 const collectionLoader: CollectionDefinitionLoader | undefined =
   AsterCollectionLoaders.amellus;
-declare const collectionDefinition: CollectionDefinition;
 
 // @ts-expect-error Canonical definitions are immutable.
 directDefinition.identity.name = "changed";
@@ -52,12 +42,6 @@ const component = ArrowLeft.component;
 
 // @ts-expect-error Collection modules do not expose rendered SVG.
 const markup = Search.svg;
-
-// @ts-expect-error Canonical icon indexes are immutable.
-AsterIcons.push(ArrowLeft);
-
-// @ts-expect-error Canonical collection indexes are immutable.
-AsterCollections.push(collectionDefinition);
 
 // @ts-expect-error Canonical manifest ordering is immutable.
 AsterIconManifest.push(AsterIconManifest[0]);
@@ -75,8 +59,6 @@ AsterIconLoaders["aster/changed"] = iconLoader;
 AsterCollectionLoaders.changed = collectionLoader;
 
 void directDefinition;
-void indexedDefinitions;
-void indexedCollections;
 void iconManifest;
 void collectionManifest;
 void iconLoaders;

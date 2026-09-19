@@ -1,12 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import * as collectionExports from "../../src/collections/index.js";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
 } from "../../src/dynamic/index.js";
-import * as iconExports from "../../src/icons/index.js";
 import {
   AsterCollectionManifest,
   AsterIconManifest,
@@ -42,19 +40,26 @@ test("loads every exact icon and collection definition asynchronously", async ()
     const loader = AsterIconLoaders[entry.key];
 
     assert.ok(loader);
-    assert.equal(
-      await loader(),
-      (iconExports as Record<string, unknown>)[entry.symbol],
-    );
+    const definition = await loader();
+
+    assert.deepEqual(definition.identity, entry.identity);
+    assert.equal(definition.metadata.displayName, entry.displayName);
+    assert.equal(await loader(), definition);
   }
 
   for (const entry of AsterCollectionManifest) {
     const loader = AsterCollectionLoaders[entry.key];
 
     assert.ok(loader);
-    assert.equal(
-      await loader(),
-      (collectionExports as Record<string, unknown>)[entry.symbol],
+    const definition = await loader();
+
+    assert.deepEqual(definition.identity, entry.identity);
+    assert.deepEqual(
+      definition.icons.map(({ identity }) =>
+        `${identity.namespace}/${identity.name}${identity.variant === undefined ? "" : `@${identity.variant}`}`
+      ),
+      entry.members,
     );
+    assert.equal(await loader(), definition);
   }
 });
