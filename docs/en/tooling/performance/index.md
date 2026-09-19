@@ -64,6 +64,8 @@ deliberate measurement evidence.
 | `CoreBaselineFactory`, `SvgBaselineFactory`, `IconsBaselineFactory`, `ImportBaselineFactory`, `CliBaselineFactory` | Compose fresh package runners from shared repository and benchmark capabilities. |
 | `CoreBaselineRunner`, `SvgBaselineRunner`, `IconsBaselineRunner`, `ImportBaselineRunner`, `CliBaselineRunner` | Own each package's independent scenario matrix and final immutable report. |
 | `CliColdStartRunner` | Repeats cold root-import and executable scenarios, validates their exact process contract and summarises timings. |
+| `CliCommandEvaluationProbe` | Instruments emitted CLI and Icons modules while executing one real built-in catalogue workflow in a disposable process. |
+| `CliCommandEvaluationRunner` | Repeats built-in workflows in fresh processes and rejects unstable command results or evaluated-module sets. |
 
 Each package owns an independent runner, factory, and command. `CoreBaselineFactory` composes the
 shared Node capabilities, while `CoreBaselineRunner` defines only Core icon and collection
@@ -75,9 +77,11 @@ definition, emission, adoption, rejection, batch and distribution evidence. Any 
 follows the same isolation, reuses shared capabilities, and never edits a global scenario registry
 or imports another package baseline's configuration.
 
-The shared process host exists because both CLI cold-start and Icons module-evaluation evidence
-require isolated Node processes. CLI retains only its cold-start policy; Icons owns its public
-specifier scenarios while the shared import runner and disposable probe own generic measurement.
+The shared process host exists because CLI cold-start, CLI built-in command evaluation, and Icons
+module-evaluation evidence require isolated Node processes. CLI owns its command workflows and
+instrumentation because their semantics cross its provider integration boundary; Icons owns its
+public specifier scenarios while the shared import runner and disposable probe own generic import
+measurement.
 
 ## Core comparison
 
@@ -126,9 +130,10 @@ pnpm benchmark:cli
 ```
 
 The command builds Core, Icons, SVG, and CLI before measuring synchronous shell adaptation,
-asynchronous programmatic commands over a fixed synthetic provider, fresh Node startup, and emitted
-distribution evidence. Exact scenarios, attribution, and acceptance rules are defined by the
-[CLI Quality Baseline](../../packages/cli/quality-baseline.md).
+asynchronous programmatic commands over a fixed synthetic provider, fresh Node startup, real
+built-in catalogue command module evaluation, and emitted distribution evidence. Exact scenarios,
+attribution, and acceptance rules are defined by the [CLI Quality
+Baseline](../../packages/cli/quality-baseline.md).
 
 ## Import comparison
 

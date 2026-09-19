@@ -8,9 +8,11 @@ import { NodeProcessHost } from "../../shared/runtime/node-process.host.mjs";
 import { NumericSampleStatistics } from "../../shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../shared/runtime/package-distribution.inspector.mjs";
 import { cliBaseline } from "../constants/cli-baseline.constant.mjs";
+import { cliCommandEvaluation } from "../constants/cli-command-evaluation.constant.mjs";
 import { CliBaselineFixtureFactory } from "./cli-baseline-fixture.factory.mjs";
 import { CliBaselineRunner } from "./cli-baseline.runner.mjs";
 import { CliColdStartRunner } from "./cli-cold-start.runner.mjs";
+import { CliCommandEvaluationRunner } from "./cli-command-evaluation.runner.mjs";
 
 /**
  * @description Composes Node and repository capabilities required by the CLI comparison.
@@ -39,6 +41,12 @@ export class CliBaselineFactory {
       new CliColdStartRunner(
         new NodeProcessHost(paths.resolve(".")),
         statistics,
+      ),
+      new CliCommandEvaluationRunner(
+        new NodeProcessHost(paths.resolve(".")),
+        statistics,
+        paths.resolve(cliCommandEvaluation.probePath),
+        cliCommandEvaluation.sampleCount,
       ),
       distribution,
       host,

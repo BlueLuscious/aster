@@ -8,9 +8,11 @@ performance threshold. Current package findings remain in [CLI Quality](quality.
 
 ## Representative evidence
 
-The schema-version-two baseline prepares a fixed synthetic catalogue outside timed operations.
+The schema-version-three baseline prepares a fixed synthetic catalogue outside timed operations.
 Programmatic scenarios use the public package roots; shell parsing and presentation scenarios
-exercise the private built host directly without process or package-manager cost.
+exercise the private built host directly without process or package-manager cost. Separate
+fresh-process scenarios instrument real built-in catalogue commands and attribute evaluated CLI
+and Icons distribution modules.
 
 | Workload | Pressure represented |
 | --- | --- |
@@ -27,6 +29,7 @@ exercise the private built host directly without process or package-manager cost
 | Cold Node control | Fresh Node startup without Aster module evaluation. |
 | Cold root import | Fresh Node startup plus programmatic root composition and module evaluation. |
 | Cold executable version | Fresh Node startup, private host acquisition, argv parsing, command execution, presentation, and process writes. |
+| Built-in catalogue command evaluation | Fresh Node startup, one real catalogue workflow, and exact CLI and Icons distribution-module evaluation. |
 
 Filesystem publication and package-manager startup are excluded from timing because they measure
 host and storage conditions rather than command-domain execution. Their behaviour remains covered
@@ -69,12 +72,31 @@ retaining mutable memoisation, trusting canonical object provenance, bundling pr
 weakening reconstruction would change correctness or distribution boundaries without evidence of
 a safe CLI-owned mechanism.
 
+## Lazy-integration control
+
+The schema-version-three control executes each representative built-in workflow in five fresh
+processes. Every sample produced the same result and evaluated-module set:
+
+| Workflow | Stable result | CLI modules | Icons modules |
+| --- | --- | ---: | ---: |
+| `list icons` | `success:icon-list` | 62 | 58 |
+| `search camera` | `success:search` | 62 | 58 |
+| `show icon aster/camera` | `success:icon-show` | 62 | 58 |
+| `export icon aster/camera` | `success:export` | 62 | 58 |
+| `review icon aster/camera` | `success:review` | 62 | 58 |
+
+The Icons set includes its dynamic entry point and generated loader map, all 26 icon facades and
+definitions, the Amellus collection facade and definition, and both authoring authorities. This
+is the accepted pre-migration control: metadata-only commands currently pay the same complete
+catalogue evaluation cost as definition-consuming commands. Future lazy-provider evidence must
+compare exact module sets, not infer laziness from elapsed time alone.
+
 ## Distribution evidence
 
-The measured native ES2022 ESM output contains 274 files and 345,415 unminified bytes:
+The measured native ES2022 ESM output contains 274 files and 346,295 unminified bytes:
 
-- 160 JavaScript modules totalling 243,973 bytes;
-- 114 declaration files totalling 101,442 bytes;
+- 160 JavaScript modules totalling 244,812 bytes;
+- 114 declaration files totalling 101,483 bytes;
 - one public root export;
 - one private `aster` binary mapping;
 - `sideEffects: false`;
@@ -97,10 +119,10 @@ pnpm benchmark:cli
 ```
 
 The command builds Core, Icons, SVG, and CLI, then runs Node with explicit garbage-collection
-access. It prints schema-version-two JSON and writes no artefact. Reports include environment,
+access. It prints schema-version-three JSON and writes no artefact. Reports include environment,
 synchronous and asynchronous operation samples, heap-pressure indicators, deterministic
-checksums, fresh-process samples, emitted files and bytes, exports, side effects, engine range,
-binary mapping, and dependencies.
+checksums, cold-process samples, built-in command module sets, emitted files and bytes, exports,
+side effects, engine range, binary mapping, and dependencies.
 
 Heap growth is a pressure indicator rather than an allocation counter. Processor state, background
 load, storage, antivirus software, runtime revision, and operating system can affect measurements.
@@ -121,8 +143,9 @@ committed.
 
 ## Tooling boundary
 
-CLI owns its fixture factory, operation runner, cold-start policy, composition factory and command.
-The Node process adapter is shared private tooling because Icons import evaluation now requires the
-same fresh-process capability. One generic runner measures synchronous or asynchronous scenario
-results sequentially while statistics, heap, clock, repository and distribution capabilities
-remain shared. Neither layer is shipped by CLI or imported by production packages.
+CLI owns its fixture factory, operation runner, cold-start policy, built-in command-evaluation
+probe and runner, composition factory, and command. The Node process adapter is shared private
+tooling because CLI and Icons evaluation evidence requires the same fresh-process capability. One
+generic runner measures synchronous or asynchronous scenario results sequentially while
+statistics, heap, clock, repository and distribution capabilities remain shared. Neither layer is
+shipped by CLI or imported by production packages.

@@ -100,8 +100,8 @@ and exact asynchronous loaders are the foundation for genuinely lazy CLI consump
 The built-in CLI provider currently invokes every generated loader to satisfy its complete-snapshot
 contract. Replace that compatibility bridge so:
 
-- `list` and `search` consume only manifest metadata;
-- `show`, `export` and `review` resolve only the selected icon or collection;
+- `list`, `search` and `show` consume only manifest metadata;
+- `export` and `review` resolve only the selected icon or collection;
 - collection resolution evaluates only that collection and its explicit members;
 - provider absence and loader rejection remain deterministic command diagnostics;
 - `help` and `version` retain zero Icons acquisition or evaluation;

@@ -3,9 +3,11 @@ import { Svg } from "@aster/svg";
 import { CommandLineParser } from "../../../../packages/cli/dist/shell/parsing/runtime/command-line.parser.js";
 import { CommandOutputPresenter } from "../../../../packages/cli/dist/shell/presentation/runtime/command-output.presenter.js";
 import { cliBaseline } from "../constants/cli-baseline.constant.mjs";
+import { cliCommandEvaluation } from "../constants/cli-command-evaluation.constant.mjs";
 
 /**
- * @description Coordinates CLI operation, cold-start, and distribution baseline evidence.
+ * @description Coordinates CLI operation, module-evaluation, cold-start, and distribution
+ * baseline evidence.
  */
 export class CliBaselineRunner {
   /** @description Generic deterministic runner configured for synchronous scenarios. */
@@ -16,6 +18,9 @@ export class CliBaselineRunner {
 
   /** @description Fresh-process CLI measurement authority. */
   #coldStartRunner;
+
+  /** @description Fresh-process real-command module evaluation authority. */
+  #commandEvaluationRunner;
 
   /** @description Emitted package shape inspector. */
   #distributionInspector;
@@ -40,6 +45,7 @@ export class CliBaselineRunner {
    * @param {{ measure(scenario: object): Promise<object>, methodology(): object }} benchmarkRunner - Measurement authority configured for synchronous scenarios.
    * @param {{ measure(scenario: object): Promise<object>, methodology(): object }} asynchronousBenchmarkRunner - Measurement authority configured for asynchronous scenarios.
    * @param {{ measure(scenario: object): object }} coldStartRunner - Fresh-process measurement authority.
+   * @param {{ measure(scenarioKey: string, scenario: object): object }} commandEvaluationRunner - Real-command module evaluation authority.
    * @param {{ inspect(packagePath: string): Promise<object> }} distributionInspector - Package distribution authority.
    * @param {{ environment(): object }} host - Runtime environment authority.
    * @param {import("../contracts/internal/cli-baseline-fixtures.contract.mjs").ICliBaselineFixtures} fixtures - Prepared CLI inputs.
@@ -49,6 +55,7 @@ export class CliBaselineRunner {
     benchmarkRunner,
     asynchronousBenchmarkRunner,
     coldStartRunner,
+    commandEvaluationRunner,
     distributionInspector,
     host,
     fixtures,
@@ -57,6 +64,7 @@ export class CliBaselineRunner {
     this.#benchmarkRunner = benchmarkRunner;
     this.#asynchronousBenchmarkRunner = asynchronousBenchmarkRunner;
     this.#coldStartRunner = coldStartRunner;
+    this.#commandEvaluationRunner = commandEvaluationRunner;
     this.#distributionInspector = distributionInspector;
     this.#host = host;
     this.#fixtures = fixtures;
@@ -167,6 +175,7 @@ export class CliBaselineRunner {
     ];
     const synchronousResults = [];
     const asynchronousResults = [];
+    const evaluationResults = [];
 
     for (const scenario of synchronousScenarios) {
       synchronousResults.push(await this.#benchmarkRunner.measure(scenario));
@@ -178,6 +187,14 @@ export class CliBaselineRunner {
       );
     }
 
+    for (const [scenarioKey, scenario] of Object.entries(
+      cliCommandEvaluation.scenarios,
+    )) {
+      evaluationResults.push(
+        this.#commandEvaluationRunner.measure(scenarioKey, scenario),
+      );
+    }
+
     return Object.freeze({
       schemaVersion: cliBaseline.schemaVersion,
       package: cliBaseline.packageName,
@@ -186,12 +203,15 @@ export class CliBaselineRunner {
         synchronous: this.#benchmarkRunner.methodology(),
         asynchronous: this.#asynchronousBenchmarkRunner.methodology(),
         coldStart: "fresh direct Node processes without package-manager bootstrap",
+        commandEvaluation:
+          "fresh direct Node processes with CLI and Icons distribution-module instrumentation",
       }),
       distribution: await this.#distributionInspector.inspect(
         cliBaseline.packagePath,
       ),
       scenarios: Object.freeze(synchronousResults),
       asyncScenarios: Object.freeze(asynchronousResults),
+      evaluationScenarios: Object.freeze(evaluationResults),
       coldScenarios: Object.freeze(
         coldScenarios.map((scenario) => this.#coldStartRunner.measure(scenario)),
       ),

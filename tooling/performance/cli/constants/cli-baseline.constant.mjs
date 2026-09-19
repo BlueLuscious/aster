@@ -3,7 +3,7 @@
  */
 export const cliBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
-  schemaVersion: 2,
+  schemaVersion: 3,
   /** @description Measured public package identity. */
   packageName: "@aster/cli",
   /** @description Workspace-relative measured package root. */
