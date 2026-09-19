@@ -69,11 +69,14 @@ therefore fails before generated outputs are touched.
 
 Names begin with one ASCII lowercase letter and continue with lowercase alphanumeric segments
 separated by one hyphen. Variants use portable Core slug syntax. Every canonical export must call
-its configured public `Icon.define(...)` or `Collection.define(...)` factory with a direct object
-whose literal identity agrees with its path. Invalid layout or TypeScript, mismatched identities,
-missing exports, additional exported constants, duplicate identities and dangling members are
-rejected before any generated file is written. Distinct public subpaths may expose the same symbol
-because their module scopes never converge in an aggregate barrel.
+its configured public `Icon.define(...)` or `Collection.define(...)` factory, imported as one
+runtime named import from `@aster/core`, with a direct object whose literal identity agrees with
+its path. Collection members and imported static metadata authorities must also use runtime named
+imports; imported authorities must be exported top-level constants. Invalid layout or TypeScript,
+mismatched identities, missing exports, additional exported constants, duplicate static
+properties, duplicate identities and dangling members are rejected before any generated file is
+written. Distinct public subpaths may expose the same symbol because their module scopes never
+converge in an aggregate barrel.
 
 The icon names `collections`, `dynamic` and `manifest` are reserved because those first-level
 subpaths belong to collection or integration families. A base icon therefore cannot shadow them.
@@ -134,6 +137,22 @@ cannot drift independently. The
 synchroniser builds the complete immutable inspection set before asking the serialiser for any
 output, so source failures cannot partially replace generated files. Static document and value
 caches are scoped to one complete synchronisation and cleared before the next inspection.
+
+## Internal contracts
+
+| Contract | Responsibility and relationship |
+| --- | --- |
+| `ICatalogueSourceFamily` | Configures one canonical source family and its Core factory, physical root and generated facade root. |
+| `ICatalogueSourceIdentity` | Carries the path-owned name, optional variant, symbol and public subpath produced by layout normalisation. |
+| `ICatalogueCollectionMemberReference` | Retains one collection member's local symbol, imported symbol and canonical module specifier for relationship validation. |
+| `ICatalogueIconManifestData` | Carries statically extracted metadata for one icon manifest entry without portable geometry. |
+| `ICatalogueCollectionManifestData` | Carries statically extracted collection metadata and ordered member keys. |
+| `ICatalogueSourceSyntaxInspection` | Couples one module's static manifest data with any collection member references found by syntax inspection. |
+| `ICatalogueSourceModule` | Combines canonical path identity, source location, manifest data and relationships for one validated module. |
+| `ICatalogueSourceFamilyInspection` | Groups the canonically ordered modules validated for one configured family. |
+| `ICatalogueSourceOutput` | Describes one deterministic generated relative path and its complete content. |
+| `ICatalogueSourcePlan` | Separates fixed generated outputs from the atomically published facade set. |
+| `ICatalogueSourceFileSystem` | Isolates recursive acquisition, text persistence and owned-directory replacement from catalogue policy. |
 
 ## Workflow
 

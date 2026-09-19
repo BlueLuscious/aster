@@ -120,6 +120,13 @@ export class CatalogueSourceValueResolver {
         }
 
         const name = this.#propertyName(sourcePath, property.name);
+
+        if (Object.hasOwn(value, name)) {
+          throw new CatalogueSourceError(
+            `${sourcePath} contains duplicate static property ${name}.`,
+          );
+        }
+
         value[name] = await this.#resolveExpression(
           sourcePath,
           sourceFile,
@@ -204,7 +211,7 @@ export class CatalogueSourceValueResolver {
     references.add(reference);
 
     try {
-      const local = this.#constantDeclaration(sourceFile, name);
+      const local = this.#constantDeclaration(sourcePath, sourceFile, name);
 
       if (local !== undefined) {
         const value = await this.#resolveExpression(
@@ -217,7 +224,7 @@ export class CatalogueSourceValueResolver {
         return value;
       }
 
-      const binding = this.#importBinding(sourceFile, name);
+      const binding = this.#importBinding(sourcePath, sourceFile, name);
 
       if (binding === undefined || !/^(?:\.\/|\.\.\/)/u.test(binding.specifier)) {
         throw new CatalogueSourceError(
@@ -231,8 +238,10 @@ export class CatalogueSourceValueResolver {
       );
       const target = await this.#document(targetPath);
       const declaration = this.#constantDeclaration(
+        targetPath,
         target.sourceFile,
         binding.importedName,
+        true,
       );
 
       if (declaration === undefined) {
@@ -286,15 +295,22 @@ export class CatalogueSourceValueResolver {
 
   /**
    * @description Finds one directly initialised top-level constant declaration.
+   * @param {string} sourcePath - Absolute source path used for failure context.
    * @param {import("typescript").SourceFile} sourceFile - Parsed source document.
    * @param {string} name - Constant identifier to find.
+   * @param {boolean} [exported=false] - Whether the declaration must be exported.
    * @returns {import("typescript").VariableDeclaration | undefined} Matching initialised constant.
    */
-  #constantDeclaration(sourceFile, name) {
+  #constantDeclaration(sourcePath, sourceFile, name, exported = false) {
+    const declarations = [];
+
     for (const statement of sourceFile.statements) {
       if (
         !ts.isVariableStatement(statement)
         || (statement.declarationList.flags & ts.NodeFlags.Const) === 0
+        || (exported && !statement.modifiers?.some(
+          (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
+        ))
       ) {
         continue;
       }
@@ -305,25 +321,35 @@ export class CatalogueSourceValueResolver {
           && declaration.name.text === name
           && declaration.initializer !== undefined
         ) {
-          return declaration;
+          declarations.push(declaration);
         }
       }
     }
 
-    return undefined;
+    if (declarations.length > 1) {
+      throw new CatalogueSourceError(
+        `${sourcePath} contains ambiguous static constant ${name}.`,
+      );
+    }
+
+    return declarations[0];
   }
 
   /**
    * @description Finds one named import binding by its local identifier.
+   * @param {string} sourcePath - Absolute source path used for failure context.
    * @param {import("typescript").SourceFile} sourceFile - Parsed source document.
    * @param {string} localName - Local import identifier.
    * @returns {{ importedName: string, specifier: string } | undefined} Static named import binding.
    */
-  #importBinding(sourceFile, localName) {
+  #importBinding(sourcePath, sourceFile, localName) {
+    const bindings = [];
+
     for (const statement of sourceFile.statements) {
       if (
         !ts.isImportDeclaration(statement)
         || !ts.isStringLiteralLike(statement.moduleSpecifier)
+        || statement.importClause?.isTypeOnly
         || statement.importClause?.namedBindings === undefined
         || !ts.isNamedImports(statement.importClause.namedBindings)
       ) {
@@ -331,16 +357,26 @@ export class CatalogueSourceValueResolver {
       }
 
       for (const element of statement.importClause.namedBindings.elements) {
+        if (element.isTypeOnly) {
+          continue;
+        }
+
         if (element.name.text === localName) {
-          return Object.freeze({
+          bindings.push(Object.freeze({
             importedName: element.propertyName?.text ?? element.name.text,
             specifier: statement.moduleSpecifier.text,
-          });
+          }));
         }
       }
     }
 
-    return undefined;
+    if (bindings.length > 1) {
+      throw new CatalogueSourceError(
+        `${sourcePath} contains ambiguous static import ${localName}.`,
+      );
+    }
+
+    return bindings[0];
   }
 
   /**

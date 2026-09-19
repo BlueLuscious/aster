@@ -48,6 +48,8 @@ function iconSource(name, variant) {
   const variantProperty = variant === undefined ? "" : `, variant: "${variant}"`;
 
   return [
+    'import { Icon } from "@aster/core";',
+    "",
     `export const ${symbol} = Icon.define({`,
     `  identity: { name: "${name}"${variantProperty} },`,
     `  metadata: { displayName: "${pascalCase(name)}", tags: ["${name}"], rtl: "preserve", deprecated: false },`,
@@ -58,8 +60,9 @@ function iconSource(name, variant) {
 
 function collectionSource(name, imports = [], members = []) {
   return [
+    'import { Collection } from "@aster/core";',
     ...imports,
-    ...(imports.length === 0 ? [] : [""]),
+    "",
     `export const ${pascalCase(name)}Collection = Collection.define({`,
     `  identity: { name: "${name}" },`,
     `  icons: [${members.join(", ")}],`,
@@ -96,6 +99,7 @@ async function createPackageFixture() {
   await writeFile(
     zetaPath,
     [
+      'import { Icon } from "@aster/core";',
       'import { fixtureAuthorship } from "../../../authoring/constants/fixture-authorship.constant.js";',
       "",
       "export const Zeta = Icon.define({",
@@ -582,7 +586,7 @@ test("rejects invalid and malformed canonical modules before writing", async () 
     {
       files: [[
         "w/wrong/wrong.icon.ts",
-        "export const Other = Icon.define({});\n",
+        'import { Icon } from "@aster/core";\n\nexport const Other = Icon.define({});\n',
       ]],
       pattern: /must export exactly one constant named Wrong/u,
     },
@@ -601,30 +605,44 @@ test("rejects invalid and malformed canonical modules before writing", async () 
     {
       files: [[
         "c/camera/camera.icon.ts",
-        'export const Camera = Icon.define({ identity: { name: "photograph" } });\n',
+        'import { Icon } from "@aster/core";\n\nexport const Camera = Icon.define({ identity: { name: "photograph" } });\n',
       ]],
       pattern: /identity must match camera/u,
     },
     {
       files: [[
         "c/camera/camera-filled.icon.ts",
-        'export const CameraFilled = Icon.define({ identity: { name: "camera", variant: "outline" } });\n',
+        'import { Icon } from "@aster/core";\n\nexport const CameraFilled = Icon.define({ identity: { name: "camera", variant: "outline" } });\n',
       ]],
       pattern: /identity must match camera@filled/u,
     },
     {
       files: [[
         "c/computed/computed.icon.ts",
-        'export const Computed = Icon.define({ identity: { name: "computed" }, metadata: { displayName: createName(), rtl: "preserve", deprecated: false } });\n',
+        'import { Icon } from "@aster/core";\n\nexport const Computed = Icon.define({ identity: { name: "computed" }, metadata: { displayName: createName(), rtl: "preserve", deprecated: false } });\n',
       ]],
       pattern: /unsupported static catalogue syntax CallExpression/u,
     },
     {
       files: [[
         "c/cyclic/cyclic.icon.ts",
-        'const label = label;\nexport const Cyclic = Icon.define({ identity: { name: "cyclic" }, metadata: { displayName: label, rtl: "preserve", deprecated: false } });\n',
+        'import { Icon } from "@aster/core";\n\nconst label = label;\nexport const Cyclic = Icon.define({ identity: { name: "cyclic" }, metadata: { displayName: label, rtl: "preserve", deprecated: false } });\n',
       ]],
       pattern: /cyclic static catalogue reference through label/u,
+    },
+    {
+      files: [[
+        "f/foreign/foreign.icon.ts",
+        'import { Icon } from "@aster/not-core";\n\nexport const Foreign = Icon.define({ identity: { name: "foreign" }, metadata: { displayName: "Foreign", rtl: "preserve", deprecated: false } });\n',
+      ]],
+      pattern: /must import Icon from @aster\/core as one runtime named import/u,
+    },
+    {
+      files: [[
+        "t/type-only/type-only.icon.ts",
+        'import type { Icon } from "@aster/core";\n\nexport const TypeOnly = Icon.define({ identity: { name: "type-only" }, metadata: { displayName: "Type Only", rtl: "preserve", deprecated: false } });\n',
+      ]],
+      pattern: /must import Icon from @aster\/core as one runtime named import/u,
     },
     {
       files: [["x/camera/camera.icon.ts", iconSource("camera")]],
@@ -650,6 +668,130 @@ test("rejects invalid and malformed canonical modules before writing", async () 
       for (const path of completeGeneratedOutputPaths) {
         await assert.rejects(readFile(resolve(root, path), "utf8"));
       }
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  }
+});
+
+test("rejects non-runtime collection members before replacing outputs", async () => {
+  const root = await createPackageFixture();
+  const collectionPath = resolve(
+    root,
+    "src/collections/s/sample/sample.collection.ts",
+  );
+
+  try {
+    await synchroniseIconsCatalogue(root);
+    const outputs = await readGeneratedOutputs(root);
+    await writeFile(
+      collectionPath,
+      collectionSource(
+        "sample",
+        [
+          'import type { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+        ],
+        ["AlphaIcon"],
+      ),
+      "utf8",
+    );
+
+    await assert.rejects(
+      synchroniseIconsCatalogue(root),
+      /collection member AlphaIcon must use a runtime named import/u,
+    );
+    assert.deepEqual(await readGeneratedOutputs(root), outputs);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects invalid imported manifest authorities before replacing outputs", async () => {
+  const cases = [
+    {
+      source:
+        'const fixtureAuthorship = Object.freeze({ namespace: "fixture", licence: "ISC" });\n',
+      pattern: /cannot resolve static import fixtureAuthorship/u,
+    },
+    {
+      source:
+        'export const fixtureAuthorship = Object.freeze({ namespace: "fixture", namespace: "duplicate", licence: "ISC" });\n',
+      pattern: /duplicate static property namespace/u,
+    },
+    {
+      source:
+        'export const fixtureAuthorship = Object.freeze({ namespace: "fixture", licence: "ISC" });\nexport const fixtureAuthorship = Object.freeze({ namespace: "duplicate", licence: "ISC" });\n',
+      pattern: /ambiguous static constant fixtureAuthorship/u,
+    },
+  ];
+
+  for (const fixture of cases) {
+    const root = await createPackageFixture();
+    const authorshipPath = resolve(
+      root,
+      "src/authoring/constants/fixture-authorship.constant.ts",
+    );
+
+    try {
+      await synchroniseIconsCatalogue(root);
+      const outputs = await readGeneratedOutputs(root);
+      await writeFile(authorshipPath, fixture.source, "utf8");
+
+      await assert.rejects(
+        synchroniseIconsCatalogue(root),
+        fixture.pattern,
+      );
+      assert.deepEqual(await readGeneratedOutputs(root), outputs);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  }
+});
+
+test("rejects invalid static authority bindings before replacing outputs", async () => {
+  const cases = [
+    {
+      imports: [
+        'import type { fixtureAuthorship } from "../../../authoring/constants/fixture-authorship.constant.js";',
+      ],
+      pattern: /unsupported static identifier fixtureAuthorship/u,
+    },
+    {
+      imports: [
+        'import { fixtureAuthorship } from "../../../authoring/constants/fixture-authorship.constant.js";',
+        'import { fixtureAuthorship } from "../../../authoring/constants/fixture-authorship.constant.js";',
+      ],
+      pattern: /ambiguous static import fixtureAuthorship/u,
+    },
+  ];
+
+  for (const fixture of cases) {
+    const root = await createPackageFixture();
+    const zetaPath = resolve(root, "src/glyphs/z/zeta/zeta.icon.ts");
+
+    try {
+      await synchroniseIconsCatalogue(root);
+      const outputs = await readGeneratedOutputs(root);
+      await writeFile(
+        zetaPath,
+        [
+          'import { Icon } from "@aster/core";',
+          ...fixture.imports,
+          "",
+          "export const Zeta = Icon.define({",
+          '  identity: { namespace: fixtureAuthorship.namespace, name: "zeta" },',
+          '  metadata: { displayName: "Zeta", rtl: "preserve", deprecated: false },',
+          "});",
+          "",
+        ].join("\n"),
+        "utf8",
+      );
+
+      await assert.rejects(
+        synchroniseIconsCatalogue(root),
+        fixture.pattern,
+      );
+      assert.deepEqual(await readGeneratedOutputs(root), outputs);
     } finally {
       await rm(root, { recursive: true, force: true });
     }

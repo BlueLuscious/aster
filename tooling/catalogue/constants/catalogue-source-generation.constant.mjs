@@ -29,6 +29,8 @@ export const catalogueSourceGeneration = Object.freeze({
       symbolSuffix: "",
       /** @description Public Core factory expected in canonical icon modules. */
       definitionFactory: "Icon",
+      /** @description Public package module owning the canonical icon factory. */
+      definitionModule: "@aster/core",
       /** @description Reserved source-root directories excluded from canonical discovery. */
       excludedDirectories: Object.freeze([]),
       /** @description Directory containing generated public icon facades. */
@@ -45,6 +47,8 @@ export const catalogueSourceGeneration = Object.freeze({
       symbolSuffix: "Collection",
       /** @description Public Core factory expected in canonical collection modules. */
       definitionFactory: "Collection",
+      /** @description Public package module owning the canonical collection factory. */
+      definitionModule: "@aster/core",
       /** @description Reserved source-root directories excluded from canonical discovery. */
       excludedDirectories: Object.freeze(["constants"]),
       /** @description Directory containing generated public collection facades. */

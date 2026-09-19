@@ -54,7 +54,12 @@ export class CatalogueSourceSyntaxInspector {
       sourceFile,
       identity.symbol,
     );
-    const definition = this.#definitionObject(sourcePath, declaration, family);
+    const definition = this.#definitionObject(
+      sourcePath,
+      sourceFile,
+      declaration,
+      family,
+    );
     const identityObject = this.#requiredObjectProperty(
       sourcePath,
       definition,
@@ -139,11 +144,12 @@ export class CatalogueSourceSyntaxInspector {
   /**
    * @description Resolves the object passed to the configured public Core definition factory.
    * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {import("typescript").SourceFile} sourceFile - Parsed TypeScript source.
    * @param {import("typescript").VariableDeclaration} declaration - Canonical exported declaration.
    * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
    * @returns {import("typescript").ObjectLiteralExpression} Authored definition object.
    */
-  #definitionObject(sourcePath, declaration, family) {
+  #definitionObject(sourcePath, sourceFile, declaration, family) {
     const initializer = declaration.initializer;
 
     if (
@@ -161,7 +167,53 @@ export class CatalogueSourceSyntaxInspector {
       );
     }
 
+    this.#requireDefinitionFactoryImport(sourcePath, sourceFile, family);
+
     return initializer.arguments[0];
+  }
+
+  /**
+   * @description Requires the definition factory identifier to be one exact runtime named import.
+   * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {import("typescript").SourceFile} sourceFile - Parsed TypeScript source.
+   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
+   * @returns {void}
+   */
+  #requireDefinitionFactoryImport(sourcePath, sourceFile, family) {
+    const matches = [];
+
+    for (const statement of sourceFile.statements) {
+      if (
+        !ts.isImportDeclaration(statement)
+        || !ts.isStringLiteralLike(statement.moduleSpecifier)
+        || statement.importClause?.namedBindings === undefined
+        || !ts.isNamedImports(statement.importClause.namedBindings)
+      ) {
+        continue;
+      }
+
+      for (const element of statement.importClause.namedBindings.elements) {
+        if (element.name.text === family.definitionFactory) {
+          matches.push({ statement, element });
+        }
+      }
+    }
+
+    const [match] = matches;
+    const importedName = match?.element.propertyName?.text
+      ?? match?.element.name.text;
+
+    if (
+      matches.length !== 1
+      || match.statement.moduleSpecifier.text !== family.definitionModule
+      || match.statement.importClause.isTypeOnly
+      || match.element.isTypeOnly
+      || importedName !== family.definitionFactory
+    ) {
+      throw new CatalogueSourceError(
+        `${sourcePath} must import ${family.definitionFactory} from ${family.definitionModule} as one runtime named import.`,
+      );
+    }
   }
 
   /**
@@ -287,7 +339,7 @@ export class CatalogueSourceSyntaxInspector {
 
       if (reference === undefined) {
         throw new CatalogueSourceError(
-          `${sourcePath} collection member ${member.text} must use a named import.`,
+          `${sourcePath} collection member ${member.text} must use a runtime named import.`,
         );
       }
 
@@ -312,6 +364,7 @@ export class CatalogueSourceSyntaxInspector {
         !ts.isImportDeclaration(statement) ||
         !ts.isStringLiteralLike(statement.moduleSpecifier) ||
         statement.importClause === undefined ||
+        statement.importClause.isTypeOnly ||
         statement.importClause.namedBindings === undefined ||
         !ts.isNamedImports(statement.importClause.namedBindings)
       ) {
@@ -319,6 +372,10 @@ export class CatalogueSourceSyntaxInspector {
       }
 
       for (const element of statement.importClause.namedBindings.elements) {
+        if (element.isTypeOnly) {
+          continue;
+        }
+
         if (imports.has(element.name.text)) {
           throw new CatalogueSourceError(
             `${sourcePath} contains ambiguous named import ${element.name.text}.`,

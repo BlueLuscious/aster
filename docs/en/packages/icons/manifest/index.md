@@ -42,10 +42,12 @@ collection record does not evaluate that icon.
 
 Catalogue source tooling derives the manifest from accepted canonical `*.icon.ts` and
 `*.collection.ts` modules. It parses a finite data-only TypeScript subset and resolves local or
-relative imported constants without executing source modules. Literals, arrays, object literals,
-property access, syntax-only TypeScript wrappers and one-argument `Object.freeze(...)` calls are
-accepted. Calls requiring execution, spreads, computed properties, unresolved values and cyclic
-references are rejected before generated outputs are changed.
+relative imported constants without executing source modules. Imported authorities must use
+unambiguous runtime named imports and target exported top-level constants. Literals, arrays, object
+literals, property access, syntax-only TypeScript wrappers and one-argument `Object.freeze(...)`
+calls are accepted. Calls requiring execution, type-only or ambiguous bindings, duplicate or
+computed properties, unresolved values and cyclic references are rejected before generated outputs
+are changed.
 
 Identity names and variants remain path-owned. Collection membership remains explicitly authored
 and its order is preserved. Removing a source removes its record during the same deterministic
