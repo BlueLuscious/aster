@@ -112,9 +112,9 @@ Run:
 pnpm benchmark:icons
 ```
 
-The command builds Core and Icons before measuring fresh-process root, isolated-icon and
-isolated-collection imports plus emitted distribution. Exact scenarios, module instrumentation,
-findings and acceptance rules are defined by the
+The command builds Core and Icons before measuring fresh-process isolated-icon,
+isolated-collection, metadata-manifest and dynamic-loader imports plus emitted distribution. Exact
+scenarios, module instrumentation, findings and acceptance rules are defined by the
 [Icons Quality Baseline](../../packages/icons/quality-baseline.md).
 
 ## CLI comparison

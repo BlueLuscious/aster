@@ -67,6 +67,9 @@ The private root exposes stable orchestration contracts:
 | `pnpm check:docs` | Run the [documentation verifier](documentation/index.md). |
 | `pnpm check:types` | Build and type-check every applicable package. |
 | `pnpm benchmark:core` | Run the development-only [Core comparison](performance/index.md). |
+| `pnpm benchmark:cli` | Run the development-only [CLI comparison](performance/index.md). |
+| `pnpm benchmark:icons` | Run the development-only [Icons comparison](performance/index.md). |
+| `pnpm benchmark:import` | Run the development-only [Import comparison](performance/index.md). |
 | `pnpm benchmark:svg` | Run the development-only [SVG comparison](performance/index.md). |
 | `pnpm lint` | Delegate to packages that define an accepted lint contract. |
 | `pnpm format` | Delegate to packages that define a mutating format contract. |
@@ -102,7 +105,7 @@ Every retained feature protects a current boundary:
 | Feature | Retained evidence |
 | --- | --- |
 | Architecture | Detects source, manifest, dependency, compiler, host-authority, and private-tooling boundary drift before publication. |
-| Catalogue | Detects source, relationship and aggregate drift and reconstructs generated outputs deterministically. |
+| Catalogue | Detects source, relationship and generated distribution drift and reconstructs owned outputs deterministically. |
 | Documentation | Detects broken local links, stale package mirroring, contributor-local references, and missing current entry points. |
 | Workspace | Deletes only a verified package's direct generated distribution through an explicit destructive policy. |
 | Performance | Produces reproducible package-specific comparison reports without CI thresholds or production dependencies. |
