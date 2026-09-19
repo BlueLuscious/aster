@@ -3,43 +3,37 @@ import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnost
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
 import { AsciiStringComparator } from "../../shared/runtime/ascii-string.comparator.js";
 import type { CatalogueProvider } from "../contracts/index.js";
-import type { TAcceptedCatalogue } from "../types/internal/accepted-catalogue.type.js";
-import { CatalogueSnapshotNormaliser } from "./catalogue-snapshot.normaliser.js";
+import type { TAcceptedCatalogueDiscovery } from "../types/internal/accepted-catalogue-discovery.type.js";
+import { CatalogueDiscoveryNormaliser } from "./catalogue-discovery.normaliser.js";
 
 /**
- * @description Loads every explicit provider once and accepts results in canonical provider order.
+ * @description Discovers and accepts metadata from explicit catalogue providers.
  */
 export class CatalogueLoader {
-  /**
-   * @description Locale-independent ordering authority for canonical provider identities.
-   */
+  /** @description Locale-independent ordering authority for canonical provider identities. */
   readonly #strings = new AsciiStringComparator();
 
-  /**
-   * @description Provider snapshot acceptance boundary.
-   */
-  readonly #snapshots = new CatalogueSnapshotNormaliser();
+  /** @description Provider discovery acceptance boundary. */
+  readonly #discoveries = new CatalogueDiscoveryNormaliser();
 
-  /**
-   * @description Immutable diagnostic constructor for rejected provider operations.
-   */
+  /** @description Immutable diagnostic constructor for rejected provider operations. */
   readonly #diagnostics = new CommandDiagnosticFactory();
 
   /**
-   * @description Loads and validates all providers without retaining catalogue state.
+   * @description Discovers and validates all providers without retaining catalogue state.
    * @param providers - Explicit unique provider sequence supplied by the host.
-   * @returns Canonically ordered accepted catalogues or one deterministic rejection.
+   * @returns Canonically ordered accepted discovery states or one deterministic rejection.
    */
-  async load(
+  async discover(
     providers: readonly CatalogueProvider[],
-  ): Promise<TAcceptanceResult<readonly TAcceptedCatalogue[]>> {
+  ): Promise<TAcceptanceResult<readonly TAcceptedCatalogueDiscovery[]>> {
     const orderedProviders = [...providers].sort((left, right) =>
       this.#strings.compare(left.identity, right.identity),
     );
     const settled = await Promise.allSettled(
-      orderedProviders.map((provider) => provider.load()),
+      orderedProviders.map((provider) => provider.discover()),
     );
-    const catalogues: TAcceptedCatalogue[] = [];
+    const catalogues: TAcceptedCatalogueDiscovery[] = [];
 
     for (const [index, result] of settled.entries()) {
       const provider = orderedProviders[index];
@@ -51,18 +45,18 @@ export class CatalogueLoader {
       if (result.status === "rejected") {
         return this.#unavailable(
           provider.identity,
-          "catalogue provider failed to load",
+          "catalogue provider failed to discover metadata",
         );
       }
 
-      let accepted: TAcceptanceResult<TAcceptedCatalogue>;
+      let accepted: TAcceptanceResult<TAcceptedCatalogueDiscovery>;
 
       try {
-        accepted = this.#snapshots.normalise(provider.identity, result.value);
+        accepted = this.#discoveries.normalise(provider.identity, result.value);
       } catch {
         return this.#unavailable(
           provider.identity,
-          "catalogue provider returned an unreadable snapshot",
+          "catalogue provider returned unreadable discovery metadata",
         );
       }
 
@@ -84,11 +78,12 @@ export class CatalogueLoader {
    * @param providerIdentity - Canonical identity of the failing provider.
    * @param message - Stable Aster-owned explanation.
    * @returns Immutable rejected catalogue acceptance result.
+   * @typeParam Value - Accepted value family prevented by provider failure.
    */
-  #unavailable(
+  #unavailable<Value>(
     providerIdentity: string,
     message: string,
-  ): TAcceptanceResult<readonly TAcceptedCatalogue[]> {
+  ): TAcceptanceResult<Value> {
     return Object.freeze({
       accepted: false,
       diagnostic: this.#diagnostics.create(

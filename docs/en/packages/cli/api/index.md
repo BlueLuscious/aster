@@ -35,7 +35,7 @@ Adding a command requires its own invocation normaliser and definition plus expl
 here. It may additionally require a shell parser or presenter, but the programmatic authority
 cannot import those Node-facing collaborators.
 
-The API retains no invocation, context, result, provider snapshot, filesystem, process, terminal,
+The API retains no invocation, context, result, provider state, filesystem, process, terminal,
 network, DOM, framework, package-manager, or repository-tooling state. Importing the package root
 exposes this value without executing the private `aster` entrypoint.
 

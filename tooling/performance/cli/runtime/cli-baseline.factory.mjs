@@ -4,13 +4,15 @@ import { RepositoryJsonReader } from "../../../shared/runtime/repository-json.re
 import { RepositoryPathResolver } from "../../../shared/runtime/repository-path.resolver.mjs";
 import { BenchmarkRunner } from "../../shared/runtime/benchmark.runner.mjs";
 import { NodeBenchmarkHost } from "../../shared/runtime/node-benchmark.host.mjs";
+import { NodeProcessHost } from "../../shared/runtime/node-process.host.mjs";
 import { NumericSampleStatistics } from "../../shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../shared/runtime/package-distribution.inspector.mjs";
 import { cliBaseline } from "../constants/cli-baseline.constant.mjs";
+import { cliCommandEvaluation } from "../constants/cli-command-evaluation.constant.mjs";
 import { CliBaselineFixtureFactory } from "./cli-baseline-fixture.factory.mjs";
 import { CliBaselineRunner } from "./cli-baseline.runner.mjs";
 import { CliColdStartRunner } from "./cli-cold-start.runner.mjs";
-import { NodeCliProcessHost } from "./node-cli-process.host.mjs";
+import { CliCommandEvaluationRunner } from "./cli-command-evaluation.runner.mjs";
 
 /**
  * @description Composes Node and repository capabilities required by the CLI comparison.
@@ -37,8 +39,14 @@ export class CliBaselineFactory {
       new BenchmarkRunner(host, statistics, { warmupOperations: 20 }),
       new BenchmarkRunner(host, statistics, { warmupOperations: 5 }),
       new CliColdStartRunner(
-        new NodeCliProcessHost(paths.resolve(".")),
+        new NodeProcessHost(paths.resolve(".")),
         statistics,
+      ),
+      new CliCommandEvaluationRunner(
+        new NodeProcessHost(paths.resolve(".")),
+        statistics,
+        paths.resolve(cliCommandEvaluation.probePath),
+        cliCommandEvaluation.sampleCount,
       ),
       distribution,
       host,

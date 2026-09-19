@@ -1,4 +1,4 @@
-import assert from "node:assert/strict";
+﻿import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import {
   mkdir,
@@ -13,17 +13,32 @@ import { basename, dirname, resolve } from "node:path";
 import process from "node:process";
 import test, { after, before } from "node:test";
 import { fileURLToPath } from "node:url";
-import { AsterIcons } from "@aster/icons";
-import { AsterCollections } from "@aster/icons/collections";
+import {
+  AsterCollectionLoaders,
+  AsterIconLoaders,
+} from "@aster/icons/dynamic";
+
+const asterIconDefinitions = await Promise.all(
+  Object.values(AsterIconLoaders).map((loader) => {
+    assert.ok(loader);
+    return loader();
+  }),
+);
+const asterCollectionDefinitions = await Promise.all(
+  Object.values(AsterCollectionLoaders).map((loader) => {
+    assert.ok(loader);
+    return loader();
+  }),
+);
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const workspaceRoot = resolve(packageRoot, "../..");
-assert.ok(AsterIcons.length > 0, "Expected the packed icon family to be non-empty.");
+assert.ok(asterIconDefinitions.length > 0, "Expected the packed icon family to be non-empty.");
 assert.ok(
-  AsterCollections.length > 0,
+  asterCollectionDefinitions.length > 0,
   "Expected the packed collection family to be non-empty.",
 );
-const representativeCollection = AsterCollections.find(
+const representativeCollection = asterCollectionDefinitions.find(
   (collection) => collection.icons.length > 0,
 );
 assert.ok(
@@ -38,7 +53,7 @@ const representativeCollectionIdentity = `${
 const representativeCollectionLiteral = JSON.stringify(
   representativeCollectionIdentity,
 );
-const taggedIcon = AsterIcons.find(
+const taggedIcon = asterIconDefinitions.find(
   (icon) => (icon.metadata.tags?.length ?? 0) > 0,
 );
 assert.ok(taggedIcon, "Expected one tagged icon for packed CLI conformance.");
@@ -411,10 +426,12 @@ test("requires explicit catalogues and canonicalises provider registration order
     "const counts = { alpha: 0, beta: 0 };",
     "const provider = (identity) => ({",
     "  identity,",
-    "  async load() {",
+    "  async discover() {",
     "    counts[identity] += 1;",
     "    return { icons: [], collections: [] };",
     "  },",
+    "  async loadIcon() { return undefined; },",
+    "  async loadCollection() { return undefined; },",
     "});",
     "const alpha = provider(\"alpha\");",
     "const beta = provider(\"beta\");",

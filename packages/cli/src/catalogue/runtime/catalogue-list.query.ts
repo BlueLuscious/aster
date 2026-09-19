@@ -37,7 +37,7 @@ export class CatalogueListQuery {
 
   /**
    * @description Creates one list query using the explicit shared provider loader.
-   * @param loader - Provider loading and snapshot acceptance boundary.
+   * @param loader - Provider discovery and metadata acceptance boundary.
    */
   constructor(loader: CatalogueLoader) {
     this.#loader = loader;
@@ -59,7 +59,7 @@ export class CatalogueListQuery {
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
-    const loaded = await this.#loader.load(context.catalogues);
+    const loaded = await this.#loader.discover(context.catalogues);
 
     if (!loaded.accepted) {
       return this.#commandResults.failure(asterCommandNames.list, loaded.diagnostic);
@@ -85,7 +85,7 @@ export class CatalogueListQuery {
         kind: asterCommandPayloadKinds.collectionList,
         collections: Object.freeze(selected.value.flatMap((catalogue) =>
           catalogue.collections.map((record) =>
-            this.#catalogueResults.collection(catalogue.identity, record.definition),
+            this.#catalogueResults.collection(catalogue.identity, record),
           ),
         )),
       }));
@@ -102,7 +102,7 @@ export class CatalogueListQuery {
       icons: Object.freeze(selected.value.flatMap((catalogue) =>
         catalogue.icons
           .filter((record) => this.#scope.matchesCollection(record, invocation.collection))
-          .filter((record) => this.#scope.matchesTags(record.definition.metadata.tags, invocation.tags))
+          .filter((record) => this.#scope.matchesTags(record.metadata.tags, invocation.tags))
           .map((record) => this.#catalogueResults.icon(catalogue.identity, record)),
       )),
     }));

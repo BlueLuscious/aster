@@ -58,7 +58,9 @@ serialises and publishes static HTML beneath `aster-review` or an explicit `--ou
 evidence. Output roots and replacement intent remain outside the structured invocation.
 
 The shell explicitly supplies `AsterCatalogue`. This is executable composition rather than an
-ambient default in `AsterCommands`.
+ambient default in `AsterCommands`. Discovery commands acquire only Icons manifests. Export and
+Review acquire only the exact selected definition after host-neutral metadata selection; shell
+presentation and publication never inspect or enumerate definition modules.
 
 ## Presentation
 

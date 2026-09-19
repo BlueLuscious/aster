@@ -13,7 +13,7 @@ The canonical documentation mirrors the real tooling feature roots:
 | Feature | Responsibility |
 | --- | --- |
 | [Architecture](architecture/index.md) | Verifies compiler, workspace, package dependency, and authored collection boundaries. |
-| [Catalogue](catalogue/index.md) | Synchronises generated Icons barrels and aggregate indexes from canonical definition modules. |
+| [Catalogue](catalogue/index.md) | Recursively validates canonical Icons sources and synchronises manifests, loaders and public facades. |
 | [Documentation](documentation/index.md) | Verifies the current canonical hierarchy, package mirroring, links, and local exclusions. |
 | [Performance](performance/index.md) | Provides development-only package comparison infrastructure and independent scenario runners. |
 | [Shared](shared/index.md) | Supplies narrow filesystem, path, directory, traversal, and strict JSON foundations used by multiple tooling features. |
@@ -67,6 +67,9 @@ The private root exposes stable orchestration contracts:
 | `pnpm check:docs` | Run the [documentation verifier](documentation/index.md). |
 | `pnpm check:types` | Build and type-check every applicable package. |
 | `pnpm benchmark:core` | Run the development-only [Core comparison](performance/index.md). |
+| `pnpm benchmark:cli` | Run the development-only [CLI comparison](performance/index.md). |
+| `pnpm benchmark:icons` | Run the development-only [Icons comparison](performance/index.md). |
+| `pnpm benchmark:import` | Run the development-only [Import comparison](performance/index.md). |
 | `pnpm benchmark:svg` | Run the development-only [SVG comparison](performance/index.md). |
 | `pnpm lint` | Delegate to packages that define an accepted lint contract. |
 | `pnpm format` | Delegate to packages that define a mutating format contract. |
@@ -102,7 +105,7 @@ Every retained feature protects a current boundary:
 | Feature | Retained evidence |
 | --- | --- |
 | Architecture | Detects source, manifest, dependency, compiler, host-authority, and private-tooling boundary drift before publication. |
-| Catalogue | Detects stale aggregate sources and reconstructs them deterministically from canonical definition modules. |
+| Catalogue | Detects source, relationship and generated distribution drift and reconstructs owned outputs deterministically. |
 | Documentation | Detects broken local links, stale package mirroring, contributor-local references, and missing current entry points. |
 | Workspace | Deletes only a verified package's direct generated distribution through an explicit destructive policy. |
 | Performance | Produces reproducible package-specific comparison reports without CI thresholds or production dependencies. |

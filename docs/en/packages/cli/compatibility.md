@@ -65,17 +65,21 @@ exit status. Exact human and JSON stream selection and exit statuses are owned b
 ## Catalogue isolation
 
 Catalogue providers are supplied explicitly and invoked once per command execution. Provider
-registration order cannot change accepted ordering or selected results. Snapshots and retained
-portable values are validated, copied where required, and frozen before query behaviour becomes
-observable. No result relies on source files, a mutable global registry, or catalogue object
-insertion order.
+registration order cannot change accepted ordering or selected results. Provider capabilities and
+retained portable values are validated, copied where required, and frozen before query behaviour
+becomes observable. No result relies on source files, a mutable global registry, or catalogue
+object insertion order.
+
+The public provider ABI contains metadata discovery plus exact icon and collection loaders. It
+contains no complete-provider snapshot contract. Discovery commands invoke no definition loader;
+Export and Review load only the exact accepted target after metadata selection.
 
 Provider and membership guarantees are owned by the
 [CLI Catalogue](catalogue/index.md).
 
 ## Export isolation
 
-Headless export consumes only accepted catalogue snapshots and the public SVG renderer. It returns
+Headless export consumes only accepted catalogue definitions and the public SVG renderer. It returns
 complete immutable logical artefacts and acquires no process or filesystem capability. The shell
 may present a raw single-icon SVG or serialise the same structured plan. Its private output host
 can stage and publish that plan without changing the programmatic result contract. Shell render

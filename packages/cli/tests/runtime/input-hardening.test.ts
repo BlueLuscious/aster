@@ -3,17 +3,26 @@ import test from "node:test";
 
 import { AsterCommands } from "../../src/index.js";
 import type {
+  CatalogueDiscovery,
   CatalogueProvider,
-  CatalogueSnapshot,
 } from "../../src/catalogue/contracts/index.js";
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { CommandKernel } from "../../src/command/runtime/command.kernel.js";
 import { StructuredDataInspector } from "../../src/shared/runtime/structured-data.inspector.js";
 import { createCommandInvocations } from "./command-invocation.fixture.js";
 
-const emptySnapshot: CatalogueSnapshot = Object.freeze({
+const emptyDiscovery: CatalogueDiscovery = Object.freeze({
   icons: Object.freeze([]),
   collections: Object.freeze([]),
+});
+
+const unavailableDefinitionLoaders = Object.freeze({
+  async loadIcon() {
+    return undefined;
+  },
+  async loadCollection() {
+    return undefined;
+  },
 });
 
 function createContext(
@@ -140,9 +149,17 @@ test("snapshots provider methods while preserving their original receiver", asyn
     readonly identity = "stateful";
     calls = 0;
 
-    async load(): Promise<CatalogueSnapshot> {
+    async discover(): Promise<CatalogueDiscovery> {
       this.calls += 1;
-      return emptySnapshot;
+      return emptyDiscovery;
+    }
+
+    async loadIcon() {
+      return undefined;
+    }
+
+    async loadCollection() {
+      return undefined;
     }
   }
 
@@ -161,11 +178,12 @@ test("isolates provider identity and method selection from later mutation", asyn
   let replacementCalls = 0;
   const provider = {
     identity: "mutable",
-    async load(): Promise<CatalogueSnapshot> {
+    async discover(): Promise<CatalogueDiscovery> {
       originalCalls += 1;
       await Promise.resolve();
-      return emptySnapshot;
+      return emptyDiscovery;
     },
+    ...unavailableDefinitionLoaders,
   };
   const execution = AsterCommands.execute(
     { command: "list", subject: "catalogues" },
@@ -173,9 +191,9 @@ test("isolates provider identity and method selection from later mutation", asyn
   );
 
   provider.identity = "replacement";
-  provider.load = async () => {
+  provider.discover = async () => {
     replacementCalls += 1;
-    return emptySnapshot;
+    return emptyDiscovery;
   };
 
   const result = await execution;
@@ -203,9 +221,17 @@ test("rejects provider accessors and sparse provider sequences without reading t
         return "accessor";
       },
     },
-    load: {
+    discover: {
       enumerable: true,
-      value: async () => emptySnapshot,
+      value: async () => emptyDiscovery,
+    },
+    loadIcon: {
+      enumerable: true,
+      value: unavailableDefinitionLoaders.loadIcon,
+    },
+    loadCollection: {
+      enumerable: true,
+      value: unavailableDefinitionLoaders.loadCollection,
     },
   }) as CatalogueProvider;
   const sparseProviders = new Array<CatalogueProvider>(1);
@@ -258,11 +284,11 @@ test("rejects cyclic provider prototype traversal without hanging", async () => 
   }
 });
 
-test("rejects reflective provider snapshots without leaking or partially accepting them", async () => {
+test("rejects reflective provider discovery without leaking or partially accepting it", async () => {
   let getterCalls = 0;
   const provider: CatalogueProvider = {
     identity: "reflective",
-    async load() {
+    async discover() {
       return Object.defineProperties({}, {
         icons: {
           enumerable: true,
@@ -275,8 +301,9 @@ test("rejects reflective provider snapshots without leaking or partially accepti
           enumerable: true,
           value: [],
         },
-      }) as CatalogueSnapshot;
+      }) as CatalogueDiscovery;
     },
+    ...unavailableDefinitionLoaders,
   };
   const result = await AsterCommands.execute(
     { command: "list", subject: "catalogues" },
@@ -293,16 +320,17 @@ test("rejects reflective provider snapshots without leaking or partially accepti
   }
 });
 
-test("sanitises provider snapshot Proxy failures as catalogue unavailability", async () => {
+test("sanitises provider discovery Proxy failures as catalogue unavailability", async () => {
   const provider: CatalogueProvider = {
     identity: "trapped",
-    async load() {
+    async discover() {
       return new Proxy({}, {
         getPrototypeOf() {
           throw new Error("native provider Proxy secret");
         },
-      }) as CatalogueSnapshot;
+      }) as CatalogueDiscovery;
     },
+    ...unavailableDefinitionLoaders,
   };
   const result = await AsterCommands.execute(
     { command: "list", subject: "catalogues" },

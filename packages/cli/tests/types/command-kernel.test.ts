@@ -21,14 +21,15 @@ import type {
   AsterReviewPlan,
   AsterReviewSubjectType,
   AsterCommandShowSubjectType,
-  CatalogueCollectionRecord,
   CatalogueCollectionResult,
-  CatalogueIconRecord,
+  CatalogueDiscovery,
+  CatalogueDiscoveryCollectionRecord,
+  CatalogueDiscoveryIconRecord,
+  CatalogueIconMetadata,
   CatalogueIconResult,
   CatalogueProvider,
   CatalogueProviderResult,
   CatalogueResultKindType,
-  CatalogueSnapshot,
 } from "../../src/index.js";
 import {
   AsterCatalogue,
@@ -38,15 +39,16 @@ import {
   reviewTargets,
 } from "../../src/index.js";
 
-const snapshot: CatalogueSnapshot = {
-  icons: [],
-  collections: [],
-};
-
 const provider: CatalogueProvider = {
   identity: "testing",
-  async load(): Promise<CatalogueSnapshot> {
-    return snapshot;
+  async discover(): Promise<CatalogueDiscovery> {
+    return { icons: [], collections: [] };
+  },
+  async loadIcon() {
+    return undefined;
+  },
+  async loadCollection() {
+    return undefined;
   },
 };
 
@@ -157,9 +159,10 @@ const publicExecution: Promise<AsterCommandResultType> = AsterCommands.execute(
 );
 const publicProvider: CatalogueProvider = AsterCatalogue;
 declare const commandPayload: AsterCommandPayloadType;
-declare const iconRecord: CatalogueIconRecord;
+declare const discoveryCollection: CatalogueDiscoveryCollectionRecord;
+declare const discoveryIcon: CatalogueDiscoveryIconRecord;
+declare const discoveryMetadata: CatalogueIconMetadata;
 declare const iconResult: CatalogueIconResult;
-declare const collectionRecord: CatalogueCollectionRecord;
 declare const collectionResult: CatalogueCollectionResult;
 declare const providerResult: CatalogueProviderResult;
 
@@ -201,10 +204,11 @@ void reviewInvocation;
 void reviewPlan;
 void reviewSubject;
 void commandPayload;
+void discoveryCollection;
+void discoveryIcon;
+void discoveryMetadata;
 void catalogueResultKind;
-void collectionRecord;
 void iconResult;
-void iconRecord;
 void iconExportOptions;
 void invalidCollectionExport;
 void collectionResult;

@@ -13,13 +13,14 @@ import {
 } from "../../src/index.js";
 import type {
   CatalogueProvider,
-  CatalogueSnapshot,
 } from "../../src/catalogue/contracts/index.js";
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { CommandLineError } from "../../src/shell/parsing/runtime/command-line.error.js";
 import { CommandLineParser } from "../../src/shell/parsing/runtime/command-line.parser.js";
 import { ReviewDocumentFactory } from "../../src/review/runtime/review-document.factory.js";
 import type { TCatalogueSelection } from "../../src/catalogue/types/internal/catalogue-selection.type.js";
+import { createCatalogueProvider } from "./catalogue-provider.fixture.js";
+import type { TCatalogueProviderFixture } from "./types/internal/catalogue-provider-fixture.type.js";
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -93,14 +94,9 @@ function createCollection(
 
 function createProvider(
   identity: string,
-  snapshot: CatalogueSnapshot,
+  fixture: TCatalogueProviderFixture,
 ): CatalogueProvider {
-  return {
-    identity,
-    async load() {
-      return snapshot;
-    },
-  };
+  return createCatalogueProvider(identity, fixture);
 }
 
 function createContext(
@@ -169,6 +165,59 @@ test("plans immutable technical evidence for one icon", async () => {
   }
 });
 
+test("loads only the exact icon or collection required by review", async () => {
+  const alpha = createIcon("alpha");
+  const bravo = createIcon("bravo");
+  const unrelated = createIcon("unrelated");
+  const collection = createCollection("reviewable", [alpha, bravo]);
+  const iconLoads: string[] = [];
+  const collectionLoads: string[] = [];
+  const provider = createCatalogueProvider("testing", {
+    icons: [
+      { definition: unrelated, memberships: [] },
+      { definition: bravo, memberships: [collection.identity] },
+      { definition: alpha, memberships: [collection.identity] },
+    ],
+    collections: [{ definition: collection }],
+  }, {
+    onLoadIcon: (identity) => iconLoads.push(
+      `${identity.namespace}/${identity.name}`,
+    ),
+    onLoadCollection: (identity) => collectionLoads.push(
+      `${identity.namespace}/${identity.name}`,
+    ),
+  });
+  const acceptedContext = createContext([provider]);
+  const icon = await AsterCommands.execute({
+    command: "review",
+    subject: "icon",
+    identity: "testing/alpha",
+  }, acceptedContext);
+  const reviewedCollection = await AsterCommands.execute({
+    command: "review",
+    subject: "collection",
+    identity: "testing/reviewable",
+  }, acceptedContext);
+
+  assert.equal(icon.ok, true);
+  assert.equal(reviewedCollection.ok, true);
+  assert.deepEqual(iconLoads, ["testing/alpha"]);
+  assert.deepEqual(collectionLoads, ["testing/reviewable"]);
+
+  if (
+    reviewedCollection.ok
+    && reviewedCollection.payload.kind === "review"
+    && reviewedCollection.payload.plan.document.kind === "collection"
+  ) {
+    assert.deepEqual(
+      reviewedCollection.payload.plan.document.icons.map((entry) =>
+        entry.identity.name
+      ),
+      ["alpha", "bravo"],
+    );
+  }
+});
+
 test("plans canonically ordered collection and empty-collection evidence", async () => {
   const zeta = createIcon("zeta");
   const alpha = createIcon("alpha");
@@ -225,13 +274,13 @@ test("plans canonically ordered collection and empty-collection evidence", async
 
 test("retains exact missing, ambiguous, and explicit-provider selection semantics", async () => {
   const icon = createIcon("shared");
-  const snapshot: CatalogueSnapshot = {
+  const fixture: TCatalogueProviderFixture = {
     icons: [{ definition: icon, memberships: [] }],
     collections: [],
   };
   const context = createContext([
-    createProvider("alpha", snapshot),
-    createProvider("beta", snapshot),
+    createProvider("alpha", fixture),
+    createProvider("beta", fixture),
   ]);
   const missing = await AsterCommands.execute({
     command: "review",

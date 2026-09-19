@@ -1,3 +1,5 @@
+import { CatalogueDefinitionResolver } from "../catalogue/runtime/catalogue-definition.resolver.js";
+import { CatalogueDiscoverySelector } from "../catalogue/runtime/catalogue-discovery.selector.js";
 import { CatalogueListQuery } from "../catalogue/runtime/catalogue-list.query.js";
 import { CatalogueLoader } from "../catalogue/runtime/catalogue.loader.js";
 import { CatalogueSearchQuery } from "../catalogue/runtime/catalogue-search.query.js";
@@ -37,9 +39,17 @@ import type {
 const catalogueLoader = new CatalogueLoader();
 
 /**
- * @description Shared exact subject selector used by every identity-addressing command.
+ * @description Shared exact metadata selector used by discovery-only show commands.
  */
-const catalogueSelections = new CatalogueSubjectSelector(catalogueLoader);
+const catalogueDiscoverySelections = new CatalogueDiscoverySelector(catalogueLoader);
+
+/**
+ * @description Shared exact subject selector used by definition-consuming commands.
+ */
+const catalogueSelections = new CatalogueSubjectSelector(
+  catalogueDiscoverySelections,
+  new CatalogueDefinitionResolver(),
+);
 
 /**
  * @description Complete immutable descriptor sequence supplied to deterministic help.
@@ -72,7 +82,7 @@ const commandKernel = new CommandKernel(
       new ReviewPlanQuery(catalogueSelections),
     ),
     new SearchCommandDefinition(new CatalogueSearchQuery(catalogueLoader)),
-    new ShowCommandDefinition(new CatalogueShowQuery(catalogueSelections)),
+    new ShowCommandDefinition(new CatalogueShowQuery(catalogueDiscoverySelections)),
     new HelpCommandDefinition(commandDescriptors),
     new VersionCommandDefinition(),
   ],

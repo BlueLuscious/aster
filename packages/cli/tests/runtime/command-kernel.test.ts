@@ -18,11 +18,17 @@ import { createCommandInvocations } from "./command-invocation.fixture.js";
 
 const emptyProvider: CatalogueProvider = {
   identity: "testing",
-  async load() {
+  async discover() {
     return Object.freeze({
       icons: Object.freeze([]),
       collections: Object.freeze([]),
     });
+  },
+  async loadIcon() {
+    return undefined;
+  },
+  async loadCollection() {
+    return undefined;
   },
 };
 
@@ -217,7 +223,12 @@ test("rejects malformed and conflicting explicit capabilities", async () => {
   const invalid = await kernel.execute(
     { command: "version" },
     {
-      catalogues: [{ identity: "Invalid", load: emptyProvider.load }],
+      catalogues: [{
+        identity: "Invalid",
+        discover: emptyProvider.discover,
+        loadIcon: emptyProvider.loadIcon,
+        loadCollection: emptyProvider.loadCollection,
+      }],
       productName: "Aster",
       productVersion: "0.0.0",
     },

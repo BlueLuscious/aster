@@ -3,8 +3,8 @@
 Status: **Accepted**
 
 The `icons` feature contains one canonical TypeScript module and one named immutable value per
-authored icon. `AsterIcons` is the complete immutable package index over those independent values.
-The current corpus contains all twenty-six definitions accepted for foundational Amellus
+authored icon. The metadata manifest and exact loader map provide complete discovery without a
+package-wide definition aggregate. The current corpus contains all twenty-six definitions accepted for foundational Amellus
 membership. Seventeen definitions remain primitive-first. Nine use structured absolute path
 commands, combined with clearer primitives where appropriate, and contain no raw SVG path text.
 
@@ -42,9 +42,9 @@ source layout: public imports omit it and retain `@aster/icons/<icon-slug>`.
 | `User` | `aster/user` | Circular head, curved shoulders, symmetry, and minimum-size recognition. |
 | `Warning` | `aster/warning` | Triangular enclosure, vertical detail, and minimum-size spacing. |
 
-Every icon:
+Every current icon:
 
-- uses the shared internal `asterIconAuthoring` viewBox and presentation policy;
+- composes internal `asterOriginalIconAuthorship` and `amellusIconAuthoringProfile` authorities;
 - contains no node-specific paint or stroke exceptions;
 - uses geometry values on the provisional half-unit grid;
 - resolves ISC licence and BlueLuscious attribution;
@@ -52,16 +52,14 @@ Every icon:
 - remains below the provisional primitive and structured-command budgets;
 - exports through `@aster/icons/<icon-slug>`.
 
-`AsterIcons` retains the canonical definitions in identity order. Catalogue source synchronisation
-generates this index from direct `*.icon.ts` modules, making each valid icon available to
-complete-package consumers such as the built-in CLI catalogue without adding collection
-membership. It is a package-owned sequence, not a mutable runtime registry or runtime source
-discovery service.
+Catalogue source synchronisation generates one manifest record, exact loader and public facade for
+each nested canonical `*.icon.ts` module. Complete-package consumers must deliberately iterate the
+loader map; metadata-only consumers use the manifest without evaluating definitions.
 
 Only `ArrowLeft` and `ArrowRight` use the `mirror` RTL policy. The remaining identities preserve
 geometry in RTL because their metaphors do not represent logical horizontal movement.
 
-`AmellusCollection` explicitly retains all twenty-six definitions. Inclusion in `AsterIcons`
+`AmellusCollection` explicitly retains all twenty-six definitions. Presence in the icon manifest
 provides package discovery only and never implies Amellus membership or membership in a future
 collection. Core and package tests prove that the same immutable definition may be retained by
 multiple independently constructed collections without acquiring mutable reverse links.
@@ -78,12 +76,15 @@ isolated icon module.
 
 ## Isolation
 
-An icon module imports only public `@aster/core` authority and the internal authoring constant. It
-does not import a collection, another icon, the root index, a manifest, a renderer, or Import.
+An icon module imports only public `@aster/core` authority and its applicable internal authoring
+authorities. It does not import a collection, another icon, the root index, a manifest, a renderer,
+or Import. The [authoring boundary](../authoring/index.md) allows another visual family or artwork
+owner to supply different inputs without changing Amellus or original Aster authorship.
 
-Package ABI tests verify that direct and root imports preserve the same object identity, internal
-subpaths are rejected, and emitted ESM and declarations remain host independent.
+Package ABI tests verify that direct imports and exact loaders preserve the same object identity,
+aggregate roots and internal subpaths are rejected, and emitted ESM and declarations remain host
+independent.
 
-The generated barrel and aggregate index are versioned, deterministically reconstructable outputs.
-Their ownership and drift checks are documented by
+Generated facades, manifests and loader maps are versioned, deterministically reconstructable
+outputs. Their ownership and drift checks are documented by
 [Catalogue Source Tooling](../../../tooling/catalogue/index.md).

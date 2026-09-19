@@ -3,8 +3,7 @@ import test from "node:test";
 
 import { AsterCatalogue, AsterCommands } from "@aster/cli";
 import { Icon, type IconDefinition, type IconMetadata } from "@aster/core";
-import { AsterIcons } from "@aster/icons";
-import { AsterCollections } from "@aster/icons/collections";
+import { AsterCollectionLoaders } from "@aster/icons/dynamic";
 import { IconImport, iconImportFormats } from "@aster/import";
 import { Svg } from "@aster/svg";
 
@@ -189,17 +188,9 @@ test("adopts independent host-owned batches into renderable editable definitions
 });
 
 test("plans one discovered collection through CLI and SVG boundaries", async () => {
-  assert.ok(
-    AsterIcons.length > 0,
-    "Expected the canonical icon index to be non-empty.",
-  );
-  assert.ok(
-    AsterCollections.length > 0,
-    "Expected the canonical collection index to be non-empty.",
-  );
-  const collection = AsterCollections.find(
-    (candidate) => candidate.icons.length > 0,
-  );
+  const collectionLoader = Object.values(AsterCollectionLoaders)[0];
+  assert.ok(collectionLoader, "Expected one canonical collection loader.");
+  const collection = await collectionLoader();
   assert.ok(collection, "Expected one non-empty canonical collection.");
   const identity = `${
     collection.identity.namespace === undefined

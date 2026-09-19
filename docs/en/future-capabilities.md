@@ -23,10 +23,10 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics, and persistence together. |
-| 2 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 3 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 4 | `P2` | Evaluate selective Icons acquisition. | Measured package acquisition cost or consumer demand justifies a distribution product beyond subpath imports. |
+| 1 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 2 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 3 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 4 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
 | 5 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
 | 6 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
 | 7 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
@@ -90,60 +90,58 @@ general development server or framework dependency solely for this capability.
 
 ## Selective Icons acquisition
 
-Importance: **P2 - Conditional**
+Importance: **P1 - High**
 
-The implemented `@aster/icons` export map already separates scalable public families:
+Consumers must eventually be able to acquire one icon, one variant or one collection without
+installing the complete `@aster/icons` artefact. The preferred direction is a defined Aster
+registry consumed by explicit CLI workflows:
 
-- `.` provides named icon definitions and the complete `AsterIcons` index;
-- `./*` maps short isolated icon imports to canonical `*.icon` modules;
-- `./collections` provides the complete `AsterCollections` family;
-- `./collections/*` maps isolated collection imports to canonical `*.collection` modules.
+```text
+aster add icon camera
+aster add icon camera --variant stippled
+aster add collection amellus
+```
 
-These guarded pattern targets prevent manifest growth per definition while keeping constants,
-implementation modules and physical source paths inaccessible. The root deliberately remains an
-icon-only facade; complete collection discovery is opt-in.
+The registry should expose lightweight searchable metadata and immutable artefacts addressable by
+canonical identity and version. The CLI should resolve requested dependencies, verify integrity
+and provenance, detect ownership and conflicts, and materialise only the accepted files. Updates
+and removals require equally explicit policies; `add` must never silently overwrite human-owned
+sources or install ambient dependencies.
+
+This capability starts only after local Icons manifests, identity rules and dynamic loading are
+stable. Its design must establish:
+
+- registry ownership, schema versioning, availability and trust boundaries;
+- artefact integrity, provenance, licensing and attribution;
+- collection membership closure and shared-icon deduplication;
+- destination ownership, conflict, update and removal semantics;
+- offline, cached and failed-acquisition behaviour;
+- the distinction between vendored editable source and installed immutable dependencies.
 
 ### Collection package boundary
 
-Collections currently remain inside `@aster/icons` because they are lightweight immutable
-aggregates of canonical icon definitions, share the same ownership and release maturity, and need
-no dependency that Icons does not already accept. The explicit `@aster/icons/collections` family
-keeps this placement from mixing collection exports into the icon root and provides a deliberate
-migration boundary if evidence later justifies another package.
+Collections remain inside `@aster/icons` while they share definition ownership, release maturity
+and dependencies. Creating one `@aster/collections` package that depends on `@aster/icons` would
+not reduce npm acquisition because its dependency would still install the complete Icons package.
+Do not introduce it merely to mirror a source directory.
 
-Do not create `@aster/collections` merely to mirror the source directory. A single collections
-package that depends on `@aster/icons` would separate API ownership and versioning, but npm would
-still acquire the complete Icons package. It therefore would not, by itself, provide selective
-collection downloads.
+Independently versioned packages per collection may later complement registry acquisition for
+consumers that prefer conventional npm dependencies. Adopt that model only when packed size,
+installation cost, release cadence, licensing or real consumer demand justifies the publication
+overhead. Shared icons must retain one canonical owner rather than being copied into several
+collection packages.
 
-Reconsider `@aster/collections` before the collection import family becomes a stable public
-guarantee when at least one of these conditions is observed:
+Reconsider a separate collection boundary when at least one of these conditions is observed:
 
 - collections require an independent release cadence or compatibility policy;
-- collection metadata, licensing, curation or tooling gains ownership distinct from icon
-  definitions;
-- consumers commonly use collection discovery without the complete icon facade;
-- another icon-definition provider must publish collections through the same product boundary;
-- measured package composition shows that a separate dependency graph materially improves real
-  consumers.
+- collection metadata, licensing, curation or tooling gains distinct ownership;
+- consumers commonly acquire or discover collections independently from the full icon package;
+- another icon-definition provider must publish collections through the same boundary;
+- measured package composition proves that a separate dependency graph improves real consumers.
 
-If accepted, migrate through an explicit compatibility period rather than silently moving
-symbols. `@aster/icons/collections` may temporarily re-export the new authority, but the final
-dependency direction must avoid cycles and preserve one canonical owner for every definition and
-collection. If none of the triggers appears before the first supported release, retain collections
-inside `@aster/icons` and treat that location as the supported boundary.
-
-Package exports and package acquisition are separate concerns. Subpath imports can prevent
-unrelated modules from entering runtime evaluation or a consumer bundle, but installing one npm
-package still acquires its complete tarball. Downloading only selected icons or one collection
-requires a different distribution product, such as independently versioned collection packages or
-an explicit `aster add` vendoring workflow backed by a defined source and ownership policy.
-
-Do not split packages solely from an estimated future icon count. First measure packed size,
-installation cost, bundle behaviour, collection overlap, versioning pressure, licensing boundaries
-and real consumer demand. A collection-package model must resolve icons shared by several
-collections without accidental duplicate ownership. Selective CLI acquisition must define source
-integrity, provenance, updates, conflicts and removal before writing consumer files.
+If accepted, migration requires an explicit compatibility period and an acyclic dependency
+direction. If no trigger appears before the first supported release, retain collections inside
+`@aster/icons` and treat their isolated subpaths as the supported boundary.
 
 ## Command-set extraction and Flora integration
 

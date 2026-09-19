@@ -27,9 +27,10 @@ prototype, key, and descriptor satisfies the same closed invariants; thrown refl
 translated by the owning command or provider boundary without retaining native exception text.
 
 Catalogue providers are capabilities rather than serialisable data. Command context acceptance
-therefore snapshots their canonical identity and callable `load` member separately while retaining
-the original receiver needed by class implementations. Provider results still enter the strict
-structured-data and Core reconstruction boundaries before becoming observable catalogue state.
+therefore snapshots their canonical identity and callable `discover`, `loadIcon`, and
+`loadCollection` members separately while retaining the original receiver needed by class
+implementations. Discovery and definition results remain untrusted at their owning acceptance
+boundaries.
 
 These authorities remain internal because their exact acceptance mechanics are CLI policy, not a
 portable Core contract or public extension ABI.

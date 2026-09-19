@@ -1,8 +1,8 @@
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
-import type { CatalogueIconRecord } from "../contracts/index.js";
-import type { TAcceptedCatalogue } from "../types/internal/accepted-catalogue.type.js";
+import type { CatalogueDiscoveryIconRecord } from "../contracts/index.js";
+import type { TAcceptedCatalogueDiscovery } from "../types/internal/accepted-catalogue-discovery.type.js";
 import { CatalogueIdentityFormatter } from "./catalogue-identity.formatter.js";
 
 /**
@@ -21,14 +21,15 @@ export class CatalogueQueryScope {
 
   /**
    * @description Selects an optional exact provider or returns not-found evidence.
+   * @typeParam Catalogue - Accepted catalogue state carrying one provider identity.
    * @param catalogues - Accepted loaded catalogues.
    * @param identity - Optional exact provider identity.
    * @returns Selected immutable catalogue sequence or structured rejection.
    */
-  selectCatalogues(
-    catalogues: readonly TAcceptedCatalogue[],
+  selectCatalogues<Catalogue extends Readonly<{ identity: string }>>(
+    catalogues: readonly Catalogue[],
     identity: string | undefined,
-  ): TAcceptanceResult<readonly TAcceptedCatalogue[]> {
+  ): TAcceptanceResult<readonly Catalogue[]> {
     if (identity === undefined) {
       return Object.freeze({ accepted: true, value: catalogues });
     }
@@ -57,7 +58,7 @@ export class CatalogueQueryScope {
    * @returns Accepted identity or structured not-found evidence.
    */
   acceptCollection(
-    catalogues: readonly TAcceptedCatalogue[],
+    catalogues: readonly TAcceptedCatalogueDiscovery[],
     identity: string | undefined,
   ): TAcceptanceResult<string | undefined> {
     if (identity === undefined) {
@@ -66,7 +67,7 @@ export class CatalogueQueryScope {
 
     const exists = catalogues.some((catalogue) =>
       catalogue.collections.some(
-        (record) => this.#identities.collection(record.definition.identity) === identity,
+        (record) => this.#identities.collection(record.identity) === identity,
       ),
     );
 
@@ -91,7 +92,10 @@ export class CatalogueQueryScope {
    * @param identity - Optional exact collection filter.
    * @returns Whether the icon belongs to the requested collection scope.
    */
-  matchesCollection(record: CatalogueIconRecord, identity: string | undefined): boolean {
+  matchesCollection(
+    record: CatalogueDiscoveryIconRecord,
+    identity: string | undefined,
+  ): boolean {
     return identity === undefined || record.memberships.some(
       (membership) => this.#identities.collection(membership) === identity,
     );
