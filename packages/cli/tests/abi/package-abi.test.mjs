@@ -165,6 +165,10 @@ test("emits host-neutral declarations with only accepted public package imports"
       source,
       /(?:@aster\/import|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
     );
+    assert.doesNotMatch(
+      source,
+      /\b(?:CatalogueSnapshot|CatalogueIconRecord|CatalogueCollectionRecord)\b/gu,
+    );
   }
 });
 

@@ -19,11 +19,10 @@ import {
 import type {
   CatalogueDiscovery,
   CatalogueProvider,
-  CatalogueSnapshot,
 } from "../../src/catalogue/contracts/index.js";
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
-import { AsterCatalogueSnapshotFactory } from "../../src/catalogue/runtime/aster-catalogue-snapshot.factory.js";
 import { createCatalogueProvider } from "./catalogue-provider.fixture.js";
+import type { TCatalogueProviderFixture } from "./types/internal/catalogue-provider-fixture.type.js";
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -45,7 +44,6 @@ test("exposes immutable catalogue result discriminators", () => {
 function createIcon(
   name: string,
   tags: readonly string[] = ["testing"],
-  inset = 1,
 ): IconDefinition {
   return Icon.define({
     identity: { namespace: "testing", name },
@@ -53,8 +51,8 @@ function createIcon(
     nodes: [{
       kind: "path",
       commands: [
-        { kind: "move", x: inset, y: inset },
-        { kind: "line", x: 24 - inset, y: 24 - inset },
+        { kind: "move", x: 1, y: 1 },
+        { kind: "line", x: 23, y: 23 },
       ],
     }],
     metadata: {
@@ -86,12 +84,12 @@ function createCollection(
 
 function createProvider(
   identity: string,
-  snapshot: CatalogueSnapshot,
+  fixture: TCatalogueProviderFixture,
   onLoad?: () => void,
 ): CatalogueProvider {
   return createCatalogueProvider(
     identity,
-    snapshot,
+    fixture,
     onLoad === undefined ? {} : { onDiscover: onLoad },
   );
 }
@@ -265,60 +263,6 @@ test("isolates mutable discovery records before exposing command results", async
   }
 });
 
-test("adapts independent canonical definitions with derived memberships", () => {
-  const standalone = createIcon("standalone");
-  const shared = createIcon("shared");
-  const zeta = createCollection("zeta", [shared]);
-  const alpha = createCollection("alpha", [shared]);
-  const empty = createCollection("empty", []);
-  const snapshot = new AsterCatalogueSnapshotFactory().create(
-    [shared, standalone],
-    [zeta, empty, alpha],
-  );
-
-  assert.deepEqual(
-    snapshot.icons.map((record) => record.definition.identity.name),
-    ["shared", "standalone"],
-  );
-  assert.deepEqual(
-    snapshot.icons[0]?.memberships.map((identity) => identity.name),
-    ["alpha", "zeta"],
-  );
-  assert.deepEqual(snapshot.icons[1]?.memberships, []);
-  assert.deepEqual(
-    snapshot.collections.map((record) => record.definition.identity.name),
-    ["alpha", "empty", "zeta"],
-  );
-  assert.ok(Object.isFrozen(snapshot));
-  assert.ok(Object.isFrozen(snapshot.icons));
-  assert.ok(Object.isFrozen(snapshot.icons[0]?.memberships));
-  assert.ok(Object.isFrozen(snapshot.collections));
-});
-
-test("rejects invalid canonical definition relationships before snapshot loading", () => {
-  const factory = new AsterCatalogueSnapshotFactory();
-  const indexed = createIcon("shared");
-  const conflicting = createIcon("shared", ["testing"], 2);
-  const missing = createIcon("missing");
-  const conflictingCollection = createCollection("conflicting", [conflicting]);
-  const unavailableCollection = createCollection("unavailable", [missing]);
-  const duplicateCollection = createCollection("duplicate", []);
-
-  assert.throws(() => factory.create([indexed, indexed], []), TypeError);
-  assert.throws(
-    () => factory.create([], [duplicateCollection, duplicateCollection]),
-    TypeError,
-  );
-  assert.throws(
-    () => factory.create([indexed], [unavailableCollection]),
-    TypeError,
-  );
-  assert.throws(
-    () => factory.create([indexed], [conflictingCollection]),
-    TypeError,
-  );
-});
-
 test("lists providers and standalone icons in canonical order", async () => {
   const alpha = createIcon("alpha");
   const zeta = createIcon("zeta");
@@ -459,13 +403,13 @@ test("searches identity, display name, tags, and provider-owned terms", async ()
 
 test("reports cross-provider ambiguity and supports exact provider filtering", async () => {
   const icon = createIcon("shared");
-  const snapshot: CatalogueSnapshot = {
+  const fixture: TCatalogueProviderFixture = {
     icons: [{ definition: icon, memberships: [] }],
     collections: [],
   };
   const context = createContext([
-    createProvider("alpha", snapshot),
-    createProvider("beta", snapshot),
+    createProvider("alpha", fixture),
+    createProvider("beta", fixture),
   ]);
   const ambiguous = await AsterCommands.execute(
     { command: "show", subject: "icon", identity: "testing/shared" },

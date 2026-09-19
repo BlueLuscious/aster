@@ -9,7 +9,6 @@ import {
 } from "../../src/index.js";
 import type {
   CatalogueProvider,
-  CatalogueSnapshot,
 } from "../../src/catalogue/contracts/index.js";
 import { HtmlContentEscaper } from "../../src/review/runtime/html-content.escaper.js";
 import { ReviewDocumentSerialiser } from "../../src/review/runtime/review-document.serialiser.js";
@@ -159,11 +158,11 @@ test("escapes hostile authored text and explicit attribute contexts", async () =
       tags: ["review-escape"],
     },
   });
-  const snapshot: CatalogueSnapshot = {
+  const fixture = {
     icons: [{ definition: icon, memberships: [collection.identity] }],
     collections: [{ definition: collection }],
   };
-  const provider = createCatalogueProvider("testing", snapshot);
+  const provider = createCatalogueProvider("testing", fixture);
   const serialiser = new ReviewDocumentSerialiser();
   const html = serialiser.serialise(
     await plan("collection", "testing/hostile", [provider]),

@@ -21,13 +21,11 @@ import type {
   AsterReviewPlan,
   AsterReviewSubjectType,
   AsterCommandShowSubjectType,
-  CatalogueCollectionRecord,
   CatalogueCollectionResult,
   CatalogueDiscovery,
   CatalogueDiscoveryCollectionRecord,
   CatalogueDiscoveryIconRecord,
   CatalogueIconMetadata,
-  CatalogueIconRecord,
   CatalogueIconResult,
   CatalogueProvider,
   CatalogueProviderResult,
@@ -164,9 +162,7 @@ declare const commandPayload: AsterCommandPayloadType;
 declare const discoveryCollection: CatalogueDiscoveryCollectionRecord;
 declare const discoveryIcon: CatalogueDiscoveryIconRecord;
 declare const discoveryMetadata: CatalogueIconMetadata;
-declare const iconRecord: CatalogueIconRecord;
 declare const iconResult: CatalogueIconResult;
-declare const collectionRecord: CatalogueCollectionRecord;
 declare const collectionResult: CatalogueCollectionResult;
 declare const providerResult: CatalogueProviderResult;
 
@@ -212,9 +208,7 @@ void discoveryCollection;
 void discoveryIcon;
 void discoveryMetadata;
 void catalogueResultKind;
-void collectionRecord;
 void iconResult;
-void iconRecord;
 void iconExportOptions;
 void invalidCollectionExport;
 void collectionResult;

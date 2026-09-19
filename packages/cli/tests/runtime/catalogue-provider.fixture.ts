@@ -7,19 +7,19 @@ import type {
   CatalogueDiscovery,
   CatalogueIconMetadata,
   CatalogueProvider,
-  CatalogueSnapshot,
 } from "../../src/catalogue/contracts/index.js";
+import type { TCatalogueProviderFixture } from "./types/internal/catalogue-provider-fixture.type.js";
 
 /**
- * @description Creates one complete test provider from a legacy definition snapshot fixture.
+ * @description Creates one complete test provider from local definition fixtures.
  * @param identity - Canonical fixture provider identity.
- * @param snapshot - Complete fixture definitions and membership evidence.
+ * @param fixture - Complete definitions and membership evidence for the provider fixture.
  * @param observers - Optional capability invocation observers.
  * @returns Explicit discovery and exact-loading provider.
  */
 export function createCatalogueProvider(
   identity: string,
-  snapshot: CatalogueSnapshot,
+  fixture: TCatalogueProviderFixture,
   observers: Readonly<{
     /** @description Optional discovery invocation observer. */
     onDiscover?: () => void;
@@ -29,16 +29,16 @@ export function createCatalogueProvider(
     onLoadCollection?: (identity: CollectionIdentity) => void;
   }> = {},
 ): CatalogueProvider {
-  const iconsByIdentity = new Map(snapshot.icons.map((record) => [
+  const iconsByIdentity = new Map(fixture.icons.map((record) => [
     iconIdentity(record.definition.identity),
     record.definition,
   ]));
-  const collectionsByIdentity = new Map(snapshot.collections.map((record) => [
+  const collectionsByIdentity = new Map(fixture.collections.map((record) => [
     collectionIdentity(record.definition.identity),
     record.definition,
   ]));
   const discovery: CatalogueDiscovery = Object.freeze({
-    icons: Object.freeze(snapshot.icons.map((record) => Object.freeze({
+    icons: Object.freeze(fixture.icons.map((record) => Object.freeze({
       identity: record.definition.identity,
       metadata: discoveryMetadata(record.definition.metadata),
       memberships: record.memberships,
@@ -46,7 +46,7 @@ export function createCatalogueProvider(
         ? {}
         : { searchTerms: record.searchTerms }),
     }))),
-    collections: Object.freeze(snapshot.collections.map((record) => Object.freeze({
+    collections: Object.freeze(fixture.collections.map((record) => Object.freeze({
       identity: record.definition.identity,
       metadata: record.definition.metadata,
       icons: Object.freeze(record.definition.icons.map((icon) => icon.identity)),

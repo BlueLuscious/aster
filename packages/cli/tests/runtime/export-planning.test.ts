@@ -13,13 +13,13 @@ import {
 } from "../../src/index.js";
 import type {
   CatalogueProvider,
-  CatalogueSnapshot,
 } from "../../src/catalogue/contracts/index.js";
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { asterCommandSubjects } from "../../src/command/constants/aster-command-subjects.constant.js";
 import { SvgExportArtefactFactory } from "../../src/export/runtime/svg-export-artefact.factory.js";
 import type { TCatalogueSelection } from "../../src/catalogue/types/internal/catalogue-selection.type.js";
 import { createCatalogueProvider } from "./catalogue-provider.fixture.js";
+import type { TCatalogueProviderFixture } from "./types/internal/catalogue-provider-fixture.type.js";
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -90,9 +90,9 @@ function createCollection(
 
 function createProvider(
   identity: string,
-  snapshot: CatalogueSnapshot,
+  fixture: TCatalogueProviderFixture,
 ): CatalogueProvider {
-  return createCatalogueProvider(identity, snapshot);
+  return createCatalogueProvider(identity, fixture);
 }
 
 function createContext(
@@ -105,10 +105,10 @@ function createContext(
   };
 }
 
-function createSnapshot(
+function createFixture(
   icons: readonly IconDefinition[],
   collections: readonly CollectionDefinition[],
-): CatalogueSnapshot {
+): TCatalogueProviderFixture {
   return {
     icons: icons.map((definition) => ({
       definition,
@@ -134,7 +134,7 @@ const representativeLabel = representativeIcon.metadata.displayName;
 const context = createContext([
   createProvider(
     "testing",
-    createSnapshot([representativeIcon], [representativeCollection]),
+    createFixture([representativeIcon], [representativeCollection]),
   ),
 ]);
 
@@ -192,7 +192,7 @@ test("loads only exact base, variant, and collection export definitions", async 
   let discoveries = 0;
   const provider = createCatalogueProvider(
     "testing",
-    createSnapshot([unrelated, variant, base], [collection]),
+    createFixture([unrelated, variant, base], [collection]),
     {
       onDiscover: () => discoveries += 1,
       onLoadIcon: (identity) => iconLoads.push(
@@ -287,7 +287,7 @@ test("exports empty collections and canonical namespace and variant paths", asyn
   const populated = createCollection("navigation", [variant, standalone]);
   const provider = createProvider(
     "testing",
-    createSnapshot([standalone, variant], [populated, empty]),
+    createFixture([standalone, variant], [populated, empty]),
   );
   const acceptedContext = createContext([provider]);
   const emptyResult = await AsterCommands.execute({
@@ -324,11 +324,11 @@ test("produces byte-equivalent plans independently from provider record and memb
   const reverse = createCollection("ordered", [zeta, alpha]);
   const firstProvider = createProvider(
     "testing",
-    createSnapshot([zeta, alpha], [reverse]),
+    createFixture([zeta, alpha], [reverse]),
   );
   const secondProvider = createProvider(
     "testing",
-    createSnapshot([alpha, zeta], [forward]),
+    createFixture([alpha, zeta], [forward]),
   );
   const invocation = {
     command: "export",
@@ -351,9 +351,9 @@ test("produces byte-equivalent plans independently from provider record and memb
 
 test("keeps export ambiguity independent from provider registration order", async () => {
   const shared = createIcon("shared", { namespace: "testing" });
-  const snapshot = createSnapshot([shared], []);
-  const alpha = createProvider("alpha", snapshot);
-  const beta = createProvider("beta", snapshot);
+  const fixture = createFixture([shared], []);
+  const alpha = createProvider("alpha", fixture);
+  const beta = createProvider("beta", fixture);
   const invocation = {
     command: "export",
     subject: "icon",

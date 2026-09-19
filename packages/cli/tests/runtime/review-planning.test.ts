@@ -13,7 +13,6 @@ import {
 } from "../../src/index.js";
 import type {
   CatalogueProvider,
-  CatalogueSnapshot,
 } from "../../src/catalogue/contracts/index.js";
 import type { AsterCommandContext } from "../../src/command/contracts/index.js";
 import { CommandLineError } from "../../src/shell/parsing/runtime/command-line.error.js";
@@ -21,6 +20,7 @@ import { CommandLineParser } from "../../src/shell/parsing/runtime/command-line.
 import { ReviewDocumentFactory } from "../../src/review/runtime/review-document.factory.js";
 import type { TCatalogueSelection } from "../../src/catalogue/types/internal/catalogue-selection.type.js";
 import { createCatalogueProvider } from "./catalogue-provider.fixture.js";
+import type { TCatalogueProviderFixture } from "./types/internal/catalogue-provider-fixture.type.js";
 
 const presentation = Object.freeze({
   defaults: Object.freeze({
@@ -94,9 +94,9 @@ function createCollection(
 
 function createProvider(
   identity: string,
-  snapshot: CatalogueSnapshot,
+  fixture: TCatalogueProviderFixture,
 ): CatalogueProvider {
-  return createCatalogueProvider(identity, snapshot);
+  return createCatalogueProvider(identity, fixture);
 }
 
 function createContext(
@@ -274,13 +274,13 @@ test("plans canonically ordered collection and empty-collection evidence", async
 
 test("retains exact missing, ambiguous, and explicit-provider selection semantics", async () => {
   const icon = createIcon("shared");
-  const snapshot: CatalogueSnapshot = {
+  const fixture: TCatalogueProviderFixture = {
     icons: [{ definition: icon, memberships: [] }],
     collections: [],
   };
   const context = createContext([
-    createProvider("alpha", snapshot),
-    createProvider("beta", snapshot),
+    createProvider("alpha", fixture),
+    createProvider("beta", fixture),
   ]);
   const missing = await AsterCommands.execute({
     command: "review",
