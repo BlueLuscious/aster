@@ -36,5 +36,12 @@ export const iconsBaseline = Object.freeze({
       /** @description Public package specifier under measurement. */
       specifier: "@aster/icons/collections/amellus",
     }),
+    /** @description Metadata-only icon and collection discovery import. */
+    manifest: Object.freeze({
+      /** @description Stable report scenario identity. */
+      name: "icons.import.manifest",
+      /** @description Public package specifier under measurement. */
+      specifier: "@aster/icons/manifest",
+    }),
   }),
 });

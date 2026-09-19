@@ -21,6 +21,7 @@ const generatedOutputPaths = Object.freeze({
   collectionBarrel: "src/collections/index.ts",
   collectionAuthority:
     "src/collections/constants/aster-collections.constant.ts",
+  manifest: "src/generated/manifest/index.ts",
   alphaIconFacade: "src/generated/facades/icons/alpha-icon.ts",
   zetaFacade: "src/generated/facades/icons/zeta.ts",
   sampleCollectionFacade:
@@ -47,6 +48,7 @@ function iconSource(name, variant) {
   return [
     `export const ${symbol} = Icon.define({`,
     `  identity: { name: "${name}"${variantProperty} },`,
+    `  metadata: { displayName: "${pascalCase(name)}", tags: ["${name}"], rtl: "preserve", deprecated: false },`,
     "});",
     "",
   ].join("\n");
@@ -59,6 +61,7 @@ function collectionSource(name, imports = [], members = []) {
     `export const ${pascalCase(name)}Collection = Collection.define({`,
     `  identity: { name: "${name}" },`,
     `  icons: [${members.join(", ")}],`,
+    `  metadata: { displayName: "${pascalCase(name)}" },`,
     "});\n",
   ].join("\n");
 }
@@ -74,10 +77,15 @@ async function createPackageFixture() {
     root,
     "src/collections/s/sample/sample.collection.ts",
   );
+  const authorshipPath = resolve(
+    root,
+    "src/authoring/constants/fixture-authorship.constant.ts",
+  );
 
   await mkdir(dirname(alphaPath), { recursive: true });
   await mkdir(dirname(zetaPath), { recursive: true });
   await mkdir(dirname(samplePath), { recursive: true });
+  await mkdir(dirname(authorshipPath), { recursive: true });
   await writeFile(
     alphaPath,
     iconSource("alpha-icon"),
@@ -85,7 +93,20 @@ async function createPackageFixture() {
   );
   await writeFile(
     zetaPath,
-    iconSource("zeta"),
+    [
+      'import { fixtureAuthorship } from "../../../authoring/constants/fixture-authorship.constant.js";',
+      "",
+      "export const Zeta = Icon.define({",
+      '  identity: { namespace: fixtureAuthorship.namespace, name: "zeta" },',
+      '  metadata: { displayName: "Zeta", tags: ["zeta"], rtl: "preserve", licence: fixtureAuthorship.licence, deprecated: false },',
+      "});",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  await writeFile(
+    authorshipPath,
+    'export const fixtureAuthorship = Object.freeze({ namespace: "fixture", licence: "ISC" });\n',
     "utf8",
   );
   await writeFile(
@@ -165,6 +186,20 @@ test("synchronises canonical modules deterministically and reports drift", async
       ),
       /export \{ SampleCollection \} from "\.\.\/\.\.\/\.\.\/collections\/s\/sample\/sample\.collection\.js";/u,
     );
+    const manifest = await readFile(
+      resolve(root, generatedOutputPaths.manifest),
+      "utf8",
+    );
+    assert.match(manifest, /export const AsterIconManifest/u);
+    assert.match(manifest, /export const AsterCollectionManifest/u);
+    assert.match(manifest, /key: "alpha-icon"/u);
+    assert.match(manifest, /key: "fixture\/zeta"/u);
+    assert.match(manifest, /licence: "ISC"/u);
+    assert.match(manifest, /members: Object\.freeze\(\["alpha-icon"\]\)/u);
+    assert.doesNotMatch(
+      manifest,
+      /\b(?:nodes|viewBox|presentation|Icon\.define|Collection\.define)\b/u,
+    );
 
     const current = await synchroniseIconsCatalogue(root, true);
     assert.deepEqual(current.changedPaths, []);
@@ -194,6 +229,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
     assert.deepEqual(added.changedPaths, [
       generatedOutputPaths.iconBarrel,
       generatedOutputPaths.iconAuthority,
+      generatedOutputPaths.manifest,
       "src/generated/facades/icons/middle.ts",
     ]);
     assert.match(
@@ -206,6 +242,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
     assert.deepEqual(removed.changedPaths, [
       generatedOutputPaths.iconBarrel,
       generatedOutputPaths.iconAuthority,
+      generatedOutputPaths.manifest,
       "src/generated/facades/icons/middle.ts",
     ]);
     assert.doesNotMatch(
@@ -230,6 +267,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
     assert.deepEqual(collectionAdded.changedPaths, [
       generatedOutputPaths.collectionBarrel,
       generatedOutputPaths.collectionAuthority,
+      generatedOutputPaths.manifest,
       "src/generated/facades/collections/secondary.ts",
     ]);
     assert.match(
@@ -245,6 +283,7 @@ test("adds and removes source modules without manual aggregate edits", async () 
     assert.deepEqual(collectionRemoved.changedPaths, [
       generatedOutputPaths.collectionBarrel,
       generatedOutputPaths.collectionAuthority,
+      generatedOutputPaths.manifest,
       "src/generated/facades/collections/secondary.ts",
     ]);
     assert.doesNotMatch(
@@ -267,6 +306,36 @@ test("adds and removes source modules without manual aggregate edits", async () 
       ),
       /SecondaryCollection/u,
     );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("refreshes imported manifest authorities between synchronisations", async () => {
+  const root = await createPackageFixture();
+  const authorshipPath = resolve(
+    root,
+    "src/authoring/constants/fixture-authorship.constant.ts",
+  );
+
+  try {
+    await synchroniseIconsCatalogue(root);
+    await writeFile(
+      authorshipPath,
+      'export const fixtureAuthorship = Object.freeze({ namespace: "updated", licence: "CC0-1.0" });\n',
+      "utf8",
+    );
+
+    const refreshed = await synchroniseIconsCatalogue(root);
+    const manifest = await readFile(
+      resolve(root, generatedOutputPaths.manifest),
+      "utf8",
+    );
+
+    assert.deepEqual(refreshed.changedPaths, [generatedOutputPaths.manifest]);
+    assert.match(manifest, /key: "updated\/zeta"/u);
+    assert.match(manifest, /licence: "CC0-1\.0"/u);
+    assert.doesNotMatch(manifest, /key: "fixture\/zeta"/u);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -374,6 +443,7 @@ test("discovers nested base icons, variants and collections with portable specif
     assert.deepEqual(removed.changedPaths, [
       generatedOutputPaths.iconBarrel,
       generatedOutputPaths.iconAuthority,
+      generatedOutputPaths.manifest,
       "src/generated/facades/icons/camera-retro.ts",
     ]);
     assert.doesNotMatch(
@@ -426,7 +496,7 @@ test("reports and removes obsolete facade files as one owned directory", async (
     await assert.rejects(readFile(resolve(root, obsoletePath), "utf8"));
     assert.deepEqual(
       await readdir(resolve(root, "src/generated")),
-      ["facades"],
+      ["facades", "manifest"],
     );
   } finally {
     await rm(root, { recursive: true, force: true });
@@ -558,6 +628,20 @@ test("rejects invalid, malformed and ambiguous canonical modules before writing"
         'export const CameraFilled = Icon.define({ identity: { name: "camera", variant: "outline" } });\n',
       ]],
       pattern: /identity must match camera@filled/u,
+    },
+    {
+      files: [[
+        "c/computed/computed.icon.ts",
+        'export const Computed = Icon.define({ identity: { name: "computed" }, metadata: { displayName: createName(), rtl: "preserve", deprecated: false } });\n',
+      ]],
+      pattern: /unsupported static catalogue syntax CallExpression/u,
+    },
+    {
+      files: [[
+        "c/cyclic/cyclic.icon.ts",
+        'const label = label;\nexport const Cyclic = Icon.define({ identity: { name: "cyclic" }, metadata: { displayName: label, rtl: "preserve", deprecated: false } });\n',
+      ]],
+      pattern: /cyclic static catalogue reference through label/u,
     },
     {
       files: [["x/camera/camera.icon.ts", iconSource("camera")]],

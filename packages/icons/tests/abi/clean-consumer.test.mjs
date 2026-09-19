@@ -54,11 +54,15 @@ after(async () => {
 test("resolves isolated runtime and declaration facades without source files", async () => {
   const source = [
     'import type { CollectionDefinition, IconDefinition } from "@aster/core";',
+    'import type { CollectionManifestEntry, IconManifestEntry } from "@aster/icons/manifest";',
     'import { Camera } from "@aster/icons/camera";',
     'import { AmellusCollection } from "@aster/icons/collections/amellus";',
+    'import { AsterCollectionManifest, AsterIconManifest } from "@aster/icons/manifest";',
     "const icon: IconDefinition = Camera;",
     "const collection: CollectionDefinition = AmellusCollection;",
-    "export const result = `${icon.identity.name}:${collection.identity.name}`;",
+    "const iconEntry: IconManifestEntry | undefined = AsterIconManifest.find(({ key }) => key === \"aster/camera\");",
+    "const collectionEntry: CollectionManifestEntry | undefined = AsterCollectionManifest.find(({ key }) => key === \"amellus\");",
+    "export const result = `${icon.identity.name}:${collection.identity.name}:${iconEntry?.symbol}:${collectionEntry?.symbol}`;",
     "",
   ].join("\n");
   await writeFile(resolve(consumerRoot, "consumer.ts"), source, "utf8");
@@ -107,5 +111,5 @@ test("resolves isolated runtime and declaration facades without source files", a
 
   assert.equal(executed.status, 0);
   assert.equal(executed.stderr, "");
-  assert.equal(executed.stdout, "camera:amellus");
+  assert.equal(executed.stdout, "camera:amellus:Camera:AmellusCollection");
 });

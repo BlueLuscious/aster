@@ -182,7 +182,13 @@ test("publishes only scalable icon and collection export families", async () => 
   const manifest = JSON.parse(
     await readFile(resolve(packageRoot, "package.json"), "utf8"),
   );
-  const expectedExportKeys = [".", "./collections", "./collections/*", "./*"];
+  const expectedExportKeys = [
+    ".",
+    "./collections",
+    "./manifest",
+    "./collections/*",
+    "./*",
+  ];
 
   assert.deepEqual(Object.keys(manifest.exports), expectedExportKeys);
   assert.equal(manifest.exports["."].import, "./dist/index.js");
@@ -190,6 +196,10 @@ test("publishes only scalable icon and collection export families", async () => 
   assert.deepEqual(manifest.exports["./collections"], {
     types: "./dist/collections/index.d.ts",
     import: "./dist/collections/index.js",
+  });
+  assert.deepEqual(manifest.exports["./manifest"], {
+    types: "./dist/manifest/index.d.ts",
+    import: "./dist/manifest/index.js",
   });
   assert.deepEqual(manifest.exports["./collections/*"], {
     types: "./dist/generated/facades/collections/*.d.ts",
@@ -203,6 +213,31 @@ test("publishes only scalable icon and collection export families", async () => 
     "@aster/core": "workspace:*",
   });
   assert.equal(manifest.sideEffects, false);
+});
+
+test("exposes only metadata through the isolated manifest subpath", async () => {
+  const manifest = await import("@aster/icons/manifest");
+  const publicSource = await readFile(
+    resolve(distributionRoot, "manifest/index.js"),
+    "utf8",
+  );
+  const generatedSource = await readFile(
+    resolve(distributionRoot, "generated/manifest/index.js"),
+    "utf8",
+  );
+
+  assert.deepEqual(Object.keys(manifest).sort(), [
+    "AsterCollectionManifest",
+    "AsterIconManifest",
+  ]);
+  assert.deepEqual(extractModuleSpecifiers(publicSource), [
+    "../generated/manifest/index.js",
+  ]);
+  assert.deepEqual(extractModuleSpecifiers(generatedSource), []);
+  assert.doesNotMatch(
+    generatedSource,
+    /\b(?:nodes|viewBox|presentation|Icon\.define|Collection\.define)\b/u,
+  );
 });
 
 test("keeps every per-icon module isolated from sibling definitions", async () => {
