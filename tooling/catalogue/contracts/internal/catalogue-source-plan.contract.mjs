@@ -5,7 +5,7 @@
 /**
  * @description Complete validated catalogue generation plan split by publication lifecycle.
  * @typedef {object} ICatalogueSourcePlan
- * @property {readonly ICatalogueSourceOutput[]} outputs - Transitional generated outputs replaced independently.
+ * @property {readonly ICatalogueSourceOutput[]} outputs - Fixed-path generated outputs replaced independently.
  * @property {readonly ICatalogueSourceOutput[]} facades - Public facades published as one owned directory.
  */
 

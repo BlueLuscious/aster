@@ -10,6 +10,8 @@ export const catalogueSourceGeneration = Object.freeze({
   checkArgument: "--check",
   /** @description Exclusively owned root containing generated public definition facades. */
   facadeRoot: "src/generated/facades",
+  /** @description Generated metadata-only distribution manifest path. */
+  manifestPath: "src/generated/manifest/index.ts",
   /** @description Icon names reserved by package-level public subpath families. */
   reservedIconNames: Object.freeze(["collections", "dynamic", "manifest"]),
   /** @description Canonical source families and their generated outputs. */

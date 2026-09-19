@@ -1,7 +1,7 @@
 import { posix } from "node:path";
 
 /**
- * @description Serialises deterministic catalogue barrels and aggregate authorities.
+ * @description Serialises deterministic catalogue barrels, authorities, facades and manifests.
  */
 export class CatalogueSourceSerialiser {
   /**
@@ -65,6 +65,117 @@ export class CatalogueSourceSerialiser {
    */
   facade(outputPath, module) {
     return `${this.#header}export { ${module.symbol} } from "${this.#moduleSpecifier(outputPath, module.relativePath)}";\n`;
+  }
+
+  /**
+   * @description Serialises complete metadata-only icon and collection manifests.
+   * @param {readonly object[]} icons - Canonically ordered icon manifest records.
+   * @param {readonly object[]} collections - Canonically ordered collection manifest records.
+   * @returns {string} Complete deterministic TypeScript manifest module.
+   */
+  manifest(icons, collections) {
+    const iconRecords = icons.map((record) => this.#iconManifestRecord(record));
+    const collectionRecords = collections.map((record) =>
+      this.#collectionManifestRecord(record),
+    );
+
+    return `${this.#header}import type {\n  CollectionManifestEntry,\n  IconManifestEntry,\n} from "../../manifest/contracts/index.js";\n\n/**\n * @description Complete immutable metadata-only index of distributed Aster icon definitions.\n */\nexport const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([\n${iconRecords.join("\n")}\n]);\n\n/**\n * @description Complete immutable metadata-only index of distributed Aster collections.\n */\nexport const AsterCollectionManifest: readonly CollectionManifestEntry[] = Object.freeze([\n${collectionRecords.join("\n")}\n]);\n`;
+  }
+
+  /**
+   * @description Serialises one deeply frozen icon manifest record.
+   * @param {object} record - Validated icon manifest record.
+   * @returns {string} Deterministic TypeScript record expression.
+   */
+  #iconManifestRecord(record) {
+    const fields = [
+      `  key: ${JSON.stringify(record.key)},`,
+      `  identity: ${this.#identity(record.identity, 2)},`,
+      `  symbol: ${JSON.stringify(record.symbol)},`,
+      `  displayName: ${JSON.stringify(record.displayName)},`,
+      ...(record.tags === undefined
+        ? []
+        : [`  tags: ${this.#stringArray(record.tags, 2)},`]),
+      `  rtl: ${JSON.stringify(record.rtl)},`,
+      ...(record.licence === undefined
+        ? []
+        : [`  licence: ${JSON.stringify(record.licence)},`]),
+      ...(record.attribution === undefined
+        ? []
+        : [`  attribution: ${JSON.stringify(record.attribution)},`]),
+      `  deprecated: ${record.deprecated},`,
+      ...(record.replacedBy === undefined
+        ? []
+        : [`  replacedBy: ${this.#identity(record.replacedBy, 2)},`]),
+    ];
+
+    return `  Object.freeze({\n${fields.map((field) => `  ${field}`).join("\n")}\n  }),`;
+  }
+
+  /**
+   * @description Serialises one deeply frozen collection manifest record.
+   * @param {object} record - Validated collection manifest record.
+   * @returns {string} Deterministic TypeScript record expression.
+   */
+  #collectionManifestRecord(record) {
+    const metadataFields = [
+      `displayName: ${JSON.stringify(record.metadata.displayName)},`,
+      ...(record.metadata.description === undefined
+        ? []
+        : [`description: ${JSON.stringify(record.metadata.description)},`]),
+      ...(record.metadata.tags === undefined
+        ? []
+        : [`tags: ${this.#stringArray(record.metadata.tags, 3)},`]),
+      ...(record.metadata.licence === undefined
+        ? []
+        : [`licence: ${JSON.stringify(record.metadata.licence)},`]),
+      ...(record.metadata.attribution === undefined
+        ? []
+        : [`attribution: ${JSON.stringify(record.metadata.attribution)},`]),
+    ];
+    const metadata = `Object.freeze({\n${metadataFields.map((field) => `      ${field}`).join("\n")}\n    })`;
+
+    return `  Object.freeze({\n    key: ${JSON.stringify(record.key)},\n    identity: ${this.#identity(record.identity, 2)},\n    symbol: ${JSON.stringify(record.symbol)},\n    metadata: ${metadata},\n    members: ${this.#stringArray(record.members, 2)},\n  }),`;
+  }
+
+  /**
+   * @description Serialises one deeply frozen icon or collection identity.
+   * @param {{ namespace?: string, name: string, variant?: string }} identity - Complete portable identity.
+   * @param {number} indentation - Base indentation depth for nested fields.
+   * @returns {string} Deterministic TypeScript identity expression.
+   */
+  #identity(identity, indentation) {
+    const prefix = "  ".repeat(indentation);
+    const fields = [
+      ...(identity.namespace === undefined
+        ? []
+        : [`namespace: ${JSON.stringify(identity.namespace)},`]),
+      `name: ${JSON.stringify(identity.name)},`,
+      ...(identity.variant === undefined
+        ? []
+        : [`variant: ${JSON.stringify(identity.variant)},`]),
+    ];
+
+    return `Object.freeze({\n${fields.map((field) => `${prefix}  ${field}`).join("\n")}\n${prefix}})`;
+  }
+
+  /**
+   * @description Serialises one immutable string sequence.
+   * @param {readonly string[]} values - Ordered string values.
+   * @param {number} indentation - Base indentation depth for a multiline sequence.
+   * @returns {string} Deterministic TypeScript frozen-array expression.
+   */
+  #stringArray(values, indentation) {
+    const serialised = values.map((value) => JSON.stringify(value));
+    const inline = `Object.freeze([${serialised.join(", ")}])`;
+
+    if (inline.length <= 88) {
+      return inline;
+    }
+
+    const prefix = "  ".repeat(indentation);
+
+    return `Object.freeze([\n${serialised.map((value) => `${prefix}  ${value},`).join("\n")}\n${prefix}])`;
   }
 
   /**

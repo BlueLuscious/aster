@@ -7,15 +7,34 @@ import { CatalogueSourceError } from "./catalogue-source.error.mjs";
  * @description Validates canonical definition syntax, authored identity and collection membership.
  */
 export class CatalogueSourceSyntaxInspector {
+  /** @description Metadata-only canonical source inspection capability. */
+  #manifests;
+
   /**
-   * @description Validates one canonical source and returns imported collection member references.
+   * @description Creates one canonical TypeScript source inspector.
+   * @param {import("./catalogue-source-manifest.inspector.mjs").CatalogueSourceManifestInspector} manifests - Metadata-only source inspector.
+   */
+  constructor(manifests) {
+    this.#manifests = manifests;
+  }
+
+  /**
+   * @description Starts one fresh complete source inspection lifecycle.
+   * @returns {void} Nothing.
+   */
+  reset() {
+    this.#manifests.reset();
+  }
+
+  /**
+   * @description Validates one canonical source and extracts its distribution metadata.
    * @param {string} sourcePath - Absolute source path used for failure context.
    * @param {string} source - Exact TypeScript source.
    * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
    * @param {import("../contracts/internal/catalogue-source-identity.contract.mjs").ICatalogueSourceIdentity} identity - Path-owned expected identity.
-   * @returns {readonly import("../contracts/internal/catalogue-collection-member-reference.contract.mjs").ICatalogueCollectionMemberReference[]} Imported collection members.
+   * @returns {Promise<import("../contracts/internal/catalogue-source-syntax-inspection.contract.mjs").ICatalogueSourceSyntaxInspection>} Frozen syntax inspection.
    */
-  inspect(sourcePath, source, family, identity) {
+  async inspect(sourcePath, source, family, identity) {
     const sourceFile = ts.createSourceFile(
       sourcePath,
       source,
@@ -58,9 +77,20 @@ export class CatalogueSourceSyntaxInspector {
       );
     }
 
-    return family.kind === catalogueSourceFamilyKinds.collection
+    const memberReferences = family.kind === catalogueSourceFamilyKinds.collection
       ? this.#collectionMemberReferences(sourcePath, sourceFile, definition)
       : Object.freeze([]);
+
+    return Object.freeze({
+      memberReferences,
+      manifest: await this.#manifests.inspect(
+        sourcePath,
+        sourceFile,
+        definition,
+        identity,
+        family,
+      ),
+    });
   }
 
   /**

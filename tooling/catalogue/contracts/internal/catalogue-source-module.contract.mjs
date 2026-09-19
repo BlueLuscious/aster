@@ -11,6 +11,7 @@
  * @property {string} sourcePath - Absolute canonical source path.
  * @property {string} relativePath - Slash-separated package-relative canonical source path.
  * @property {readonly ICatalogueCollectionMemberReference[]} memberReferences - Imported members retained by a collection source.
+ * @property {import("./catalogue-icon-manifest-data.contract.mjs").ICatalogueIconManifestData | import("./catalogue-collection-manifest-data.contract.mjs").ICatalogueCollectionManifestData} manifest - Metadata-only distribution data extracted from source syntax.
  */
 
 export {};

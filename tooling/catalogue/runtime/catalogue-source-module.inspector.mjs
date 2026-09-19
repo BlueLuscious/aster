@@ -51,6 +51,14 @@ export class CatalogueSourceModuleInspector {
   }
 
   /**
+   * @description Starts one fresh complete source inspection lifecycle.
+   * @returns {void} Nothing.
+   */
+  reset() {
+    this.#syntax.reset();
+  }
+
+  /**
    * @description Discovers one configured family and rejects identity or symbol ambiguity.
    * @param {string} packageRoot - Absolute package root.
    * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Canonical source-family configuration.
@@ -95,7 +103,7 @@ export class CatalogueSourceModuleInspector {
       }
 
       const source = await this.#fileSystem.readText(sourcePath);
-      const memberReferences = this.#syntax.inspect(
+      const syntax = await this.#syntax.inspect(
         sourcePath,
         source,
         family,
@@ -111,7 +119,8 @@ export class CatalogueSourceModuleInspector {
           symbol: identity.symbol,
           sourcePath,
           relativePath: this.#paths.display(packageRoot, sourcePath),
-          memberReferences,
+          memberReferences: syntax.memberReferences,
+          manifest: syntax.manifest,
         }),
       );
     }

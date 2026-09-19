@@ -26,6 +26,10 @@
       "types": "./dist/collections/index.d.ts",
       "import": "./dist/collections/index.js"
     },
+    "./manifest": {
+      "types": "./dist/manifest/index.d.ts",
+      "import": "./dist/manifest/index.js"
+    },
     "./collections/*": {
       "types": "./dist/generated/facades/collections/*.d.ts",
       "import": "./dist/generated/facades/collections/*.js"
