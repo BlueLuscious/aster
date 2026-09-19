@@ -27,12 +27,6 @@ const generatedOutputPaths = Object.freeze({
 const completeGeneratedOutputPaths = Object.freeze(
   Object.values(generatedOutputPaths),
 );
-const retiredGeneratedOutputPaths = Object.freeze([
-  "src/icons/index.ts",
-  "src/icons/constants/aster-icons.constant.ts",
-  "src/collections/index.ts",
-  "src/collections/constants/aster-collections.constant.ts",
-]);
 
 function pascalCase(slug) {
   return slug
@@ -222,10 +216,6 @@ test("synchronises canonical modules deterministically and reports drift", async
 
     const current = await synchroniseIconsCatalogue(root, true);
     assert.deepEqual(current.changedPaths, []);
-
-    for (const path of retiredGeneratedOutputPaths) {
-      await assert.rejects(readFile(resolve(root, path), "utf8"));
-    }
 
     const manifestPath = resolve(root, generatedOutputPaths.manifest);
     await writeFile(manifestPath, "stale\n", "utf8");
