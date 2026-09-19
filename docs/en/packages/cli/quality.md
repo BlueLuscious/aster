@@ -125,6 +125,8 @@ repository workflows. It currently demonstrates:
 - catalogue discovery, empty values, many-to-many membership, ambiguity, conflicts, and failures;
 - zero exact-loader invocation and only two evaluated Icons manifest modules for list, search, and
   show;
+- isolated exact icon and collection resolution with no cross-invocation cache, redundant member
+  loader calls, partial state, or native provider failure leakage;
 - complete icon and collection export planning without partial artefacts;
 - deterministic self-contained review HTML, semantic navigation, offline assets, fixed visual
   samples, and hostile-text escaping;

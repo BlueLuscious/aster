@@ -98,8 +98,9 @@ The scalable `@aster/icons` authoring and distribution boundary is accepted and 
 and exact asynchronous loaders are the foundation for genuinely lazy CLI consumption.
 
 The built-in CLI provider now discovers accepted metadata through Icons manifests. `list`,
-`search`, and `show` evaluate no complete definitions. The remaining complete-definition bridge
-must be replaced so:
+`search`, and `show` evaluate no complete definitions. Exact icon and collection resolution now
+validates selected loader results through Core and against accepted discovery without retaining a
+cache. The remaining complete-definition command bridge must be replaced so:
 
 - `list`, `search` and `show` continue consuming only manifest metadata;
 - `export` and `review` resolve only the selected icon or collection;

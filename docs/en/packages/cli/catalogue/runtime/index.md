@@ -16,6 +16,8 @@ None of these classes is exported through a package subpath.
 | `CatalogueDiscoveryMetadataNormaliser` | Accepts lightweight icon metadata and descriptive collection metadata. |
 | `CatalogueDiscoveryMembershipValidator` | Validates bidirectional agreement between icon memberships and collection members. |
 | `CatalogueDiscoverySelector` | Resolves exact metadata records with provider filtering and ambiguity handling. |
+| `CatalogueDefinitionResolver` | Invokes one selected exact loader, reconstructs its result through Core, and returns complete immutable command evidence. |
+| `CatalogueDefinitionConsistencyValidator` | Verifies loaded identity, metadata, and collection membership against accepted discovery evidence. |
 | `CatalogueIdentityFormatter` | Formats portable identities for exact matching and ordering. |
 | `CatalogueQueryScope` | Applies shared provider, collection, membership, and tag filters. |
 | `CatalogueResultFactory` | Projects accepted discovery records into public immutable evidence. |
@@ -26,6 +28,11 @@ None of these classes is exported through a package subpath.
 `TAcceptedCatalogueDiscovery` associates one canonical provider identity with canonically ordered,
 isolated discovery records. It is the immutable hand-off from provider acceptance to list, search,
 show, and later exact selection; it is not a public provider result.
+
+`TCatalogueDiscoverySelection` retains one exact provider, requested identity, selected record, and
+the discovery icon records required by that subject. It contains no complete definition.
+`TCatalogueSelection` is the downstream immutable result containing the isolated definition and
+canonically ordered icon evidence required by Export or Review.
 
 ```text
 explicit providers --> discover --> discovery normaliser --> accepted discoveries
@@ -53,6 +60,24 @@ remain CLI-owned catalogue data rather than Core metadata.
 One rejected provider prevents any partial payload from becoming observable. Rejected promises,
 accessors, proxies, malformed fields, duplicate identities, unknown members, and inconsistent
 membership claims become sanitised diagnostics associated with the accepted provider identity.
+
+## Exact definition resolution
+
+Exact resolution begins only after metadata selection has resolved provider scope, identity, and
+ambiguity. An icon selection invokes `loadIcon()` once. A collection selection invokes
+`loadCollection()` once and uses the complete members carried by that collection definition; it
+does not invoke individual icon loaders.
+
+Every loaded value crosses `Icon.define()` or `Collection.define()` before command state can retain
+it. The consistency validator then compares canonical identity and metadata. Collection resolution
+also compares the ordered member identities and validates every loaded member against its accepted
+icon discovery record. Results are isolated and deeply immutable even when a provider returns
+mutable authored data.
+
+An absent provider, missing value, rejected loader, malformed definition, identity mismatch,
+metadata mismatch, or membership mismatch becomes one sanitised `catalogue-unavailable`
+diagnostic containing only accepted provider and identity evidence. The resolver retains no cache;
+each invocation represents one explicit provider operation.
 
 Export and Review still use `CatalogueLoader.loadDefinitions()` as a temporary migration bridge.
 That path invokes every discovered exact loader and passes reconstructed records through the

@@ -40,6 +40,12 @@ catalogue results until exact lookup rules resolve or reject them.
 one exact identity after discovery has established provider scope and availability. An absent
 loader result for an identity promised by discovery is provider failure, not `not-found`.
 
+The internal exact resolver reconstructs loaded values through Core and requires their identity,
+metadata, and collection membership to agree with accepted discovery. Icon resolution invokes one
+icon loader. Collection resolution invokes one collection loader and consumes only the members
+carried by that definition; it does not issue redundant member loader calls. Export and Review have
+not yet migrated to this resolver and retain their documented transitional bridge.
+
 Context acceptance snapshots all three callable capabilities without invoking them and preserves
 the original receiver required by class implementations. Each discovery command then:
 
