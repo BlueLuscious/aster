@@ -36,6 +36,35 @@ export const packageBoundaries = Object.freeze({
   importDependencies: Object.freeze(["@aster/core", "xmlsax-typescript"]),
   /** @description Accepted CLI production dependencies. */
   cliDependencies: Object.freeze(["@aster/core", "@aster/icons", "@aster/svg"]),
+  /** @description Accepted Icons production dependencies. */
+  iconsDependencies: Object.freeze(["@aster/core"]),
+  /** @description Exact scalable Icons package export surface. */
+  iconsExports: Object.freeze({
+    /** @description Deliberately unavailable package root. */
+    ".": null,
+    /** @description Deliberately unavailable aggregate collection root. */
+    "./collections": null,
+    /** @description Metadata-only catalogue manifest entry. */
+    "./manifest": Object.freeze({
+      types: "./dist/manifest/index.d.ts",
+      import: "./dist/manifest/index.js",
+    }),
+    /** @description Asynchronous definition loader entry. */
+    "./dynamic": Object.freeze({
+      types: "./dist/dynamic/index.d.ts",
+      import: "./dist/dynamic/index.js",
+    }),
+    /** @description Generated per-collection facade family. */
+    "./collections/*": Object.freeze({
+      types: "./dist/generated/facades/collections/*.d.ts",
+      import: "./dist/generated/facades/collections/*.js",
+    }),
+    /** @description Generated per-icon facade family. */
+    "./*": Object.freeze({
+      types: "./dist/generated/facades/icons/*.d.ts",
+      import: "./dist/generated/facades/icons/*.js",
+    }),
+  }),
   /** @description Accepted SVG production dependencies. */
   svgDependencies: Object.freeze(["@aster/core"]),
   /** @description Accepted XML parser dependency and private adapter boundary. */
