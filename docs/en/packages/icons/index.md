@@ -51,7 +51,7 @@ The only production dependency is public `@aster/core`.
 @aster/icons --> @aster/core
 ```
 
-`@aster/svg`, `@aster/import`, Lilium, Lotus, Aster adapters, DOM libraries, and Node APIs are not
+`@aster/svg`, `@aster/import`, Lilium, Protea, Aster adapters, DOM libraries, and Node APIs are not
 runtime dependencies. Repository-level workflow tests may compose independently installed
 packages without changing this boundary.
 

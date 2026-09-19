@@ -7,6 +7,9 @@ Canonical documentation is written in British English and organised by its narro
 
 - [Project](project/index.md) explains Aster's product boundary, package composition, dependency
   direction, implemented workflows, and release posture.
+- [Garden's Aster record](https://github.com/BlueLuscious/garden/blob/master/docs/en/products/aster/index.md)
+  owns Aster's ecosystem identity and cross-product relationships without replacing this
+  repository's implementation authority.
 - [Packages](packages/index.md) document the production packages that exist in the repository.
 - [Repository Tooling](tooling/index.md) documents private verification and workspace-maintenance
   features.

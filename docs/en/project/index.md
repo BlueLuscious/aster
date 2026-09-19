@@ -74,10 +74,13 @@ cross-package posture is defined by [Versioning and Releases](versioning.md).
 
 ## External integration direction
 
-Lilium, Lotus, Flora, and other consumers may integrate through optional adapters built against
+Lilium, Protea, Flora, and other consumers may integrate through optional adapters built against
 stable public Aster contracts. Portable Aster packages do not depend on those products or acquire
 their framework, component, DOM, or plugin semantics. Prospective integrations remain proposals
 until their activation conditions are met in [Future Capabilities](../future-capabilities.md).
+The [Garden Aster record](https://github.com/BlueLuscious/garden/blob/master/docs/en/products/aster/index.md)
+owns Aster's ecosystem identity and cross-product relationships; this project documentation
+remains authoritative for Aster's implemented boundaries and behaviour.
 
 ## Documentation map
 

@@ -25,10 +25,12 @@ pre-release distribution without creating a stable-version compatibility promise
 
 ## Naming decision
 
-Garden normally associates a major product with a botanical genus and may use one species of that
-genus for a durable identity inside the product. A species assignment is made only when the owned
-concept exists, remains taxonomically valid, has a clear product role, and benefits from a name
-that can survive implementation and package changes.
+The
+[Garden Aster Species Registry](https://github.com/BlueLuscious/garden/blob/master/docs/en/products/aster/species-registry.md)
+owns Amellus's botanical assignment. Garden normally associates a major product with a botanical
+genus and may use one species of that genus for a durable identity inside the product. A species
+assignment is made only when the owned concept exists, remains taxonomically valid, has a clear
+product role, and benefits from a name that can survive implementation and package changes.
 
 The accepted product genus is *Aster*. Kew Plants of the World Online recognises
 [*Aster amellus* L.](https://powo.science.kew.org/taxon/urn%3Alsid%3Aipni.org%3Anames%3A331070-2/general-information)
