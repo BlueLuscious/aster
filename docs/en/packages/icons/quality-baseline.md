@@ -79,6 +79,10 @@ The current native ES2022 ESM output contains 136 files and 79,559 unminified by
 - `sideEffects: false`;
 - public `@aster/core` as the only runtime dependency.
 
+The corresponding package tarball contains those 136 emitted files plus `package.json`, `README.md`
+and `LICENSE`. Clean-consumer evidence installs that actual tarball and rejects any additional
+source, test or repository-tooling surface.
+
 The pre-migration control contained 68 files and 55,087 bytes. The accepted facade, manifest and
 loader responsibilities increase emitted file count while removing default package-wide runtime
 evaluation. Neither figure is a size budget.

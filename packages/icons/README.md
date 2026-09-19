@@ -3,10 +3,12 @@
 Canonical portable TypeScript icon and collection definitions for Aster.
 
 The package depends only on `@aster/core`. Every icon and collection has an isolated public
-subpath; no package-wide definition root is exported. `@aster/icons/manifest` provides metadata-only discovery without
-loading complete definitions, while `@aster/icons/dynamic` resolves identities asynchronously
-without eager catalogue evaluation. The package contains no renderer, framework, DOM, filesystem,
-Import, or global catalogue dependency.
+subpath; no package-wide definition root is exported. `@aster/icons/manifest` provides
+metadata-only discovery without loading complete definitions, while `@aster/icons/dynamic`
+resolves identities asynchronously without eager catalogue evaluation. These runtime boundaries
+do not change npm acquisition: installing `@aster/icons` acquires the complete published package.
+The package contains no renderer, framework, DOM, filesystem, Import, or global catalogue
+dependency.
 The example below assumes `@aster/svg` is installed independently by the consumer.
 
 Canonical `*.icon.ts` and `*.collection.ts` modules are editable sources. Package builds

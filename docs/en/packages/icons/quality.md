@@ -52,11 +52,12 @@ The exact exported subpath set is intentional distribution evidence even though 
 grows with the catalogue. The test derives that set from canonical modules rather than maintaining
 a second handwritten icon or collection inventory.
 
-A clean consumer receives only packed-style `package.json` and `dist` trees for Core and Icons. It
-compiles isolated icon, collection, manifest and dynamic imports through published declarations, then
-executes the emitted JavaScript through the same subpaths without any workspace source file.
-Separate failure evidence removes one copied facade and verifies that loader invocation preserves
-the native `ERR_MODULE_NOT_FOUND` rejection.
+A clean consumer installs actual locally packed Core and Icons tarballs with scripts disabled and
+without registry access. Evidence compares the installed Icons payload with the complete emitted
+distribution plus its package metadata, rejects source and test trees, compiles isolated icon,
+collection, manifest and dynamic imports through published declarations, and executes the emitted
+JavaScript without any workspace source file. Separate failure evidence removes one installed
+facade and verifies that loader invocation preserves the native `ERR_MODULE_NOT_FOUND` rejection.
 
 ## Cross-package evidence
 

@@ -71,6 +71,13 @@ import { ArrowLeft } from "@aster/icons/arrow-left";
 import { Search } from "@aster/icons/search";
 ```
 
+A rendition keeps the same logical icon name, adds a lowercase kebab-case variant identity and
+concatenates both PascalCase parts in its export symbol. For example, a future `stippled`
+rendition of `camera` would use identity `aster/camera@stippled`, public subpath
+`@aster/icons/camera/stippled` and symbol `CameraStippled`. A visually different concept such as a
+retro camera remains a separate base identity rather than using a style variant to change its
+meaning.
+
 Search and catalogue inspection use the isolated metadata-only manifest:
 
 ```ts
@@ -99,6 +106,22 @@ No mutable registry, renderer, generated implementation path, physical source pa
 subpath is public. The package root and bare collection-family subpath are intentionally not
 exported. The package currently has no variants, but the export surface accepts
 `@aster/icons/<name>/<variant>` once a canonical rendition exists.
+
+## Distribution Costs
+
+Acquisition, runtime evaluation and bundle inclusion are separate concerns:
+
+| Concern | Current guarantee |
+| --- | --- |
+| npm acquisition | Installing `@aster/icons` acquires the complete published package, including every canonical definition. |
+| Runtime evaluation | A direct icon import evaluates only its facade, definition and shared authorities. A manifest or loader-map import evaluates no complete definition. |
+| Bundle inclusion | Stable definition subpaths and dynamic loader boundaries permit consumers and capable bundlers to retain isolated modules or chunks; final inclusion remains bundler- and application-dependent. |
+
+Normal application code should import a known definition directly. Metadata-only catalogue
+discovery and runtime-selected resolution are advanced integration concerns and should use
+`@aster/icons/manifest` and `@aster/icons/dynamic` respectively. Neither integration reduces the
+package downloaded by npm. Selective acquisition requires a future registry and explicit CLI
+materialisation workflow rather than a different import spelling.
 
 ## Execution Flow
 
