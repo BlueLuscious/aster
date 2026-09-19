@@ -16,7 +16,8 @@ import { AsterCatalogueProvider } from "../runtime/aster-catalogue.provider.js";
 const asterCatalogueProvider = new AsterCatalogueProvider();
 
 /**
- * @description Immutable explicit provider for canonical `@aster/icons` catalogue discovery.
+ * @description Immutable explicit provider for canonical `@aster/icons` discovery and exact
+ * loading.
  */
 export const AsterCatalogue: CatalogueProvider = Object.freeze({
   /** @description Stable identity of the canonical Aster catalogue provider. */

@@ -110,10 +110,10 @@ deterministic comparison authority.
 
 ## Distribution evidence
 
-The measured native ES2022 ESM output contains 294 files and 385,513 unminified bytes:
+The measured native ES2022 ESM output contains 294 files and 385,535 unminified bytes:
 
-- 170 JavaScript modules totalling 270,272 bytes;
-- 124 declaration files totalling 115,241 bytes;
+- 170 JavaScript modules totalling 270,283 bytes;
+- 124 declaration files totalling 115,252 bytes;
 - one public root export;
 - one private `aster` binary mapping;
 - `sideEffects: false`;

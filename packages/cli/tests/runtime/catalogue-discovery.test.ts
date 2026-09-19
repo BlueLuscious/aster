@@ -117,8 +117,7 @@ assert.ok(representativeIcon, "Expected one representative Aster icon.");
 const representativeIdentity = representativeIcon.key;
 const representativeMemberships = AsterCollectionManifest
   .filter((collection) => collection.members.includes(representativeIcon.key))
-  .map((collection) => collection.identity)
-  .sort((left, right) => left.name.localeCompare(right.name));
+  .map((collection) => collection.identity);
 
 test("discovers the explicit built-in Aster catalogue", async () => {
   const context = createContext([AsterCatalogue]);
