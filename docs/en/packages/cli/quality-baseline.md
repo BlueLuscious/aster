@@ -94,11 +94,11 @@ exact command migration:
 
 | Workflow | Stable result | CLI modules | Icons modules |
 | --- | --- | ---: | ---: |
-| `list icons` | `success:icon-list` | 71 | 2 |
-| `search camera` | `success:search` | 71 | 2 |
-| `show icon aster/camera` | `success:icon-show` | 71 | 2 |
-| `export icon aster/camera` | `success:export` | 71 | 8 |
-| `review icon aster/camera` | `success:review` | 71 | 8 |
+| `list icons` | `success:icon-list` | 68 | 2 |
+| `search camera` | `success:search` | 68 | 2 |
+| `show icon aster/camera` | `success:icon-show` | 68 | 2 |
+| `export icon aster/camera` | `success:export` | 68 | 8 |
+| `review icon aster/camera` | `success:review` | 68 | 8 |
 
 The two discovery modules are `manifest/index.js` and `generated/manifest/index.js`. No icon
 facade, glyph definition, collection definition, authoring authority, or dynamic-loader module is
@@ -110,10 +110,10 @@ deterministic comparison authority.
 
 ## Distribution evidence
 
-The measured native ES2022 ESM output contains 310 files and 416,275 unminified bytes:
+The measured native ES2022 ESM output contains 294 files and 385,513 unminified bytes:
 
-- 178 JavaScript modules totalling 294,088 bytes;
-- 132 declaration files totalling 122,187 bytes;
+- 170 JavaScript modules totalling 270,272 bytes;
+- 124 declaration files totalling 115,241 bytes;
 - one public root export;
 - one private `aster` binary mapping;
 - `sideEffects: false`;

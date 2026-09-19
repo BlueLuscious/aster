@@ -23,20 +23,19 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P0` | Establish scalable Icons authoring and runtime distribution. | Complete before catalogue growth or a supported Icons release stabilises the current eager surface. |
-| 2 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 3 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 4 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 5 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 6 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 7 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 8 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
-| 9 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 10 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 11 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 12 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 13 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 14 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 1 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 2 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 3 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 4 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 5 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 6 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 7 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
+| 8 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 9 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 10 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 11 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 12 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 13 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
 
 ## Catalogue and command expansion
 
@@ -88,33 +87,6 @@ Any accepted host must establish all of these boundaries together:
 Prefer owned on-disk regeneration unless measured evidence proves that an in-memory document
 lifecycle materially improves authoring without weakening publication ownership. Do not add a
 general development server or framework dependency solely for this capability.
-
-## Lazy CLI catalogue integration
-
-Importance: **P0 - Required**
-
-The scalable `@aster/icons` authoring and distribution boundary is accepted and documented by the
-[Icons package](packages/icons/index.md). Its isolated definition subpaths, metadata-only manifests
-and exact asynchronous loaders are the foundation for genuinely lazy CLI consumption.
-
-The built-in CLI provider now discovers accepted metadata through Icons manifests. `list`,
-`search`, and `show` evaluate no complete definitions. Exact icon and collection resolution now
-validates selected loader results through Core and against accepted discovery without retaining a
-cache. `export` and `review` now use that metadata-first exact-resolution boundary, so:
-
-- `list`, `search` and `show` continue consuming only manifest metadata;
-- `export` and `review` resolve only the selected icon or collection;
-- collection resolution evaluates only that collection and its explicit members;
-- provider absence and loader rejection remain deterministic command diagnostics;
-- `help` and `version` retain zero Icons acquisition or evaluation;
-- CLI owns query and diagnostic behaviour without copying Icons inventory or source discovery.
-
-The obsolete complete-snapshot contracts, normaliser, and loader bridge remain isolated for one
-compatibility-led removal pass. They no longer participate in command execution.
-
-This integration must consume the existing public `manifest` and `dynamic` subpaths rather than
-introducing an `AsterIconCatalogue` object, package-root aggregate or generic catalogue package.
-Selective npm acquisition remains the separate capability below.
 
 ## Selective Icons acquisition
 

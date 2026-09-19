@@ -65,10 +65,14 @@ exit status. Exact human and JSON stream selection and exit statuses are owned b
 ## Catalogue isolation
 
 Catalogue providers are supplied explicitly and invoked once per command execution. Provider
-registration order cannot change accepted ordering or selected results. Snapshots and retained
-portable values are validated, copied where required, and frozen before query behaviour becomes
-observable. No result relies on source files, a mutable global registry, or catalogue object
-insertion order.
+registration order cannot change accepted ordering or selected results. Provider capabilities and
+retained portable values are validated, copied where required, and frozen before query behaviour
+becomes observable. No result relies on source files, a mutable global registry, or catalogue
+object insertion order.
+
+The public provider ABI contains metadata discovery plus exact icon and collection loaders. It
+contains no complete-provider snapshot contract. Discovery commands invoke no definition loader;
+Export and Review load only the exact accepted target after metadata selection.
 
 Provider and membership guarantees are owned by the
 [CLI Catalogue](catalogue/index.md).

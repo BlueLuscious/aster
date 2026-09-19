@@ -19,10 +19,6 @@ providers from installed packages or the filesystem.
 | `CatalogueIconResult` | Reports one icon identity, lightweight metadata, provider, and independent memberships. | Returned by icon list, search, and exact show. |
 | `CatalogueCollectionResult` | Reports one collection identity, metadata, provider, and member identities. | Returned by collection list, search, and exact show. |
 
-`CatalogueSnapshot`, `CatalogueIconRecord`, and `CatalogueCollectionRecord` remain transitional
-complete-definition contracts pending legacy removal. They are not returned by
-`CatalogueProvider`, and no command workflow consumes them.
-
 ## Public types and authorities
 
 | Symbol | Responsibility | Relations |

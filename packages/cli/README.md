@@ -4,8 +4,8 @@ Host-neutral command contracts and execution for Aster.
 
 The package exposes the frozen `AsterCommands` composition for deterministic `export`, `review`,
 `list`, `search`, `show`, `help`, and `version` execution through explicit catalogue providers.
-`AsterCatalogue` adapts the canonical `@aster/icons` definitions when a host opts into that
-provider.
+`AsterCatalogue` adapts canonical `@aster/icons` manifests for discovery and loads only an exact
+icon or collection definition when a host executes Export or Review through that provider.
 
 The standalone Node package also exposes the `aster` executable:
 

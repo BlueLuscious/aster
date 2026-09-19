@@ -27,7 +27,6 @@ Its public type surface comprises:
   `AsterCommandDiagnosticCategoryType`;
 - `CatalogueProvider`, `CatalogueDiscovery`, `CatalogueDiscoveryIconRecord`,
   `CatalogueDiscoveryCollectionRecord`, and `CatalogueIconMetadata`;
-- transitional `CatalogueSnapshot`, `CatalogueIconRecord`, and `CatalogueCollectionRecord`;
 - `CatalogueProviderResult`, `CatalogueIconResult`, and `CatalogueCollectionResult`;
 - `CatalogueResultKindType`;
 - `AsterExportArtefact`, `AsterExportPlan`, `AsterExportSubjectType`, `AsterExportOptionsType`, and
@@ -48,7 +47,6 @@ the package export map. The executable module is reachable only through the pack
 | Command invocation, context, descriptor, result, payload, and diagnostic types | Programmatic hosts construct requests, supply capabilities, and interpret results without argv. | Retain as the complete structured command ABI. |
 | `AsterCatalogue` and `CatalogueProvider` | Standalone composition and explicit programmatic catalogue registration | Retain the built-in provider and replaceable provider capability. |
 | Catalogue discovery contracts | Independent providers author lightweight metadata evidence without a global registry. | Retain as the provider input boundary. |
-| Transitional snapshot contracts | No command consumes them after exact Export and Review migration. | Remove with the isolated legacy loader and normaliser after compatibility verification. |
 | Catalogue result contracts and `catalogueResultKinds` | Hosts interpret discriminated discovery results at runtime and compile time. | Retain the paired runtime and type authorities. |
 | Export options, plan, artefact, subject, and `exportTargets` | Programmatic and standalone hosts plan, present, redirect, or publish complete SVG output. | Retain the paired planning and target authorities. |
 | Review models, plan, subject, `reviewSubjects`, and `reviewTargets` | Programmatic and standalone hosts inspect deterministic technical evidence without host effects. | Retain the paired planning and discriminator authorities. |
@@ -127,6 +125,8 @@ repository workflows. It currently demonstrates:
   show;
 - isolated exact icon and collection resolution with no cross-invocation cache, redundant member
   loader calls, partial state, or native provider failure leakage;
+- eight evaluated Icons modules for exact built-in icon Export and Review rather than complete
+  catalogue evaluation;
 - complete icon and collection export planning without partial artefacts;
 - deterministic self-contained review HTML, semantic navigation, offline assets, fixed visual
   samples, and hostile-text escaping;
@@ -164,7 +164,7 @@ behaviour or distribution structure.
 | Provider retention | Context normalisation snapshots provider identity and three callable capabilities while preserving the original receiver required by class implementations. | Keep provider-owned mutable state behind the capability; never treat returned discovery or definitions as trusted. |
 | Shared authorities | Canonical textual identity, ASCII ordering, and structured-data inspection are centralised under the private CLI shared feature. | Keep each authority internal and avoid widening it into Core or the public ABI. |
 | Command growth | Programmatic acceptance and argv parsing dispatch to explicit command-owned collaborators; human presentation dispatches to cohesive payload-family presenters. | Keep integration explicit and bounded without mutable registries, reflection, base-class hierarchies, or automatic discovery. |
-| Catalogue concentration | Discovery normalisation is split by identity, metadata, records, and membership; unused legacy snapshot acceptance remains transitional. | Preserve semantic boundaries and remove the isolated legacy path rather than layering over it. |
+| Catalogue concentration | Discovery normalisation is split by identity, metadata, records, and membership; exact loading has an independent consistency boundary. | Preserve semantic boundaries rather than layering query, loading, and validation into one service. |
 | Filesystem races | Lexical confinement, portable segments, exclusive writes, same-parent staging, a second target check, current-stage cleanup, and sanitised failures are covered. | Retain explicit non-guarantees for hostile concurrent mutation, symlink replacement, process interruption, crash durability, and native rename semantics. |
 | Startup and package cost | Cold Node control, root import, executable startup, command execution, provider loading, export, presentation, emitted distribution, and packed installation are measured independently. | Retain the current structure until a repeatable CLI-owned mechanism satisfies the documented comparison rules. |
 

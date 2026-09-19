@@ -76,7 +76,6 @@ The package exposes only its root `"."`. It exports these types:
   `AsterCommandDiagnosticCategoryType`;
 - `CatalogueProvider`, `CatalogueDiscovery`, `CatalogueDiscoveryIconRecord`,
   `CatalogueDiscoveryCollectionRecord`, and `CatalogueIconMetadata`;
-- transitional `CatalogueSnapshot`, `CatalogueIconRecord`, and `CatalogueCollectionRecord`;
 - `CatalogueProviderResult`, `CatalogueIconResult`, and `CatalogueCollectionResult`;
 - `CatalogueResultKindType`;
 - `AsterExportArtefact`, `AsterExportPlan`, `AsterExportSubjectType`, `AsterExportOptionsType`, and
@@ -108,6 +107,7 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
 - many-to-many membership without duplicated icon identity;
 - mixed search fields, cross-provider ambiguity, discovery conflicts, and unavailable providers;
 - zero definition-loader invocation across list, search, and show;
+- one exact icon or collection loader invocation across export and review;
 - exact export selection, option normalisation, deterministic SVG paths and contents, and complete
   immutable plans;
 - exact review selection, deterministic technical evidence, contained SVG failures, and complete

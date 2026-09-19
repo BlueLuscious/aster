@@ -9,7 +9,7 @@ None of these classes is exported through a package subpath.
 | --- | --- |
 | `AsterCatalogueProvider` | Lazily acquires canonical Icons manifests and exposes independent exact definition loaders. |
 | `AsterCatalogueDiscoveryFactory` | Adapts manifest entries and derives bidirectional membership evidence without evaluating definitions. |
-| `CatalogueLoader` | Orders providers and accepts discovery metadata; its obsolete complete-definition bridge remains isolated pending removal. |
+| `CatalogueLoader` | Orders explicit providers and accepts metadata-only discovery results. |
 | `CatalogueDiscoveryNormaliser` | Coordinates strict discovery-container acceptance, cross-checking, ordering, and freezing. |
 | `CatalogueDiscoveryRecordNormaliser` | Accepts and isolates icon and collection discovery records. |
 | `CatalogueDiscoveryIdentityNormaliser` | Accepts portable icon and collection identities from untrusted discovery values. |
@@ -80,6 +80,5 @@ diagnostic containing only accepted provider and identity evidence. The resolver
 each invocation represents one explicit provider operation.
 
 `CatalogueSubjectSelector` composes metadata selection with this exact resolver for Export and
-Review. Consequently, command workflows do not use `CatalogueLoader.loadDefinitions()`. That
-obsolete bridge and its legacy snapshot normaliser remain isolated until their public contract and
-compatibility consequences are removed together.
+Review. No complete-provider snapshot, eager definition index, or aggregate loader exists in the
+runtime or public contracts.
