@@ -1,7 +1,7 @@
 import { posix } from "node:path";
 
 /**
- * @description Serialises deterministic catalogue barrels, authorities, facades and manifests.
+ * @description Serialises deterministic catalogue barrels, authorities, facades and integrations.
  */
 export class CatalogueSourceSerialiser {
   /**
@@ -80,6 +80,36 @@ export class CatalogueSourceSerialiser {
     );
 
     return `${this.#header}import type {\n  CollectionManifestEntry,\n  IconManifestEntry,\n} from "../../manifest/contracts/index.js";\n\n/**\n * @description Complete immutable metadata-only index of distributed Aster icon definitions.\n */\nexport const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([\n${iconRecords.join("\n")}\n]);\n\n/**\n * @description Complete immutable metadata-only index of distributed Aster collections.\n */\nexport const AsterCollectionManifest: readonly CollectionManifestEntry[] = Object.freeze([\n${collectionRecords.join("\n")}\n]);\n`;
+  }
+
+  /**
+   * @description Serialises exact asynchronous icon and collection loader maps.
+   * @param {string} outputPath - Package-relative generated dynamic-loader path.
+   * @param {readonly { key: string, symbol: string, facadePath: string }[]} icons - Canonically ordered icon loader records.
+   * @param {readonly { key: string, symbol: string, facadePath: string }[]} collections - Canonically ordered collection loader records.
+   * @returns {string} Complete deterministic TypeScript dynamic-loader module.
+   */
+  dynamic(outputPath, icons, collections) {
+    const iconRecords = icons.map((record) =>
+      this.#loaderRecord(outputPath, record),
+    );
+    const collectionRecords = collections.map((record) =>
+      this.#loaderRecord(outputPath, record),
+    );
+
+    return `${this.#header}import type {\n  CollectionDefinitionLoaderMap,\n  IconDefinitionLoaderMap,\n} from "../../dynamic/contracts/index.js";\n\n/**\n * @description Immutable exact asynchronous loaders for distributed Aster icon definitions.\n */\nexport const AsterIconLoaders: IconDefinitionLoaderMap = Object.freeze({\n${iconRecords.join("\n")}\n});\n\n/**\n * @description Immutable exact asynchronous loaders for distributed Aster collections.\n */\nexport const AsterCollectionLoaders: CollectionDefinitionLoaderMap = Object.freeze({\n${collectionRecords.join("\n")}\n});\n`;
+  }
+
+  /**
+   * @description Serialises one frozen loader targeting a generated public definition facade.
+   * @param {string} outputPath - Package-relative generated dynamic-loader path.
+   * @param {{ key: string, symbol: string, facadePath: string }} record - Validated loader record.
+   * @returns {string} Deterministic TypeScript loader property.
+   */
+  #loaderRecord(outputPath, record) {
+    const specifier = this.#moduleSpecifier(outputPath, record.facadePath);
+
+    return `  ${JSON.stringify(record.key)}: Object.freeze(\n    () => import(${JSON.stringify(specifier)}).then(({ ${record.symbol} }) => ${record.symbol}),\n  ),`;
   }
 
   /**

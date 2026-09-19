@@ -12,6 +12,8 @@ export const catalogueSourceGeneration = Object.freeze({
   facadeRoot: "src/generated/facades",
   /** @description Generated metadata-only distribution manifest path. */
   manifestPath: "src/generated/manifest/index.ts",
+  /** @description Generated exact asynchronous definition-loader path. */
+  dynamicPath: "src/generated/dynamic/index.ts",
   /** @description Icon names reserved by package-level public subpath families. */
   reservedIconNames: Object.freeze(["collections", "dynamic", "manifest"]),
   /** @description Canonical source families and their generated outputs. */

@@ -11,6 +11,9 @@ export class CatalogueSourceManifestPlanner {
   /** @description Repository path composition capability. */
   #paths;
 
+  /** @description Shared canonical distribution-key serialiser. */
+  #keys;
+
   /** @description Package-relative generated manifest output path. */
   #manifestPath;
 
@@ -18,11 +21,13 @@ export class CatalogueSourceManifestPlanner {
    * @description Creates one metadata-only distribution manifest planner.
    * @param {import("./catalogue-source.serialiser.mjs").CatalogueSourceSerialiser} serialiser - Generated source serialiser.
    * @param {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver} paths - Repository path capability.
+   * @param {import("./catalogue-source-key.serialiser.mjs").CatalogueSourceKeySerialiser} keys - Canonical distribution-key serialiser.
    * @param {string} manifestPath - Package-relative generated manifest output path.
    */
-  constructor(serialiser, paths, manifestPath) {
+  constructor(serialiser, paths, keys, manifestPath) {
     this.#serialiser = serialiser;
     this.#paths = paths;
+    this.#keys = keys;
     this.#manifestPath = manifestPath;
   }
 
@@ -44,14 +49,20 @@ export class CatalogueSourceManifestPlanner {
     );
     const iconRecords = icons
       .map((module) => Object.freeze({
-        key: this.#iconKey(module.manifest.identity),
+        key: this.#keys.serialise(
+          catalogueSourceFamilyKinds.icon,
+          module.manifest.identity,
+        ),
         symbol: module.symbol,
         ...module.manifest,
       }))
       .sort((left, right) => this.#compareText(left.key, right.key));
     const collectionRecords = collections
       .map((module) => Object.freeze({
-        key: this.#collectionKey(module.manifest.identity),
+        key: this.#keys.serialise(
+          catalogueSourceFamilyKinds.collection,
+          module.manifest.identity,
+        ),
         symbol: module.symbol,
         ...module.manifest,
         members: Object.freeze(
@@ -68,7 +79,10 @@ export class CatalogueSourceManifestPlanner {
               );
             }
 
-            return this.#iconKey(target.manifest.identity);
+            return this.#keys.serialise(
+              catalogueSourceFamilyKinds.icon,
+              target.manifest.identity,
+            );
           }),
         ),
       }))
@@ -79,24 +93,6 @@ export class CatalogueSourceManifestPlanner {
       relativePath: this.#manifestPath,
       content: this.#serialiser.manifest(iconRecords, collectionRecords),
     });
-  }
-
-  /**
-   * @description Serialises one complete icon identity to its canonical textual key.
-   * @param {{ namespace?: string, name: string, variant?: string }} identity - Complete icon identity.
-   * @returns {string} Canonical icon manifest key.
-   */
-  #iconKey(identity) {
-    return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}${identity.variant === undefined ? "" : `@${identity.variant}`}`;
-  }
-
-  /**
-   * @description Serialises one complete collection identity to its canonical textual key.
-   * @param {{ namespace?: string, name: string }} identity - Complete collection identity.
-   * @returns {string} Canonical collection manifest key.
-   */
-  #collectionKey(identity) {
-    return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}`;
   }
 
   /**

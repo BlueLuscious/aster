@@ -1,5 +1,3 @@
-import { posix } from "node:path";
-
 import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family-kinds.constant.mjs";
 import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
@@ -13,6 +11,9 @@ export class CatalogueSourceFacadePlanner {
   /** @description Repository path composition capability. */
   #paths;
 
+  /** @description Stable public subpath and generated facade path authority. */
+  #facadeResolver;
+
   /** @description Icon names owned by exact or distinct package subpath families. */
   #reservedIconNames;
 
@@ -20,11 +21,13 @@ export class CatalogueSourceFacadePlanner {
    * @description Creates one generated public facade planner.
    * @param {import("./catalogue-source.serialiser.mjs").CatalogueSourceSerialiser} serialiser - Generated source serialiser.
    * @param {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver} paths - Repository path capability.
+   * @param {import("./catalogue-source-facade.resolver.mjs").CatalogueSourceFacadeResolver} facadeResolver - Public subpath and facade path authority.
    * @param {readonly string[]} reservedIconNames - Icon names unavailable to ordinary icon subpaths.
    */
-  constructor(serialiser, paths, reservedIconNames) {
+  constructor(serialiser, paths, facadeResolver, reservedIconNames) {
     this.#serialiser = serialiser;
     this.#paths = paths;
+    this.#facadeResolver = facadeResolver;
     this.#reservedIconNames = new Set(reservedIconNames);
   }
 
@@ -49,7 +52,10 @@ export class CatalogueSourceFacadePlanner {
           );
         }
 
-        const publicSubpath = this.#publicSubpath(family.kind, module);
+        const publicSubpath = this.#facadeResolver.publicSubpath(
+          family.kind,
+          module,
+        );
 
         if (publicSubpaths.has(publicSubpath)) {
           throw new CatalogueSourceError(
@@ -58,7 +64,7 @@ export class CatalogueSourceFacadePlanner {
         }
 
         publicSubpaths.add(publicSubpath);
-        const relativePath = this.#facadePath(family, module);
+        const relativePath = this.#facadeResolver.path(family, module);
         outputs.push(
           Object.freeze({
             path: this.#paths.resolve(packageRoot, relativePath),
@@ -70,35 +76,5 @@ export class CatalogueSourceFacadePlanner {
     }
 
     return Object.freeze(outputs);
-  }
-
-  /**
-   * @description Resolves one logical definition to its package public subpath.
-   * @param {"icon" | "collection"} familyKind - Semantic source-family discriminator.
-   * @param {import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule} module - Validated source module.
-   * @returns {string} Slash-separated public subpath.
-   */
-  #publicSubpath(familyKind, module) {
-    if (familyKind === catalogueSourceFamilyKinds.collection) {
-      return `collections/${module.name}`;
-    }
-
-    return module.variant === undefined
-      ? module.name
-      : `${module.name}/${module.variant}`;
-  }
-
-  /**
-   * @description Resolves one logical definition to its generated TypeScript facade path.
-   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
-   * @param {import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule} module - Validated source module.
-   * @returns {string} Package-relative generated facade path.
-   */
-  #facadePath(family, module) {
-    const suffix = module.variant === undefined
-      ? `${module.name}.ts`
-      : `${module.name}/${module.variant}.ts`;
-
-    return posix.join(family.facadeDirectory, suffix);
   }
 }

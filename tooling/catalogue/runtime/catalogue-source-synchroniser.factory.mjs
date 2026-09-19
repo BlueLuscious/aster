@@ -2,6 +2,9 @@ import { RepositoryFileWalker } from "../../shared/runtime/repository-file.walke
 import { RepositoryPathResolver } from "../../shared/runtime/repository-path.resolver.mjs";
 import { catalogueSourceGeneration } from "../constants/catalogue-source-generation.constant.mjs";
 import { CatalogueSourceFacadePlanner } from "./catalogue-source-facade.planner.mjs";
+import { CatalogueSourceFacadeResolver } from "./catalogue-source-facade.resolver.mjs";
+import { CatalogueSourceDynamicPlanner } from "./catalogue-source-dynamic.planner.mjs";
+import { CatalogueSourceKeySerialiser } from "./catalogue-source-key.serialiser.mjs";
 import { CatalogueSourceLayoutNormaliser } from "./catalogue-source-layout.normaliser.mjs";
 import { CatalogueSourceManifestInspector } from "./catalogue-source-manifest.inspector.mjs";
 import { CatalogueSourceManifestPlanner } from "./catalogue-source-manifest.planner.mjs";
@@ -28,6 +31,8 @@ export class CatalogueSourceSynchroniserFactory {
     const serialiser = new CatalogueSourceSerialiser(
       catalogueSourceGeneration.command,
     );
+    const facadeResolver = new CatalogueSourceFacadeResolver();
+    const keys = new CatalogueSourceKeySerialiser();
 
     return new CatalogueSourceSynchroniser(
       fileSystem,
@@ -46,12 +51,21 @@ export class CatalogueSourceSynchroniserFactory {
       new CatalogueSourceFacadePlanner(
         serialiser,
         paths,
+        facadeResolver,
         catalogueSourceGeneration.reservedIconNames,
       ),
       new CatalogueSourceManifestPlanner(
         serialiser,
         paths,
+        keys,
         catalogueSourceGeneration.manifestPath,
+      ),
+      new CatalogueSourceDynamicPlanner(
+        serialiser,
+        paths,
+        keys,
+        facadeResolver,
+        catalogueSourceGeneration.dynamicPath,
       ),
       paths,
       new CatalogueSourceRelationshipInspector(paths),

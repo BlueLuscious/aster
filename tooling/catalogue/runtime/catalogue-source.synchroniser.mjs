@@ -33,6 +33,12 @@ export class CatalogueSourceSynchroniser {
   #manifest;
 
   /**
+   * @description Exact asynchronous definition-loader planning authority.
+   * @type {import("./catalogue-source-dynamic.planner.mjs").CatalogueSourceDynamicPlanner}
+   */
+  #dynamic;
+
+  /**
    * @description Repository path composition capability.
    * @type {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver}
    */
@@ -66,6 +72,7 @@ export class CatalogueSourceSynchroniser {
    * @param {import("./catalogue-source.serialiser.mjs").CatalogueSourceSerialiser} serialiser - Generated source serialiser.
    * @param {import("./catalogue-source-facade.planner.mjs").CatalogueSourceFacadePlanner} facades - Generated public facade planner.
    * @param {import("./catalogue-source-manifest.planner.mjs").CatalogueSourceManifestPlanner} manifest - Metadata-only distribution manifest planner.
+   * @param {import("./catalogue-source-dynamic.planner.mjs").CatalogueSourceDynamicPlanner} dynamic - Exact asynchronous definition-loader planner.
    * @param {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver} paths - Repository path capability.
    * @param {import("./catalogue-source-relationship.inspector.mjs").CatalogueSourceRelationshipInspector} relationships - Cross-family relationship inspector.
    * @param {import("../../shared/runtime/repository-file.walker.mjs").RepositoryFileWalker} files - Deterministic recursive file traversal capability.
@@ -78,6 +85,7 @@ export class CatalogueSourceSynchroniser {
     serialiser,
     facades,
     manifest,
+    dynamic,
     paths,
     relationships,
     files,
@@ -89,6 +97,7 @@ export class CatalogueSourceSynchroniser {
     this.#serialiser = serialiser;
     this.#facades = facades;
     this.#manifest = manifest;
+    this.#dynamic = dynamic;
     this.#paths = paths;
     this.#relationships = relationships;
     this.#files = files;
@@ -174,6 +183,7 @@ export class CatalogueSourceSynchroniser {
     }
 
     outputs.push(this.#manifest.plan(packageRoot, inspections));
+    outputs.push(this.#dynamic.plan(packageRoot, inspections));
 
     return Object.freeze({
       outputs: Object.freeze(outputs),
