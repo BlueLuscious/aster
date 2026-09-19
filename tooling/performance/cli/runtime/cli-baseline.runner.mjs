@@ -22,7 +22,10 @@ export class CliBaselineRunner {
   /** @description Fresh-process real-command module evaluation authority. */
   #commandEvaluationRunner;
 
-  /** @description Emitted package shape inspector. */
+  /**
+   * @description Emitted package shape inspector.
+   * @type {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector}
+   */
   #distributionInspector;
 
   /** @description Measurement host providing environment identity. */
@@ -46,7 +49,7 @@ export class CliBaselineRunner {
    * @param {{ measure(scenario: object): Promise<object>, methodology(): object }} asynchronousBenchmarkRunner - Measurement authority configured for asynchronous scenarios.
    * @param {{ measure(scenario: object): object }} coldStartRunner - Fresh-process measurement authority.
    * @param {{ measure(scenarioKey: string, scenario: object): object }} commandEvaluationRunner - Real-command module evaluation authority.
-   * @param {{ inspect(packagePath: string): Promise<object> }} distributionInspector - Package distribution authority.
+   * @param {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector} distributionInspector - Package distribution authority.
    * @param {{ environment(): object }} host - Runtime environment authority.
    * @param {import("../contracts/internal/cli-baseline-fixtures.contract.mjs").ICliBaselineFixtures} fixtures - Prepared CLI inputs.
    * @param {string} executablePath - Absolute built executable path.

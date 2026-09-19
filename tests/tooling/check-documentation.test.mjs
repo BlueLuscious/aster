@@ -80,8 +80,8 @@ test("ignores Markdown outside the accepted canonical hierarchy", async () => {
   try {
     await writeDocument(
       root,
-      "docs/en/garden/index.md",
-      "# Garden\n\n[Missing](missing.md)\n\nSee plans/private.md.\n",
+      "docs/en/notes/index.md",
+      "# Notes\n\n[Missing](missing.md)\n\nSee plans/private.md.\n",
     );
 
     const result = await verifyDocumentation(root);

@@ -8,6 +8,7 @@ import { ArchitectureVerifier } from "./architecture-verifier.mjs";
 import { ImportPackagePolicy } from "./import-package.policy.mjs";
 import { CliPackagePolicy } from "./cli-package.policy.mjs";
 import { CorePackagePolicy } from "./core-package.policy.mjs";
+import { IconsPackagePolicy } from "./icons-package.policy.mjs";
 import { ModuleSpecifierExtractor } from "./module-specifier.extractor.mjs";
 import { PackageArchitectureInspector } from "./package-architecture.inspector.mjs";
 import { PackageModuleInspector } from "./package-module.inspector.mjs";
@@ -44,6 +45,10 @@ export class ArchitectureVerifierFactory {
     policies.set(
       packageBoundaries.names.import,
       new ImportPackagePolicy(compiler, rootExport),
+    );
+    policies.set(
+      packageBoundaries.names.icons,
+      new IconsPackagePolicy(compiler),
     );
     policies.set(
       packageBoundaries.names.cli,

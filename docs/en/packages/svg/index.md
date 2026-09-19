@@ -4,7 +4,7 @@ Status: **Accepted**
 
 `@aster/svg` owns framework-independent conversion of portable `@aster/core` icon definitions into
 complete standalone SVG markup. It is a public target renderer with no DOM, browser, Node, Import,
-Lilium, or Lotus authority.
+Lilium, or Protea authority.
 
 ## Current boundary
 

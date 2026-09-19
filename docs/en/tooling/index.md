@@ -118,7 +118,7 @@ observable package loading after build.
 The following checks are intentionally absent:
 
 - no mandatory repository collection source root;
-- no special Lilium or Lotus dependency rejection in addition to exact package allowlists;
+- no special Lilium or Protea dependency rejection in addition to exact package allowlists;
 - no successful lint or format signal when no implementation ran;
 - no prose scoring, external-link crawling, generic Markdown parsing, or performance thresholds;
 - no generic deletion, task-runner, plugin-framework, or automatic policy-discovery API.

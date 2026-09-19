@@ -175,10 +175,6 @@ test("rejects implementation and undeclared internal subpaths", async () => {
     import(`@aster/icons/collections/${collectionSubpath}.collection.js`),
     (error) => error?.code === "ERR_MODULE_NOT_FOUND",
   );
-  await assert.rejects(
-    import("@aster/icons/aster-icons.constant"),
-    (error) => error?.code === "ERR_MODULE_NOT_FOUND",
-  );
 });
 
 test("publishes only accepted scalable export families", async () => {

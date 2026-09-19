@@ -170,7 +170,7 @@ catalogue. `@aster/flora` would contain only the optional plugin adaptation. Flo
 explicit Aster namespace without making Aster packages depend on a generic ecosystem host.
 
 Target plans remain effect-free; either standalone CLI capabilities or Flora capabilities decide
-how to present and publish them. Aster Core, Icons, SVG, Lotus, Lilium, and unrelated consumers
+how to present and publish them. Aster Core, Icons, SVG, Protea, Lilium, and unrelated consumers
 must not acquire reverse dependencies through this integration.
 
 ## Import host integration
@@ -326,6 +326,6 @@ and the relevant catalogue or generation boundaries are stable against the publi
 required by one real integration.
 
 The adapter remains optional and directionally dependent on public Aster and Lilium contracts.
-Aster Core, Icons, SVG, CLI, Lotus, and unrelated consumers remain usable without Lilium. DOM
+Aster Core, Icons, SVG, CLI, Protea, and unrelated consumers remain usable without Lilium. DOM
 implementation, if required, belongs to an optional target mapping rather than the portable Aster
 definition boundary.

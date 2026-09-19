@@ -30,7 +30,7 @@ registry, or global identity authority.
 ## Dependency boundary
 
 Core has no runtime dependency. Its production compilation uses ES2022 only and includes no Node,
-DOM, browser, Lilium, Lotus, parser, renderer, or repository-tooling ambient types.
+DOM, browser, Lilium, Protea, parser, renderer, or repository-tooling ambient types.
 
 Consumers depend on Core; Core never depends on a collection, importer, renderer, framework,
 or target.
