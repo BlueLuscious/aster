@@ -8,7 +8,10 @@ export class ImportBaselineRunner {
   /** @description Generic deterministic scenario runner. */
   #benchmarkRunner;
 
-  /** @description Emitted package shape inspector. */
+  /**
+   * @description Emitted package shape inspector.
+   * @type {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector}
+   */
   #distributionInspector;
 
   /** @description Measurement host providing environment identity. */
@@ -23,7 +26,7 @@ export class ImportBaselineRunner {
   /**
    * @description Creates one Import baseline composition.
    * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Generic measurement authority.
-   * @param {{ inspect(packagePath: string): Promise<object> }} distributionInspector - Package distribution authority.
+   * @param {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector} distributionInspector - Package distribution authority.
    * @param {{ environment(): object }} host - Runtime environment authority.
    * @param {import("../contracts/internal/import-baseline-fixtures.contract.mjs").IImportBaselineFixtures} fixtures - Prepared public Import scenario inputs.
    */

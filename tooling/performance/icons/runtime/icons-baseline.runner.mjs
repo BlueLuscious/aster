@@ -7,7 +7,10 @@ export class IconsBaselineRunner {
   /** @description Fresh public module import authority. */
   #moduleImportRunner;
 
-  /** @description Emitted package shape inspector. */
+  /**
+   * @description Emitted package shape inspector.
+   * @type {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector}
+   */
   #distributionInspector;
 
   /** @description Measurement host providing environment identity. */
@@ -19,7 +22,7 @@ export class IconsBaselineRunner {
   /**
    * @description Creates one Icons distribution baseline composition.
    * @param {{ measure(scenario: { name: string, specifier: string, packagePath: string }): object }} moduleImportRunner - Fresh import measurement authority.
-   * @param {{ inspect(packagePath: string): Promise<object> }} distributionInspector - Package distribution authority.
+   * @param {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector} distributionInspector - Package distribution authority.
    * @param {{ environment(): object }} host - Runtime environment authority.
    * @param {string} packagePath - Absolute measured package root.
    */

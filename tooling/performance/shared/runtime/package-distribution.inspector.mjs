@@ -2,6 +2,7 @@ import { packageDistribution } from "../constants/package-distribution.constant.
 
 /**
  * @description Inspects emitted package shape without assigning bundler-specific meaning.
+ * @implements {import("../contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector}
  */
 export class PackageDistributionInspector {
   /**
