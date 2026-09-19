@@ -24,9 +24,9 @@ export function createCatalogueProvider(
     /** @description Optional discovery invocation observer. */
     onDiscover?: () => void;
     /** @description Optional exact icon-loader invocation observer. */
-    onLoadIcon?: () => void;
+    onLoadIcon?: (identity: IconIdentity) => void;
     /** @description Optional exact collection-loader invocation observer. */
-    onLoadCollection?: () => void;
+    onLoadCollection?: (identity: CollectionIdentity) => void;
   }> = {},
 ): CatalogueProvider {
   const iconsByIdentity = new Map(snapshot.icons.map((record) => [
@@ -63,11 +63,11 @@ export function createCatalogueProvider(
       return discovery;
     },
     async loadIcon(selectedIdentity: IconIdentity) {
-      observers.onLoadIcon?.();
+      observers.onLoadIcon?.(selectedIdentity);
       return iconsByIdentity.get(iconIdentity(selectedIdentity));
     },
     async loadCollection(selectedIdentity: CollectionIdentity) {
-      observers.onLoadCollection?.();
+      observers.onLoadCollection?.(selectedIdentity);
       return collectionsByIdentity.get(collectionIdentity(selectedIdentity));
     },
   });

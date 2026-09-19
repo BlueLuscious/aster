@@ -165,6 +165,59 @@ test("plans immutable technical evidence for one icon", async () => {
   }
 });
 
+test("loads only the exact icon or collection required by review", async () => {
+  const alpha = createIcon("alpha");
+  const bravo = createIcon("bravo");
+  const unrelated = createIcon("unrelated");
+  const collection = createCollection("reviewable", [alpha, bravo]);
+  const iconLoads: string[] = [];
+  const collectionLoads: string[] = [];
+  const provider = createCatalogueProvider("testing", {
+    icons: [
+      { definition: unrelated, memberships: [] },
+      { definition: bravo, memberships: [collection.identity] },
+      { definition: alpha, memberships: [collection.identity] },
+    ],
+    collections: [{ definition: collection }],
+  }, {
+    onLoadIcon: (identity) => iconLoads.push(
+      `${identity.namespace}/${identity.name}`,
+    ),
+    onLoadCollection: (identity) => collectionLoads.push(
+      `${identity.namespace}/${identity.name}`,
+    ),
+  });
+  const acceptedContext = createContext([provider]);
+  const icon = await AsterCommands.execute({
+    command: "review",
+    subject: "icon",
+    identity: "testing/alpha",
+  }, acceptedContext);
+  const reviewedCollection = await AsterCommands.execute({
+    command: "review",
+    subject: "collection",
+    identity: "testing/reviewable",
+  }, acceptedContext);
+
+  assert.equal(icon.ok, true);
+  assert.equal(reviewedCollection.ok, true);
+  assert.deepEqual(iconLoads, ["testing/alpha"]);
+  assert.deepEqual(collectionLoads, ["testing/reviewable"]);
+
+  if (
+    reviewedCollection.ok
+    && reviewedCollection.payload.kind === "review"
+    && reviewedCollection.payload.plan.document.kind === "collection"
+  ) {
+    assert.deepEqual(
+      reviewedCollection.payload.plan.document.icons.map((entry) =>
+        entry.identity.name
+      ),
+      ["alpha", "bravo"],
+    );
+  }
+});
+
 test("plans canonically ordered collection and empty-collection evidence", async () => {
   const zeta = createIcon("zeta");
   const alpha = createIcon("alpha");

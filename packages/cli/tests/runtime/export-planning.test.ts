@@ -179,6 +179,71 @@ test("plans one deterministic immutable icon SVG export", async () => {
   }
 });
 
+test("loads only exact base, variant, and collection export definitions", async () => {
+  const base = createIcon("camera", { namespace: "testing" });
+  const variant = createIcon("camera", {
+    namespace: "testing",
+    variant: "filled",
+  });
+  const unrelated = createIcon("unrelated", { namespace: "testing" });
+  const collection = createCollection("cameras", [base, variant]);
+  const iconLoads: string[] = [];
+  const collectionLoads: string[] = [];
+  let discoveries = 0;
+  const provider = createCatalogueProvider(
+    "testing",
+    createSnapshot([unrelated, variant, base], [collection]),
+    {
+      onDiscover: () => discoveries += 1,
+      onLoadIcon: (identity) => iconLoads.push(
+        `${identity.namespace}/${identity.name}${
+          identity.variant === undefined ? "" : `@${identity.variant}`
+        }`,
+      ),
+      onLoadCollection: (identity) => collectionLoads.push(
+        `${identity.namespace}/${identity.name}`,
+      ),
+    },
+  );
+  const acceptedContext = createContext([provider]);
+  const baseResult = await AsterCommands.execute({
+    command: "export",
+    subject: "icon",
+    identity: "testing/camera",
+  }, acceptedContext);
+  const variantResult = await AsterCommands.execute({
+    command: "export",
+    subject: "icon",
+    identity: "testing/camera@filled",
+  }, acceptedContext);
+  const collectionResult = await AsterCommands.execute({
+    command: "export",
+    subject: "collection",
+    identity: "testing/cameras",
+  }, acceptedContext);
+
+  assert.equal(baseResult.ok, true);
+  assert.equal(variantResult.ok, true);
+  assert.equal(collectionResult.ok, true);
+  assert.equal(discoveries, 3);
+  assert.deepEqual(iconLoads, ["testing/camera", "testing/camera@filled"]);
+  assert.deepEqual(collectionLoads, ["testing/cameras"]);
+
+  if (variantResult.ok && variantResult.payload.kind === "export") {
+    assert.equal(
+      variantResult.payload.plan.artefacts[0]?.path,
+      "testing/camera@filled.svg",
+    );
+  }
+
+  if (collectionResult.ok && collectionResult.payload.kind === "export") {
+    assert.deepEqual(
+      collectionResult.payload.plan.artefacts.map((artefact) => artefact.path),
+      ["testing/camera.svg", "testing/camera@filled.svg"],
+    );
+  }
+});
+
 test("plans collection members in canonical path order", async () => {
   const result = await AsterCommands.execute({
     command: "export",
