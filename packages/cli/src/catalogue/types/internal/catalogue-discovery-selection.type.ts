@@ -22,4 +22,7 @@ export type TCatalogueDiscoverySelection = Readonly<{
 
   /** @description Selected collection record when the subject is a collection. */
   collection?: CatalogueDiscoveryCollectionRecord;
+
+  /** @description Required icon records retained for exact definition consistency checks. */
+  icons: readonly CatalogueDiscoveryIconRecord[];
 }>;

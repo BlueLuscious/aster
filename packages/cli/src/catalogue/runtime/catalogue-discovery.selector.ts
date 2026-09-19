@@ -105,6 +105,7 @@ export class CatalogueDiscoverySelector {
         subject: asterCommandSubjects.show.icon,
         identity,
         icon: record,
+        icons: Object.freeze([record]),
       }))));
   }
 
@@ -120,12 +121,21 @@ export class CatalogueDiscoverySelector {
   ): readonly TCatalogueDiscoverySelection[] {
     return Object.freeze(catalogues.flatMap((catalogue) => catalogue.collections
       .filter((record) => this.#identities.collection(record.identity) === identity)
-      .map((record) => Object.freeze({
-        catalogue: catalogue.identity,
-        subject: asterCommandSubjects.show.collection,
-        identity,
-        collection: record,
-      }))));
+      .map((record) => {
+        const memberIdentities = new Set(record.icons.map((icon) =>
+          this.#identities.icon(icon),
+        ));
+
+        return Object.freeze({
+          catalogue: catalogue.identity,
+          subject: asterCommandSubjects.show.collection,
+          identity,
+          collection: record,
+          icons: Object.freeze(catalogue.icons.filter((icon) =>
+            memberIdentities.has(this.#identities.icon(icon.identity)),
+          )),
+        });
+      })));
   }
 
   /**
