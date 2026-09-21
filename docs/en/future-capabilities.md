@@ -23,19 +23,47 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 2 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 3 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 4 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 5 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 6 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 7 | `P2` | Activate objective linting and formatting verification. | A supported release or external contribution workflow requires enforceable source checks. |
+| 1 | `P0` | Complete first supported pre-release readiness. | The selected public package set passes every release, distribution, documentation and source-quality gate. |
+| 2 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 3 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 4 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 5 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 6 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 7 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
 | 8 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
 | 9 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
 | 10 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
 | 11 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
 | 12 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
 | 13 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 14 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+
+## First supported pre-release readiness
+
+Importance: **P0 - Required**
+
+Aster's immediate delivery gate is its first supported pre-release. This work does not expand the
+product model: it proves that the selected public packages can be installed, understood, and
+released without relying on workspace internals or undocumented maintainer knowledge.
+
+Readiness must establish:
+
+- the exact published package set, initial versions, dependency ranges, and release order;
+- complete package metadata, software and artwork licensing, attribution, and provenance;
+- reproducible package archives, clean-consumer installation, public export and declaration
+  conformance, and package-content review;
+- objective non-mutating lint and formatting checks integrated into repository verification;
+- installation, quick-start, compatibility, and release documentation for supported consumers;
+- release notes and an explicit npm publication procedure with least-privilege credentials,
+  protected environments, and a deliberate human release action.
+
+`@aster/import` remains private unless a separate hosted workflow and publication decision justify
+it. Selective registry acquisition, Flora, Lilium, Studio, Managed Mode, and multi-target Export
+are not prerequisites for the first supported pre-release.
+
+After publication, durable release guarantees belong to project, package, collection, and tooling
+documentation. Remove this temporary roadmap gate rather than preserving a completed release
+checklist as a future capability.
 
 ## Catalogue and command expansion
 
@@ -251,20 +279,6 @@ The replaceable dependency boundary remains defined by the
 [Import SVG parser](packages/import/formats/svg/parser/index.md) and
 [Import compatibility](packages/import/compatibility.md) authorities.
 
-## Active linting and formatting verification
-
-Importance: **P2 - Conditional**
-
-The root `lint`, `format`, and `format:check` commands are stable delegators, but no package
-currently implements their contracts. Before the first supported release or external
-contribution workflow, select either repository-owned checks or a replaceable external tool and
-activate non-mutating checks through the root verification path.
-
-The implementation should enforce objective source invariants without duplicating TypeScript,
-architecture, documentation, or human prose review. Any external tool remains an exact
-development-only dependency behind the existing root commands. The replacement boundary belongs
-to [Repository Tooling](tooling/index.md).
-
 ## Headless repository-tooling extraction
 
 Importance: **P2 - Conditional**
@@ -329,3 +343,23 @@ The adapter remains optional and directionally dependent on public Aster and Lil
 Aster Core, Icons, SVG, CLI, Protea, and unrelated consumers remain usable without Lilium. DOM
 implementation, if required, belongs to an optional target mapping rather than the portable Aster
 definition boundary.
+
+## Garden documentation automation
+
+Importance: **P4 - Deferred**
+
+Cross-repository documentation updates between Aster and Garden remain manual, independently
+reviewed pull requests. Aster must not push to Garden, synchronise prose, or make either repository
+part of the other's build, test, release, or source checkout.
+
+Reconsider limited automation only after repeated real maintenance demonstrates material drift or
+missed ecosystem updates. Acceptable candidates are:
+
+- Garden-owned scheduled validation of external links;
+- an Aster release event that proposes a Garden issue without editing documentation;
+- a bot-authored pull request derived from an accepted versioned metadata contract and requiring
+  human Garden review.
+
+Do not introduce submodules, direct cross-repository writes, shared mutable documentation, or
+credentials broader than one narrowly scoped GitHub App. Automation must preserve Garden's
+authority over ecosystem prose and Aster's authority over its implementation documentation.
