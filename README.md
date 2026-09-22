@@ -6,7 +6,7 @@ serve Lilium, Protea and other consumers without assigning framework ownership t
 the icon source.
 
 The repository is in pre-release development. Core, Icons, SVG and CLI declare
-`0.1.0` publication candidates; they have not yet been published by this project.
+`0.1.0-rc.1` publication candidates; they have not yet been published by this project.
 
 ## Candidate consumption
 
@@ -14,7 +14,7 @@ Once the packages are published, a consumer can install the exact candidate vers
 canonical icons and SVG rendering:
 
 ```sh
-pnpm add @luscious-garden/aster-icons@0.1.0 @luscious-garden/aster-svg@0.1.0
+pnpm add @luscious-garden/aster-icons@0.1.0-rc.1 @luscious-garden/aster-svg@0.1.0-rc.1
 ```
 
 ```ts
@@ -25,7 +25,7 @@ const markup = Svg.render(ArrowLeft);
 ```
 
 Authoring a new definition directly requires `@luscious-garden/aster-core`; the standalone CLI can be installed
-with `pnpm add -D @luscious-garden/aster-cli@0.1.0` and run with `pnpm exec aster list icons` on Node
+with `pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.1` and run with `pnpm exec aster list icons` on Node
 `>=24.10.0 <25`. The [publication procedure](docs/en/project/publication.md) separates these
 candidate instructions from an actual npm release.
 

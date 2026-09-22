@@ -2,8 +2,8 @@
 
 Framework-independent SVG rendering for portable Aster icon definitions.
 
-When `0.1.0` is published, install the exact candidate version with
-`pnpm add @luscious-garden/aster-core@0.1.0 @luscious-garden/aster-svg@0.1.0` to author and render definitions directly.
+When `0.1.0-rc.1` is published, install the exact candidate version with
+`pnpm add @luscious-garden/aster-core@0.1.0-rc.1 @luscious-garden/aster-svg@0.1.0-rc.1` to author and render definitions directly.
 
 ```ts
 import { Icon } from "@luscious-garden/aster-core";

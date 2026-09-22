@@ -10,10 +10,10 @@ icon or collection definition when a host executes Export or Review through that
 The standalone Node package also exposes the `aster` executable:
 
 ```sh
-pnpm add -D @luscious-garden/aster-cli@0.1.0
+pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.1
 ```
 
-These candidate installation instructions apply once `0.1.0` is published. The executable
+These candidate installation instructions apply once `0.1.0-rc.1` is published. The executable
 supports Node `>=24.10.0 <25`; installation brings compatible Core, Icons and SVG packages.
 
 ```sh

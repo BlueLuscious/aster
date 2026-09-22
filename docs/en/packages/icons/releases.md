@@ -1,13 +1,13 @@
 # Icons Release Notes
 
-## 0.1.0 candidate
+## 0.1.0-rc.1 candidate
 
-Status: **Not published**. This is the proposed first public version, not a previously supported
-release. No consumer migration is required.
+Status: **Not published**. This is the formal release candidate for the first public `0.1.0`, not
+a previously supported release. No consumer migration is required.
 
 **Compatible capability:** `@luscious-garden/aster-icons` provides the accepted 26 canonical icon definitions,
 the Amellus collection, isolated icon and collection subpaths, a metadata-only `/manifest`, and
-exact asynchronous `/dynamic` loaders. Its runtime dependency is `@luscious-garden/aster-core@^0.1.0`.
+exact asynchronous `/dynamic` loaders. Its runtime dependency is `@luscious-garden/aster-core@^0.1.0-rc.1`.
 
 **Accepted limits:** The package root and `/collections` aggregate are deliberately not exported.
 Installing the package acquires all its files even when a consumer imports one icon. Metadata

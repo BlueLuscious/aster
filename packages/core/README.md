@@ -6,8 +6,8 @@ The package exposes portable contracts, frozen runtime vocabularies, and the imm
 `Collection` API objects. It ships as dependency-free ES2022 ESM with a single approved root
 export.
 
-When `0.1.0` is published, install the exact candidate version with
-`pnpm add @luscious-garden/aster-core@0.1.0`. This package has no runtime dependencies.
+When `0.1.0-rc.1` is published, install the exact candidate version with
+`pnpm add @luscious-garden/aster-core@0.1.0-rc.1`. This package has no runtime dependencies.
 
 ```ts
 import { Icon } from "@luscious-garden/aster-core";

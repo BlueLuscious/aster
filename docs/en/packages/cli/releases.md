@@ -1,15 +1,15 @@
 # CLI Release Notes
 
-## 0.1.0 candidate
+## 0.1.0-rc.1 candidate
 
-Status: **Not published**. This is the proposed first public version, not a previously supported
-release. No consumer migration is required.
+Status: **Not published**. This is the formal release candidate for the first public `0.1.0`, not
+a previously supported release. No consumer migration is required.
 
 **Compatible capability:** `@luscious-garden/aster-cli` exposes the host-neutral `AsterCommands` API and explicit
 `AsterCatalogue` provider through its root, plus the standalone `aster` binary. The executable
 supports `list`, `search`, `show`, `export`, `review`, `help`, and `version`. Catalogue discovery
 uses Icons metadata and loads exact definitions only when an operation requires them. Runtime
-dependencies are `@luscious-garden/aster-core@^0.1.0`, `@luscious-garden/aster-icons@^0.1.0`, and `@luscious-garden/aster-svg@^0.1.0`.
+dependencies are `@luscious-garden/aster-core@^0.1.0-rc.1`, `@luscious-garden/aster-icons@^0.1.0-rc.1`, and `@luscious-garden/aster-svg@^0.1.0-rc.1`.
 
 **Accepted limits:** The executable requires Node `>=24.10.0 <25`. It has no plugin registration,
 registry-backed `add`, watch mode, or external-source import command. Only the package root and

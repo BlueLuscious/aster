@@ -1,6 +1,6 @@
 {
   "name": "@luscious-garden/aster-cli",
-  "version": "0.1.0",
+  "version": "0.1.0-rc.1",
   "description": "Host-neutral Aster commands and their standalone command-line host.",
   "type": "module",
   "author": "BlueLuscious",

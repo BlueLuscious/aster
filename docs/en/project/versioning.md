@@ -9,8 +9,9 @@ respective [package documentation](../packages/index.md).
 ## Current maturity
 
 Aster has no stable public release or compatibility commitment to external consumers. Core,
-Icons, SVG, and CLI declare initial `0.1.0` candidates; none has been published by this decision.
-`@luscious-garden/aster-import` also uses `0.1.0` for independent internal version tracking but remains private.
+Icons, SVG, and CLI declare initial `0.1.0-rc.1` release candidates; none has been published by
+this decision. `@luscious-garden/aster-import` also uses `0.1.0-rc.1` for independent internal
+version tracking but remains private.
 Repository conformance proves the current implementation against its documented boundaries but
 does not turn candidate versions into published releases.
 The [manual publication procedure](publication.md) records the separate registry and human
@@ -19,10 +20,15 @@ go/no-go checks; this policy does not authorise publication by itself.
 The shared initial number is a convenient starting point, not a lockstep policy. Core has no
 production dependency. Icons and SVG depend on Core; CLI depends on all three. Each public edge
 uses `workspace:^` in source and must resolve to a caret range on the installed dependency's
-version when packed. For the initial candidates, this is `^0.1.0`, which excludes `0.2.0`.
+version when packed. For the initial candidates, this is `^0.1.0-rc.1`, which excludes `0.2.0`.
 Import also uses `workspace:^` for its Core edge, even though it is not packed for publication.
 Development-only workspace dependencies retain `workspace:*` because they are not runtime
 requirements of a distributed package.
+
+The `rc.1` suffix is part of the package's Semantic Versioning identity and marks the first
+release candidate for `0.1.0`. The npm `next` dist-tag is independent registry metadata that
+selects which published version consumers receive through that tag. Publishing
+`0.1.0-rc.1 --tag next` neither publishes nor aliases the later stable `0.1.0` release.
 
 ## Version ownership
 

@@ -1,13 +1,13 @@
 # SVG Release Notes
 
-## 0.1.0 candidate
+## 0.1.0-rc.1 candidate
 
-Status: **Not published**. This is the proposed first public version, not a previously supported
-release. No consumer migration is required.
+Status: **Not published**. This is the formal release candidate for the first public `0.1.0`, not
+a previously supported release. No consumer migration is required.
 
 **Compatible capability:** `@luscious-garden/aster-svg` exposes `Svg.render()`, `SvgRenderError`, and their
 public contracts and types through the ES2022 ESM root. Rendering an explicit Core definition
-produces deterministic standalone SVG markup. Its runtime dependency is `@luscious-garden/aster-core@^0.1.0`.
+produces deterministic standalone SVG markup. Its runtime dependency is `@luscious-garden/aster-core@^0.1.0-rc.1`.
 
 **Accepted limits:** The renderer returns markup rather than DOM nodes, framework components or
 files. It neither discovers icons nor imports external SVG. Only the root package export is

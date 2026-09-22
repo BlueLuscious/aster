@@ -211,12 +211,12 @@ after(async () => {
 test("installs independent package versions with bounded public dependency ranges", async () => {
   const expectedDependencies = {
     core: undefined,
-    icons: { "@luscious-garden/aster-core": "^0.1.0" },
-    svg: { "@luscious-garden/aster-core": "^0.1.0" },
+    icons: { "@luscious-garden/aster-core": "^0.1.0-rc.1" },
+    svg: { "@luscious-garden/aster-core": "^0.1.0-rc.1" },
     cli: {
-      "@luscious-garden/aster-core": "^0.1.0",
-      "@luscious-garden/aster-icons": "^0.1.0",
-      "@luscious-garden/aster-svg": "^0.1.0",
+      "@luscious-garden/aster-core": "^0.1.0-rc.1",
+      "@luscious-garden/aster-icons": "^0.1.0-rc.1",
+      "@luscious-garden/aster-svg": "^0.1.0-rc.1",
     },
   };
 
@@ -226,7 +226,7 @@ test("installs independent package versions with bounded public dependency range
       "utf8",
     ));
 
-    assert.equal(manifest.version, "0.1.0");
+    assert.equal(manifest.version, "0.1.0-rc.1");
     assert.deepEqual(manifest.dependencies, dependencies);
     assert.equal(
       manifest.homepage,
@@ -369,7 +369,7 @@ test("type-checks cross-package usage against packed declarations", async () => 
     "export const markup: string = Svg.render(icon);",
     "export const listed = await AsterCommands.execute(",
     '  { command: "list", subject: "catalogues" },',
-    '  { catalogues: [AsterCatalogue], productName: "Aster", productVersion: "0.1.0" },',
+    '  { catalogues: [AsterCatalogue], productName: "Aster", productVersion: "0.1.0-rc.1" },',
     ");",
     "",
   ].join("\n"), "utf8");

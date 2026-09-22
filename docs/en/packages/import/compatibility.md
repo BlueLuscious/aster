@@ -1,6 +1,6 @@
 # Import Compatibility
 
-`@luscious-garden/aster-import` is a private ES2022 ESM workspace package. Its `0.1.0` version tracks internal
+`@luscious-garden/aster-import` is a private ES2022 ESM workspace package. Its `0.1.0-rc.1` version tracks internal
 changes independently; it is not published and carries no external compatibility promise while
 its first real host remains unimplemented.
 
