@@ -81,6 +81,8 @@ until their activation conditions are met in [Future Capabilities](../future-cap
 The [Garden Aster record](https://github.com/BlueLuscious/garden/blob/master/docs/en/products/aster/index.md)
 owns Aster's ecosystem identity and cross-product relationships; this project documentation
 remains authoritative for Aster's implemented boundaries and behaviour.
+Updates that affect both authorities use separate manually reviewed pull requests. Neither
+repository synchronises or mutates the other's documentation automatically.
 
 ## Documentation map
 
