@@ -20,7 +20,9 @@ editable sources of truth. The synchroniser exclusively owns:
 
 These generated files remain versioned so clean source checkouts, editors and package consumers
 can resolve the package structure without first executing repository tooling. Their generated
-headers identify the reconstruction command and prohibit manual editing.
+headers identify the reconstruction command and prohibit manual editing. The repository's
+`.gitattributes` keeps this generated subtree on LF line endings across checkout platforms so
+the read-only synchronisation check compares the same bytes that the serialiser produces.
 
 Collection membership remains authored inside each canonical collection module. Synchronisation
 does not infer membership, alter icon definitions or create collections from directories.
