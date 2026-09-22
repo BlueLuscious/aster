@@ -77,6 +77,7 @@ const expectedCollectionPaths = Object.freeze(
     .sort((left, right) => left.localeCompare(right)),
 );
 let consumerRoot;
+let packedPackages;
 
 function runPnpm(arguments_) {
   const options = {
@@ -119,7 +120,12 @@ async function packPublishedPackage(name, tarballRoot) {
 
   assertSuccessfulProcess(packed, `pack @aster/${name}`);
 
-  return basename(JSON.parse(packed.stdout).filename);
+  const artefact = JSON.parse(packed.stdout);
+
+  return Object.freeze({
+    filename: basename(artefact.filename),
+    files: Object.freeze(artefact.files.map(({ path }) => path)),
+  });
 }
 
 function runModule(source) {
@@ -161,7 +167,7 @@ before(async () => {
 
   await mkdir(tarballRoot, { recursive: true });
   const packageNames = ["core", "icons", "svg", "cli"];
-  const filenames = Object.fromEntries(
+  packedPackages = Object.fromEntries(
     await Promise.all(
       packageNames.map(async (name) => [
         name,
@@ -172,7 +178,7 @@ before(async () => {
   const packageSpecifications = Object.fromEntries(
     packageNames.map((name) => [
       `@aster/${name}`,
-      `file:./tarballs/${filenames[name]}`,
+      `file:./tarballs/${packedPackages[name].filename}`,
     ]),
   );
   await writeFile(
@@ -223,6 +229,150 @@ test("installs independent package versions with bounded public dependency range
     assert.equal(manifest.version, "0.1.0");
     assert.deepEqual(manifest.dependencies, dependencies);
   }
+});
+
+test("installs only accepted public package files and notices", async () => {
+  const names = (await readdir(resolve(consumerRoot, "node_modules", "@aster")))
+    .sort((left, right) => left.localeCompare(right));
+
+  assert.deepEqual(names, ["cli", "core", "icons", "svg"]);
+
+  for (const name of names) {
+    const files = packedPackages[name].files;
+
+    assert.ok(files.includes("package.json"), `Missing ${name} manifest.`);
+    assert.ok(files.includes("README.md"), `Missing ${name} README.`);
+    assert.ok(files.includes("LICENSE"), `Missing ${name} software notice.`);
+    assert.equal(files.includes("ARTWORK-LICENCE.md"), name === "icons");
+    assert.ok(files.some((file) => file.endsWith(".d.ts")));
+    const unexpected = files.filter((file) => !(
+      file.startsWith("dist/") || [
+        "package.json",
+        "README.md",
+        "LICENSE",
+        "ARTWORK-LICENCE.md",
+      ].includes(file)
+    ));
+    assert.deepEqual(unexpected, [], `Unexpected ${name} package content.`);
+  }
+});
+
+test("composes packed Core, Icons, and SVG through public consumer entrypoints", () => {
+  const baseIcon = asterIconDefinitions.find(
+    (icon) => icon.identity.variant === undefined,
+  );
+  const collection = asterCollectionDefinitions[0];
+  assert.ok(baseIcon, "Expected one packed base icon.");
+  assert.ok(collection, "Expected one packed collection.");
+
+  const executed = runModule([
+    'import { Icon } from "@aster/core";',
+    'import { AsterIconManifest, AsterCollectionManifest } from "@aster/icons/manifest";',
+    'import { AsterIconLoaders, AsterCollectionLoaders } from "@aster/icons/dynamic";',
+    'import { Svg } from "@aster/svg";',
+    "const iconEntry = AsterIconManifest.find(({ identity }) => identity.variant === undefined);",
+    "const collectionEntry = AsterCollectionManifest[0];",
+    'if (!iconEntry || !collectionEntry) throw new Error("Missing packed catalogue entries");',
+    "const icon = await AsterIconLoaders[iconEntry.key]();",
+    "const collection = await AsterCollectionLoaders[collectionEntry.key]();",
+    "const directIcon = await import(`@aster/icons/${iconEntry.identity.name}`);",
+    "const directCollection = await import(`@aster/icons/collections/${collectionEntry.identity.name}`);",
+    "const rebuilt = Icon.define(icon);",
+    "const markup = Svg.render(rebuilt);",
+    "process.stdout.write(JSON.stringify({",
+    "  icon: iconEntry.key,",
+    "  collection: collectionEntry.key,",
+    "  exactIcon: directIcon[iconEntry.symbol] === icon,",
+    "  exactCollection: directCollection[collectionEntry.symbol] === collection,",
+    "  rebuilt: JSON.stringify(rebuilt) === JSON.stringify(icon),",
+    '  svg: markup.startsWith("<svg ") && markup.endsWith("</svg>"),',
+    "}));",
+  ].join("\n"));
+
+  assert.equal(executed.status, 0, executed.stderr);
+  assert.equal(executed.stderr, "");
+  assert.deepEqual(JSON.parse(executed.stdout), {
+    icon: `${baseIcon.identity.namespace === undefined
+      ? ""
+      : `${baseIcon.identity.namespace}/`}${baseIcon.identity.name}`,
+    collection: `${collection.identity.namespace === undefined
+      ? ""
+      : `${collection.identity.namespace}/`}${collection.identity.name}`,
+    exactIcon: true,
+    exactCollection: true,
+    rebuilt: true,
+    svg: true,
+  });
+});
+
+test("type-checks cross-package usage against packed declarations", async () => {
+  await writeFile(resolve(consumerRoot, "consumer.ts"), [
+    'import type { IconDefinition } from "@aster/core";',
+    'import { AsterIconManifest } from "@aster/icons/manifest";',
+    'import { AsterIconLoaders } from "@aster/icons/dynamic";',
+    'import { Svg } from "@aster/svg";',
+    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    "const entry = AsterIconManifest[0];",
+    'if (entry === undefined) throw new Error("Missing icon");',
+    "const loader = AsterIconLoaders[entry.key];",
+    'if (loader === undefined) throw new Error("Missing loader");',
+    "const icon: IconDefinition = await loader();",
+    "export const markup: string = Svg.render(icon);",
+    "export const listed = await AsterCommands.execute(",
+    '  { command: "list", subject: "catalogues" },',
+    '  { catalogues: [AsterCatalogue], productName: "Aster", productVersion: "0.1.0" },',
+    ");",
+    "",
+  ].join("\n"), "utf8");
+  await writeFile(resolve(consumerRoot, "tsconfig.json"), `${JSON.stringify({
+    compilerOptions: {
+      target: "ES2022",
+      module: "NodeNext",
+      moduleResolution: "NodeNext",
+      strict: true,
+      noEmit: true,
+      types: [],
+    },
+    include: ["consumer.ts"],
+  })}\n`, "utf8");
+
+  const checked = spawnSync(process.execPath, [
+    resolve(workspaceRoot, "node_modules/typescript/bin/tsc"),
+    "-p",
+    resolve(consumerRoot, "tsconfig.json"),
+  ], { cwd: consumerRoot, encoding: "utf8" });
+
+  assertSuccessfulProcess(checked, "type-check packed Aster packages");
+});
+
+test("keeps private package internals outside the packed consumer", () => {
+  const executed = runModule([
+    "const specifiers = [",
+    '  "@aster/core/definition/runtime/icon-definition.factory.js",',
+    '  "@aster/icons",',
+    '  "@aster/icons/collections",',
+    '  "@aster/svg/render/runtime/svg-markup.serialiser.js",',
+    '  "@aster/cli/shell/aster.js",',
+    '  "@aster/import",',
+    "];",
+    "const codes = [];",
+    "for (const specifier of specifiers) {",
+    "  try { await import(specifier); codes.push('accepted'); }",
+    "  catch (error) { codes.push(error.code); }",
+    "}",
+    "process.stdout.write(JSON.stringify(codes));",
+  ].join("\n"));
+
+  assert.equal(executed.status, 0, executed.stderr);
+  assert.equal(executed.stderr, "");
+  assert.deepEqual(JSON.parse(executed.stdout), [
+    "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    "ERR_MODULE_NOT_FOUND",
+  ]);
 });
 
 test("imports the public package without source files or observable effects", () => {
