@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { glob, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
@@ -33,6 +33,24 @@ import { NodeRepositoryFileSystem } from "../../tooling/shared/runtime/node-repo
 import { RepositoryFileWalker } from "../../tooling/shared/runtime/repository-file.walker.mjs";
 import { RepositoryJsonReader } from "../../tooling/shared/runtime/repository-json.reader.mjs";
 import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
+
+test("keeps structural performance contracts free of runtime exports", async () => {
+  const contractRoot = resolve("tooling/performance");
+  const contractPaths = [];
+
+  for await (const path of glob("**/contracts/internal/*.contract.mjs", {
+    cwd: contractRoot,
+  })) {
+    contractPaths.push(path);
+  }
+
+  const contracts = await Promise.all(
+    contractPaths.map((path) => import(pathToFileURL(resolve(contractRoot, path)))),
+  );
+
+  assert.ok(contractPaths.length > 0);
+  assert.ok(contracts.every((contract) => Object.keys(contract).length === 0));
+});
 
 test("prepares one stable synthetic benchmark catalogue", () => {
   const fixture = new BenchmarkCatalogueFixtureFactory().create();
