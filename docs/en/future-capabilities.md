@@ -24,20 +24,21 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
 | 1 | `P0` | Complete first supported pre-release readiness. | The selected public package set passes every release, distribution, documentation and source-quality gate. |
-| 2 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 3 | `P2` | Automate reviewed version proposals. | One manually reviewed multi-package release proves the version and changelog policy. |
-| 4 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 5 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 6 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 7 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 8 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 9 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 10 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 11 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 12 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 13 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 14 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 15 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 2 | `P2` | Add informational SVG attribution markers. | Release-readiness work is complete and the renderer's default-versus-opt-in output policy is accepted. |
+| 3 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 4 | `P2` | Automate reviewed version proposals. | One manually reviewed multi-package release proves the version and changelog policy. |
+| 5 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 6 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 7 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 8 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 9 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 11 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 12 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 13 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 14 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 15 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 16 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
 
 ## First supported pre-release readiness
 
@@ -66,6 +67,22 @@ are not prerequisites for the first supported pre-release.
 After publication, durable release guarantees belong to project, package, collection, and tooling
 documentation. Remove this temporary roadmap gate rather than preserving a completed release
 checklist as a future capability.
+
+## Informational SVG attribution markers
+
+Importance: **P2 - Conditional**
+
+After the current release-readiness work, consider placing `data-attribution` and
+`data-rendered-by="Aster"` on rendered SVG roots. Attribution must come from the individual icon's
+metadata rather than the collection or a hard-coded author. Decide whether the markers belong to
+every `Svg.render(...)` result or an explicit SVG export mode before changing the public output
+contract. A missing attribution must not be invented.
+
+These markers make source provenance easier to inspect but do not enforce ownership or replace
+the accompanying licence and credits. Anyone who controls an SVG file can remove them, and
+optimisation may discard non-visual attributes. If accepted, update exact SVG and CLI output
+evidence, package documentation, and packed-consumer tests, then repeat release conformance
+before publication. Do not add a watermark or a runtime dependency for this purpose.
 
 ## Reviewed version proposals
 
