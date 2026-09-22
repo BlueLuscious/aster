@@ -1,0 +1,588 @@
+﻿import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import {
+  closeSync,
+  mkdirSync,
+  mkdtempSync,
+  openSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
+import { tmpdir } from "node:os";
+import { join, resolve } from "node:path";
+import process from "node:process";
+import test from "node:test";
+import { fileURLToPath } from "node:url";
+import {
+  AsterCollectionLoaders,
+  AsterIconLoaders,
+} from "@luscious-garden/aster-icons/dynamic";
+
+const asterIconDefinitions = await Promise.all(
+  Object.values(AsterIconLoaders).map((loader) => {
+    assert.ok(loader);
+    return loader();
+  }),
+);
+const asterCollectionDefinitions = await Promise.all(
+  Object.values(AsterCollectionLoaders).map((loader) => {
+    assert.ok(loader);
+    return loader();
+  }),
+);
+
+const executablePath = fileURLToPath(
+  new URL("../../dist/shell/aster.js", import.meta.url),
+);
+const packageRootUrl = new URL("../../", import.meta.url);
+const packageVersion = JSON.parse(
+  readFileSync(new URL("../../package.json", import.meta.url), "utf8"),
+).version;
+assert.ok(asterIconDefinitions.length > 0, "Expected the executable icon family to be non-empty.");
+assert.ok(
+  asterCollectionDefinitions.length > 0,
+  "Expected the executable collection family to be non-empty.",
+);
+const representativeCollection = asterCollectionDefinitions.find(
+  (collection) => collection.icons.length > 0,
+);
+assert.ok(
+  representativeCollection,
+  "Expected one non-empty collection for executable conformance.",
+);
+const representativeIcon = representativeCollection.icons[0];
+assert.ok(representativeIcon, "Expected one representative collection member.");
+const representativeCollectionIdentity = `${
+  representativeCollection.identity.namespace === undefined
+    ? ""
+    : `${representativeCollection.identity.namespace}/`
+}${representativeCollection.identity.name}`;
+const representativeCollectionDisplayName =
+  representativeCollection.metadata.displayName;
+const representativeName = representativeIcon.identity.name;
+const representativeIdentity = `${
+  representativeIcon.identity.namespace === undefined
+    ? ""
+    : `${representativeIcon.identity.namespace}/`
+}${representativeName}${
+  representativeIcon.identity.variant === undefined
+    ? ""
+    : `@${representativeIcon.identity.variant}`
+}`;
+const representativeDisplayName = representativeIcon.metadata.displayName;
+const representativePath = `${representativeIdentity}.svg`;
+const representativeMemberships = asterCollectionDefinitions
+  .filter((collection) => collection.icons.includes(representativeIcon))
+  .map((collection) => `${
+    collection.identity.namespace === undefined
+      ? ""
+      : `${collection.identity.namespace}/`
+  }${collection.identity.name}`)
+  .sort((left, right) => left.localeCompare(right));
+const taggedIcon = asterIconDefinitions.find(
+  (icon) => (icon.metadata.tags?.length ?? 0) > 0,
+);
+assert.ok(taggedIcon, "Expected one tagged icon for executable filtering.");
+const representativeTag = taggedIcon.metadata.tags?.[0];
+assert.ok(representativeTag, "Expected one representative icon tag.");
+const expectedTaggedIconNames = asterIconDefinitions
+  .filter((icon) => icon.metadata.tags?.includes(representativeTag))
+  .map((icon) => icon.identity.name)
+  .sort((left, right) => left.localeCompare(right));
+
+function run(arguments_, options = {}) {
+  return spawnSync(process.execPath, [executablePath, ...arguments_], {
+    cwd: fileURLToPath(packageRootUrl),
+    encoding: "utf8",
+    ...options,
+  });
+}
+
+test("renders default and selected human help without loading shell state", () => {
+  const complete = run([]);
+  const selected = run(["help", "show"]);
+
+  assert.equal(complete.status, 0);
+  assert.equal(complete.stderr, "");
+  assert.match(complete.stdout, /^Aster commands:\n/u);
+  assert.match(complete.stdout, /aster list catalogues/u);
+  assert.match(complete.stdout, /--output <root>/u);
+  assert.match(complete.stdout, /--replace/u);
+  assert.match(complete.stdout, /--stroke-width <number>/u);
+  assert.match(complete.stdout, /--json  Emit one JSON result document\./u);
+  assert.equal(selected.status, 0);
+  assert.equal(selected.stderr, "");
+  assert.match(selected.stdout, /^Aster commands:\n  show:/u);
+  assert.doesNotMatch(selected.stdout, /  list:/u);
+});
+
+test("renders list, search, show, and version as deterministic human text", () => {
+  const listed = run(["list", "catalogues"]);
+  const searched = run(["search", representativeIdentity]);
+  const shown = run(["show", "icon", representativeIdentity]);
+  const version = run(["version"]);
+
+  assert.equal(listed.status, 0);
+  assert.equal(
+    listed.stdout,
+    `Catalogues:\n  aster (${asterIconDefinitions.length} icons, ${asterCollectionDefinitions.length} ${asterCollectionDefinitions.length === 1 ? "collection" : "collections"})\n`,
+  );
+  assert.match(
+    searched.stdout,
+    new RegExp(`^Results:\\n  icon: ${representativeIdentity}`, "u"),
+  );
+  assert.match(
+    shown.stdout,
+    new RegExp(`^Icon: ${representativeIdentity}\\nCatalogue: aster`, "u"),
+  );
+  assert.ok(
+    shown.stdout.includes(`Collections: ${representativeMemberships.join(", ")}\n`),
+  );
+  assert.equal(version.stdout, `Aster ${packageVersion}\n`);
+
+  for (const execution of [listed, searched, shown, version]) {
+    assert.equal(execution.status, 0);
+    assert.equal(execution.stderr, "");
+  }
+});
+
+test("renders standalone options and one collection as a JSON export plan", () => {
+  const icon = run([
+    "export",
+    "icon",
+    representativeIdentity,
+    "--size",
+    "32",
+    "--colour",
+    "#00ff00",
+    "--direction",
+    "rtl",
+    "--label",
+    representativeDisplayName,
+    "--title",
+    `${representativeDisplayName} icon`,
+  ]);
+  const collection = run([
+    "export",
+    "collection",
+    representativeCollectionIdentity,
+    "--json",
+  ]);
+
+  assert.equal(icon.status, 0);
+  assert.equal(icon.stderr, "");
+  assert.match(icon.stdout, /^<svg /u);
+  assert.match(icon.stdout, /width="32"/u);
+  assert.match(icon.stdout, /color="#00ff00"/u);
+  assert.match(
+    icon.stdout,
+    new RegExp(`aria-label="${representativeDisplayName}"`, "u"),
+  );
+  assert.match(
+    icon.stdout,
+    new RegExp(`<title>${representativeDisplayName} icon</title>`, "u"),
+  );
+  assert.equal(collection.status, 0);
+  assert.equal(collection.stderr, "");
+
+  const result = JSON.parse(collection.stdout);
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.kind, "export");
+  assert.equal(
+    result.payload.plan.artefacts.length,
+    representativeCollection.icons.length,
+  );
+});
+
+test("delegates accepted presentation overrides to icon policy", () => {
+  const execution = run([
+    "export",
+    "icon",
+    representativeIdentity,
+    "--fill",
+    "none",
+    "--stroke",
+    "currentColor",
+    "--stroke-width",
+    "2",
+  ]);
+
+  assert.equal(execution.status, 1);
+  assert.equal(execution.stdout, "");
+  assert.match(execution.stderr, /^\[ASTER-CLI-007\]/u);
+  assert.doesNotMatch(execution.stderr, /unknown option|requires a value/u);
+});
+
+test("publishes icon and collection plans relative to the explicit process directory", () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-output-"));
+
+  try {
+    const icon = run(
+      ["export", "icon", representativeIdentity, "--output", "exports/icon"],
+      { cwd: root },
+    );
+    const collection = run(
+      [
+        "export",
+        "collection",
+        representativeCollectionIdentity,
+        "--output",
+        "exports/collection",
+      ],
+      { cwd: root },
+    );
+
+    assert.equal(icon.status, 0);
+    assert.equal(icon.stderr, "");
+    assert.equal(
+      icon.stdout,
+      `Exported 1 SVG artefact to ${resolve(root, "exports/icon")}\n`,
+    );
+    assert.equal(collection.status, 0);
+    assert.equal(collection.stderr, "");
+    assert.equal(
+      collection.stdout,
+      `Exported ${representativeCollection.icons.length} SVG artefacts to ${resolve(root, "exports/collection")}\n`,
+    );
+    assert.match(
+      readFileSync(resolve(root, `exports/icon/${representativePath}`), "utf8"),
+      /^<svg /u,
+    );
+    assert.equal(
+      readFileSync(
+        resolve(root, `exports/collection/${representativePath}`),
+        "utf8",
+      ),
+      readFileSync(resolve(root, `exports/icon/${representativePath}`), "utf8"),
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("maps output conflicts and filesystem failures to reserved diagnostics", () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-failure-"));
+
+  try {
+    mkdirSync(resolve(root, "existing"));
+    writeFileSync(resolve(root, "blocker"), "not a directory", "utf8");
+
+    const conflict = run(
+      ["export", "icon", representativeIdentity, "--output", "existing"],
+      { cwd: root },
+    );
+    const failure = run(
+      ["export", "icon", representativeIdentity, "--output", "blocker/output"],
+      { cwd: root },
+    );
+
+    assert.equal(conflict.status, 1);
+    assert.equal(conflict.stdout, "");
+    assert.equal(
+      conflict.stderr,
+      "[ASTER-CLI-009] output root already exists\n",
+    );
+    assert.equal(failure.status, 1);
+    assert.equal(failure.stdout, "");
+    assert.equal(
+      failure.stderr,
+      "[ASTER-CLI-010] output publication failed\n",
+    );
+    assert.doesNotMatch(failure.stderr, /ENOTDIR|blocker/u);
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("keeps JSON and output mutually exclusive before filesystem mutation", () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-exclusive-"));
+
+  try {
+    const execution = run(
+      [
+        "export",
+        "icon",
+        representativeIdentity,
+        "--output",
+        "result",
+        "--json",
+      ],
+      { cwd: root },
+    );
+
+    assert.equal(execution.status, 2);
+    assert.equal(execution.stderr, "");
+    assert.equal(JSON.parse(execution.stdout).diagnostic.category, "usage");
+    assert.equal(JSON.parse(execution.stdout).diagnostic.code, "ASTER-CLI-001");
+    assert.throws(() => readFileSync(resolve(root, "result")));
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("publishes static reviews to default and explicit output roots", () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-review-"));
+
+  try {
+    const planned = run([
+      "review",
+      "icon",
+      representativeIdentity,
+      "--json",
+    ], { cwd: root });
+    const published = run([
+      "review",
+      "collection",
+      representativeCollectionIdentity,
+      "--output",
+      "review-site",
+    ], { cwd: root });
+
+    assert.equal(planned.status, 0);
+    assert.equal(planned.stderr, "");
+    const result = JSON.parse(planned.stdout);
+    assert.equal(result.ok, true);
+    assert.equal(result.payload.kind, "review");
+    assert.equal(result.payload.plan.target, "html");
+    assert.equal(result.payload.plan.document.kind, "icon");
+
+    const defaulted = run([
+      "review",
+      "icon",
+      representativeIdentity,
+    ], { cwd: root });
+
+    assert.equal(published.status, 0);
+    assert.equal(published.stderr, "");
+    assert.equal(
+      published.stdout,
+      `Published Aster review to ${resolve(root, "review-site")}\n`,
+    );
+    const collectionReview = readFileSync(
+      resolve(root, "review-site/index.html"),
+      "utf8",
+    );
+    assert.ok(
+      collectionReview.includes(`<h1>${representativeCollectionDisplayName}</h1>`),
+    );
+    assert.match(collectionReview, /id="contact-sheet"/u);
+    assert.equal(defaulted.status, 0);
+    assert.equal(
+      defaulted.stdout,
+      `Published Aster review to ${resolve(root, "aster-review")}\n`,
+    );
+    assert.match(
+      readFileSync(resolve(root, "aster-review/index.html"), "utf8"),
+      new RegExp(`<h1>${representativeDisplayName}</h1>`, "u"),
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("replaces only explicitly owned static review output", () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-review-replace-"));
+
+  try {
+    const initial = run([
+      "review",
+      "icon",
+      representativeIdentity,
+      "--output",
+      "review-site",
+    ], { cwd: root });
+    const conflict = run([
+      "review",
+      "collection",
+      representativeCollectionIdentity,
+      "--output",
+      "review-site",
+    ], { cwd: root });
+    const replaced = run([
+      "review",
+      "collection",
+      representativeCollectionIdentity,
+      "--output",
+      "review-site",
+      "--replace",
+    ], { cwd: root });
+
+    assert.equal(initial.status, 0);
+    assert.equal(conflict.status, 1);
+    assert.equal(
+      conflict.stderr,
+      "[ASTER-CLI-009] output root already exists\n",
+    );
+    assert.equal(replaced.status, 0);
+    assert.equal(replaced.stderr, "");
+    assert.equal(
+      replaced.stdout,
+      `Replaced Aster review at ${resolve(root, "review-site")}\n`,
+    );
+    assert.ok(
+      readFileSync(resolve(root, "review-site/index.html"), "utf8").includes(
+        `<h1>${representativeCollectionDisplayName}</h1>`,
+      ),
+    );
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("writes raw icon SVG through ordinary stdout redirection", () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-redirection-"));
+  const destination = resolve(root, `${representativeName}.svg`);
+  const descriptor = openSync(destination, "w");
+
+  try {
+    const execution = run(
+      ["export", "icon", representativeIdentity],
+      { cwd: root, stdio: ["ignore", descriptor, "pipe"] },
+    );
+    closeSync(descriptor);
+
+    assert.equal(execution.status, 0);
+    assert.equal(execution.stderr, "");
+    assert.match(readFileSync(destination, "utf8"), /^<svg .*<\/svg>\n$/u);
+  } finally {
+    try {
+      closeSync(descriptor);
+    } catch {
+      // The descriptor was already closed after a successful spawn.
+    }
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("emits one stable JSON success document without terminal styling", () => {
+  const first = run(["list", "icons", "--tag", representativeTag, "--json"]);
+  const second = run(["--json", "list", "icons", "--tag", representativeTag]);
+
+  assert.equal(first.status, 0);
+  assert.equal(first.stderr, "");
+  assert.equal(first.stdout, second.stdout);
+  assert.equal(first.stdout.split("\n").length, 2);
+  assert.doesNotMatch(first.stdout, /\u001b\[/u);
+
+  const result = JSON.parse(first.stdout);
+  assert.equal(result.ok, true);
+  assert.equal(result.payload.kind, "icon-list");
+  assert.deepEqual(
+    result.payload.icons.map((icon) => icon.identity.name),
+    expectedTaggedIconNames,
+  );
+});
+
+test("maps human usage and lookup failures to stderr and documented status", () => {
+  const usage = run(["list", "icons", "--catalogue"]);
+  const missing = run(["show", "icon", "aster/missing"]);
+
+  assert.equal(usage.status, 2);
+  assert.equal(usage.stdout, "");
+  assert.match(usage.stderr, /^\[ASTER-CLI-001\]/u);
+  assert.equal(missing.status, 1);
+  assert.equal(missing.stdout, "");
+  assert.match(missing.stderr, /^\[ASTER-CLI-004\]/u);
+});
+
+test("maps expected JSON failures to stdout only", () => {
+  const usage = run(["unknown", "--json"]);
+  const missing = run([
+    "show",
+    "collection",
+    "missing",
+    "--json",
+  ]);
+
+  assert.equal(usage.status, 2);
+  assert.equal(usage.stderr, "");
+  assert.equal(JSON.parse(usage.stdout).diagnostic.category, "usage");
+  assert.equal(missing.status, 1);
+  assert.equal(missing.stderr, "");
+  assert.equal(JSON.parse(missing.stdout).diagnostic.category, "not-found");
+});
+
+test("rejects repeated, unknown, and extra shell arguments", () => {
+  const repeatedJson = run(["version", "--json", "--json"]);
+  const repeatedFilter = run([
+    "list",
+    "icons",
+    "--catalogue",
+    "aster",
+    "--catalogue",
+    "aster",
+  ]);
+  const extra = run(["search", "query", "extra"]);
+  const collectionWithoutMode = run([
+    "export",
+    "collection",
+    representativeCollectionIdentity,
+  ]);
+  const collectionLabel = run([
+    "export",
+    "collection",
+    representativeCollectionIdentity,
+    "--label",
+    "Collection",
+    "--json",
+  ]);
+  const repeatedOutput = run([
+    "export",
+    "icon",
+    representativeIdentity,
+    "--output",
+    "first",
+    "--output",
+    "second",
+  ]);
+  const incomplete = run(["export", "icon", representativeIdentity, "--size"]);
+  const emptyOutput = run([
+    "export",
+    "icon",
+    representativeIdentity,
+    "--output",
+    "",
+  ]);
+  const invalidNumber = run([
+    "export",
+    "icon",
+    representativeIdentity,
+    "--size",
+    "0x20",
+  ]);
+  const invalidDomain = run([
+    "export",
+    "icon",
+    representativeIdentity,
+    "--size",
+    "0",
+  ]);
+  const repeatedReplace = run([
+    "review",
+    "icon",
+    representativeIdentity,
+    "--replace",
+    "--replace",
+  ]);
+  const replaceJson = run([
+    "review",
+    "icon",
+    representativeIdentity,
+    "--replace",
+    "--json",
+  ]);
+
+  assert.equal(repeatedJson.status, 2);
+  assert.equal(repeatedFilter.status, 2);
+  assert.equal(extra.status, 2);
+  assert.equal(collectionWithoutMode.status, 2);
+  assert.equal(collectionLabel.status, 2);
+  assert.equal(repeatedOutput.status, 2);
+  assert.equal(incomplete.status, 2);
+  assert.equal(emptyOutput.status, 2);
+  assert.equal(invalidNumber.status, 2);
+  assert.equal(invalidDomain.status, 2);
+  assert.equal(repeatedReplace.status, 2);
+  assert.equal(replaceJson.status, 2);
+});

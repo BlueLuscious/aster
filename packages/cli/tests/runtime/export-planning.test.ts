@@ -1,0 +1,521 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import {
+  Collection,
+  type CollectionDefinition,
+  Icon,
+  type IconDefinition,
+} from "@luscious-garden/aster-core";
+import {
+  AsterCommands,
+  exportTargets,
+} from "../../src/index.js";
+import type {
+  CatalogueProvider,
+} from "../../src/catalogue/contracts/index.js";
+import type { AsterCommandContext } from "../../src/command/contracts/index.js";
+import { asterCommandSubjects } from "../../src/command/constants/aster-command-subjects.constant.js";
+import { SvgExportArtefactFactory } from "../../src/export/runtime/svg-export-artefact.factory.js";
+import type { TCatalogueSelection } from "../../src/catalogue/types/internal/catalogue-selection.type.js";
+import { createCatalogueProvider } from "./catalogue-provider.fixture.js";
+import type { TCatalogueProviderFixture } from "./types/internal/catalogue-provider-fixture.type.js";
+
+const presentation = Object.freeze({
+  defaults: Object.freeze({
+    fill: "none" as const,
+    stroke: "currentColor" as const,
+    strokeWidth: 1.5,
+  }),
+  overrides: Object.freeze([]),
+});
+
+function createIcon(
+  name: string,
+  options: Readonly<{
+    namespace?: string;
+    variant?: string;
+  }> = {},
+): IconDefinition {
+  return Icon.define({
+    identity: {
+      ...(options.namespace === undefined
+        ? {}
+        : { namespace: options.namespace }),
+      name,
+      ...(options.variant === undefined ? {} : { variant: options.variant }),
+    },
+    viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: 1, y: 1 },
+        { kind: "line", x: 23, y: 23 },
+      ],
+    }],
+    metadata: {
+      displayName: name,
+      rtl: "preserve",
+      presentation,
+      deprecated: false,
+    },
+  });
+}
+
+function createMalformedIcon(name: string): IconDefinition {
+  const accepted = createIcon(name, { namespace: "testing" });
+
+  return {
+    ...accepted,
+    nodes: [{
+      kind: "path",
+      commands: [
+        { kind: "move", x: 0, y: 0 },
+        { kind: "line", x: Number.NaN, y: 1 },
+      ],
+    }],
+  } as IconDefinition;
+}
+
+function createCollection(
+  name: string,
+  icons: readonly IconDefinition[],
+): CollectionDefinition {
+  return Collection.define({
+    identity: { namespace: "testing", name },
+    icons,
+    metadata: { displayName: name },
+  });
+}
+
+function createProvider(
+  identity: string,
+  fixture: TCatalogueProviderFixture,
+): CatalogueProvider {
+  return createCatalogueProvider(identity, fixture);
+}
+
+function createContext(
+  catalogues: readonly CatalogueProvider[],
+): AsterCommandContext {
+  return {
+    catalogues,
+    productName: "Aster",
+    productVersion: "0.0.0",
+  };
+}
+
+function createFixture(
+  icons: readonly IconDefinition[],
+  collections: readonly CollectionDefinition[],
+): TCatalogueProviderFixture {
+  return {
+    icons: icons.map((definition) => ({
+      definition,
+      memberships: collections
+        .filter((collection) => collection.icons.some((icon) =>
+          JSON.stringify(icon.identity) === JSON.stringify(definition.identity),
+        ))
+        .map((collection) => collection.identity),
+    })),
+    collections: collections.map((definition) => ({ definition })),
+  };
+}
+
+const representativeIcon = createIcon("representative", {
+  namespace: "testing",
+});
+const representativeCollection = createCollection(
+  "representatives",
+  [representativeIcon],
+);
+const representativeIdentity = "testing/representative";
+const representativeLabel = representativeIcon.metadata.displayName;
+const context = createContext([
+  createProvider(
+    "testing",
+    createFixture([representativeIcon], [representativeCollection]),
+  ),
+]);
+
+test("plans one deterministic immutable icon SVG export", async () => {
+  const first = await AsterCommands.execute({
+    command: "export",
+    subject: "icon",
+    identity: representativeIdentity,
+    options: { size: 32, colour: "#123456", label: ` ${representativeLabel} ` },
+  }, context);
+  const second = await AsterCommands.execute({
+    command: "export",
+    subject: "icon",
+    identity: representativeIdentity,
+    options: { size: 32, colour: "#123456", label: representativeLabel },
+  }, context);
+
+  assert.deepEqual(first, second);
+  assert.equal(first.ok, true);
+
+  if (first.ok && first.payload.kind === "export") {
+    assert.equal(first.payload.plan.target, exportTargets.svg);
+    assert.equal(first.payload.plan.subject, "icon");
+    assert.equal(first.payload.plan.catalogue, "testing");
+    assert.equal(first.payload.plan.identity, representativeIdentity);
+    assert.equal(first.payload.plan.artefacts.length, 1);
+    assert.equal(
+      first.payload.plan.artefacts[0]?.path,
+      `${representativeIdentity}.svg`,
+    );
+    assert.equal(first.payload.plan.artefacts[0]?.mediaType, "image/svg+xml");
+    assert.match(first.payload.plan.artefacts[0]?.content ?? "", /^<svg /u);
+    assert.match(first.payload.plan.artefacts[0]?.content ?? "", /width="32"/u);
+    assert.match(
+      first.payload.plan.artefacts[0]?.content ?? "",
+      new RegExp(`aria-label="${representativeLabel}"`, "u"),
+    );
+    assert.ok(Object.isFrozen(first.payload));
+    assert.ok(Object.isFrozen(first.payload.plan));
+    assert.ok(Object.isFrozen(first.payload.plan.artefacts));
+    assert.ok(Object.isFrozen(first.payload.plan.artefacts[0]));
+  }
+});
+
+test("loads only exact base, variant, and collection export definitions", async () => {
+  const base = createIcon("camera", { namespace: "testing" });
+  const variant = createIcon("camera", {
+    namespace: "testing",
+    variant: "filled",
+  });
+  const unrelated = createIcon("unrelated", { namespace: "testing" });
+  const collection = createCollection("cameras", [base, variant]);
+  const iconLoads: string[] = [];
+  const collectionLoads: string[] = [];
+  let discoveries = 0;
+  const provider = createCatalogueProvider(
+    "testing",
+    createFixture([unrelated, variant, base], [collection]),
+    {
+      onDiscover: () => discoveries += 1,
+      onLoadIcon: (identity) => iconLoads.push(
+        `${identity.namespace}/${identity.name}${
+          identity.variant === undefined ? "" : `@${identity.variant}`
+        }`,
+      ),
+      onLoadCollection: (identity) => collectionLoads.push(
+        `${identity.namespace}/${identity.name}`,
+      ),
+    },
+  );
+  const acceptedContext = createContext([provider]);
+  const baseResult = await AsterCommands.execute({
+    command: "export",
+    subject: "icon",
+    identity: "testing/camera",
+  }, acceptedContext);
+  const variantResult = await AsterCommands.execute({
+    command: "export",
+    subject: "icon",
+    identity: "testing/camera@filled",
+  }, acceptedContext);
+  const collectionResult = await AsterCommands.execute({
+    command: "export",
+    subject: "collection",
+    identity: "testing/cameras",
+  }, acceptedContext);
+
+  assert.equal(baseResult.ok, true);
+  assert.equal(variantResult.ok, true);
+  assert.equal(collectionResult.ok, true);
+  assert.equal(discoveries, 3);
+  assert.deepEqual(iconLoads, ["testing/camera", "testing/camera@filled"]);
+  assert.deepEqual(collectionLoads, ["testing/cameras"]);
+
+  if (variantResult.ok && variantResult.payload.kind === "export") {
+    assert.equal(
+      variantResult.payload.plan.artefacts[0]?.path,
+      "testing/camera@filled.svg",
+    );
+  }
+
+  if (collectionResult.ok && collectionResult.payload.kind === "export") {
+    assert.deepEqual(
+      collectionResult.payload.plan.artefacts.map((artefact) => artefact.path),
+      ["testing/camera.svg", "testing/camera@filled.svg"],
+    );
+  }
+});
+
+test("plans collection members in canonical path order", async () => {
+  const result = await AsterCommands.execute({
+    command: "export",
+    subject: "collection",
+    identity: "testing/representatives",
+  }, context);
+
+  assert.equal(result.ok, true);
+
+  if (result.ok && result.payload.kind === "export") {
+    const paths = result.payload.plan.artefacts.map((artefact) => artefact.path);
+    assert.equal(result.payload.plan.subject, "collection");
+    assert.equal(paths.length, representativeCollection.icons.length);
+    assert.deepEqual(paths, [...paths].sort());
+    assert.equal(new Set(paths).size, paths.length);
+  }
+});
+
+test("preserves existing exact lookup failures for export", async () => {
+  const result = await AsterCommands.execute({
+    command: "export",
+    subject: "icon",
+    identity: "testing/missing",
+  }, context);
+
+  assert.equal(result.ok, false);
+
+  if (!result.ok) {
+    assert.equal(result.diagnostic.category, "not-found");
+    assert.equal(result.diagnostic.code, "ASTER-CLI-004");
+  }
+});
+
+test("exports empty collections and canonical namespace and variant paths", async () => {
+  const variant = createIcon("arrow", {
+    namespace: "testing",
+    variant: "filled",
+  });
+  const standalone = createIcon("standalone");
+  const empty = createCollection("empty", []);
+  const populated = createCollection("navigation", [variant, standalone]);
+  const provider = createProvider(
+    "testing",
+    createFixture([standalone, variant], [populated, empty]),
+  );
+  const acceptedContext = createContext([provider]);
+  const emptyResult = await AsterCommands.execute({
+    command: "export",
+    subject: "collection",
+    identity: "testing/empty",
+  }, acceptedContext);
+  const populatedResult = await AsterCommands.execute({
+    command: "export",
+    subject: "collection",
+    identity: "testing/navigation",
+  }, acceptedContext);
+
+  assert.equal(emptyResult.ok, true);
+  assert.equal(populatedResult.ok, true);
+
+  if (emptyResult.ok && emptyResult.payload.kind === "export") {
+    assert.deepEqual(emptyResult.payload.plan.artefacts, []);
+    assert.ok(Object.isFrozen(emptyResult.payload.plan.artefacts));
+  }
+
+  if (populatedResult.ok && populatedResult.payload.kind === "export") {
+    assert.deepEqual(
+      populatedResult.payload.plan.artefacts.map((artefact) => artefact.path),
+      ["standalone.svg", "testing/arrow@filled.svg"],
+    );
+  }
+});
+
+test("produces byte-equivalent plans independently from provider record and membership order", async () => {
+  const alpha = createIcon("alpha", { namespace: "testing" });
+  const zeta = createIcon("zeta", { namespace: "testing" });
+  const forward = createCollection("ordered", [alpha, zeta]);
+  const reverse = createCollection("ordered", [zeta, alpha]);
+  const firstProvider = createProvider(
+    "testing",
+    createFixture([zeta, alpha], [reverse]),
+  );
+  const secondProvider = createProvider(
+    "testing",
+    createFixture([alpha, zeta], [forward]),
+  );
+  const invocation = {
+    command: "export",
+    subject: "collection",
+    identity: "testing/ordered",
+    options: { size: 32 },
+  } as const;
+  const first = await AsterCommands.execute(invocation, createContext([firstProvider]));
+  const second = await AsterCommands.execute(invocation, createContext([secondProvider]));
+
+  assert.deepEqual(first, second);
+
+  if (first.ok && second.ok && first.payload.kind === "export" && second.payload.kind === "export") {
+    assert.equal(JSON.stringify(first.payload.plan), JSON.stringify(second.payload.plan));
+    assert.ok(first.payload.plan.artefacts.every((artefact) =>
+      artefact.content.includes(' width="32" height="32"'),
+    ));
+  }
+});
+
+test("keeps export ambiguity independent from provider registration order", async () => {
+  const shared = createIcon("shared", { namespace: "testing" });
+  const fixture = createFixture([shared], []);
+  const alpha = createProvider("alpha", fixture);
+  const beta = createProvider("beta", fixture);
+  const invocation = {
+    command: "export",
+    subject: "icon",
+    identity: "testing/shared",
+  } as const;
+  const first = await AsterCommands.execute(invocation, createContext([beta, alpha]));
+  const second = await AsterCommands.execute(invocation, createContext([alpha, beta]));
+  const exactFirst = await AsterCommands.execute(
+    { ...invocation, catalogue: "beta" },
+    createContext([alpha, beta]),
+  );
+  const exactSecond = await AsterCommands.execute(
+    { ...invocation, catalogue: "beta" },
+    createContext([beta, alpha]),
+  );
+
+  assert.deepEqual(first, second);
+  assert.deepEqual(exactFirst, exactSecond);
+  assert.equal(first.ok, false);
+  assert.equal(exactFirst.ok, true);
+
+  if (!first.ok) {
+    assert.equal(first.diagnostic.code, "ASTER-CLI-005");
+    assert.deepEqual(first.diagnostic.related, ["alpha", "beta"]);
+  }
+
+  if (exactFirst.ok && exactFirst.payload.kind === "export") {
+    assert.equal(exactFirst.payload.plan.catalogue, "beta");
+  }
+});
+
+test("rejects unavailable collection members without exposing a partial plan", async () => {
+  const missing = createIcon("missing", { namespace: "testing" });
+  const collection = createCollection("inconsistent", [missing]);
+  const provider = createProvider("testing", {
+    icons: [],
+    collections: [{ definition: collection }],
+  });
+  const result = await AsterCommands.execute({
+    command: "export",
+    subject: "collection",
+    identity: "testing/inconsistent",
+  }, createContext([provider]));
+  const malformedProvider: CatalogueProvider = {
+    identity: "malformed",
+    async discover() {
+      return { icons: [] } as unknown as import("../../src/index.js").CatalogueDiscovery;
+    },
+    async loadIcon() {
+      return undefined;
+    },
+    async loadCollection() {
+      return undefined;
+    },
+  };
+  const malformed = await AsterCommands.execute({
+    command: "export",
+    subject: "icon",
+    identity: "testing/missing",
+  }, createContext([malformedProvider]));
+
+  assert.equal(result.ok, false);
+  assert.equal(malformed.ok, false);
+
+  if (!result.ok) {
+    assert.equal(result.diagnostic.code, "ASTER-CLI-006");
+    assert.equal(result.diagnostic.category, "catalogue-unavailable");
+    assert.equal("payload" in result, false);
+  }
+
+  if (!malformed.ok) {
+    assert.equal(malformed.diagnostic.code, "ASTER-CLI-006");
+    assert.equal(malformed.diagnostic.category, "catalogue-unavailable");
+  }
+});
+
+test("translates SVG failures without exposing target messages or partial artefacts", async () => {
+  const valid = createIcon("alpha-valid", { namespace: "testing" });
+  const invalid = createMalformedIcon("zeta-invalid-definition");
+  const selection: TCatalogueSelection = Object.freeze({
+    catalogue: "testing",
+    subject: asterCommandSubjects.export.collection,
+    identity: "testing/render-failure",
+    icons: Object.freeze([
+      Object.freeze({ definition: valid, memberships: Object.freeze([]) }),
+      Object.freeze({ definition: invalid, memberships: Object.freeze([]) }),
+    ]),
+  });
+  const result = new SvgExportArtefactFactory().create(selection, undefined);
+
+  assert.equal(result.accepted, false);
+
+  if (!result.accepted) {
+    assert.equal(result.diagnostic.code, "ASTER-CLI-007");
+    assert.equal(result.diagnostic.category, "render-failure");
+    assert.deepEqual(result.diagnostic.related, ["testing/zeta-invalid-definition.svg"]);
+    assert.doesNotMatch(result.diagnostic.message, /XML 1\.0|definition\.nodes/u);
+    assert.equal("value" in result, false);
+  }
+});
+
+test("preflights path collisions before attempting SVG rendering", () => {
+  const invalid = createIcon("collision", { namespace: "testing" });
+  const selection: TCatalogueSelection = Object.freeze({
+    catalogue: "testing",
+    subject: asterCommandSubjects.export.collection,
+    identity: "testing/colliding",
+    icons: Object.freeze([
+      Object.freeze({ definition: invalid, memberships: Object.freeze([]) }),
+      Object.freeze({ definition: invalid, memberships: Object.freeze([]) }),
+    ]),
+  });
+  const result = new SvgExportArtefactFactory().create(selection, undefined);
+
+  assert.equal(result.accepted, false);
+
+  if (!result.accepted) {
+    assert.equal(result.diagnostic.code, "ASTER-CLI-008");
+    assert.equal(result.diagnostic.category, "export-conflict");
+    assert.deepEqual(result.diagnostic.related, ["testing/collision.svg"]);
+  }
+});
+
+test("preserves unrelated target exceptions and sanitises caller invocation failures", async () => {
+  const failure = new Error("caller-owned-export-failure");
+  const definition = new Proxy(createIcon("proxy", { namespace: "testing" }), {
+    ownKeys() {
+      throw failure;
+    },
+  });
+  const selection: TCatalogueSelection = Object.freeze({
+    catalogue: "testing",
+    subject: asterCommandSubjects.export.icon,
+    identity: "testing/proxy",
+    icons: Object.freeze([
+      Object.freeze({ definition, memberships: Object.freeze([]) }),
+    ]),
+  });
+
+  assert.throws(
+    () => new SvgExportArtefactFactory().create(selection, undefined),
+    (error: unknown) => error === failure,
+  );
+
+  const optionsFailure = new Error("caller-options-secret");
+  const options = new Proxy({}, {
+    ownKeys() {
+      throw optionsFailure;
+    },
+  });
+  const result = await AsterCommands.execute({
+    command: "export",
+    subject: "icon",
+    identity: representativeIdentity,
+    options,
+  } as never, context);
+
+  assert.equal(result.ok, false);
+
+  if (!result.ok) {
+    assert.equal(result.diagnostic.code, "ASTER-CLI-999");
+    assert.equal(result.diagnostic.category, "execution-failure");
+    assert.doesNotMatch(result.diagnostic.message, /caller-options-secret/u);
+  }
+});

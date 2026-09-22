@@ -1,0 +1,59 @@
+{
+  "name": "@luscious-garden/aster-icons",
+  "version": "0.1.0-rc.1",
+  "description": "Canonical portable Aster icon and collection definitions.",
+  "type": "module",
+  "author": "BlueLuscious",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/BlueLuscious/aster/tree/master/packages/icons#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlueLuscious/aster.git",
+    "directory": "packages/icons"
+  },
+  "bugs": {
+    "url": "https://github.com/BlueLuscious/aster/issues"
+  },
+  "sideEffects": false,
+  "exports": {
+    ".": null,
+    "./collections": null,
+    "./manifest": {
+      "types": "./dist/manifest/index.d.ts",
+      "import": "./dist/manifest/index.js"
+    },
+    "./dynamic": {
+      "types": "./dist/dynamic/index.d.ts",
+      "import": "./dist/dynamic/index.js"
+    },
+    "./collections/*": {
+      "types": "./dist/generated/facades/collections/*.d.ts",
+      "import": "./dist/generated/facades/collections/*.js"
+    },
+    "./*": {
+      "types": "./dist/generated/facades/icons/*.d.ts",
+      "import": "./dist/generated/facades/icons/*.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "ARTWORK-LICENCE.md",
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm run generate:catalogue && pnpm run clean && tsc -p tsconfig.json",
+    "check:catalogue": "node ../../tooling/catalogue/synchronise-icons-catalogue.mjs --check",
+    "check:types": "tsc -p tsconfig.json --noEmit",
+    "clean": "node ../../tooling/workspace/clean-package-output.mjs dist",
+    "generate:catalogue": "node ../../tooling/catalogue/synchronise-icons-catalogue.mjs",
+    "test": "pnpm run generate:catalogue && pnpm run test:types && pnpm run test:runtime && pnpm run test:abi",
+    "test:abi": "pnpm run build && node --test --test-isolation=none tests/abi/*.test.mjs",
+    "test:runtime": "tsx --test --test-isolation=none tests/runtime/*.test.ts",
+    "test:types": "tsc -p tsconfig.test.json"
+  },
+  "dependencies": {
+    "@luscious-garden/aster-core": "workspace:^"
+  }
+}

@@ -1,0 +1,113 @@
+import { CatalogueDefinitionResolver } from "../catalogue/runtime/catalogue-definition.resolver.js";
+import { CatalogueDiscoverySelector } from "../catalogue/runtime/catalogue-discovery.selector.js";
+import { CatalogueListQuery } from "../catalogue/runtime/catalogue-list.query.js";
+import { CatalogueLoader } from "../catalogue/runtime/catalogue.loader.js";
+import { CatalogueSearchQuery } from "../catalogue/runtime/catalogue-search.query.js";
+import { CatalogueShowQuery } from "../catalogue/runtime/catalogue-show.query.js";
+import { CatalogueSubjectSelector } from "../catalogue/runtime/catalogue-subject.selector.js";
+import { asterCommandDescriptors } from "../command/constants/aster-command-descriptors.constant.js";
+import { ExportCommandDefinition } from "../command/definition/export-command.definition.js";
+import { HelpCommandDefinition } from "../command/definition/help-command.definition.js";
+import { ListCommandDefinition } from "../command/definition/list-command.definition.js";
+import { ReviewCommandDefinition } from "../command/definition/review-command.definition.js";
+import { SearchCommandDefinition } from "../command/definition/search-command.definition.js";
+import { ShowCommandDefinition } from "../command/definition/show-command.definition.js";
+import { VersionCommandDefinition } from "../command/definition/version-command.definition.js";
+import { CommandInvocationNormaliser } from "../command/invocation/runtime/command-invocation.normaliser.js";
+import { ExportInvocationNormaliser } from "../command/invocation/runtime/export-invocation.normaliser.js";
+import { HelpInvocationNormaliser } from "../command/invocation/runtime/help-invocation.normaliser.js";
+import { ListInvocationNormaliser } from "../command/invocation/runtime/list-invocation.normaliser.js";
+import { ReviewInvocationNormaliser } from "../command/invocation/runtime/review-invocation.normaliser.js";
+import { SearchInvocationNormaliser } from "../command/invocation/runtime/search-invocation.normaliser.js";
+import { ShowInvocationNormaliser } from "../command/invocation/runtime/show-invocation.normaliser.js";
+import { VersionInvocationNormaliser } from "../command/invocation/runtime/version-invocation.normaliser.js";
+import { ExportPlanQuery } from "../export/runtime/export-plan.query.js";
+import { ReviewPlanQuery } from "../review/runtime/review-plan.query.js";
+import type {
+  AsterCommandContext,
+  AsterCommandSet,
+} from "../command/contracts/index.js";
+import { CommandKernel } from "../command/runtime/command.kernel.js";
+import type {
+  AsterCommandInvocationType,
+  AsterCommandResultType,
+} from "../command/types/index.js";
+
+/**
+ * @description Shared stateless provider loader owned by the command composition root.
+ */
+const catalogueLoader = new CatalogueLoader();
+
+/**
+ * @description Shared exact metadata selector used by discovery-only show commands.
+ */
+const catalogueDiscoverySelections = new CatalogueDiscoverySelector(catalogueLoader);
+
+/**
+ * @description Shared exact subject selector used by definition-consuming commands.
+ */
+const catalogueSelections = new CatalogueSubjectSelector(
+  catalogueDiscoverySelections,
+  new CatalogueDefinitionResolver(),
+);
+
+/**
+ * @description Complete immutable descriptor sequence supplied to deterministic help.
+ */
+const commandDescriptors = Object.freeze(Object.values(asterCommandDescriptors));
+
+/**
+ * @description Explicit structured invocation grammars supplied to the command kernel.
+ */
+const commandInvocations = new CommandInvocationNormaliser([
+  new ExportInvocationNormaliser(),
+  new ListInvocationNormaliser(),
+  new ReviewInvocationNormaliser(),
+  new SearchInvocationNormaliser(),
+  new ShowInvocationNormaliser(),
+  new HelpInvocationNormaliser(),
+  new VersionInvocationNormaliser(),
+]);
+
+/**
+ * @description Explicit immutable command kernel used by every programmatic host.
+ */
+const commandKernel = new CommandKernel(
+  [
+    new ExportCommandDefinition(
+      new ExportPlanQuery(catalogueSelections),
+    ),
+    new ListCommandDefinition(new CatalogueListQuery(catalogueLoader)),
+    new ReviewCommandDefinition(
+      new ReviewPlanQuery(catalogueSelections),
+    ),
+    new SearchCommandDefinition(new CatalogueSearchQuery(catalogueLoader)),
+    new ShowCommandDefinition(new CatalogueShowQuery(catalogueDiscoverySelections)),
+    new HelpCommandDefinition(commandDescriptors),
+    new VersionCommandDefinition(),
+  ],
+  commandInvocations,
+);
+
+/**
+ * @description Immutable public host-neutral composition for executing initial Aster commands.
+ */
+export const AsterCommands: AsterCommandSet = Object.freeze({
+  /** @description Stable identity of the built-in Aster command set. */
+  identity: commandKernel.identity,
+  /** @description Immutable descriptors for every built-in Aster command. */
+  descriptors: commandKernel.descriptors,
+
+  /**
+   * @description Validates and executes one structured invocation through explicit capabilities.
+   * @param invocation - Structured command request supplied by the host.
+   * @param context - Complete explicit execution capabilities.
+   * @returns Structured immutable success or sanitised failure.
+   */
+  async execute(
+    invocation: AsterCommandInvocationType,
+    context: AsterCommandContext,
+  ): Promise<AsterCommandResultType> {
+    return commandKernel.execute(invocation, context);
+  },
+});

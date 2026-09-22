@@ -1,0 +1,427 @@
+import ts from "typescript";
+
+import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family-kinds.constant.mjs";
+import { CatalogueSourceError } from "./catalogue-source.error.mjs";
+
+/**
+ * @description Validates canonical definition syntax, authored identity and collection membership.
+ */
+export class CatalogueSourceSyntaxInspector {
+  /** @description Metadata-only canonical source inspection capability. */
+  #manifests;
+
+  /**
+   * @description Creates one canonical TypeScript source inspector.
+   * @param {import("./catalogue-source-manifest.inspector.mjs").CatalogueSourceManifestInspector} manifests - Metadata-only source inspector.
+   */
+  constructor(manifests) {
+    this.#manifests = manifests;
+  }
+
+  /**
+   * @description Starts one fresh complete source inspection lifecycle.
+   * @returns {void} Nothing.
+   */
+  reset() {
+    this.#manifests.reset();
+  }
+
+  /**
+   * @description Validates one canonical source and extracts its distribution metadata.
+   * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {string} source - Exact TypeScript source.
+   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
+   * @param {import("../contracts/internal/catalogue-source-identity.contract.mjs").ICatalogueSourceIdentity} identity - Path-owned expected identity.
+   * @returns {Promise<import("../contracts/internal/catalogue-source-syntax-inspection.contract.mjs").ICatalogueSourceSyntaxInspection>} Frozen syntax inspection.
+   */
+  async inspect(sourcePath, source, family, identity) {
+    const sourceFile = /** @type {import("typescript").SourceFile & { readonly parseDiagnostics: readonly import("typescript").Diagnostic[] }} */ (ts.createSourceFile(
+      sourcePath,
+      source,
+      ts.ScriptTarget.ESNext,
+      true,
+      ts.ScriptKind.TS,
+    ));
+
+    if (sourceFile.parseDiagnostics.length > 0) {
+      throw new CatalogueSourceError(
+        `Invalid TypeScript catalogue source: ${sourcePath}`,
+      );
+    }
+
+    const declaration = this.#exportedConstant(
+      sourcePath,
+      sourceFile,
+      identity.symbol,
+    );
+    const definition = this.#definitionObject(
+      sourcePath,
+      sourceFile,
+      declaration,
+      family,
+    );
+    const identityObject = this.#requiredObjectProperty(
+      sourcePath,
+      definition,
+      "identity",
+    );
+    const authoredName = this.#requiredStringProperty(
+      sourcePath,
+      identityObject,
+      "name",
+    );
+    const authoredVariant = this.#optionalStringProperty(
+      sourcePath,
+      identityObject,
+      "variant",
+    );
+
+    if (authoredName !== identity.name || authoredVariant !== identity.variant) {
+      throw new CatalogueSourceError(
+        `${sourcePath} identity must match ${this.#displayIdentity(identity)}.`,
+      );
+    }
+
+    const memberReferences = family.kind === catalogueSourceFamilyKinds.collection
+      ? this.#collectionMemberReferences(sourcePath, sourceFile, definition)
+      : Object.freeze([]);
+
+    return Object.freeze({
+      memberReferences,
+      manifest: await this.#manifests.inspect(
+        sourcePath,
+        sourceFile,
+        definition,
+        identity,
+        family,
+      ),
+    });
+  }
+
+  /**
+   * @description Resolves exactly one exported constant declaration.
+   * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {import("typescript").SourceFile} sourceFile - Parsed TypeScript source.
+   * @param {string} expectedSymbol - Required exported constant symbol.
+   * @returns {import("typescript").VariableDeclaration} Canonical exported declaration.
+   */
+  #exportedConstant(sourcePath, sourceFile, expectedSymbol) {
+    /** @type {import("typescript").VariableDeclaration[]} */
+    const declarations = [];
+
+    for (const statement of sourceFile.statements) {
+      if (!ts.isVariableStatement(statement)) {
+        continue;
+      }
+
+      const exported = statement.modifiers?.some(
+        (modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword,
+      );
+      const constant = (statement.declarationList.flags & ts.NodeFlags.Const) !== 0;
+
+      if (!exported || !constant) {
+        continue;
+      }
+
+      for (const declaration of statement.declarationList.declarations) {
+        if (ts.isIdentifier(declaration.name)) {
+          declarations.push(declaration);
+        }
+      }
+    }
+
+    const declaration = declarations[0];
+
+    if (
+      declarations.length !== 1
+      || declaration === undefined
+      || !ts.isIdentifier(declaration.name)
+      || declaration.name.text !== expectedSymbol
+    ) {
+      throw new CatalogueSourceError(
+        `${sourcePath} must export exactly one constant named ${expectedSymbol}.`,
+      );
+    }
+
+    return declaration;
+  }
+
+  /**
+   * @description Resolves the object passed to the configured public Core definition factory.
+   * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {import("typescript").SourceFile} sourceFile - Parsed TypeScript source.
+   * @param {import("typescript").VariableDeclaration} declaration - Canonical exported declaration.
+   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
+   * @returns {import("typescript").ObjectLiteralExpression} Authored definition object.
+   */
+  #definitionObject(sourcePath, sourceFile, declaration, family) {
+    const initializer = declaration.initializer;
+    const argument = initializer !== undefined && ts.isCallExpression(initializer)
+      ? initializer.arguments[0]
+      : undefined;
+
+    if (
+      initializer === undefined ||
+      !ts.isCallExpression(initializer) ||
+      initializer.arguments.length !== 1 ||
+      !ts.isPropertyAccessExpression(initializer.expression) ||
+      !ts.isIdentifier(initializer.expression.expression) ||
+      initializer.expression.expression.text !== family.definitionFactory ||
+      initializer.expression.name.text !== "define" ||
+      argument === undefined ||
+      !ts.isObjectLiteralExpression(argument)
+    ) {
+      throw new CatalogueSourceError(
+        `${sourcePath} must initialise ${family.definitionFactory}.define(...) with one object.`,
+      );
+    }
+
+    this.#requireDefinitionFactoryImport(sourcePath, sourceFile, family);
+
+    return argument;
+  }
+
+  /**
+   * @description Requires the definition factory identifier to be one exact runtime named import.
+   * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {import("typescript").SourceFile} sourceFile - Parsed TypeScript source.
+   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
+   * @returns {void}
+   */
+  #requireDefinitionFactoryImport(sourcePath, sourceFile, family) {
+    /** @type {{ statement: import("typescript").ImportDeclaration, element: import("typescript").ImportSpecifier }[]} */
+    const matches = [];
+
+    for (const statement of sourceFile.statements) {
+      if (
+        !ts.isImportDeclaration(statement)
+        || !ts.isStringLiteralLike(statement.moduleSpecifier)
+        || statement.importClause?.namedBindings === undefined
+        || !ts.isNamedImports(statement.importClause.namedBindings)
+      ) {
+        continue;
+      }
+
+      for (const element of statement.importClause.namedBindings.elements) {
+        if (element.name.text === family.definitionFactory) {
+          matches.push({ statement, element });
+        }
+      }
+    }
+
+    const match = matches[0];
+
+    if (
+      matches.length !== 1
+      || match === undefined
+      || !ts.isStringLiteralLike(match.statement.moduleSpecifier)
+      || match.statement.importClause === undefined
+      || match.statement.moduleSpecifier.text !== family.definitionModule
+      || match.statement.importClause.isTypeOnly
+      || match.element.isTypeOnly
+      || (match.element.propertyName?.text ?? match.element.name.text)
+        !== family.definitionFactory
+    ) {
+      throw new CatalogueSourceError(
+        `${sourcePath} must import ${family.definitionFactory} from ${family.definitionModule} as one runtime named import.`,
+      );
+    }
+  }
+
+  /**
+   * @description Resolves one required object-valued property without computed syntax.
+   * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {import("typescript").ObjectLiteralExpression} object - Object containing the required property.
+   * @param {string} name - Required property name.
+   * @returns {import("typescript").ObjectLiteralExpression} Required object literal value.
+   */
+  #requiredObjectProperty(sourcePath, object, name) {
+    const value = this.#propertyValue(sourcePath, object, name, true);
+
+    if (value === undefined || !ts.isObjectLiteralExpression(value)) {
+      throw new CatalogueSourceError(
+        `${sourcePath} must declare ${name} as an object literal.`,
+      );
+    }
+
+    return value;
+  }
+
+  /**
+   * @description Resolves one required string-literal property.
+   * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {import("typescript").ObjectLiteralExpression} object - Object containing the required property.
+   * @param {string} name - Required property name.
+   * @returns {string} Exact authored string value.
+   */
+  #requiredStringProperty(sourcePath, object, name) {
+    const value = this.#propertyValue(sourcePath, object, name, true);
+
+    if (value === undefined || !ts.isStringLiteralLike(value)) {
+      throw new CatalogueSourceError(
+        `${sourcePath} must declare ${name} as a string literal.`,
+      );
+    }
+
+    return value.text;
+  }
+
+  /**
+   * @description Resolves one optional string-literal property.
+   * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {import("typescript").ObjectLiteralExpression} object - Object containing the optional property.
+   * @param {string} name - Optional property name.
+   * @returns {string | undefined} Exact authored string value when present.
+   */
+  #optionalStringProperty(sourcePath, object, name) {
+    const value = this.#propertyValue(sourcePath, object, name, false);
+
+    if (value === undefined) {
+      return undefined;
+    }
+
+    if (!ts.isStringLiteralLike(value)) {
+      throw new CatalogueSourceError(
+        `${sourcePath} must declare ${name} as a string literal.`,
+      );
+    }
+
+    return value.text;
+  }
+
+  /**
+   * @description Resolves one unique direct property assignment.
+   * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {import("typescript").ObjectLiteralExpression} object - Object containing the candidate property.
+   * @param {string} name - Property name to resolve.
+   * @param {boolean} required - Whether absence is invalid.
+   * @returns {import("typescript").Expression | undefined} Direct property value when present.
+   */
+  #propertyValue(sourcePath, object, name, required) {
+    /** @type {import("typescript").PropertyAssignment[]} */
+    const properties = [];
+
+    for (const property of object.properties) {
+      if (
+        ts.isPropertyAssignment(property)
+        && ((ts.isIdentifier(property.name) && property.name.text === name)
+          || (ts.isStringLiteralLike(property.name) && property.name.text === name))
+      ) {
+        properties.push(property);
+      }
+    }
+
+    if (properties.length > 1 || (required && properties.length === 0)) {
+      throw new CatalogueSourceError(
+        `${sourcePath} must declare exactly one ${name} property.`,
+      );
+    }
+
+    return properties[0]?.initializer;
+  }
+
+  /**
+   * @description Resolves collection members to their named import declarations.
+   * @param {string} sourcePath - Absolute collection source path.
+   * @param {import("typescript").SourceFile} sourceFile - Parsed TypeScript collection source.
+   * @param {import("typescript").ObjectLiteralExpression} definition - Authored collection definition object.
+   * @returns {readonly import("../contracts/internal/catalogue-collection-member-reference.contract.mjs").ICatalogueCollectionMemberReference[]} Frozen member references.
+   */
+  #collectionMemberReferences(sourcePath, sourceFile, definition) {
+    const icons = this.#propertyValue(sourcePath, definition, "icons", true);
+
+    if (icons === undefined || !ts.isArrayLiteralExpression(icons)) {
+      throw new CatalogueSourceError(
+        `${sourcePath} must declare icons as an array literal.`,
+      );
+    }
+
+    const imports = this.#namedImports(sourcePath, sourceFile);
+    const references = [];
+    const members = new Set();
+
+    for (const member of icons.elements) {
+      if (!ts.isIdentifier(member)) {
+        throw new CatalogueSourceError(
+          `${sourcePath} collection members must be imported identifiers.`,
+        );
+      }
+
+      if (members.has(member.text)) {
+        throw new CatalogueSourceError(
+          `${sourcePath} contains duplicate collection member ${member.text}.`,
+        );
+      }
+
+      const reference = imports.get(member.text);
+
+      if (reference === undefined) {
+        throw new CatalogueSourceError(
+          `${sourcePath} collection member ${member.text} must use a runtime named import.`,
+        );
+      }
+
+      members.add(member.text);
+      references.push(reference);
+    }
+
+    return Object.freeze(references);
+  }
+
+  /**
+   * @description Indexes static named imports by their local source identifier.
+   * @param {string} sourcePath - Absolute source path used for failure context.
+   * @param {import("typescript").SourceFile} sourceFile - Parsed TypeScript source.
+   * @returns {ReadonlyMap<string, import("../contracts/internal/catalogue-collection-member-reference.contract.mjs").ICatalogueCollectionMemberReference>} Named import records.
+   */
+  #namedImports(sourcePath, sourceFile) {
+    const imports = new Map();
+
+    for (const statement of sourceFile.statements) {
+      if (
+        !ts.isImportDeclaration(statement) ||
+        !ts.isStringLiteralLike(statement.moduleSpecifier) ||
+        statement.importClause === undefined ||
+        statement.importClause.isTypeOnly ||
+        statement.importClause.namedBindings === undefined ||
+        !ts.isNamedImports(statement.importClause.namedBindings)
+      ) {
+        continue;
+      }
+
+      for (const element of statement.importClause.namedBindings.elements) {
+        if (element.isTypeOnly) {
+          continue;
+        }
+
+        if (imports.has(element.name.text)) {
+          throw new CatalogueSourceError(
+            `${sourcePath} contains ambiguous named import ${element.name.text}.`,
+          );
+        }
+
+        imports.set(
+          element.name.text,
+          Object.freeze({
+            localSymbol: element.name.text,
+            importedSymbol: element.propertyName?.text ?? element.name.text,
+            moduleSpecifier: statement.moduleSpecifier.text,
+          }),
+        );
+      }
+    }
+
+    return imports;
+  }
+
+  /**
+   * @description Presents one logical identity in stable diagnostic form.
+   * @param {import("../contracts/internal/catalogue-source-identity.contract.mjs").ICatalogueSourceIdentity} identity - Logical identity to present.
+   * @returns {string} Stable name and optional variant representation.
+   */
+  #displayIdentity(identity) {
+    return identity.variant === undefined
+      ? identity.name
+      : `${identity.name}@${identity.variant}`;
+  }
+}

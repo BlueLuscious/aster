@@ -1,0 +1,20 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src/shell",
+    "outDir": "dist/shell",
+    "declaration": false,
+    "tsBuildInfoFile": "../../node_modules/.cache/aster-cli/shell.tsbuildinfo",
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "src/shell/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.json"
+    }
+  ]
+}
