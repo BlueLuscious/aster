@@ -1,4 +1,4 @@
-import type { IconIdentity } from "@aster/core";
+import type { IconIdentity } from "@luscious-garden/aster-core";
 import { ImportValueValidator } from "../../shared/runtime/import-value.validator.js";
 import { CanonicalSlugNormaliser } from "../../shared/runtime/canonical-slug.normaliser.js";
 

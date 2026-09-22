@@ -1,7 +1,7 @@
 import {
   iconPathCommandKinds,
   type IconPathCommandType,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type { TSvgPathNormalisationState } from "../types/internal/svg-path-normalisation-state.type.js";
 import type { TSvgPathSegment } from "../../shared/types/internal/svg-path-segment.type.js";
 import { svgPathCommands } from "../../shared/constants/svg-path-commands.constant.js";

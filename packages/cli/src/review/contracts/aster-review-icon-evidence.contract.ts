@@ -4,8 +4,8 @@ import type {
   IconMetadata,
   IconNodeType,
   IconViewBox,
-} from "@aster/core";
-import type { SvgMarkupType } from "@aster/svg";
+} from "@luscious-garden/aster-core";
+import type { SvgMarkupType } from "@luscious-garden/aster-svg";
 
 /**
  * @description Immutable portable and rendered evidence for one reviewed icon.
@@ -42,7 +42,7 @@ export interface AsterReviewIconEvidence {
   readonly memberships: readonly CollectionIdentity[];
 
   /**
-   * @description Complete deterministic decorative SVG markup produced by `@aster/svg`.
+   * @description Complete deterministic decorative SVG markup produced by `@luscious-garden/aster-svg`.
    */
   readonly markup: SvgMarkupType;
 }

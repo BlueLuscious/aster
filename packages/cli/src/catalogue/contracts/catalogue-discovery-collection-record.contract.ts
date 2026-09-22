@@ -2,7 +2,7 @@ import type {
   CollectionIdentity,
   CollectionMetadata,
   IconIdentity,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 /**
  * @description Provider-owned metadata record for one discoverable collection identity.

@@ -14,18 +14,18 @@ Once the packages are published, a consumer can install the exact candidate vers
 canonical icons and SVG rendering:
 
 ```sh
-pnpm add @aster/icons@0.1.0 @aster/svg@0.1.0
+pnpm add @luscious-garden/aster-icons@0.1.0 @luscious-garden/aster-svg@0.1.0
 ```
 
 ```ts
-import { ArrowLeft } from "@aster/icons/arrow-left";
-import { Svg } from "@aster/svg";
+import { ArrowLeft } from "@luscious-garden/aster-icons/arrow-left";
+import { Svg } from "@luscious-garden/aster-svg";
 
 const markup = Svg.render(ArrowLeft);
 ```
 
-Authoring a new definition directly requires `@aster/core`; the standalone CLI can be installed
-with `pnpm add -D @aster/cli@0.1.0` and run with `pnpm exec aster list icons` on Node
+Authoring a new definition directly requires `@luscious-garden/aster-core`; the standalone CLI can be installed
+with `pnpm add -D @luscious-garden/aster-cli@0.1.0` and run with `pnpm exec aster list icons` on Node
 `>=24.10.0 <25`. The [publication procedure](docs/en/project/publication.md) separates these
 candidate instructions from an actual npm release.
 

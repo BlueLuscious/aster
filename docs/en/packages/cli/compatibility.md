@@ -2,7 +2,7 @@
 
 Status: **Pre-release**
 
-This document defines the compatibility-bearing surface and release evidence for `@aster/cli`.
+This document defines the compatibility-bearing surface and release evidence for `@luscious-garden/aster-cli`.
 Detailed command, catalogue, and executable semantics remain owned by their respective package
 feature documents.
 
@@ -97,9 +97,9 @@ unchanged Aster-owned review. Detailed ownership is documented by [CLI Review](r
 
 ## Conditional Flora seam
 
-The current `@aster/cli` package is a complete standalone product. It owns both the host-neutral
-`AsterCommands` composition and the private Node shell; neither `@aster/commands` nor
-`@aster/flora` exists or forms part of the supported ABI.
+The current `@luscious-garden/aster-cli` package is a complete standalone product. It owns both the host-neutral
+`AsterCommands` composition and the private Node shell; neither `@luscious-garden/aster-commands` nor
+`@luscious-garden/aster-flora` exists or forms part of the supported ABI.
 
 Extraction is not authorised merely to reorganise files, and no current package depends on a Flora
 contract. The independent-consumer trigger, prospective package roles, and required dependency

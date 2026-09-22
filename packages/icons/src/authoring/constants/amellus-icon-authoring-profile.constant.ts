@@ -1,7 +1,7 @@
 import type {
   IconPresentationPolicy,
   IconViewBox,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 /**
  * @description Immutable visual authoring profile shared by icons curated for Amellus.

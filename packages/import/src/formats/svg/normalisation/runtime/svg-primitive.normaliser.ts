@@ -2,7 +2,7 @@ import type {
   IconNodeType,
   IconPoint,
   IconPresentation,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
 import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
 import { svgSourceElementNames } from "../../shared/constants/svg-source-element-names.constant.js";

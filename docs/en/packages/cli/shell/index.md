@@ -13,7 +13,7 @@ An installed package exposes the `aster` binary. It may be installed as a projec
 dependency and invoked through the selected package manager:
 
 ```sh
-pnpm add --save-dev @aster/cli
+pnpm add --save-dev @luscious-garden/aster-cli
 pnpm exec aster list catalogues
 ```
 
@@ -111,7 +111,7 @@ moving their host authority into the programmatic command API.
 The executable entrypoint is the only module that imports `node:process`. Node path and filesystem
 imports occur only in the private [Output](output/index.md) subfeature. The host-neutral compiler excludes the
 complete shell tree. The referenced shell project consumes host-neutral declarations, admits Node
-types, and emits only the private binary modules. Importing `@aster/cli` resolves only the
+types, and emits only the private binary modules. Importing `@luscious-garden/aster-cli` resolves only the
 side-effect-free programmatic root and never evaluates the entrypoint.
 
 Host-neutral command semantics remain authoritative in [CLI Command](../command/index.md),

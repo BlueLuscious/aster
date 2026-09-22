@@ -8,7 +8,7 @@ import {
   type IconPresentation,
   type IconPresentationOverrideType,
   type IconRenderOptions,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import { SvgRenderError } from "../../error/index.js";
 import { svgRenderOptionsSchema } from "../constants/svg-render-options-schema.constant.js";
 import type { ISvgRenderContext } from "../contracts/internal/index.js";

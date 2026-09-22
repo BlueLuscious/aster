@@ -1,7 +1,7 @@
 import {
   iconPathCommandKinds,
   type IconPathCommandType,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 /**
  * @description Immutable target-owned SVG letters for canonical portable path operations.

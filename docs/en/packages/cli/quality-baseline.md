@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-This document defines the evidence method used to compare `@aster/cli` execution, startup, and
+This document defines the evidence method used to compare `@luscious-garden/aster-cli` execution, startup, and
 distribution changes. It is not a product benchmark, a hardware-independent promise, or a CI
 performance threshold. Current package findings remain in [CLI Quality](quality.md).
 

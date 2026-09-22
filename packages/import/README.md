@@ -1,4 +1,4 @@
-# @aster/import
+# @luscious-garden/aster-import
 
 Private host-independent services for adopting external icon sources as portable Aster
 definitions and editable TypeScript modules.

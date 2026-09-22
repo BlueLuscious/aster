@@ -10,7 +10,7 @@ output root, read or write files, or mutate process state.
 
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
-| `AsterExportArtefact` | Retains one canonical logical relative path, SVG media type, and complete SVG markup. | `content` is the public `SvgMarkupType` produced by `@aster/svg`. |
+| `AsterExportArtefact` | Retains one canonical logical relative path, SVG media type, and complete SVG markup. | `content` is the public `SvgMarkupType` produced by `@luscious-garden/aster-svg`. |
 | `AsterExportPlan` | Describes one exact export target, subject, provider, requested identity, and complete ordered artefact sequence. | Uses `AsterExportSubjectType`, `exportTargets`, and `AsterExportArtefact`. |
 
 ## Public types and values

@@ -1,4 +1,4 @@
-import type { CollectionDefinition } from "@aster/core";
+import type { CollectionDefinition } from "@luscious-garden/aster-core";
 
 /**
  * @description Asynchronously resolves one exact distributed collection definition.

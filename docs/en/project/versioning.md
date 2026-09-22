@@ -10,7 +10,7 @@ respective [package documentation](../packages/index.md).
 
 Aster has no stable public release or compatibility commitment to external consumers. Core,
 Icons, SVG, and CLI declare initial `0.1.0` candidates; none has been published by this decision.
-`@aster/import` also uses `0.1.0` for independent internal version tracking but remains private.
+`@luscious-garden/aster-import` also uses `0.1.0` for independent internal version tracking but remains private.
 Repository conformance proves the current implementation against its documented boundaries but
 does not turn candidate versions into published releases.
 The [manual publication procedure](publication.md) records the separate registry and human

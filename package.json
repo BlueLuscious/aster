@@ -27,11 +27,11 @@
     "framework-agnostic"
   ],
   "scripts": {
-    "benchmark:core": "pnpm --filter @aster/core run build && node --expose-gc tooling/performance/core/core-baseline.mjs",
-    "benchmark:cli": "pnpm --filter @aster/core run build && pnpm --filter @aster/icons run build && pnpm --filter @aster/svg run build && pnpm --filter @aster/cli run build && node --expose-gc tooling/performance/cli/cli-baseline.mjs",
-    "benchmark:icons": "pnpm --filter @aster/core run build && pnpm --filter @aster/icons run build && node tooling/performance/icons/icons-baseline.mjs",
-    "benchmark:import": "pnpm --filter @aster/core run build && pnpm --filter @aster/import run build && node --expose-gc tooling/performance/import/import-baseline.mjs",
-    "benchmark:svg": "pnpm --filter @aster/core run build && pnpm --filter @aster/svg run build && node --expose-gc tooling/performance/svg/svg-baseline.mjs",
+    "benchmark:core": "pnpm --filter @luscious-garden/aster-core run build && node --expose-gc tooling/performance/core/core-baseline.mjs",
+    "benchmark:cli": "pnpm --filter @luscious-garden/aster-core run build && pnpm --filter @luscious-garden/aster-icons run build && pnpm --filter @luscious-garden/aster-svg run build && pnpm --filter @luscious-garden/aster-cli run build && node --expose-gc tooling/performance/cli/cli-baseline.mjs",
+    "benchmark:icons": "pnpm --filter @luscious-garden/aster-core run build && pnpm --filter @luscious-garden/aster-icons run build && node tooling/performance/icons/icons-baseline.mjs",
+    "benchmark:import": "pnpm --filter @luscious-garden/aster-core run build && pnpm --filter @luscious-garden/aster-import run build && node --expose-gc tooling/performance/import/import-baseline.mjs",
+    "benchmark:svg": "pnpm --filter @luscious-garden/aster-core run build && pnpm --filter @luscious-garden/aster-svg run build && node --expose-gc tooling/performance/svg/svg-baseline.mjs",
     "build": "pnpm --recursive --if-present run build",
     "check": "pnpm run check:catalogue && pnpm run check:types && pnpm run check:architecture && pnpm run check:docs && pnpm run lint && pnpm run format:check",
     "check:architecture": "node tooling/architecture/check-architecture.mjs",
@@ -48,11 +48,11 @@
     "verify": "pnpm run check && pnpm run test"
   },
   "devDependencies": {
-    "@aster/cli": "workspace:*",
-    "@aster/core": "workspace:*",
-    "@aster/icons": "workspace:*",
-    "@aster/import": "workspace:*",
-    "@aster/svg": "workspace:*",
+    "@luscious-garden/aster-cli": "workspace:*",
+    "@luscious-garden/aster-core": "workspace:*",
+    "@luscious-garden/aster-icons": "workspace:*",
+    "@luscious-garden/aster-import": "workspace:*",
+    "@luscious-garden/aster-svg": "workspace:*",
     "@types/node": "24.13.3",
     "eslint": "10.11.0",
     "prettier": "3.9.8",

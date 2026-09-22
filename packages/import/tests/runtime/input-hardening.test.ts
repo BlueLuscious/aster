@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import type { IconMetadata } from "@aster/core";
+import type { IconMetadata } from "@luscious-garden/aster-core";
 import {
   IconImport,
   IconImportError,

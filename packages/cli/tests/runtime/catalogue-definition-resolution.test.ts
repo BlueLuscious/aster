@@ -7,7 +7,7 @@ import {
   Icon,
   type IconDefinition,
   type IconPresentationPolicy,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import { AsterCatalogue } from "../../src/index.js";
 import type {
   CatalogueDiscovery,

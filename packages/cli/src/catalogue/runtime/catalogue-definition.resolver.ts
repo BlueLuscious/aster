@@ -3,7 +3,7 @@ import {
   Icon,
   type CollectionDefinition,
   type IconDefinition,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import { asterCommandSubjects } from "../../command/constants/aster-command-subjects.constant.js";
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import type { AsterCommandContext } from "../../command/contracts/index.js";

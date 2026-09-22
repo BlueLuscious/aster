@@ -2,13 +2,13 @@
 
 Status: **Accepted**
 
-This document defines the evidence method used to compare `@aster/svg` rendering and distribution
+This document defines the evidence method used to compare `@luscious-garden/aster-svg` rendering and distribution
 changes. It is not a product benchmark, a hardware-independent promise, or a CI performance
 threshold. Current package findings remain in [SVG Quality](quality.md).
 
 ## Representative evidence
 
-The schema-version-two baseline uses only public `@aster/core` and `@aster/svg` roots. A fixed
+The schema-version-two baseline uses only public `@luscious-garden/aster-core` and `@luscious-garden/aster-svg` roots. A fixed
 sixteen-definition synthetic corpus, specialised definitions and options are prepared and frozen
 before timing begins, while every complete markup result enters a deterministic checksum.
 

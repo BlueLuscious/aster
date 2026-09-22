@@ -9,7 +9,7 @@ import {
   type IconDefinition,
   type IconRenderOptions,
   type IconRtlPolicyType,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import {
   Svg,
   SvgRenderError,

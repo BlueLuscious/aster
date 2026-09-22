@@ -1,5 +1,5 @@
 {
-  "name": "@aster/svg",
+  "name": "@luscious-garden/aster-svg",
   "version": "0.1.0",
   "description": "Framework-independent SVG rendering for portable Aster icon definitions.",
   "type": "module",
@@ -39,9 +39,9 @@
     "test:types": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@aster/core": "workspace:^"
+    "@luscious-garden/aster-core": "workspace:^"
   },
   "devDependencies": {
-    "@aster/icons": "workspace:*"
+    "@luscious-garden/aster-icons": "workspace:*"
   }
 }

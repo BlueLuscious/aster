@@ -4,7 +4,7 @@ Status: **Accepted**
 
 The internal authoring feature owns two independent immutable inputs used by the current canonical
 icon corpus. Neither authority is a public package export or a universal requirement for every
-definition that may be distributed by `@aster/icons`.
+definition that may be distributed by `@luscious-garden/aster-icons`.
 
 ## Original Aster authorship
 

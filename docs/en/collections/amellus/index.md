@@ -13,7 +13,7 @@ Collection lifecycle: **Active**
 | Botanical identity | *Aster amellus* L. |
 | Catalogue identity | `{ name: "amellus" }` |
 | Canonical module | `amellus.collection.ts` |
-| Public subpath | `@aster/icons/collections/amellus` |
+| Public subpath | `@luscious-garden/aster-icons/collections/amellus` |
 | Curator and original artwork author | BlueLuscious |
 | Artwork licence | [Aster Artwork Licence 1.0](../../../../packages/icons/ARTWORK-LICENCE.md) |
 | Lifecycle | Active foundational collection accepted for pre-release distribution. |

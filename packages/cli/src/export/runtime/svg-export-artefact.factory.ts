@@ -1,4 +1,4 @@
-import { Svg, SvgRenderError } from "@aster/svg";
+import { Svg, SvgRenderError } from "@luscious-garden/aster-svg";
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";

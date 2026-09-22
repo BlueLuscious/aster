@@ -1,4 +1,4 @@
-# @aster/core
+# @luscious-garden/aster-core
 
 Portable, render-neutral icon and collection contracts for Aster.
 
@@ -7,10 +7,10 @@ The package exposes portable contracts, frozen runtime vocabularies, and the imm
 export.
 
 When `0.1.0` is published, install the exact candidate version with
-`pnpm add @aster/core@0.1.0`. This package has no runtime dependencies.
+`pnpm add @luscious-garden/aster-core@0.1.0`. This package has no runtime dependencies.
 
 ```ts
-import { Icon } from "@aster/core";
+import { Icon } from "@luscious-garden/aster-core";
 
 const Camera = Icon.define({
   identity: { namespace: "minimal", name: "camera" },

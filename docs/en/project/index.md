@@ -15,30 +15,35 @@ target used to present it.
 
 | Boundary | Maturity | Project role |
 | --- | --- | --- |
-| [`@aster/core`](../packages/core/index.md) | Pre-release | Defines and constructs the portable icon and collection model. |
-| [`@aster/icons`](../packages/icons/index.md) | Pre-release | Publishes canonical TypeScript-first icons and explicit collection aggregates. |
-| [`@aster/svg`](../packages/svg/index.md) | Pre-release | Renders portable definitions as deterministic standalone SVG markup. |
-| [`@aster/cli`](../packages/cli/index.md) | Pre-release | Provides host-neutral catalogue commands and a thin standalone Node executable. |
-| [`@aster/import`](../packages/import/index.md) | Private | Adopts explicit external sources into portable definitions and editable TypeScript. |
+| [`@luscious-garden/aster-core`](../packages/core/index.md) | Pre-release | Defines and constructs the portable icon and collection model. |
+| [`@luscious-garden/aster-icons`](../packages/icons/index.md) | Pre-release | Publishes canonical TypeScript-first icons and explicit collection aggregates. |
+| [`@luscious-garden/aster-svg`](../packages/svg/index.md) | Pre-release | Renders portable definitions as deterministic standalone SVG markup. |
+| [`@luscious-garden/aster-cli`](../packages/cli/index.md) | Pre-release | Provides host-neutral catalogue commands and a thin standalone Node executable. |
+| [`@luscious-garden/aster-import`](../packages/import/index.md) | Private | Adopts explicit external sources into portable definitions and editable TypeScript. |
 | [Repository tooling](../tooling/index.md) | Private | Verifies and maintains this repository without entering production package graphs. |
 
 Collection documentation is a curatorial authority, not another package boundary. The
 [collection index](../collections/index.md) records accepted collection identities, authorship,
-visual rules, provenance, and evidence; `@aster/icons` owns their distributable TypeScript values.
+visual rules, provenance, and evidence; `@luscious-garden/aster-icons` owns their distributable TypeScript values.
+
+The `@luscious-garden` npm organisation groups package distribution; the `aster-` package-name
+prefix distinguishes this product within that shared scope. Neither the organisation name nor
+the package prefix changes an icon's canonical `aster` identity namespace or the `aster`
+executable name.
 
 ## Dependency direction
 
 The production graph points towards Core and contains no dependency on repository tooling:
 
 ```text
-@aster/icons ----------------> @aster/core <---------------- @aster/svg
+@luscious-garden/aster-icons ----------------> @luscious-garden/aster-core <---------------- @luscious-garden/aster-svg
                                     ^
                                     |
-@aster/import ----------------------+----> xmlsax-typescript
+@luscious-garden/aster-import ----------------------+----> xmlsax-typescript
 
-@aster/cli ----> @aster/core
-      +--------> @aster/icons
-      +--------> @aster/svg
+@luscious-garden/aster-cli ----> @luscious-garden/aster-core
+      +--------> @luscious-garden/aster-icons
+      +--------> @luscious-garden/aster-svg
 ```
 
 Core has no runtime dependency. Icons and SVG depend only on its public root. CLI consumes the

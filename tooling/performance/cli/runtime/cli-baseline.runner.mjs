@@ -1,5 +1,5 @@
-import { Icon } from "@aster/core";
-import { Svg } from "@aster/svg";
+import { Icon } from "@luscious-garden/aster-core";
+import { Svg } from "@luscious-garden/aster-svg";
 import { CommandLineParser } from "../../../../packages/cli/dist/shell/parsing/runtime/command-line.parser.js";
 import { CommandOutputPresenter } from "../../../../packages/cli/dist/shell/presentation/runtime/command-output.presenter.js";
 import { cliBaseline } from "../constants/cli-baseline.constant.mjs";

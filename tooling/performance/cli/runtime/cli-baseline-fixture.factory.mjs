@@ -1,4 +1,4 @@
-import { AsterCommands } from "@aster/cli";
+import { AsterCommands } from "@luscious-garden/aster-cli";
 import { CatalogueIdentityFormatter } from "../../../../packages/cli/dist/catalogue/runtime/catalogue-identity.formatter.js";
 import { BenchmarkCatalogueFixtureFactory } from "../../shared/runtime/benchmark-catalogue-fixture.factory.mjs";
 
@@ -54,16 +54,16 @@ export class CliBaselineFixtureFactory {
       },
       /**
        * @description Resolves one exact prepared icon definition.
-       * @param {import("@aster/core").IconIdentity} identity - Selected icon identity.
-       * @returns {Promise<import("@aster/core").IconDefinition | undefined>} Prepared definition or no value.
+       * @param {import("@luscious-garden/aster-core").IconIdentity} identity - Selected icon identity.
+       * @returns {Promise<import("@luscious-garden/aster-core").IconDefinition | undefined>} Prepared definition or no value.
        */
       async loadIcon(identity) {
         return iconsByIdentity.get(identities.icon(identity));
       },
       /**
        * @description Resolves one exact prepared collection definition.
-       * @param {import("@aster/core").CollectionIdentity} identity - Selected collection identity.
-       * @returns {Promise<import("@aster/core").CollectionDefinition | undefined>} Prepared definition or no value.
+       * @param {import("@luscious-garden/aster-core").CollectionIdentity} identity - Selected collection identity.
+       * @returns {Promise<import("@luscious-garden/aster-core").CollectionDefinition | undefined>} Prepared definition or no value.
        */
       async loadCollection(identity) {
         return collectionsByIdentity.get(identities.collection(identity));

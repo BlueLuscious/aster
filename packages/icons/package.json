@@ -1,5 +1,5 @@
 {
-  "name": "@aster/icons",
+  "name": "@luscious-garden/aster-icons",
   "version": "0.1.0",
   "description": "Canonical portable Aster icon and collection definitions.",
   "type": "module",
@@ -54,6 +54,6 @@
     "test:types": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@aster/core": "workspace:^"
+    "@luscious-garden/aster-core": "workspace:^"
   }
 }

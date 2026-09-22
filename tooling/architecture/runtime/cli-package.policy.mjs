@@ -37,21 +37,21 @@ export class CliPackagePolicy {
   async inspect(record, dependencies, workspaceDependencies, issues) {
     for (const name of workspaceDependencies) {
       if (!packageBoundaries.cliDependencies.includes(name)) {
-        issues.add(`@aster/cli cannot depend on workspace package ${name}`);
+        issues.add(`@luscious-garden/aster-cli cannot depend on workspace package ${name}`);
       }
     }
 
     for (const name of Object.keys(dependencies)) {
       if (!packageBoundaries.cliDependencies.includes(name)) {
-        issues.add(`@aster/cli cannot declare unaccepted production dependency ${name}`);
+        issues.add(`@luscious-garden/aster-cli cannot declare unaccepted production dependency ${name}`);
       }
     }
 
     if (record.manifest.private === true) {
-      issues.add("@aster/cli must remain a public package");
+      issues.add("@luscious-garden/aster-cli must remain a public package");
     }
 
-    this.#rootExport.inspect("@aster/cli", record.manifest, issues);
-    await this.#compiler.inspect(record.packageRoot, "@aster/cli", issues);
+    this.#rootExport.inspect("@luscious-garden/aster-cli", record.manifest, issues);
+    await this.#compiler.inspect(record.packageRoot, "@luscious-garden/aster-cli", issues);
   }
 }

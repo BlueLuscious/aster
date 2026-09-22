@@ -77,8 +77,8 @@ export class CoreBaselineFixtureFactory {
   /**
    * @description Creates one mutable structured-path definition for isolated Core measurement.
    * @param {string} name - Stable benchmark identity suffix.
-   * @param {import("@aster/core").IconPathCommandType[]} commands - Mutable authored command sequence.
-   * @returns {import("@aster/core").IconDefinition} Mutable valid definition input.
+   * @param {import("@luscious-garden/aster-core").IconPathCommandType[]} commands - Mutable authored command sequence.
+   * @returns {import("@luscious-garden/aster-core").IconDefinition} Mutable valid definition input.
    */
   #pathDefinition(name, commands) {
     return {

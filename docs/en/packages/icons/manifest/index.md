@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-`@aster/icons/manifest` exposes immutable metadata for discovery without importing icon geometry,
+`@luscious-garden/aster-icons/manifest` exposes immutable metadata for discovery without importing icon geometry,
 presentation policy or complete collection definitions. It is the lightweight package surface for
 search, listing and later on-demand resolution; it is not a mutable registry and does not load a
 definition by itself.
@@ -13,7 +13,7 @@ definition by itself.
 import {
   AsterCollectionManifest,
   AsterIconManifest,
-} from "@aster/icons/manifest";
+} from "@luscious-garden/aster-icons/manifest";
 ```
 
 `AsterIconManifest` is ordered by canonical icon key. Each `IconManifestEntry` retains:
@@ -69,9 +69,9 @@ that data module.
 `IconManifestEntry` describes one lightweight searchable icon record and relates discovery data to
 public Core identity and RTL contracts. `CollectionManifestEntry` describes one collection record,
 reuses public Core identity and metadata contracts, and replaces embedded definitions with ordered
-member keys. Both interfaces are public only through `@aster/icons/manifest`.
+member keys. Both interfaces are public only through `@luscious-garden/aster-icons/manifest`.
 
-The manifest does not promise selective package installation. Installing `@aster/icons` still
+The manifest does not promise selective package installation. Installing `@luscious-garden/aster-icons` still
 installs every published file; the manifest only prevents unrelated runtime evaluation and makes a
 future remote registry or `aster add` workflow possible without changing canonical definitions.
 
@@ -81,7 +81,7 @@ Runtime evidence compares every manifest record with definitions resolved throug
 checks canonical ordering and recursively verifies immutability. Catalogue tooling tests cover
 deterministic creation, drift, additions, removals, static imported authorities, rejected executable
 syntax, cycles and stale-record cleanup. ABI and clean-consumer tests verify the exact
-`@aster/icons/manifest` subpath, declarations and emitted dependency graph.
+`@luscious-garden/aster-icons/manifest` subpath, declarations and emitted dependency graph.
 
 Fresh-process evaluation is measured by the [Icons Quality Baseline](../quality-baseline.md).
 Canonical authoring and regeneration are defined by the [Icons Authoring Workflow](../workflow.md)

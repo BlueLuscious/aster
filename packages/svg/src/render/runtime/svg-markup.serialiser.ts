@@ -6,7 +6,7 @@ import {
   type IconNodeType,
   type IconPoint,
   type IconPresentation,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import { SvgRenderError } from "../../error/index.js";
 import type { ISvgRenderContext } from "../contracts/internal/index.js";
 import type { SvgMarkupType } from "../types/index.js";

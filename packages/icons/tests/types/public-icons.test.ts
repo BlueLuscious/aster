@@ -1,6 +1,6 @@
 import type {
   IconDefinition,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import { ArrowLeft } from "../../src/generated/facades/icons/arrow-left.js";
 import { Search } from "../../src/generated/facades/icons/search.js";
 import type {

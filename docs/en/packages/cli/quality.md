@@ -2,7 +2,7 @@
 
 Status: **Hardened Pre-release**
 
-This document records the hardened observable `@aster/cli` boundary, its conformance evidence,
+This document records the hardened observable `@luscious-garden/aster-cli` boundary, its conformance evidence,
 and the constraints retained for the pre-release contract. The implemented execution path is documented by the
 [CLI Workflow](workflow.md).
 
@@ -69,23 +69,23 @@ definitions, normalisers, queries, presenters, filesystem capabilities, or Node 
 | Shell | Parses argv, presents output, maps process status, and composes output publication. | Node process and filesystem |
 
 `help` and `version` do not load catalogue providers. Importing the package root constructs
-stateless command services and the built-in provider wrapper but does not evaluate `@aster/icons`,
+stateless command services and the built-in provider wrapper but does not evaluate `@luscious-garden/aster-icons`,
 read process state, access the filesystem, or write output.
 
 ## Dependency ownership
 
 | Dependency | Exact responsibility |
 | --- | --- |
-| `@aster/core` | Portable definition contracts, reconstruction, identity, metadata, presentation, and render-option vocabulary used by catalogue and export boundaries. |
-| `@aster/icons` | Canonical manifests and exact definition loaders supplied only through the explicit built-in provider. |
-| `@aster/svg` | Public deterministic SVG rendering used to create export artefacts and review evidence. |
+| `@luscious-garden/aster-core` | Portable definition contracts, reconstruction, identity, metadata, presentation, and render-option vocabulary used by catalogue and export boundaries. |
+| `@luscious-garden/aster-icons` | Canonical manifests and exact definition loaders supplied only through the explicit built-in provider. |
+| `@luscious-garden/aster-svg` | Public deterministic SVG rendering used to create export artefacts and review evidence. |
 
 Import, DOM, browser, framework, network, package-manager, Flora, and repository-tooling imports are
 absent from production source. Node imports occur only in the private shell entrypoint, output-path
 resolver, and filesystem adapter. The host-neutral TypeScript project excludes the complete shell
 tree and admits neither Node nor DOM ambient types.
 
-`@aster/icons` remains a regular dependency because the package publishes `AsterCatalogue` and the
+`@luscious-garden/aster-icons` remains a regular dependency because the package publishes `AsterCatalogue` and the
 standalone executable composes it by default. Discovery evaluates only its manifest modules;
 definitions remain behind provider loader methods. Making the
 dependency optional would misrepresent the installed executable contract; extracting a separate

@@ -1,7 +1,7 @@
 import type {
   CollectionIdentity,
   IconIdentity,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 /**
  * @description Formats portable identities into the canonical unambiguous CLI representation.

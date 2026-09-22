@@ -6,7 +6,7 @@ import {
   type CollectionDefinition,
   Icon,
   type IconDefinition,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import {
   AsterCommands,
   exportTargets,

@@ -1,7 +1,7 @@
 import type {
   CollectionIdentity,
   IconIdentity,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type { catalogueResultKinds } from "../constants/catalogue-result-kinds.constant.js";
 import type { CatalogueIconMetadata } from "./catalogue-icon-metadata.contract.js";
 

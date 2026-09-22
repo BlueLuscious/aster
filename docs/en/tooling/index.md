@@ -4,7 +4,7 @@ Status: **Accepted**
 
 `tooling/` contains private contributor infrastructure for verifying and maintaining the Aster
 workspace. It is not a publishable package, product API, or implementation dependency for
-`@aster/*` packages.
+`@luscious-garden/aster-*` packages.
 
 ## Features
 

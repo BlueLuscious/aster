@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { AsterCatalogue, AsterCommands } from "@aster/cli";
-import { Icon, type IconDefinition, type IconMetadata } from "@aster/core";
-import { AsterCollectionLoaders } from "@aster/icons/dynamic";
-import { IconImport, iconImportFormats } from "@aster/import";
-import { Svg } from "@aster/svg";
+import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";
+import { Icon, type IconDefinition, type IconMetadata } from "@luscious-garden/aster-core";
+import { AsterCollectionLoaders } from "@luscious-garden/aster-icons/dynamic";
+import { IconImport, iconImportFormats } from "@luscious-garden/aster-import";
+import { Svg } from "@luscious-garden/aster-svg";
 
 const arrowMetadata: IconMetadata = {
   displayName: "Arrow Left",

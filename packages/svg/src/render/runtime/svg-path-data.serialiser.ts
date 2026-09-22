@@ -1,7 +1,7 @@
 import {
   iconPathCommandKinds,
   type IconPathCommandType,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import { SvgRenderError } from "../../error/index.js";
 import { svgPathCommandLetters } from "../constants/svg-path-command-letters.constant.js";
 import { SvgNumberSerialiser } from "./svg-number.serialiser.js";

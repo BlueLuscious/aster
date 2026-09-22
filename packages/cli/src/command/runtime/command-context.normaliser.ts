@@ -3,7 +3,7 @@ import type {
   CollectionIdentity,
   IconDefinition,
   IconIdentity,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type {
   CatalogueDiscovery,
   CatalogueProvider,

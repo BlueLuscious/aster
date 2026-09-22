@@ -1,4 +1,4 @@
-import type { IconMetadata } from "@aster/core";
+import type { IconMetadata } from "@luscious-garden/aster-core";
 import type { IconImportDraft } from "./icon-import-draft.contract.js";
 
 /**

@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-This document inventories the observable `@aster/core` boundary, records accepted consumer and
+This document inventories the observable `@luscious-garden/aster-core` boundary, records accepted consumer and
 distribution conformance, and identifies pressures that do not currently justify API or runtime
 growth. The measurement method is the [Core Quality Baseline](quality-baseline.md).
 
@@ -37,10 +37,10 @@ its implementation subpath remains unsupported.
 
 | Consumer | Core authority used |
 | --- | --- |
-| `@aster/icons` | Authors canonical icon and collection definitions. |
-| `@aster/svg` | Revalidates definitions and interprets portable render options and presentation authorities. |
-| `@aster/import` | Inspects external source evidence and delegates portable definition construction to Core. |
-| `@aster/cli` | Describes and normalises catalogue icon and collection records without changing definitions. |
+| `@luscious-garden/aster-icons` | Authors canonical icon and collection definitions. |
+| `@luscious-garden/aster-svg` | Revalidates definitions and interprets portable render options and presentation authorities. |
+| `@luscious-garden/aster-import` | Inspects external source evidence and delegates portable definition construction to Core. |
+| `@luscious-garden/aster-cli` | Describes and normalises catalogue icon and collection records without changing definitions. |
 | Repository workflows | Exercise TypeScript-first authoring, import equivalence, and package composition through public roots. |
 
 No consumer grants Core filesystem, DOM, terminal, process, framework, or catalogue-registry

@@ -37,21 +37,21 @@ export class SvgPackagePolicy {
   async inspect(record, dependencies, workspaceDependencies, issues) {
     for (const name of workspaceDependencies) {
       if (!packageBoundaries.svgDependencies.includes(name)) {
-        issues.add(`@aster/svg cannot depend on workspace package ${name}`);
+        issues.add(`@luscious-garden/aster-svg cannot depend on workspace package ${name}`);
       }
     }
 
     for (const name of Object.keys(dependencies)) {
       if (!packageBoundaries.svgDependencies.includes(name)) {
-        issues.add(`@aster/svg cannot declare unaccepted production dependency ${name}`);
+        issues.add(`@luscious-garden/aster-svg cannot declare unaccepted production dependency ${name}`);
       }
     }
 
     if (record.manifest.private === true) {
-      issues.add("@aster/svg must remain a public package");
+      issues.add("@luscious-garden/aster-svg must remain a public package");
     }
 
-    this.#rootExport.inspect("@aster/svg", record.manifest, issues);
-    await this.#compiler.inspect(record.packageRoot, "@aster/svg", issues);
+    this.#rootExport.inspect("@luscious-garden/aster-svg", record.manifest, issues);
+    await this.#compiler.inspect(record.packageRoot, "@luscious-garden/aster-svg", issues);
   }
 }

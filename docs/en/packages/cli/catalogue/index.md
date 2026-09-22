@@ -58,8 +58,8 @@ object identity never become observable command state.
 ## Built-in provider
 
 `AsterCatalogue` is the explicit built-in provider. Discovery dynamically imports
-`@aster/icons/manifest`, derives icon memberships from collection member keys, and returns no
-complete definitions. Exact loaders dynamically acquire `@aster/icons/dynamic` only when invoked.
+`@luscious-garden/aster-icons/manifest`, derives icon memberships from collection member keys, and returns no
+complete definitions. Exact loaders dynamically acquire `@luscious-garden/aster-icons/dynamic` only when invoked.
 The provider does not register itself globally; hosts include it explicitly in
 `AsterCommandContext.catalogues`.
 

@@ -3,7 +3,7 @@ import {
   IconDefinitionError,
   type IconDefinition,
   type IconRenderOptions,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import { SvgRenderError } from "../../error/index.js";
 import type { SvgMarkupType } from "../types/index.js";
 import { SvgMarkupSerialiser } from "./svg-markup.serialiser.js";

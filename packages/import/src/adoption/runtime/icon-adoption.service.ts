@@ -10,7 +10,7 @@ import type {
 import type { SourceDiagnostic } from "../../diagnostic/contracts/index.js";
 import type { DiagnosticResultType } from "../../diagnostic/types/index.js";
 import type { IconImportSourceType } from "../../source/types/index.js";
-import type { IconDefinition, IconMetadata } from "@aster/core";
+import type { IconDefinition, IconMetadata } from "@luscious-garden/aster-core";
 import { DiagnosticResultFactory } from "../../diagnostic/runtime/diagnostic-result.factory.js";
 import { diagnosticSeverities } from "../../diagnostic/constants/diagnostic-severities.constant.js";
 import { IconImportError } from "../../error/index.js";

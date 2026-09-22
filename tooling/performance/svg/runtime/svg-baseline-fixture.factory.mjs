@@ -1,4 +1,4 @@
-import { Icon } from "@aster/core";
+import { Icon } from "@luscious-garden/aster-core";
 import { BenchmarkCatalogueFixtureFactory } from "../../shared/runtime/benchmark-catalogue-fixture.factory.mjs";
 
 /**
@@ -126,8 +126,8 @@ export class SvgBaselineFixtureFactory {
   /**
    * @description Constructs one canonical benchmark definition with shared presentation policy.
    * @param {string} name - Benchmark-local canonical identity name.
-   * @param {import("@aster/core").IconNodeType[]} nodes - Prepared portable geometry nodes.
-   * @returns {import("@aster/core").IconDefinition} Canonical frozen definition.
+   * @param {import("@luscious-garden/aster-core").IconNodeType[]} nodes - Prepared portable geometry nodes.
+   * @returns {import("@luscious-garden/aster-core").IconDefinition} Canonical frozen definition.
    */
   #definition(name, nodes) {
     return Icon.define({

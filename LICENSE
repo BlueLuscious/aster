@@ -1,6 +1,6 @@
 This ISC licence covers the software and documentation in this repository. It does not cover
 icon visual artwork or the creative selection and arrangement of collections. BlueLuscious-owned
-artwork in `@aster/icons` marked `LicenseRef-Aster-Artwork-1.0` follows the
+artwork in `@luscious-garden/aster-icons` marked `LicenseRef-Aster-Artwork-1.0` follows the
 [Aster Artwork Licence](packages/icons/ARTWORK-LICENCE.md); other artwork follows its declared
 terms. An icon definition module may contain both ISC software and separately licensed artwork.
 

@@ -2,7 +2,7 @@
 
 Status: **Pre-release**
 
-This document describes how `@aster/cli` turns one explicit invocation into an observable result
+This document describes how `@luscious-garden/aster-cli` turns one explicit invocation into an observable result
 without merging host-neutral command behaviour with standalone Node effects. Feature contracts and
 types remain documented by [Command](command/index.md), [Catalogue](catalogue/index.md),
 [Export](export/index.md), [Review](review/index.md), and [Shell](shell/index.md).
@@ -33,13 +33,13 @@ does not execute this workflow.
 For `export`, the host-neutral path first selects one exact metadata record and only then invokes
 that provider's exact icon or collection loader. The loaded value is reconstructed through Core
 and checked against discovery before rendering is allowed. Export delegates rendering to the
-public `@aster/svg` root and constructs a complete immutable `AsterExportPlan` before returning
+public `@luscious-garden/aster-svg` root and constructs a complete immutable `AsterExportPlan` before returning
 success.
 
 An icon produces one logical SVG artefact. A collection resolves every declared member before
 rendering and then orders all artefacts by canonical relative path. Selection, path collisions,
 render failures, and malformed providers fail without exposing a partial plan. The workflow does
-not import `@aster/import`, inspect source files, or acquire filesystem authority.
+not import `@luscious-garden/aster-import`, inspect source files, or acquire filesystem authority.
 
 ## Review planning
 
@@ -48,7 +48,7 @@ Export. An icon selection retains its independent collection memberships. A coll
 loads one complete collection, validates every declared member against discovery, and canonically
 orders its evidence, while an empty collection remains a valid empty model.
 
-Review renders each selected definition through public `@aster/svg` and constructs one immutable
+Review renders each selected definition through public `@luscious-garden/aster-svg` and constructs one immutable
 `AsterReviewPlan` containing only portable technical evidence. The plan contains no output root,
 timestamp, environment value, current directory, serialised HTML, or publication effect. Expected
 lookup and render failures expose no partial model.

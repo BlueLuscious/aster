@@ -1,4 +1,4 @@
-import type { IconPresentation } from "@aster/core";
+import type { IconPresentation } from "@luscious-garden/aster-core";
 import { CatalogueIdentityFormatter } from "../../catalogue/runtime/catalogue-identity.formatter.js";
 import { reviewSubjects } from "../constants/review-subjects.constant.js";
 import { reviewDocumentPresentation } from "../constants/review-document-presentation.constant.js";
@@ -13,7 +13,7 @@ import { HtmlContentEscaper } from "./html-content.escaper.js";
 
 /**
  * @description Serialises complete review plans into deterministic self-contained HTML evidence.
- * @remarks Rendered icon markup is retained from `@aster/svg`; this class never interprets geometry.
+ * @remarks Rendered icon markup is retained from `@luscious-garden/aster-svg`; this class never interprets geometry.
  */
 export class ReviewDocumentSerialiser {
   /**

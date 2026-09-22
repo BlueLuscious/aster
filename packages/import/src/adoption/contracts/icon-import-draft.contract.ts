@@ -2,7 +2,7 @@ import type {
   IconIdentity,
   IconNodeType,
   IconViewBox,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type { IconImportMetrics } from "./icon-import-metrics.contract.js";
 import type { IconImportProvenance } from "./icon-import-provenance.contract.js";
 

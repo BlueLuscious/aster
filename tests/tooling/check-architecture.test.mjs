@@ -83,10 +83,10 @@ test("rejects reverse and relative package dependencies", async () => {
 
   try {
     await writeFixtureJson(root, "packages/core/package.json", {
-      name: "@aster/core",
+      name: "@luscious-garden/aster-core",
       type: "module",
       dependencies: {
-        "@aster/svg": "workspace:*",
+        "@luscious-garden/aster-svg": "workspace:*",
       },
     });
     await writeFixtureFile(
@@ -95,7 +95,7 @@ test("rejects reverse and relative package dependencies", async () => {
       'import "../../svg/src/index.js";\n',
     );
     await writeFixtureJson(root, "packages/svg/package.json", {
-      name: "@aster/svg",
+      name: "@luscious-garden/aster-svg",
       type: "module",
     });
     await writeFixtureFile(root, "packages/svg/src/index.ts", "export {};\n");
@@ -104,7 +104,7 @@ test("rejects reverse and relative package dependencies", async () => {
 
     assert.ok(
       issues.some((issue) =>
-        /@aster\/core cannot depend on another workspace package/u.test(issue),
+        /@luscious-garden\/aster-core cannot depend on another workspace package/u.test(issue),
       ),
     );
     assert.ok(
@@ -120,7 +120,7 @@ test("rejects Core production dependencies and public package boundary drift", a
 
   try {
     await writeFixtureJson(root, "packages/core/package.json", {
-      name: "@aster/core",
+      name: "@luscious-garden/aster-core",
       type: "module",
       sideEffects: true,
       exports: {
@@ -161,11 +161,11 @@ test("rejects host adapters and reverse dependencies in the private import domai
 
   try {
     await writeFixtureJson(root, "packages/import/package.json", {
-      name: "@aster/import",
+      name: "@luscious-garden/aster-import",
       private: false,
       type: "module",
       dependencies: {
-        "@aster/svg": "workspace:*",
+        "@luscious-garden/aster-svg": "workspace:*",
         "unexpected-package": "^1.0.0",
       },
     });
@@ -181,7 +181,7 @@ test("rejects host adapters and reverse dependencies in the private import domai
       'import "node:fs";\nimport "../../../tooling/adapter.js";\n',
     );
     await writeFixtureJson(root, "packages/svg/package.json", {
-      name: "@aster/svg",
+      name: "@luscious-garden/aster-svg",
       type: "module",
     });
     await writeFixtureFile(root, "packages/svg/src/index.ts", "export {};\n");
@@ -190,7 +190,7 @@ test("rejects host adapters and reverse dependencies in the private import domai
 
     assert.ok(issues.some((issue) => /must remain a private/u.test(issue)));
     assert.ok(
-      issues.some((issue) => /cannot depend on workspace package @aster\/svg/u.test(issue)),
+      issues.some((issue) => /cannot depend on workspace package @luscious-garden\/aster-svg/u.test(issue)),
     );
     assert.ok(
       issues.some((issue) => /unaccepted production dependency unexpected-package/u.test(issue)),
@@ -209,7 +209,7 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
 
   try {
     await writeFixtureJson(root, "packages/cli/package.json", {
-      name: "@aster/cli",
+      name: "@luscious-garden/aster-cli",
       private: true,
       type: "module",
       sideEffects: true,
@@ -221,7 +221,7 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
         "./runtime": "./dist/runtime.js",
       },
       dependencies: {
-        "@aster/import": "workspace:*",
+        "@luscious-garden/aster-import": "workspace:*",
       },
     });
     await writeFixtureJson(root, "packages/cli/tsconfig.json", {
@@ -241,7 +241,7 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
       'import "../../output/runtime/export-output.publisher.js";\n',
     );
     await writeFixtureJson(root, "packages/import/package.json", {
-      name: "@aster/import",
+      name: "@luscious-garden/aster-import",
       type: "module",
     });
     await writeFixtureFile(root, "packages/import/src/index.ts", "export {};\n");
@@ -249,9 +249,9 @@ test("rejects CLI dependency, package-surface, and Node-authority drift", async 
     const issues = await verifyArchitecture(root);
 
     assert.ok(
-      issues.some((issue) => /cannot depend on workspace package @aster\/import/u.test(issue)),
+      issues.some((issue) => /cannot depend on workspace package @luscious-garden\/aster-import/u.test(issue)),
     );
-    assert.ok(issues.some((issue) => /unaccepted production dependency @aster\/import/u.test(issue)));
+    assert.ok(issues.some((issue) => /unaccepted production dependency @luscious-garden\/aster-import/u.test(issue)));
     assert.ok(issues.some((issue) => /must remain a public package/u.test(issue)));
     assert.ok(issues.some((issue) => /sideEffects as false/u.test(issue)));
     assert.ok(issues.some((issue) => /expose only the root/u.test(issue)));
@@ -269,17 +269,17 @@ test("rejects Icons dependency, package-surface, and compiler drift", async () =
 
   try {
     await writeFixtureJson(root, "packages/core/package.json", {
-      name: "@aster/core",
+      name: "@luscious-garden/aster-core",
       type: "module",
     });
     await writeFixtureFile(root, "packages/core/src/index.ts", "export {};\n");
     await writeFixtureJson(root, "packages/other/package.json", {
-      name: "@aster/other",
+      name: "@luscious-garden/aster-other",
       type: "module",
     });
     await writeFixtureFile(root, "packages/other/src/index.ts", "export {};\n");
     await writeFixtureJson(root, "packages/icons/package.json", {
-      name: "@aster/icons",
+      name: "@luscious-garden/aster-icons",
       private: true,
       type: "module",
       sideEffects: true,
@@ -290,8 +290,8 @@ test("rejects Icons dependency, package-surface, and compiler drift", async () =
         },
       },
       dependencies: {
-        "@aster/core": "workspace:*",
-        "@aster/other": "workspace:*",
+        "@luscious-garden/aster-core": "workspace:*",
+        "@luscious-garden/aster-other": "workspace:*",
         "host-library": "^1.0.0",
       },
     });
@@ -307,7 +307,7 @@ test("rejects Icons dependency, package-surface, and compiler drift", async () =
 
     assert.ok(
       issues.some((issue) =>
-        /cannot depend on workspace package @aster\/other/u.test(issue),
+        /cannot depend on workspace package @luscious-garden\/aster-other/u.test(issue),
       ),
     );
     assert.ok(
@@ -334,17 +334,17 @@ test("rejects SVG dependency, package-surface, and compiler drift", async () => 
 
   try {
     await writeFixtureJson(root, "packages/core/package.json", {
-      name: "@aster/core",
+      name: "@luscious-garden/aster-core",
       type: "module",
     });
     await writeFixtureFile(root, "packages/core/src/index.ts", "export {};\n");
     await writeFixtureJson(root, "packages/icons/package.json", {
-      name: "@aster/icons",
+      name: "@luscious-garden/aster-icons",
       type: "module",
     });
     await writeFixtureFile(root, "packages/icons/src/index.ts", "export {};\n");
     await writeFixtureJson(root, "packages/svg/package.json", {
-      name: "@aster/svg",
+      name: "@luscious-garden/aster-svg",
       private: true,
       type: "module",
       sideEffects: true,
@@ -356,8 +356,8 @@ test("rejects SVG dependency, package-surface, and compiler drift", async () => 
         "./runtime": "./dist/runtime.js",
       },
       dependencies: {
-        "@aster/core": "workspace:*",
-        "@aster/icons": "workspace:*",
+        "@luscious-garden/aster-core": "workspace:*",
+        "@luscious-garden/aster-icons": "workspace:*",
         "host-library": "^1.0.0",
       },
     });
@@ -372,7 +372,7 @@ test("rejects SVG dependency, package-surface, and compiler drift", async () => 
     const issues = await verifyArchitecture(root);
 
     assert.ok(
-      issues.some((issue) => /cannot depend on workspace package @aster\/icons/u.test(issue)),
+      issues.some((issue) => /cannot depend on workspace package @luscious-garden\/aster-icons/u.test(issue)),
     );
     assert.ok(
       issues.some((issue) => /unaccepted production dependency host-library/u.test(issue)),
@@ -392,7 +392,7 @@ test("rejects private parser dependency and adapter boundary drift", async () =>
 
   try {
     await writeFixtureJson(root, "packages/import/package.json", {
-      name: "@aster/import",
+      name: "@luscious-garden/aster-import",
       private: true,
       type: "module",
       sideEffects: false,
@@ -449,7 +449,7 @@ test("rejects Validation runtime imports from Import SVG Normalisation", async (
 
   try {
     await writeFixtureJson(root, "packages/import/package.json", {
-      name: "@aster/import",
+      name: "@luscious-garden/aster-import",
       private: true,
       type: "module",
       sideEffects: false,
@@ -460,7 +460,7 @@ test("rejects Validation runtime imports from Import SVG Normalisation", async (
         },
       },
       dependencies: {
-        "@aster/core": "workspace:*",
+        "@luscious-garden/aster-core": "workspace:*",
         "xmlsax-typescript": "1.0.0",
       },
     });
@@ -487,7 +487,7 @@ test("rejects repository tooling imports from every production package", async (
 
   try {
     await writeFixtureJson(root, "packages/example/package.json", {
-      name: "@aster/example",
+      name: "@luscious-garden/aster-example",
       type: "module",
     });
     await writeFixtureFile(
@@ -499,7 +499,7 @@ test("rejects repository tooling imports from every production package", async (
     const issues = await verifyArchitecture(root);
 
     assert.ok(
-      issues.some((issue) => /imports repository tooling into @aster\/example/u.test(issue)),
+      issues.some((issue) => /imports repository tooling into @luscious-garden\/aster-example/u.test(issue)),
     );
   } finally {
     await rm(root, { recursive: true, force: true });

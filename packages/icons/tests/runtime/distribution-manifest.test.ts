@@ -3,7 +3,7 @@ import test from "node:test";
 
 import type {
   IconIdentity,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import { asterArtworkLicence } from "../../src/authoring/constants/aster-artwork-licence.constant.js";
 import {
   AsterCollectionLoaders,

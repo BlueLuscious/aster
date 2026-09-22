@@ -1,5 +1,5 @@
 {
-  "name": "@aster/cli",
+  "name": "@luscious-garden/aster-cli",
   "version": "0.1.0",
   "description": "Host-neutral Aster commands and their standalone command-line host.",
   "type": "module",
@@ -47,8 +47,8 @@
     "test:types": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@aster/core": "workspace:^",
-    "@aster/icons": "workspace:^",
-    "@aster/svg": "workspace:^"
+    "@luscious-garden/aster-core": "workspace:^",
+    "@luscious-garden/aster-icons": "workspace:^",
+    "@luscious-garden/aster-svg": "workspace:^"
   }
 }

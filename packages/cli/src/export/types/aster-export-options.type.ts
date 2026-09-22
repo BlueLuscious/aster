@@ -1,4 +1,4 @@
-import type { IconRenderOptions } from "@aster/core";
+import type { IconRenderOptions } from "@luscious-garden/aster-core";
 
 /**
  * @description Portable render values applied uniformly by icon and collection export.

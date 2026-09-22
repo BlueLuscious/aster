@@ -3,7 +3,7 @@ import type {
   CollectionIdentity,
   IconDefinition,
   IconIdentity,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type {
   CatalogueDiscovery,
   CatalogueProvider,
@@ -32,7 +32,7 @@ export class AsterCatalogueProvider implements CatalogueProvider {
    */
   async discover(): Promise<CatalogueDiscovery> {
     const { AsterCollectionManifest, AsterIconManifest } = await import(
-      "@aster/icons/manifest"
+      "@luscious-garden/aster-icons/manifest"
     );
 
     return this.#discoveries.create(AsterIconManifest, AsterCollectionManifest);
@@ -64,7 +64,7 @@ export class AsterCatalogueProvider implements CatalogueProvider {
    * @description Acquires generated exact definition loaders only after exact loading is invoked.
    * @returns Canonical icon and collection loader maps.
    */
-  async #definitionLoaders(): Promise<typeof import("@aster/icons/dynamic")> {
-    return import("@aster/icons/dynamic");
+  async #definitionLoaders(): Promise<typeof import("@luscious-garden/aster-icons/dynamic")> {
+    return import("@luscious-garden/aster-icons/dynamic");
   }
 }

@@ -28,8 +28,8 @@ A single icon uses `adopt()`. A host-prepared set of icons uses `adoptMany()`. O
 batch selected by the host, not a distinct Import value. Several collections remain independent
 batch calls so their membership, naming, review and commit boundaries do not leak into Import.
 
-The emitted module imports only `@aster/core`. Once retained as canonical authored source, it
-compiles, imports and renders through `@aster/svg` without `@aster/import`, the original SVG or
+The emitted module imports only `@luscious-garden/aster-core`. Once retained as canonical authored source, it
+compiles, imports and renders through `@luscious-garden/aster-svg` without `@luscious-garden/aster-import`, the original SVG or
 external metadata files.
 
 Path nodes are emitted as structured command objects. Re-importing equivalent compact SVG and

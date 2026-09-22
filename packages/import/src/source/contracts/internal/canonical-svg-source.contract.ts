@@ -1,4 +1,4 @@
-import type { IconIdentity } from "@aster/core";
+import type { IconIdentity } from "@luscious-garden/aster-core";
 import type { iconImportFormats } from "../../../format/constants/icon-import-formats.constant.js";
 import type { ICanonicalTextSource } from "./canonical-text-source.contract.js";
 

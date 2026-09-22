@@ -36,7 +36,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | 11 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
 | 12 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
 | 13 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 14 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 14 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
 | 15 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
 
 ## Informational SVG attribution markers
@@ -72,7 +72,7 @@ first pre-release and not a reason to introduce a release framework prematurely.
 
 Importance: **P1 - High**
 
-The implemented `@aster/cli` already provides catalogue discovery, lookup, search, display,
+The implemented `@luscious-garden/aster-cli` already provides catalogue discovery, lookup, search, display,
 deterministic SVG export, and disposable static review publication through host-neutral commands
 and a standalone Node shell. Those current guarantees are documented by the
 [CLI package](packages/cli/index.md).
@@ -124,7 +124,7 @@ general development server or framework dependency solely for this capability.
 Importance: **P1 - High**
 
 Consumers must eventually be able to acquire one icon, one variant or one collection without
-installing the complete `@aster/icons` artefact. The preferred direction is a defined Aster
+installing the complete `@luscious-garden/aster-icons` artefact. The preferred direction is a defined Aster
 registry consumed by explicit CLI workflows:
 
 ```text
@@ -151,8 +151,8 @@ stable. Its design must establish:
 
 ### Collection package boundary
 
-Collections remain inside `@aster/icons` while they share definition ownership, release maturity
-and dependencies. Creating one `@aster/collections` package that depends on `@aster/icons` would
+Collections remain inside `@luscious-garden/aster-icons` while they share definition ownership, release maturity
+and dependencies. Creating one `@luscious-garden/aster-collections` package that depends on `@luscious-garden/aster-icons` would
 not reduce npm acquisition because its dependency would still install the complete Icons package.
 Do not introduce it merely to mirror a source directory.
 
@@ -172,32 +172,32 @@ Reconsider a separate collection boundary when at least one of these conditions 
 
 If accepted, migration requires an explicit compatibility period and an acyclic dependency
 direction. If no trigger appears before the first supported release, retain collections inside
-`@aster/icons` and treat their isolated subpaths as the supported boundary.
+`@luscious-garden/aster-icons` and treat their isolated subpaths as the supported boundary.
 
 ## Command-set extraction and Flora integration
 
 Importance: **P2 - Conditional**
 
 The current CLI keeps host-neutral command composition separate from its private standalone shell.
-Do not create `@aster/commands` merely to reorganise files. Extract it only when an independent
+Do not create `@luscious-garden/aster-commands` merely to reorganise files. Extract it only when an independent
 consumer needs the same structured commands without the Aster executable.
 
 Flora is the prospective headless multi-ecosystem CLI host. If Flora exposes a stable minimal
-plugin ABI and one real integration scenario, an optional `@aster/flora` adapter may translate
+plugin ABI and one real integration scenario, an optional `@luscious-garden/aster-flora` adapter may translate
 Flora invocations and capabilities to the extracted Aster command set:
 
 ```text
-@aster/core <- @aster/svg <- @aster/commands
+@luscious-garden/aster-core <- @luscious-garden/aster-svg <- @luscious-garden/aster-commands
                               ^           ^
                               |           |
-                         @aster/cli   @aster/flora -> @flora/core
+                         @luscious-garden/aster-cli   @luscious-garden/aster-flora -> Flora runtime
                               |
-                         @aster/icons
+                         @luscious-garden/aster-icons
 ```
 
-`@aster/commands` would own host-neutral validation, catalogue selection, and immutable target
-plans. `@aster/cli` would remain the standalone Node executable and compose the default Icons
-catalogue. `@aster/flora` would contain only the optional plugin adaptation. Flora would route an
+`@luscious-garden/aster-commands` would own host-neutral validation, catalogue selection, and immutable target
+plans. `@luscious-garden/aster-cli` would remain the standalone Node executable and compose the default Icons
+catalogue. `@luscious-garden/aster-flora` would contain only the optional plugin adaptation. Flora would route an
 explicit Aster namespace without making Aster packages depend on a generic ecosystem host.
 
 Target plans remain effect-free; either standalone CLI capabilities or Flora capabilities decide
@@ -240,7 +240,7 @@ of those guarantees incrementally to Import.
 
 Importance: **P2 - Conditional**
 
-Core definitions can render to SVG through `@aster/svg`, and CLI can plan and publish SVG exports.
+Core definitions can render to SVG through `@luscious-garden/aster-svg`, and CLI can plan and publish SVG exports.
 Introduce a separate multi-target Export boundary only after a second real target, such as JSON,
 proves that shared target selection, diagnostics, or atomic planning cannot remain in its owning
 adapter or host.
@@ -304,7 +304,7 @@ registries, or combining contributor tooling with the user-facing multi-ecosyste
 
 Importance: **P4 - Deferred**
 
-`@aster/studio` is a provisional name for a future Lilium web application dedicated to interactive
+`@luscious-garden/aster-studio` is a provisional name for a future Lilium web application dedicated to interactive
 Aster authoring. It is not a current package boundary, release prerequisite, or reason for Core,
 Icons, SVG, Import, or CLI to depend on Lilium. A broader Garden workbench may eventually host the
 same Aster experience, but cross-project composition must not move Aster domain behaviour into an

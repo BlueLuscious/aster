@@ -5,7 +5,7 @@ import test from "node:test";
 import {
   iconPathCommandKinds,
   type IconMetadata,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import {
   IconImport,
   IconImportError,

@@ -1,4 +1,4 @@
-import type { IconIdentity } from "@aster/core";
+import type { IconIdentity } from "@luscious-garden/aster-core";
 
 /**
  * @description Formats portable icon identities for deterministic internal comparison and prose.

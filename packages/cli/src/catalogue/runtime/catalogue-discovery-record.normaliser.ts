@@ -1,4 +1,4 @@
-import type { CollectionIdentity } from "@aster/core";
+import type { CollectionIdentity } from "@luscious-garden/aster-core";
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";

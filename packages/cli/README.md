@@ -1,16 +1,16 @@
-# @aster/cli
+# @luscious-garden/aster-cli
 
 Host-neutral command contracts and execution for Aster.
 
 The package exposes the frozen `AsterCommands` composition for deterministic `export`, `review`,
 `list`, `search`, `show`, `help`, and `version` execution through explicit catalogue providers.
-`AsterCatalogue` adapts canonical `@aster/icons` manifests for discovery and loads only an exact
+`AsterCatalogue` adapts canonical `@luscious-garden/aster-icons` manifests for discovery and loads only an exact
 icon or collection definition when a host executes Export or Review through that provider.
 
 The standalone Node package also exposes the `aster` executable:
 
 ```sh
-pnpm add -D @aster/cli@0.1.0
+pnpm add -D @luscious-garden/aster-cli@0.1.0
 ```
 
 These candidate installation instructions apply once `0.1.0` is published. The executable

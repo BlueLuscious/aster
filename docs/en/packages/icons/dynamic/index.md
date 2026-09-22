@@ -2,8 +2,8 @@
 
 Status: **Accepted**
 
-`@aster/icons/dynamic` exposes immutable asynchronous loader maps for identities known only at
-runtime. It complements metadata-only discovery through `@aster/icons/manifest`; it does not own
+`@luscious-garden/aster-icons/dynamic` exposes immutable asynchronous loader maps for identities known only at
+runtime. It complements metadata-only discovery through `@luscious-garden/aster-icons/manifest`; it does not own
 search, selection, error diagnostics or a mutable registry.
 
 ## Public values
@@ -12,7 +12,7 @@ search, selection, error diagnostics or a mutable registry.
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
-} from "@aster/icons/dynamic";
+} from "@luscious-garden/aster-icons/dynamic";
 
 const camera = await AsterIconLoaders["aster/camera"]?.();
 const amellus = await AsterCollectionLoaders.amellus?.();
@@ -33,7 +33,7 @@ diagnostic policy.
 `IconDefinitionLoader` and `CollectionDefinitionLoader` describe zero-argument asynchronous
 functions resolving public Core definitions. `IconDefinitionLoaderMap` and
 `CollectionDefinitionLoaderMap` describe read-only string-indexed lookup where absence is explicit
-as `undefined`. All four interfaces are public only through `@aster/icons/dynamic`.
+as `undefined`. All four interfaces are public only through `@luscious-garden/aster-icons/dynamic`.
 
 The loader maps do not accept configuration and do not cache additional state. JavaScript module
 loading supplies its ordinary per-process module cache after a loader resolves successfully.
@@ -46,7 +46,7 @@ definition facades rather than physical `src/glyphs` or `src/collections` paths,
 resolution independent from private source organisation.
 
 The generated module contains only dynamic `import()` expressions and type-only contract imports.
-Importing `@aster/icons/dynamic` therefore evaluates the public entrypoint and generated map but no
+Importing `@luscious-garden/aster-icons/dynamic` therefore evaluates the public entrypoint and generated map but no
 definition. Invoking one icon loader evaluates its facade, definition and directly shared
 authoring authorities. Invoking one collection loader evaluates its facade, collection and
 explicitly retained members.
@@ -58,7 +58,7 @@ retain an identity absent from the other.
 ## Distribution boundary
 
 Dynamic loading controls runtime evaluation and permits bundlers to retain independent chunks. It
-does not provide selective npm acquisition: installing `@aster/icons` still acquires every file in
+does not provide selective npm acquisition: installing `@luscious-garden/aster-icons` still acquires every file in
 the package. Selective remote acquisition remains a separate registry and CLI concern.
 
 Runtime tests invoke every generated loader and compare object identity with canonical exports.

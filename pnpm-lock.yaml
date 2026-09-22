@@ -8,19 +8,19 @@ importers:
 
   .:
     devDependencies:
-      '@aster/cli':
+      '@luscious-garden/aster-cli':
         specifier: workspace:*
         version: link:packages/cli
-      '@aster/core':
+      '@luscious-garden/aster-core':
         specifier: workspace:*
         version: link:packages/core
-      '@aster/icons':
+      '@luscious-garden/aster-icons':
         specifier: workspace:*
         version: link:packages/icons
-      '@aster/import':
+      '@luscious-garden/aster-import':
         specifier: workspace:*
         version: link:packages/import
-      '@aster/svg':
+      '@luscious-garden/aster-svg':
         specifier: workspace:*
         version: link:packages/svg
       '@types/node':
@@ -44,13 +44,13 @@ importers:
 
   packages/cli:
     dependencies:
-      '@aster/core':
+      '@luscious-garden/aster-core':
         specifier: workspace:^
         version: link:../core
-      '@aster/icons':
+      '@luscious-garden/aster-icons':
         specifier: workspace:^
         version: link:../icons
-      '@aster/svg':
+      '@luscious-garden/aster-svg':
         specifier: workspace:^
         version: link:../svg
 
@@ -58,13 +58,13 @@ importers:
 
   packages/icons:
     dependencies:
-      '@aster/core':
+      '@luscious-garden/aster-core':
         specifier: workspace:^
         version: link:../core
 
   packages/import:
     dependencies:
-      '@aster/core':
+      '@luscious-garden/aster-core':
         specifier: workspace:^
         version: link:../core
       xmlsax-typescript:
@@ -73,11 +73,11 @@ importers:
 
   packages/svg:
     dependencies:
-      '@aster/core':
+      '@luscious-garden/aster-core':
         specifier: workspace:^
         version: link:../core
     devDependencies:
-      '@aster/icons':
+      '@luscious-garden/aster-icons':
         specifier: workspace:*
         version: link:../icons
 

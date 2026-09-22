@@ -30,7 +30,7 @@ collection-scale batches. ABI tests build and import the package root, assert th
 declaration surface, reject implementation subpaths and inspect emitted ESM dependencies.
 
 An isolated TypeScript consumer compiles an emitted `.icon.ts` module and renders it through
-`@aster/svg` without importing Import. Repository workflows separately prove equivalence between
+`@luscious-garden/aster-svg` without importing Import. Repository workflows separately prove equivalence between
 TypeScript-first and adopted definitions.
 
 The package-owned advisory benchmark compares the original operation matrix and explicit source

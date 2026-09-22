@@ -1,4 +1,4 @@
-import type { IconPaintType, IconPresentation } from "@aster/core";
+import type { IconPaintType, IconPresentation } from "@luscious-garden/aster-core";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
 import { svgPaintSchema } from "../../shared/constants/svg-paint-schema.constant.js";
 import { svgPresentationAttributeSchema } from "../../shared/constants/svg-presentation-attribute-schema.constant.js";

@@ -3,11 +3,11 @@
 Copyright (c) 2026 BlueLuscious.
 
 This licence covers original visual artwork authored and owned by BlueLuscious and distributed
-in `@aster/icons` when its icon or collection metadata identifies
+in `@luscious-garden/aster-icons` when its icon or collection metadata identifies
 `LicenseRef-Aster-Artwork-1.0`. This includes icon shapes and geometry, their rendered forms,
 and the creative selection and arrangement of any collection so identified. It applies
 regardless of whether the artwork is represented by TypeScript nodes, compiled JavaScript,
-SVG, or another format. Inclusion in `@aster/icons` alone does not place third-party artwork
+SVG, or another format. Inclusion in `@luscious-garden/aster-icons` alone does not place third-party artwork
 under this licence. It does not replace the [ISC software licence](LICENSE) for the code and
 APIs used to define, catalogue, or load that artwork.
 

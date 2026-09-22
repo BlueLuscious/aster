@@ -17,7 +17,7 @@ import { fileURLToPath } from "node:url";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
-} from "@aster/icons/dynamic";
+} from "@luscious-garden/aster-icons/dynamic";
 
 const asterIconDefinitions = await Promise.all(
   Object.values(AsterIconLoaders).map((loader) => {

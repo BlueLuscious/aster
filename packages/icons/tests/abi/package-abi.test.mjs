@@ -101,7 +101,7 @@ function extractModuleSpecifiers(source) {
 }
 
 test("exposes exact definition families without aggregate roots", async () => {
-  const dynamic = await import("@aster/icons/dynamic");
+  const dynamic = await import("@luscious-garden/aster-icons/dynamic");
 
   assert.ok(
     Object.keys(iconSubpaths).length > 0,
@@ -113,11 +113,11 @@ test("exposes exact definition families without aggregate roots", async () => {
   );
 
   await assert.rejects(
-    import("@aster/icons"),
+    import("@luscious-garden/aster-icons"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
   await assert.rejects(
-    import("@aster/icons/collections"),
+    import("@luscious-garden/aster-icons/collections"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
   await assert.rejects(readFile(resolve(distributionRoot, "index.js"), "utf8"));
@@ -126,7 +126,7 @@ test("exposes exact definition families without aggregate roots", async () => {
   );
 
   for (const [subpath, symbol] of Object.entries(iconSubpaths)) {
-    const direct = await import(`@aster/icons/${subpath}`);
+    const direct = await import(`@luscious-garden/aster-icons/${subpath}`);
     const [name, variant] = subpath.split("/");
     const key = `aster/${name}${variant === undefined ? "" : `@${variant}`}`;
     const loader = dynamic.AsterIconLoaders[key];
@@ -139,7 +139,7 @@ test("exposes exact definition families without aggregate roots", async () => {
   }
 
   for (const [subpath, symbol] of Object.entries(collectionSubpaths)) {
-    const direct = await import(`@aster/icons/collections/${subpath}`);
+    const direct = await import(`@luscious-garden/aster-icons/collections/${subpath}`);
     const loader = dynamic.AsterCollectionLoaders[subpath];
 
     assert.ok(loader);
@@ -168,11 +168,11 @@ test("rejects implementation and undeclared internal subpaths", async () => {
   );
 
   await assert.rejects(
-    import(`@aster/icons/icons/${iconSubpath}.icon.js`),
+    import(`@luscious-garden/aster-icons/icons/${iconSubpath}.icon.js`),
     (error) => error?.code === "ERR_MODULE_NOT_FOUND",
   );
   await assert.rejects(
-    import(`@aster/icons/collections/${collectionSubpath}.collection.js`),
+    import(`@luscious-garden/aster-icons/collections/${collectionSubpath}.collection.js`),
     (error) => error?.code === "ERR_MODULE_NOT_FOUND",
   );
 });
@@ -212,13 +212,13 @@ test("publishes only accepted scalable export families", async () => {
     import: "./dist/generated/facades/icons/*.js",
   });
   assert.deepEqual(manifest.dependencies, {
-    "@aster/core": "workspace:^",
+    "@luscious-garden/aster-core": "workspace:^",
   });
   assert.equal(manifest.sideEffects, false);
 });
 
 test("exposes only metadata through the isolated manifest subpath", async () => {
-  const manifest = await import("@aster/icons/manifest");
+  const manifest = await import("@luscious-garden/aster-icons/manifest");
   const publicSource = await readFile(
     resolve(distributionRoot, "manifest/index.js"),
     "utf8",
@@ -243,8 +243,8 @@ test("exposes only metadata through the isolated manifest subpath", async () => 
 });
 
 test("exposes exact asynchronous loaders without eager definitions", async () => {
-  const dynamic = await import("@aster/icons/dynamic");
-  const manifest = await import("@aster/icons/manifest");
+  const dynamic = await import("@luscious-garden/aster-icons/dynamic");
+  const manifest = await import("@luscious-garden/aster-icons/manifest");
   const publicSource = await readFile(
     resolve(distributionRoot, "dynamic/index.js"),
     "utf8",
@@ -295,7 +295,7 @@ test("keeps every per-icon module isolated from sibling definitions", async () =
     assert.deepEqual(specifiers.sort(), [
       "../../../authoring/constants/amellus-icon-authoring-profile.constant.js",
       "../../../authoring/constants/aster-original-icon-authorship.constant.js",
-      "@aster/core",
+      "@luscious-garden/aster-core",
     ]);
     assert.doesNotMatch(source, /(?:icons\/index|manifest|catalogue|registry)/gu);
   }
@@ -357,7 +357,7 @@ test("keeps every per-collection module isolated from catalogue indexes", async 
     );
     const specifiers = extractModuleSpecifiers(source);
 
-    assert.equal(specifiers[0], "@aster/core");
+    assert.equal(specifiers[0], "@luscious-garden/aster-core");
     assert.ok(
       specifiers.slice(1).every((specifier) =>
         specifier === "../../../authoring/constants/aster-artwork-licence.constant.js" ||
@@ -388,7 +388,7 @@ test("emits host-independent side-effect-free ESM", async () => {
 
     assert.deepEqual(
       [...new Set(externalSpecifiers)],
-      externalSpecifiers.length === 0 ? [] : ["@aster/core"],
+      externalSpecifiers.length === 0 ? [] : ["@luscious-garden/aster-core"],
     );
     assert.doesNotMatch(source, /\/\/\/\s*<reference/iu);
     assert.doesNotMatch(
@@ -405,13 +405,13 @@ test("emits host-independent side-effect-free ESM", async () => {
 
     assert.deepEqual(
       [...new Set(externalSpecifiers)],
-      externalSpecifiers.length === 0 ? [] : ["@aster/core"],
+      externalSpecifiers.length === 0 ? [] : ["@luscious-garden/aster-core"],
     );
     assert.doesNotMatch(source, /\brequire\s*\(/gu);
     assert.doesNotMatch(source, /\bmodule\.exports\b/gu);
     assert.doesNotMatch(
       source,
-      /(?:@aster\/core\/|@aster\/build|@aster\/svg|\blilium\b|\blotus\b|\bnode:|\btooling\b)/giu,
+      /(?:@luscious-garden\/aster-core\/|@luscious-garden\/aster-build|@luscious-garden\/aster-svg|\blilium\b|\blotus\b|\bnode:|\btooling\b)/giu,
     );
   }
 });

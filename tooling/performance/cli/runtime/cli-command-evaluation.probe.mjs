@@ -65,7 +65,7 @@ export class CliCommandEvaluationProbe {
     const startedAt = process.hrtime.bigint();
 
     try {
-      const { AsterCatalogue, AsterCommands } = await import("@aster/cli");
+      const { AsterCatalogue, AsterCommands } = await import("@luscious-garden/aster-cli");
       const result = await AsterCommands.execute(
         scenario.invocation,
         Object.freeze({

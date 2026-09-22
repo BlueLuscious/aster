@@ -29,7 +29,7 @@ async function readManifest(root) {
 }
 
 test("exposes the exact documented immutable root value surface", async () => {
-  const packageModule = await import("@aster/cli");
+  const packageModule = await import("@luscious-garden/aster-cli");
 
   assert.deepEqual(Object.keys(packageModule).sort(), [
     "AsterCatalogue",
@@ -95,9 +95,9 @@ test("publishes the accepted root, executable, dependency, and declaration surfa
   });
   assert.deepEqual(manifest.files, ["dist"]);
   assert.deepEqual(manifest.dependencies, {
-    "@aster/core": "workspace:^",
-    "@aster/icons": "workspace:^",
-    "@aster/svg": "workspace:^",
+    "@luscious-garden/aster-core": "workspace:^",
+    "@luscious-garden/aster-icons": "workspace:^",
+    "@luscious-garden/aster-svg": "workspace:^",
   });
   assert.equal(manifest.peerDependencies, undefined);
   assert.equal(manifest.optionalDependencies, undefined);
@@ -123,15 +123,15 @@ test("publishes the accepted root, executable, dependency, and declaration surfa
 
 test("rejects implementation and executable subpaths through package exports", async () => {
   await assert.rejects(
-    import("@aster/cli/command/runtime/command.kernel.js"),
+    import("@luscious-garden/aster-cli/command/runtime/command.kernel.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
   await assert.rejects(
-    import("@aster/cli/catalogue/runtime/catalogue.loader.js"),
+    import("@luscious-garden/aster-cli/catalogue/runtime/catalogue.loader.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
   await assert.rejects(
-    import("@aster/cli/shell/aster.js"),
+    import("@luscious-garden/aster-cli/shell/aster.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
 });
@@ -151,7 +151,7 @@ test("emits host-neutral declarations with only accepted public package imports"
       [...new Set(externalSpecifiers)].sort(),
       [...new Set(externalSpecifiers)]
         .filter((specifier) =>
-          specifier === "@aster/core" || specifier === "@aster/svg"
+          specifier === "@luscious-garden/aster-core" || specifier === "@luscious-garden/aster-svg"
         )
         .sort(),
     );
@@ -163,7 +163,7 @@ test("emits host-neutral declarations with only accepted public package imports"
     );
     assert.doesNotMatch(
       source,
-      /(?:@aster\/import|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
+      /(?:@luscious-garden\/aster-import|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
     );
     assert.doesNotMatch(
       source,
@@ -202,17 +202,17 @@ test("limits Node process authority and the manifest bridge to the private entry
       [...new Set(externalSpecifiers)].sort(),
       [...new Set(externalSpecifiers)]
         .filter((specifier) =>
-          specifier === "@aster/core"
-          || specifier === "@aster/icons/dynamic"
-          || specifier === "@aster/icons/manifest"
-          || specifier === "@aster/svg"
+          specifier === "@luscious-garden/aster-core"
+          || specifier === "@luscious-garden/aster-icons/dynamic"
+          || specifier === "@luscious-garden/aster-icons/manifest"
+          || specifier === "@luscious-garden/aster-svg"
         )
         .sort(),
     );
     assert.doesNotMatch(source, /\bmodule\.exports\b/gu);
     assert.doesNotMatch(
       source,
-      /(?:@aster\/import|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
+      /(?:@luscious-garden\/aster-import|\blilium\b|\blotus\b|(?:^|[\\/])tooling[\\/]|(?:^|[\\/])plans[\\/])/gimu,
     );
     if (module !== executableEntry) {
       assert.doesNotMatch(
@@ -245,20 +245,20 @@ test("acquires built-in Icons manifests and definitions only through its lazy pr
 
     const iconsSpecifiers = extractModuleSpecifiers(source).filter(
       (specifier) =>
-        specifier === "@aster/icons/dynamic"
-        || specifier === "@aster/icons/manifest",
+        specifier === "@luscious-garden/aster-icons/dynamic"
+        || specifier === "@luscious-garden/aster-icons/manifest",
     );
 
     if (iconsSpecifiers.length > 0) {
       iconsOwners.push(modulePath);
       assert.deepEqual(iconsSpecifiers.sort(), [
-        "@aster/icons/dynamic",
-        "@aster/icons/manifest",
+        "@luscious-garden/aster-icons/dynamic",
+        "@luscious-garden/aster-icons/manifest",
       ]);
-      assert.match(source, /import\(\s*"@aster\/icons\/dynamic"\s*\)/u);
-      assert.match(source, /import\(\s*"@aster\/icons\/manifest"\s*\)/u);
-      assert.doesNotMatch(source, /from\s+["']@aster\/icons\/dynamic["']/u);
-      assert.doesNotMatch(source, /from\s+["']@aster\/icons\/manifest["']/u);
+      assert.match(source, /import\(\s*"@luscious-garden\/aster-icons\/dynamic"\s*\)/u);
+      assert.match(source, /import\(\s*"@luscious-garden\/aster-icons\/manifest"\s*\)/u);
+      assert.doesNotMatch(source, /from\s+["']@luscious-garden\/aster-icons\/dynamic["']/u);
+      assert.doesNotMatch(source, /from\s+["']@luscious-garden\/aster-icons\/manifest["']/u);
     }
   }
 
@@ -279,24 +279,24 @@ test("preserves the accepted workspace dependency direction", async () => {
 
   assert.equal(manifests.core.dependencies, undefined);
   assert.deepEqual(manifests.icons.dependencies, {
-    "@aster/core": "workspace:^",
+    "@luscious-garden/aster-core": "workspace:^",
   });
   assert.deepEqual(manifests.svg.dependencies, {
-    "@aster/core": "workspace:^",
+    "@luscious-garden/aster-core": "workspace:^",
   });
   assert.deepEqual(manifests.import.dependencies, {
-    "@aster/core": "workspace:^",
+    "@luscious-garden/aster-core": "workspace:^",
     "xmlsax-typescript": "1.0.0",
   });
   assert.deepEqual(manifests.cli.dependencies, {
-    "@aster/core": "workspace:^",
-    "@aster/icons": "workspace:^",
-    "@aster/svg": "workspace:^",
+    "@luscious-garden/aster-core": "workspace:^",
+    "@luscious-garden/aster-icons": "workspace:^",
+    "@luscious-garden/aster-svg": "workspace:^",
   });
 
   for (const [name, manifest] of Object.entries(manifests)) {
     if (name !== "cli") {
-      assert.equal(manifest.dependencies?.["@aster/cli"], undefined);
+      assert.equal(manifest.dependencies?.["@luscious-garden/aster-cli"], undefined);
     }
   }
 });

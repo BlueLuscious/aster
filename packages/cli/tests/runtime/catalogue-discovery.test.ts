@@ -6,11 +6,11 @@ import {
   type CollectionDefinition,
   Icon,
   type IconDefinition,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import {
   AsterCollectionManifest,
   AsterIconManifest,
-} from "@aster/icons/manifest";
+} from "@luscious-garden/aster-icons/manifest";
 import {
   AsterCatalogue,
   AsterCommands,

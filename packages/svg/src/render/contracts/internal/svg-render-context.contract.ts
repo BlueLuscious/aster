@@ -3,7 +3,7 @@ import type {
   IconDirectionType,
   IconPaintType,
   IconPresentation,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 /**
  * @description Accepted immutable values required to serialise one complete SVG result.

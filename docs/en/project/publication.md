@@ -4,23 +4,23 @@ Status: **Technical candidate reviewed; no npm publication has occurred**.
 
 This is the human-controlled procedure for the first public `0.1.0` release of Core, Icons, SVG
 and CLI. The [versioning policy](versioning.md) owns compatibility and dependency sequencing;
-each package owns its [release notes](../packages/index.md). Private `@aster/import` participates
+each package owns its [release notes](../packages/index.md). Private `@luscious-garden/aster-import` participates
 in repository verification but must not be packed or published as part of this release.
 
 ## Reviewed candidate
 
-The first public set has four independently versioned `0.1.0` packages. A prior clean frozen
-offline installation passed on Node `24.10.0` with pnpm `10.28.1`. Complete repository
-verification, pack inventories and isolated tarball-consumer tests passed again after the
-candidate documentation was finalised. The final approved commit and tarballs still require the
-repeatable checks below; local evidence alone is not a registry permission check.
+The first public set has four independently versioned `0.1.0` packages. A frozen offline
+workspace installation, complete repository verification, pack inventories and isolated
+tarball-consumer tests passed on Node `24.10.0` with pnpm `10.28.1` after the npm-scope change.
+The final approved commit still requires a clean checkout and the repeatable checks below;
+local evidence alone is not a registry permission check.
 
 | Package | Packed files | Production dependencies | Package release notes |
 | --- | ---: | --- | --- |
-| `@aster/core` | 167 | None | [Core](../packages/core/releases.md) |
-| `@aster/icons` | 142 | Core `^0.1.0` | [Icons](../packages/icons/releases.md) |
-| `@aster/svg` | 47 | Core `^0.1.0` | [SVG](../packages/svg/releases.md) |
-| `@aster/cli` | 297 | Core, Icons and SVG `^0.1.0` | [CLI](../packages/cli/releases.md) |
+| `@luscious-garden/aster-core` | 167 | None | [Core](../packages/core/releases.md) |
+| `@luscious-garden/aster-icons` | 142 | Core `^0.1.0` | [Icons](../packages/icons/releases.md) |
+| `@luscious-garden/aster-svg` | 47 | Core `^0.1.0` | [SVG](../packages/svg/releases.md) |
+| `@luscious-garden/aster-cli` | 297 | Core, Icons and SVG `^0.1.0` | [CLI](../packages/cli/releases.md) |
 
 The archives contain emitted ESM and declarations, their manifests, READMEs and software
 licences; Icons alone also includes the artwork licence. They exclude private Import, source
@@ -29,8 +29,9 @@ software terms; the [package authority](../packages/icons/index.md#rights-bounda
 scope. These counts are candidate evidence, not a promise that future versions retain identical
 contents.
 
-No release-account or `@aster` scope rights have been verified, no live npm name availability
-has been confirmed, and the maintainer has not given publication approval. The proposed `next`
+The maintainer reports creating the `luscious-garden` npm organisation, but authenticated publish
+rights under `@luscious-garden` have not been verified. No live npm name availability has been
+confirmed, and the maintainer has not given publication approval. The proposed `next`
 tag also awaits confirmation. Specialist legal review remains optional if certainty about the
 software/artwork boundary is required. These are explicit pre-publication decisions, not failed
 source or packed-consumer checks.
@@ -95,8 +96,8 @@ approval and publication. Use the same tarballs for dry-run and live commands.
 
 ```powershell
 Get-ChildItem -LiteralPath $releaseDir -Filter "*.tgz" | Get-FileHash -Algorithm SHA256
-tar -tf "$releaseDir/aster-core-0.1.0.tgz"
-tar -xOf "$releaseDir/aster-core-0.1.0.tgz" package/package.json
+tar -tf "$releaseDir/luscious-garden-aster-core-0.1.0.tgz"
+tar -xOf "$releaseDir/luscious-garden-aster-core-0.1.0.tgz" package/package.json
 ```
 
 Repeat the archive inspection for Icons, SVG and CLI.
@@ -113,14 +114,14 @@ Before publishing, inspect the selected registry and authenticated identity:
 ```sh
 npm config get registry
 npm whoami --registry=https://registry.npmjs.org/
-npm view @aster/core@0.1.0 version --registry=https://registry.npmjs.org/
-npm view @aster/icons@0.1.0 version --registry=https://registry.npmjs.org/
-npm view @aster/svg@0.1.0 version --registry=https://registry.npmjs.org/
-npm view @aster/cli@0.1.0 version --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-core@0.1.0 version --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-icons@0.1.0 version --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-svg@0.1.0 version --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-cli@0.1.0 version --registry=https://registry.npmjs.org/
 ```
 
 The registry must be `https://registry.npmjs.org/` for these commands. Confirm through the npm
-account or organisation controls that the publisher owns or may publish under `@aster` and that
+account or organisation controls that the publisher may publish under `@luscious-garden` and that
 the four names are eligible. `whoami` proves authentication, not scope authority. A not-found
 response from `npm view` does not grant ownership or prove that a name is available. An existing
 `0.1.0` is a stop condition, not a prompt to overwrite it. Do not put credentials in repository
@@ -138,20 +139,20 @@ Run every dry-run against its approved archive. `--access public` is explicit fo
 packages; `--tag next` prevents an accidental `latest` tag. A dry-run is not publication.
 
 ```powershell
-npm publish "$releaseDir/aster-core-0.1.0.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/aster-icons-0.1.0.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/aster-svg-0.1.0.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/aster-cli-0.1.0.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-core-0.1.0.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-icons-0.1.0.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-svg-0.1.0.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-cli-0.1.0.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
 ```
 
 Stop for explicit human go/no-go after comparing the dry-run file lists, archive hashes, release
 notes, rights, and registry access. If approved, publish the same tarballs in dependency order:
 
 ```powershell
-npm publish "$releaseDir/aster-core-0.1.0.tgz" --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/aster-icons-0.1.0.tgz" --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/aster-svg-0.1.0.tgz" --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/aster-cli-0.1.0.tgz" --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-core-0.1.0.tgz" --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-icons-0.1.0.tgz" --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-svg-0.1.0.tgz" --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-cli-0.1.0.tgz" --access public --tag next --registry=https://registry.npmjs.org/
 ```
 
 Stop on the first failure. Do not publish a dependent package before its required predecessors
@@ -164,18 +165,18 @@ automatic rollback of already published packages.
 After registry propagation, inspect each published version, dependency map and dist-tags:
 
 ```sh
-npm view @aster/core@0.1.0 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
-npm view @aster/icons@0.1.0 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
-npm view @aster/svg@0.1.0 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
-npm view @aster/cli@0.1.0 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-core@0.1.0 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-icons@0.1.0 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-svg@0.1.0 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-cli@0.1.0 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
 ```
 
 In a fresh external project without workspace links, install exact versions from npm, not the
 local tarballs. After initialising that project, run:
 
 ```sh
-pnpm add @aster/core@0.1.0 @aster/icons@0.1.0 @aster/svg@0.1.0
-pnpm add -D @aster/cli@0.1.0
+pnpm add @luscious-garden/aster-core@0.1.0 @luscious-garden/aster-icons@0.1.0 @luscious-garden/aster-svg@0.1.0
+pnpm add -D @luscious-garden/aster-cli@0.1.0
 pnpm exec aster version
 pnpm exec aster list icons
 ```

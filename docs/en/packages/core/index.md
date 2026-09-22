@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-`@aster/core` owns Aster's serialisable, target-independent icon model. It allows source adapters,
+`@luscious-garden/aster-core` owns Aster's serialisable, target-independent icon model. It allows source adapters,
 canonical icon packages, renderers, and framework adapters to exchange the same values
 without importing SVG parser syntax, DOM objects, framework state, or repository tooling.
 

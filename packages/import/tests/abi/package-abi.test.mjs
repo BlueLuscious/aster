@@ -71,7 +71,7 @@ function adoptionRequest() {
 }
 
 test("imports the exact immutable package root without source files", async () => {
-  const packageModule = await import("@aster/import");
+  const packageModule = await import("@luscious-garden/aster-import");
 
   assert.deepEqual(Object.keys(packageModule).sort(), [
     "IconImport",
@@ -109,7 +109,7 @@ test("publishes only the accepted private root and exact dependencies", async ()
   assert.equal(manifest.exports["."].import, "./dist/index.js");
   assert.equal(manifest.exports["."].types, "./dist/index.d.ts");
   assert.deepEqual(manifest.dependencies, {
-    "@aster/core": "workspace:^",
+    "@luscious-garden/aster-core": "workspace:^",
     "xmlsax-typescript": "1.0.0",
   });
   assert.equal(manifest.sideEffects, false);
@@ -118,11 +118,11 @@ test("publishes only the accepted private root and exact dependencies", async ()
 
 test("rejects implementation and adapter subpaths through package exports", async () => {
   await assert.rejects(
-    import("@aster/import/adoption/runtime/icon-adoption.service.js"),
+    import("@luscious-garden/aster-import/adoption/runtime/icon-adoption.service.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
   await assert.rejects(
-    import("@aster/import/formats/svg/runtime/svg-icon-import.adapter.js"),
+    import("@luscious-garden/aster-import/formats/svg/runtime/svg-icon-import.adapter.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
 });
@@ -143,7 +143,7 @@ test("emits host-independent declarations and ESM with exact external authoritie
     assert.deepEqual(
       [...new Set(externalSpecifiers)].sort(),
       [...new Set(externalSpecifiers)].sort().filter(
-        (specifier) => specifier === "@aster/core" || specifier === "xmlsax-typescript",
+        (specifier) => specifier === "@luscious-garden/aster-core" || specifier === "xmlsax-typescript",
       ),
     );
     assert.doesNotMatch(source, /\/\/\/\s*<reference/iu);
@@ -151,7 +151,7 @@ test("emits host-independent declarations and ESM with exact external authoritie
       source,
       /\b(?:HTMLElement|SVGElement|Document|Window|Buffer|NodeJS)\b/gu,
     );
-    assert.doesNotMatch(source, /@aster\/(?:build|cli|icons|svg)|\bnode:/gu);
+    assert.doesNotMatch(source, /@luscious-garden\/aster-(?:build|cli|icons|svg)|\bnode:/gu);
   }
 
   for (const module of modules) {
@@ -163,11 +163,11 @@ test("emits host-independent declarations and ESM with exact external authoritie
     assert.deepEqual(
       [...new Set(externalSpecifiers)].sort(),
       [...new Set(externalSpecifiers)].sort().filter(
-        (specifier) => specifier === "@aster/core" || specifier === "xmlsax-typescript",
+        (specifier) => specifier === "@luscious-garden/aster-core" || specifier === "xmlsax-typescript",
       ),
     );
     assert.doesNotMatch(source, /\brequire\s*\(|\bmodule\.exports\b/gu);
-    assert.doesNotMatch(source, /@aster\/(?:build|cli|icons|svg)|\bnode:/gu);
+    assert.doesNotMatch(source, /@luscious-garden\/aster-(?:build|cli|icons|svg)|\bnode:/gu);
   }
 });
 
@@ -182,7 +182,7 @@ test("emits only ESM modules and declarations without auxiliary artefacts", asyn
 });
 
 test("compiles and renders an emitted editable module without Import", async (context) => {
-  const { IconImport } = await import("@aster/import");
+  const { IconImport } = await import("@luscious-garden/aster-import");
   const adopted = IconImport.adopt(adoptionRequest());
   assert.equal(adopted.successful, true);
   if (!adopted.successful) {
@@ -200,7 +200,7 @@ test("compiles and renders an emitted editable module without Import", async (co
   await writeFile(
     resolve(consumerRoot, "consumer.ts"),
     [
-      'import { Svg } from "@aster/svg";',
+      'import { Svg } from "@luscious-garden/aster-svg";',
       `import { ${adopted.value.module.symbol} } from "./adopted.icon.js";`,
       "",
       `export const definition = ${adopted.value.module.symbol};`,
@@ -237,7 +237,7 @@ test("compiles and renders an emitted editable module without Import", async (co
     resolve(consumerRoot, "dist/adopted.icon.js"),
     "utf8",
   );
-  assert.doesNotMatch(compiledIcon, /@aster\/import/u);
+  assert.doesNotMatch(compiledIcon, /@luscious-garden\/aster-import/u);
 
   const consumer = await import(
     `${pathToFileURL(resolve(consumerRoot, "dist/consumer.js")).href}?abi=1`

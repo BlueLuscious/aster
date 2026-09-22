@@ -24,7 +24,7 @@ All runtime implementation classes, adapter contracts, parser syntax, retained v
 and internal diagnostic details remain inaccessible through package exports. Structural review
 removed provisional evidence without widening this visibility.
 
-Import depends only on the public `@aster/core` root and the pinned `xmlsax-typescript` parser.
+Import depends only on the public `@luscious-garden/aster-core` root and the pinned `xmlsax-typescript` parser.
 Core, Icons, SVG and CLI do not depend on Import. Emitted modules depend on Core rather than Import.
 The package remains private ES2022 ESM, side-effect-free and available through one root export.
 

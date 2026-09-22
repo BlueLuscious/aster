@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-This document defines the evidence method used to compare `@aster/icons` public import evaluation
+This document defines the evidence method used to compare `@luscious-garden/aster-icons` public import evaluation
 and emitted distribution changes. It is not a bundle-size promise, hardware-independent speed
 guarantee or CI performance threshold. Current correctness evidence remains in
 [Icons Quality](quality.md).
@@ -78,7 +78,7 @@ The current native ES2022 ESM output contains 138 files and 80,965 unminified by
 - isolated-icon, isolated-collection, manifest and dynamic export patterns;
 - explicit blocked aggregate-root and bare collection-family entries;
 - `sideEffects: false`;
-- public `@aster/core` as the only runtime dependency.
+- public `@luscious-garden/aster-core` as the only runtime dependency.
 
 The corresponding package tarball contains those 138 emitted files plus `package.json`, `README.md`,
 the [ISC software notice](../../../../packages/icons/LICENSE) and

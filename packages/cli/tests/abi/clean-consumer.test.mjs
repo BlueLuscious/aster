@@ -16,7 +16,7 @@ import { fileURLToPath } from "node:url";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
-} from "@aster/icons/dynamic";
+} from "@luscious-garden/aster-icons/dynamic";
 
 const asterIconDefinitions = await Promise.all(
   Object.values(AsterIconLoaders).map((loader) => {
@@ -118,7 +118,7 @@ async function packPublishedPackage(name, tarballRoot) {
     "--json",
   ]);
 
-  assertSuccessfulProcess(packed, `pack @aster/${name}`);
+  assertSuccessfulProcess(packed, `pack @luscious-garden/aster-${name}`);
 
   const artefact = JSON.parse(packed.stdout);
 
@@ -146,8 +146,8 @@ function runExecutable(arguments_) {
       resolve(
         consumerRoot,
         "node_modules",
-        "@aster",
-        "cli",
+        "@luscious-garden",
+        "aster-cli",
         "dist",
         "shell",
         "aster.js",
@@ -177,7 +177,7 @@ before(async () => {
   );
   const packageSpecifications = Object.fromEntries(
     packageNames.map((name) => [
-      `@aster/${name}`,
+      `@luscious-garden/aster-${name}`,
       `file:./tarballs/${packedPackages[name].filename}`,
     ]),
   );
@@ -211,18 +211,18 @@ after(async () => {
 test("installs independent package versions with bounded public dependency ranges", async () => {
   const expectedDependencies = {
     core: undefined,
-    icons: { "@aster/core": "^0.1.0" },
-    svg: { "@aster/core": "^0.1.0" },
+    icons: { "@luscious-garden/aster-core": "^0.1.0" },
+    svg: { "@luscious-garden/aster-core": "^0.1.0" },
     cli: {
-      "@aster/core": "^0.1.0",
-      "@aster/icons": "^0.1.0",
-      "@aster/svg": "^0.1.0",
+      "@luscious-garden/aster-core": "^0.1.0",
+      "@luscious-garden/aster-icons": "^0.1.0",
+      "@luscious-garden/aster-svg": "^0.1.0",
     },
   };
 
   for (const [name, dependencies] of Object.entries(expectedDependencies)) {
     const manifest = JSON.parse(await readFile(
-      resolve(consumerRoot, "node_modules", "@aster", name, "package.json"),
+      resolve(consumerRoot, "node_modules", "@luscious-garden", `aster-${name}`, "package.json"),
       "utf8",
     ));
 
@@ -232,12 +232,13 @@ test("installs independent package versions with bounded public dependency range
 });
 
 test("installs only accepted public package files and notices", async () => {
-  const names = (await readdir(resolve(consumerRoot, "node_modules", "@aster")))
+  const names = (await readdir(resolve(consumerRoot, "node_modules", "@luscious-garden")))
     .sort((left, right) => left.localeCompare(right));
 
-  assert.deepEqual(names, ["cli", "core", "icons", "svg"]);
+  assert.deepEqual(names, ["aster-cli", "aster-core", "aster-icons", "aster-svg"]);
 
-  for (const name of names) {
+  for (const packageName of names) {
+    const name = packageName.slice("aster-".length);
     const files = packedPackages[name].files;
 
     assert.ok(files.includes("package.json"), `Missing ${name} manifest.`);
@@ -266,7 +267,7 @@ test("executes published README examples through packed package entrypoints", as
 
   for (const { name, result } of examples) {
     const readme = await readFile(
-      resolve(consumerRoot, "node_modules", "@aster", name, "README.md"),
+      resolve(consumerRoot, "node_modules", "@luscious-garden", `aster-${name}`, "README.md"),
       "utf8",
     );
     const source = readme.match(/```ts\r?\n([\s\S]*?)\r?\n```/)?.[1];
@@ -297,17 +298,17 @@ test("composes packed Core, Icons, and SVG through public consumer entrypoints",
   assert.ok(collection, "Expected one packed collection.");
 
   const executed = runModule([
-    'import { Icon } from "@aster/core";',
-    'import { AsterIconManifest, AsterCollectionManifest } from "@aster/icons/manifest";',
-    'import { AsterIconLoaders, AsterCollectionLoaders } from "@aster/icons/dynamic";',
-    'import { Svg } from "@aster/svg";',
+    'import { Icon } from "@luscious-garden/aster-core";',
+    'import { AsterIconManifest, AsterCollectionManifest } from "@luscious-garden/aster-icons/manifest";',
+    'import { AsterIconLoaders, AsterCollectionLoaders } from "@luscious-garden/aster-icons/dynamic";',
+    'import { Svg } from "@luscious-garden/aster-svg";',
     "const iconEntry = AsterIconManifest.find(({ identity }) => identity.variant === undefined);",
     "const collectionEntry = AsterCollectionManifest[0];",
     'if (!iconEntry || !collectionEntry) throw new Error("Missing packed catalogue entries");',
     "const icon = await AsterIconLoaders[iconEntry.key]();",
     "const collection = await AsterCollectionLoaders[collectionEntry.key]();",
-    "const directIcon = await import(`@aster/icons/${iconEntry.identity.name}`);",
-    "const directCollection = await import(`@aster/icons/collections/${collectionEntry.identity.name}`);",
+    "const directIcon = await import(`@luscious-garden/aster-icons/${iconEntry.identity.name}`);",
+    "const directCollection = await import(`@luscious-garden/aster-icons/collections/${collectionEntry.identity.name}`);",
     "const rebuilt = Icon.define(icon);",
     "const markup = Svg.render(rebuilt);",
     "process.stdout.write(JSON.stringify({",
@@ -338,11 +339,11 @@ test("composes packed Core, Icons, and SVG through public consumer entrypoints",
 
 test("type-checks cross-package usage against packed declarations", async () => {
   await writeFile(resolve(consumerRoot, "consumer.ts"), [
-    'import type { IconDefinition } from "@aster/core";',
-    'import { AsterIconManifest } from "@aster/icons/manifest";',
-    'import { AsterIconLoaders } from "@aster/icons/dynamic";',
-    'import { Svg } from "@aster/svg";',
-    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    'import type { IconDefinition } from "@luscious-garden/aster-core";',
+    'import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
+    'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
+    'import { Svg } from "@luscious-garden/aster-svg";',
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
     "const entry = AsterIconManifest[0];",
     'if (entry === undefined) throw new Error("Missing icon");',
     "const loader = AsterIconLoaders[entry.key];",
@@ -379,12 +380,12 @@ test("type-checks cross-package usage against packed declarations", async () => 
 test("keeps private package internals outside the packed consumer", () => {
   const executed = runModule([
     "const specifiers = [",
-    '  "@aster/core/definition/runtime/icon-definition.factory.js",',
-    '  "@aster/icons",',
-    '  "@aster/icons/collections",',
-    '  "@aster/svg/render/runtime/svg-markup.serialiser.js",',
-    '  "@aster/cli/shell/aster.js",',
-    '  "@aster/import",',
+    '  "@luscious-garden/aster-core/definition/runtime/icon-definition.factory.js",',
+    '  "@luscious-garden/aster-icons",',
+    '  "@luscious-garden/aster-icons/collections",',
+    '  "@luscious-garden/aster-svg/render/runtime/svg-markup.serialiser.js",',
+    '  "@luscious-garden/aster-cli/shell/aster.js",',
+    '  "@luscious-garden/aster-import",',
     "];",
     "const codes = [];",
     "for (const specifier of specifiers) {",
@@ -407,9 +408,9 @@ test("keeps private package internals outside the packed consumer", () => {
 });
 
 test("imports the public package without source files or observable effects", () => {
-  const imported = runModule('await import("@aster/cli");');
+  const imported = runModule('await import("@luscious-garden/aster-cli");');
   const inspected = runModule([
-    'import * as AsterCli from "@aster/cli";',
+    'import * as AsterCli from "@luscious-garden/aster-cli";',
     "process.stdout.write(JSON.stringify(Object.keys(AsterCli).sort()));",
   ].join("\n"));
 
@@ -444,7 +445,7 @@ test("returns the same result through the executable and an independent plugin h
     "--json",
   ]);
   const programmatic = runModule([
-    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
     "const plugins = new Map([[AsterCommands.identity, AsterCommands]]);",
     'const plugin = plugins.get("aster");',
     "if (plugin === undefined) throw new TypeError(\"Missing Aster plugin\");",
@@ -481,7 +482,7 @@ test("returns the same complete export through standalone and programmatic hosts
     "--json",
   ]);
   const programmatic = runModule([
-    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
     "const plugins = new Map([[AsterCommands.identity, AsterCommands]]);",
     'const plugin = plugins.get("aster");',
     'if (plugin === undefined) throw new TypeError("Missing Aster plugin");',
@@ -531,7 +532,7 @@ test("returns and publishes a complete review from the clean consumer", async ()
     "--json",
   ]);
   const programmatic = runModule([
-    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
     "const result = await AsterCommands.execute(",
     "  {",
     '    command: "review",',
@@ -629,7 +630,7 @@ test("publishes the complete planned collection from the clean consumer", async 
 
 test("requires explicit catalogues and canonicalises provider registration order", () => {
   const execution = runModule([
-    'import { AsterCommands } from "@aster/cli";',
+    'import { AsterCommands } from "@luscious-garden/aster-cli";',
     "const counts = { alpha: 0, beta: 0 };",
     "const provider = (identity) => ({",
     "  identity,",

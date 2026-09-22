@@ -1,7 +1,7 @@
 import type {
   IconDefinition,
   IconRenderOptions,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import { SvgRenderer } from "../render/runtime/svg.renderer.js";
 import type { SvgMarkupType } from "../render/types/index.js";
 import type { SvgApi } from "./contracts/index.js";

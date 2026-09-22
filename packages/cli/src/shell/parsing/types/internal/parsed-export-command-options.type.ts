@@ -1,7 +1,7 @@
 import type {
   IconDirectionType,
   IconPaintType,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 /**
  * @description Mutable export-specific options accumulated from one standalone argv sequence.

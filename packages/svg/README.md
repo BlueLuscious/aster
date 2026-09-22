@@ -1,13 +1,13 @@
-# @aster/svg
+# @luscious-garden/aster-svg
 
 Framework-independent SVG rendering for portable Aster icon definitions.
 
 When `0.1.0` is published, install the exact candidate version with
-`pnpm add @aster/core@0.1.0 @aster/svg@0.1.0` to author and render definitions directly.
+`pnpm add @luscious-garden/aster-core@0.1.0 @luscious-garden/aster-svg@0.1.0` to author and render definitions directly.
 
 ```ts
-import { Icon } from "@aster/core";
-import { Svg } from "@aster/svg";
+import { Icon } from "@luscious-garden/aster-core";
+import { Svg } from "@luscious-garden/aster-svg";
 
 const Camera = Icon.define({
   identity: { namespace: "consumer", name: "camera" },

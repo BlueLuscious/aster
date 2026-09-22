@@ -10,7 +10,7 @@ test("extracts static module specifiers in source order", () => {
   const extractor = new ModuleSpecifierExtractor();
   const source = [
     'import "side-effect";',
-    'import type { Definition } from "@aster/core";',
+    'import type { Definition } from "@luscious-garden/aster-core";',
     'export { icon } from "./icon.js";',
     'const dynamic = import("node:path");',
     'const ignored = require("legacy");',
@@ -18,7 +18,7 @@ test("extracts static module specifiers in source order", () => {
 
   assert.deepEqual(extractor.extract(source), [
     "side-effect",
-    "@aster/core",
+    "@luscious-garden/aster-core",
     "./icon.js",
     "node:path",
   ]);
@@ -28,13 +28,13 @@ test("reports dependency cycles in deterministic graph order", () => {
   const graph = new WorkspaceDependencyGraph();
   const issues = new ArchitectureIssueCollector();
 
-  graph.add("@aster/alpha", new Set(["@aster/beta"]));
-  graph.add("@aster/beta", new Set(["@aster/alpha"]));
-  graph.add("@aster/stable", new Set());
+  graph.add("@luscious-garden/aster-alpha", new Set(["@luscious-garden/aster-beta"]));
+  graph.add("@luscious-garden/aster-beta", new Set(["@luscious-garden/aster-alpha"]));
+  graph.add("@luscious-garden/aster-stable", new Set());
   graph.inspectCycles(issues);
 
   assert.deepEqual(issues.snapshot(), [
-    "Workspace production dependency cycle: @aster/alpha -> @aster/beta -> @aster/alpha",
+    "Workspace production dependency cycle: @luscious-garden/aster-alpha -> @luscious-garden/aster-beta -> @luscious-garden/aster-alpha",
   ]);
 });
 

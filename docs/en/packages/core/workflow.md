@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-This document explains how authored values enter `@aster/core`, become canonical immutable icon or
+This document explains how authored values enter `@luscious-garden/aster-core`, become canonical immutable icon or
 collection definitions, and leave Core for independent consumers. Feature documents remain the
 authority for individual contracts and normalisers.
 
@@ -129,10 +129,10 @@ or turn the portable data graph into a live instance.
 
 After construction, Core performs no work until another explicit API receives the value:
 
-- `@aster/icons` exports canonical definitions and explicit collection aggregates;
-- `@aster/svg` interprets one definition and render options as standalone SVG markup;
-- `@aster/import` converts accepted external source evidence into Core values;
-- `@aster/cli` reads definitions through explicit catalogue providers;
+- `@luscious-garden/aster-icons` exports canonical definitions and explicit collection aggregates;
+- `@luscious-garden/aster-svg` interprets one definition and render options as standalone SVG markup;
+- `@luscious-garden/aster-import` converts accepted external source evidence into Core values;
+- `@luscious-garden/aster-cli` reads definitions through explicit catalogue providers;
 - future adapters may map definitions into target-specific occurrences and lifecycle state.
 
 Those consumers may add target, catalogue, filesystem, process, or lifecycle responsibilities at

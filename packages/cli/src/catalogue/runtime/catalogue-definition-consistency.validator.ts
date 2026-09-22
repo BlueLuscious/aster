@@ -4,7 +4,7 @@ import type {
   IconDefinition,
   IconIdentity,
   IconMetadata,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type {
   CatalogueDiscoveryCollectionRecord,
   CatalogueDiscoveryIconRecord,

@@ -2,7 +2,7 @@
 
 Status: **Pre-release**
 
-`@aster/cli` owns Aster's host-neutral command contracts, deterministic catalogue discovery, and
+`@luscious-garden/aster-cli` owns Aster's host-neutral command contracts, deterministic catalogue discovery, and
 the standalone Node host. The implementation provides the frozen programmatic `AsterCommands`
 composition, the explicit built-in `AsterCatalogue` provider, and the `aster` executable.
 
@@ -14,9 +14,9 @@ frozen values.
 `search`, `show`, `export`, `review`, `help`, and `version`, and returns sanitised structured failures. It never
 selects an ambient catalogue. Hosts pass providers explicitly in `AsterCommandContext`.
 
-`AsterCatalogue` adapts canonical `@aster/icons` manifests and exact loaders into that provider
+`AsterCatalogue` adapts canonical `@luscious-garden/aster-icons` manifests and exact loaders into that provider
 boundary. Metadata commands evaluate only manifest modules; complete definitions remain behind
-explicit exact-loader capabilities. Importing `@aster/cli` or reading help metadata does not
+explicit exact-loader capabilities. Importing `@luscious-garden/aster-cli` or reading help metadata does not
 evaluate Icons.
 
 The [initial release notes](releases.md) record this package's candidate public capability and
@@ -51,13 +51,13 @@ and distribution comparison evidence.
 
 ## Dependency boundary
 
-The command and catalogue domains depend on the public root of `@aster/core` for portable identity,
+The command and catalogue domains depend on the public root of `@luscious-garden/aster-core` for portable identity,
 metadata, and definition contracts. The built-in provider consumes the public
-`@aster/icons/manifest` subpath for discovery and reserves `@aster/icons/dynamic` for exact
+`@luscious-garden/aster-icons/manifest` subpath for discovery and reserves `@luscious-garden/aster-icons/dynamic` for exact
 definition loading. CLI owns query, acceptance, and diagnostic behaviour without copying the Icons
 inventory or assigning catalogue ownership to Core.
 
-The export domain depends directly on the public `@aster/svg` root. It renders accepted portable
+The export domain depends directly on the public `@luscious-garden/aster-svg` root. It renders accepted portable
 definitions without importing Import, filesystem services, or SVG implementation subpaths.
 
 The host-neutral production compilation uses ES2022 ESM without Node or DOM ambient types. A

@@ -7,7 +7,7 @@ collection manifest provides complete discovery and exact loaders resolve select
 The accepted concrete authority is currently `AmellusCollection`.
 
 Canonical modules use `<collection-slug>.collection.ts`. Public imports omit the role and retain
-`@aster/icons/collections/<collection-slug>`.
+`@luscious-garden/aster-icons/collections/<collection-slug>`.
 
 ## `AmellusCollection`
 
@@ -32,12 +32,12 @@ reverse membership link. Core rejects duplicate logical identity only within one
 ## Imports
 
 ```ts
-import { AmellusCollection } from "@aster/icons/collections/amellus";
+import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";
 ```
 
 The isolated subpath loads only the selected collection and its declared icon members. Complete
-collection discovery uses `@aster/icons/manifest`; runtime identity selection uses
-`@aster/icons/dynamic`. The package does not export a bare collection-family aggregate.
+collection discovery uses `@luscious-garden/aster-icons/manifest`; runtime identity selection uses
+`@luscious-garden/aster-icons/dynamic`. The package does not export a bare collection-family aggregate.
 
 Collection membership remains explicitly authored. Changing a collection changes its derived
 membership record only and does not add or remove independent icon definitions.

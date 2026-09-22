@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { Icon } from "@aster/core";
+import { Icon } from "@luscious-garden/aster-core";
 import { asterArtworkLicence } from "../../src/authoring/constants/aster-artwork-licence.constant.js";
 import {
   amellusIconAuthoringProfile,

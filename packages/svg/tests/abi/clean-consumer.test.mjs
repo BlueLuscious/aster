@@ -20,7 +20,7 @@ let consumerRoot;
 
 async function copyPublishedPackage(name) {
   const sourceRoot = resolve(workspaceRoot, "packages", name);
-  const targetRoot = resolve(consumerRoot, "node_modules", "@aster", name);
+  const targetRoot = resolve(consumerRoot, "node_modules", "@luscious-garden", `aster-${name}`);
 
   await mkdir(targetRoot, { recursive: true });
   await Promise.all([
@@ -63,10 +63,10 @@ after(async () => {
 });
 
 test("imports and renders through published roots without source files", () => {
-  const imported = runModule('await import("@aster/svg");');
+  const imported = runModule('await import("@luscious-garden/aster-svg");');
   const rendered = runModule([
-    'import { Icon } from "@aster/core";',
-    'import { Svg } from "@aster/svg";',
+    'import { Icon } from "@luscious-garden/aster-core";',
+    'import { Svg } from "@luscious-garden/aster-svg";',
     "const definition = Icon.define({",
     '  identity: { namespace: "consumer", name: "circle" },',
     "  viewBox: { minX: 0, minY: 0, width: 24, height: 24 },",

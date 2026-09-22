@@ -1,7 +1,7 @@
 import type {
   CollectionIdentity,
   CollectionMetadata,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 /**
  * @description Internal structural view of one built-in collection manifest entry.

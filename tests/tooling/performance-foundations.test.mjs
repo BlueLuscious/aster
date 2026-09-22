@@ -669,7 +669,7 @@ test("runs the complete Icons distribution scenario matrix", async () => {
   const report = await runner.run();
 
   assert.equal(report.schemaVersion, 1);
-  assert.equal(report.package, "@aster/icons");
+  assert.equal(report.package, "@luscious-garden/aster-icons");
   assert.deepEqual(
     measured.map(({ name, specifier }) => ({ name, specifier })),
     Object.values(iconsBaseline.scenarios),

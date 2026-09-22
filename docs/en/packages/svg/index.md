@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-`@aster/svg` owns framework-independent conversion of portable `@aster/core` icon definitions into
+`@luscious-garden/aster-svg` owns framework-independent conversion of portable `@luscious-garden/aster-core` icon definitions into
 complete standalone SVG markup. It is a public target renderer with no DOM, browser, Node, Import,
 Lilium, or Protea authority.
 
@@ -29,7 +29,7 @@ checks and human approval.
 
 ## Dependency boundary
 
-The package depends only on the public root of `@aster/core`. It consumes `IconDefinition`,
+The package depends only on the public root of `@luscious-garden/aster-core`. It consumes `IconDefinition`,
 `IconRenderOptions`, and the frozen portable runtime authorities required to interpret them. It
 cannot import Core implementation paths, Import, a collection catalogue, a framework, or a
 platform host.
@@ -55,9 +55,9 @@ No implementation subpath is public.
 The compiled-package ABI suite verifies:
 
 - the exact `Svg` and `SvgRenderError` root value surface;
-- import through the approved `@aster/svg` root and rejection of implementation subpaths;
+- import through the approved `@luscious-garden/aster-svg` root and rejection of implementation subpaths;
 - the exact root declaration and manifest export;
-- dependency on the public `@aster/core` root only;
+- dependency on the public `@luscious-garden/aster-core` root only;
 - host-independent declarations without DOM, Node, framework, Import, or tooling references;
 - side-effect-free ESM without CommonJS compatibility output;
 - deterministic representative markup from an explicitly supplied definition;

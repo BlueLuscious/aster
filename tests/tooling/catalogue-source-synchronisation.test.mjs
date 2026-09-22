@@ -42,7 +42,7 @@ function iconSource(name, variant) {
   const variantProperty = variant === undefined ? "" : `, variant: "${variant}"`;
 
   return [
-    'import { Icon } from "@aster/core";',
+    'import { Icon } from "@luscious-garden/aster-core";',
     "",
     `export const ${symbol} = Icon.define({`,
     `  identity: { name: "${name}"${variantProperty} },`,
@@ -54,7 +54,7 @@ function iconSource(name, variant) {
 
 function collectionSource(name, imports = [], members = []) {
   return [
-    'import { Collection } from "@aster/core";',
+    'import { Collection } from "@luscious-garden/aster-core";',
     ...imports,
     "",
     `export const ${pascalCase(name)}Collection = Collection.define({`,
@@ -93,7 +93,7 @@ async function createPackageFixture() {
   await writeFile(
     zetaPath,
     [
-      'import { Icon } from "@aster/core";',
+      'import { Icon } from "@luscious-garden/aster-core";',
       'import { fixtureAuthorship } from "../../../authoring/constants/fixture-authorship.constant.js";',
       "",
       "export const Zeta = Icon.define({",
@@ -576,7 +576,7 @@ test("rejects invalid and malformed canonical modules before writing", async () 
     {
       files: [[
         "w/wrong/wrong.icon.ts",
-        'import { Icon } from "@aster/core";\n\nexport const Other = Icon.define({});\n',
+        'import { Icon } from "@luscious-garden/aster-core";\n\nexport const Other = Icon.define({});\n',
       ]],
       pattern: /must export exactly one constant named Wrong/u,
     },
@@ -595,44 +595,44 @@ test("rejects invalid and malformed canonical modules before writing", async () 
     {
       files: [[
         "c/camera/camera.icon.ts",
-        'import { Icon } from "@aster/core";\n\nexport const Camera = Icon.define({ identity: { name: "photograph" } });\n',
+        'import { Icon } from "@luscious-garden/aster-core";\n\nexport const Camera = Icon.define({ identity: { name: "photograph" } });\n',
       ]],
       pattern: /identity must match camera/u,
     },
     {
       files: [[
         "c/camera/camera-filled.icon.ts",
-        'import { Icon } from "@aster/core";\n\nexport const CameraFilled = Icon.define({ identity: { name: "camera", variant: "outline" } });\n',
+        'import { Icon } from "@luscious-garden/aster-core";\n\nexport const CameraFilled = Icon.define({ identity: { name: "camera", variant: "outline" } });\n',
       ]],
       pattern: /identity must match camera@filled/u,
     },
     {
       files: [[
         "c/computed/computed.icon.ts",
-        'import { Icon } from "@aster/core";\n\nexport const Computed = Icon.define({ identity: { name: "computed" }, metadata: { displayName: createName(), rtl: "preserve", deprecated: false } });\n',
+        'import { Icon } from "@luscious-garden/aster-core";\n\nexport const Computed = Icon.define({ identity: { name: "computed" }, metadata: { displayName: createName(), rtl: "preserve", deprecated: false } });\n',
       ]],
       pattern: /unsupported static catalogue syntax CallExpression/u,
     },
     {
       files: [[
         "c/cyclic/cyclic.icon.ts",
-        'import { Icon } from "@aster/core";\n\nconst label = label;\nexport const Cyclic = Icon.define({ identity: { name: "cyclic" }, metadata: { displayName: label, rtl: "preserve", deprecated: false } });\n',
+        'import { Icon } from "@luscious-garden/aster-core";\n\nconst label = label;\nexport const Cyclic = Icon.define({ identity: { name: "cyclic" }, metadata: { displayName: label, rtl: "preserve", deprecated: false } });\n',
       ]],
       pattern: /cyclic static catalogue reference through label/u,
     },
     {
       files: [[
         "f/foreign/foreign.icon.ts",
-        'import { Icon } from "@aster/not-core";\n\nexport const Foreign = Icon.define({ identity: { name: "foreign" }, metadata: { displayName: "Foreign", rtl: "preserve", deprecated: false } });\n',
+        'import { Icon } from "@luscious-garden/aster-not-core";\n\nexport const Foreign = Icon.define({ identity: { name: "foreign" }, metadata: { displayName: "Foreign", rtl: "preserve", deprecated: false } });\n',
       ]],
-      pattern: /must import Icon from @aster\/core as one runtime named import/u,
+      pattern: /must import Icon from @luscious-garden\/aster-core as one runtime named import/u,
     },
     {
       files: [[
         "t/type-only/type-only.icon.ts",
-        'import type { Icon } from "@aster/core";\n\nexport const TypeOnly = Icon.define({ identity: { name: "type-only" }, metadata: { displayName: "Type Only", rtl: "preserve", deprecated: false } });\n',
+        'import type { Icon } from "@luscious-garden/aster-core";\n\nexport const TypeOnly = Icon.define({ identity: { name: "type-only" }, metadata: { displayName: "Type Only", rtl: "preserve", deprecated: false } });\n',
       ]],
-      pattern: /must import Icon from @aster\/core as one runtime named import/u,
+      pattern: /must import Icon from @luscious-garden\/aster-core as one runtime named import/u,
     },
     {
       files: [["x/camera/camera.icon.ts", iconSource("camera")]],
@@ -765,7 +765,7 @@ test("rejects invalid static authority bindings before replacing outputs", async
       await writeFile(
         zetaPath,
         [
-          'import { Icon } from "@aster/core";',
+          'import { Icon } from "@luscious-garden/aster-core";',
           ...fixture.imports,
           "",
           "export const Zeta = Icon.define({",
