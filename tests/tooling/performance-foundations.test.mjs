@@ -24,6 +24,7 @@ import { BenchmarkRunner } from "../../tooling/performance/shared/runtime/benchm
 import { BenchmarkCatalogueFixtureFactory } from "../../tooling/performance/shared/runtime/benchmark-catalogue-fixture.factory.mjs";
 import { ModuleImportProbe } from "../../tooling/performance/shared/runtime/module-import.probe.mjs";
 import { ModuleImportRunner } from "../../tooling/performance/shared/runtime/module-import.runner.mjs";
+import { decodeModuleSource } from "../../tooling/performance/shared/runtime/module-source.decoder.mjs";
 import { NumericSampleStatistics } from "../../tooling/performance/shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../tooling/performance/shared/runtime/package-distribution.inspector.mjs";
 import { svgBaseline } from "../../tooling/performance/svg/constants/svg-baseline.constant.mjs";
@@ -50,6 +51,18 @@ test("keeps structural performance contracts free of runtime exports", async () 
 
   assert.ok(contractPaths.length > 0);
   assert.ok(contracts.every((contract) => Object.keys(contract).length === 0));
+});
+
+test("decodes every module-hook source representation as exact UTF-8", () => {
+  const source = "export const flower = \"aster\";";
+  const bytes = new TextEncoder().encode(source);
+  const framed = new Uint8Array(bytes.length + 2);
+
+  framed.set(bytes, 1);
+
+  assert.equal(decodeModuleSource(source), source);
+  assert.equal(decodeModuleSource(bytes.buffer), source);
+  assert.equal(decodeModuleSource(framed.subarray(1, -1)), source);
 });
 
 test("prepares one stable synthetic benchmark catalogue", () => {

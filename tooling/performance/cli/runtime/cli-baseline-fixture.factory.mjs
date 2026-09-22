@@ -1,6 +1,13 @@
 import { AsterCommands } from "@luscious-garden/aster-cli";
-import { CatalogueIdentityFormatter } from "../../../../packages/cli/dist/catalogue/runtime/catalogue-identity.formatter.js";
 import { BenchmarkCatalogueFixtureFactory } from "../../shared/runtime/benchmark-catalogue-fixture.factory.mjs";
+
+/** @description Built CLI identity formatter module loaded during fixture preparation. */
+const catalogueIdentityFormatterModule =
+  "../../../../packages/cli/dist/catalogue/runtime/catalogue-identity.formatter.js";
+/** @description Built CLI identity formatter constructor. */
+const { CatalogueIdentityFormatter } = await import(
+  catalogueIdentityFormatterModule
+);
 
 /**
  * @description Prepares representative immutable CLI inputs outside measured operations.
@@ -47,7 +54,7 @@ export class CliBaselineFixtureFactory {
       identity: "fixture",
       /**
        * @description Returns already acquired immutable fixture discovery metadata.
-       * @returns {Promise<object>} Prepared catalogue discovery.
+       * @returns {Promise<import("@luscious-garden/aster-cli").CatalogueDiscovery>} Prepared catalogue discovery.
        */
       async discover() {
         return discovery;

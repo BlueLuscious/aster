@@ -20,6 +20,14 @@ export class CatalogueSourceLayoutNormaliser {
   normalise(relativePath, family) {
     const segments = relativePath.split("/");
     const filename = segments.at(-1);
+
+    if (filename === undefined) {
+      throw new CatalogueSourceError(
+        `Invalid empty canonical catalogue source path: ${relativePath}`,
+      );
+    }
+
+
     const stem = filename.slice(0, -family.sourceSuffix.length);
     const { name, variant } = this.#normaliseNested(
       segments,
@@ -53,6 +61,14 @@ export class CatalogueSourceLayoutNormaliser {
     }
 
     const [initial, name] = segments;
+
+    if (initial === undefined || name === undefined) {
+      throw new CatalogueSourceError(
+        `Invalid canonical catalogue source path: ${relativePath}`,
+      );
+    }
+
+
     this.#assertName(name, relativePath);
 
     if (initial.length !== 1 || initial !== name[0]) {
@@ -105,7 +121,15 @@ export class CatalogueSourceLayoutNormaliser {
   #pascalCase(slug) {
     return slug
       .split("-")
-      .map((part) => `${part[0].toUpperCase()}${part.slice(1)}`)
+      .map((part) => {
+        const initial = part[0];
+
+        if (initial === undefined) {
+          throw new CatalogueSourceError(`Invalid empty canonical slug: ${slug}`);
+        }
+
+        return `${initial.toUpperCase()}${part.slice(1)}`;
+      })
       .join("");
   }
 }

@@ -103,6 +103,7 @@ export class CoreBaselineFixtureFactory {
 
   /**
    * @description Clones one serialisable portable value into mutable plain data.
+   * @template Value
    * @param {Value} value - Canonical portable input.
    * @returns {Value} Structurally equivalent mutable clone.
    * @typeParam Value - Portable serialisable value family.

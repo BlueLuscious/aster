@@ -43,6 +43,7 @@ export class SvgBaselineRunner {
    * @returns {Promise<object>} Immutable serialisable SVG baseline report.
    */
   async run() {
+    /** @type {import("../../shared/contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario[]} */
     const scenarios = [
       Object.freeze({
         ...svgBaseline.scenarios.coreRevalidation,

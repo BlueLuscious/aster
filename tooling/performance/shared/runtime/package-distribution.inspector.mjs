@@ -1,8 +1,13 @@
 import { packageDistribution } from "../constants/package-distribution.constant.mjs";
 
 /**
+ * @description Structural package-distribution inspection contract implemented by this runtime.
+ * @typedef {import("../contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector} IPackageDistributionInspector
+ */
+
+/**
  * @description Inspects emitted package shape without assigning bundler-specific meaning.
- * @implements {import("../contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector}
+ * @implements {IPackageDistributionInspector}
  */
 export class PackageDistributionInspector {
   /**

@@ -1,9 +1,18 @@
 import { Icon } from "@luscious-garden/aster-core";
 import { Svg } from "@luscious-garden/aster-svg";
-import { CommandLineParser } from "../../../../packages/cli/dist/shell/parsing/runtime/command-line.parser.js";
-import { CommandOutputPresenter } from "../../../../packages/cli/dist/shell/presentation/runtime/command-output.presenter.js";
 import { cliBaseline } from "../constants/cli-baseline.constant.mjs";
 import { cliCommandEvaluation } from "../constants/cli-command-evaluation.constant.mjs";
+
+/** @description Built CLI argument parser module loaded outside measured operations. */
+const commandLineParserModule =
+  "../../../../packages/cli/dist/shell/parsing/runtime/command-line.parser.js";
+/** @description Built CLI result presenter module loaded outside measured operations. */
+const commandOutputPresenterModule =
+  "../../../../packages/cli/dist/shell/presentation/runtime/command-output.presenter.js";
+/** @description Built CLI argument parser constructor. */
+const { CommandLineParser } = await import(commandLineParserModule);
+/** @description Built CLI result presenter constructor. */
+const { CommandOutputPresenter } = await import(commandOutputPresenterModule);
 
 /**
  * @description Coordinates CLI operation, module-evaluation, cold-start, and distribution
@@ -83,6 +92,7 @@ export class CliBaselineRunner {
       this.#fixtures.invocations.listIcons,
       this.#fixtures.context,
     );
+    /** @type {import("../../shared/contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario[]} */
     const synchronousScenarios = [
       Object.freeze({
         ...cliBaseline.scenarios.coreRevalidation,
@@ -108,6 +118,7 @@ export class CliBaselineRunner {
           this.#present(presentationResult, iterations),
       }),
     ];
+    /** @type {import("../../shared/contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario[]} */
     const asynchronousScenarios = [
       Object.freeze({
         ...cliBaseline.asyncScenarios.help,
@@ -270,7 +281,7 @@ export class CliBaselineRunner {
 
   /**
    * @description Measures JSON presentation without process writes.
-   * @param {object} result - Prepared immutable command result.
+   * @param {import("@luscious-garden/aster-cli").AsterCommandResultType} result - Prepared immutable command result.
    * @param {number} iterations - Number of operations to execute.
    * @returns {number} Deterministic checksum over complete stream bytes and status.
    */
@@ -292,8 +303,8 @@ export class CliBaselineRunner {
 
   /**
    * @description Measures one public programmatic command with explicit context.
-   * @param {object} invocation - Prepared structured invocation.
-   * @param {object} context - Prepared explicit command context.
+   * @param {import("@luscious-garden/aster-cli").AsterCommandInvocationType} invocation - Prepared structured invocation.
+   * @param {import("@luscious-garden/aster-cli").AsterCommandContext} context - Prepared explicit command context.
    * @param {number} iterations - Number of operations to execute.
    * @returns {Promise<number>} Deterministic checksum over complete results.
    */
@@ -336,7 +347,7 @@ export class CliBaselineRunner {
 
   /**
    * @description Consumes one complete command result without serialisation overhead.
-   * @param {object} result - Structured command result.
+   * @param {import("@luscious-garden/aster-cli").AsterCommandResultType} result - Structured command result.
    * @returns {number} Stable result-shape checksum.
    */
   #resultChecksum(result) {
@@ -365,10 +376,24 @@ export class CliBaselineRunner {
       );
     }
 
-    for (const key of ["catalogues", "collections", "icons", "results", "descriptors"]) {
-      if (key in payload && Array.isArray(payload[key])) {
-        return payload.kind.length + payload[key].length;
-      }
+    if ("catalogues" in payload) {
+      return payload.kind.length + payload.catalogues.length;
+    }
+
+    if ("collections" in payload) {
+      return payload.kind.length + payload.collections.length;
+    }
+
+    if ("icons" in payload) {
+      return payload.kind.length + payload.icons.length;
+    }
+
+    if ("results" in payload) {
+      return payload.kind.length + payload.results.length;
+    }
+
+    if ("descriptors" in payload) {
+      return payload.kind.length + payload.descriptors.length;
     }
 
     return payload.kind.length;

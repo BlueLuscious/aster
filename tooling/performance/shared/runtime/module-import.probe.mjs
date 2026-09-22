@@ -1,10 +1,10 @@
-import { Buffer } from "node:buffer";
 import { registerHooks } from "node:module";
 import { relative, resolve, sep } from "node:path";
 import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { moduleImportProbe } from "../constants/module-import-probe.constant.mjs";
+import { decodeModuleSource } from "./module-source.decoder.mjs";
 
 /**
  * @description Inspects one package import in an isolated process and records evaluated package
@@ -31,7 +31,7 @@ export class ModuleImportProbe {
     const distributionRoot = resolve(packagePath, "dist");
     const distributionPrefix = pathToFileURL(`${distributionRoot}${sep}`).href;
     const evaluations = new Set();
-    globalThis[this.#evaluationSymbol] = evaluations;
+    Reflect.set(globalThis, this.#evaluationSymbol, evaluations);
 
     const hooks = registerHooks({
       load: (url, context, nextLoad) => {
@@ -46,10 +46,7 @@ export class ModuleImportProbe {
           const marker =
             `globalThis[Symbol.for(${JSON.stringify(moduleImportProbe.evaluationSymbolKey)})]`
             + `.add(${JSON.stringify(url)});\n`;
-          const source =
-            typeof result.source === "string"
-              ? result.source
-              : Buffer.from(result.source).toString("utf8");
+          const source = decodeModuleSource(result.source);
 
           return Object.freeze({
             ...result,
@@ -79,7 +76,7 @@ export class ModuleImportProbe {
       });
     } finally {
       hooks.deregister();
-      delete globalThis[this.#evaluationSymbol];
+      Reflect.deleteProperty(globalThis, this.#evaluationSymbol);
     }
   }
 }

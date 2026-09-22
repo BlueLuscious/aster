@@ -54,7 +54,10 @@ contracts or runtime dependencies.
 `tsconfig.base.json` defines ES2022 ESM, strict typing, exact optional properties, unchecked-index
 protection, native class-field semantics, declaration generation, and no ambient type packages by
 default. Production packages extend that baseline with their own source and output boundaries.
-Tests and repository tooling opt into Node capabilities independently.
+Tests and repository tooling opt into Node capabilities independently. `tsconfig.tooling.json`
+applies strict `checkJs` analysis to every authored tooling module without emitting distribution
+files. Built package modules loaded by performance probes remain outside that source boundary and
+are verified through package type, ABI and clean-consumer evidence instead.
 
 ## Stable root commands
 
@@ -68,6 +71,7 @@ The private root exposes stable orchestration contracts:
 | `pnpm check:catalogue` | Verify generated [catalogue sources](catalogue/index.md) without writing. |
 | `pnpm check:docs` | Run the [documentation verifier](documentation/index.md). |
 | `pnpm check:types` | Build and type-check every applicable package. |
+| `pnpm check:tooling-types` | Strictly type-check every authored repository-tooling module. |
 | `pnpm benchmark:core` | Run the development-only [Core comparison](performance/index.md). |
 | `pnpm benchmark:cli` | Run the development-only [CLI comparison](performance/index.md). |
 | `pnpm benchmark:icons` | Run the development-only [Icons comparison](performance/index.md). |

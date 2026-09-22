@@ -46,6 +46,7 @@ export class CoreBaselineRunner {
    * @returns {Promise<object>} Immutable serialisable Core baseline report.
    */
   async run() {
+    /** @type {import("../../shared/contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario[]} */
     const scenarios = [
       Object.freeze({
         ...coreBaseline.scenarios.iconMutable,

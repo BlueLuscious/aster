@@ -41,6 +41,7 @@ export class CliCommandEvaluationRunner {
   measure(scenarioKey, scenario) {
     const processTimings = [];
     const scenarioTimings = [];
+    /** @type {{ name: string, result: string, scenarioNanoseconds: number, evaluatedModules: Readonly<{ cli: readonly string[], icons: readonly string[] }> } | undefined} */
     let reference;
 
     for (let index = 0; index < this.#sampleCount; index += 1) {
@@ -77,6 +78,10 @@ export class CliCommandEvaluationRunner {
 
     const processTiming = this.#statistics.summarise(processTimings);
     const scenarioTiming = this.#statistics.summarise(scenarioTimings);
+
+    if (reference === undefined) {
+      throw new Error(`CLI evaluation scenario ${scenario.name} produced no evidence.`);
+    }
 
     return Object.freeze({
       name: scenario.name,
@@ -121,9 +126,13 @@ export class CliCommandEvaluationRunner {
       || evidence.evaluatedModules === null
       || typeof evidence.evaluatedModules !== "object"
       || !Array.isArray(evidence.evaluatedModules.cli)
-      || !evidence.evaluatedModules.cli.every((value) => typeof value === "string")
+      || !evidence.evaluatedModules.cli.every(
+        /** @param {unknown} value */ (value) => typeof value === "string",
+      )
       || !Array.isArray(evidence.evaluatedModules.icons)
-      || !evidence.evaluatedModules.icons.every((value) => typeof value === "string")
+      || !evidence.evaluatedModules.icons.every(
+        /** @param {unknown} value */ (value) => typeof value === "string",
+      )
     ) {
       throw new Error(`CLI evaluation scenario ${scenario.name} returned invalid evidence.`);
     }

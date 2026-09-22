@@ -13,7 +13,13 @@ export class MarkdownLinkTargetExtractor {
     const targets = [];
 
     for (const match of content.matchAll(markdownLinkRules.linkPattern)) {
-      const target = match[1].replace(markdownLinkRules.wrapperPattern, "");
+      const capturedTarget = match[1];
+
+      if (capturedTarget === undefined) {
+        continue;
+      }
+
+      const target = capturedTarget.replace(markdownLinkRules.wrapperPattern, "");
 
       if (
         target.startsWith("#") ||

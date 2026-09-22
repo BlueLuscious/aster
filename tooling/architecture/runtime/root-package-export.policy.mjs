@@ -17,22 +17,24 @@ export class RootPackageExportPolicy {
     }
 
     const exports = manifest.exports;
+    const exportRecord = typeof exports === "object" && exports !== null
+      ? /** @type {Record<string, unknown>} */ (exports)
+      : undefined;
     const exportKeys =
-      typeof exports === "object" && exports !== null ? Object.keys(exports) : [];
-    const rootExport =
-      typeof exports === "object" && exports !== null
-        ? exports[packageBoundaries.rootExport.key]
-        : undefined;
+      exportRecord === undefined ? [] : Object.keys(exportRecord);
+    const rootExport = exportRecord?.[packageBoundaries.rootExport.key];
+    const rootExportRecord = typeof rootExport === "object" && rootExport !== null
+      ? /** @type {Record<string, unknown>} */ (rootExport)
+      : undefined;
 
     if (JSON.stringify(exportKeys) !== JSON.stringify([packageBoundaries.rootExport.key])) {
       issues.add(`${packageName} must expose only the root "." package export`);
     }
 
     if (
-      typeof rootExport !== "object" ||
-      rootExport === null ||
-      rootExport.import !== packageBoundaries.rootExport.import ||
-      rootExport.types !== packageBoundaries.rootExport.types
+      rootExportRecord === undefined ||
+      rootExportRecord.import !== packageBoundaries.rootExport.import ||
+      rootExportRecord.types !== packageBoundaries.rootExport.types
     ) {
       issues.add(
         `${packageName} root export must provide the accepted ESM and declaration entries`,
