@@ -1,5 +1,5 @@
-import { Icon } from "@aster/core";
-import { Svg } from "@aster/svg";
+import { Icon } from "@luscious-garden/aster-core";
+import { Svg } from "@luscious-garden/aster-svg";
 import { svgBaseline } from "../constants/svg-baseline.constant.mjs";
 
 /**
@@ -43,6 +43,7 @@ export class SvgBaselineRunner {
    * @returns {Promise<object>} Immutable serialisable SVG baseline report.
    */
   async run() {
+    /** @type {import("../../shared/contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario[]} */
     const scenarios = [
       Object.freeze({
         ...svgBaseline.scenarios.coreRevalidation,
@@ -146,8 +147,8 @@ export class SvgBaselineRunner {
 
   /**
    * @description Renders prepared definitions and consumes every complete markup result.
-   * @param {readonly import("@aster/core").IconDefinition[]} definitions - Prepared canonical definitions selected in round-robin order.
-   * @param {import("@aster/core").IconRenderOptions | undefined} options - Prepared optional render value.
+   * @param {readonly import("@luscious-garden/aster-core").IconDefinition[]} definitions - Prepared canonical definitions selected in round-robin order.
+   * @param {import("@luscious-garden/aster-core").IconRenderOptions | undefined} options - Prepared optional render value.
    * @param {number} iterations - Number of public SVG operations to execute.
    * @returns {number} Deterministic checksum over complete markup bytes.
    */

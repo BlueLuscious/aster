@@ -11,7 +11,9 @@ export class ModuleSpecifierExtractor {
    */
   extract(source) {
     return Object.freeze(
-      [...source.matchAll(sourceModule.specifierPattern)].map((match) => match[1]),
+      [...source.matchAll(sourceModule.specifierPattern)]
+        .map((match) => match[1])
+        .filter((specifier) => specifier !== undefined),
     );
   }
 }

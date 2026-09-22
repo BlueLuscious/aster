@@ -34,8 +34,8 @@ export class CatalogueSourceSerialiser {
 
   /**
    * @description Serialises complete metadata-only icon and collection manifests.
-   * @param {readonly object[]} icons - Canonically ordered icon manifest records.
-   * @param {readonly object[]} collections - Canonically ordered collection manifest records.
+   * @param {readonly import("../contracts/internal/catalogue-icon-manifest-record.contract.mjs").ICatalogueIconManifestRecord[]} icons - Canonically ordered icon manifest records.
+   * @param {readonly import("../contracts/internal/catalogue-collection-manifest-record.contract.mjs").ICatalogueCollectionManifestRecord[]} collections - Canonically ordered collection manifest records.
    * @returns {string} Complete deterministic TypeScript manifest module.
    */
   manifest(icons, collections) {
@@ -79,7 +79,7 @@ export class CatalogueSourceSerialiser {
 
   /**
    * @description Serialises one deeply frozen icon manifest record.
-   * @param {object} record - Validated icon manifest record.
+   * @param {import("../contracts/internal/catalogue-icon-manifest-record.contract.mjs").ICatalogueIconManifestRecord} record - Validated icon manifest record.
    * @returns {string} Deterministic TypeScript record expression.
    */
   #iconManifestRecord(record) {
@@ -109,7 +109,7 @@ export class CatalogueSourceSerialiser {
 
   /**
    * @description Serialises one deeply frozen collection manifest record.
-   * @param {object} record - Validated collection manifest record.
+   * @param {import("../contracts/internal/catalogue-collection-manifest-record.contract.mjs").ICatalogueCollectionManifestRecord} record - Validated collection manifest record.
    * @returns {string} Deterministic TypeScript record expression.
    */
   #collectionManifestRecord(record) {

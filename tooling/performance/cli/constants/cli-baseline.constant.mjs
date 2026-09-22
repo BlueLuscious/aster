@@ -5,7 +5,7 @@ export const cliBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
   schemaVersion: 4,
   /** @description Measured public package identity. */
-  packageName: "@aster/cli",
+  packageName: "@luscious-garden/aster-cli",
   /** @description Workspace-relative measured package root. */
   packagePath: "packages/cli",
   /** @description Built standalone executable path. */
@@ -119,7 +119,7 @@ export const cliBaseline = Object.freeze({
       arguments: Object.freeze([
         "--input-type=module",
         "--eval",
-        'await import("@aster/cli");',
+        'await import("@luscious-garden/aster-cli");',
       ]),
       /** @description Exact standard output required from root import. */
       stdout: "",
@@ -131,7 +131,7 @@ export const cliBaseline = Object.freeze({
       /** @description Exact executable arguments used by the scenario. */
       arguments: Object.freeze(["version"]),
       /** @description Exact standard output required from the executable. */
-      stdout: "Aster 0.0.0\n",
+      stdout: "Aster 0.1.0-rc.1\n",
     }),
   }),
 });

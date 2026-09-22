@@ -1,4 +1,4 @@
-import type { IconDefinition } from "@aster/core";
+import type { IconDefinition } from "@luscious-garden/aster-core";
 
 /**
  * @description Accepted definition and provenance required for editable TypeScript emission.

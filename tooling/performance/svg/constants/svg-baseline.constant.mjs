@@ -5,7 +5,7 @@ export const svgBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
   schemaVersion: 2,
   /** @description Measured public package identity. */
-  packageName: "@aster/svg",
+  packageName: "@luscious-garden/aster-svg",
   /** @description Workspace-relative measured package root. */
   packagePath: "packages/svg",
   /** @description Stable public scenario identities and sample sizes. */

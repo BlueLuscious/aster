@@ -1,11 +1,11 @@
 {
-  "name": "@aster/icons",
-  "version": "0.0.0",
+  "name": "@luscious-garden/aster-icons",
+  "version": "0.1.0-rc.1",
   "description": "Canonical portable Aster icon and collection definitions.",
   "type": "module",
   "author": "BlueLuscious",
-  "license": "ISC",
-  "homepage": "https://github.com/BlueLuscious/aster/tree/develop/packages/icons#readme",
+  "license": "SEE LICENSE IN LICENSE",
+  "homepage": "https://github.com/BlueLuscious/aster/tree/master/packages/icons#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BlueLuscious/aster.git",
@@ -39,6 +39,7 @@
     "access": "public"
   },
   "files": [
+    "ARTWORK-LICENCE.md",
     "dist"
   ],
   "scripts": {
@@ -53,6 +54,6 @@
     "test:types": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@aster/core": "workspace:*"
+    "@luscious-garden/aster-core": "workspace:^"
   }
 }

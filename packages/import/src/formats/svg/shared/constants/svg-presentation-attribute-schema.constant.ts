@@ -1,4 +1,4 @@
-import type { IconPresentation } from "@aster/core";
+import type { IconPresentation } from "@luscious-garden/aster-core";
 import type { TSvgPresentationNumericDomain } from "../types/internal/svg-presentation-numeric-domain.type.js";
 import { svgNumericDomains } from "./svg-numeric-domains.constant.js";
 import { svgPresentationValueKinds } from "./svg-presentation-value-kinds.constant.js";

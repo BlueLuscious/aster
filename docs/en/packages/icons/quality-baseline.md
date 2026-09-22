@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-This document defines the evidence method used to compare `@aster/icons` public import evaluation
+This document defines the evidence method used to compare `@luscious-garden/aster-icons` public import evaluation
 and emitted distribution changes. It is not a bundle-size promise, hardware-independent speed
 guarantee or CI performance threshold. Current correctness evidence remains in
 [Icons Quality](quality.md).
@@ -46,14 +46,15 @@ After facade generation and eager-surface retirement, current deterministic modu
 
 | Scenario | Evaluated Icons modules |
 | --- | ---: |
-| `icons.import.isolated-icon` | 4 |
-| `icons.import.isolated-collection` | 30 |
+| `icons.import.isolated-icon` | 5 |
+| `icons.import.isolated-collection` | 31 |
 | `icons.import.manifest` | 2 |
 | `icons.import.dynamic` | 2 |
 
-The isolated Camera import evaluates its facade, definition and two shared authoring authorities.
-The Amellus import necessarily evaluates its facade, collection, the same two authorities and all
-twenty-six explicitly retained members. Neither import evaluates an unrelated definition.
+The isolated Camera import evaluates its facade, definition, two shared authoring authorities and
+their artwork-licence authority. The Amellus import necessarily evaluates its facade, collection,
+the same three authorities and all twenty-six explicitly retained members. Neither import
+evaluates an unrelated definition.
 
 After introducing the accepted metadata-only integration, a fresh manifest probe evaluates exactly
 `manifest/index.js` and `generated/manifest/index.js`. It evaluates no canonical icon, collection or
@@ -70,18 +71,19 @@ correctness evidence; elapsed time remains informative supporting evidence affec
 
 ## Distribution evidence
 
-The current native ES2022 ESM output contains 136 files and 79,559 unminified bytes:
+The current native ES2022 ESM output contains 138 files and 80,965 unminified bytes:
 
-- 68 JavaScript modules totalling 64,997 bytes;
-- 68 declaration files totalling 14,562 bytes;
+- 69 JavaScript modules totalling 66,124 bytes;
+- 69 declaration files totalling 14,841 bytes;
 - isolated-icon, isolated-collection, manifest and dynamic export patterns;
 - explicit blocked aggregate-root and bare collection-family entries;
 - `sideEffects: false`;
-- public `@aster/core` as the only runtime dependency.
+- public `@luscious-garden/aster-core` as the only runtime dependency.
 
-The corresponding package tarball contains those 136 emitted files plus `package.json`, `README.md`
-and `LICENSE`. Clean-consumer evidence installs that actual tarball and rejects any additional
-source, test or repository-tooling surface.
+The corresponding package tarball contains those 138 emitted files plus `package.json`, `README.md`,
+the [ISC software notice](../../../../packages/icons/LICENSE) and
+[artwork terms](../../../../packages/icons/ARTWORK-LICENCE.md). Clean-consumer evidence installs
+that actual tarball and rejects any additional source, test or repository-tooling surface.
 
 The pre-migration control contained 68 files and 55,087 bytes. The accepted facade, manifest and
 loader responsibilities increase emitted file count while removing default package-wide runtime

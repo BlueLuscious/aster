@@ -1,4 +1,4 @@
-import { Svg, SvgRenderError } from "@aster/svg";
+import { Svg, SvgRenderError } from "@luscious-garden/aster-svg";
 import type { TCatalogueSelection } from "../../catalogue/types/internal/catalogue-selection.type.js";
 import { CatalogueIdentityFormatter } from "../../catalogue/runtime/catalogue-identity.formatter.js";
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";

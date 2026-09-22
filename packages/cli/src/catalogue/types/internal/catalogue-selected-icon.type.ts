@@ -1,7 +1,7 @@
 import type {
   CollectionIdentity,
   IconDefinition,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 /**
  * @description Internal accepted icon definition and its independent collection memberships.

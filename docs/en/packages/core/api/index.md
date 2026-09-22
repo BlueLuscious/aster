@@ -29,7 +29,7 @@ annotations are therefore never treated as runtime evidence.
 ## Usage
 
 ```ts
-import { Collection, Icon } from "@aster/core";
+import { Collection, Icon } from "@luscious-garden/aster-core";
 
 const Camera = Icon.define({
   identity: {
@@ -80,7 +80,7 @@ The accepted value is plain readonly data. Consumers inspect `identity`, `viewBo
 
 ## Package exports
 
-`@aster/core` approves only its root `"."` export. The root provides `Icon`, `Collection`,
+`@luscious-garden/aster-core` approves only its root `"."` export. The root provides `Icon`, `Collection`,
 documented frozen portable runtime authorities, and all public contracts and types.
 
 No feature, runtime, manager, normaliser, validator, or shared implementation subpath is public.

@@ -15,30 +15,33 @@ target used to present it.
 
 | Boundary | Maturity | Project role |
 | --- | --- | --- |
-| [`@aster/core`](../packages/core/index.md) | Pre-release | Defines and constructs the portable icon and collection model. |
-| [`@aster/icons`](../packages/icons/index.md) | Pre-release | Publishes canonical TypeScript-first icons and explicit collection aggregates. |
-| [`@aster/svg`](../packages/svg/index.md) | Pre-release | Renders portable definitions as deterministic standalone SVG markup. |
-| [`@aster/cli`](../packages/cli/index.md) | Pre-release | Provides host-neutral catalogue commands and a thin standalone Node executable. |
-| [`@aster/import`](../packages/import/index.md) | Private | Adopts explicit external sources into portable definitions and editable TypeScript. |
+| [`@luscious-garden/aster-core`](../packages/core/index.md) | Pre-release | Defines and constructs the portable icon and collection model. |
+| [`@luscious-garden/aster-icons`](../packages/icons/index.md) | Pre-release | Publishes canonical TypeScript-first icons and explicit collection aggregates. |
+| [`@luscious-garden/aster-svg`](../packages/svg/index.md) | Pre-release | Renders portable definitions as deterministic standalone SVG markup. |
+| [`@luscious-garden/aster-cli`](../packages/cli/index.md) | Pre-release | Provides host-neutral catalogue commands and a thin standalone Node executable. |
+| [`@luscious-garden/aster-import`](../packages/import/index.md) | Private | Adopts explicit external sources into portable definitions and editable TypeScript. |
 | [Repository tooling](../tooling/index.md) | Private | Verifies and maintains this repository without entering production package graphs. |
 
 Collection documentation is a curatorial authority, not another package boundary. The
 [collection index](../collections/index.md) records accepted collection identities, authorship,
-visual rules, provenance, and evidence; `@aster/icons` owns their distributable TypeScript values.
+visual rules, provenance, and evidence; `@luscious-garden/aster-icons` owns their distributable TypeScript values.
+
+The `@luscious-garden` npm organisation groups package distribution; the `aster-` package-name
+prefix distinguishes this product within that shared scope. Neither the organisation name nor
+the package prefix changes an icon's canonical `aster` identity namespace or the `aster`
+executable name.
 
 ## Dependency direction
 
-The production graph points towards Core and contains no dependency on repository tooling:
+Each arrow points from a package in the table above to one of its direct production dependencies.
+The graph contains no dependency on repository tooling:
 
 ```text
-@aster/icons ----------------> @aster/core <---------------- @aster/svg
-                                    ^
-                                    |
-@aster/import ----------------------+----> xmlsax-typescript
-
-@aster/cli ----> @aster/core
-      +--------> @aster/icons
-      +--------> @aster/svg
+CLI    -> Core, Icons, SVG
+Icons  -> Core
+SVG    -> Core
+Import -> Core, xmlsax-typescript
+Core   -> (none)
 ```
 
 Core has no runtime dependency. Icons and SVG depend only on its public root. CLI consumes the
@@ -63,14 +66,18 @@ by each owning package rather than repeated here.
 
 ## Maturity and releases
 
-Aster has no stable public release. Public package manifests remain at `0.0.0`, Icons contains its
-first accepted collection, and Import is deliberately private. Current package and workflow checks
-prove development conformance but do not constitute a compatibility promise to external
-consumers.
+Aster has no published public release. Core, Icons, SVG, and CLI declare `0.1.0-rc.1` as the initial
+publication candidates, Icons contains its first accepted collection, and Import is deliberately
+private. Technical readiness checks and packed-consumer evidence have passed, but they do not
+constitute a published compatibility promise or authorise publication. npm scope access, the
+release tag, final artefacts and the human go/no-go remain explicit checks in the
+[Manual Publication](publication.md) procedure.
 
 When publication begins, independently installable packages will own separate Semantic Versioning
 sequences and coordinate only where their dependency contracts require it. The complete
 cross-package posture is defined by [Versioning and Releases](versioning.md).
+The [Manual Publication](publication.md) procedure describes the separate human-controlled
+go/no-go, registry checks and post-publication verification; it is not a release trigger.
 
 ## External integration direction
 
@@ -97,3 +104,4 @@ repository synchronises or mutates the other's documentation automatically.
   independence, isolation, and repository verification.
 - [Versioning and Releases](versioning.md) owns cross-package maturity, compatibility, and release
   coordination.
+- [Manual Publication](publication.md) owns the explicit release procedure and registry checks.

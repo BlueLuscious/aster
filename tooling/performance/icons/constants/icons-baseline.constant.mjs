@@ -6,7 +6,7 @@ export const iconsBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
   schemaVersion: 1,
   /** @description Measured public package identity. */
-  packageName: "@aster/icons",
+  packageName: "@luscious-garden/aster-icons",
   /** @description Workspace-relative measured package root. */
   packagePath: "packages/icons",
   /** @description Workspace-relative disposable module probe path. */
@@ -20,28 +20,28 @@ export const iconsBaseline = Object.freeze({
       /** @description Stable report scenario identity. */
       name: "icons.import.isolated-icon",
       /** @description Public package specifier under measurement. */
-      specifier: "@aster/icons/camera",
+      specifier: "@luscious-garden/aster-icons/camera",
     }),
     /** @description Representative isolated collection import. */
     isolatedCollection: Object.freeze({
       /** @description Stable report scenario identity. */
       name: "icons.import.isolated-collection",
       /** @description Public package specifier under measurement. */
-      specifier: "@aster/icons/collections/amellus",
+      specifier: "@luscious-garden/aster-icons/collections/amellus",
     }),
     /** @description Metadata-only icon and collection discovery import. */
     manifest: Object.freeze({
       /** @description Stable report scenario identity. */
       name: "icons.import.manifest",
       /** @description Public package specifier under measurement. */
-      specifier: "@aster/icons/manifest",
+      specifier: "@luscious-garden/aster-icons/manifest",
     }),
     /** @description Exact asynchronous definition-loader map import. */
     dynamic: Object.freeze({
       /** @description Stable report scenario identity. */
       name: "icons.import.dynamic",
       /** @description Public package specifier under measurement. */
-      specifier: "@aster/icons/dynamic",
+      specifier: "@luscious-garden/aster-icons/dynamic",
     }),
   }),
 });

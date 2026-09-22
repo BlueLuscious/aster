@@ -4,7 +4,7 @@ Status: **Accepted**
 
 `tooling/` contains private contributor infrastructure for verifying and maintaining the Aster
 workspace. It is not a publishable package, product API, or implementation dependency for
-`@aster/*` packages.
+`@luscious-garden/aster-*` packages.
 
 ## Features
 
@@ -42,17 +42,22 @@ The private root owns shared development versions:
 | TypeScript | Compiles production packages and type tests, and parses canonical catalogue modules during source synchronisation. | Development only. |
 | `tsx` | Adapts TypeScript tests to Node's built-in test runner. | Test only. |
 | `@types/node` | Types tests and repository tooling. | Excluded from portable production compilation. |
+| ESLint and `typescript-eslint` | Parse authored TypeScript and JavaScript and enforce focused source rules. | Development only. |
+| Prettier | Checks or explicitly formats owned workspace configuration. | Development only. |
 
-No third-party monorepo orchestrator, formatter, linter, test framework, cleaner, or benchmark
-framework is currently selected. A future tool must remain replaceable behind an accepted root
-command and cannot leak into product contracts or runtime dependencies.
+No third-party monorepo orchestrator, test framework, cleaner, or benchmark framework is selected.
+Development tools remain replaceable behind the root commands and cannot leak into product
+contracts or runtime dependencies.
 
 ## Shared compiler baseline
 
 `tsconfig.base.json` defines ES2022 ESM, strict typing, exact optional properties, unchecked-index
 protection, native class-field semantics, declaration generation, and no ambient type packages by
 default. Production packages extend that baseline with their own source and output boundaries.
-Tests and repository tooling opt into Node capabilities independently.
+Tests and repository tooling opt into Node capabilities independently. `tsconfig.tooling.json`
+applies strict `checkJs` analysis to every authored tooling module without emitting distribution
+files. Built package modules loaded by performance probes remain outside that source boundary and
+are verified through package type, ABI and clean-consumer evidence instead.
 
 ## Stable root commands
 
@@ -61,29 +66,43 @@ The private root exposes stable orchestration contracts:
 | Command | Contract |
 | --- | --- |
 | `pnpm build` | Build every real package in dependency order when it defines `build`. |
-| `pnpm check` | Run catalogue drift, type, architecture, and documentation checks. |
+| `pnpm check` | Run catalogue drift, type, architecture, documentation, lint, and formatting checks. |
 | `pnpm check:architecture` | Run the [architecture verifier](architecture/index.md). |
 | `pnpm check:catalogue` | Verify generated [catalogue sources](catalogue/index.md) without writing. |
 | `pnpm check:docs` | Run the [documentation verifier](documentation/index.md). |
 | `pnpm check:types` | Build and type-check every applicable package. |
+| `pnpm check:tooling-types` | Strictly type-check every authored repository-tooling module. |
 | `pnpm benchmark:core` | Run the development-only [Core comparison](performance/index.md). |
 | `pnpm benchmark:cli` | Run the development-only [CLI comparison](performance/index.md). |
 | `pnpm benchmark:icons` | Run the development-only [Icons comparison](performance/index.md). |
 | `pnpm benchmark:import` | Run the development-only [Import comparison](performance/index.md). |
 | `pnpm benchmark:svg` | Run the development-only [SVG comparison](performance/index.md). |
-| `pnpm lint` | Delegate to packages that define an accepted lint contract. |
-| `pnpm format` | Delegate to packages that define a mutating format contract. |
-| `pnpm format:check` | Delegate to packages that define a non-mutating format contract. |
+| `pnpm lint` | Check authored TypeScript and JavaScript in packages, tooling, tests, and the lint configuration. |
+| `pnpm format` | Explicitly format owned workspace manifests and quality-tool configuration. |
+| `pnpm format:check` | Check those files without writing. |
 | `pnpm test` | Run tooling fixtures, package tests, and cross-package workflows. |
 | `pnpm test:tooling` | Run fixture-based conformance for repository tools. |
 | `pnpm test:workflow` | Run implemented cross-package workflows through public roots. |
 | `pnpm clean` | Delegate to each package's guarded cleanup contract. |
 | `pnpm verify` | Run checks and the complete test graph as the repository gate; owned subcommands build every inspected output. |
 
-Root commands remain stable while internal implementations can be replaced. `pnpm lint`,
-`pnpm format`, and `pnpm format:check` remain reserved delegators, but they are excluded from
-`pnpm check` while no package implements them. Empty delegated matches are not repository evidence;
-objective linting and formatting remain deferred until an accepted implementation exists.
+Root commands remain stable while internal implementations can be replaced. `pnpm lint` and
+`pnpm format:check` are active parts of `pnpm check`; `pnpm format` is the only mutating quality
+command and is never called by verification.
+
+ESLint uses the repository-owned `eslint.config.mjs`. It checks semicolons, double-quoted strings,
+braced control flow, strict equality, and a small set of unsafe constructs. TypeScript and the
+architecture and documentation verifiers retain their own responsibilities; lint does not repeat
+type analysis, dependency checks, or prose checks. Generated catalogue sources, distribution output,
+dependency installations, and parser fixtures are excluded.
+
+Prettier checks the root and package manifests plus its own and ESLint's configuration. The Icons
+manifest is excluded because catalogue synchronisation owns its generated export entries and
+serialisation. Authored source is deliberately outside the format command: applying Prettier to
+the existing source tree would cause an unrelated mechanical rewrite. ESLint still enforces its
+accepted source conventions. Widening the format boundary requires a separate, reviewed migration;
+the current command must not imply that it checks every source file. Lockfiles, generated artefacts,
+fixtures, and documentation are outside this formatting boundary.
 
 ## Verification orchestration
 

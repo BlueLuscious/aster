@@ -1,4 +1,5 @@
-import { Collection } from "@aster/core";
+import { Collection } from "@luscious-garden/aster-core";
+import { asterArtworkLicence } from "../../../authoring/constants/aster-artwork-licence.constant.js";
 import { ArrowDown } from "../../../glyphs/a/arrow-down/arrow-down.icon.js";
 import { ArrowLeft } from "../../../glyphs/a/arrow-left/arrow-left.icon.js";
 import { ArrowRight } from "../../../glyphs/a/arrow-right/arrow-right.icon.js";
@@ -71,7 +72,7 @@ export const AmellusCollection = Collection.define({
       "minimalist",
       "outline-icons",
     ],
-    licence: "ISC",
+    licence: asterArtworkLicence,
     attribution: "BlueLuscious",
   },
 });

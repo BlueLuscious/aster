@@ -1,7 +1,7 @@
 import type {
   CollectionIdentity,
   CollectionMetadata,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 /**
  * @description Lightweight searchable metadata for one distributed icon collection.

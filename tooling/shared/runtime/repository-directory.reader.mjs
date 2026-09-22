@@ -4,7 +4,10 @@ import { repositoryEntryKinds } from "../constants/repository-entry-kinds.consta
  * @description Reads deterministic immediate directory membership from optional roots.
  */
 export class RepositoryDirectoryReader {
-  /** @type {import("../contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem} */
+  /**
+   * @description Repository filesystem used to inspect directory membership.
+   * @type {import("../contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem}
+   */
   #fileSystem;
 
   /**

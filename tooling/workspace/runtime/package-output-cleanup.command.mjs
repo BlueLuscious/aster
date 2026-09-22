@@ -16,7 +16,7 @@ export class PackageOutputCleanupCommand {
   /**
    * @description Creates a package output cleanup command adapter.
    * @param {import("./package-output.cleaner.mjs").PackageOutputCleaner} cleaner - Guarded cleanup authority.
-   * @param {{ argv: string[], cwd(): string, stderr: { write(value: string): unknown }, exitCode?: number }} processCapability - Narrow process capability.
+   * @param {{ argv: string[], cwd(): string, stderr: { write(value: string): unknown }, exitCode?: string | number | null | undefined }} processCapability - Narrow process capability.
    */
   constructor(cleaner, processCapability) {
     this.#cleaner = cleaner;

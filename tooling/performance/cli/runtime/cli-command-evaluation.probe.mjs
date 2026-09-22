@@ -1,10 +1,10 @@
-import { Buffer } from "node:buffer";
 import { registerHooks } from "node:module";
 import { relative, resolve, sep } from "node:path";
 import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { cliCommandEvaluation } from "../constants/cli-command-evaluation.constant.mjs";
+import { decodeModuleSource } from "../../shared/runtime/module-source.decoder.mjs";
 
 /**
  * @description Executes one real built-in CLI workflow while attributing evaluated CLI and Icons
@@ -20,7 +20,10 @@ export class CliCommandEvaluationProbe {
    * @returns {Promise<{ name: string, result: string, scenarioNanoseconds: number, evaluatedModules: Readonly<{ cli: readonly string[], icons: readonly string[] }> }>} Immutable workflow evaluation evidence.
    */
   async inspect(scenarioKey) {
-    const scenario = cliCommandEvaluation.scenarios[scenarioKey];
+    const scenarios = /** @type {Readonly<Record<string, { name: string, invocation: import("@luscious-garden/aster-cli").AsterCommandInvocationType }>>} */ (
+      cliCommandEvaluation.scenarios
+    );
+    const scenario = scenarios[scenarioKey];
 
     if (scenario === undefined) {
       throw new TypeError(`Unknown CLI command evaluation scenario ${scenarioKey}.`);
@@ -37,7 +40,7 @@ export class CliCommandEvaluationProbe {
       }),
     ));
     const evaluations = new Set();
-    globalThis[this.#evaluationSymbol] = evaluations;
+    Reflect.set(globalThis, this.#evaluationSymbol, evaluations);
 
     const hooks = registerHooks({
       load: (url, context, nextLoad) => {
@@ -52,9 +55,7 @@ export class CliCommandEvaluationProbe {
           const marker =
             `globalThis[Symbol.for(${JSON.stringify(cliCommandEvaluation.evaluationSymbolKey)})]`
             + `.add(${JSON.stringify(url)});\n`;
-          const source = typeof result.source === "string"
-            ? result.source
-            : Buffer.from(result.source).toString("utf8");
+          const source = decodeModuleSource(result.source);
 
           return Object.freeze({ ...result, source: `${marker}${source}` });
         }
@@ -65,7 +66,7 @@ export class CliCommandEvaluationProbe {
     const startedAt = process.hrtime.bigint();
 
     try {
-      const { AsterCatalogue, AsterCommands } = await import("@aster/cli");
+      const { AsterCatalogue, AsterCommands } = await import("@luscious-garden/aster-cli");
       const result = await AsterCommands.execute(
         scenario.invocation,
         Object.freeze({
@@ -75,27 +76,29 @@ export class CliCommandEvaluationProbe {
         }),
       );
       const scenarioNanoseconds = Number(process.hrtime.bigint() - startedAt);
-      const evaluatedModules = Object.freeze(Object.fromEntries(
-        Object.entries(roots).map(([name, { distributionRoot, prefix }]) => [
-          name,
-          Object.freeze([...evaluations]
-            .filter((url) => url.startsWith(prefix))
-            .map((url) => relative(distributionRoot, fileURLToPath(url)).split(sep).join("/"))
-            .sort()),
-        ]),
-      ));
+      const evaluatedModules = /** @type {Readonly<{ cli: readonly string[], icons: readonly string[] }>} */ (
+        Object.freeze(Object.fromEntries(
+          Object.entries(roots).map(([name, { distributionRoot, prefix }]) => [
+            name,
+            Object.freeze([...evaluations]
+              .filter((url) => url.startsWith(prefix))
+              .map((url) => relative(distributionRoot, fileURLToPath(url)).split(sep).join("/"))
+              .sort()),
+          ]),
+        ))
+      );
 
       return Object.freeze({
         name: scenario.name,
-        result: result.ok
-          ? `success:${result.payload.kind}`
-          : `failure:${result.diagnostic.code}`,
+        result: "diagnostic" in result
+          ? `failure:${result.diagnostic.code}`
+          : `success:${result.payload.kind}`,
         scenarioNanoseconds,
         evaluatedModules,
       });
     } finally {
       hooks.deregister();
-      delete globalThis[this.#evaluationSymbol];
+      Reflect.deleteProperty(globalThis, this.#evaluationSymbol);
     }
   }
 }

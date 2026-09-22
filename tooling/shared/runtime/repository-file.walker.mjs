@@ -4,10 +4,16 @@ import { repositoryEntryKinds } from "../constants/repository-entry-kinds.consta
  * @description Walks optional repository trees with deterministic ordering and caller-owned selection.
  */
 export class RepositoryFileWalker {
-  /** @type {import("../contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem} */
+  /**
+   * @description Repository filesystem used to traverse directory entries.
+   * @type {import("../contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem}
+   */
   #fileSystem;
 
-  /** @type {import("./repository-path.resolver.mjs").RepositoryPathResolver} */
+  /**
+   * @description Path resolver used to compose traversed file locations.
+   * @type {import("./repository-path.resolver.mjs").RepositoryPathResolver}
+   */
   #paths;
 
   /**

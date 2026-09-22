@@ -42,7 +42,9 @@ export class CatalogueSourceDynamicPlanner {
    * @returns {import("../contracts/internal/catalogue-source-output.contract.mjs").ICatalogueSourceOutput} Generated dynamic-loader output.
    */
   plan(packageRoot, inspections) {
+    /** @type {{ key: string, symbol: string, facadePath: string }[]} */
     const icons = [];
+    /** @type {{ key: string, symbol: string, facadePath: string }[]} */
     const collections = [];
 
     for (const { family, modules } of inspections) {

@@ -156,7 +156,7 @@ export class CatalogueSourceValueResolver {
         );
       }
 
-      return owner[expression.name.text];
+      return /** @type {Record<string, unknown>} */ (owner)[expression.name.text];
     }
 
     if (ts.isIdentifier(expression)) {
@@ -176,10 +176,16 @@ export class CatalogueSourceValueResolver {
       && expression.expression.expression.text === "Object"
       && expression.expression.name.text === "freeze"
     ) {
+      const argument = expression.arguments[0];
+
+      if (argument === undefined) {
+        return this.#unsupported(sourcePath, expression);
+      }
+
       return this.#resolveExpression(
         sourcePath,
         sourceFile,
-        this.#unwrap(expression.arguments[0]),
+        this.#unwrap(argument),
         references,
       );
     }
@@ -214,6 +220,10 @@ export class CatalogueSourceValueResolver {
       const local = this.#constantDeclaration(sourcePath, sourceFile, name);
 
       if (local !== undefined) {
+        if (local.initializer === undefined) {
+          return this.#unsupported(sourcePath, local);
+        }
+
         const value = await this.#resolveExpression(
           sourcePath,
           sourceFile,
@@ -274,13 +284,13 @@ export class CatalogueSourceValueResolver {
     }
 
     const source = await this.#fileSystem.readText(sourcePath);
-    const sourceFile = ts.createSourceFile(
+    const sourceFile = /** @type {import("typescript").SourceFile & { readonly parseDiagnostics: readonly import("typescript").Diagnostic[] }} */ (ts.createSourceFile(
       sourcePath,
       source,
       ts.ScriptTarget.ESNext,
       true,
       ts.ScriptKind.TS,
-    );
+    ));
 
     if (sourceFile.parseDiagnostics.length > 0) {
       throw new CatalogueSourceError(

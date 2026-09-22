@@ -1,11 +1,11 @@
 {
-  "name": "@aster/core",
-  "version": "0.0.0",
+  "name": "@luscious-garden/aster-core",
+  "version": "0.1.0-rc.1",
   "description": "Portable icon definitions and render-neutral contracts for Aster.",
   "type": "module",
   "author": "BlueLuscious",
   "license": "ISC",
-  "homepage": "https://github.com/BlueLuscious/aster/tree/develop/packages/core#readme",
+  "homepage": "https://github.com/BlueLuscious/aster/tree/master/packages/core#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BlueLuscious/aster.git",

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { AsterIconLoaders } from "@aster/icons/dynamic";
+import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";
 import { Svg } from "../../src/index.js";
 
 test("renders the complete real icon corpus deterministically", async () => {

@@ -205,12 +205,15 @@ export class CatalogueSourceManifestInspector {
    * @returns {{ namespace?: string, name: string, variant?: string }} Frozen complete icon identity.
    */
   #resolvedIconIdentity(sourcePath, value, propertyName) {
+    const identity = typeof value === "object" && value !== null
+      ? /** @type {Record<string, unknown>} */ (value)
+      : undefined;
+
     if (
-      typeof value !== "object"
-      || value === null
-      || typeof value.name !== "string"
-      || (value.namespace !== undefined && typeof value.namespace !== "string")
-      || (value.variant !== undefined && typeof value.variant !== "string")
+      identity === undefined
+      || typeof identity.name !== "string"
+      || (identity.namespace !== undefined && typeof identity.namespace !== "string")
+      || (identity.variant !== undefined && typeof identity.variant !== "string")
     ) {
       throw new CatalogueSourceError(
         `${sourcePath} must resolve ${propertyName} to one icon identity.`,
@@ -218,9 +221,9 @@ export class CatalogueSourceManifestInspector {
     }
 
     return Object.freeze({
-      ...(value.namespace === undefined ? {} : { namespace: value.namespace }),
-      name: value.name,
-      ...(value.variant === undefined ? {} : { variant: value.variant }),
+      ...(identity.namespace === undefined ? {} : { namespace: identity.namespace }),
+      name: identity.name,
+      ...(identity.variant === undefined ? {} : { variant: identity.variant }),
     });
   }
 
@@ -350,7 +353,7 @@ export class CatalogueSourceManifestInspector {
   #requiredObjectProperty(sourcePath, object, name) {
     const value = this.#propertyValue(sourcePath, object, name, true);
 
-    if (!ts.isObjectLiteralExpression(value)) {
+    if (value === undefined || !ts.isObjectLiteralExpression(value)) {
       throw new CatalogueSourceError(
         `${sourcePath} must declare ${name} as an object literal.`,
       );
@@ -368,12 +371,18 @@ export class CatalogueSourceManifestInspector {
    * @returns {import("typescript").Expression | undefined} Direct property value when present.
    */
   #propertyValue(sourcePath, object, name, required) {
-    const properties = object.properties.filter(
-      (property) =>
+    /** @type {import("typescript").PropertyAssignment[]} */
+    const properties = [];
+
+    for (const property of object.properties) {
+      if (
         ts.isPropertyAssignment(property)
         && ((ts.isIdentifier(property.name) && property.name.text === name)
-          || (ts.isStringLiteralLike(property.name) && property.name.text === name)),
-    );
+          || (ts.isStringLiteralLike(property.name) && property.name.text === name))
+      ) {
+        properties.push(property);
+      }
+    }
 
     if (properties.length > 1 || (required && properties.length === 0)) {
       throw new CatalogueSourceError(

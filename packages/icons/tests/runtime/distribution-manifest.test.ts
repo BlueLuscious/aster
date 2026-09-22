@@ -3,7 +3,8 @@ import test from "node:test";
 
 import type {
   IconIdentity,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
+import { asterArtworkLicence } from "../../src/authoring/constants/aster-artwork-licence.constant.js";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
@@ -127,4 +128,24 @@ test("deeply freezes manifest records and their canonical ordering", () => {
     collectionKeys,
     [...collectionKeys].sort(),
   );
+});
+
+test("declares effective artwork rights for every distributed definition", () => {
+  for (const entry of AsterIconManifest) {
+    assert.ok(entry.licence?.trim(), `${entry.key} needs an artwork licence`);
+    assert.ok(entry.attribution?.trim(), `${entry.key} needs artwork attribution`);
+
+    if (entry.licence === asterArtworkLicence) {
+      assert.equal(entry.attribution, "BlueLuscious");
+    }
+  }
+
+  for (const entry of AsterCollectionManifest) {
+    assert.ok(entry.metadata.licence?.trim(), `${entry.key} needs an artwork licence`);
+    assert.ok(entry.metadata.attribution?.trim(), `${entry.key} needs artwork attribution`);
+
+    if (entry.metadata.licence === asterArtworkLicence) {
+      assert.equal(entry.metadata.attribution, "BlueLuscious");
+    }
+  }
 });

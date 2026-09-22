@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { glob, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
@@ -24,6 +24,7 @@ import { BenchmarkRunner } from "../../tooling/performance/shared/runtime/benchm
 import { BenchmarkCatalogueFixtureFactory } from "../../tooling/performance/shared/runtime/benchmark-catalogue-fixture.factory.mjs";
 import { ModuleImportProbe } from "../../tooling/performance/shared/runtime/module-import.probe.mjs";
 import { ModuleImportRunner } from "../../tooling/performance/shared/runtime/module-import.runner.mjs";
+import { decodeModuleSource } from "../../tooling/performance/shared/runtime/module-source.decoder.mjs";
 import { NumericSampleStatistics } from "../../tooling/performance/shared/runtime/numeric-sample.statistics.mjs";
 import { PackageDistributionInspector } from "../../tooling/performance/shared/runtime/package-distribution.inspector.mjs";
 import { svgBaseline } from "../../tooling/performance/svg/constants/svg-baseline.constant.mjs";
@@ -33,6 +34,36 @@ import { NodeRepositoryFileSystem } from "../../tooling/shared/runtime/node-repo
 import { RepositoryFileWalker } from "../../tooling/shared/runtime/repository-file.walker.mjs";
 import { RepositoryJsonReader } from "../../tooling/shared/runtime/repository-json.reader.mjs";
 import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
+
+test("keeps structural performance contracts free of runtime exports", async () => {
+  const contractRoot = resolve("tooling/performance");
+  const contractPaths = [];
+
+  for await (const path of glob("**/contracts/internal/*.contract.mjs", {
+    cwd: contractRoot,
+  })) {
+    contractPaths.push(path);
+  }
+
+  const contracts = await Promise.all(
+    contractPaths.map((path) => import(pathToFileURL(resolve(contractRoot, path)))),
+  );
+
+  assert.ok(contractPaths.length > 0);
+  assert.ok(contracts.every((contract) => Object.keys(contract).length === 0));
+});
+
+test("decodes every module-hook source representation as exact UTF-8", () => {
+  const source = "export const flower = \"aster\";";
+  const bytes = new TextEncoder().encode(source);
+  const framed = new Uint8Array(bytes.length + 2);
+
+  framed.set(bytes, 1);
+
+  assert.equal(decodeModuleSource(source), source);
+  assert.equal(decodeModuleSource(bytes.buffer), source);
+  assert.equal(decodeModuleSource(framed.subarray(1, -1)), source);
+});
 
 test("prepares one stable synthetic benchmark catalogue", () => {
   const fixture = new BenchmarkCatalogueFixtureFactory().create();
@@ -669,7 +700,7 @@ test("runs the complete Icons distribution scenario matrix", async () => {
   const report = await runner.run();
 
   assert.equal(report.schemaVersion, 1);
-  assert.equal(report.package, "@aster/icons");
+  assert.equal(report.package, "@luscious-garden/aster-icons");
   assert.deepEqual(
     measured.map(({ name, specifier }) => ({ name, specifier })),
     Object.values(iconsBaseline.scenarios),

@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-`@aster/icons` uses TypeScript-first authoring. Each distributable icon owns one editable
+`@luscious-garden/aster-icons` uses TypeScript-first authoring. Each distributable icon owns one editable
 `Icon.define(...)` module; each collection owns one explicit `Collection.define(...)` aggregate;
 and SVG remains derived review or distribution output.
 
@@ -12,14 +12,14 @@ and SVG remains derived review or distribution output.
 author or correct .icon.ts
         |
         v
-construct through @aster/core
+construct through @luscious-garden/aster-core
         |
         +--> synchronise generated catalogue sources
         |
         +--> compose explicit .collection.ts membership
         |
         v
-render or review through @aster/svg and @aster/cli
+render or review through @luscious-garden/aster-svg and @luscious-garden/aster-cli
 ```
 
 The TypeScript module retains geometry, portable identity, presentation and runtime metadata in
@@ -32,20 +32,21 @@ icon values and neither clones nor owns their geometry.
 Icon sources use `src/glyphs/<initial>/<name>/<name>.icon.ts` and export exactly one PascalCase
 constant. Collection sources use
 `src/collections/<initial>/<name>/<name>.collection.ts`, export exactly one constant ending in
-`Collection`, and import only public `@aster/core` plus their directly declared icon modules.
+`Collection`, and import only public `@luscious-garden/aster-core`, their directly declared icon modules and any
+applicable local artwork-licence authority.
 Generated facades keep these physical directories private and preserve logical public subpaths.
 The generated distribution manifest and dynamic loader maps derive discovery and resolution
 records from the same modules.
 
 Every icon module:
 
-- creates one immutable definition through public `@aster/core`;
+- creates one immutable definition through public `@luscious-garden/aster-core`;
 - composes applicable package-owned authorship and visual-profile authorities rather than copying
   shared policy;
 - owns its intrinsic display name, tags, RTL policy, presentation, effective artwork licence,
   attribution, deprecation state and replacement relationship;
 - remains independent from collections, renderers, Import, frameworks, DOM and filesystem APIs;
-- becomes available through its isolated `@aster/icons/<icon-slug>` subpath after catalogue
+- becomes available through its isolated `@luscious-garden/aster-icons/<icon-slug>` subpath after catalogue
   synchronisation.
 
 The package currently has no variants. Tooling distinguishes a separate glyph such as
@@ -64,7 +65,8 @@ To add one:
 
 1. choose a canonical lowercase kebab-case glyph name and export its PascalCase symbol;
 2. call `Icon.define(...)` with complete identity, view box, nodes and metadata;
-3. compose the applicable authorship and visual profile explicitly;
+3. compose the applicable authorship and visual profile explicitly, including effective artwork
+   licence and attribution;
 4. add the imported definition to each intended collection's explicit `icons` sequence;
 5. run the package build, inspect `aster review` evidence and run complete verification.
 
@@ -80,12 +82,24 @@ collection-owned metadata and retains members in its intentional semantic order.
 synchronisation discovers it automatically; authors do not edit distribution manifests, loader
 maps or public facades.
 
+## Artwork rights
+
+Every distributable icon and collection declares its effective artwork licence and attribution in
+its own metadata. The [Aster Artwork Licence](../../../../packages/icons/ARTWORK-LICENCE.md) is
+the normal choice for original visual artwork authored and owned by BlueLuscious; it is not
+assigned merely because a definition lives in this package or uses the `aster` namespace. Each
+BlueLuscious-owned definition opts in explicitly through `LicenseRef-Aster-Artwork-1.0`.
+Third-party or differently licensed work keeps its own licence, attribution and reviewed source
+provenance. A collection's licence applies to its own original curation, not automatically to the
+artwork of every member icon. Software and documentation remain under the
+[ISC notice](../../../../packages/icons/LICENSE).
+
 ### Add a rendition
 
 The accepted rendition source is
 `src/glyphs/<initial>/<name>/<name>-<variant>.icon.ts`, sharing the base glyph `name` and declaring
 the rendition in `identity.variant`. Its stable public path is
-`@aster/icons/<name>/<variant>`. Recursive tooling and generated facades enforce this identity,
+`@luscious-garden/aster-icons/<name>/<variant>`. Recursive tooling and generated facades enforce this identity,
 symbol and public-path mapping.
 
 ## Catalogue synchronisation
@@ -106,7 +120,7 @@ are documented by [Catalogue Source Tooling](../../tooling/catalogue/index.md).
 
 ## Derived SVG and review
 
-`@aster/svg` renders deterministic standalone markup from an accepted definition. `aster export`
+`@luscious-garden/aster-svg` renders deterministic standalone markup from an accepted definition. `aster export`
 can emit one icon or plan and publish a complete collection, while `aster review` creates a
 self-contained contact sheet and per-icon technical evidence. These outputs:
 
@@ -130,7 +144,7 @@ documented default and minimum sizes.
 
 ## Optional source adoption
 
-Private `@aster/import` may adopt explicitly acquired SVG into editable TypeScript when external
+Private `@luscious-garden/aster-import` may adopt explicitly acquired SVG into editable TypeScript when external
 artwork is useful. Complete reviewed Core metadata must be supplied because SVG cannot preserve
 search tags, RTL policy, lifecycle, licensing or source authority.
 

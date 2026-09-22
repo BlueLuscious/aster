@@ -1,4 +1,4 @@
-import { Icon } from "@aster/core";
+import { Icon } from "@luscious-garden/aster-core";
 import {
   amellusIconAuthoringProfile,
 } from "../../../authoring/constants/amellus-icon-authoring-profile.constant.js";

@@ -8,10 +8,27 @@ respective [package documentation](../packages/index.md).
 
 ## Current maturity
 
-Aster has no stable public release or compatibility commitment to external consumers. Every
-package manifest currently uses `0.0.0`; `@aster/icons` has an accepted pre-release catalogue and
-`@aster/import` is private. Repository conformance proves the current implementation against its
-documented boundaries but does not turn those versions into published releases.
+Aster has no stable public release or compatibility commitment to external consumers. Core,
+Icons, SVG, and CLI declare initial `0.1.0-rc.1` release candidates; none has been published by
+this decision. `@luscious-garden/aster-import` also uses `0.1.0-rc.1` for independent internal
+version tracking but remains private.
+Repository conformance proves the current implementation against its documented boundaries but
+does not turn candidate versions into published releases.
+The [manual publication procedure](publication.md) records the separate registry and human
+go/no-go checks; this policy does not authorise publication by itself.
+
+The shared initial number is a convenient starting point, not a lockstep policy. Core has no
+production dependency. Icons and SVG depend on Core; CLI depends on all three. Each public edge
+uses `workspace:^` in source and must resolve to a caret range on the installed dependency's
+version when packed. For the initial candidates, this is `^0.1.0-rc.1`, which excludes `0.2.0`.
+Import also uses `workspace:^` for its Core edge, even though it is not packed for publication.
+Development-only workspace dependencies retain `workspace:*` because they are not runtime
+requirements of a distributed package.
+
+The `rc.1` suffix is part of the package's Semantic Versioning identity and marks the first
+release candidate for `0.1.0`. The npm `next` dist-tag is independent registry metadata that
+selects which published version consumers receive through that tag. Publishing
+`0.1.0-rc.1 --tag next` neither publishes nor aliases the later stable `0.1.0` release.
 
 ## Version ownership
 
@@ -48,6 +65,15 @@ Each package declares the narrowest dependency range proven by its built-package
 evidence. When an upstream contract changes incompatibly, its release must precede or accompany
 compatible releases of dependent packages. Release notes identify the affected package set,
 required migration, and compatible versions; unrelated packages remain untouched.
+
+Publish Core first, then Icons and SVG in either order, then CLI, but only after all four final
+tarballs pass clean-consumer conformance. A package release note must name its own version,
+classify each change as compatible capability, compatible correction, or breaking change, and
+state any affected public contract, supported dependency range, and consumer migration. An
+unchanged dependent package needs no new release when its already published range covers the
+upstream update. If not, review and release that dependent package with an updated range and
+evidence before recommending the new combination. Conventional Commit titles inform this
+assessment but never determine versions or trigger publication alone.
 
 Private packages participate in repository verification but are not published. Making one public
 requires an explicit package-boundary decision and complete public distribution evidence rather

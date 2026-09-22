@@ -1,4 +1,4 @@
-import type { CollectionDefinition } from "@aster/core";
+import type { CollectionDefinition } from "@luscious-garden/aster-core";
 import type { AsterCommandShowSubjectType } from "../../../command/types/index.js";
 import type { TCatalogueSelectedIcon } from "./catalogue-selected-icon.type.js";
 

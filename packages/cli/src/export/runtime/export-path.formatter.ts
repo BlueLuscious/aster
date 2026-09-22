@@ -1,4 +1,4 @@
-import type { IconIdentity } from "@aster/core";
+import type { IconIdentity } from "@luscious-garden/aster-core";
 import { svgExportArtefactSchema } from "../constants/svg-export-artefact-schema.constant.js";
 
 /**

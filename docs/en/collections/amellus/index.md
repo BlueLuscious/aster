@@ -13,9 +13,9 @@ Collection lifecycle: **Active**
 | Botanical identity | *Aster amellus* L. |
 | Catalogue identity | `{ name: "amellus" }` |
 | Canonical module | `amellus.collection.ts` |
-| Public subpath | `@aster/icons/collections/amellus` |
+| Public subpath | `@luscious-garden/aster-icons/collections/amellus` |
 | Curator and original artwork author | BlueLuscious |
-| Artwork licence | [ISC](../../../../LICENSE) |
+| Artwork licence | [Aster Artwork Licence 1.0](../../../../packages/icons/ARTWORK-LICENCE.md) |
 | Lifecycle | Active foundational collection accepted for pre-release distribution. |
 
 `Amellus` is the frozen identity for Aster's foundational minimalist general-purpose collection.
@@ -106,8 +106,11 @@ promise, alias or replacement export because it was never released.
 
 ## Provenance and acceptance evidence
 
-Original Amellus artwork is authored and curated by BlueLuscious under ISC. Each
-accepted icon must retain:
+Original Amellus artwork is authored and curated by BlueLuscious under the
+[Aster Artwork Licence](../../../../packages/icons/ARTWORK-LICENCE.md). The licence permits
+commercial product use but not sale or resale of the artwork as a standalone asset.
+[ISC](../../../../packages/icons/LICENSE) applies to the software implementation, not to the
+original visual artwork. Each accepted icon must retain:
 
 - one canonical editable TypeScript definition and its independent portable identity;
 - the original author, effective artwork licence and an explicit third-party-source statement;
@@ -131,6 +134,17 @@ The complete twenty-six-icon collection has passed static visual review using th
 catalogue and SVG rendering workflow. Evidence covered `16px`, `24px`, `32px` and `48px` sizes;
 light, dark and transparent backgrounds; neutral and contrasting foreground colours; construction
 grids; and view-box bounds.
+
+The review surface is reproduced from a built workspace without retaining derived HTML:
+
+```sh
+pnpm run build
+pnpm exec aster review collection amellus --output ./aster-review --replace
+```
+
+The generated directory is disposable evidence and remains outside source control. The written
+findings below are the durable human acceptance record; the command reconstructs the exact visual
+surface whenever artwork or rendering behaviour changes.
 
 The review accepted the following findings:
 

@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-This document defines the evidence method used to compare `@aster/core` construction and
+This document defines the evidence method used to compare `@luscious-garden/aster-core` construction and
 distribution changes. It is not a product benchmark, a hardware-independent promise, or a CI
 performance threshold.
 

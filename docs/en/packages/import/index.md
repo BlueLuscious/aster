@@ -2,13 +2,13 @@
 
 Status: **Private pre-release**
 
-`@aster/import` is the host-independent adoption compiler for explicitly acquired external icon
+`@luscious-garden/aster-import` is the host-independent adoption compiler for explicitly acquired external icon
 sources. It inspects untrusted input, returns a metadata-free portable draft, combines that draft
 with complete host-reviewed Core metadata, and emits an editable `.icon.ts` module.
 
 Import owns no filesystem, terminal, process, network, discovery, overwrite, cleanup, collection
 membership or generated-package authority. The emitted module becomes human-owned source
-immediately and depends only on [`@aster/core`](../core/index.md).
+immediately and depends only on [`@luscious-garden/aster-core`](../core/index.md).
 
 ## Features
 

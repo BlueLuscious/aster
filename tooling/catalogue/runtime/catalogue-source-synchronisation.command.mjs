@@ -18,7 +18,7 @@ export class CatalogueSourceSynchronisationCommand {
   /**
    * @description Creates one catalogue source synchronisation command.
    * @param {{ synchronise(packageRoot: string, checkOnly: boolean): Promise<{ changedPaths: readonly string[], outputCount: number }> }} synchroniser - Catalogue source synchronisation authority.
-   * @param {{ argv: string[], stdout: { write(value: string): unknown }, stderr: { write(value: string): unknown }, exitCode?: number }} processHost - Process capability.
+   * @param {{ argv: string[], stdout: { write(value: string): unknown }, stderr: { write(value: string): unknown }, exitCode?: string | number | null | undefined }} processHost - Process capability.
    */
   constructor(synchroniser, processHost) {
     this.#synchroniser = synchroniser;

@@ -34,18 +34,18 @@ export class CorePackagePolicy {
    */
   async inspect(record, dependencies, workspaceDependencies, issues) {
     if (workspaceDependencies.size > 0) {
-      issues.add("@aster/core cannot depend on another workspace package");
+      issues.add("@luscious-garden/aster-core cannot depend on another workspace package");
     }
 
     const dependencyNames = Object.keys(dependencies);
 
     if (dependencyNames.length > 0) {
       issues.add(
-        `@aster/core cannot declare production dependencies: ${dependencyNames.sort().join(", ")}`,
+        `@luscious-garden/aster-core cannot declare production dependencies: ${dependencyNames.sort().join(", ")}`,
       );
     }
 
-    this.#rootExport.inspect("@aster/core", record.manifest, issues);
-    await this.#compiler.inspect(record.packageRoot, "@aster/core", issues);
+    this.#rootExport.inspect("@luscious-garden/aster-core", record.manifest, issues);
+    await this.#compiler.inspect(record.packageRoot, "@luscious-garden/aster-core", issues);
   }
 }

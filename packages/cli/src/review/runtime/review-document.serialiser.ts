@@ -1,4 +1,4 @@
-import type { IconPresentation } from "@aster/core";
+import type { IconPresentation } from "@luscious-garden/aster-core";
 import { CatalogueIdentityFormatter } from "../../catalogue/runtime/catalogue-identity.formatter.js";
 import { reviewSubjects } from "../constants/review-subjects.constant.js";
 import { reviewDocumentPresentation } from "../constants/review-document-presentation.constant.js";
@@ -13,7 +13,7 @@ import { HtmlContentEscaper } from "./html-content.escaper.js";
 
 /**
  * @description Serialises complete review plans into deterministic self-contained HTML evidence.
- * @remarks Rendered icon markup is retained from `@aster/svg`; this class never interprets geometry.
+ * @remarks Rendered icon markup is retained from `@luscious-garden/aster-svg`; this class never interprets geometry.
  */
 export class ReviewDocumentSerialiser {
   /**
@@ -182,7 +182,7 @@ export class ReviewDocumentSerialiser {
       "</div>",
       `<${detailHeading}>Presentation policy</${detailHeading}>`,
       this.#presentation(icon.metadata.presentation.defaults, icon.metadata.presentation.overrides, icon.metadata.presentation.defaultSize, icon.metadata.presentation.minimumSize),
-      '<details><summary>Rendered SVG markup</summary>',
+      "<details><summary>Rendered SVG markup</summary>",
       `<pre class="review-code"><code>${this.#html.text(icon.markup)}</code></pre>`,
       "</details>",
       "</article>",
@@ -223,7 +223,7 @@ export class ReviewDocumentSerialiser {
    */
   #tags(tags: readonly string[] | undefined): string {
     if (tags === undefined || tags.length === 0) {
-      return '<p><strong>Tags:</strong> none</p>';
+      return "<p><strong>Tags:</strong> none</p>";
     }
 
     return `<ul class="review-tags" aria-label="Tags">${tags.map((tag) => `<li class="review-tag">${this.#html.text(tag)}</li>`).join("")}</ul>`;

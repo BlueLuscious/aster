@@ -9,7 +9,7 @@ membership. Seventeen definitions remain primitive-first. Nine use structured ab
 commands, combined with clearer primitives where appropriate, and contain no raw SVG path text.
 
 Canonical source modules use `<icon-slug>.icon.ts`. The semantic role remains internal to the
-source layout: public imports omit it and retain `@aster/icons/<icon-slug>`.
+source layout: public imports omit it and retain `@luscious-garden/aster-icons/<icon-slug>`.
 
 ## Authored corpus
 
@@ -47,10 +47,11 @@ Every current icon:
 - composes internal `asterOriginalIconAuthorship` and `amellusIconAuthoringProfile` authorities;
 - contains no node-specific paint or stroke exceptions;
 - uses geometry values on the provisional half-unit grid;
-- resolves ISC licence and BlueLuscious attribution;
+- resolves [`LicenseRef-Aster-Artwork-1.0`](../../../../../packages/icons/ARTWORK-LICENCE.md)
+  artwork terms and BlueLuscious attribution;
 - is deeply frozen by Core;
 - remains below the provisional primitive and structured-command budgets;
-- exports through `@aster/icons/<icon-slug>`.
+- exports through `@luscious-garden/aster-icons/<icon-slug>`.
 
 Catalogue source synchronisation generates one manifest record, exact loader and public facade for
 each nested canonical `*.icon.ts` module. Complete-package consumers must deliberately iterate the
@@ -76,7 +77,7 @@ isolated icon module.
 
 ## Isolation
 
-An icon module imports only public `@aster/core` authority and its applicable internal authoring
+An icon module imports only public `@luscious-garden/aster-core` authority and its applicable internal authoring
 authorities. It does not import a collection, another icon, the root index, a manifest, a renderer,
 or Import. The [authoring boundary](../authoring/index.md) allows another visual family or artwork
 owner to supply different inputs without changing Amellus or original Aster authorship.

@@ -1,7 +1,7 @@
 import type {
   CollectionIdentity,
   CollectionMetadata,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type { reviewSubjects } from "../constants/review-subjects.constant.js";
 import type { AsterReviewIconEvidence } from "./aster-review-icon-evidence.contract.js";
 

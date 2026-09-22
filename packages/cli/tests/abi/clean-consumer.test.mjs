@@ -16,7 +16,7 @@ import { fileURLToPath } from "node:url";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
-} from "@aster/icons/dynamic";
+} from "@luscious-garden/aster-icons/dynamic";
 
 const asterIconDefinitions = await Promise.all(
   Object.values(AsterIconLoaders).map((loader) => {
@@ -33,6 +33,9 @@ const asterCollectionDefinitions = await Promise.all(
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const workspaceRoot = resolve(packageRoot, "../..");
+const packageVersion = JSON.parse(
+  await readFile(resolve(packageRoot, "package.json"), "utf8"),
+).version;
 assert.ok(asterIconDefinitions.length > 0, "Expected the packed icon family to be non-empty.");
 assert.ok(
   asterCollectionDefinitions.length > 0,
@@ -74,6 +77,7 @@ const expectedCollectionPaths = Object.freeze(
     .sort((left, right) => left.localeCompare(right)),
 );
 let consumerRoot;
+let packedPackages;
 
 function runPnpm(arguments_) {
   const options = {
@@ -114,9 +118,14 @@ async function packPublishedPackage(name, tarballRoot) {
     "--json",
   ]);
 
-  assertSuccessfulProcess(packed, `pack @aster/${name}`);
+  assertSuccessfulProcess(packed, `pack @luscious-garden/aster-${name}`);
 
-  return basename(JSON.parse(packed.stdout).filename);
+  const artefact = JSON.parse(packed.stdout);
+
+  return Object.freeze({
+    filename: basename(artefact.filename),
+    files: Object.freeze(artefact.files.map(({ path }) => path)),
+  });
 }
 
 function runModule(source) {
@@ -137,8 +146,8 @@ function runExecutable(arguments_) {
       resolve(
         consumerRoot,
         "node_modules",
-        "@aster",
-        "cli",
+        "@luscious-garden",
+        "aster-cli",
         "dist",
         "shell",
         "aster.js",
@@ -158,7 +167,7 @@ before(async () => {
 
   await mkdir(tarballRoot, { recursive: true });
   const packageNames = ["core", "icons", "svg", "cli"];
-  const filenames = Object.fromEntries(
+  packedPackages = Object.fromEntries(
     await Promise.all(
       packageNames.map(async (name) => [
         name,
@@ -168,8 +177,8 @@ before(async () => {
   );
   const packageSpecifications = Object.fromEntries(
     packageNames.map((name) => [
-      `@aster/${name}`,
-      `file:./tarballs/${filenames[name]}`,
+      `@luscious-garden/aster-${name}`,
+      `file:./tarballs/${packedPackages[name].filename}`,
     ]),
   );
   await writeFile(
@@ -199,10 +208,226 @@ after(async () => {
   await rm(consumerRoot, { recursive: true, force: true });
 });
 
+test("installs independent package versions with bounded public dependency ranges", async () => {
+  const expectedDependencies = {
+    core: undefined,
+    icons: { "@luscious-garden/aster-core": "^0.1.0-rc.1" },
+    svg: { "@luscious-garden/aster-core": "^0.1.0-rc.1" },
+    cli: {
+      "@luscious-garden/aster-core": "^0.1.0-rc.1",
+      "@luscious-garden/aster-icons": "^0.1.0-rc.1",
+      "@luscious-garden/aster-svg": "^0.1.0-rc.1",
+    },
+  };
+
+  for (const [name, dependencies] of Object.entries(expectedDependencies)) {
+    const manifest = JSON.parse(await readFile(
+      resolve(consumerRoot, "node_modules", "@luscious-garden", `aster-${name}`, "package.json"),
+      "utf8",
+    ));
+
+    assert.equal(manifest.version, "0.1.0-rc.1");
+    assert.deepEqual(manifest.dependencies, dependencies);
+    assert.equal(
+      manifest.homepage,
+      `https://github.com/BlueLuscious/aster/tree/master/packages/${name}#readme`,
+    );
+  }
+});
+
+test("installs only accepted public package files and notices", async () => {
+  const names = (await readdir(resolve(consumerRoot, "node_modules", "@luscious-garden")))
+    .sort((left, right) => left.localeCompare(right));
+
+  assert.deepEqual(names, ["aster-cli", "aster-core", "aster-icons", "aster-svg"]);
+
+  for (const packageName of names) {
+    const name = packageName.slice("aster-".length);
+    const files = packedPackages[name].files;
+
+    assert.ok(files.includes("package.json"), `Missing ${name} manifest.`);
+    assert.ok(files.includes("README.md"), `Missing ${name} README.`);
+    assert.ok(files.includes("LICENSE"), `Missing ${name} software notice.`);
+    assert.equal(files.includes("ARTWORK-LICENCE.md"), name === "icons");
+    assert.ok(files.some((file) => file.endsWith(".d.ts")));
+    const readme = await readFile(
+      resolve(
+        consumerRoot,
+        "node_modules",
+        "@luscious-garden",
+        packageName,
+        "README.md",
+      ),
+      "utf8",
+    );
+
+    assert.ok(!readme.includes("/blob/develop/"), `Stale ${name} README branch link.`);
+    assert.ok(readme.includes("/blob/master/"), `Missing ${name} release branch link.`);
+    const unexpected = files.filter((file) => !(
+      file.startsWith("dist/") || [
+        "package.json",
+        "README.md",
+        "LICENSE",
+        "ARTWORK-LICENCE.md",
+      ].includes(file)
+    ));
+    assert.deepEqual(unexpected, [], `Unexpected ${name} package content.`);
+  }
+});
+
+test("executes published README examples through packed package entrypoints", async () => {
+  const examples = [
+    { name: "core", result: 'Camera.identity.name === "camera"' },
+    { name: "icons", result: 'markup.startsWith("<svg ")' },
+    { name: "svg", result: 'markup.includes("<circle ")' },
+  ];
+
+  for (const { name, result } of examples) {
+    const readme = await readFile(
+      resolve(consumerRoot, "node_modules", "@luscious-garden", `aster-${name}`, "README.md"),
+      "utf8",
+    );
+    const source = readme.match(/```ts\r?\n([\s\S]*?)\r?\n```/)?.[1];
+
+    assert.ok(source, `Missing executable ${name} README example.`);
+    assert.ok(!readme.includes("../../docs/"), `Broken ${name} package documentation link.`);
+
+    const executed = runModule(`${source}\nif (!(${result})) throw new Error("README example failed");`);
+
+    assert.equal(executed.status, 0, `${name}: ${executed.stderr}`);
+    assert.equal(executed.stderr, "");
+  }
+
+  const rootReadme = await readFile(resolve(workspaceRoot, "README.md"), "utf8");
+  const rootSource = rootReadme.match(/```ts\r?\n([\s\S]*?)\r?\n```/)?.[1];
+  assert.ok(rootSource, "Missing root README example.");
+  const executed = runModule(`${rootSource}\nif (!markup.startsWith("<svg ")) throw new Error("Root README example failed");`);
+  assert.equal(executed.status, 0, executed.stderr);
+  assert.equal(executed.stderr, "");
+});
+
+test("composes packed Core, Icons, and SVG through public consumer entrypoints", () => {
+  const baseIcon = asterIconDefinitions.find(
+    (icon) => icon.identity.variant === undefined,
+  );
+  const collection = asterCollectionDefinitions[0];
+  assert.ok(baseIcon, "Expected one packed base icon.");
+  assert.ok(collection, "Expected one packed collection.");
+
+  const executed = runModule([
+    'import { Icon } from "@luscious-garden/aster-core";',
+    'import { AsterIconManifest, AsterCollectionManifest } from "@luscious-garden/aster-icons/manifest";',
+    'import { AsterIconLoaders, AsterCollectionLoaders } from "@luscious-garden/aster-icons/dynamic";',
+    'import { Svg } from "@luscious-garden/aster-svg";',
+    "const iconEntry = AsterIconManifest.find(({ identity }) => identity.variant === undefined);",
+    "const collectionEntry = AsterCollectionManifest[0];",
+    'if (!iconEntry || !collectionEntry) throw new Error("Missing packed catalogue entries");',
+    "const icon = await AsterIconLoaders[iconEntry.key]();",
+    "const collection = await AsterCollectionLoaders[collectionEntry.key]();",
+    "const directIcon = await import(`@luscious-garden/aster-icons/${iconEntry.identity.name}`);",
+    "const directCollection = await import(`@luscious-garden/aster-icons/collections/${collectionEntry.identity.name}`);",
+    "const rebuilt = Icon.define(icon);",
+    "const markup = Svg.render(rebuilt);",
+    "process.stdout.write(JSON.stringify({",
+    "  icon: iconEntry.key,",
+    "  collection: collectionEntry.key,",
+    "  exactIcon: directIcon[iconEntry.symbol] === icon,",
+    "  exactCollection: directCollection[collectionEntry.symbol] === collection,",
+    "  rebuilt: JSON.stringify(rebuilt) === JSON.stringify(icon),",
+    '  svg: markup.startsWith("<svg ") && markup.endsWith("</svg>"),',
+    "}));",
+  ].join("\n"));
+
+  assert.equal(executed.status, 0, executed.stderr);
+  assert.equal(executed.stderr, "");
+  assert.deepEqual(JSON.parse(executed.stdout), {
+    icon: `${baseIcon.identity.namespace === undefined
+      ? ""
+      : `${baseIcon.identity.namespace}/`}${baseIcon.identity.name}`,
+    collection: `${collection.identity.namespace === undefined
+      ? ""
+      : `${collection.identity.namespace}/`}${collection.identity.name}`,
+    exactIcon: true,
+    exactCollection: true,
+    rebuilt: true,
+    svg: true,
+  });
+});
+
+test("type-checks cross-package usage against packed declarations", async () => {
+  await writeFile(resolve(consumerRoot, "consumer.ts"), [
+    'import type { IconDefinition } from "@luscious-garden/aster-core";',
+    'import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
+    'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
+    'import { Svg } from "@luscious-garden/aster-svg";',
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
+    "const entry = AsterIconManifest[0];",
+    'if (entry === undefined) throw new Error("Missing icon");',
+    "const loader = AsterIconLoaders[entry.key];",
+    'if (loader === undefined) throw new Error("Missing loader");',
+    "const icon: IconDefinition = await loader();",
+    "export const markup: string = Svg.render(icon);",
+    "export const listed = await AsterCommands.execute(",
+    '  { command: "list", subject: "catalogues" },',
+    '  { catalogues: [AsterCatalogue], productName: "Aster", productVersion: "0.1.0-rc.1" },',
+    ");",
+    "",
+  ].join("\n"), "utf8");
+  await writeFile(resolve(consumerRoot, "tsconfig.json"), `${JSON.stringify({
+    compilerOptions: {
+      target: "ES2022",
+      module: "NodeNext",
+      moduleResolution: "NodeNext",
+      strict: true,
+      noEmit: true,
+      types: [],
+    },
+    include: ["consumer.ts"],
+  })}\n`, "utf8");
+
+  const checked = spawnSync(process.execPath, [
+    resolve(workspaceRoot, "node_modules/typescript/bin/tsc"),
+    "-p",
+    resolve(consumerRoot, "tsconfig.json"),
+  ], { cwd: consumerRoot, encoding: "utf8" });
+
+  assertSuccessfulProcess(checked, "type-check packed Aster packages");
+});
+
+test("keeps private package internals outside the packed consumer", () => {
+  const executed = runModule([
+    "const specifiers = [",
+    '  "@luscious-garden/aster-core/definition/runtime/icon-definition.factory.js",',
+    '  "@luscious-garden/aster-icons",',
+    '  "@luscious-garden/aster-icons/collections",',
+    '  "@luscious-garden/aster-svg/render/runtime/svg-markup.serialiser.js",',
+    '  "@luscious-garden/aster-cli/shell/aster.js",',
+    '  "@luscious-garden/aster-import",',
+    "];",
+    "const codes = [];",
+    "for (const specifier of specifiers) {",
+    "  try { await import(specifier); codes.push('accepted'); }",
+    "  catch (error) { codes.push(error.code); }",
+    "}",
+    "process.stdout.write(JSON.stringify(codes));",
+  ].join("\n"));
+
+  assert.equal(executed.status, 0, executed.stderr);
+  assert.equal(executed.stderr, "");
+  assert.deepEqual(JSON.parse(executed.stdout), [
+    "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    "ERR_PACKAGE_PATH_NOT_EXPORTED",
+    "ERR_MODULE_NOT_FOUND",
+  ]);
+});
+
 test("imports the public package without source files or observable effects", () => {
-  const imported = runModule('await import("@aster/cli");');
+  const imported = runModule('await import("@luscious-garden/aster-cli");');
   const inspected = runModule([
-    'import * as AsterCli from "@aster/cli";',
+    'import * as AsterCli from "@luscious-garden/aster-cli";',
     "process.stdout.write(JSON.stringify(Object.keys(AsterCli).sort()));",
   ].join("\n"));
 
@@ -225,7 +450,7 @@ test("links and executes the packed CLI binary through the package manager", () 
   const linked = runPnpm(["--dir", consumerRoot, "exec", "aster", "version"]);
 
   assertSuccessfulProcess(linked, "execute linked Aster binary");
-  assert.equal(linked.stdout, "Aster 0.0.0\n");
+  assert.equal(linked.stdout, `Aster ${packageVersion}\n`);
 });
 
 test("returns the same result through the executable and an independent plugin host", () => {
@@ -237,7 +462,7 @@ test("returns the same result through the executable and an independent plugin h
     "--json",
   ]);
   const programmatic = runModule([
-    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
     "const plugins = new Map([[AsterCommands.identity, AsterCommands]]);",
     'const plugin = plugins.get("aster");',
     "if (plugin === undefined) throw new TypeError(\"Missing Aster plugin\");",
@@ -249,7 +474,7 @@ test("returns the same result through the executable and an independent plugin h
     '    productVersion: "0.0.0",',
     "  },",
     ");",
-    'process.stdout.write(`${JSON.stringify(result)}\\n`);',
+    "process.stdout.write(`${JSON.stringify(result)}\\n`);",
   ].join("\n"));
 
   assert.equal(executable.status, 0);
@@ -274,7 +499,7 @@ test("returns the same complete export through standalone and programmatic hosts
     "--json",
   ]);
   const programmatic = runModule([
-    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
     "const plugins = new Map([[AsterCommands.identity, AsterCommands]]);",
     'const plugin = plugins.get("aster");',
     'if (plugin === undefined) throw new TypeError("Missing Aster plugin");',
@@ -295,7 +520,7 @@ test("returns the same complete export through standalone and programmatic hosts
     '    productVersion: "0.0.0",',
     "  },",
     ");",
-    'process.stdout.write(`${JSON.stringify(result)}\\n`);',
+    "process.stdout.write(`${JSON.stringify(result)}\\n`);",
   ].join("\n"));
 
   assert.equal(executable.status, 0);
@@ -324,7 +549,7 @@ test("returns and publishes a complete review from the clean consumer", async ()
     "--json",
   ]);
   const programmatic = runModule([
-    'import { AsterCatalogue, AsterCommands } from "@aster/cli";',
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
     "const result = await AsterCommands.execute(",
     "  {",
     '    command: "review",',
@@ -337,7 +562,7 @@ test("returns and publishes a complete review from the clean consumer", async ()
     '    productVersion: "0.0.0",',
     "  },",
     ");",
-    'process.stdout.write(`${JSON.stringify(result)}\n`);',
+    "process.stdout.write(`${JSON.stringify(result)}\n`);",
   ].join("\n"));
 
   assert.equal(executable.status, 0);
@@ -422,7 +647,7 @@ test("publishes the complete planned collection from the clean consumer", async 
 
 test("requires explicit catalogues and canonicalises provider registration order", () => {
   const execution = runModule([
-    'import { AsterCommands } from "@aster/cli";',
+    'import { AsterCommands } from "@luscious-garden/aster-cli";',
     "const counts = { alpha: 0, beta: 0 };",
     "const provider = (identity) => ({",
     "  identity,",

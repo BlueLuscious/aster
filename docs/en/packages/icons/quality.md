@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-`@aster/icons` quality evidence protects canonical authored definitions, independent collection
+`@luscious-garden/aster-icons` quality evidence protects canonical authored definitions, independent collection
 composition, generated catalogue sources and the package's distributable public surface. This
 evidence accepts the current pre-release boundary and artwork without creating a stable-version
 compatibility promise.
@@ -11,13 +11,17 @@ compatibility promise.
 
 Runtime tests discover every canonical icon and collection from generated manifests and exact
 loaders. They require both families to be non-empty, reconstruct every definition through public
-`@aster/core`, verify deep immutability and uniqueness, and validate collection membership against
+`@luscious-garden/aster-core`, verify deep immutability and uniqueness, and validate collection membership against
 independent icon loaders without assuming a fixed catalogue count or collection identity.
 
 Collection-specific evidence separately protects Amellus's accepted twenty-six-member semantic
 order, metadata, complete loader membership and independence from additional or reduced test
 collections. This exact evidence belongs to the collection contract rather than the generic
 catalogue-growth tests.
+
+Distribution evidence requires every icon and collection to state its effective artwork licence
+and attribution. A definition using `LicenseRef-Aster-Artwork-1.0` must attribute BlueLuscious;
+other licences remain possible and are not replaced by package defaults.
 
 Identity-specific assertions remain only where the identity carries the behaviour under test.
 Declared directional arrow pairs therefore retain exact RTL and relationship evidence; generic
@@ -44,9 +48,12 @@ Raw SVG path text is not accepted as authored catalogue data.
 
 ABI tests build the package and verify blocked aggregate roots plus exact per-icon, per-collection,
 manifest and dynamic exports against discovered canonical source modules. They also verify
-declarations, ESM loading, object identity across direct and loader routes, `sideEffects: false`, dependency confinement to public
-`@aster/core`, exact minimal facade modules, rejection of implementation subpaths and isolated
-collection dependencies on only their explicitly declared icon modules.
+declarations, ESM loading, object identity across direct and loader routes, `sideEffects: false`,
+dependency confinement to public `@luscious-garden/aster-core`, exact minimal facade modules, rejection of
+implementation subpaths and isolated collection dependencies on only their explicitly declared
+icon modules and local artwork-licence authority. The installed tarball contains both the
+[ISC software notice](../../../../packages/icons/LICENSE) and
+[artwork terms](../../../../packages/icons/ARTWORK-LICENCE.md).
 
 The exact exported subpath set is intentional distribution evidence even though its membership
 grows with the catalogue. The test derives that set from canonical modules rather than maintaining

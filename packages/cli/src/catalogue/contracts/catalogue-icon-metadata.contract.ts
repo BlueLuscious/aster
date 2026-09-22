@@ -1,7 +1,7 @@
 import type {
   IconIdentity,
   IconRtlPolicyType,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 /**
  * @description Lightweight portable metadata accepted for icon discovery.

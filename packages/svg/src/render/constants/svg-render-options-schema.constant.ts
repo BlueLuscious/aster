@@ -1,4 +1,4 @@
-import { iconPresentationOverrideOrder } from "@aster/core";
+import { iconPresentationOverrideOrder } from "@luscious-garden/aster-core";
 
 /**
  * @description Immutable closed field authority for portable SVG render options.

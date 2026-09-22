@@ -2,7 +2,10 @@
  * @description Reads strict JSON objects through an injected repository filesystem capability.
  */
 export class RepositoryJsonReader {
-  /** @type {import("../contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem} */
+  /**
+   * @description Repository filesystem used to read JSON source text.
+   * @type {import("../contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem}
+   */
   #fileSystem;
 
   /**

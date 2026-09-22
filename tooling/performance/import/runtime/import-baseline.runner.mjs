@@ -1,4 +1,4 @@
-import { IconImport } from "@aster/import";
+import { IconImport } from "@luscious-garden/aster-import";
 import { importBaseline } from "../constants/import-baseline.constant.mjs";
 
 /**
@@ -96,7 +96,7 @@ export class ImportBaselineRunner {
   /**
    * @description Adapts one public Import operation to the generic repeated-scenario contract.
    * @param {{ readonly name: string, readonly operationsPerSample: number }} configuration - Stable scenario identity and operation count.
-   * @param {() => import("@aster/import").DiagnosticResultType<unknown>} operation - Public Import operation under measurement.
+   * @param {() => import("@luscious-garden/aster-import").DiagnosticResultType<unknown>} operation - Public Import operation under measurement.
    * @returns {{ readonly name: string, readonly operationsPerSample: number, execute(iterations: number): number }} Repeated benchmark scenario.
    */
   #scenario(configuration, operation) {

@@ -36,26 +36,26 @@ export class ImportPackagePolicy {
    */
   async inspect(record, dependencies, workspaceDependencies, issues) {
     if (record.manifest.private !== true) {
-      issues.add("@aster/import must remain a private adoption package");
+      issues.add("@luscious-garden/aster-import must remain a private adoption package");
     }
 
     for (const name of workspaceDependencies) {
       if (name !== packageBoundaries.names.core) {
-        issues.add(`@aster/import cannot depend on workspace package ${name}`);
+        issues.add(`@luscious-garden/aster-import cannot depend on workspace package ${name}`);
       }
     }
 
     for (const name of Object.keys(dependencies)) {
       if (!packageBoundaries.importDependencies.includes(name)) {
-        issues.add(`@aster/import cannot declare unaccepted production dependency ${name}`);
+        issues.add(`@luscious-garden/aster-import cannot declare unaccepted production dependency ${name}`);
       }
     }
 
     if (dependencies[packageBoundaries.parser.dependency] !== packageBoundaries.parser.version) {
-      issues.add("@aster/import must pin the accepted xmlsax-typescript parser at 1.0.0");
+      issues.add("@luscious-garden/aster-import must pin the accepted xmlsax-typescript parser at 1.0.0");
     }
 
-    this.#rootExport.inspect("@aster/import", record.manifest, issues);
-    await this.#compiler.inspect(record.packageRoot, "@aster/import", issues);
+    this.#rootExport.inspect("@luscious-garden/aster-import", record.manifest, issues);
+    await this.#compiler.inspect(record.packageRoot, "@luscious-garden/aster-import", issues);
   }
 }

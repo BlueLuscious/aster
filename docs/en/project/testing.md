@@ -19,6 +19,18 @@ Every test has one primary role:
 | Workflow | One meaningful composition across independently owned boundaries. |
 | Measurement | Fixture and runner semantics without accidental product performance promises. |
 
+The current suites map to those roles as follows. Individual tests may protect a narrower
+secondary boundary, but their suite placement does not erase the primary evidence they own.
+
+| Suite | Primary evidence roles |
+| --- | --- |
+| Package `tests/types/` | Contract and Boundary evidence for accepted TypeScript use and rejection. |
+| Package `tests/runtime/` | Contract, Regression and Boundary evidence for source-level behaviour. |
+| Package `tests/abi/` | Conformance evidence for emitted modules, declarations and package surfaces. |
+| CLI `tests/executable/` | Boundary and Conformance evidence for the installed process interface. |
+| Root `tests/tooling/` | Boundary and Measurement evidence for private repository capabilities. |
+| Root `tests/workflow/` | Workflow evidence for compositions spanning multiple public packages. |
+
 A test is removed when it has no current role, protects retired behaviour, asserts an unsupported
 implementation arrangement, cannot fail when its claimed behaviour breaks, or is strictly weaker
 than evidence owned by another retained test. Consolidation must preserve failure localisation and

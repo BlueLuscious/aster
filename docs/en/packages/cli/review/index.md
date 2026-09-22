@@ -11,7 +11,7 @@ launching a browser, or mutating process state.
 
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
-| `AsterReviewIconEvidence` | Retains one icon's portable identity, metadata, view box, node count, primitive families, memberships, and rendered SVG. | SVG markup is produced exclusively through public `@aster/svg`; portable values originate from accepted Core definitions. |
+| `AsterReviewIconEvidence` | Retains one icon's portable identity, metadata, view box, node count, primitive families, memberships, and rendered SVG. | SVG markup is produced exclusively through public `@luscious-garden/aster-svg`; portable values originate from accepted Core definitions. |
 | `AsterIconReviewDocument` | Describes one exact icon review. | Retains one `AsterReviewIconEvidence` value and uses the `icon` discriminator. |
 | `AsterCollectionReviewDocument` | Describes one exact collection and its ordered member evidence. | Retains collection identity and metadata plus zero or more `AsterReviewIconEvidence` values. |
 | `AsterReviewPlan` | Describes one selected provider, subject, identity, output target, and complete technical model. | Retains `AsterReviewDocumentType`, `AsterReviewSubjectType`, and `reviewTargets.html`. |
@@ -73,7 +73,7 @@ keyboard reachable.
 
 All CSS and SVG are inline. The document contains no scripts, external fonts, images, stylesheets,
 or network references. Fixed review CSS owns every visual value. Authored metadata is escaped for
-HTML text, rendered SVG enters only from public `@aster/svg`, and no authored value becomes CSS or
+HTML text, rendered SVG enters only from public `@luscious-garden/aster-svg`, and no authored value becomes CSS or
 raw markup. Equal plans produce byte-identical documents.
 
 ## Effects and failures

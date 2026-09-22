@@ -1,7 +1,7 @@
 import type {
   IconDefinition,
   IconRenderOptions,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import {
   Svg,
   SvgRenderError,

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
 
-import { Collection, Icon } from "@aster/core";
+import { Collection, Icon } from "@luscious-garden/aster-core";
 import {
   AsterCommands,
   type AsterReviewPlan,

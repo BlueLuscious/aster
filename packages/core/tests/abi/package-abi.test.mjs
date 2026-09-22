@@ -59,7 +59,7 @@ function createDefinitionInput() {
 }
 
 test("exposes the exact immutable root value surface", async () => {
-  const packageModule = await import("@aster/core");
+  const packageModule = await import("@luscious-garden/aster-core");
 
   assert.deepEqual(Object.keys(packageModule).sort(), [
     "Collection",
@@ -97,7 +97,7 @@ test("exposes the exact immutable root value surface", async () => {
 });
 
 test("exposes deterministic definition failure discrimination", async () => {
-  const { Icon, IconDefinitionError } = await import("@aster/core");
+  const { Icon, IconDefinitionError } = await import("@luscious-garden/aster-core");
 
   assert.equal(IconDefinitionError.code, "ASTER-CORE-001");
   assert.throws(
@@ -112,7 +112,7 @@ test("exposes deterministic definition failure discrimination", async () => {
 });
 
 test("constructs isolated definitions without a catalogue registry", async () => {
-  const { Icon } = await import("@aster/core");
+  const { Icon } = await import("@luscious-garden/aster-core");
   const first = Icon.define(createDefinitionInput());
   const second = Icon.define(createDefinitionInput());
 
@@ -123,11 +123,11 @@ test("constructs isolated definitions without a catalogue registry", async () =>
 
 test("rejects implementation subpaths through package exports", async () => {
   await assert.rejects(
-    import("@aster/core/definition/runtime/icon-definition.factory.js"),
+    import("@luscious-garden/aster-core/definition/runtime/icon-definition.factory.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
   await assert.rejects(
-    import("@aster/core/shared/runtime/icon-definition.error.js"),
+    import("@luscious-garden/aster-core/shared/runtime/icon-definition.error.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
 });

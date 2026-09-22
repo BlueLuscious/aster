@@ -9,24 +9,24 @@ The current package set is:
 
 | Package | Status | Responsibility |
 | --- | --- | --- |
-| [`@aster/core`](core/index.md) | Pre-release | Independent portable icon and collection definitions, immutable construction, and render-neutral contracts. |
-| [`@aster/import`](import/index.md) | Private | Host-independent adoption of external icon sources into portable definitions and editable TypeScript. |
-| [`@aster/icons`](icons/index.md) | Pre-release | Accepted canonical portable icons and the opt-in Amellus collection aggregate. |
-| [`@aster/svg`](svg/index.md) | Pre-release | Hardened framework-independent standalone SVG rendering. |
-| [`@aster/cli`](cli/index.md) | Pre-release | Host-neutral command execution, explicit catalogue discovery, deterministic SVG export planning, and a thin standalone Node output host. |
+| [`@luscious-garden/aster-core`](core/index.md) | Pre-release | Independent portable icon and collection definitions, immutable construction, and render-neutral contracts. |
+| [`@luscious-garden/aster-import`](import/index.md) | Private | Host-independent adoption of external icon sources into portable definitions and editable TypeScript. |
+| [`@luscious-garden/aster-icons`](icons/index.md) | Pre-release | Accepted canonical portable icons and the opt-in Amellus collection aggregate. |
+| [`@luscious-garden/aster-svg`](svg/index.md) | Pre-release | Hardened framework-independent standalone SVG rendering. |
+| [`@luscious-garden/aster-cli`](cli/index.md) | Pre-release | Host-neutral command execution, explicit catalogue discovery, deterministic SVG export planning, and a thin standalone Node output host. |
 
 The accepted production dependency direction is:
 
 ```text
-@aster/core <---- @aster/icons
+@luscious-garden/aster-core <---- @luscious-garden/aster-icons
       ^
-      +---------- @aster/svg
-      +---------- @aster/import ----> xmlsax-typescript
+      +---------- @luscious-garden/aster-svg
+      +---------- @luscious-garden/aster-import ----> xmlsax-typescript
       ^                  (private)
       |
-@aster/cli ------> @aster/icons
+@luscious-garden/aster-cli ------> @luscious-garden/aster-icons
       |
-      +----------> @aster/svg
+      +----------> @luscious-garden/aster-svg
 ```
 
 Core is the portable foundation and has no runtime dependency. Icons and SVG depend only on its

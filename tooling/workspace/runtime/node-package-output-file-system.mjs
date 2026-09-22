@@ -13,7 +13,7 @@ export class NodePackageOutputFileSystem {
     try {
       return (await stat(path)).isFile();
     } catch (error) {
-      if (error?.code === "ENOENT") {
+      if (error instanceof Error && "code" in error && error.code === "ENOENT") {
         return false;
       }
 

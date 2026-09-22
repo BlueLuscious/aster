@@ -16,7 +16,7 @@ export class NodeRepositoryFileSystem {
       await stat(path);
       return true;
     } catch (error) {
-      if (error?.code === "ENOENT") {
+      if (error instanceof Error && "code" in error && error.code === "ENOENT") {
         return false;
       }
 

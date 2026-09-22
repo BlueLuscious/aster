@@ -30,24 +30,24 @@ export class IconsPackagePolicy {
   async inspect(record, dependencies, workspaceDependencies, issues) {
     for (const name of workspaceDependencies) {
       if (!packageBoundaries.iconsDependencies.includes(name)) {
-        issues.add(`@aster/icons cannot depend on workspace package ${name}`);
+        issues.add(`@luscious-garden/aster-icons cannot depend on workspace package ${name}`);
       }
     }
 
     for (const name of Object.keys(dependencies)) {
       if (!packageBoundaries.iconsDependencies.includes(name)) {
         issues.add(
-          `@aster/icons cannot declare unaccepted production dependency ${name}`,
+          `@luscious-garden/aster-icons cannot declare unaccepted production dependency ${name}`,
         );
       }
     }
 
     if (record.manifest.private === true) {
-      issues.add("@aster/icons must remain a public package");
+      issues.add("@luscious-garden/aster-icons must remain a public package");
     }
 
     if (record.manifest.sideEffects !== false) {
-      issues.add("@aster/icons must declare package.json#sideEffects as false");
+      issues.add("@luscious-garden/aster-icons must declare package.json#sideEffects as false");
     }
 
     if (
@@ -55,10 +55,10 @@ export class IconsPackagePolicy {
       JSON.stringify(packageBoundaries.iconsExports)
     ) {
       issues.add(
-        "@aster/icons must expose only the accepted scalable package exports",
+        "@luscious-garden/aster-icons must expose only the accepted scalable package exports",
       );
     }
 
-    await this.#compiler.inspect(record.packageRoot, "@aster/icons", issues);
+    await this.#compiler.inspect(record.packageRoot, "@luscious-garden/aster-icons", issues);
   }
 }

@@ -26,7 +26,7 @@ export class NodeCatalogueSourceFileSystem {
       await stat(path);
       return true;
     } catch (error) {
-      if (error?.code === "ENOENT") {
+      if (error instanceof Error && "code" in error && error.code === "ENOENT") {
         return false;
       }
 
@@ -61,6 +61,15 @@ export class NodeCatalogueSourceFileSystem {
    */
   async readText(path) {
     return readFile(path, "utf8");
+  }
+
+  /**
+   * @description Reads one source file size without acquiring its content.
+   * @param {string} path - File path to inspect.
+   * @returns {Promise<number>} File size in bytes.
+   */
+  async fileSize(path) {
+    return (await stat(path)).size;
   }
 
   /**

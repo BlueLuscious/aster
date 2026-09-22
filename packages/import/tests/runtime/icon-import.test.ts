@@ -5,7 +5,7 @@ import test from "node:test";
 import {
   iconPathCommandKinds,
   type IconMetadata,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import {
   IconImport,
   IconImportError,
@@ -224,6 +224,90 @@ test("normalises arcs, closure and compound contours", () => {
       { kind: iconPathCommandKinds.close },
     ],
   });
+});
+
+test("accepts adjacent SVG arc flags without weakening flag validation", () => {
+  const spaced = inspectPath(
+    "M0 0 A5 5 0 0 1 10 10 5 5 0 1 0 15 15",
+    "spaced-arc-flags",
+  );
+
+  assert.equal(spaced.successful, true, JSON.stringify(spaced.diagnostics));
+  if (!spaced.successful) {
+    throw new Error("Expected successful spaced arc inspection.");
+  }
+
+  for (const [name, data] of [
+    ["adjacent-arc-flags", "M0 0 A5 5 0 01 10 10 5 5 0 10 15 15"],
+    ["compact-arc-flags", "M0 0 A5 5 0 0110 10 5 5 0 1015 15"],
+  ] as const) {
+    const result = inspectPath(data, name);
+    assert.equal(result.successful, true, JSON.stringify(result.diagnostics));
+    if (!result.successful) {
+      throw new Error("Expected successful compact arc inspection.");
+    }
+    assert.deepEqual(result.value.nodes, spaced.value.nodes);
+  }
+
+  for (const [name, data] of [
+    ["invalid-arc-flag", "M0 0 A5 5 0 21 10 10"],
+    ["signed-arc-flag", "M0 0 A5 5 0 +1 0 10 10"],
+  ] as const) {
+    const result = inspectPath(data, name);
+    assert.equal(result.successful, false);
+    assert.deepEqual(
+      result.diagnostics.map((diagnostic) => diagnostic.code),
+      ["ASTER-SYNTAX-004"],
+    );
+  }
+});
+
+test("rejects non-SVG Unicode whitespace in path and numeric sequences", () => {
+  for (const [name, data] of [
+    ["non-breaking-path-space", "M0\u00a00 L1 1"],
+    ["narrow-non-breaking-path-space", "M0\u202f0 L1 1"],
+  ] as const) {
+    const result = inspectPath(data, name);
+    assert.equal(result.successful, false);
+    assert.deepEqual(
+      result.diagnostics.map((diagnostic) => diagnostic.code),
+      ["ASTER-SYNTAX-004"],
+    );
+  }
+
+  const viewBox = IconImport.inspect({
+    format: iconImportFormats.svg,
+    sourceId: "paths/non-breaking-view-box.svg",
+    identity: { namespace: "paths", name: "non-breaking-view-box" },
+    content: [
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0\u00a00 24 24">',
+      '<line x1="0" y1="0" x2="1" y2="1"/>',
+      "</svg>",
+    ].join(""),
+  });
+  assert.equal(viewBox.successful, false);
+  assert.deepEqual(
+    viewBox.diagnostics.map((diagnostic) => diagnostic.code),
+    ["ASTER-SYNTAX-002"],
+  );
+});
+
+test("rejects finite SVG operands whose absolute path expansion overflows", () => {
+  for (const [name, data] of [
+    ["relative-overflow", "M1e308 0 l1e308 0"],
+    ["smooth-control-overflow", "M1e308 0 C0 0 0 0 1e308 0 S1e308 0 1e308 0"],
+  ] as const) {
+    const result = inspectPath(data, name);
+    assert.equal(result.successful, false, name);
+    assert.equal("value" in result, false);
+    assert.deepEqual(
+      result.diagnostics.map((diagnostic) => diagnostic.code),
+      ["ASTER-SYNTAX-004"],
+    );
+    const span = result.diagnostics[0]?.span;
+    assert.ok(span);
+    assert.equal(span.end.offset - span.start.offset, data.length);
+  }
 });
 
 test("rejects empty and structurally malformed path contours", () => {

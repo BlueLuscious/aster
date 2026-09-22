@@ -10,7 +10,7 @@ import type {
 import type { SourceDiagnostic } from "../../diagnostic/contracts/index.js";
 import type { DiagnosticResultType } from "../../diagnostic/types/index.js";
 import type { IconImportSourceType } from "../../source/types/index.js";
-import type { IconDefinition, IconMetadata } from "@aster/core";
+import type { IconDefinition, IconMetadata } from "@luscious-garden/aster-core";
 import { DiagnosticResultFactory } from "../../diagnostic/runtime/diagnostic-result.factory.js";
 import { diagnosticSeverities } from "../../diagnostic/constants/diagnostic-severities.constant.js";
 import { IconImportError } from "../../error/index.js";
@@ -94,8 +94,18 @@ export class IconAdoptionService {
   ): DiagnosticResultType<IconDefinition> {
     const record = this.#request(request, ["draft", "metadata"]);
     const draft = this.#validator.record(record.draft, "request.draft");
+    this.#validator.exactFields(
+      draft,
+      ["identity", "viewBox", "nodes", "metrics", "provenance"],
+      "request.draft",
+    );
     const provenance = this.#validator.record(
       draft.provenance,
+      "request.draft.provenance",
+    );
+    this.#validator.exactFields(
+      provenance,
+      ["format", "sourceId"],
       "request.draft.provenance",
     );
     this.#validator.nonEmptyString(

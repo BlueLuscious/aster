@@ -1,4 +1,4 @@
-import type { CollectionIdentity, IconIdentity } from "@aster/core";
+import type { CollectionIdentity, IconIdentity } from "@luscious-garden/aster-core";
 
 /**
  * @description Formats portable identities for deterministic standalone-shell presentation.

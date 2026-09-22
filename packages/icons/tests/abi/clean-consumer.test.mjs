@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import {
   mkdir,
   mkdtemp,
+  readFile,
   readdir,
   rm,
   unlink,
@@ -66,7 +67,7 @@ async function packPublishedPackage(name, tarballRoot) {
     "--json",
   ]);
 
-  assertSuccessfulProcess(packed, `pack @aster/${name}`);
+  assertSuccessfulProcess(packed, `pack @luscious-garden/aster-${name}`);
 
   return basename(JSON.parse(packed.stdout).filename);
 }
@@ -104,7 +105,7 @@ before(async () => {
   );
   const packageSpecifications = Object.fromEntries(
     packageNames.map((name) => [
-      `@aster/${name}`,
+      `@luscious-garden/aster-${name}`,
       `file:./tarballs/${filenames[name]}`,
     ]),
   );
@@ -144,11 +145,12 @@ test("packs every emitted file without repository source", async () => {
     resolve(packageRoot, "dist"),
   )).map((path) => `dist/${path}`);
   const installedFiles = await collectRelativeFiles(
-    resolve(consumerRoot, "node_modules/@aster/icons"),
+    resolve(consumerRoot, "node_modules/@luscious-garden/aster-icons"),
   );
 
   assert.deepEqual(installedFiles, [
     ...sourceDistributionFiles,
+    "ARTWORK-LICENCE.md",
     "LICENSE",
     "package.json",
     "README.md",
@@ -167,15 +169,30 @@ test("packs every emitted file without repository source", async () => {
   assert.equal(installedFiles.some((path) => path.startsWith("tests/")), false);
 });
 
+test("includes both software and artwork terms in the installed package", async () => {
+  const packageDirectory = resolve(consumerRoot, "node_modules/@luscious-garden/aster-icons");
+  const [softwareNotice, artworkNotice, manifest] = await Promise.all([
+    readFile(resolve(packageDirectory, "LICENSE"), "utf8"),
+    readFile(resolve(packageDirectory, "ARTWORK-LICENCE.md"), "utf8"),
+    readFile(resolve(packageDirectory, "package.json"), "utf8"),
+  ]);
+
+  assert.match(softwareNotice, /ISC License/u);
+  assert.match(softwareNotice, /\[Aster Artwork Licence\]\(ARTWORK-LICENCE\.md\)/u);
+  assert.match(artworkNotice, /standalone artwork product/u);
+  assert.match(artworkNotice, /\[ISC software licence\]\(LICENSE\)/u);
+  assert.equal(JSON.parse(manifest).license, "SEE LICENSE IN LICENSE");
+});
+
 test("resolves isolated runtime and declaration facades without source files", async () => {
   const source = [
-    'import type { CollectionDefinition, IconDefinition } from "@aster/core";',
-    'import type { CollectionDefinitionLoader, IconDefinitionLoader } from "@aster/icons/dynamic";',
-    'import type { CollectionManifestEntry, IconManifestEntry } from "@aster/icons/manifest";',
-    'import { Camera } from "@aster/icons/camera";',
-    'import { AmellusCollection } from "@aster/icons/collections/amellus";',
-    'import { AsterCollectionManifest, AsterIconManifest } from "@aster/icons/manifest";',
-    'import { AsterCollectionLoaders, AsterIconLoaders } from "@aster/icons/dynamic";',
+    'import type { CollectionDefinition, IconDefinition } from "@luscious-garden/aster-core";',
+    'import type { CollectionDefinitionLoader, IconDefinitionLoader } from "@luscious-garden/aster-icons/dynamic";',
+    'import type { CollectionManifestEntry, IconManifestEntry } from "@luscious-garden/aster-icons/manifest";',
+    'import { Camera } from "@luscious-garden/aster-icons/camera";',
+    'import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";',
+    'import { AsterCollectionManifest, AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
+    'import { AsterCollectionLoaders, AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     "const icon: IconDefinition = Camera;",
     "const collection: CollectionDefinition = AmellusCollection;",
     "const iconEntry: IconManifestEntry | undefined = AsterIconManifest.find(({ key }) => key === \"aster/camera\");",
@@ -244,7 +261,7 @@ test("preserves native dynamic-import rejection details", async () => {
   await unlink(
     resolve(
       consumerRoot,
-      "node_modules/@aster/icons/dist/generated/facades/icons/camera.js",
+      "node_modules/@luscious-garden/aster-icons/dist/generated/facades/icons/camera.js",
     ),
   );
   const executed = spawnSync(
@@ -253,7 +270,7 @@ test("preserves native dynamic-import rejection details", async () => {
       "--input-type=module",
       "--eval",
       [
-        'const { AsterIconLoaders } = await import("@aster/icons/dynamic");',
+        'const { AsterIconLoaders } = await import("@luscious-garden/aster-icons/dynamic");',
         'const loader = AsterIconLoaders["aster/camera"];',
         "try {",
         "  await loader();",

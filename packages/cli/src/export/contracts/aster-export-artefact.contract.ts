@@ -1,4 +1,4 @@
-import type { SvgMarkupType } from "@aster/svg";
+import type { SvgMarkupType } from "@luscious-garden/aster-svg";
 import type { svgExportArtefactSchema } from "../constants/svg-export-artefact-schema.constant.js";
 
 /**

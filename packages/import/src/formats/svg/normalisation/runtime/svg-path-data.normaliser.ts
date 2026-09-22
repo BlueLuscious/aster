@@ -1,12 +1,14 @@
 import {
   iconPathCommandKinds,
   type IconPathCommandType,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type { TSvgPathNormalisationState } from "../types/internal/svg-path-normalisation-state.type.js";
 import type { TSvgPathSegment } from "../../shared/types/internal/svg-path-segment.type.js";
+import type { SourceSpan } from "../../../../diagnostic/contracts/index.js";
 import { svgPathCommands } from "../../shared/constants/svg-path-commands.constant.js";
 import { SvgImportError } from "../../shared/runtime/svg-import.error.js";
 import { SvgPathDataInspector } from "../../shared/runtime/svg-path-data.inspector.js";
+import { SvgPathExpansionError } from "./svg-path-expansion.error.js";
 
 /**
  * @description Translates accepted SVG path syntax into canonical absolute portable commands.
@@ -20,9 +22,10 @@ export class SvgPathDataNormaliser {
   /**
    * @description Normalises one previously validated SVG path value.
    * @param value - Exact accepted authored path data.
+   * @param span - Exact authored path-data value span for numeric failures.
    * @returns Frozen canonical portable command sequence.
    */
-  normalise(value: string): readonly IconPathCommandType[] {
+  normalise(value: string, span: SourceSpan): readonly IconPathCommandType[] {
     const inspection = this.#inspector.inspect(value);
 
     if (
@@ -46,6 +49,16 @@ export class SvgPathDataNormaliser {
 
     for (const segment of inspection.segments) {
       this.#normaliseSegment(segment, state, commands);
+    }
+
+    const exceedsFiniteDomain = commands.some((command) =>
+      Object.values(command).some(
+        (operand) => typeof operand === "number" && !Number.isFinite(operand),
+      ),
+    );
+
+    if (exceedsFiniteDomain) {
+      throw new SvgPathExpansionError(span);
     }
 
     return Object.freeze(commands);

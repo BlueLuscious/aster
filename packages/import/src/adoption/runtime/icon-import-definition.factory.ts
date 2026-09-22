@@ -2,7 +2,7 @@ import {
   Icon,
   IconDefinitionError,
   type IconDefinition,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type { IconImportDefinitionRequest } from "../contracts/index.js";
 import type { DiagnosticResultType } from "../../diagnostic/types/index.js";
 import { DiagnosticResultFactory } from "../../diagnostic/runtime/diagnostic-result.factory.js";

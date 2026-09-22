@@ -1,4 +1,4 @@
-import type { IconRenderOptions } from "@aster/core";
+import type { IconRenderOptions } from "@luscious-garden/aster-core";
 import type { AsterExportOptionsType } from "./aster-export-options.type.js";
 
 /**

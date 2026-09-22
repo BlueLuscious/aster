@@ -2,7 +2,7 @@ import type {
   CollectionDefinition,
   CollectionIdentity,
   IconDefinition,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 
 export type TCatalogueProviderFixture = Readonly<{
   icons: readonly Readonly<{

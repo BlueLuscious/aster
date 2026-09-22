@@ -1,4 +1,4 @@
-import { IconImport, iconImportFormats } from "@aster/import";
+import { IconImport, iconImportFormats } from "@luscious-garden/aster-import";
 import { importBaseline } from "../constants/import-baseline.constant.mjs";
 
 /**
@@ -122,7 +122,7 @@ export class ImportBaselineFixtureFactory {
    * @param {number} requestCount - Positive request count owned by the benchmark configuration.
    * @param {string} prefix - Identity prefix distinguishing the benchmark scale.
    * @param {string} content - Exact accepted SVG source shared by the requests.
-   * @returns {readonly import("@aster/import").IconAdoptionRequest[]} Immutable host-owned batch inputs.
+   * @returns {readonly import("@luscious-garden/aster-import").IconAdoptionRequest[]} Immutable host-owned batch inputs.
    */
   #batchRequests(requestCount, prefix, content) {
     return Object.freeze(
@@ -137,7 +137,7 @@ export class ImportBaselineFixtureFactory {
    * @description Creates one benchmark-local host-owned SVG source.
    * @param {string} name - Distinct portable icon name.
    * @param {string} content - Exact decoded SVG source.
-   * @returns {import("@aster/import").SvgIconImportSource} Prepared mutable source input.
+   * @returns {import("@luscious-garden/aster-import").SvgIconImportSource} Prepared mutable source input.
    */
   #source(name, content) {
     return {
@@ -151,7 +151,7 @@ export class ImportBaselineFixtureFactory {
   /**
    * @description Creates complete reviewed metadata for one benchmark adoption.
    * @param {string} displayName - Human-readable benchmark identity.
-   * @returns {import("@aster/core").IconMetadata} Prepared mutable metadata input.
+   * @returns {import("@luscious-garden/aster-core").IconMetadata} Prepared mutable metadata input.
    */
   #metadata(displayName) {
     return {

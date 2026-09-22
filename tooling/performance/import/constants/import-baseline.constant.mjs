@@ -5,7 +5,7 @@ export const importBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
   schemaVersion: 2,
   /** @description Measured private package identity. */
-  packageName: "@aster/import",
+  packageName: "@luscious-garden/aster-import",
   /** @description Workspace-relative measured package root. */
   packagePath: "packages/import",
   /** @description Stable request count represented by the ordinary batch scenario. */

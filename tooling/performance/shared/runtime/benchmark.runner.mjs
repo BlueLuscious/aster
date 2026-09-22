@@ -119,7 +119,7 @@ export class BenchmarkRunner {
   /**
    * @description Determines whether one scenario result requires asynchronous settlement.
    * @param {number | PromiseLike<number>} value - Direct or deferred scenario checksum.
-   * @returns {boolean} Whether the value exposes a callable promise-like continuation.
+   * @returns {value is PromiseLike<number>} Whether the value exposes a callable promise-like continuation.
    */
   #isPromiseLike(value) {
     return (

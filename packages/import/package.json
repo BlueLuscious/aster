@@ -1,6 +1,6 @@
 {
-  "name": "@aster/import",
-  "version": "0.0.0",
+  "name": "@luscious-garden/aster-import",
+  "version": "0.1.0-rc.1",
   "description": "Private host-independent icon adoption compiler for Aster.",
   "private": true,
   "type": "module",
@@ -25,7 +25,7 @@
     "test:types": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@aster/core": "workspace:*",
+    "@luscious-garden/aster-core": "workspace:^",
     "xmlsax-typescript": "1.0.0"
   }
 }

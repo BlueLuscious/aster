@@ -30,7 +30,7 @@ Catalogue size is not maturity or quality evidence. A smaller coherent collectio
 geometry, provenance, and visual behaviour is preferable to unreviewed expansion.
 
 Collection membership remains separate from icon identity. Package documentation owns how
-`CollectionDefinition` and `@aster/icons` represent membership; this tree owns why a curator groups
+`CollectionDefinition` and `@luscious-garden/aster-icons` represent membership; this tree owns why a curator groups
 those icons and what visual evidence governs them.
 
 Each collection document covers:

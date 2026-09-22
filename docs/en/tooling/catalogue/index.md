@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-The `catalogue` tooling feature recursively discovers canonical `@aster/icons` TypeScript sources,
+The `catalogue` tooling feature recursively discovers canonical `@luscious-garden/aster-icons` TypeScript sources,
 validates their identities and relationships, and synchronises metadata-only distribution data,
 exact dynamic loaders and public definition facades. It is private
 repository infrastructure, not runtime discovery, a public package API, or an icon-authoring
@@ -20,7 +20,9 @@ editable sources of truth. The synchroniser exclusively owns:
 
 These generated files remain versioned so clean source checkouts, editors and package consumers
 can resolve the package structure without first executing repository tooling. Their generated
-headers identify the reconstruction command and prohibit manual editing.
+headers identify the reconstruction command and prohibit manual editing. The repository's
+`.gitattributes` keeps this generated subtree on LF line endings across checkout platforms so
+the read-only synchronisation check compares the same bytes that the serialiser produces.
 
 Collection membership remains authored inside each canonical collection module. Synchronisation
 does not infer membership, alter icon definitions or create collections from directories.
@@ -70,7 +72,7 @@ therefore fails before generated outputs are touched.
 Names begin with one ASCII lowercase letter and continue with lowercase alphanumeric segments
 separated by one hyphen. Variants use portable Core slug syntax. Every canonical export must call
 its configured public `Icon.define(...)` or `Collection.define(...)` factory, imported as one
-runtime named import from `@aster/core`, with a direct object whose literal identity agrees with
+runtime named import from `@luscious-garden/aster-core`, with a direct object whose literal identity agrees with
 its path. Collection members and imported static metadata authorities must also use runtime named
 imports; imported authorities must be exported top-level constants. Invalid layout or TypeScript,
 mismatched identities, missing exports, additional exported constants, duplicate static
@@ -208,7 +210,7 @@ its lazy imports resolve those facades without owning their publication lifecycl
 
 Generated outputs are ordinary side-effect-free ESM sources. The emitted manifest has no runtime
 imports because its contract imports are type-only. The emitted dynamic map has only deferred
-imports of generated definition facades. `@aster/cli` and all consumers import immutable values
+imports of generated definition facades. `@luscious-garden/aster-cli` and all consumers import immutable values
 without accessing Node, tooling paths or the filesystem.
 
 Conformance covers deterministic regeneration, idempotence, drift detection, nested addition and

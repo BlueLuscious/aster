@@ -1,4 +1,4 @@
-import type { IconDefinition } from "@aster/core";
+import type { IconDefinition } from "@luscious-garden/aster-core";
 import type { IconModuleOutput } from "../contracts/index.js";
 
 /**

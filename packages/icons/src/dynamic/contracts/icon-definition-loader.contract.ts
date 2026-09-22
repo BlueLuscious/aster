@@ -1,4 +1,4 @@
-import type { IconDefinition } from "@aster/core";
+import type { IconDefinition } from "@luscious-garden/aster-core";
 
 /**
  * @description Asynchronously resolves one exact distributed icon definition.

@@ -3,7 +3,7 @@ import type {
   CollectionIdentity,
   IconDefinition,
   IconIdentity,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type {
   CatalogueDiscovery,
   CatalogueProvider,
@@ -16,7 +16,7 @@ import { AsterCatalogueProvider } from "../runtime/aster-catalogue.provider.js";
 const asterCatalogueProvider = new AsterCatalogueProvider();
 
 /**
- * @description Immutable explicit provider for canonical `@aster/icons` discovery and exact
+ * @description Immutable explicit provider for canonical `@luscious-garden/aster-icons` discovery and exact
  * loading.
  */
 export const AsterCatalogue: CatalogueProvider = Object.freeze({

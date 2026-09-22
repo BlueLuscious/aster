@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { Collection } from "@aster/core";
+import { Collection } from "@luscious-garden/aster-core";
+import { asterArtworkLicence } from "../../src/authoring/constants/aster-artwork-licence.constant.js";
 import { AmellusCollection } from "../../src/collections/a/amellus/amellus.collection.js";
 import { AsterIconLoaders } from "../../src/dynamic/index.js";
 
@@ -49,7 +50,7 @@ test("composes the exact Amellus inventory in accepted semantic order", () => {
       "minimalist",
       "outline-icons",
     ],
-    licence: "ISC",
+    licence: asterArtworkLicence,
     attribution: "BlueLuscious",
   });
   assert.ok(

@@ -41,6 +41,7 @@ export class ModuleImportRunner {
   measure(scenario) {
     const processTimings = [];
     const importTimings = [];
+    /** @type {{ specifier: string, exports: readonly string[], evaluatedModules: readonly string[], importNanoseconds: number } | undefined} */
     let reference;
 
     for (let index = 0; index < this.#sampleCount; index += 1) {
@@ -78,6 +79,10 @@ export class ModuleImportRunner {
     const processTiming = this.#statistics.summarise(processTimings);
     const importTiming = this.#statistics.summarise(importTimings);
 
+    if (reference === undefined) {
+      throw new Error(`Import scenario ${scenario.name} produced no evidence.`);
+    }
+
     return Object.freeze({
       name: scenario.name,
       specifier: scenario.specifier,
@@ -114,9 +119,13 @@ export class ModuleImportRunner {
       || typeof evidence !== "object"
       || evidence.specifier !== scenario.specifier
       || !Array.isArray(evidence.exports)
-      || !evidence.exports.every((value) => typeof value === "string")
+      || !evidence.exports.every(
+        /** @param {unknown} value */ (value) => typeof value === "string",
+      )
       || !Array.isArray(evidence.evaluatedModules)
-      || !evidence.evaluatedModules.every((value) => typeof value === "string")
+      || !evidence.evaluatedModules.every(
+        /** @param {unknown} value */ (value) => typeof value === "string",
+      )
       || !Number.isSafeInteger(evidence.importNanoseconds)
       || evidence.importNanoseconds < 0
     ) {

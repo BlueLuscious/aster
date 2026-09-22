@@ -2,7 +2,7 @@ import {
   Icon,
   IconDefinitionError,
   type IconDefinition,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type {
   IconModuleEmissionRequest,
   IconModuleOutput,
@@ -83,7 +83,7 @@ export class IconModuleEmitter {
     const content = [
       `// Adopted from: ${sourceIds.join(", ")}`,
       "",
-      'import { Icon as $Icon } from "@aster/core";',
+      'import { Icon as $Icon } from "@luscious-garden/aster-core";',
       "",
       "/**",
       ` * @description Portable definition for \`${this.#identityKey(definition)}\`.`,

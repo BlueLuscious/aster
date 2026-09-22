@@ -177,10 +177,21 @@ export class SvgPathDataInspector {
     const tokens: (string | number)[] = [];
     let cursor = 0;
     let match: RegExpExecArray | null;
+    let activeCommand: TSvgPathCommand | undefined;
+    let operandIndex = 0;
     this.#tokenPattern.lastIndex = 0;
 
     while ((match = this.#tokenPattern.exec(value)) !== null) {
-      const raw = match[0];
+      const arcFlag =
+        activeCommand === svgPathCommands.arc &&
+        (operandIndex % 7 === 3 || operandIndex % 7 === 4);
+      // Arc flags may touch each other and the following coordinate.
+      const raw = arcFlag && /^[01]/u.test(match[0])
+        ? match[0].slice(0, 1)
+        : match[0];
+      if (raw.length !== match[0].length) {
+        this.#tokenPattern.lastIndex = match.index + raw.length;
+      }
       const token =
         this.#commandPattern.test(raw)
           ? raw
@@ -195,7 +206,8 @@ export class SvgPathDataInspector {
           typeof previous === "number",
           typeof token === "number",
         ) ||
-        (typeof token === "number" && !Number.isFinite(token))
+        (typeof token === "number" && !Number.isFinite(token)) ||
+        (arcFlag && raw !== "0" && raw !== "1")
       ) {
         return undefined;
       }
@@ -203,6 +215,16 @@ export class SvgPathDataInspector {
       tokens.push(
         typeof token === "number" && Object.is(token, -0) ? 0 : token,
       );
+      if (typeof token === "string") {
+        const command = token.toLowerCase();
+        if (!Object.hasOwn(svgPathCommandParameterCounts, command)) {
+          return undefined;
+        }
+        activeCommand = command as TSvgPathCommand;
+        operandIndex = 0;
+      } else {
+        operandIndex += 1;
+      }
       cursor = match.index + raw.length;
     }
 

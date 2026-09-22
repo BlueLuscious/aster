@@ -1,4 +1,4 @@
-import { Collection, Icon } from "@aster/core";
+import { Collection, Icon } from "@luscious-garden/aster-core";
 import { coreBaseline } from "../constants/core-baseline.constant.mjs";
 
 /**
@@ -46,6 +46,7 @@ export class CoreBaselineRunner {
    * @returns {Promise<object>} Immutable serialisable Core baseline report.
    */
   async run() {
+    /** @type {import("../../shared/contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario[]} */
     const scenarios = [
       Object.freeze({
         ...coreBaseline.scenarios.iconMutable,
@@ -123,7 +124,7 @@ export class CoreBaselineRunner {
 
   /**
    * @description Reconstructs canonical icons from the representative collection.
-   * @param {readonly import("@aster/core").IconDefinition[]} definitions - Prepared equivalent icon inputs.
+   * @param {readonly import("@luscious-garden/aster-core").IconDefinition[]} definitions - Prepared equivalent icon inputs.
    * @param {number} iterations - Number of public API operations to execute.
    * @returns {number} Deterministic checksum preventing discarded scenario results.
    */
@@ -146,7 +147,7 @@ export class CoreBaselineRunner {
 
   /**
    * @description Reconstructs one structured-path icon repeatedly through the public API.
-   * @param {import("@aster/core").IconDefinition} source - Prepared valid icon input.
+   * @param {import("@luscious-garden/aster-core").IconDefinition} source - Prepared valid icon input.
    * @param {number} iterations - Number of public API operations to execute.
    * @returns {number} Deterministic checksum preventing discarded scenario results.
    */
@@ -169,7 +170,7 @@ export class CoreBaselineRunner {
 
   /**
    * @description Reconstructs one prepared collection repeatedly through the public API.
-   * @param {import("@aster/core").CollectionDefinition} source - Prepared collection input.
+   * @param {import("@luscious-garden/aster-core").CollectionDefinition} source - Prepared collection input.
    * @param {number} iterations - Number of public API operations to execute.
    * @returns {number} Deterministic checksum preventing discarded scenario results.
    */

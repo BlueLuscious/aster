@@ -5,9 +5,9 @@ export const svgLexicalPatternSources = Object.freeze({
   /** @description Regular-expression source for SVG command syntax. */
   command: String.raw`^[A-Za-z]$`,
   /** @description Regular-expression source for SVG whitespace only syntax. */
-  whitespaceOnly: String.raw`^\s*$`,
+  whitespaceOnly: String.raw`^[\t\n\f\r ]*$`,
   /** @description Regular-expression source for SVG required whitespace syntax. */
-  requiredWhitespace: String.raw`^\s+$`,
+  requiredWhitespace: String.raw`^[\t\n\f\r ]+$`,
   /** @description Regular-expression source for SVG comma separator syntax. */
-  commaSeparator: String.raw`^\s*,\s*$`,
+  commaSeparator: String.raw`^[\t\n\f\r ]*,[\t\n\f\r ]*$`,
 });

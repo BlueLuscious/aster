@@ -23,7 +23,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P0` | Complete first supported pre-release readiness. | The selected public package set passes every release, distribution, documentation and source-quality gate. |
+| 1 | `P2` | Add informational SVG attribution markers. | Technical release readiness is complete and the renderer's default-versus-opt-in output policy is accepted. |
 | 2 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
 | 3 | `P2` | Automate reviewed version proposals. | One manually reviewed multi-package release proves the version and changelog policy. |
 | 4 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
@@ -36,36 +36,24 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | 11 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
 | 12 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
 | 13 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 14 | `P4` | Consider `@aster/studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 14 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
 | 15 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
 
-## First supported pre-release readiness
+## Informational SVG attribution markers
 
-Importance: **P0 - Required**
+Importance: **P2 - Conditional**
 
-Aster's immediate delivery gate is its first supported pre-release. This work does not expand the
-product model: it proves that the selected public packages can be installed, understood, and
-released without relying on workspace internals or undocumented maintainer knowledge.
+After technical release readiness, consider placing `data-attribution` and
+`data-rendered-by="Aster"` on rendered SVG roots. Attribution must come from the individual icon's
+metadata rather than the collection or a hard-coded author. Decide whether the markers belong to
+every `Svg.render(...)` result or an explicit SVG export mode before changing the public output
+contract. A missing attribution must not be invented.
 
-Readiness must establish:
-
-- the exact published package set, initial versions, dependency ranges, and release order;
-- complete package metadata, software and artwork licensing, attribution, and provenance;
-- reproducible package archives, clean-consumer installation, public export and declaration
-  conformance, and package-content review;
-- objective non-mutating ESLint and Prettier checks, limited to rules not already enforced by
-  TypeScript or existing repository verifiers, integrated into repository verification;
-- installation, quick-start, compatibility, and release documentation for supported consumers;
-- release notes and an explicit npm publication procedure with least-privilege credentials,
-  protected environments, and a deliberate human release action.
-
-`@aster/import` remains private unless a separate hosted workflow and publication decision justify
-it. Selective registry acquisition, Flora, Lilium, Studio, Managed Mode, and multi-target Export
-are not prerequisites for the first supported pre-release.
-
-After publication, durable release guarantees belong to project, package, collection, and tooling
-documentation. Remove this temporary roadmap gate rather than preserving a completed release
-checklist as a future capability.
+These markers make source provenance easier to inspect but do not enforce ownership or replace
+the accompanying licence and credits. Anyone who controls an SVG file can remove them, and
+optimisation may discard non-visual attributes. If accepted, update exact SVG and CLI output
+evidence, package documentation, and packed-consumer tests, then repeat release conformance
+before publication. Do not add a watermark or a runtime dependency for this purpose.
 
 ## Reviewed version proposals
 
@@ -84,7 +72,7 @@ first pre-release and not a reason to introduce a release framework prematurely.
 
 Importance: **P1 - High**
 
-The implemented `@aster/cli` already provides catalogue discovery, lookup, search, display,
+The implemented `@luscious-garden/aster-cli` already provides catalogue discovery, lookup, search, display,
 deterministic SVG export, and disposable static review publication through host-neutral commands
 and a standalone Node shell. Those current guarantees are documented by the
 [CLI package](packages/cli/index.md).
@@ -136,7 +124,7 @@ general development server or framework dependency solely for this capability.
 Importance: **P1 - High**
 
 Consumers must eventually be able to acquire one icon, one variant or one collection without
-installing the complete `@aster/icons` artefact. The preferred direction is a defined Aster
+installing the complete `@luscious-garden/aster-icons` artefact. The preferred direction is a defined Aster
 registry consumed by explicit CLI workflows:
 
 ```text
@@ -163,8 +151,8 @@ stable. Its design must establish:
 
 ### Collection package boundary
 
-Collections remain inside `@aster/icons` while they share definition ownership, release maturity
-and dependencies. Creating one `@aster/collections` package that depends on `@aster/icons` would
+Collections remain inside `@luscious-garden/aster-icons` while they share definition ownership, release maturity
+and dependencies. Creating one `@luscious-garden/aster-collections` package that depends on `@luscious-garden/aster-icons` would
 not reduce npm acquisition because its dependency would still install the complete Icons package.
 Do not introduce it merely to mirror a source directory.
 
@@ -184,32 +172,32 @@ Reconsider a separate collection boundary when at least one of these conditions 
 
 If accepted, migration requires an explicit compatibility period and an acyclic dependency
 direction. If no trigger appears before the first supported release, retain collections inside
-`@aster/icons` and treat their isolated subpaths as the supported boundary.
+`@luscious-garden/aster-icons` and treat their isolated subpaths as the supported boundary.
 
 ## Command-set extraction and Flora integration
 
 Importance: **P2 - Conditional**
 
 The current CLI keeps host-neutral command composition separate from its private standalone shell.
-Do not create `@aster/commands` merely to reorganise files. Extract it only when an independent
+Do not create `@luscious-garden/aster-commands` merely to reorganise files. Extract it only when an independent
 consumer needs the same structured commands without the Aster executable.
 
 Flora is the prospective headless multi-ecosystem CLI host. If Flora exposes a stable minimal
-plugin ABI and one real integration scenario, an optional `@aster/flora` adapter may translate
+plugin ABI and one real integration scenario, an optional `@luscious-garden/aster-flora` adapter may translate
 Flora invocations and capabilities to the extracted Aster command set:
 
 ```text
-@aster/core <- @aster/svg <- @aster/commands
+@luscious-garden/aster-core <- @luscious-garden/aster-svg <- @luscious-garden/aster-commands
                               ^           ^
                               |           |
-                         @aster/cli   @aster/flora -> @flora/core
+                         @luscious-garden/aster-cli   @luscious-garden/aster-flora -> Flora runtime
                               |
-                         @aster/icons
+                         @luscious-garden/aster-icons
 ```
 
-`@aster/commands` would own host-neutral validation, catalogue selection, and immutable target
-plans. `@aster/cli` would remain the standalone Node executable and compose the default Icons
-catalogue. `@aster/flora` would contain only the optional plugin adaptation. Flora would route an
+`@luscious-garden/aster-commands` would own host-neutral validation, catalogue selection, and immutable target
+plans. `@luscious-garden/aster-cli` would remain the standalone Node executable and compose the default Icons
+catalogue. `@luscious-garden/aster-flora` would contain only the optional plugin adaptation. Flora would route an
 explicit Aster namespace without making Aster packages depend on a generic ecosystem host.
 
 Target plans remain effect-free; either standalone CLI capabilities or Flora capabilities decide
@@ -252,7 +240,7 @@ of those guarantees incrementally to Import.
 
 Importance: **P2 - Conditional**
 
-Core definitions can render to SVG through `@aster/svg`, and CLI can plan and publish SVG exports.
+Core definitions can render to SVG through `@luscious-garden/aster-svg`, and CLI can plan and publish SVG exports.
 Introduce a separate multi-target Export boundary only after a second real target, such as JSON,
 proves that shared target selection, diagnostics, or atomic planning cannot remain in its owning
 adapter or host.
@@ -316,7 +304,7 @@ registries, or combining contributor tooling with the user-facing multi-ecosyste
 
 Importance: **P4 - Deferred**
 
-`@aster/studio` is a provisional name for a future Lilium web application dedicated to interactive
+`@luscious-garden/aster-studio` is a provisional name for a future Lilium web application dedicated to interactive
 Aster authoring. It is not a current package boundary, release prerequisite, or reason for Core,
 Icons, SVG, Import, or CLI to depend on Lilium. A broader Garden workbench may eventually host the
 same Aster experience, but cross-project composition must not move Aster domain behaviour into an

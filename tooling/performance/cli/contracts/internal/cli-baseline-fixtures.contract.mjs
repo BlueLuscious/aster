@@ -1,19 +1,11 @@
 /**
- * @description Documents prepared CLI values consumed outside fixture construction.
+ * @description Prepared CLI values consumed outside fixture construction.
+ * @typedef {object} ICliBaselineFixtures
+ * @property {import("@luscious-garden/aster-core").IconDefinition} icon - Canonical representative icon definition.
+ * @property {import("@luscious-garden/aster-cli").AsterCommandContext} context - Explicit context backed by prepared discovery and exact definitions.
+ * @property {Readonly<{ help: import("@luscious-garden/aster-cli").AsterCommandInvocationType, version: import("@luscious-garden/aster-cli").AsterCommandInvocationType, listIcons: import("@luscious-garden/aster-cli").AsterCommandInvocationType, exportIcon: import("@luscious-garden/aster-cli").AsterCommandInvocationType, exportCollection: import("@luscious-garden/aster-cli").AsterCommandInvocationType, reviewCollection: import("@luscious-garden/aster-cli").AsterCommandInvocationType }>} invocations - Closed representative structured invocations.
+ * @property {Readonly<{ help: readonly string[], collectionExport: readonly string[] }>} arguments - Closed representative standalone argument sequences.
+ * @property {import("@luscious-garden/aster-cli").AsterCommandSet} commands - Public immutable command composition under measurement.
  */
-export class ICliBaselineFixtures {
-  /** @description Canonical representative icon definition. */
-  icon;
 
-  /** @description Explicit context backed by prepared discovery and exact definitions. */
-  context;
-
-  /** @description Closed representative structured invocations. */
-  invocations;
-
-  /** @description Closed representative standalone argv sequences. */
-  arguments;
-
-  /** @description Public immutable command composition under measurement. */
-  commands;
-}
+export {};

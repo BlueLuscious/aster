@@ -1,4 +1,4 @@
-import type { IconViewBox } from "@aster/core";
+import type { IconViewBox } from "@luscious-garden/aster-core";
 
 /**
  * @description Deterministic technical facts consumed by the imported draft.

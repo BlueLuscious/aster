@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { AsterCatalogue, AsterCommands } from "@aster/cli";
-import { AmellusCollection } from "@aster/icons/collections/amellus";
-import { AsterIconManifest } from "@aster/icons/manifest";
+import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";
+import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";
+import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";
 
 const commandContext = Object.freeze({
   catalogues: Object.freeze([AsterCatalogue]),

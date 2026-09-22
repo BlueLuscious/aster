@@ -14,15 +14,28 @@ export class NumericSampleStatistics {
 
     const ordered = [...values].sort((left, right) => left - right);
     const middle = Math.floor(ordered.length / 2);
+    const middleValue = ordered[middle];
+    const firstValue = ordered[0];
+    const lastValue = ordered.at(-1);
+
+    if (
+      middleValue === undefined
+      || firstValue === undefined
+      || lastValue === undefined
+    ) {
+      throw new TypeError("Numeric samples cannot be empty.");
+    }
+
+    const lowerMiddleValue = ordered[middle - 1];
     const median =
       ordered.length % 2 === 1
-        ? ordered[middle]
-        : (ordered[middle - 1] + ordered[middle]) / 2;
+        ? middleValue
+        : ((lowerMiddleValue ?? middleValue) + middleValue) / 2;
 
     return Object.freeze({
       median,
-      minimum: ordered[0],
-      maximum: ordered[ordered.length - 1],
+      minimum: firstValue,
+      maximum: lastValue,
     });
   }
 }

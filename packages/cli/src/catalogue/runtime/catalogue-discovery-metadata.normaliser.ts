@@ -3,7 +3,7 @@ import {
   type CollectionMetadata,
   type IconIdentity,
   type IconRtlPolicyType,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import { CanonicalIdentityValidator } from "../../shared/runtime/canonical-identity.validator.js";
 import { StructuredDataInspector } from "../../shared/runtime/structured-data.inspector.js";
 import { catalogueDiscoverySchema } from "../constants/catalogue-discovery-schema.constant.js";

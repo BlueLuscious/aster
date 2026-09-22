@@ -59,7 +59,7 @@ function createDefinitionInput() {
 }
 
 test("exposes the exact documented root value surface", async () => {
-  const packageModule = await import("@aster/svg");
+  const packageModule = await import("@luscious-garden/aster-svg");
 
   assert.deepEqual(
     Object.keys(packageModule).sort(),
@@ -76,8 +76,8 @@ test("exposes the exact documented root value surface", async () => {
 });
 
 test("renders deterministic markup from one explicit built-package definition", async () => {
-  const { Icon } = await import("@aster/core");
-  const { Svg } = await import("@aster/svg");
+  const { Icon } = await import("@luscious-garden/aster-core");
+  const { Svg } = await import("@luscious-garden/aster-svg");
   const firstDefinition = Icon.define(createDefinitionInput());
   const secondDefinition = Icon.define(createDefinitionInput());
   const options = {
@@ -99,11 +99,11 @@ test("renders deterministic markup from one explicit built-package definition", 
 
 test("rejects implementation subpaths through package exports", async () => {
   await assert.rejects(
-    import("@aster/svg/render/runtime/svg.renderer.js"),
+    import("@luscious-garden/aster-svg/render/runtime/svg.renderer.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
   await assert.rejects(
-    import("@aster/svg/error/runtime/svg-render.error.js"),
+    import("@luscious-garden/aster-svg/error/runtime/svg-render.error.js"),
     (error) => error?.code === "ERR_PACKAGE_PATH_NOT_EXPORTED",
   );
 });
@@ -121,7 +121,7 @@ test("publishes only the accepted root export and declaration snapshot", async (
   assert.equal(manifest.exports["."].import, "./dist/index.js");
   assert.equal(manifest.exports["."].types, "./dist/index.d.ts");
   assert.deepEqual(manifest.dependencies, {
-    "@aster/core": "workspace:*",
+    "@luscious-garden/aster-core": "workspace:^",
   });
   assert.equal(manifest.sideEffects, false);
   assert.equal(
@@ -149,7 +149,7 @@ test("emits host-independent declarations with only public Core imports", async 
 
     assert.deepEqual(
       [...new Set(externalSpecifiers)],
-      externalSpecifiers.length === 0 ? [] : ["@aster/core"],
+      externalSpecifiers.length === 0 ? [] : ["@luscious-garden/aster-core"],
     );
     assert.doesNotMatch(source, /\/\/\/\s*<reference/iu);
     assert.doesNotMatch(
@@ -158,7 +158,7 @@ test("emits host-independent declarations with only public Core imports", async 
     );
     assert.doesNotMatch(
       source,
-      /(?:@aster\/build|\blilium\b|\blotus\b|\bnode:|\btooling\b|\brepository\b)/giu,
+      /(?:@luscious-garden\/aster-build|\blilium\b|\blotus\b|\bnode:|\btooling\b|\brepository\b)/giu,
     );
   }
 });
@@ -176,13 +176,13 @@ test("emits side-effect-free ESM with only public Core authority", async () => {
 
     assert.deepEqual(
       [...new Set(externalSpecifiers)],
-      externalSpecifiers.length === 0 ? [] : ["@aster/core"],
+      externalSpecifiers.length === 0 ? [] : ["@luscious-garden/aster-core"],
     );
     assert.doesNotMatch(source, /\brequire\s*\(/gu);
     assert.doesNotMatch(source, /\bmodule\.exports\b/gu);
     assert.doesNotMatch(
       source,
-      /(?:@aster\/core\/|@aster\/build|\blilium\b|\blotus\b|\bnode:|\btooling\b)/giu,
+      /(?:@luscious-garden\/aster-core\/|@luscious-garden\/aster-build|\blilium\b|\blotus\b|\bnode:|\btooling\b)/giu,
     );
   }
 });

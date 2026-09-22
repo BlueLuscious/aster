@@ -264,7 +264,7 @@ export class PackageModuleInspector {
       specifier.startsWith(sourceModule.nodeProtocolPrefix)
     ) {
       issues.add(
-        `${this.#paths.relative(workspaceRoot, modulePath)} imports a Node adapter into @aster/import`,
+        `${this.#paths.relative(workspaceRoot, modulePath)} imports a Node adapter into @luscious-garden/aster-import`,
       );
     }
 

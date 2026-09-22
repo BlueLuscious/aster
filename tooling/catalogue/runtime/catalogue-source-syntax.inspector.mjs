@@ -35,13 +35,13 @@ export class CatalogueSourceSyntaxInspector {
    * @returns {Promise<import("../contracts/internal/catalogue-source-syntax-inspection.contract.mjs").ICatalogueSourceSyntaxInspection>} Frozen syntax inspection.
    */
   async inspect(sourcePath, source, family, identity) {
-    const sourceFile = ts.createSourceFile(
+    const sourceFile = /** @type {import("typescript").SourceFile & { readonly parseDiagnostics: readonly import("typescript").Diagnostic[] }} */ (ts.createSourceFile(
       sourcePath,
       source,
       ts.ScriptTarget.ESNext,
       true,
       ts.ScriptKind.TS,
-    );
+    ));
 
     if (sourceFile.parseDiagnostics.length > 0) {
       throw new CatalogueSourceError(
@@ -106,6 +106,7 @@ export class CatalogueSourceSyntaxInspector {
    * @returns {import("typescript").VariableDeclaration} Canonical exported declaration.
    */
   #exportedConstant(sourcePath, sourceFile, expectedSymbol) {
+    /** @type {import("typescript").VariableDeclaration[]} */
     const declarations = [];
 
     for (const statement of sourceFile.statements) {
@@ -129,16 +130,20 @@ export class CatalogueSourceSyntaxInspector {
       }
     }
 
+    const declaration = declarations[0];
+
     if (
-      declarations.length !== 1 ||
-      declarations[0].name.text !== expectedSymbol
+      declarations.length !== 1
+      || declaration === undefined
+      || !ts.isIdentifier(declaration.name)
+      || declaration.name.text !== expectedSymbol
     ) {
       throw new CatalogueSourceError(
         `${sourcePath} must export exactly one constant named ${expectedSymbol}.`,
       );
     }
 
-    return declarations[0];
+    return declaration;
   }
 
   /**
@@ -151,6 +156,9 @@ export class CatalogueSourceSyntaxInspector {
    */
   #definitionObject(sourcePath, sourceFile, declaration, family) {
     const initializer = declaration.initializer;
+    const argument = initializer !== undefined && ts.isCallExpression(initializer)
+      ? initializer.arguments[0]
+      : undefined;
 
     if (
       initializer === undefined ||
@@ -160,7 +168,8 @@ export class CatalogueSourceSyntaxInspector {
       !ts.isIdentifier(initializer.expression.expression) ||
       initializer.expression.expression.text !== family.definitionFactory ||
       initializer.expression.name.text !== "define" ||
-      !ts.isObjectLiteralExpression(initializer.arguments[0])
+      argument === undefined ||
+      !ts.isObjectLiteralExpression(argument)
     ) {
       throw new CatalogueSourceError(
         `${sourcePath} must initialise ${family.definitionFactory}.define(...) with one object.`,
@@ -169,7 +178,7 @@ export class CatalogueSourceSyntaxInspector {
 
     this.#requireDefinitionFactoryImport(sourcePath, sourceFile, family);
 
-    return initializer.arguments[0];
+    return argument;
   }
 
   /**
@@ -180,6 +189,7 @@ export class CatalogueSourceSyntaxInspector {
    * @returns {void}
    */
   #requireDefinitionFactoryImport(sourcePath, sourceFile, family) {
+    /** @type {{ statement: import("typescript").ImportDeclaration, element: import("typescript").ImportSpecifier }[]} */
     const matches = [];
 
     for (const statement of sourceFile.statements) {
@@ -199,16 +209,18 @@ export class CatalogueSourceSyntaxInspector {
       }
     }
 
-    const [match] = matches;
-    const importedName = match?.element.propertyName?.text
-      ?? match?.element.name.text;
+    const match = matches[0];
 
     if (
       matches.length !== 1
+      || match === undefined
+      || !ts.isStringLiteralLike(match.statement.moduleSpecifier)
+      || match.statement.importClause === undefined
       || match.statement.moduleSpecifier.text !== family.definitionModule
       || match.statement.importClause.isTypeOnly
       || match.element.isTypeOnly
-      || importedName !== family.definitionFactory
+      || (match.element.propertyName?.text ?? match.element.name.text)
+        !== family.definitionFactory
     ) {
       throw new CatalogueSourceError(
         `${sourcePath} must import ${family.definitionFactory} from ${family.definitionModule} as one runtime named import.`,
@@ -226,7 +238,7 @@ export class CatalogueSourceSyntaxInspector {
   #requiredObjectProperty(sourcePath, object, name) {
     const value = this.#propertyValue(sourcePath, object, name, true);
 
-    if (!ts.isObjectLiteralExpression(value)) {
+    if (value === undefined || !ts.isObjectLiteralExpression(value)) {
       throw new CatalogueSourceError(
         `${sourcePath} must declare ${name} as an object literal.`,
       );
@@ -245,7 +257,7 @@ export class CatalogueSourceSyntaxInspector {
   #requiredStringProperty(sourcePath, object, name) {
     const value = this.#propertyValue(sourcePath, object, name, true);
 
-    if (!ts.isStringLiteralLike(value)) {
+    if (value === undefined || !ts.isStringLiteralLike(value)) {
       throw new CatalogueSourceError(
         `${sourcePath} must declare ${name} as a string literal.`,
       );
@@ -286,12 +298,18 @@ export class CatalogueSourceSyntaxInspector {
    * @returns {import("typescript").Expression | undefined} Direct property value when present.
    */
   #propertyValue(sourcePath, object, name, required) {
-    const properties = object.properties.filter(
-      (property) =>
-        ts.isPropertyAssignment(property) &&
-        ((ts.isIdentifier(property.name) && property.name.text === name) ||
-          (ts.isStringLiteralLike(property.name) && property.name.text === name)),
-    );
+    /** @type {import("typescript").PropertyAssignment[]} */
+    const properties = [];
+
+    for (const property of object.properties) {
+      if (
+        ts.isPropertyAssignment(property)
+        && ((ts.isIdentifier(property.name) && property.name.text === name)
+          || (ts.isStringLiteralLike(property.name) && property.name.text === name))
+      ) {
+        properties.push(property);
+      }
+    }
 
     if (properties.length > 1 || (required && properties.length === 0)) {
       throw new CatalogueSourceError(
@@ -312,7 +330,7 @@ export class CatalogueSourceSyntaxInspector {
   #collectionMemberReferences(sourcePath, sourceFile, definition) {
     const icons = this.#propertyValue(sourcePath, definition, "icons", true);
 
-    if (!ts.isArrayLiteralExpression(icons)) {
+    if (icons === undefined || !ts.isArrayLiteralExpression(icons)) {
       throw new CatalogueSourceError(
         `${sourcePath} must declare icons as an array literal.`,
       );

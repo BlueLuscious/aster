@@ -1,4 +1,4 @@
-import { Collection, Icon } from "@aster/core";
+import { Collection, Icon } from "@luscious-garden/aster-core";
 import { benchmarkCatalogueFixture } from "../constants/benchmark-catalogue-fixture.constant.mjs";
 
 /**
@@ -49,7 +49,7 @@ export class BenchmarkCatalogueFixtureFactory {
   /**
    * @description Creates one canonical definition from a deterministic geometry family.
    * @param {number} index - Zero-based corpus position.
-   * @returns {import("@aster/core").IconDefinition} Canonical synthetic icon.
+   * @returns {import("@luscious-garden/aster-core").IconDefinition} Canonical synthetic icon.
    */
   #icon(index) {
     const ordinal = index + 1;
@@ -84,7 +84,7 @@ export class BenchmarkCatalogueFixtureFactory {
   /**
    * @description Selects one deterministic geometry family for a corpus position.
    * @param {number} index - Zero-based corpus position.
-   * @returns {import("@aster/core").IconNodeType[]} Mutable authored nodes consumed immediately by Core.
+   * @returns {import("@luscious-garden/aster-core").IconNodeType[]} Mutable authored nodes consumed immediately by Core.
    */
   #nodes(index) {
     const offset = index % 4;

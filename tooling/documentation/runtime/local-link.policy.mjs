@@ -41,7 +41,13 @@ export class LocalLinkPolicy {
    */
   async inspect(context, document, issues) {
     for (const target of this.#links.extract(document.content)) {
-      const targetWithoutFragment = decodeURIComponent(target.split("#", 1)[0]);
+      const targetPath = target.split("#", 1)[0];
+
+      if (targetPath === undefined) {
+        continue;
+      }
+
+      const targetWithoutFragment = decodeURIComponent(targetPath);
       const resolvedTarget = this.#paths.resolve(
         this.#paths.dirname(document.path),
         targetWithoutFragment,

@@ -2,16 +2,16 @@
  * @description Fixed safety limits applied before untrusted SVG syntax can enter later import stages.
  */
 export const svgParserLimits = Object.freeze({
-  /** @description Maximum accepted max source length before parsing is rejected. */
+  /** @description Maximum source length in UTF-16 code units. */
   maxSourceLength: 1_048_576,
-  /** @description Maximum accepted max element depth before parsing is rejected. */
+  /** @description Maximum one-based element nesting depth. */
   maxElementDepth: 64,
-  /** @description Maximum accepted max elements before parsing is rejected. */
+  /** @description Maximum element count in one source. */
   maxElements: 10_000,
-  /** @description Maximum accepted max attributes per element before parsing is rejected. */
+  /** @description Maximum attributes on one element. */
   maxAttributesPerElement: 128,
-  /** @description Maximum accepted max text length before parsing is rejected. */
+  /** @description Maximum raw character-data length in UTF-16 code units. */
   maxTextLength: 262_144,
-  /** @description Maximum accepted max path data length before parsing is rejected. */
+  /** @description Maximum path-data attribute length in UTF-16 code units. */
   maxPathDataLength: 262_144,
 });

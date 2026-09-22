@@ -48,44 +48,60 @@ export class CatalogueSourceManifestPlanner {
       icons.map((module) => [this.#paths.resolve(module.sourcePath), module]),
     );
     const iconRecords = icons
-      .map((module) => Object.freeze({
-        key: this.#keys.serialise(
-          catalogueSourceFamilyKinds.icon,
-          module.manifest.identity,
-        ),
-        symbol: module.symbol,
-        ...module.manifest,
-      }))
+      .map((module) => {
+        if (!("displayName" in module.manifest)) {
+          throw new CatalogueSourceError(
+            `${module.sourcePath} produced collection metadata for an icon source.`,
+          );
+        }
+
+        return Object.freeze({
+          key: this.#keys.serialise(
+            catalogueSourceFamilyKinds.icon,
+            module.manifest.identity,
+          ),
+          symbol: module.symbol,
+          ...module.manifest,
+        });
+      })
       .sort((left, right) => this.#compareText(left.key, right.key));
     const collectionRecords = collections
-      .map((module) => Object.freeze({
-        key: this.#keys.serialise(
-          catalogueSourceFamilyKinds.collection,
-          module.manifest.identity,
-        ),
-        symbol: module.symbol,
-        ...module.manifest,
-        members: Object.freeze(
-          module.memberReferences.map((reference) => {
-            const targetPath = this.#paths.resolve(
-              this.#paths.dirname(module.sourcePath),
-              reference.moduleSpecifier.replace(/\.js$/u, ".ts"),
-            );
-            const target = iconsByPath.get(targetPath);
+      .map((module) => {
+        if (!("metadata" in module.manifest)) {
+          throw new CatalogueSourceError(
+            `${module.sourcePath} produced icon metadata for a collection source.`,
+          );
+        }
 
-            if (target === undefined) {
-              throw new CatalogueSourceError(
-                `${module.sourcePath} contains unresolved manifest member ${reference.moduleSpecifier}.`,
+        return Object.freeze({
+          key: this.#keys.serialise(
+            catalogueSourceFamilyKinds.collection,
+            module.manifest.identity,
+          ),
+          symbol: module.symbol,
+          ...module.manifest,
+          members: Object.freeze(
+            module.memberReferences.map((reference) => {
+              const targetPath = this.#paths.resolve(
+                this.#paths.dirname(module.sourcePath),
+                reference.moduleSpecifier.replace(/\.js$/u, ".ts"),
               );
-            }
+              const target = iconsByPath.get(targetPath);
 
-            return this.#keys.serialise(
-              catalogueSourceFamilyKinds.icon,
-              target.manifest.identity,
-            );
-          }),
-        ),
-      }))
+              if (target === undefined) {
+                throw new CatalogueSourceError(
+                  `${module.sourcePath} contains unresolved manifest member ${reference.moduleSpecifier}.`,
+                );
+              }
+
+              return this.#keys.serialise(
+                catalogueSourceFamilyKinds.icon,
+                target.manifest.identity,
+              );
+            }),
+          ),
+        });
+      })
       .sort((left, right) => this.#compareText(left.key, right.key));
 
     return Object.freeze({

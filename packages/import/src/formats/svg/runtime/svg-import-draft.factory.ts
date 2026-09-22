@@ -1,7 +1,7 @@
 import type {
   IconNodeType,
   IconPresentation,
-} from "@aster/core";
+} from "@luscious-garden/aster-core";
 import type { IconImportDraft } from "../../../adoption/contracts/index.js";
 import type { SvgIconImportSource } from "../../../source/contracts/svg-icon-import-source.contract.js";
 import type { ISvgSyntaxDocument } from "../parser/contracts/internal/svg-syntax-document.contract.js";

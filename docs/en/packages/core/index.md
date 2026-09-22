@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-`@aster/core` owns Aster's serialisable, target-independent icon model. It allows source adapters,
+`@luscious-garden/aster-core` owns Aster's serialisable, target-independent icon model. It allows source adapters,
 canonical icon packages, renderers, and framework adapters to exchange the same values
 without importing SVG parser syntax, DOM objects, framework state, or repository tooling.
 
@@ -26,6 +26,10 @@ registry, or global identity authority.
 | [Shared](shared/index.md) | Internal primitive assertions and the public deterministic Core failure boundary. |
 | [Workflow](workflow.md) | End-to-end icon and collection construction, validation, isolation, and consumption flow. |
 | [Quality](quality.md) | Public inventory, consumer conformance, distribution evidence, and future pressure boundaries. |
+
+The [initial release notes](releases.md) record this package's candidate public capability and
+accepted limits. The [project publication procedure](../../project/publication.md) owns registry
+checks and human approval.
 
 ## Dependency boundary
 

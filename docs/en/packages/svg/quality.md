@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-This document records the accepted observable `@aster/svg` boundary, distribution and consumer
+This document records the accepted observable `@luscious-garden/aster-svg` boundary, distribution and consumer
 evidence, and the pressures that require new evidence before changing that boundary.
 The implemented execution path is documented by [SVG Workflow](workflow.md).
 
@@ -48,8 +48,8 @@ separate responsibility or demonstrated reuse.
 | CLI export | Renders selected icon and collection definitions into complete immutable export plans through the public SVG root. |
 | CLI static review | Renders selected definitions through the public SVG root before composing self-contained visual evidence. |
 
-`@aster/cli` depends on the public SVG root for export and static review rendering.
-`@aster/icons`, `@aster/core`, and `@aster/import` do not depend on SVG. Import adopts external SVG
+`@luscious-garden/aster-cli` depends on the public SVG root for export and static review rendering.
+`@luscious-garden/aster-icons`, `@luscious-garden/aster-core`, and `@luscious-garden/aster-import` do not depend on SVG. Import adopts external SVG
 into portable definitions; this package renders portable definitions towards SVG markup. Neither
 direction owns the other.
 
@@ -58,7 +58,7 @@ direction owns the other.
 The package emits native ES2022 ESM with one public root export and `sideEffects: false`.
 The unminified TypeScript distribution contains 22 JavaScript modules totalling 32,335 bytes and
 22 declaration files totalling 9,232 bytes. Its sole production dependency is the public
-`@aster/core` package root. These values are inspection evidence, not fixed compatibility or
+`@luscious-garden/aster-core` package root. These values are inspection evidence, not fixed compatibility or
 performance promises.
 
 Production compilation excludes DOM, browser, Node, Import, framework, and tooling ambient types.
