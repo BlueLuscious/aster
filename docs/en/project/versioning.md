@@ -9,11 +9,11 @@ respective [package documentation](../packages/index.md).
 ## Current maturity
 
 Aster has no stable public release or compatibility commitment to external consumers. Core,
-Icons, SVG, and CLI declare initial `0.1.0-rc.1` release candidates; none has been published by
-this decision. `@luscious-garden/aster-import` also uses `0.1.0-rc.1` for independent internal
-version tracking but remains private.
+Icons, SVG, and CLI published their initial `0.1.0-rc.1` release candidates on 22 September 2026.
+`@luscious-garden/aster-import` also uses `0.1.0-rc.1` for independent internal version tracking
+but remains private.
 Repository conformance proves the current implementation against its documented boundaries but
-does not turn candidate versions into published releases.
+does not turn pre-release versions into stable compatibility commitments.
 The [manual publication procedure](publication.md) records the separate registry and human
 go/no-go checks; this policy does not authorise publication by itself.
 
@@ -27,8 +27,11 @@ requirements of a distributed package.
 
 The `rc.1` suffix is part of the package's Semantic Versioning identity and marks the first
 release candidate for `0.1.0`. The npm `next` dist-tag is independent registry metadata that
-selects which published version consumers receive through that tag. Publishing
-`0.1.0-rc.1 --tag next` neither publishes nor aliases the later stable `0.1.0` release.
+selects which published version consumers receive through that tag. The first publication also
+assigned `latest` to each package while no earlier version existed. The registry returned a
+`400 Bad Request` when the maintainer attempted to remove that initial default tag. Both tags
+currently resolve to `0.1.0-rc.1`. This registry state neither publishes nor aliases the later
+stable `0.1.0` release, which will replace `latest` explicitly.
 
 ## Version ownership
 
