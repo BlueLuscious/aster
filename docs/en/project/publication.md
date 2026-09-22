@@ -1,11 +1,39 @@
 # Manual Publication
 
-Status: **Candidate procedure; no npm publication has occurred**.
+Status: **Technical candidate reviewed; no npm publication has occurred**.
 
 This is the human-controlled procedure for the first public `0.1.0` release of Core, Icons, SVG
 and CLI. The [versioning policy](versioning.md) owns compatibility and dependency sequencing;
 each package owns its [release notes](../packages/index.md). Private `@aster/import` participates
 in repository verification but must not be packed or published as part of this release.
+
+## Reviewed candidate
+
+The first public set has four independently versioned `0.1.0` packages. A prior clean frozen
+offline installation passed on Node `24.10.0` with pnpm `10.28.1`. Complete repository
+verification, pack inventories and isolated tarball-consumer tests passed again after the
+candidate documentation was finalised. The final approved commit and tarballs still require the
+repeatable checks below; local evidence alone is not a registry permission check.
+
+| Package | Packed files | Production dependencies | Package release notes |
+| --- | ---: | --- | --- |
+| `@aster/core` | 167 | None | [Core](../packages/core/releases.md) |
+| `@aster/icons` | 142 | Core `^0.1.0` | [Icons](../packages/icons/releases.md) |
+| `@aster/svg` | 47 | Core `^0.1.0` | [SVG](../packages/svg/releases.md) |
+| `@aster/cli` | 297 | Core, Icons and SVG `^0.1.0` | [CLI](../packages/cli/releases.md) |
+
+The archives contain emitted ESM and declarations, their manifests, READMEs and software
+licences; Icons alone also includes the artwork licence. They exclude private Import, source
+trees, tests, tooling and credentials. Icons carries a distinct artwork licence alongside ISC
+software terms; the [package authority](../packages/icons/index.md#rights-boundary) explains the
+scope. These counts are candidate evidence, not a promise that future versions retain identical
+contents.
+
+No release-account or `@aster` scope rights have been verified, no live npm name availability
+has been confirmed, and the maintainer has not given publication approval. The proposed `next`
+tag also awaits confirmation. Specialist legal review remains optional if certainty about the
+software/artwork boundary is required. These are explicit pre-publication decisions, not failed
+source or packed-consumer checks.
 
 ## Decision boundary
 

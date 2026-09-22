@@ -63,10 +63,12 @@ by each owning package rather than repeated here.
 
 ## Maturity and releases
 
-Aster has no stable public release. Core, Icons, SVG, and CLI declare `0.1.0` as initial
+Aster has no published public release. Core, Icons, SVG, and CLI declare `0.1.0` as initial
 publication candidates, Icons contains its first accepted collection, and Import is deliberately
-private. Current package and workflow checks prove development conformance but do not constitute
-a published compatibility promise to external consumers.
+private. Technical readiness checks and packed-consumer evidence have passed, but they do not
+constitute a published compatibility promise or authorise publication. npm scope access, the
+release tag, final artefacts and the human go/no-go remain explicit checks in the
+[Manual Publication](publication.md) procedure.
 
 When publication begins, independently installable packages will own separate Semantic Versioning
 sequences and coordinate only where their dependency contracts require it. The complete
