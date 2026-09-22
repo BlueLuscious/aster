@@ -1,3 +1,11 @@
+@aster/icons contains software, documentation and original artwork. The software implementation,
+documentation, TypeScript declarations and APIs are licensed under ISC as set out below. The visual
+artwork encoded in an icon definition or the creative selection and arrangement of a collection
+follows the effective artwork licence declared in that definition's metadata. BlueLuscious-owned
+artwork marked `LicenseRef-Aster-Artwork-1.0` follows the
+[Aster Artwork Licence](ARTWORK-LICENCE.md). Both terms may apply to different parts of the same
+.icon.ts module or its compiled output. Package inclusion alone does not relicense artwork.
+
 ISC License
 
 Copyright (c) 2026 BlueLuscious

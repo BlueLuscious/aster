@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { Icon } from "@aster/core";
+import { asterArtworkLicence } from "../../src/authoring/constants/aster-artwork-licence.constant.js";
 import {
   amellusIconAuthoringProfile,
 } from "../../src/authoring/constants/amellus-icon-authoring-profile.constant.js";
@@ -12,7 +13,7 @@ import {
 test("keeps original authorship separate from Amellus visual policy", () => {
   assert.deepEqual(asterOriginalIconAuthorship, {
     namespace: "aster",
-    licence: "ISC",
+    licence: asterArtworkLicence,
     attribution: "BlueLuscious",
   });
   assert.deepEqual(amellusIconAuthoringProfile, {

@@ -3,6 +3,7 @@ import { spawnSync } from "node:child_process";
 import {
   mkdir,
   mkdtemp,
+  readFile,
   readdir,
   rm,
   unlink,
@@ -149,6 +150,7 @@ test("packs every emitted file without repository source", async () => {
 
   assert.deepEqual(installedFiles, [
     ...sourceDistributionFiles,
+    "ARTWORK-LICENCE.md",
     "LICENSE",
     "package.json",
     "README.md",
@@ -165,6 +167,21 @@ test("packs every emitted file without repository source", async () => {
   );
   assert.equal(installedFiles.some((path) => path.startsWith("src/")), false);
   assert.equal(installedFiles.some((path) => path.startsWith("tests/")), false);
+});
+
+test("includes both software and artwork terms in the installed package", async () => {
+  const packageDirectory = resolve(consumerRoot, "node_modules/@aster/icons");
+  const [softwareNotice, artworkNotice, manifest] = await Promise.all([
+    readFile(resolve(packageDirectory, "LICENSE"), "utf8"),
+    readFile(resolve(packageDirectory, "ARTWORK-LICENCE.md"), "utf8"),
+    readFile(resolve(packageDirectory, "package.json"), "utf8"),
+  ]);
+
+  assert.match(softwareNotice, /ISC License/u);
+  assert.match(softwareNotice, /\[Aster Artwork Licence\]\(ARTWORK-LICENCE\.md\)/u);
+  assert.match(artworkNotice, /standalone artwork product/u);
+  assert.match(artworkNotice, /\[ISC software licence\]\(LICENSE\)/u);
+  assert.equal(JSON.parse(manifest).license, "SEE LICENSE IN LICENSE");
 });
 
 test("resolves isolated runtime and declaration facades without source files", async () => {

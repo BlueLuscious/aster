@@ -29,4 +29,8 @@ The package currently provides the accepted Amellus foundational collection. See
 
 ## Licence
 
-This package is licensed under the terms in [LICENSE](LICENSE).
+The software and documentation are licensed under [ISC](LICENSE). BlueLuscious-owned icon and
+collection artwork marked with `LicenseRef-Aster-Artwork-1.0` follows the separate
+[Aster Artwork Licence](ARTWORK-LICENCE.md), which permits commercial use in products but not
+sale of the artwork as a standalone asset. Other artwork retains its declared terms. Software
+and artwork may appear in the same `*.icon.ts` module.

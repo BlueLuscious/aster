@@ -360,9 +360,10 @@ test("keeps every per-collection module isolated from catalogue indexes", async 
     assert.equal(specifiers[0], "@aster/core");
     assert.ok(
       specifiers.slice(1).every((specifier) =>
+        specifier === "../../../authoring/constants/aster-artwork-licence.constant.js" ||
         /^\.\.\/\.\.\/\.\.\/glyphs\/[a-z]\/([a-z0-9]+(?:-[a-z0-9]+)*)\/\1\.icon\.js$/u.test(specifier),
       ),
-      `Expected ${subpath} to import only its declared icon modules.`,
+      `Expected ${subpath} to import only its artwork licence and declared icon modules.`,
     );
     assert.equal(new Set(specifiers).size, specifiers.length);
     assert.doesNotMatch(

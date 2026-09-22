@@ -4,7 +4,7 @@
   "description": "Canonical portable Aster icon and collection definitions.",
   "type": "module",
   "author": "BlueLuscious",
-  "license": "ISC",
+  "license": "SEE LICENSE IN LICENSE",
   "homepage": "https://github.com/BlueLuscious/aster/tree/develop/packages/icons#readme",
   "repository": {
     "type": "git",
@@ -39,6 +39,7 @@
     "access": "public"
   },
   "files": [
+    "ARTWORK-LICENCE.md",
     "dist"
   ],
   "scripts": {
