@@ -11,7 +11,7 @@ The package contains no renderer, framework, DOM, filesystem, Import, or global 
 dependency.
 The example below assumes `@luscious-garden/aster-svg` is installed independently by the consumer.
 
-When `0.1.0-rc.1` is published, install both packages for this example with
+Install both exact candidate versions for this example with
 `pnpm add @luscious-garden/aster-icons@0.1.0-rc.1 @luscious-garden/aster-svg@0.1.0-rc.1`. To use a definition without SVG rendering,
 install only `@luscious-garden/aster-icons`; it brings its compatible Core dependency.
 

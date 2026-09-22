@@ -13,8 +13,8 @@ The standalone Node package also exposes the `aster` executable:
 pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.1
 ```
 
-These candidate installation instructions apply once `0.1.0-rc.1` is published. The executable
-supports Node `>=24.10.0 <25`; installation brings compatible Core, Icons and SVG packages.
+The executable supports Node `>=24.10.0 <25`; installation brings compatible Core, Icons and SVG
+packages.
 
 ```sh
 pnpm exec aster list icons

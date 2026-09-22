@@ -1,19 +1,19 @@
 # Manual Publication
 
-Status: **Technical candidate reviewed; no npm publication has occurred**.
+Status: **Completed for `0.1.0-rc.1` on 22 September 2026**.
 
-This is the human-controlled procedure for the first public `0.1.0-rc.1` release of Core, Icons, SVG
-and CLI. The [versioning policy](versioning.md) owns compatibility and dependency sequencing;
-each package owns its [release notes](../packages/index.md). Private `@luscious-garden/aster-import` participates
-in repository verification but must not be packed or published as part of this release.
+This records the human-controlled procedure and evidence for the first public `0.1.0-rc.1`
+release of Core, Icons, SVG and CLI. The [versioning policy](versioning.md) owns compatibility and
+dependency sequencing; each package owns its [release notes](../packages/index.md). Private
+`@luscious-garden/aster-import` participated in repository verification but was not packed or
+published as part of this release.
 
 ## Reviewed candidate
 
 The first public set has four independently versioned `0.1.0-rc.1` packages. A frozen offline
 workspace installation, complete repository verification, pack inventories and isolated
-tarball-consumer tests passed on Node `24.10.0` with pnpm `10.28.1` after the npm-scope change.
-The final approved commit still requires a clean checkout and the repeatable checks below;
-local evidence alone is not a registry permission check.
+tarball-consumer tests passed on Node `24.10.0` with pnpm `10.28.1` from clean commit
+`7c7efd67d8f6f60204cfa268e0ce4fcf4b794df1`.
 
 | Package | Packed files | Production dependencies | Package release notes |
 | --- | ---: | --- | --- |
@@ -29,12 +29,21 @@ software terms; the [package authority](../packages/icons/index.md#rights-bounda
 scope. These counts are candidate evidence, not a promise that future versions retain identical
 contents.
 
-The maintainer reports creating the `luscious-garden` npm organisation, but authenticated publish
-rights under `@luscious-garden` have not been verified. No live npm name availability has been
-confirmed, and the maintainer has not given publication approval. The proposed `next`
-tag also awaits confirmation. Specialist legal review remains optional if certainty about the
-software/artwork boundary is required. These are explicit pre-publication decisions, not failed
-source or packed-consumer checks.
+Authenticated registry checks identified `blue_luscious` as owner of the `luscious-garden` npm
+organisation. The maintainer gave an explicit go decision after reviewing the final archives,
+licence boundaries, commands and SHA-256 hashes. Publication completed in dependency order and an
+external consumer without registry credentials installed all four exact versions, executed the
+CLI, listed the complete icon catalogue and rendered an imported icon. Specialist legal review
+remains optional if additional certainty about the software/artwork boundary is required.
+
+## Published artefacts
+
+| Package | Registry | SHA-256 |
+| --- | --- | --- |
+| Core | [`0.1.0-rc.1`](https://www.npmjs.com/package/@luscious-garden/aster-core/v/0.1.0-rc.1) | `FA4C247160BB9556ABE2F78EFD7DFAED2FBE33B72471A1710FA0608144DDB59B` |
+| Icons | [`0.1.0-rc.1`](https://www.npmjs.com/package/@luscious-garden/aster-icons/v/0.1.0-rc.1) | `DDE0653DBD7C94E75E7FEA880C24ED1A641566DD077516650BA1AEEA8B2DEA63` |
+| SVG | [`0.1.0-rc.1`](https://www.npmjs.com/package/@luscious-garden/aster-svg/v/0.1.0-rc.1) | `C2FCD1EA1C64052486710F13AB49662184DDF61B7AE820B935BC948F1B140831` |
+| CLI | [`0.1.0-rc.1`](https://www.npmjs.com/package/@luscious-garden/aster-cli/v/0.1.0-rc.1) | `39E5C9A172CEDE79EDC20A13F4127EB702C1A1F0471CC5C8B4328CF74248D364` |
 
 ## Decision boundary
 
@@ -45,11 +54,12 @@ They then decide go or no-go. No push, merge, tag, version script, CI job, or Co
 title triggers a registry write. Garden's ecosystem record is maintained through a separate,
 manually reviewed change only when the release materially affects it.
 
-The proposed first-publication dist-tag is `next` so a new pre-1.0 candidate is not implicitly
-presented as `latest`. Confirm that choice in the go/no-go decision. Consumers use explicit
-`@0.1.0-rc.1` versions until a separate human decision prepares the stable `0.1.0` release. npm's
-default publish tag is `latest` unless a tag is supplied; the commands below therefore always
-specify `--tag next`.
+The intended pre-release channel is `next`. The registry also assigned `latest` to each first
+package version even though publication explicitly supplied `--tag next`. It returned a
+`400 Bad Request` when the maintainer attempted to remove Core's initial `latest` tag.
+Consequently, both `next` and `latest` currently resolve to `0.1.0-rc.1`; consumers should still
+select `@next` or the exact version to express pre-release intent. The future stable `0.1.0`
+release will replace `latest` through a separate human decision.
 See [npm publish](https://docs.npmjs.com/cli/v11/commands/npm-publish/) and
 [dist-tags](https://docs.npmjs.com/adding-dist-tags-to-packages/).
 
@@ -150,7 +160,9 @@ check before proceeding.
 ## Dry-run and publish
 
 Run every dry-run against its approved archive. `--access public` is explicit for these scoped
-packages; `--tag next` prevents an accidental `latest` tag. A dry-run is not publication.
+packages; `--tag next` requests the intended pre-release channel. Inspect actual post-publication
+tags because a package's first registry version may also acquire `latest`. A dry-run is not
+publication.
 
 ```powershell
 npm publish "$releaseDir/luscious-garden-aster-core-0.1.0-rc.1.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
@@ -196,10 +208,9 @@ pnpm exec aster list icons
 ```
 
 Repeat the package README examples to verify a Core definition, isolated Icons import, and SVG
-render under Node `>=24.10.0 <25`. Confirm the intended `next` tag and accessible README/licence
-notices on the npm pages. Only then record the actual publication date, artefact hashes and
-registry links in the package release notes and update candidate-only wording. An unpublished
-candidate must never be described as available from npm.
+render under Node `>=24.10.0 <25`. Confirm the actual dist-tags and accessible README/licence
+notices on the npm pages. Record the publication date, artefact hashes and registry links in the
+package release notes before closing each future release.
 
 ## Promote a stable release
 

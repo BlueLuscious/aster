@@ -1,9 +1,13 @@
 # CLI Release Notes
 
-## 0.1.0-rc.1 candidate
+## 0.1.0-rc.1
 
-Status: **Not published**. This is the formal release candidate for the first public `0.1.0`, not
-a previously supported release. No consumer migration is required.
+Status: **Published on 22 September 2026**. This is the formal release candidate for the first
+public `0.1.0`, not a previously supported release. No consumer migration is required.
+
+Registry: [`@luscious-garden/aster-cli@0.1.0-rc.1`](https://www.npmjs.com/package/@luscious-garden/aster-cli/v/0.1.0-rc.1)
+
+Approved archive SHA-256: `39E5C9A172CEDE79EDC20A13F4127EB702C1A1F0471CC5C8B4328CF74248D364`.
 
 **Compatible capability:** `@luscious-garden/aster-cli` exposes the host-neutral `AsterCommands` API and explicit
 `AsterCatalogue` provider through its root, plus the standalone `aster` binary. The executable
