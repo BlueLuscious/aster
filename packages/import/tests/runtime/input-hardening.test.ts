@@ -68,6 +68,38 @@ test("rejects accessor-owned fields across public operations without executing t
     throw new Error("Expected accepted hardening source.");
   }
 
+  for (const field of [
+    "identity",
+    "viewBox",
+    "nodes",
+    "metrics",
+    "provenance",
+  ] as const) {
+    const draft = accessor({ ...successfulInspection.value }, field);
+    assert.throws(
+      () => IconImport.define({ draft, metadata } as never),
+      (error: unknown) =>
+        error instanceof IconImportError &&
+        error.path === `request.draft.${field}`,
+    );
+  }
+
+  for (const field of ["format", "sourceId"] as const) {
+    const provenance = accessor(
+      { ...successfulInspection.value.provenance },
+      field,
+    );
+    assert.throws(
+      () => IconImport.define({
+        draft: { ...successfulInspection.value, provenance },
+        metadata,
+      } as never),
+      (error: unknown) =>
+        error instanceof IconImportError &&
+        error.path === `request.draft.provenance.${field}`,
+    );
+  }
+
   const defined = accessor({
     draft: successfulInspection.value,
     metadata,

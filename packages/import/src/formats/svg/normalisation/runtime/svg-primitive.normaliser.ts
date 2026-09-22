@@ -3,6 +3,7 @@ import type {
   IconPoint,
   IconPresentation,
 } from "@luscious-garden/aster-core";
+import type { ISvgSyntaxAttribute } from "../../parser/contracts/internal/svg-syntax-attribute.contract.js";
 import type { ISvgSyntaxElement } from "../../parser/contracts/internal/svg-syntax-element.contract.js";
 import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
 import { svgSourceElementNames } from "../../shared/constants/svg-source-element-names.constant.js";
@@ -35,14 +36,17 @@ export class SvgPrimitiveNormaliser {
     presentation: IconPresentation,
   ): IconNodeType {
     switch (element.localName) {
-      case svgSourceElementNames.path:
+      case svgSourceElementNames.path: {
+        const path = this.#required(element, svgSourceAttributeNames.pathData);
         return {
           kind: svgSourceElementNames.path,
           commands: this.#pathNormaliser.normalise(
-            this.#required(element, svgSourceAttributeNames.pathData),
+            path.value,
+            path.valueSpan,
           ),
           ...presentation,
         };
+      }
       case svgSourceElementNames.circle:
         return {
           kind: svgSourceElementNames.circle,
@@ -126,7 +130,7 @@ export class SvgPrimitiveNormaliser {
    */
   #points(element: ISvgSyntaxElement): readonly IconPoint[] {
     const values = this.#numberParser.parseSequence(
-      this.#required(element, svgSourceAttributeNames.points),
+      this.#required(element, svgSourceAttributeNames.points).value,
     );
 
     if (values === undefined || values.length % 2 !== 0) {
@@ -212,9 +216,9 @@ export class SvgPrimitiveNormaliser {
    * @description Reads one required authored attribute.
    * @param element - Safe validated geometry syntax.
    * @param name - Namespace-free SVG attribute name.
-   * @returns Exact validated attribute value.
+   * @returns Exact validated attribute with its source evidence.
    */
-  #required(element: ISvgSyntaxElement, name: string): string {
+  #required(element: ISvgSyntaxElement, name: string): ISvgSyntaxAttribute {
     const attribute = element.attributes.find(
       (candidate) => candidate.localName === name,
     );
@@ -226,6 +230,6 @@ export class SvgPrimitiveNormaliser {
       );
     }
 
-    return attribute.value;
+    return attribute;
   }
 }

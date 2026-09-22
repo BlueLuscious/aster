@@ -94,8 +94,18 @@ export class IconAdoptionService {
   ): DiagnosticResultType<IconDefinition> {
     const record = this.#request(request, ["draft", "metadata"]);
     const draft = this.#validator.record(record.draft, "request.draft");
+    this.#validator.exactFields(
+      draft,
+      ["identity", "viewBox", "nodes", "metrics", "provenance"],
+      "request.draft",
+    );
     const provenance = this.#validator.record(
       draft.provenance,
+      "request.draft.provenance",
+    );
+    this.#validator.exactFields(
+      provenance,
+      ["format", "sourceId"],
       "request.draft.provenance",
     );
     this.#validator.nonEmptyString(

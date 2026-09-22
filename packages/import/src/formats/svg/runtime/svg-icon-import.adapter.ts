@@ -6,8 +6,11 @@ import type { DiagnosticResultType } from "../../../diagnostic/types/index.js";
 import { iconImportFormats } from "../../../format/constants/icon-import-formats.constant.js";
 import { DiagnosticResultFactory } from "../../../diagnostic/runtime/diagnostic-result.factory.js";
 import { diagnosticSeverities } from "../../../diagnostic/constants/diagnostic-severities.constant.js";
+import { SvgPathExpansionError } from "../normalisation/runtime/svg-path-expansion.error.js";
 import { SvgParser } from "../parser/runtime/svg.parser.js";
+import { svgValidationIssueKinds } from "../validation/constants/svg-validation-issue-kinds.constant.js";
 import { SvgTechnicalValidator } from "../validation/runtime/svg-technical.validator.js";
+import { SvgValidationDiagnosticFactory } from "../validation/runtime/svg-validation-diagnostic.factory.js";
 import { SvgImportDraftFactory } from "./svg-import-draft.factory.js";
 
 /**
@@ -40,6 +43,11 @@ export class SvgIconImportAdapter implements IIconImportAdapter<SvgIconImportSou
   readonly #resultFactory = new DiagnosticResultFactory();
 
   /**
+   * @description Stable technical diagnostic authority for path expansion failures.
+   */
+  readonly #diagnosticFactory = new SvgValidationDiagnosticFactory();
+
+  /**
    * @description Inspects one isolated SVG source without semantic metadata or host effects.
    * @param source - Exact decoded and independently identified SVG source.
    * @returns Neutral draft or blocking parser and technical diagnostics.
@@ -70,9 +78,25 @@ export class SvgIconImportAdapter implements IIconImportAdapter<SvgIconImportSou
       return this.#resultFactory.failure(technical.diagnostics);
     }
 
-    return this.#resultFactory.success(
-      this.#draftFactory.create(source, parsed.value, technical.metrics),
-      technical.diagnostics,
-    );
+    let draft: IconImportDraft;
+
+    try {
+      draft = this.#draftFactory.create(source, parsed.value, technical.metrics);
+    } catch (error: unknown) {
+      if (!(error instanceof SvgPathExpansionError)) {
+        throw error;
+      }
+
+      return this.#resultFactory.failure([
+        ...technical.diagnostics,
+        this.#diagnosticFactory.create({
+          kind: svgValidationIssueKinds.invalidPathData,
+          sourceId: source.sourceId,
+          span: error.span,
+        }),
+      ]);
+    }
+
+    return this.#resultFactory.success(draft, technical.diagnostics);
   }
 }
