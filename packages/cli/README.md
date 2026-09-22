@@ -31,8 +31,8 @@ filesystem effect. The standalone Node executable serialises and publishes self-
 HTML to `aster-review` by default or to an explicit output root. Existing owned review output can
 be replaced only through the explicit `--replace` option.
 
-See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/cli/index.md) and
-[initial release notes](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/cli/releases.md) for boundaries,
+See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/index.md) and
+[initial release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/releases.md) for boundaries,
 contracts, and implemented behaviour.
 
 ## Licence

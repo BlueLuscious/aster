@@ -8,7 +8,7 @@
   "engines": {
     "node": ">=24.10.0 <25"
   },
-  "homepage": "https://github.com/BlueLuscious/aster/tree/develop/packages/cli#readme",
+  "homepage": "https://github.com/BlueLuscious/aster/tree/master/packages/cli#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BlueLuscious/aster.git",

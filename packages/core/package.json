@@ -5,7 +5,7 @@
   "type": "module",
   "author": "BlueLuscious",
   "license": "ISC",
-  "homepage": "https://github.com/BlueLuscious/aster/tree/develop/packages/core#readme",
+  "homepage": "https://github.com/BlueLuscious/aster/tree/master/packages/core#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BlueLuscious/aster.git",

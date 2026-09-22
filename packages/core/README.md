@@ -28,8 +28,8 @@ const Camera = Icon.define({
 });
 ```
 
-See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/core/index.md) and
-[initial release notes](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/core/releases.md) for
+See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/index.md) and
+[initial release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/releases.md) for
 responsibilities, features, exports, and model relationships.
 
 ## Licence

@@ -5,7 +5,7 @@
   "type": "module",
   "author": "BlueLuscious",
   "license": "ISC",
-  "homepage": "https://github.com/BlueLuscious/aster/tree/develop/packages/svg#readme",
+  "homepage": "https://github.com/BlueLuscious/aster/tree/master/packages/svg#readme",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BlueLuscious/aster.git",

@@ -27,10 +27,10 @@ const markup = Svg.render(ArrowLeft);
 ```
 
 The package currently provides the accepted Amellus foundational collection. See the
-[canonical package documentation](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/icons/index.md),
-[authoring workflow](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/icons/workflow.md),
-[initial release notes](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/icons/releases.md) and
-[Amellus collection authority](https://github.com/BlueLuscious/aster/blob/develop/docs/en/collections/amellus/index.md).
+[canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/index.md),
+[authoring workflow](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/workflow.md),
+[initial release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases.md) and
+[Amellus collection authority](https://github.com/BlueLuscious/aster/blob/master/docs/en/collections/amellus/index.md).
 
 ## Licence
 

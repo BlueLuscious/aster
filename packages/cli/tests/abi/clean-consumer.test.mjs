@@ -228,6 +228,10 @@ test("installs independent package versions with bounded public dependency range
 
     assert.equal(manifest.version, "0.1.0");
     assert.deepEqual(manifest.dependencies, dependencies);
+    assert.equal(
+      manifest.homepage,
+      `https://github.com/BlueLuscious/aster/tree/master/packages/${name}#readme`,
+    );
   }
 });
 
@@ -246,6 +250,19 @@ test("installs only accepted public package files and notices", async () => {
     assert.ok(files.includes("LICENSE"), `Missing ${name} software notice.`);
     assert.equal(files.includes("ARTWORK-LICENCE.md"), name === "icons");
     assert.ok(files.some((file) => file.endsWith(".d.ts")));
+    const readme = await readFile(
+      resolve(
+        consumerRoot,
+        "node_modules",
+        "@luscious-garden",
+        packageName,
+        "README.md",
+      ),
+      "utf8",
+    );
+
+    assert.ok(!readme.includes("/blob/develop/"), `Stale ${name} README branch link.`);
+    assert.ok(readme.includes("/blob/master/"), `Missing ${name} release branch link.`);
     const unexpected = files.filter((file) => !(
       file.startsWith("dist/") || [
         "package.json",

@@ -30,8 +30,8 @@ const markup = Svg.render(Camera, {
 });
 ```
 
-See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/svg/index.md) and
-[initial release notes](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/svg/releases.md) for
+See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/index.md) and
+[initial release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/releases.md) for
 responsibilities, exports, and rendering semantics.
 
 ## Licence
