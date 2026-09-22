@@ -66,18 +66,17 @@ by each owning package rather than repeated here.
 
 ## Maturity and releases
 
-Aster has no published public release. Core, Icons, SVG, and CLI declare `0.1.0-rc.1` as the initial
-publication candidates, Icons contains its first accepted collection, and Import is deliberately
-private. Technical readiness checks and packed-consumer evidence have passed, but they do not
-constitute a published compatibility promise or authorise publication. npm scope access, the
-release tag, final artefacts and the human go/no-go remain explicit checks in the
-[Manual Publication](publication.md) procedure.
+Aster has no stable public release. Core, Icons, SVG, and CLI published `0.1.0-rc.1` as their
+initial release candidates on 22 September 2026, Icons contains its first accepted collection,
+and Import remains deliberately private. The release passed clean source, packed-consumer and
+anonymous registry-consumer verification. Pre-release availability does not establish a stable
+compatibility promise.
 
-When publication begins, independently installable packages will own separate Semantic Versioning
-sequences and coordinate only where their dependency contracts require it. The complete
+Independently installable packages own separate Semantic Versioning sequences and coordinate only
+where their dependency contracts require it. The complete
 cross-package posture is defined by [Versioning and Releases](versioning.md).
-The [Manual Publication](publication.md) procedure describes the separate human-controlled
-go/no-go, registry checks and post-publication verification; it is not a release trigger.
+The [Manual Publication](publication.md) record describes the separate human-controlled go/no-go,
+registry checks and post-publication verification; it is not a release trigger.
 
 ## External integration direction
 

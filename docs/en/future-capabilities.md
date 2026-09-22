@@ -23,9 +23,9 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P2` | Add informational SVG attribution markers. | Technical release readiness is complete and the renderer's default-versus-opt-in output policy is accepted. |
+| 1 | `P2` | Add informational SVG attribution markers. | `0.1.0-rc.1` proves technical release readiness; the renderer's default-versus-opt-in output policy remains to be accepted. |
 | 2 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 3 | `P2` | Automate reviewed version proposals. | One manually reviewed multi-package release proves the version and changelog policy. |
+| 3 | `P2` | Automate reviewed version proposals. | `0.1.0-rc.1` supplies one manually reviewed multi-package release; the automation boundary remains to be accepted. |
 | 4 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
 | 5 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
 | 6 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
@@ -43,7 +43,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 Importance: **P2 - Conditional**
 
-After technical release readiness, consider placing `data-attribution` and
+Technical release readiness is complete. Consider placing `data-attribution` and
 `data-rendered-by="Aster"` on rendered SVG roots. Attribution must come from the individual icon's
 metadata rather than the collection or a hard-coded author. Decide whether the markers belong to
 every `Svg.render(...)` result or an explicit SVG export mode before changing the public output
@@ -59,11 +59,12 @@ before publication. Do not add a watermark or a runtime dependency for this purp
 
 Importance: **P2 - Conditional**
 
-After the first manually reviewed release establishes real package version and changelog evidence,
-consider automating proposals from conventional commits and public-contract changes. A proposal
-must identify the affected packages, dependency-range consequences and compatibility rationale;
-commit scopes alone do not determine a version increment. Release notes and package versions
-remain independently reviewable, and npm publication always requires explicit human approval.
+The manually reviewed `0.1.0-rc.1` release establishes real package version, dependency and
+release-note evidence. This satisfies the evidence trigger but does not accept an automation
+boundary. Any future proposal must identify the affected packages, dependency-range consequences
+and compatibility rationale; commit scopes alone do not determine a version increment. Release
+notes and package versions remain independently reviewable, and npm publication always requires
+explicit human approval.
 
 This is a near-term follow-up to a proven manual release process, not a prerequisite for the
 first pre-release and not a reason to introduce a release framework prematurely.
