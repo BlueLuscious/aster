@@ -249,7 +249,7 @@ test("returns the same result through the executable and an independent plugin h
     '    productVersion: "0.0.0",',
     "  },",
     ");",
-    'process.stdout.write(`${JSON.stringify(result)}\\n`);',
+    "process.stdout.write(`${JSON.stringify(result)}\\n`);",
   ].join("\n"));
 
   assert.equal(executable.status, 0);
@@ -295,7 +295,7 @@ test("returns the same complete export through standalone and programmatic hosts
     '    productVersion: "0.0.0",',
     "  },",
     ");",
-    'process.stdout.write(`${JSON.stringify(result)}\\n`);',
+    "process.stdout.write(`${JSON.stringify(result)}\\n`);",
   ].join("\n"));
 
   assert.equal(executable.status, 0);
@@ -337,7 +337,7 @@ test("returns and publishes a complete review from the clean consumer", async ()
     '    productVersion: "0.0.0",',
     "  },",
     ");",
-    'process.stdout.write(`${JSON.stringify(result)}\n`);',
+    "process.stdout.write(`${JSON.stringify(result)}\n`);",
   ].join("\n"));
 
   assert.equal(executable.status, 0);
