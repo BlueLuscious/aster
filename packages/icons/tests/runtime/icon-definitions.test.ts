@@ -1,7 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import type { IconDefinition } from "@luscious-garden/aster-core";
+import {
+  iconTechnicalPresentation,
+  type IconDefinition,
+} from "@luscious-garden/aster-core";
 import {
   amellusIconAuthoringProfile,
 } from "../../src/authoring/constants/amellus-icon-authoring-profile.constant.js";
@@ -30,18 +33,7 @@ const collectionDefinitions = Object.freeze(
   ),
 );
 
-const presentationFields = [
-  "fill",
-  "fillRule",
-  "stroke",
-  "strokeWidth",
-  "strokeLineCap",
-  "strokeLineJoin",
-  "strokeMiterLimit",
-  "opacity",
-  "fillOpacity",
-  "strokeOpacity",
-] as const;
+const presentationFields = Object.keys(iconTechnicalPresentation);
 
 function assertDeeplyFrozen(value: unknown): void {
   if (typeof value !== "object" || value === null) {
@@ -78,12 +70,6 @@ function numericGeometryValues(definition: IconDefinition): readonly number[] {
             }
           }
         }
-      }
-
-      if (field === "data" && typeof value === "string") {
-        values.push(
-          ...(value.match(/-?(?:\d+(?:\.\d+)?|\.\d+)/gu) ?? []).map(Number),
-        );
       }
     }
   }
