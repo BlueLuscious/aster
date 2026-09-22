@@ -25,6 +25,11 @@ import {
 - optional effective `licence` and `attribution`;
 - `deprecated` and an optional complete `replacedBy` identity.
 
+For original Aster artwork, `licence` is `LicenseRef-Aster-Artwork-1.0`, whose complete terms
+are [shipped with the package](../../../../../packages/icons/ARTWORK-LICENCE.md). This metadata
+describes artwork rights; it does not change the [ISC software licence](../../../../../packages/icons/LICENSE)
+of the manifest implementation.
+
 `AsterCollectionManifest` is ordered by canonical collection key. Each
 `CollectionManifestEntry` retains:
 

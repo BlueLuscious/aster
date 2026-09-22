@@ -32,7 +32,8 @@ icon values and neither clones nor owns their geometry.
 Icon sources use `src/glyphs/<initial>/<name>/<name>.icon.ts` and export exactly one PascalCase
 constant. Collection sources use
 `src/collections/<initial>/<name>/<name>.collection.ts`, export exactly one constant ending in
-`Collection`, and import only public `@aster/core` plus their directly declared icon modules.
+`Collection`, and import only public `@aster/core`, their directly declared icon modules and any
+applicable local artwork-licence authority.
 Generated facades keep these physical directories private and preserve logical public subpaths.
 The generated distribution manifest and dynamic loader maps derive discovery and resolution
 records from the same modules.
@@ -64,7 +65,8 @@ To add one:
 
 1. choose a canonical lowercase kebab-case glyph name and export its PascalCase symbol;
 2. call `Icon.define(...)` with complete identity, view box, nodes and metadata;
-3. compose the applicable authorship and visual profile explicitly;
+3. compose the applicable authorship and visual profile explicitly, including effective artwork
+   licence and attribution;
 4. add the imported definition to each intended collection's explicit `icons` sequence;
 5. run the package build, inspect `aster review` evidence and run complete verification.
 
@@ -79,6 +81,18 @@ exports `<Name>Collection`, imports each member from its canonical icon module, 
 collection-owned metadata and retains members in its intentional semantic order. Catalogue
 synchronisation discovers it automatically; authors do not edit distribution manifests, loader
 maps or public facades.
+
+## Artwork rights
+
+Every distributable icon and collection declares its effective artwork licence and attribution in
+its own metadata. The [Aster Artwork Licence](../../../../packages/icons/ARTWORK-LICENCE.md) is
+the normal choice for original visual artwork authored and owned by BlueLuscious; it is not
+assigned merely because a definition lives in this package or uses the `aster` namespace. Each
+BlueLuscious-owned definition opts in explicitly through `LicenseRef-Aster-Artwork-1.0`.
+Third-party or differently licensed work keeps its own licence, attribution and reviewed source
+provenance. A collection's licence applies to its own original curation, not automatically to the
+artwork of every member icon. Software and documentation remain under the
+[ISC notice](../../../../packages/icons/LICENSE).
 
 ### Add a rendition
 

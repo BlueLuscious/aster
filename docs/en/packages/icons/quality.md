@@ -19,6 +19,10 @@ order, metadata, complete loader membership and independence from additional or 
 collections. This exact evidence belongs to the collection contract rather than the generic
 catalogue-growth tests.
 
+Distribution evidence requires every icon and collection to state its effective artwork licence
+and attribution. A definition using `LicenseRef-Aster-Artwork-1.0` must attribute BlueLuscious;
+other licences remain possible and are not replaced by package defaults.
+
 Identity-specific assertions remain only where the identity carries the behaviour under test.
 Declared directional arrow pairs therefore retain exact RTL and relationship evidence; generic
 validity, membership and discovery do not select a named icon or collection.
@@ -44,9 +48,12 @@ Raw SVG path text is not accepted as authored catalogue data.
 
 ABI tests build the package and verify blocked aggregate roots plus exact per-icon, per-collection,
 manifest and dynamic exports against discovered canonical source modules. They also verify
-declarations, ESM loading, object identity across direct and loader routes, `sideEffects: false`, dependency confinement to public
-`@aster/core`, exact minimal facade modules, rejection of implementation subpaths and isolated
-collection dependencies on only their explicitly declared icon modules.
+declarations, ESM loading, object identity across direct and loader routes, `sideEffects: false`,
+dependency confinement to public `@aster/core`, exact minimal facade modules, rejection of
+implementation subpaths and isolated collection dependencies on only their explicitly declared
+icon modules and local artwork-licence authority. The installed tarball contains both the
+[ISC software notice](../../../../packages/icons/LICENSE) and
+[artwork terms](../../../../packages/icons/ARTWORK-LICENCE.md).
 
 The exact exported subpath set is intentional distribution evidence even though its membership
 grows with the catalogue. The test derives that set from canonical modules rather than maintaining

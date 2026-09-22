@@ -40,4 +40,6 @@ pnpm run check:docs
 
 ## Licence
 
-Aster is licensed under the terms in [LICENSE](LICENSE).
+Aster's software and documentation are licensed under [ISC](LICENSE). BlueLuscious-owned icon and
+collection artwork identified by its metadata follows the separate
+[artwork licence](packages/icons/ARTWORK-LICENCE.md); other artwork retains its declared terms.

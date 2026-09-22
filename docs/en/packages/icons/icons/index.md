@@ -47,7 +47,8 @@ Every current icon:
 - composes internal `asterOriginalIconAuthorship` and `amellusIconAuthoringProfile` authorities;
 - contains no node-specific paint or stroke exceptions;
 - uses geometry values on the provisional half-unit grid;
-- resolves ISC licence and BlueLuscious attribution;
+- resolves [`LicenseRef-Aster-Artwork-1.0`](../../../../../packages/icons/ARTWORK-LICENCE.md)
+  artwork terms and BlueLuscious attribution;
 - is deeply frozen by Core;
 - remains below the provisional primitive and structured-command budgets;
 - exports through `@aster/icons/<icon-slug>`.

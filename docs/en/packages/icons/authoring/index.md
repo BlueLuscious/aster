@@ -13,7 +13,7 @@ definition that may be distributed by `@aster/icons`.
 | Field | Value |
 | --- | --- |
 | Technical namespace | `aster` |
-| Artwork licence | `ISC` |
+| Artwork licence | `LicenseRef-Aster-Artwork-1.0` ([terms](../../../../../packages/icons/ARTWORK-LICENCE.md)) |
 | Attribution | `BlueLuscious` |
 
 This authority contains no view box, presentation, geometry, tags, RTL policy or collection
@@ -49,9 +49,11 @@ calling `Icon.define(...)`. Core validates, isolates and deeply freezes the resu
 definition. A collection then retains that definition without applying, replacing or mutating
 either authority.
 
-The Amellus collection currently records the same licence and attribution for its own collection
-metadata. Those values remain explicit because collection ownership and artwork authorship are
-independent legal authorities even when their text happens to match.
+The Amellus collection records the same effective artwork licence and attribution for its own
+metadata. Both definitions reuse the licence identifier, while collection ownership and icon
+authorship remain independent legal responsibilities. The [ISC software notice](../../../../../packages/icons/LICENSE)
+and [artwork terms](../../../../../packages/icons/ARTWORK-LICENCE.md) have different scopes,
+including where an icon's geometry is embedded in a TypeScript module.
 
 No consumer may import either authoring object through a public subpath. Runtime consumers receive
 only the resolved values carried by an exported `IconDefinition`.

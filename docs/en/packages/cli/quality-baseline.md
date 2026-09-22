@@ -97,14 +97,15 @@ exact command migration:
 | `list icons` | `success:icon-list` | 68 | 2 |
 | `search camera` | `success:search` | 68 | 2 |
 | `show icon aster/camera` | `success:icon-show` | 68 | 2 |
-| `export icon aster/camera` | `success:export` | 68 | 8 |
-| `review icon aster/camera` | `success:review` | 68 | 8 |
+| `export icon aster/camera` | `success:export` | 68 | 9 |
+| `review icon aster/camera` | `success:review` | 68 | 9 |
 
 The two discovery modules are `manifest/index.js` and `generated/manifest/index.js`. No icon
 facade, glyph definition, collection definition, authoring authority, or dynamic-loader module is
 evaluated by list, search, or show. Export and Review evaluate the manifest pair, dynamic-loader
-entry points, the exact camera facade and definition, and its two authoring authorities. Their
-eight-module result replaces the immediately preceding 60-module eager bridge evidence without
+entry points, the exact camera facade and definition, its two authoring authorities and the
+shared artwork-licence authority. Their nine-module result replaces the immediately preceding
+60-module eager bridge evidence without
 changing command output. Exact evaluated module sets, rather than elapsed time, remain the
 deterministic comparison authority.
 

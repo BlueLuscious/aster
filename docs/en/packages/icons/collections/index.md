@@ -20,7 +20,7 @@ the complete twenty-six-icon foundational inventory in accepted semantic order:
 | Display name | Amellus |
 | Description | Minimalist general-purpose outline icons for application interfaces. |
 | Tags | `application-icons`, `general-purpose`, `interface-icons`, `minimalist`, `outline-icons` |
-| Artwork licence | ISC |
+| Artwork licence | `LicenseRef-Aster-Artwork-1.0` ([terms](../../../../../packages/icons/ARTWORK-LICENCE.md)) |
 | Attribution | BlueLuscious |
 | Members | All twenty-six canonical foundational icon objects |
 

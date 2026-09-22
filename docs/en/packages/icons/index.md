@@ -25,6 +25,17 @@ The package:
 The package does not render SVG, create framework components, access DOM or filesystem APIs,
 import SVG sources, run Import, discover paths, or own repository tooling.
 
+## Rights Boundary
+
+The [package licence notice](../../../../packages/icons/LICENSE) applies ISC to software code
+and APIs. Original BlueLuscious-owned icon geometry, rendered forms and collection curation
+marked `LicenseRef-Aster-Artwork-1.0` follow the separate
+[Aster Artwork Licence](../../../../packages/icons/ARTWORK-LICENCE.md). Commercial use in an
+application is permitted; sale of that artwork as a standalone asset is not. Other artwork keeps
+its own declared terms. A canonical `*.icon.ts` file can contain both software implementation
+and visual artwork, so the file extension alone does not determine its licence. The `licence`
+field in definition metadata identifies the effective artwork terms, not the software licence.
+
 ## Authoring authority
 
 Each `.icon.ts` module is the sole canonical editable source for its definition. SVG is a derived
