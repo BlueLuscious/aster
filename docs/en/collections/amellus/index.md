@@ -135,6 +135,17 @@ catalogue and SVG rendering workflow. Evidence covered `16px`, `24px`, `32px` an
 light, dark and transparent backgrounds; neutral and contrasting foreground colours; construction
 grids; and view-box bounds.
 
+The review surface is reproduced from a built workspace without retaining derived HTML:
+
+```sh
+pnpm run build
+pnpm exec aster review collection amellus --output ./aster-review --replace
+```
+
+The generated directory is disposable evidence and remains outside source control. The written
+findings below are the durable human acceptance record; the command reconstructs the exact visual
+surface whenever artwork or rendering behaviour changes.
+
 The review accepted the following findings:
 
 - all icons retain recognisable silhouettes and usable negative space at the `16px` minimum;
