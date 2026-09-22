@@ -1,13 +1,14 @@
 # Import Compatibility
 
-`@aster/import` is a private ES2022 ESM workspace package. It is not published and carries no
-external compatibility promise while its first real host remains unimplemented.
+`@aster/import` is a private ES2022 ESM workspace package. Its `0.1.0` version tracks internal
+changes independently; it is not published and carries no external compatibility promise while
+its first real host remains unimplemented.
 
 ## Dependencies
 
-Import depends on the public root of `@aster/core` and pins `xmlsax-typescript` `1.0.0` behind its
-private SVG parser boundary. It does not depend on Icons, SVG, CLI, repository tooling, Node, DOM,
-framework or filesystem APIs.
+Import depends on the public root of `@aster/core` through `workspace:^` and pins
+`xmlsax-typescript` `1.0.0` behind its private SVG parser boundary. It does not depend on Icons,
+SVG, CLI, repository tooling, Node, DOM, framework or filesystem APIs.
 
 The parser dependency is an implementation choice rather than part of the package ABI. Its token
 types, failures and messages remain private, and the [SVG parser authority](formats/svg/parser/index.md)

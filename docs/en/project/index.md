@@ -63,10 +63,10 @@ by each owning package rather than repeated here.
 
 ## Maturity and releases
 
-Aster has no stable public release. Public package manifests remain at `0.0.0`, Icons contains its
-first accepted collection, and Import is deliberately private. Current package and workflow checks
-prove development conformance but do not constitute a compatibility promise to external
-consumers.
+Aster has no stable public release. Core, Icons, SVG, and CLI declare `0.1.0` as initial
+publication candidates, Icons contains its first accepted collection, and Import is deliberately
+private. Current package and workflow checks prove development conformance but do not constitute
+a published compatibility promise to external consumers.
 
 When publication begins, independently installable packages will own separate Semantic Versioning
 sequences and coordinate only where their dependency contracts require it. The complete
