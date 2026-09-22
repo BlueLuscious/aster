@@ -131,7 +131,7 @@ export const cliBaseline = Object.freeze({
       /** @description Exact executable arguments used by the scenario. */
       arguments: Object.freeze(["version"]),
       /** @description Exact standard output required from the executable. */
-      stdout: "Aster 0.0.0\n",
+      stdout: "Aster 0.1.0\n",
     }),
   }),
 });

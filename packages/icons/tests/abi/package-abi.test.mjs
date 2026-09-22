@@ -212,7 +212,7 @@ test("publishes only accepted scalable export families", async () => {
     import: "./dist/generated/facades/icons/*.js",
   });
   assert.deepEqual(manifest.dependencies, {
-    "@aster/core": "workspace:*",
+    "@aster/core": "workspace:^",
   });
   assert.equal(manifest.sideEffects, false);
 });

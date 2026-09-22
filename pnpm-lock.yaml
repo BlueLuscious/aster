@@ -45,13 +45,13 @@ importers:
   packages/cli:
     dependencies:
       '@aster/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       '@aster/icons':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../icons
       '@aster/svg':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../svg
 
   packages/core: {}
@@ -59,13 +59,13 @@ importers:
   packages/icons:
     dependencies:
       '@aster/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
 
   packages/import:
     dependencies:
       '@aster/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
       xmlsax-typescript:
         specifier: 1.0.0
@@ -74,7 +74,7 @@ importers:
   packages/svg:
     dependencies:
       '@aster/core':
-        specifier: workspace:*
+        specifier: workspace:^
         version: link:../core
     devDependencies:
       '@aster/icons':

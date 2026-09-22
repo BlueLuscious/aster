@@ -121,7 +121,7 @@ test("publishes only the accepted root export and declaration snapshot", async (
   assert.equal(manifest.exports["."].import, "./dist/index.js");
   assert.equal(manifest.exports["."].types, "./dist/index.d.ts");
   assert.deepEqual(manifest.dependencies, {
-    "@aster/core": "workspace:*",
+    "@aster/core": "workspace:^",
   });
   assert.equal(manifest.sideEffects, false);
   assert.equal(

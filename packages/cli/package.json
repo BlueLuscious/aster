@@ -1,6 +1,6 @@
 {
   "name": "@aster/cli",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Host-neutral Aster commands and their standalone command-line host.",
   "type": "module",
   "author": "BlueLuscious",
@@ -47,8 +47,8 @@
     "test:types": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@aster/core": "workspace:*",
-    "@aster/icons": "workspace:*",
-    "@aster/svg": "workspace:*"
+    "@aster/core": "workspace:^",
+    "@aster/icons": "workspace:^",
+    "@aster/svg": "workspace:^"
   }
 }

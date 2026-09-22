@@ -109,7 +109,7 @@ test("publishes only the accepted private root and exact dependencies", async ()
   assert.equal(manifest.exports["."].import, "./dist/index.js");
   assert.equal(manifest.exports["."].types, "./dist/index.d.ts");
   assert.deepEqual(manifest.dependencies, {
-    "@aster/core": "workspace:*",
+    "@aster/core": "workspace:^",
     "xmlsax-typescript": "1.0.0",
   });
   assert.equal(manifest.sideEffects, false);

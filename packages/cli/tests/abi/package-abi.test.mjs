@@ -95,9 +95,9 @@ test("publishes the accepted root, executable, dependency, and declaration surfa
   });
   assert.deepEqual(manifest.files, ["dist"]);
   assert.deepEqual(manifest.dependencies, {
-    "@aster/core": "workspace:*",
-    "@aster/icons": "workspace:*",
-    "@aster/svg": "workspace:*",
+    "@aster/core": "workspace:^",
+    "@aster/icons": "workspace:^",
+    "@aster/svg": "workspace:^",
   });
   assert.equal(manifest.peerDependencies, undefined);
   assert.equal(manifest.optionalDependencies, undefined);
@@ -279,19 +279,19 @@ test("preserves the accepted workspace dependency direction", async () => {
 
   assert.equal(manifests.core.dependencies, undefined);
   assert.deepEqual(manifests.icons.dependencies, {
-    "@aster/core": "workspace:*",
+    "@aster/core": "workspace:^",
   });
   assert.deepEqual(manifests.svg.dependencies, {
-    "@aster/core": "workspace:*",
+    "@aster/core": "workspace:^",
   });
   assert.deepEqual(manifests.import.dependencies, {
-    "@aster/core": "workspace:*",
+    "@aster/core": "workspace:^",
     "xmlsax-typescript": "1.0.0",
   });
   assert.deepEqual(manifests.cli.dependencies, {
-    "@aster/core": "workspace:*",
-    "@aster/icons": "workspace:*",
-    "@aster/svg": "workspace:*",
+    "@aster/core": "workspace:^",
+    "@aster/icons": "workspace:^",
+    "@aster/svg": "workspace:^",
   });
 
   for (const [name, manifest] of Object.entries(manifests)) {

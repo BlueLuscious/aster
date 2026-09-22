@@ -33,6 +33,9 @@ const asterCollectionDefinitions = await Promise.all(
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const workspaceRoot = resolve(packageRoot, "../..");
+const packageVersion = JSON.parse(
+  await readFile(resolve(packageRoot, "package.json"), "utf8"),
+).version;
 assert.ok(asterIconDefinitions.length > 0, "Expected the packed icon family to be non-empty.");
 assert.ok(
   asterCollectionDefinitions.length > 0,
@@ -199,6 +202,29 @@ after(async () => {
   await rm(consumerRoot, { recursive: true, force: true });
 });
 
+test("installs independent package versions with bounded public dependency ranges", async () => {
+  const expectedDependencies = {
+    core: undefined,
+    icons: { "@aster/core": "^0.1.0" },
+    svg: { "@aster/core": "^0.1.0" },
+    cli: {
+      "@aster/core": "^0.1.0",
+      "@aster/icons": "^0.1.0",
+      "@aster/svg": "^0.1.0",
+    },
+  };
+
+  for (const [name, dependencies] of Object.entries(expectedDependencies)) {
+    const manifest = JSON.parse(await readFile(
+      resolve(consumerRoot, "node_modules", "@aster", name, "package.json"),
+      "utf8",
+    ));
+
+    assert.equal(manifest.version, "0.1.0");
+    assert.deepEqual(manifest.dependencies, dependencies);
+  }
+});
+
 test("imports the public package without source files or observable effects", () => {
   const imported = runModule('await import("@aster/cli");');
   const inspected = runModule([
@@ -225,7 +251,7 @@ test("links and executes the packed CLI binary through the package manager", () 
   const linked = runPnpm(["--dir", consumerRoot, "exec", "aster", "version"]);
 
   assertSuccessfulProcess(linked, "execute linked Aster binary");
-  assert.equal(linked.stdout, "Aster 0.0.0\n");
+  assert.equal(linked.stdout, `Aster ${packageVersion}\n`);
 });
 
 test("returns the same result through the executable and an independent plugin host", () => {

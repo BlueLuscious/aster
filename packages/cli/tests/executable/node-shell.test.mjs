@@ -36,6 +36,9 @@ const executablePath = fileURLToPath(
   new URL("../../dist/shell/aster.js", import.meta.url),
 );
 const packageRootUrl = new URL("../../", import.meta.url);
+const packageVersion = JSON.parse(
+  readFileSync(new URL("../../package.json", import.meta.url), "utf8"),
+).version;
 assert.ok(asterIconDefinitions.length > 0, "Expected the executable icon family to be non-empty.");
 assert.ok(
   asterCollectionDefinitions.length > 0,
@@ -136,7 +139,7 @@ test("renders list, search, show, and version as deterministic human text", () =
   assert.ok(
     shown.stdout.includes(`Collections: ${representativeMemberships.join(", ")}\n`),
   );
-  assert.equal(version.stdout, "Aster 0.0.0\n");
+  assert.equal(version.stdout, `Aster ${packageVersion}\n`);
 
   for (const execution of [listed, searched, shown, version]) {
     assert.equal(execution.status, 0);

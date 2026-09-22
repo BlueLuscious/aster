@@ -1,6 +1,6 @@
 {
   "name": "@aster/import",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Private host-independent icon adoption compiler for Aster.",
   "private": true,
   "type": "module",
@@ -25,7 +25,7 @@
     "test:types": "tsc -p tsconfig.test.json"
   },
   "dependencies": {
-    "@aster/core": "workspace:*",
+    "@aster/core": "workspace:^",
     "xmlsax-typescript": "1.0.0"
   }
 }
