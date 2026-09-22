@@ -33,17 +33,15 @@ executable name.
 
 ## Dependency direction
 
-The production graph points towards Core and contains no dependency on repository tooling:
+Each arrow points from a package in the table above to one of its direct production dependencies.
+The graph contains no dependency on repository tooling:
 
 ```text
-@luscious-garden/aster-icons ----------------> @luscious-garden/aster-core <---------------- @luscious-garden/aster-svg
-                                    ^
-                                    |
-@luscious-garden/aster-import ----------------------+----> xmlsax-typescript
-
-@luscious-garden/aster-cli ----> @luscious-garden/aster-core
-      +--------> @luscious-garden/aster-icons
-      +--------> @luscious-garden/aster-svg
+CLI    -> Core, Icons, SVG
+Icons  -> Core
+SVG    -> Core
+Import -> Core, xmlsax-typescript
+Core   -> (none)
 ```
 
 Core has no runtime dependency. Icons and SVG depend only on its public root. CLI consumes the
