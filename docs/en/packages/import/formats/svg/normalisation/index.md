@@ -10,6 +10,11 @@ become ordinary lines, smooth-curve controls are reflected explicitly, arc flags
 and every authored contour is retained in order. The resulting path node contains immutable
 structured commands and no raw SVG `d` value.
 
+Finite SVG operands can overflow when relative coordinates or reflected smooth controls become
+absolute. A failed expansion produces the stable invalid-path diagnostic at the authored `d`
+value span and returns no draft; it never exposes non-finite portable commands. The internal
+`SvgPathExpansionError` carries that span only between normalisation and the SVG adapter.
+
 Validation and normalisation share the same immutable SVG schemas, finite-number parser and path
 inspector. Normalisation deliberately rechecks accepted lexical values at the trust hand-off
 rather than retaining mutable parser caches or partially normalised nodes from a failed validation

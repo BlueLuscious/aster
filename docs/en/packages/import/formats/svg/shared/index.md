@@ -4,6 +4,10 @@ SVG Shared owns the closed element, attribute, path-command, paint and numeric v
 the parser, validator and normaliser. Runtime helpers parse strict finite numbers and inspect path
 data; the internal SVG error represents impossible adapter states.
 
+The shared numeric and path readers accept only SVG whitespace separators, not arbitrary Unicode
+whitespace. Arc flags follow SVG's single-digit grammar, including adjacent flags and compact
+flag-to-coordinate boundaries; invalid flag values remain blocking path diagnostics.
+
 These authorities remain private because they describe accepted external SVG source rather than
 portable Core values or public Import formats.
 
