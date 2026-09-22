@@ -5,13 +5,35 @@ cataloguing and distributing icon collections. Its canonical model is designed t
 serve Lilium, Protea and other consumers without assigning framework ownership to
 the icon source.
 
-The repository is in foundation development and does not yet expose a stable
-public package.
+The repository is in pre-release development. Core, Icons, SVG and CLI declare
+`0.1.0` publication candidates; they have not yet been published by this project.
+
+## Candidate consumption
+
+Once the packages are published, a consumer can install the exact candidate versions for
+canonical icons and SVG rendering:
+
+```sh
+pnpm add @aster/icons@0.1.0 @aster/svg@0.1.0
+```
+
+```ts
+import { ArrowLeft } from "@aster/icons/arrow-left";
+import { Svg } from "@aster/svg";
+
+const markup = Svg.render(ArrowLeft);
+```
+
+Authoring a new definition directly requires `@aster/core`; the standalone CLI can be installed
+with `pnpm add -D @aster/cli@0.1.0` and run with `pnpm exec aster list icons` on Node
+`>=24.10.0 <25`. The [publication procedure](docs/en/project/publication.md) separates these
+candidate instructions from an actual npm release.
 
 ## Documentation
 
 - [Documentation home](docs/en/index.md)
 - [Project](docs/en/project/index.md)
+- [Publication procedure](docs/en/project/publication.md)
 - [Repository tooling](docs/en/tooling/index.md)
 - [Packages](docs/en/packages/index.md)
 - [Collections](docs/en/collections/index.md)

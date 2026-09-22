@@ -13,6 +13,8 @@ Icons, SVG, and CLI declare initial `0.1.0` candidates; none has been published 
 `@aster/import` also uses `0.1.0` for independent internal version tracking but remains private.
 Repository conformance proves the current implementation against its documented boundaries but
 does not turn candidate versions into published releases.
+The [manual publication procedure](publication.md) records the separate registry and human
+go/no-go checks; this policy does not authorise publication by itself.
 
 The shared initial number is a convenient starting point, not a lockstep policy. Core has no
 production dependency. Icons and SVG depend on Core; CLI depends on all three. Each public edge

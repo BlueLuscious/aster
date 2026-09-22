@@ -12,6 +12,10 @@ The package implements deterministic definition-to-markup rendering through its 
 object. Each call revalidates and isolates the supplied definition through Core, accepts the
 closed render options, resolves effective presentation, and returns complete markup atomically.
 
+The [initial release notes](releases.md) record this package's candidate public capability and
+accepted limits. The [project publication procedure](../../project/publication.md) owns registry
+checks and human approval.
+
 ## Features
 
 | Feature | Responsibility |

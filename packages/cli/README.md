@@ -10,6 +10,13 @@ icon or collection definition when a host executes Export or Review through that
 The standalone Node package also exposes the `aster` executable:
 
 ```sh
+pnpm add -D @aster/cli@0.1.0
+```
+
+These candidate installation instructions apply once `0.1.0` is published. The executable
+supports Node `>=24.10.0 <25`; installation brings compatible Core, Icons and SVG packages.
+
+```sh
 pnpm exec aster list icons
 pnpm exec aster search camera --json
 pnpm exec aster show icon aster/camera
@@ -24,7 +31,8 @@ filesystem effect. The standalone Node executable serialises and publishes self-
 HTML to `aster-review` by default or to an explicit output root. Existing owned review output can
 be replaced only through the explicit `--replace` option.
 
-See the [canonical package documentation](../../docs/en/packages/cli/index.md) for boundaries,
+See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/cli/index.md) and
+[initial release notes](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/cli/releases.md) for boundaries,
 contracts, and implemented behaviour.
 
 ## Licence

@@ -11,6 +11,10 @@ The package contains no renderer, framework, DOM, filesystem, Import, or global 
 dependency.
 The example below assumes `@aster/svg` is installed independently by the consumer.
 
+When `0.1.0` is published, install both packages for this example with
+`pnpm add @aster/icons@0.1.0 @aster/svg@0.1.0`. To use a definition without SVG rendering,
+install only `@aster/icons`; it brings its compatible Core dependency.
+
 Canonical `*.icon.ts` and `*.collection.ts` modules are editable sources. Package builds
 deterministically synchronise their manifests, exact loader maps and stable public facades before
 compilation.
@@ -23,9 +27,10 @@ const markup = Svg.render(ArrowLeft);
 ```
 
 The package currently provides the accepted Amellus foundational collection. See the
-[canonical package documentation](../../docs/en/packages/icons/index.md),
-[authoring workflow](../../docs/en/packages/icons/workflow.md) and
-[Amellus collection authority](../../docs/en/collections/amellus/index.md).
+[canonical package documentation](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/icons/index.md),
+[authoring workflow](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/icons/workflow.md),
+[initial release notes](https://github.com/BlueLuscious/aster/blob/develop/docs/en/packages/icons/releases.md) and
+[Amellus collection authority](https://github.com/BlueLuscious/aster/blob/develop/docs/en/collections/amellus/index.md).
 
 ## Licence
 

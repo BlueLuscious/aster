@@ -71,6 +71,8 @@ a published compatibility promise to external consumers.
 When publication begins, independently installable packages will own separate Semantic Versioning
 sequences and coordinate only where their dependency contracts require it. The complete
 cross-package posture is defined by [Versioning and Releases](versioning.md).
+The [Manual Publication](publication.md) procedure describes the separate human-controlled
+go/no-go, registry checks and post-publication verification; it is not a release trigger.
 
 ## External integration direction
 
@@ -97,3 +99,4 @@ repository synchronises or mutates the other's documentation automatically.
   independence, isolation, and repository verification.
 - [Versioning and Releases](versioning.md) owns cross-package maturity, compatibility, and release
   coordination.
+- [Manual Publication](publication.md) owns the explicit release procedure and registry checks.

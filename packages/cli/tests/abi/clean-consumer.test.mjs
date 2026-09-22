@@ -257,6 +257,37 @@ test("installs only accepted public package files and notices", async () => {
   }
 });
 
+test("executes published README examples through packed package entrypoints", async () => {
+  const examples = [
+    { name: "core", result: 'Camera.identity.name === "camera"' },
+    { name: "icons", result: 'markup.startsWith("<svg ")' },
+    { name: "svg", result: 'markup.includes("<circle ")' },
+  ];
+
+  for (const { name, result } of examples) {
+    const readme = await readFile(
+      resolve(consumerRoot, "node_modules", "@aster", name, "README.md"),
+      "utf8",
+    );
+    const source = readme.match(/```ts\r?\n([\s\S]*?)\r?\n```/)?.[1];
+
+    assert.ok(source, `Missing executable ${name} README example.`);
+    assert.ok(!readme.includes("../../docs/"), `Broken ${name} package documentation link.`);
+
+    const executed = runModule(`${source}\nif (!(${result})) throw new Error("README example failed");`);
+
+    assert.equal(executed.status, 0, `${name}: ${executed.stderr}`);
+    assert.equal(executed.stderr, "");
+  }
+
+  const rootReadme = await readFile(resolve(workspaceRoot, "README.md"), "utf8");
+  const rootSource = rootReadme.match(/```ts\r?\n([\s\S]*?)\r?\n```/)?.[1];
+  assert.ok(rootSource, "Missing root README example.");
+  const executed = runModule(`${rootSource}\nif (!markup.startsWith("<svg ")) throw new Error("Root README example failed");`);
+  assert.equal(executed.status, 0, executed.stderr);
+  assert.equal(executed.stderr, "");
+});
+
 test("composes packed Core, Icons, and SVG through public consumer entrypoints", () => {
   const baseIcon = asterIconDefinitions.find(
     (icon) => icon.identity.variant === undefined,
