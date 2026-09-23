@@ -159,7 +159,7 @@ test("keeps collection membership within the independent icon loaders", () => {
   );
 
   for (const collection of collectionDefinitions) {
-    for (const definition of collection.icons) {
+    for (const definition of collection.members) {
       assert.ok(
         iconDefinitions.includes(definition),
         `Expected ${definition.identity.name} from ${collection.identity.name} in the icon loader family.`,

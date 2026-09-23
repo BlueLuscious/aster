@@ -52,17 +52,27 @@ function iconSource(name, variant) {
   ].join("\n");
 }
 
-function collectionSource(name, imports = [], members = []) {
+function collectionSourceWithIcons(name, imports = [], icons = []) {
   return [
     'import { Collection } from "@luscious-garden/aster-core";',
     ...imports,
     "",
     `export const ${pascalCase(name)}Collection = Collection.define({`,
     `  identity: { name: "${name}" },`,
-    `  icons: [${members.join(", ")}],`,
+    "  icons: {",
+    ...icons,
+    "  },",
     `  metadata: { displayName: "${pascalCase(name)}" },`,
     "});\n",
   ].join("\n");
+}
+
+function collectionSource(name, imports = [], members = []) {
+  return collectionSourceWithIcons(
+    name,
+    imports,
+    members.map(({ alias, symbol }) => `    ${alias}: ${symbol},`),
+  );
 }
 
 async function createPackageFixture() {
@@ -116,7 +126,7 @@ async function createPackageFixture() {
       [
         'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
       ],
-      ["AlphaIcon"],
+      [{ alias: "alphaIcon", symbol: "AlphaIcon" }],
     ),
     "utf8",
   );
@@ -225,6 +235,73 @@ test("synchronises canonical modules deterministically and reports drift", async
 
     await synchroniseIconsCatalogue(root);
     assert.equal(await readFile(manifestPath, "utf8"), manifest);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("synchronises collection membership from the canonical source alone", async () => {
+  const root = await createPackageFixture();
+  const collectionPath = resolve(
+    root,
+    "src/collections/s/sample/sample.collection.ts",
+  );
+
+  try {
+    await synchroniseIconsCatalogue(root);
+    await writeFile(
+      collectionPath,
+      collectionSource(
+        "sample",
+        [
+          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+          'import { Zeta } from "../../../glyphs/z/zeta/zeta.icon.js";',
+        ],
+        [
+          { alias: "alphaIcon", symbol: "AlphaIcon" },
+          { alias: "zeta", symbol: "Zeta" },
+        ],
+      ),
+      "utf8",
+    );
+
+    const added = await synchroniseIconsCatalogue(root);
+    const addedManifest = await readFile(
+      resolve(root, generatedOutputPaths.manifest),
+      "utf8",
+    );
+
+    assert.deepEqual(added.changedPaths, [generatedOutputPaths.manifest]);
+    assert.match(
+      addedManifest,
+      /members: Object\.freeze\(\["alpha-icon", "fixture\/zeta"\]\)/u,
+    );
+
+    await writeFile(
+      collectionPath,
+      collectionSource(
+        "sample",
+        ['import { Zeta } from "../../../glyphs/z/zeta/zeta.icon.js";'],
+        [{ alias: "zeta", symbol: "Zeta" }],
+      ),
+      "utf8",
+    );
+
+    const removed = await synchroniseIconsCatalogue(root);
+    const removedManifest = await readFile(
+      resolve(root, generatedOutputPaths.manifest),
+      "utf8",
+    );
+
+    assert.deepEqual(removed.changedPaths, [generatedOutputPaths.manifest]);
+    assert.match(
+      removedManifest,
+      /members: Object\.freeze\(\["fixture\/zeta"\]\)/u,
+    );
+    assert.deepEqual(
+      (await synchroniseIconsCatalogue(root, true)).changedPaths,
+      [],
+    );
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -381,7 +458,7 @@ test("discovers nested base icons, variants and collections with portable specif
         [
           'import { CameraStippled } from "../../../glyphs/c/camera/camera-stippled.icon.js";',
         ],
-        ["CameraStippled"],
+        [{ alias: "cameraStippled", symbol: "CameraStippled" }],
       ),
       "utf8",
     );
@@ -681,7 +758,7 @@ test("rejects non-runtime collection members before replacing outputs", async ()
         [
           'import type { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
         ],
-        ["AlphaIcon"],
+        [{ alias: "alphaIcon", symbol: "AlphaIcon" }],
       ),
       "utf8",
     );
@@ -693,6 +770,120 @@ test("rejects non-runtime collection members before replacing outputs", async ()
     assert.deepEqual(await readGeneratedOutputs(root), outputs);
   } finally {
     await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects unsupported collection icon dictionary syntax before replacing outputs", async () => {
+  const cases = [
+    {
+      source: collectionSource(
+        "sample",
+        [
+          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+        ],
+        [{ alias: "alphaIcon", symbol: "AlphaIcon" }],
+      ).replace(
+        "  icons: {\n    alphaIcon: AlphaIcon,\n  },",
+        "  icons: [AlphaIcon],",
+      ),
+      pattern: /must declare icons as an object literal/u,
+    },
+    {
+      source: collectionSourceWithIcons(
+        "sample",
+        [
+          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+        ],
+        ["    AlphaIcon: AlphaIcon,"],
+      ),
+      pattern: /collection icon alias AlphaIcon must use lower camel-case syntax/u,
+    },
+    {
+      source: collectionSourceWithIcons(
+        "sample",
+        [
+          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+        ],
+        [
+          "    alphaIcon: AlphaIcon,",
+          "    alphaIcon: AlphaIcon,",
+        ],
+      ),
+      pattern: /contains duplicate collection icon alias alphaIcon/u,
+    },
+    {
+      source: collectionSourceWithIcons(
+        "sample",
+        [
+          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+        ],
+        [
+          "    alphaIcon: AlphaIcon,",
+          "    repeatedAlpha: AlphaIcon,",
+        ],
+      ),
+      pattern: /contains duplicate collection member AlphaIcon/u,
+    },
+    {
+      source: collectionSourceWithIcons(
+        "sample",
+        [
+          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+        ],
+        ["    ...{ alphaIcon: AlphaIcon },"],
+      ),
+      pattern: /must use direct lower camel-case properties/u,
+    },
+    {
+      source: collectionSourceWithIcons(
+        "sample",
+        [
+          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+        ],
+        ["    [\"alphaIcon\"]: AlphaIcon,"],
+      ),
+      pattern: /must use direct lower camel-case properties/u,
+    },
+    {
+      source: collectionSourceWithIcons(
+        "sample",
+        [
+          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+        ],
+        ["    get alphaIcon() { return AlphaIcon; },"],
+      ),
+      pattern: /must use direct lower camel-case properties/u,
+    },
+    {
+      source: collectionSourceWithIcons(
+        "sample",
+        [],
+        ["    alphaIcon: createIcon(),"],
+      ),
+      pattern: /must use direct lower camel-case properties/u,
+    },
+  ];
+
+  for (const fixture of cases) {
+    const root = await createPackageFixture();
+    const collectionPath = resolve(
+      root,
+      "src/collections/s/sample/sample.collection.ts",
+    );
+
+    try {
+      await synchroniseIconsCatalogue(root);
+      const outputs = await readGeneratedOutputs(root);
+      await writeFile(collectionPath, fixture.source, "utf8");
+
+      await assert.rejects(
+        synchroniseIconsCatalogue(root),
+        fixture.pattern,
+      );
+      assert.deepEqual(await readGeneratedOutputs(root), outputs);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
   }
 });
 
