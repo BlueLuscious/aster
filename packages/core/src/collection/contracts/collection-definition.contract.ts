@@ -1,23 +1,21 @@
 import type { IconDefinition } from "../../definition/contracts/index.js";
-import type { CollectionIdentity } from "./collection-identity.contract.js";
-import type { CollectionMetadata } from "./collection-metadata.contract.js";
+import type { CollectionDefinitionInput } from "./collection-definition-input.contract.js";
+import type { CollectionIconMap } from "./collection-icon-map.contract.js";
 
 /**
- * @description Complete immutable collection with direct portable icon membership.
+ * @description Complete immutable collection with keyed and ordered portable icon membership.
+ * @typeParam TIconMap - Concrete collection-local icon alias map.
  */
-export interface CollectionDefinition {
+export interface CollectionDefinition<
+  TIconMap extends CollectionIconMap = CollectionIconMap,
+> extends CollectionDefinitionInput<TIconMap> {
   /**
-   * @description Stable collection identity independent of its members.
+   * @description Frozen canonical alias map retained by this collection.
    */
-  readonly identity: CollectionIdentity;
+  readonly icons: Readonly<TIconMap>;
 
   /**
-   * @description Ordered unique icon definitions retained by this collection.
+   * @description Ordered unique icon definitions derived from the alias map.
    */
-  readonly icons: readonly IconDefinition[];
-
-  /**
-   * @description Collection-owned descriptive and redistribution metadata.
-   */
-  readonly metadata: CollectionMetadata;
+  readonly members: readonly IconDefinition[];
 }
