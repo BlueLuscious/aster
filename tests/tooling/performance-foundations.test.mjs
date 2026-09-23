@@ -76,7 +76,7 @@ test("prepares one stable synthetic benchmark catalogue", () => {
     fixture.icons.length,
     benchmarkCatalogueFixture.corpusSize,
   );
-  assert.equal(fixture.collection.icons.length, fixture.icons.length);
+  assert.equal(fixture.collection.members.length, fixture.icons.length);
   assert.equal(fixture.snapshot.icons.length, fixture.icons.length);
   assert.equal(fixture.snapshot.collections.length, 1);
   assert.equal(fixture.icon, fixture.icons[0]);
@@ -94,10 +94,10 @@ test("prepares distinct mutable and canonical Core benchmark fixtures", () => {
   assert.deepEqual(fixtures.mutableIcons, fixtures.canonicalIcons);
   assert.equal(Object.isFrozen(fixtures.mutableCollection), false);
   assert.deepEqual(fixtures.mutableCollection, fixtures.canonicalCollection);
-  assert.equal(fixtures.emptyCollection.icons.length, 0);
-  assert.equal(fixtures.singleCanonicalCollection.icons.length, 1);
+  assert.equal(Object.keys(fixtures.emptyCollection.icons).length, 0);
+  assert.equal(Object.keys(fixtures.singleCanonicalCollection.icons).length, 1);
   assert.equal(
-    fixtures.singleCanonicalCollection.icons[0],
+    fixtures.singleCanonicalCollection.icons.fixture1,
     fixtures.canonicalIcons[0],
   );
   assert.equal(fixtures.straightPath.nodes[0]?.commands.length, 2);
@@ -149,7 +149,7 @@ test("runs the complete Core scenario matrix through public values", async () =>
   assert.equal(measured[6]?.checksum, 34);
   const completeCollectionChecksum =
     2 *
-    (fixtures.canonicalCollection.icons.length +
+    (fixtures.canonicalCollection.members.length +
       fixtures.canonicalCollection.identity.name.length);
   assert.equal(measured[7]?.checksum, completeCollectionChecksum);
   assert.equal(measured[8]?.checksum, completeCollectionChecksum);

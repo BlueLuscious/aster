@@ -20,12 +20,12 @@ export class CoreBaselineFixtureFactory {
       mutableCollection: this.#clone(catalogue.collection),
       emptyCollection: {
         identity: { namespace: "benchmark", name: "empty" },
-        icons: [],
+        icons: {},
         metadata: { displayName: "Benchmark Empty" },
       },
       singleCanonicalCollection: {
         identity: { namespace: "benchmark", name: "single-canonical" },
-        icons: [firstIcon],
+        icons: { fixture1: firstIcon },
         metadata: { displayName: "Benchmark Single Canonical" },
       },
       straightPath: this.#pathDefinition("straight", [

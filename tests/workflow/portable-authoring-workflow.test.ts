@@ -212,9 +212,9 @@ test("plans one discovered collection through CLI and SVG boundaries", async () 
     throw new Error("Expected successful canonical collection export planning.");
   }
 
-  assert.equal(result.payload.plan.artefacts.length, collection.icons.length);
+  assert.equal(result.payload.plan.artefacts.length, collection.members.length);
   assert.deepEqual(
     result.payload.plan.artefacts.map((artefact) => artefact.content).sort(),
-    collection.icons.map((definition) => Svg.render(definition)).sort(),
+    collection.members.map((definition) => Svg.render(definition)).sort(),
   );
 });

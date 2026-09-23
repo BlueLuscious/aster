@@ -65,7 +65,7 @@ export class CatalogueDefinitionConsistencyValidator {
     const discoveredMembers = record.icons.map((member) =>
       this.#identities.icon(member),
     );
-    const loadedMembers = definition.icons.map((member) =>
+    const loadedMembers = definition.members.map((member) =>
       this.#identities.icon(member.identity),
     );
     const selectedMembers = icons.map((icon) =>
@@ -88,7 +88,7 @@ export class CatalogueDefinitionConsistencyValidator {
       icon,
     ]));
 
-    for (const member of definition.icons) {
+    for (const member of definition.members) {
       const memberIdentity = this.#identities.icon(member.identity);
       const discovery = iconsByIdentity.get(memberIdentity);
 

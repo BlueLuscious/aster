@@ -170,7 +170,7 @@ export class CoreBaselineRunner {
 
   /**
    * @description Reconstructs one prepared collection repeatedly through the public API.
-   * @param {import("@luscious-garden/aster-core").CollectionDefinition} source - Prepared collection input.
+   * @param {import("@luscious-garden/aster-core").CollectionDefinitionInput} source - Prepared collection input.
    * @param {number} iterations - Number of public API operations to execute.
    * @returns {number} Deterministic checksum preventing discarded scenario results.
    */
@@ -181,7 +181,7 @@ export class CoreBaselineRunner {
       const collection = Collection.define(source);
       checksum = (
         checksum +
-        collection.icons.length +
+        collection.members.length +
         collection.identity.name.length
       ) >>> 0;
     }

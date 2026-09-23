@@ -46,7 +46,7 @@ export class CliBaselineFixtureFactory {
         identity: record.definition.identity,
         metadata: record.definition.metadata,
         icons: Object.freeze(
-          record.definition.icons.map((member) => member.identity),
+          record.definition.members.map((member) => member.identity),
         ),
       }))),
     });

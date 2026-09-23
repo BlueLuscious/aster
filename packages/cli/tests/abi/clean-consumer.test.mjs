@@ -42,7 +42,7 @@ assert.ok(
   "Expected the packed collection family to be non-empty.",
 );
 const representativeCollection = asterCollectionDefinitions.find(
-  (collection) => collection.icons.length > 0,
+  (collection) => collection.members.length > 0,
 );
 assert.ok(
   representativeCollection,
@@ -64,7 +64,7 @@ const representativeTag = taggedIcon.metadata.tags?.[0];
 assert.ok(representativeTag, "Expected one representative packed icon tag.");
 const representativeTagLiteral = JSON.stringify(representativeTag);
 const expectedCollectionPaths = Object.freeze(
-  representativeCollection.icons
+  representativeCollection.members
     .map(
       (icon) => `${
         icon.identity.namespace === undefined
