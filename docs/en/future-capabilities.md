@@ -25,7 +25,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | --- | --- | --- | --- |
 | 1 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
 | 2 | `P2` | Report installed package versions through the CLI. | Stable independently versioned packages make local compatibility diagnosis useful. |
-| 3 | `P2` | Accept unqualified CLI identity aliases. | Canonical namespaces remain authoritative and an explicit ambiguity policy is accepted. |
+| 3 | `P2` | Accept unqualified Aster identity aliases. | Icons and CLI share one strict Aster-default and suggestion policy without changing canonical identities. |
 | 4 | `P2` | Add informational SVG attribution markers. | Stable renderer output exists and the default-versus-opt-in marker policy is accepted. |
 | 5 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
 | 6 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
@@ -92,7 +92,7 @@ must distinguish package identities explicitly, retain plain `aster version` as 
 and omit the private Import package from public installation claims. Missing or incompatible
 packages require deterministic diagnostics rather than an invented ecosystem version.
 
-## Unqualified CLI identity aliases
+## Unqualified Aster identity aliases
 
 Importance: **P2 - Conditional**
 
@@ -103,24 +103,28 @@ both represent a camera or belong to the same collection. Amellus is canonically
 because its collection definition has no namespace, while its current Aster-authored members retain
 their independent `aster/*` identities.
 
-After the stable baseline, consider accepting an unqualified local identity such as `camera` as a
-CLI convenience without removing or rewriting the canonical `aster/camera` identity. Resolution
-must apply to `show`, `export`, and `review` consistently for icons and collections:
+Consider accepting an unqualified local identity such as `camera` through both concrete Icons
+collection queries and CLI workflows without removing or rewriting the canonical `aster/camera`
+identity. Resolution must apply consistently to collection lookup and the CLI `show`, `export`,
+and `review` commands:
 
-1. Prefer an exact canonical identity match.
-2. When the input has no namespace, let the standalone Aster host prefer the `aster` namespace if
-   that canonical candidate exists. The host-neutral command kernel must receive this preference
-   explicitly rather than hard-code an Aster-specific default.
-3. Otherwise, search the already selected catalogue scope by local name and optional variant.
-4. Resolve exactly one candidate and retain its complete canonical identity in results, paths, and
-   generated artefacts.
-5. Reject any remaining ambiguity without choosing silently, and display every canonical candidate
-   so the user can repeat the command with the intended identity.
-6. Preserve ordinary not-found diagnostics when no candidate exists.
+1. Preserve explicitly qualified canonical identities exactly as supplied.
+2. When an icon input has no namespace, interpret it strictly as
+   `aster/<name>[@<variant>]`, even when other namespaces expose the same local identity.
+3. Resolve that Aster candidate when it exists and retain its complete canonical identity in
+   results, paths, and generated artefacts.
+4. When the Aster candidate does not exist, return a not-found result rather than selecting another
+   namespace automatically.
+5. The failure may suggest canonically qualified close names from `aster` and exact local-name
+   matches from other namespaces, but suggestions never become implicit selections.
+6. Require a qualified identity such as `retro/camera` when the user intends a non-Aster icon.
 
 Catalogue selection and namespaces remain separate concerns: a catalogue is a discovery provider,
 whereas a namespace belongs to the portable definition identity. The shortcut must not remove
-namespaces from source definitions, manifests, collection membership, metadata, or exports.
+namespaces from source definitions, manifests, collection membership, metadata, or exports. The
+shared resolver may receive `aster` as explicit Aster-product policy, but neither Icons nor CLI may
+implement a fallback to another namespace. Their failure transport may remain boundary-specific:
+CLI returns a structured diagnostic, while a collection query follows its accepted API contract.
 
 ## Catalogue and command expansion
 
