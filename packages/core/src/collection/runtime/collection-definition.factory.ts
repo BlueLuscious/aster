@@ -46,6 +46,7 @@ export class CollectionDefinitionFactory {
       record,
       ["identity", "icons", "members", "metadata"],
       path,
+      ["identity", "icons", "metadata"],
     );
     const identity = this.#validator.dataProperty(
       record,

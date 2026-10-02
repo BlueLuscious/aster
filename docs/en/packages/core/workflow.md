@@ -46,6 +46,11 @@ properties are rejected rather than ignored. Each feature normaliser validates i
 textual, cardinality, vocabulary, ordering, and relationship rules before creating new retained
 objects.
 
+Required fields must be own enumerable data properties; inherited values cannot satisfy them.
+Optional fields are inspected only when owned, so inherited accessors do not supply portable
+definition data. This guarantee applies to ordinary records; proxy traps remain outside Core's
+trust boundary.
+
 Identity is canonical ASCII lowercase slug data. The viewBox has finite minima and positive finite
 dimensions. Nodes form a non-empty ordered sequence from the closed portable geometry union.
 Metadata resolves display information, intrinsic tags, RTL policy, presentation policy, licensing,
@@ -61,9 +66,9 @@ lowercasing hexadecimal colours, ordering closed presentation capabilities, and 
 arrays and objects. The returned graph is deeply frozen and no mutable authored array or nested
 object is retained by reference.
 
-If any stage fails, construction throws one deterministic Core programming error before returning a
-definition. The error identifies the stable Core code and logical value path. No partially
-normalised value is observable.
+Invalid ordinary authored data raises one deterministic Core programming error before returning a
+definition. The error identifies the stable Core code and logical value path. A proxy trap may
+instead propagate its own failure, as described below. No partially normalised value is observable.
 
 ## Collection construction
 

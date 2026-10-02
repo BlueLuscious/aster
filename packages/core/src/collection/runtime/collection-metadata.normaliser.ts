@@ -32,25 +32,26 @@ export class CollectionMetadataNormaliser {
       record,
       ["displayName", "description", "tags", "licence", "attribution"],
       path,
+      ["displayName"],
     );
     const displayName = this.#validator.text(
       record.displayName,
       `${path}.displayName`,
     );
     const description =
-      "description" in record
+      Object.hasOwn(record, "description")
         ? this.#validator.text(record.description, `${path}.description`)
         : undefined;
     const tags =
-      "tags" in record
+      Object.hasOwn(record, "tags")
         ? this.#normaliseTags(record.tags, `${path}.tags`)
         : undefined;
     const licence =
-      "licence" in record
+      Object.hasOwn(record, "licence")
         ? this.#validator.text(record.licence, `${path}.licence`)
         : undefined;
     const attribution =
-      "attribution" in record
+      Object.hasOwn(record, "attribution")
         ? this.#validator.text(record.attribution, `${path}.attribution`)
         : undefined;
 

@@ -63,7 +63,10 @@ export class CollectionMembershipNormaliser {
       }
 
       identities.add(identity);
-      icons[alias] = icon;
+      Object.defineProperty(icons, alias, {
+        value: icon,
+        enumerable: true,
+      });
       members.push(icon);
     }
 
