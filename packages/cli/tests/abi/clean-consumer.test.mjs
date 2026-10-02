@@ -42,7 +42,7 @@ assert.ok(
   "Expected the packed collection family to be non-empty.",
 );
 const representativeCollection = asterCollectionDefinitions.find(
-  (collection) => collection.icons.length > 0,
+  (collection) => collection.members.length > 0,
 );
 assert.ok(
   representativeCollection,
@@ -64,7 +64,7 @@ const representativeTag = taggedIcon.metadata.tags?.[0];
 assert.ok(representativeTag, "Expected one representative packed icon tag.");
 const representativeTagLiteral = JSON.stringify(representativeTag);
 const expectedCollectionPaths = Object.freeze(
-  representativeCollection.icons
+  representativeCollection.members
     .map(
       (icon) => `${
         icon.identity.namespace === undefined
@@ -275,10 +275,16 @@ test("installs only accepted public package files and notices", async () => {
   }
 });
 
-test("executes published README examples through packed package entrypoints", async () => {
+test("executes packaged README examples through packed package entrypoints", async () => {
   const examples = [
-    { name: "core", result: 'Camera.identity.name === "camera"' },
-    { name: "icons", result: 'markup.startsWith("<svg ")' },
+    {
+      name: "core",
+      result: 'Camera.identity.name === "camera" && InterfaceIcons.icons.camera === Camera && InterfaceIcons.members[0] === Camera',
+    },
+    {
+      name: "icons",
+      result: 'markup.startsWith("<svg ") && cameraMarkup.startsWith("<svg ") && collectionMarkup.length === AmellusCollection.members.length && collectionMarkup.every((entry) => entry.startsWith("<svg "))',
+    },
     { name: "svg", result: 'markup.includes("<circle ")' },
   ];
 
@@ -287,11 +293,15 @@ test("executes published README examples through packed package entrypoints", as
       resolve(consumerRoot, "node_modules", "@luscious-garden", `aster-${name}`, "README.md"),
       "utf8",
     );
-    const source = readme.match(/```ts\r?\n([\s\S]*?)\r?\n```/)?.[1];
+    const sources = Array.from(
+      readme.matchAll(/```ts\r?\n([\s\S]*?)\r?\n```/gu),
+      (match) => match[1],
+    );
 
-    assert.ok(source, `Missing executable ${name} README example.`);
+    assert.ok(sources.length > 0, `Missing executable ${name} README example.`);
     assert.ok(!readme.includes("../../docs/"), `Broken ${name} package documentation link.`);
 
+    const source = sources.join("\n\n");
     const executed = runModule(`${source}\nif (!(${result})) throw new Error("README example failed");`);
 
     assert.equal(executed.status, 0, `${name}: ${executed.stderr}`);
@@ -357,6 +367,7 @@ test("composes packed Core, Icons, and SVG through public consumer entrypoints",
 test("type-checks cross-package usage against packed declarations", async () => {
   await writeFile(resolve(consumerRoot, "consumer.ts"), [
     'import type { IconDefinition } from "@luscious-garden/aster-core";',
+    'import { Collection } from "@luscious-garden/aster-core";',
     'import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
     'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     'import { Svg } from "@luscious-garden/aster-svg";',
@@ -366,6 +377,39 @@ test("type-checks cross-package usage against packed declarations", async () => 
     "const loader = AsterIconLoaders[entry.key];",
     'if (loader === undefined) throw new Error("Missing loader");',
     "const icon: IconDefinition = await loader();",
+    "const authored = {",
+    "  ...icon,",
+    '  nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],',
+    '  metadata: { ...icon.metadata, displayName: "  Packed Icon  " },',
+    "} satisfies IconDefinition;",
+    "const collectionInput = {",
+    '  identity: { name: "packed-authored" },',
+    "  icons: { probe: authored },",
+    '  metadata: { displayName: "Packed Authored" },',
+    "};",
+    "const collection = Collection.define(collectionInput);",
+    "const literalCollection = Collection.define({",
+    "  ...collectionInput,",
+    "  icons: {",
+    "    probe: {",
+    "      ...authored,",
+    '      metadata: { ...authored.metadata, displayName: "  Packed Icon  " as const },',
+    "    },",
+    "  },",
+    "});",
+    "const canonicalMember: IconDefinition = collection.icons.probe;",
+    "if (false) {",
+    "  // @ts-expect-error Packed canonical nodes are readonly despite mutable authoring.",
+    '  collection.icons.probe.nodes.push({ kind: "circle", cx: 6, cy: 6, radius: 2 });',
+    "  // @ts-expect-error Packed canonical metadata is readonly despite mutable authoring.",
+    '  collection.icons.probe.metadata.displayName = "Changed";',
+    "  // @ts-expect-error Normalised output cannot retain the authored metadata literal.",
+    '  const authoredLiteral: "  Packed Icon  " = literalCollection.icons.probe.metadata.displayName;',
+    "  // @ts-expect-error Packed canonical membership still rejects unknown aliases.",
+    "  collection.icons.unknown;",
+    "  void authoredLiteral;",
+    "}",
+    "void canonicalMember;",
     "export const markup: string = Svg.render(icon);",
     "export const listed = await AsterCommands.execute(",
     '  { command: "list", subject: "catalogues" },',

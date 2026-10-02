@@ -95,7 +95,7 @@ test("publishes exact metadata-only icon and collection records", async () => {
         identity: definition.identity,
         symbol: `${symbolSegment(definition.identity.name)}Collection`,
         metadata: definition.metadata,
-        members: definition.icons.map((icon) => iconKey(icon.identity)),
+        members: definition.members.map((icon) => iconKey(icon.identity)),
       };
     }),
   );

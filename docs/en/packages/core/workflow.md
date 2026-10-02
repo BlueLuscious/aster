@@ -73,10 +73,23 @@ The collection entry point is:
 const collection = Collection.define(authoredCollection);
 ```
 
-Collection construction validates the exact root fields `identity`, `icons`, and `metadata`. It
-then processes every member through the icon construction authority, ensuring that mutable or
-structurally invalid icon-shaped input cannot enter membership merely because TypeScript accepts
-its shape.
+Authored collection input contains `identity`, an `icons` alias dictionary, and `metadata`:
+
+```ts
+const collection = Collection.define({
+  identity: { name: "interface-icons" },
+  icons: { camera: Camera, search: Search },
+  metadata: { displayName: "Interface Icons" },
+});
+
+collection.icons.camera;
+collection.members; // Frozen ordered [Camera, Search].
+```
+
+`Camera` and `Search` are definitions constructed through `Icon.define()`. Collection construction
+validates the exact root fields and processes every dictionary value through the icon construction
+authority, ensuring that mutable or structurally invalid icon-shaped input cannot enter membership
+merely because TypeScript accepts its shape.
 
 ```text
 authored collection
@@ -88,8 +101,11 @@ Collection API
 CollectionDefinitionFactory
     |
     +--> validate exact collection fields
+    +--> validate plain alias dictionary and own data properties
     +--> validate and isolate every icon member
     +--> reject duplicate canonical icon identities
+    +--> freeze alias map and derive ordered members once
+    +--> verify submitted members when revalidating a complete definition
     +--> normalise collection identity
     +--> normalise collection metadata
     |
@@ -104,6 +120,17 @@ other valid candidate uses the isolated canonical reconstruction. Membership ord
 identities must be unique within one collection, and the same canonical icon may belong to multiple
 independent collections without acquiring collection state.
 
+`CollectionDefinitionInput<TIconMap>` describes authored input without `members`.
+`CollectionDefinition<TIconMap>` adds the derived list and readonly alias properties while
+preserving exact keys. Their relationship and alias grammar are defined by
+[Core Collection](collection/index.md).
+
+When a complete definition arrives from a provider or decoded data, Core permits its own `members`
+field only after checking that every submitted icon value and its order agree with the validated
+dictionary. Core reconstructs the two containers; canonical icon references may be retained,
+while mutable submitted icons are isolated. This also preserves agreement after a JSON round trip
+has lost shared object references.
+
 A collection may be empty. It remains a valid identity and metadata authority rather than an icon
 registry.
 
@@ -114,12 +141,16 @@ objects. Consumers read fields directly:
 
 ```ts
 icon.identity.name;
-collection.icons;
+collection.icons.camera;
+collection.members;
 ```
 
 This representation remains serialisable, structurally interoperable, renderer-neutral, and easy
 to inspect. It deliberately has no getters, setters, mutation methods, hidden registration, or
 prototype-owned domain behaviour.
+
+`members` is an ordinary frozen data property. Repeated reads return the same array without
+repeating `Object.values()` or cloning its icon definitions.
 
 Future immutable composition helpers, if justified, belong to the frozen `Icon` or `Collection`
 API authorities and return a new canonical definition. They do not mutate an existing definition

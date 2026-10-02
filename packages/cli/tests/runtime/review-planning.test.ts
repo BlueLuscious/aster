@@ -83,7 +83,10 @@ function createCollection(
 ): CollectionDefinition {
   return Collection.define({
     identity: { namespace: "testing", name },
-    icons,
+    icons: Object.fromEntries(icons.map((icon, index) => [
+      `icon${index + 1}`,
+      icon,
+    ])),
     metadata: {
       displayName: name,
       description: `Review ${name}`,

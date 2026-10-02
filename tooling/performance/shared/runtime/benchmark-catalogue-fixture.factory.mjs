@@ -17,9 +17,13 @@ export class BenchmarkCatalogueFixtureFactory {
         (_, index) => this.#icon(index),
       ),
     );
+    const iconMap = Object.fromEntries(icons.map((definition, index) => [
+      `fixture${index + 1}`,
+      definition,
+    ]));
     const collection = Collection.define({
       identity: { name: "benchmark" },
-      icons,
+      icons: iconMap,
       metadata: {
         displayName: "Benchmark",
         description: "Stable synthetic performance corpus.",

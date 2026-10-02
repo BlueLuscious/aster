@@ -18,7 +18,8 @@ The package exposes only the root subpath. Its runtime values are:
 
 Its public type surface comprises:
 
-- `CollectionApi`, `CollectionDefinition`, `CollectionIdentity`, and `CollectionMetadata`;
+- `CollectionApi`, `CollectionDefinitionInput`, `CollectionDefinition`, `CollectionIconMap`,
+  `CollectionIdentity`, and `CollectionMetadata`;
 - `IconApi`, `IconDefinition`, `IconIdentity`, `IconViewBox`, and `IconMetadata`;
 - `IconPoint`, `IconPathNode`, `IconCircleNode`, `IconEllipseNode`, `IconRectNode`,
   `IconLineNode`, `IconPolylineNode`, `IconPolygonNode`, and `IconNodeType`;
@@ -71,12 +72,14 @@ semantics before it expands the API.
 
 ## Distribution snapshot
 
-The accepted baseline emits native ES2022 ESM with one public root export and `sideEffects: false`.
-Before the canonical-retention correction, the unminified distribution contained 72 JavaScript
-modules totalling 48,345 bytes and 72 declaration files totalling 33,535 bytes. The current
-distribution includes the dedicated matcher responsibility and contains 73 JavaScript modules
+Core emits native ES2022 ESM with one public root export and `sideEffects: false`.
+The historical canonical-retention comparison used an unminified distribution of 72 JavaScript
+modules totalling 48,345 bytes and 72 declaration files totalling 33,535 bytes. The comparison
+candidate included the dedicated matcher responsibility and contained 73 JavaScript modules
 totalling 50,270 bytes and 73 declaration files totalling 34,366 bytes. These values are comparison
-evidence, not a fixed compatibility promise.
+evidence for that earlier boundary, not the current structured-path and typed-collection output or
+a fixed compatibility promise. `pnpm benchmark:core` reports the distribution built from the
+current checkout.
 
 ## Performance comparison
 
@@ -122,6 +125,28 @@ bounded consequence of complete semantic validation and identity-safe graph comp
 unfinished correction. Further work requires a new measured mechanism that preserves the same
 trust boundary; caching, branding, registries, mutable memoisation, and frozen-only shortcuts
 remain unacceptable substitutes for evidence.
+
+## Typed collection conformance
+
+Runtime and type evidence require concrete readonly aliases, deterministic dictionary order,
+duplicate canonical identity rejection, and a frozen `members` data property containing the same
+icon objects as the alias map. Type evidence also checks mutable authored members, optional
+aliases, and normalised literals: output values use the canonical readonly `IconDefinition`
+contract rather than retaining the authored member's subtype. Complete-definition revalidation
+checks any submitted member list against the authoritative dictionary, including after structural
+cloning has lost reference sharing. Reflective dictionary evidence covers symbols, accessors,
+hidden properties, ordinary and null prototypes, and valid aliases that shadow inherited names.
+
+Packed-consumer evidence compiles concrete collection aliases, rejects unknown aliases and
+mutation, and verifies direct-icon reference retention plus ordered traversal through the exact
+emitted declarations and modules. Repository workflows and CLI providers consume `members` for
+ordered complete-definition processing while keeping discovery records metadata-only.
+
+The scale scenarios prepare authored dictionaries of 26 and 256 synthetic icons before timing.
+They measure validation and one-time member derivation without consulting product artwork.
+Observed construction cost and its limits are recorded by the
+[Core Quality Baseline](quality-baseline.md#typed-collection-scaling). No query runtime, registry,
+cache, or construction shortcut is required by this evidence.
 
 ## Future pressure boundaries
 

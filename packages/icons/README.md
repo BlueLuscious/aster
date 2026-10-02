@@ -26,6 +26,24 @@ import { Svg } from "@luscious-garden/aster-svg";
 const markup = Svg.render(ArrowLeft);
 ```
 
+The current source checkout exposes collection icons by a typed local alias and provides an
+ordered list for iteration:
+
+```ts
+import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";
+
+const cameraMarkup = Svg.render(AmellusCollection.icons.camera);
+const collectionMarkup = AmellusCollection.members.map((icon) => Svg.render(icon));
+```
+
+Both views contain the same canonical icon objects. Importing Amellus evaluates all its declared
+members even when only `.icons.camera` is read; import `@luscious-garden/aster-icons/camera` directly
+when only that icon is needed.
+
+This collection representation awaits publication. The published `0.1.0-rc.1` candidate exposes
+the earlier member array; the [release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases.md)
+describe the migration.
+
 The package currently provides the accepted Amellus foundational collection. See the
 [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/index.md),
 [authoring workflow](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/workflow.md),

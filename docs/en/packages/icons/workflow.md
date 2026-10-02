@@ -67,7 +67,8 @@ To add one:
 2. call `Icon.define(...)` with complete identity, view box, nodes and metadata;
 3. compose the applicable authorship and visual profile explicitly, including effective artwork
    licence and attribution;
-4. add the imported definition to each intended collection's explicit `icons` sequence;
+4. add the imported definition under a lower camel-case alias in each intended collection's
+   explicit `icons` dictionary;
 5. run the package build, inspect `aster review` evidence and run complete verification.
 
 Omitting step 4 leaves a valid standalone icon. No generated manifest, loader map, facade or test
@@ -81,6 +82,21 @@ exports `<Name>Collection`, imports each member from its canonical icon module, 
 collection-owned metadata and retains members in its intentional semantic order. Catalogue
 synchronisation discovers it automatically; authors do not edit distribution manifests, loader
 maps or public facades.
+
+Author the `icons` dictionary with explicit property assignments to named runtime imports:
+
+```text
+icons: {
+  camera: Camera,
+  search: Search,
+}
+```
+
+Aliases belong to the collection and never change a member's canonical identity. Property order
+defines the collection's semantic order. Core derives the frozen `members` list once; authors do
+not supply it or maintain a second sequence. Renaming an alias or changing order requires the same
+compatibility review as other published collection data. The accepted source grammar and static
+generation flow are defined by [Catalogue Source Tooling](../../tooling/catalogue/index.md).
 
 ## Artwork rights
 

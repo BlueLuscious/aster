@@ -92,8 +92,10 @@ pnpm benchmark:core
 ```
 
 The command builds Core, prepares mutable and canonical variants of the fixed synthetic corpus
-outside timed loops, runs Node with explicit garbage-collection access, prints one JSON report and
-writes no artefact. Exact scenarios, interpretation, and acceptance rules are defined by the
+plus authored alias dictionaries of 26 and 256 synthetic icons outside timed loops, runs Node with
+explicit garbage-collection access, prints one JSON report and writes no artefact. The dictionary
+scenarios include one-time `members` derivation; complete-definition scenarios also validate the
+submitted member view. Exact scenarios, interpretation, and acceptance rules are defined by the
 [Core Quality Baseline](../../packages/core/quality-baseline.md).
 
 ## SVG comparison

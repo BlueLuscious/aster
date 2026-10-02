@@ -5,6 +5,7 @@ import { join, resolve } from "node:path";
 import test from "node:test";
 import { pathToFileURL } from "node:url";
 
+import { Collection } from "@luscious-garden/aster-core";
 import { cliBaseline } from "../../tooling/performance/cli/constants/cli-baseline.constant.mjs";
 import { cliCommandEvaluation } from "../../tooling/performance/cli/constants/cli-command-evaluation.constant.mjs";
 import { CliBaselineFixtureFactory } from "../../tooling/performance/cli/runtime/cli-baseline-fixture.factory.mjs";
@@ -76,7 +77,7 @@ test("prepares one stable synthetic benchmark catalogue", () => {
     fixture.icons.length,
     benchmarkCatalogueFixture.corpusSize,
   );
-  assert.equal(fixture.collection.icons.length, fixture.icons.length);
+  assert.equal(fixture.collection.members.length, fixture.icons.length);
   assert.equal(fixture.snapshot.icons.length, fixture.icons.length);
   assert.equal(fixture.snapshot.collections.length, 1);
   assert.equal(fixture.icon, fixture.icons[0]);
@@ -94,12 +95,51 @@ test("prepares distinct mutable and canonical Core benchmark fixtures", () => {
   assert.deepEqual(fixtures.mutableIcons, fixtures.canonicalIcons);
   assert.equal(Object.isFrozen(fixtures.mutableCollection), false);
   assert.deepEqual(fixtures.mutableCollection, fixtures.canonicalCollection);
-  assert.equal(fixtures.emptyCollection.icons.length, 0);
-  assert.equal(fixtures.singleCanonicalCollection.icons.length, 1);
+  assert.equal(Object.keys(fixtures.emptyCollection.icons).length, 0);
+  assert.equal(Object.keys(fixtures.singleCanonicalCollection.icons).length, 1);
   assert.equal(
-    fixtures.singleCanonicalCollection.icons[0],
+    fixtures.singleCanonicalCollection.icons.fixture1,
     fixtures.canonicalIcons[0],
   );
+  assert.equal(
+    Object.keys(fixtures.representativeCanonicalCollection.icons).length,
+    coreBaseline.collectionSizes.representative,
+  );
+  assert.equal(
+    Object.keys(fixtures.largeCanonicalCollection.icons).length,
+    coreBaseline.collectionSizes.large,
+  );
+  assert.equal(
+    Object.hasOwn(fixtures.representativeCanonicalCollection, "members"),
+    false,
+  );
+  assert.deepEqual(
+    fixtures.representativeMutableCollection,
+    fixtures.representativeCanonicalCollection,
+  );
+  assert.notEqual(
+    fixtures.representativeMutableCollection.icons.scale1,
+    fixtures.representativeCanonicalCollection.icons.scale1,
+  );
+  assert.equal(
+    fixtures.representativeCanonicalCollection.icons.scale1,
+    fixtures.largeCanonicalCollection.icons.scale1,
+  );
+  assert.equal(
+    new Set(Object.values(fixtures.largeCanonicalCollection.icons)
+      .map((icon) => icon.identity.name)).size,
+    coreBaseline.collectionSizes.large,
+  );
+  const large = Collection.define(fixtures.largeCanonicalCollection);
+  const authoredIcons = Object.values(fixtures.largeCanonicalCollection.icons);
+
+  assert.equal(large.members.length, authoredIcons.length);
+  assert.equal(Object.getOwnPropertyDescriptor(large, "members")?.value, large.members);
+  assert.ok(Object.isFrozen(large.members));
+  assert.ok(large.members.every((icon, index) =>
+    icon === authoredIcons[index]
+    && icon === large.icons[`scale${index + 1}`]
+  ));
   assert.equal(fixtures.straightPath.nodes[0]?.commands.length, 2);
   assert.equal(fixtures.curvedPath.nodes[0]?.commands.length, 4);
   assert.equal(fixtures.compoundPath.nodes[0]?.commands.length, 8);
@@ -136,7 +176,7 @@ test("runs the complete Core scenario matrix through public values", async () =>
   );
   const report = await runner.run();
 
-  assert.equal(report.schemaVersion, 4);
+  assert.equal(report.schemaVersion, 5);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
     Object.values(coreBaseline.scenarios).map((scenario) => scenario.name),
@@ -149,10 +189,20 @@ test("runs the complete Core scenario matrix through public values", async () =>
   assert.equal(measured[6]?.checksum, 34);
   const completeCollectionChecksum =
     2 *
-    (fixtures.canonicalCollection.icons.length +
+    (fixtures.canonicalCollection.members.length +
       fixtures.canonicalCollection.identity.name.length);
   assert.equal(measured[7]?.checksum, completeCollectionChecksum);
   assert.equal(measured[8]?.checksum, completeCollectionChecksum);
+  const representativeChecksum = 2 * (
+    coreBaseline.collectionSizes.representative
+    + fixtures.representativeCanonicalCollection.identity.name.length
+  );
+  assert.equal(measured[9]?.checksum, representativeChecksum);
+  assert.equal(measured[10]?.checksum, representativeChecksum);
+  assert.equal(measured[11]?.checksum, 2 * (
+    coreBaseline.collectionSizes.large
+    + fixtures.largeCanonicalCollection.identity.name.length
+  ));
   assert.deepEqual(report.distribution, { packagePath: "packages/core" });
 });
 

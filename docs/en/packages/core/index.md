@@ -67,7 +67,8 @@ tree-shaking result for every bundler.
 - A definition has one identity, one positive viewBox, non-empty ordered nodes, and resolved
   metadata.
 - An icon identity never carries collection membership.
-- A collection may be empty and retains unique icon definitions directly.
+- A collection authors unique icons through a typed alias dictionary and derives its ordered
+  frozen `members` list once; both views may be empty.
 - The same icon value may be retained by multiple collections without mutation.
 - Node discriminators form a closed union.
 - Presentation uses explicit fields rather than an arbitrary attribute map.

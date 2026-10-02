@@ -7,7 +7,7 @@
 /**
  * @description Validated syntax-owned data extracted from one canonical catalogue source.
  * @typedef {object} ICatalogueSourceSyntaxInspection
- * @property {readonly ICatalogueCollectionMemberReference[]} memberReferences - Imported members retained by a collection source.
+ * @property {readonly ICatalogueCollectionMemberReference[]} memberReferences - Source-owned aliases and imported members retained by a collection source.
  * @property {ICatalogueIconManifestData | ICatalogueCollectionManifestData} manifest - Metadata-only distribution data.
  */
 

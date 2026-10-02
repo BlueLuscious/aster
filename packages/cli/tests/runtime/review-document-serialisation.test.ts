@@ -103,7 +103,7 @@ test("serialises collections in canonical navigable order", async () => {
   });
   const collection = Collection.define({
     identity: { namespace: "testing", name: "ordered" },
-    icons: [zeta, alpha],
+    icons: { zeta, alpha },
     metadata: { displayName: "Ordered" },
   });
   const provider = createCatalogueProvider("testing", {
@@ -151,7 +151,7 @@ test("escapes hostile authored text and explicit attribute contexts", async () =
   });
   const collection = Collection.define({
     identity: { namespace: "testing", name: "hostile" },
-    icons: [icon],
+    icons: { hostile: icon },
     metadata: {
       displayName: dangerous,
       description: "<strong>not markup</strong>",
@@ -185,7 +185,7 @@ test("escapes hostile authored text and explicit attribute contexts", async () =
 test("renders an explicit empty collection state", async () => {
   const collection = Collection.define({
     identity: { namespace: "testing", name: "empty" },
-    icons: [],
+    icons: {},
     metadata: { displayName: "Empty" },
   });
   const provider = createCatalogueProvider("testing", {

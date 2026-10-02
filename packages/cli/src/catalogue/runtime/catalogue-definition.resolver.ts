@@ -163,7 +163,7 @@ export class CatalogueDefinitionResolver {
       return this.#unavailable(selection, failure);
     }
 
-    const definitionsByIdentity = new Map(definition.icons.map((icon) => [
+    const definitionsByIdentity = new Map(definition.members.map((icon) => [
       this.#identities.icon(icon.identity),
       icon,
     ]));

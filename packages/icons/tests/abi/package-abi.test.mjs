@@ -147,7 +147,7 @@ test("exposes exact definition families without aggregate roots", async () => {
     assert.equal(direct[symbol], await loader());
     assert.equal(direct[symbol].identity.name, subpath);
     assert.ok(
-      direct[symbol].icons.every((definition) =>
+      direct[symbol].members.every((definition) =>
         Object.hasOwn(
           dynamic.AsterIconLoaders,
           `${definition.identity.namespace}/${definition.identity.name}`,

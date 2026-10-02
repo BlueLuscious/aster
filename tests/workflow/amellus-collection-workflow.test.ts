@@ -58,8 +58,8 @@ test("exposes Amellus through every collection-neutral CLI workflow", async () =
     ["camera"],
   );
   assert.equal(shown.payload.collection.identity.name, "amellus");
-  assert.equal(shown.payload.collection.icons.length, AmellusCollection.icons.length);
-  assert.equal(exported.payload.plan.artefacts.length, AmellusCollection.icons.length);
+  assert.equal(shown.payload.collection.icons.length, AmellusCollection.members.length);
+  assert.equal(exported.payload.plan.artefacts.length, AmellusCollection.members.length);
   assert.equal(reviewed.payload.plan.document.kind, "collection");
-  assert.equal(reviewed.payload.plan.document.icons.length, AmellusCollection.icons.length);
+  assert.equal(reviewed.payload.plan.document.icons.length, AmellusCollection.members.length);
 });

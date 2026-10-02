@@ -65,14 +65,23 @@ membership claims become sanitised diagnostics associated with the accepted prov
 
 Exact resolution begins only after metadata selection has resolved provider scope, identity, and
 ambiguity. An icon selection invokes `loadIcon()` once. A collection selection invokes
-`loadCollection()` once and uses the complete members carried by that collection definition; it
+`loadCollection()` once and uses the ordered `definition.members` carried by that collection; it
 does not invoke individual icon loaders.
 
 Every loaded value crosses `Icon.define()` or `Collection.define()` before command state can retain
-it. The consistency validator then compares canonical identity and metadata. Collection resolution
+it. A complete collection supplies its alias dictionary and derived member list; Core checks that
+the two views agree, reconstructs their containers, and retains or isolates their icons according
+to the [Core Collection contract](../../../core/collection/index.md). The consistency validator then
+compares canonical identity and metadata. Collection resolution
 also compares the ordered member identities and validates every loaded member against its accepted
 icon discovery record. Results are isolated and deeply immutable even when a provider returns
 mutable authored data.
+
+Discovery collection records continue using their metadata-only `icons` identity array. They
+contain neither aliases nor complete definitions. Renaming a collection-local alias does not
+change CLI matching, member identities, export paths, or review output. The resolver indexes
+validated `definition.members` by canonical identity and produces canonically ordered selected
+icon evidence independently of dictionary lookup names.
 
 An absent provider, missing value, rejected loader, malformed definition, identity mismatch,
 metadata mismatch, or membership mismatch becomes one sanitised `catalogue-unavailable`

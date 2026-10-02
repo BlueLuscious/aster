@@ -10,7 +10,7 @@ collections. Each frozen API object owns one private factory instance.
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
 | `IconApi` | Declares `define()` as the complete public value authority. | Accepts and returns `IconDefinition`. |
-| `CollectionApi` | Declares `define()` as the complete public collection authority. | Accepts and returns `CollectionDefinition`. |
+| `CollectionApi` | Declares generic `define()` as the complete public collection authority. | Accepts `CollectionDefinitionInput<TIconMap>` and returns `CollectionDefinition<TIconMap>`. |
 
 ## Value
 
@@ -25,6 +25,11 @@ twice with equal authored values creates independent equal definitions.
 The API provides compile-time guidance through `IconDefinition`, while its internal factory
 accepts an unknown runtime value and validates it before reading the closed shape. TypeScript
 annotations are therefore never treated as runtime evidence.
+
+`Collection.define()` infers the authored alias map through a generic constrained by
+`CollectionIconMap`. It preserves known aliases as readonly properties and derives the ordered
+`members` list. The [Collection contract](../collection/index.md) owns alias, membership, and
+complete-definition revalidation semantics.
 
 ## Usage
 
@@ -68,11 +73,16 @@ const InterfaceIcons = Collection.define({
   identity: {
     name: "interface-icons",
   },
-  icons: [Camera],
+  icons: {
+    camera: Camera,
+  },
   metadata: {
     displayName: "Interface Icons",
   },
 });
+
+InterfaceIcons.icons.camera; // The same canonical Camera object.
+InterfaceIcons.members; // Frozen ordered [Camera], derived once.
 ```
 
 The accepted value is plain readonly data. Consumers inspect `identity`, `viewBox`, `nodes`, and

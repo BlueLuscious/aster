@@ -45,13 +45,13 @@ assert.ok(
   "Expected the executable collection family to be non-empty.",
 );
 const representativeCollection = asterCollectionDefinitions.find(
-  (collection) => collection.icons.length > 0,
+  (collection) => collection.members.length > 0,
 );
 assert.ok(
   representativeCollection,
   "Expected one non-empty collection for executable conformance.",
 );
-const representativeIcon = representativeCollection.icons[0];
+const representativeIcon = representativeCollection.members[0];
 assert.ok(representativeIcon, "Expected one representative collection member.");
 const representativeCollectionIdentity = `${
   representativeCollection.identity.namespace === undefined
@@ -73,7 +73,7 @@ const representativeIdentity = `${
 const representativeDisplayName = representativeIcon.metadata.displayName;
 const representativePath = `${representativeIdentity}.svg`;
 const representativeMemberships = asterCollectionDefinitions
-  .filter((collection) => collection.icons.includes(representativeIcon))
+  .filter((collection) => collection.members.includes(representativeIcon))
   .map((collection) => `${
     collection.identity.namespace === undefined
       ? ""
@@ -191,7 +191,7 @@ test("renders standalone options and one collection as a JSON export plan", () =
   assert.equal(result.payload.kind, "export");
   assert.equal(
     result.payload.plan.artefacts.length,
-    representativeCollection.icons.length,
+    representativeCollection.members.length,
   );
 });
 
@@ -243,7 +243,7 @@ test("publishes icon and collection plans relative to the explicit process direc
     assert.equal(collection.stderr, "");
     assert.equal(
       collection.stdout,
-      `Exported ${representativeCollection.icons.length} SVG artefacts to ${resolve(root, "exports/collection")}\n`,
+      `Exported ${representativeCollection.members.length} SVG artefacts to ${resolve(root, "exports/collection")}\n`,
     );
     assert.match(
       readFileSync(resolve(root, `exports/icon/${representativePath}`), "utf8"),

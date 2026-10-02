@@ -83,7 +83,10 @@ function createCollection(
 ): CollectionDefinition {
   return Collection.define({
     identity: { namespace: "testing", name },
-    icons,
+    icons: Object.fromEntries(icons.map((icon, index) => [
+      `icon${index + 1}`,
+      icon,
+    ])),
     metadata: { displayName: name },
   });
 }
@@ -113,7 +116,7 @@ function createFixture(
     icons: icons.map((definition) => ({
       definition,
       memberships: collections
-        .filter((collection) => collection.icons.some((icon) =>
+        .filter((collection) => collection.members.some((icon) =>
           JSON.stringify(icon.identity) === JSON.stringify(definition.identity),
         ))
         .map((collection) => collection.identity),
@@ -256,7 +259,7 @@ test("plans collection members in canonical path order", async () => {
   if (result.ok && result.payload.kind === "export") {
     const paths = result.payload.plan.artefacts.map((artefact) => artefact.path);
     assert.equal(result.payload.plan.subject, "collection");
-    assert.equal(paths.length, representativeCollection.icons.length);
+    assert.equal(paths.length, representativeCollection.members.length);
     assert.deepEqual(paths, [...paths].sort());
     assert.equal(new Set(paths).size, paths.length);
   }
