@@ -71,10 +71,10 @@ correctness evidence; elapsed time remains informative supporting evidence affec
 
 ## Distribution evidence
 
-The current native ES2022 ESM output contains 138 files and 80,965 unminified bytes:
+The typed-collection native ES2022 ESM output contains 138 files and 83,832 unminified bytes:
 
-- 69 JavaScript modules totalling 66,124 bytes;
-- 69 declaration files totalling 14,841 bytes;
+- 69 JavaScript modules totalling 66,769 bytes;
+- 69 declaration files totalling 17,063 bytes;
 - isolated-icon, isolated-collection, manifest and dynamic export patterns;
 - explicit blocked aggregate-root and bare collection-family entries;
 - `sideEffects: false`;
@@ -88,6 +88,11 @@ that actual tarball and rejects any additional source, test or repository-toolin
 The pre-migration control contained 68 files and 55,087 bytes. The accepted facade, manifest and
 loader responsibilities increase emitted file count while removing default package-wide runtime
 evaluation. Neither figure is a size budget.
+
+Typed collection membership preserves the same import-module sets while adding concrete alias
+declarations and the authored dictionary. `members` is derived by Core and introduces no extra
+Icons module or registry dependency. The counts describe this measured source revision; the
+command reports fresh values after catalogue or compiler changes.
 
 ## Reproduction
 

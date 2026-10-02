@@ -28,6 +28,25 @@ const Camera = Icon.define({
 });
 ```
 
+The current source checkout also supports typed collection aliases and an ordered member list:
+
+```ts
+import { Collection } from "@luscious-garden/aster-core";
+
+const InterfaceIcons = Collection.define({
+  identity: { name: "interface-icons" },
+  icons: { camera: Camera },
+  metadata: { displayName: "Interface Icons" },
+});
+
+InterfaceIcons.icons.camera; // Known readonly alias.
+InterfaceIcons.members; // Frozen ordered [Camera], derived once.
+```
+
+This collection representation awaits publication. The published `0.1.0-rc.1` candidate accepts
+an icon array; the [release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/releases.md)
+describe the migration. Definitions remain immutable data without lookup or mutation methods.
+
 See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/index.md) and
 [initial release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/releases.md) for
 responsibilities, features, exports, and model relationships.

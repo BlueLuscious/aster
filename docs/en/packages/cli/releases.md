@@ -1,5 +1,19 @@
 # CLI Release Notes
 
+## Unreleased
+
+**Breaking change:** Complete collection loaders now return the Core alias dictionary and its
+derived `members` list. Providers using the previous icon array must construct their collection
+through the matching `Collection.define()` implementation. Inconsistent keyed and ordered views
+are rejected during Core revalidation before command plans become observable.
+
+Metadata-only discovery retains its existing identity arrays. Command grammar, canonical identity
+selection, ordered export and review results remain unchanged. This integration requires the
+corresponding Core and Icons implementations; package versions and dependency ranges must be
+reviewed together before publication. The published `0.1.0-rc.1` remains on the previous collection
+contract. See [Catalogue](catalogue/index.md) and [Compatibility](compatibility.md) for current
+provider guarantees.
+
 ## 0.1.0-rc.1
 
 Status: **Published on 22 September 2026**. This is the formal release candidate for the first

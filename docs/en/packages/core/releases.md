@@ -1,5 +1,25 @@
 # Core Release Notes
 
+## Unreleased
+
+**Breaking change:** Collection authoring replaces the `icons` array with a typed alias dictionary.
+`CollectionDefinitionInput<TIconMap>` describes authored fields;
+`CollectionDefinition<TIconMap>` adds the frozen ordered `members` list derived once from that
+dictionary. The input constraint is `CollectionIconMap`. Known aliases retain exact readonly
+TypeScript keys. The published `0.1.0-rc.1` tarball still uses the previous representation.
+
+Migrate `icons: [Camera, Search]` to `icons: { camera: Camera, search: Search }`. Use
+`collection.icons.camera` for known property access and replace array traversal, counting, or
+indexing on `collection.icons` with `collection.members`. Preserve the former array order in the
+dictionary's property order. Do not author a separate `members` list.
+
+Complete definitions may be revalidated, but any submitted member view must match the dictionary's
+canonical values and order. Icon identity, geometry, metadata, and construction semantics remain
+unchanged. Release version and dependent-package ranges require coordinated review before
+publication under the [project compatibility policy](../../project/versioning.md).
+The [Collection contract](collection/index.md) and [Workflow](workflow.md) describe the current
+implementation.
+
 ## 0.1.0-rc.1
 
 Status: **Published on 22 September 2026**. This is the formal release candidate for the first

@@ -74,6 +74,12 @@ The public provider ABI contains metadata discovery plus exact icon and collecti
 contains no complete-provider snapshot contract. Discovery commands invoke no definition loader;
 Export and Review load only the exact accepted target after metadata selection.
 
+Complete collection loaders return the current Core `CollectionDefinition` with a typed `icons`
+dictionary and its derived ordered `members` list. Revalidation rejects a submitted list that
+disagrees with the dictionary. The metadata-only discovery contract still exposes member
+identities in its `icons` array; collection aliases never change identity resolution. Provider
+migration from the published RC is recorded in the [CLI release notes](releases.md).
+
 Provider and membership guarantees are owned by the
 [CLI Catalogue](catalogue/index.md).
 
