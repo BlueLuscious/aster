@@ -275,10 +275,16 @@ test("installs only accepted public package files and notices", async () => {
   }
 });
 
-test("executes published README examples through packed package entrypoints", async () => {
+test("executes packaged README examples through packed package entrypoints", async () => {
   const examples = [
-    { name: "core", result: 'Camera.identity.name === "camera"' },
-    { name: "icons", result: 'markup.startsWith("<svg ")' },
+    {
+      name: "core",
+      result: 'Camera.identity.name === "camera" && InterfaceIcons.icons.camera === Camera && InterfaceIcons.members[0] === Camera',
+    },
+    {
+      name: "icons",
+      result: 'markup.startsWith("<svg ") && cameraMarkup.startsWith("<svg ") && collectionMarkup.length === AmellusCollection.members.length && collectionMarkup.every((entry) => entry.startsWith("<svg "))',
+    },
     { name: "svg", result: 'markup.includes("<circle ")' },
   ];
 
@@ -287,11 +293,15 @@ test("executes published README examples through packed package entrypoints", as
       resolve(consumerRoot, "node_modules", "@luscious-garden", `aster-${name}`, "README.md"),
       "utf8",
     );
-    const source = readme.match(/```ts\r?\n([\s\S]*?)\r?\n```/)?.[1];
+    const sources = Array.from(
+      readme.matchAll(/```ts\r?\n([\s\S]*?)\r?\n```/gu),
+      (match) => match[1],
+    );
 
-    assert.ok(source, `Missing executable ${name} README example.`);
+    assert.ok(sources.length > 0, `Missing executable ${name} README example.`);
     assert.ok(!readme.includes("../../docs/"), `Broken ${name} package documentation link.`);
 
+    const source = sources.join("\n\n");
     const executed = runModule(`${source}\nif (!(${result})) throw new Error("README example failed");`);
 
     assert.equal(executed.status, 0, `${name}: ${executed.stderr}`);
