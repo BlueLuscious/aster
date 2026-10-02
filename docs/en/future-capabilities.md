@@ -103,9 +103,9 @@ both represent a camera or belong to the same collection. Amellus is canonically
 because its collection definition has no namespace, while its current Aster-authored members retain
 their independent `aster/*` identities.
 
-Consider accepting an unqualified local identity such as `camera` through both concrete Icons
-collection queries and CLI workflows without removing or rewriting the canonical `aster/camera`
-identity. Resolution must apply consistently to collection lookup and the CLI `show`, `export`,
+Consider accepting an unqualified local identity such as `camera` through future Icons
+collection lookup operations and CLI workflows without removing or rewriting the canonical
+`aster/camera` identity. Resolution must apply consistently to collection lookup and the CLI `show`, `export`,
 and `review` commands:
 
 1. Preserve explicitly qualified canonical identities exactly as supplied.
@@ -125,6 +125,31 @@ namespaces from source definitions, manifests, collection membership, metadata, 
 shared resolver may receive `aster` as explicit Aster-product policy, but neither Icons nor CLI may
 implement a fallback to another namespace. Their failure transport may remain boundary-specific:
 CLI returns a structured diagnostic, while a collection query follows its accepted API contract.
+
+Typed collection aliases already provide direct property access, and `members` provides ordinary
+array iteration. Neither applies this proposed identity resolver: `.icons.camera` is an authored
+collection-local key, not an abbreviation of `aster/camera`.
+
+## Collection query and discovery candidates
+
+Importance: **P2 - Conditional**
+
+The implemented collection model is immutable structural data: one typed alias dictionary plus
+its ordered frozen `members` list. Consumers can use ordinary array operations without adding
+behaviour to definitions. The [Core Collection contract](packages/core/collection/index.md) owns
+those current guarantees.
+
+Reconsider shared `get`, `has`, `filter`, `exclude`, query objects, or manager-like composition only
+after actual consumers demonstrate a repeated need beyond direct aliases and ordinary iteration.
+Any accepted API must specify input ownership, canonical identity resolution, empty and ambiguous
+results, dictionary-versus-list projections, order, reference retention, and construction or
+allocation costs. It must not make a collection definition mutable or register definitions during
+`Icon.define()` or `Collection.define()`.
+
+If independent icon or collection discovery later needs a lazy registry, prefer an explicitly
+constructed view over existing metadata manifests and exact loaders. Accept its scope and
+lifecycle separately; no global set, import-order registry, query API, or eager family aggregate
+is part of the current contract.
 
 ## Catalogue and command expansion
 
