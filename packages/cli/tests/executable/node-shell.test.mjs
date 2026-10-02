@@ -558,6 +558,22 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
     "--size",
     "0",
   ]);
+  const invalidPaint = run([
+    "export",
+    "icon",
+    representativeIdentity,
+    "--colour",
+    "red",
+    "--json",
+  ]);
+  const invalidDirection = run([
+    "export",
+    "icon",
+    representativeIdentity,
+    "--direction",
+    "sideways",
+    "--json",
+  ]);
   const repeatedReplace = run([
     "review",
     "icon",
@@ -583,6 +599,10 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
   assert.equal(emptyOutput.status, 2);
   assert.equal(invalidNumber.status, 2);
   assert.equal(invalidDomain.status, 2);
+  assert.equal(invalidPaint.status, 2);
+  assert.equal(invalidDirection.status, 2);
+  assert.equal(JSON.parse(invalidPaint.stdout).diagnostic.category, "usage");
+  assert.equal(JSON.parse(invalidDirection.stdout).diagnostic.category, "usage");
   assert.equal(repeatedReplace.status, 2);
   assert.equal(replaceJson.status, 2);
 });

@@ -1,13 +1,13 @@
-import type { AsterCommandInvocationType } from "../../../../command/types/index.js";
+import type { TParsedCommandInvocation } from "./parsed-command-invocation.type.js";
 
 /**
  * @description Accepted argv adaptation and its shell-owned presentation selection.
  */
 export type TParsedCommandLine = Readonly<{
   /**
-   * @description Structured host-neutral invocation delegated to the command set.
+   * @description Host-neutral request delegated to command validation, including raw export tokens.
    */
-  invocation: AsterCommandInvocationType;
+  invocation: TParsedCommandInvocation;
 
   /**
    * @description Whether the shell must emit one machine-readable JSON document.

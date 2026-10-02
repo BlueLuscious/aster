@@ -1,8 +1,7 @@
-import type { asterCommandNames } from "../../../command/constants/aster-command-names.constant.js";
-import type { AsterCommandInvocationType } from "../../../command/types/index.js";
 import { commandLineTokens } from "../constants/command-line-tokens.constant.js";
 import type { ICommandLineCommandParser } from "../contracts/internal/command-line-command-parser.contract.js";
 import type { TParsedCommandLine } from "../types/internal/parsed-command-line.type.js";
+import type { TParsedExportCommandInvocation } from "../types/internal/parsed-export-command-invocation.type.js";
 import { CommandLineError } from "./command-line.error.js";
 import { ExportCommandLineOptionParser } from "./export-command-line-option.parser.js";
 
@@ -84,13 +83,7 @@ export class ExportCommandLineParser implements ICommandLineCommandParser {
       ...(parsed.label === undefined ? {} : { label: parsed.label }),
       ...(parsed.title === undefined ? {} : { title: parsed.title }),
     });
-    const invocation: Extract<
-      AsterCommandInvocationType,
-      {
-        /** @description Export-command discriminator used for invocation narrowing. */
-        command: typeof asterCommandNames.export;
-      }
-    > = {
+    const invocation: TParsedExportCommandInvocation = {
       command: this.command,
       subject,
       identity,

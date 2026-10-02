@@ -265,6 +265,71 @@ test("isolates mutable discovery records before exposing command results", async
   }
 });
 
+test("isolates nested collection discovery membership from provider mutation", async () => {
+  const source = {
+    icons: [{
+      identity: { namespace: "testing", name: "member" },
+      metadata: {
+        displayName: "Member",
+        rtl: "preserve",
+        deprecated: false,
+      },
+      memberships: [{ namespace: "testing", name: "mutable" }],
+    }],
+    collections: [{
+      identity: { namespace: "testing", name: "mutable" },
+      metadata: { displayName: "Mutable", tags: ["original"] },
+      icons: [{ namespace: "testing", name: "member" }],
+    }],
+  };
+  const provider: CatalogueProvider = {
+    identity: "testing",
+    async discover() {
+      return source as CatalogueDiscovery;
+    },
+    async loadIcon() {
+      throw new Error("unexpected icon load");
+    },
+    async loadCollection() {
+      throw new Error("unexpected collection load");
+    },
+  };
+  const context = createContext([provider]);
+  const result = await AsterCommands.execute(
+    { command: "show", subject: "collection", identity: "testing/mutable" },
+    context,
+  );
+  const iconResult = await AsterCommands.execute(
+    { command: "show", subject: "icon", identity: "testing/member" },
+    context,
+  );
+
+  source.collections[0]!.metadata.tags.push("changed");
+  source.collections[0]!.icons[0]!.name = "changed";
+  source.icons[0]!.memberships[0]!.name = "changed";
+
+  assert.equal(result.ok, true);
+  assert.equal(iconResult.ok, true);
+
+  if (result.ok && result.payload.kind === "collection-show") {
+    assert.deepEqual(result.payload.collection.metadata.tags, ["original"]);
+    assert.deepEqual(result.payload.collection.icons, [
+      { namespace: "testing", name: "member" },
+    ]);
+    assert.ok(Object.isFrozen(result.payload.collection.metadata.tags));
+    assert.ok(Object.isFrozen(result.payload.collection.icons));
+    assert.ok(Object.isFrozen(result.payload.collection.icons[0]));
+  }
+
+  if (iconResult.ok && iconResult.payload.kind === "icon-show") {
+    assert.deepEqual(iconResult.payload.icon.memberships, [
+      { namespace: "testing", name: "mutable" },
+    ]);
+    assert.ok(Object.isFrozen(iconResult.payload.icon.memberships));
+    assert.ok(Object.isFrozen(iconResult.payload.icon.memberships[0]));
+  }
+});
+
 test("lists providers and standalone icons in canonical order", async () => {
   const alpha = createIcon("alpha");
   const zeta = createIcon("zeta");
