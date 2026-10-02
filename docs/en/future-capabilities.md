@@ -23,29 +23,65 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
-| 2 | `P2` | Report installed package versions through the CLI. | Stable independently versioned packages make local compatibility diagnosis useful. |
-| 3 | `P2` | Accept unqualified Aster identity aliases. | Icons and CLI share one strict Aster-default and suggestion policy without changing canonical identities. |
-| 4 | `P2` | Add informational SVG attribution markers. | Stable renderer output exists and the default-versus-opt-in marker policy is accepted. |
-| 5 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 6 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 7 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 8 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 9 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 10 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 11 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 12 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 13 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 14 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 15 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 16 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 17 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 1 | `P0` | Audit canonical contracts and immutability across the repository. | Complete this additional type/runtime conformance gate before publishing the first stable version. |
+| 2 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
+| 3 | `P2` | Report installed package versions through the CLI. | Stable independently versioned packages make local compatibility diagnosis useful. |
+| 4 | `P2` | Accept unqualified Aster identity aliases. | Icons and CLI share one strict Aster-default and suggestion policy without changing canonical identities. |
+| 5 | `P2` | Add informational SVG attribution markers. | Stable renderer output exists and the default-versus-opt-in marker policy is accepted. |
+| 6 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 7 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 8 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 9 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 10 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 11 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 12 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 13 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 14 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 15 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 16 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
+| 17 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 18 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 19 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+
+## Canonical contract and immutability audit
+
+Importance: **P0 - Required**
+
+Before publishing the first stable version, audit Core, Icons, SVG, CLI, private Import, repository
+tooling and cross-package consumers for agreement between compile-time contracts and runtime
+guarantees. Cover public and internal boundaries that accept, transform, return or retain data;
+existing green verification does not prove every inferred output type is sound.
+
+The audit must examine:
+
+- authored input versus canonical output types, including normalised literals, defaults, optional
+  fields and discriminated unions;
+- shallow `Readonly` wrappers versus nested arrays, records and mutable containers, distinguishing
+  compile-time restrictions from runtime freezing and isolation;
+- generics and mapped types that should preserve alias keys and modifiers without retaining
+  mutable or narrower authored member subtypes after canonicalisation;
+- assertions, casts and inferred return types whose claims require actual validation, including
+  providers, loaders, generated facades, command payloads and target plans;
+- reference retention, shared aliases, ordered views and caller-owned mutations wherever an
+  immutable result is promised.
+
+Require positive and negative compile-time regression tests, runtime normalisation and mutation
+evidence, and conformance through emitted declarations and clean packed consumers. Prove each
+identified defect with a failing regression before accepting its correction. Repeat complete
+verification and assess compiler or runtime cost when a correction materially changes either.
+
+Preserve deliberately mutable authoring drafts, host state and internal working structures. Do not
+apply blanket deep-readonly types, add runtime cloning or freezing, widen the public API, or create
+new layers without an ownership or correctness requirement. The
+[Core Collection contract](packages/core/collection/index.md) owns the existing keyed-member
+guarantees; durable audit outcomes belong in each affected package or tooling document rather
+than becoming duplicate guarantees here.
 
 ## Informational SVG attribution markers
 
 Importance: **P2 - Conditional**
 
-Technical release readiness is complete. Consider placing `data-attribution` and
+After the stable package baseline exists, consider placing `data-attribution` and
 `data-rendered-by="Aster"` on rendered SVG roots. Attribution must come from the individual icon's
 metadata rather than the collection or a hard-coded author. Decide whether the markers belong to
 every `Svg.render(...)` result or an explicit SVG export mode before changing the public output
@@ -70,6 +106,25 @@ explicit human approval.
 
 This is a near-term follow-up to a proven manual release process, not a prerequisite for the
 first pre-release and not a reason to introduce a release framework prematurely.
+
+## Coexisting API versions
+
+Importance: **P2 - Conditional**
+
+The package's own Semantic Versioning identity already versions its exported APIs under the
+[project versioning policy](project/versioning.md). Separate API versions such as `v1` and `v2`
+inside one package are not required today and must not block the first stable publication.
+
+Consider versioned entrypoints or explicitly selected compatibility implementations only when a
+real consumer needs incompatible API contracts simultaneously within one installed package and
+ordinary package pinning or migration cannot satisfy that requirement. A breaking package release
+alone does not justify retaining several API generations inside its replacement.
+
+Before accepting coexistence, define selection semantics, supported version combinations,
+compatibility evidence, maintenance ownership, migration and retirement rules, and distribution
+costs. Do not add `/v1` imports, versioned classes, separate per-API counters or duplicated
+implementations speculatively. Independent schema or protocol revisions identify their own format
+or negotiation boundary and do not establish a need for coexisting package APIs.
 
 ## Installed package version reporting
 
