@@ -14,8 +14,10 @@ import type { IconDefinition, IconMetadata } from "@luscious-garden/aster-core";
 import { DiagnosticResultFactory } from "../../diagnostic/runtime/diagnostic-result.factory.js";
 import { diagnosticSeverities } from "../../diagnostic/constants/diagnostic-severities.constant.js";
 import { IconImportError } from "../../error/index.js";
+import { iconImportFormats } from "../../format/constants/icon-import-formats.constant.js";
 import { IconImportAdapterRegistry } from "../../format/runtime/icon-import-adapter.registry.js";
 import { IconImportSourceNormaliser } from "../../source/runtime/icon-import-source.normaliser.js";
+import { SourceIdNormaliser } from "../../source/runtime/source-id.normaliser.js";
 import { IconIdentityFormatter } from "../../shared/runtime/icon-identity.formatter.js";
 import { ImportValueValidator } from "../../shared/runtime/import-value.validator.js";
 import { IconAdoptionDiagnosticFactory } from "./icon-adoption-diagnostic.factory.js";
@@ -75,6 +77,11 @@ export class IconAdoptionService {
   readonly #validator = new ImportValueValidator();
 
   /**
+   * @description Logical source identifier authority for supplied draft provenance.
+   */
+  readonly #sourceIdNormaliser = new SourceIdNormaliser();
+
+  /**
    * @description Inspects one explicit source through its exact format adapter.
    * @param source - Unknown host-provided source at the runtime boundary.
    * @returns Neutral imported draft or blocking diagnostics.
@@ -85,7 +92,7 @@ export class IconAdoptionService {
   }
 
   /**
-   * @description Combines one accepted draft with complete reviewed metadata.
+   * @description Validates draft evidence and combines it with complete reviewed metadata.
    * @param request - Draft and metadata construction request.
    * @returns Portable definition or blocking diagnostics.
    */
@@ -98,6 +105,27 @@ export class IconAdoptionService {
       draft,
       ["identity", "viewBox", "nodes", "metrics", "provenance"],
       "request.draft",
+      ["identity", "viewBox", "nodes", "metrics", "provenance"],
+    );
+    const metrics = this.#validator.record(
+      draft.metrics,
+      "request.draft.metrics",
+    );
+    this.#validator.exactFields(
+      metrics,
+      ["primitiveCount", "pathCommandCount"],
+      "request.draft.metrics",
+      ["primitiveCount", "pathCommandCount"],
+    );
+    this.#validator.integer(
+      metrics.primitiveCount,
+      1,
+      "request.draft.metrics.primitiveCount",
+    );
+    this.#validator.integer(
+      metrics.pathCommandCount,
+      0,
+      "request.draft.metrics.pathCommandCount",
     );
     const provenance = this.#validator.record(
       draft.provenance,
@@ -107,8 +135,15 @@ export class IconAdoptionService {
       provenance,
       ["format", "sourceId"],
       "request.draft.provenance",
+      ["format", "sourceId"],
     );
-    this.#validator.nonEmptyString(
+    if (provenance.format !== iconImportFormats.svg) {
+      throw new IconImportError(
+        "request.draft.provenance.format",
+        "unsupported import format",
+      );
+    }
+    this.#sourceIdNormaliser.normalise(
       provenance.sourceId,
       "request.draft.provenance.sourceId",
     );

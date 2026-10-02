@@ -149,6 +149,69 @@ test("rejects accessor-owned fields across public operations without executing t
   assert.equal(reads, 0);
 });
 
+test("rejects malformed draft metrics and provenance before definition construction", () => {
+  const inspected = IconImport.inspect(source());
+  assert.equal(inspected.successful, true);
+
+  if (!inspected.successful) {
+    throw new Error("Expected an accepted source draft.");
+  }
+
+  const draft = inspected.value;
+  const cases = [
+    {
+      draft: { ...draft, metrics: { ...draft.metrics, primitiveCount: 0 } },
+      path: "request.draft.metrics.primitiveCount",
+    },
+    {
+      draft: { ...draft, metrics: { ...draft.metrics, primitiveCount: -1 } },
+      path: "request.draft.metrics.primitiveCount",
+    },
+    {
+      draft: { ...draft, metrics: { ...draft.metrics, pathCommandCount: 0.5 } },
+      path: "request.draft.metrics.pathCommandCount",
+    },
+    {
+      draft: { ...draft, metrics: { ...draft.metrics, unexpected: true } },
+      path: "request.draft.metrics.unexpected",
+    },
+    {
+      draft: {
+        ...draft,
+        metrics: { primitiveCount: draft.metrics.primitiveCount },
+      },
+      path: "request.draft.metrics.pathCommandCount",
+    },
+    {
+      draft: {
+        ...draft,
+        provenance: { ...draft.provenance, format: "unknown" },
+      },
+      path: "request.draft.provenance.format",
+    },
+    {
+      draft: {
+        ...draft,
+        provenance: { ...draft.provenance, sourceId: "../outside.svg" },
+      },
+      path: "request.draft.provenance.sourceId",
+    },
+    {
+      draft: { ...draft, provenance: { format: iconImportFormats.svg } },
+      path: "request.draft.provenance.sourceId",
+    },
+  ];
+
+  for (const item of cases) {
+    assert.throws(
+      () => IconImport.define({ draft: item.draft, metadata } as never),
+      (error: unknown) =>
+        error instanceof IconImportError && error.path === item.path,
+      item.path,
+    );
+  }
+});
+
 test("preserves caller-controlled Proxy failures at every public boundary", () => {
   const operations = [
     (value: never) => IconImport.inspect(value),
