@@ -102,6 +102,30 @@ export class CoreBaselineRunner {
             iterations,
           ),
       }),
+      Object.freeze({
+        ...coreBaseline.scenarios.collectionRepresentativeMutable,
+        execute: (iterations) =>
+          this.#defineCollection(
+            this.#fixtures.representativeMutableCollection,
+            iterations,
+          ),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.collectionRepresentativeCanonical,
+        execute: (iterations) =>
+          this.#defineCollection(
+            this.#fixtures.representativeCanonicalCollection,
+            iterations,
+          ),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.collectionLargeCanonical,
+        execute: (iterations) =>
+          this.#defineCollection(
+            this.#fixtures.largeCanonicalCollection,
+            iterations,
+          ),
+      }),
     ];
 
     const results = [];

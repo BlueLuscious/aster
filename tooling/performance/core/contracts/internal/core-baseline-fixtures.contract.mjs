@@ -7,6 +7,9 @@
  * @property {import("@luscious-garden/aster-core").CollectionDefinition} mutableCollection - Structurally equivalent mutable complete collection input.
  * @property {import("@luscious-garden/aster-core").CollectionDefinitionInput} emptyCollection - Mutable valid collection input without members.
  * @property {import("@luscious-garden/aster-core").CollectionDefinitionInput} singleCanonicalCollection - Mutable collection input retaining one canonical member candidate.
+ * @property {import("@luscious-garden/aster-core").CollectionDefinitionInput} representativeMutableCollection - Authored representative dictionary containing mutable icons.
+ * @property {import("@luscious-garden/aster-core").CollectionDefinitionInput} representativeCanonicalCollection - Authored representative dictionary containing canonical icons.
+ * @property {import("@luscious-garden/aster-core").CollectionDefinitionInput} largeCanonicalCollection - Large authored dictionary containing canonical icons.
  * @property {import("@luscious-garden/aster-core").IconDefinition} straightPath - Mutable straight-path definition.
  * @property {import("@luscious-garden/aster-core").IconDefinition} curvedPath - Mutable curved-path definition.
  * @property {import("@luscious-garden/aster-core").IconDefinition} compoundPath - Mutable compound-path definition.
