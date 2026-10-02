@@ -68,7 +68,7 @@ export class CollectionMembershipNormaliser {
     }
 
     return Object.freeze({
-      icons: Object.freeze(icons) as Readonly<TIconMap>,
+      icons: Object.freeze(icons) as TCollectionMembershipResult<TIconMap>["icons"],
       members: Object.freeze(members),
     });
   }

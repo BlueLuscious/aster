@@ -123,6 +123,34 @@ test("isolates mutable icon input across both membership views", () => {
   assert.ok(Object.isFrozen(retained.nodes));
 });
 
+test("normalises literal metadata and freezes mutable authored member values", () => {
+  const source = icon();
+  const authored = {
+    ...source,
+    viewBox: { ...source.viewBox },
+    nodes: [{ kind: "circle" as const, cx: 12, cy: 12, radius: 4 }],
+    metadata: { ...source.metadata, displayName: "  Search  " as const },
+  };
+  const accepted = collection("normalised-members", { search: authored });
+  const retained = accepted.icons.search;
+
+  assert.equal(retained.metadata.displayName, "Search");
+  assert.equal(retained, accepted.members[0]);
+  assert.notEqual(retained, authored);
+  assert.ok(Object.isFrozen(retained.nodes));
+  assert.ok(Object.isFrozen(retained.metadata));
+  assert.equal(Reflect.set(retained.metadata, "displayName", "Changed"), false);
+  assert.throws(
+    () => Reflect.apply(Array.prototype.push, retained.nodes, [authored.nodes[0]]),
+    TypeError,
+  );
+
+  authored.nodes[0]!.radius = 8;
+  authored.viewBox.width = 48;
+  assert.deepEqual(retained.nodes, [{ kind: "circle", cx: 12, cy: 12, radius: 4 }]);
+  assert.equal(retained.viewBox.width, 24);
+});
+
 test("supports explicit aliases for variants and repeated local names", () => {
   const camera = icon("camera");
   const cameraStippled = icon("camera", "aster", "stippled");

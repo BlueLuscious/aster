@@ -14,7 +14,7 @@ nor retains a reverse membership list.
 | `CollectionMetadata` | Carries display name, optional description, intrinsic discovery tags, licence, and attribution. | Describes the collection itself and never overrides member icon metadata. |
 | `CollectionIconMap` | Constrains collection-local string aliases to portable icon definitions. | Supplies the generic constraint for authored and complete collections. |
 | `CollectionDefinitionInput<TIconMap>` | Carries identity, the authored alias dictionary, and metadata. | Composes `CollectionIdentity`, `CollectionMetadata`, and a concrete map extending `CollectionIconMap`. |
-| `CollectionDefinition<TIconMap>` | Carries the immutable alias dictionary and its derived ordered `members` list. | Extends `CollectionDefinitionInput<TIconMap>`, makes its concrete aliases readonly, and adds `readonly IconDefinition[]`. |
+| `CollectionDefinition<TIconMap>` | Carries the immutable alias dictionary and its derived ordered `members` list. | Inherits identity and metadata from `CollectionDefinitionInput<TIconMap>`, maps its aliases to canonical `IconDefinition` values, and adds `readonly IconDefinition[]`. |
 
 An empty `icons` dictionary is valid and produces an empty `members` list. A release or catalogue
 policy may require a populated collection without weakening the portable domain contract.
@@ -23,6 +23,13 @@ policy may require a populated collection without weakening the portable domain 
 `icons: { camera: Camera }` exposes `collection.icons.camera` with autocompletion and rejects an
 unknown alias at compile time. Annotating the result with the broad default `CollectionDefinition`
 deliberately discards that concrete key information. The generic introduces no runtime state.
+
+The output maps those keys to the readonly `IconDefinition` contract, preserving any optional
+aliases without retaining authored value subtypes. Mutable authoring does not make canonical
+members mutable in TypeScript. Narrow authored literals are not output guarantees: for example,
+Core may trim an authored display name while reconstructing its canonical metadata. The output
+inherits identity and metadata through `Omit<CollectionDefinitionInput<TIconMap>, "icons">`, then
+declares its canonical map independently from the input's member types.
 
 ## Aliases and ordered members
 

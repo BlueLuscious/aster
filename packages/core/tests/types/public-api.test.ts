@@ -97,6 +97,61 @@ const emptyCollection = Collection.define({
     displayName: "Empty",
   },
 });
+const authoredCamera = {
+  ...camera,
+  identity: { ...camera.identity },
+  viewBox: { ...camera.viewBox },
+  nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],
+  metadata: {
+    ...camera.metadata,
+    displayName: "  Authored Camera  ",
+    presentation: {
+      defaults: { fill: "none", stroke: "currentColor" },
+      overrides: ["stroke"],
+    },
+  },
+} satisfies IconDefinition;
+const authoredCollection = Collection.define({
+  identity: { name: "authored" },
+  icons: { camera: authoredCamera },
+  metadata: { displayName: "Authored" },
+});
+const literalCollection = Collection.define({
+  identity: { name: "literal" },
+  icons: {
+    camera: {
+      ...authoredCamera,
+      metadata: {
+        ...authoredCamera.metadata,
+        displayName: "  Authored Camera  " as const,
+      },
+    },
+  },
+  metadata: { displayName: "Literal" },
+});
+const optionalIcons: { camera?: IconDefinition } = {};
+const optionalCollection = Collection.define({
+  identity: { name: "optional" },
+  icons: optionalIcons,
+  metadata: { displayName: "Optional" },
+});
+const optionalCamera: IconDefinition | undefined = optionalCollection.icons.camera;
+// @ts-expect-error An optional authored alias cannot become a required canonical alias.
+const requiredCamera: IconDefinition = optionalCollection.icons.camera;
+// @ts-expect-error Canonical icon nodes are readonly even when authored nodes are mutable.
+authoredCollection.icons.camera.nodes.push({ kind: "circle", cx: 6, cy: 6, radius: 2 });
+// @ts-expect-error Canonical icon metadata is readonly even when authored metadata is mutable.
+authoredCollection.icons.camera.metadata.displayName = "Changed";
+// @ts-expect-error Canonical icon identity is readonly even when authored identity is mutable.
+authoredCollection.icons.camera.identity.name = "changed";
+// @ts-expect-error Canonical view box fields are readonly even when authored fields are mutable.
+authoredCollection.icons.camera.viewBox.width = 48;
+// @ts-expect-error Canonical presentation policy is readonly even when authored arrays are mutable.
+authoredCollection.icons.camera.metadata.presentation.overrides.push("stroke");
+// @ts-expect-error Canonical metadata does not retain an authored literal changed by normalisation.
+const authoredLiteral: "  Authored Camera  " = literalCollection.icons.camera.metadata.displayName;
+// @ts-expect-error Canonical member values retain exact collection aliases, not arbitrary keys.
+authoredCollection.icons.search;
 const acceptedCollection: CollectionDefinition = collection;
 const revalidatedCollection = Collection.define(collection);
 const acceptedCollectionInput: CollectionDefinitionInput<{ camera: IconDefinition }> = {
@@ -146,6 +201,9 @@ void cameraAlias;
 void variantAlias;
 void namespaceAlias;
 void emptyCollection;
+void optionalCamera;
+void requiredCamera;
+void authoredLiteral;
 void (undefined as EmptyCollectionHasNoAliases);
 void unknownAlias;
 void pathKind;

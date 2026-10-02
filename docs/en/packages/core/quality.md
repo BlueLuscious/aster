@@ -130,10 +130,12 @@ remain unacceptable substitutes for evidence.
 
 Runtime and type evidence require concrete readonly aliases, deterministic dictionary order,
 duplicate canonical identity rejection, and a frozen `members` data property containing the same
-icon objects as the alias map. Complete-definition revalidation checks any submitted member list
-against the authoritative dictionary, including after structural cloning has lost reference
-sharing. Reflective dictionary evidence covers symbols, accessors, hidden properties, ordinary and
-null prototypes, and valid aliases that shadow inherited names.
+icon objects as the alias map. Type evidence also checks mutable authored members, optional
+aliases, and normalised literals: output values use the canonical readonly `IconDefinition`
+contract rather than retaining the authored member's subtype. Complete-definition revalidation
+checks any submitted member list against the authoritative dictionary, including after structural
+cloning has lost reference sharing. Reflective dictionary evidence covers symbols, accessors,
+hidden properties, ordinary and null prototypes, and valid aliases that shadow inherited names.
 
 Packed-consumer evidence compiles concrete collection aliases, rejects unknown aliases and
 mutation, and verifies direct-icon reference retention plus ordered traversal through the exact
