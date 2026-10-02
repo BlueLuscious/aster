@@ -8,6 +8,35 @@ dependency sequencing; each package owns its [release notes](../packages/index.m
 `@luscious-garden/aster-import` participated in repository verification but was not packed or
 published as part of this release.
 
+## Distribution channels
+
+npm remains the primary package distribution registry. Subsequent npm releases are accompanied
+by a manually approved GitHub Release that records the exact published package versions, release
+notes and reviewed source commit. This procedure does not establish that a companion GitHub
+Release already exists for the historical npm publication recorded below.
+
+A GitHub Release is based on a Git tag targeting the approved `master` commit; that tag is
+independent from npm dist-tags such as `next` and `latest`. Mark a release containing candidate
+packages as a pre-release. A coordinated release may list several independently versioned
+packages without implying that every package shares one version.
+
+Attach the same approved `.tgz` archives that were published to npm, together with their SHA-256
+checksums. Do not rebuild or repack them for GitHub. GitHub's automatically generated source ZIP
+and tar archives are not substitutes for the compiled npm package archives. See
+[GitHub's release documentation](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases).
+
+Confirm npm publication and registry-consumer verification for every package listed before
+publishing its companion GitHub Release. Creating the tag, publishing the release and uploading
+assets remain separately approved human operations; no workflow performs them automatically.
+Record the release URL in the affected package release notes and verify that each downloaded
+package asset matches its approved hash. Keep the release as a draft if publication is incomplete.
+
+GitHub Packages is a different registry, not the release page. It is not part of the accepted
+distribution procedure and does not block candidate or stable publication. A GitHub organisation,
+repository transfer, second npm scope or registry-routing change is not required for the selected
+npm-and-Releases path. Reconsider an additional registry only through the separately conditional
+[future capability](../future-capabilities.md#additional-package-registry).
+
 ## Reviewed candidate
 
 The first public set has four independently versioned `0.1.0-rc.1` packages. A frozen offline

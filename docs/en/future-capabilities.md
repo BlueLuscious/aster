@@ -39,9 +39,10 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | 14 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
 | 15 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
 | 16 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
-| 17 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 18 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 19 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 17 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
+| 18 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 19 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 20 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
 
 ## Canonical contract and immutability audit
 
@@ -437,6 +438,24 @@ An independent project should expose host-neutral kernels and a small explicit p
 boundary. Aster would consume it only as development tooling and retain thin process entrypoints.
 Do not extract by copying every verifier, introducing automatic rule discovery or mutable global
 registries, or combining contributor tooling with the user-facing multi-ecosystem CLI.
+
+## Additional package registry
+
+Importance: **P2 - Conditional**
+
+The [publication procedure](project/publication.md#distribution-channels) owns the accepted
+distribution channels. An additional GitHub Packages registry is optional and must not block the
+first stable release or require a repository transfer or package rename speculatively.
+
+Reconsider it only when a concrete consumer needs GitHub-hosted dependency installation rather
+than a release page or downloadable archive. Before acceptance, verify the GitHub account or
+organisation namespace independently from the npm scope, repository association, package
+visibility, publisher permissions, and authentication requirements even for public consumers.
+Define whether both registries receive identical approved archives, how dependency resolution and
+dist-tags are verified, and how partial publication is recovered without silently rebuilding a
+released version. See the [GitHub npm registry documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
+
+No second-registry workflow, token, scope mapping or automatic publication is currently accepted.
 
 ## Aster Studio
 
