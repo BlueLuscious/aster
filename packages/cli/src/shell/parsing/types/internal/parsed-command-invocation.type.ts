@@ -8,6 +8,9 @@ import type { TParsedExportCommandInvocation } from "./parsed-export-command-inv
 export type TParsedCommandInvocation =
   | Exclude<
       AsterCommandInvocationType,
-      { command: typeof asterCommandNames.export }
+      {
+        /** @description Export-command discriminator excluded from validated requests. */
+        command: typeof asterCommandNames.export;
+      }
     >
   | TParsedExportCommandInvocation;
