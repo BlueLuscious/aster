@@ -43,7 +43,7 @@ export class CoreBaselineRunner {
 
   /**
    * @description Runs representative icon and collection construction comparisons.
-   * @returns {Promise<object>} Immutable serialisable Core baseline report.
+   * @returns {Promise<object>} Frozen Core report envelope retaining injected evidence by reference.
    */
   async run() {
     /** @type {import("../../shared/contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario[]} */
