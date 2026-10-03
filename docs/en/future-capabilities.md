@@ -25,39 +25,39 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | --- | --- | --- | --- |
 | 1 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
 | 2 | `P2` | Report installed package versions through the CLI. | Stable independently versioned packages make local compatibility diagnosis useful. |
-| 3 | `P2` | Accept unqualified Aster identity aliases. | Icons and CLI share one strict Aster-default and suggestion policy without changing canonical identities. |
-| 4 | `P2` | Add informational SVG attribution markers. | Stable renderer output exists and the default-versus-opt-in marker policy is accepted. |
-| 5 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 6 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 7 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 8 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 9 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 10 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 11 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 12 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 13 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 14 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 15 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
-| 16 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
-| 17 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 18 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 19 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 3 | `P2` | Add always-on SVG provenance markers. | The accepted root-attribute policy passes XML, consumer and release-candidate conformance. |
+| 4 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 5 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 6 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 7 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 8 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 9 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 11 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 12 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 13 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 14 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
+| 15 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
+| 16 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 17 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 18 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
 
-## Informational SVG attribution markers
+## Always-on SVG provenance markers
 
 Importance: **P2 - Conditional**
 
-After the stable package baseline exists, consider placing `data-attribution` and
-`data-rendered-by="Aster"` on rendered SVG roots. Attribution must come from the individual icon's
-metadata rather than the collection or a hard-coded author. Decide whether the markers belong to
-every `Svg.render(...)` result or an explicit SVG export mode before changing the public output
-contract. A missing attribution must not be invented.
+The accepted delivery direction is to place `data-rendered-by="Aster"` on every SVG root emitted by
+`Svg.render(...)`, with `data-attribution` added only when the individual icon definition supplies
+`metadata.attribution`. The renderer identifies itself, not the artwork's author. Do not add a
+caller option, CLI flag, collection-level attribution or hard-coded artwork author. This changes
+the public byte-level output contract and must be verified before selecting the final `0.1.0`
+candidate.
 
 These markers make source provenance easier to inspect but do not enforce ownership or replace
 the accompanying licence and credits. Anyone who controls an SVG file can remove them, and
-optimisation may discard non-visual attributes. If accepted, update exact SVG and CLI output
-evidence, package documentation, and packed-consumer tests, then repeat release conformance
-before publication. Do not add a watermark or a runtime dependency for this purpose.
+optimisation may discard non-visual attributes. Verify XML escaping, exact SVG and CLI output,
+Import's separate source-subset boundary, package documentation and packed consumers before
+publication. Do not add a watermark or a runtime dependency for this purpose.
 
 ## Reviewed version proposals
 
@@ -112,65 +112,6 @@ installed CLI without loading catalogue providers or querying the network. Human
 must distinguish package identities explicitly, retain plain `aster version` as the CLI version,
 and omit the private Import package from public installation claims. Missing or incompatible
 packages require deterministic diagnostics rather than an invented ecosystem version.
-
-## Unqualified Aster identity aliases
-
-Importance: **P2 - Conditional**
-
-An optional namespace identifies the authority or domain that owns an icon or collection identity;
-it does not identify collection membership, visual style, package location, or catalogue provider.
-Consequently, `aster/camera` and `other/camera` can coexist as different canonical icons even when
-both represent a camera or belong to the same collection. Amellus is canonically just `amellus`
-because its collection definition has no namespace, while its current Aster-authored members retain
-their independent `aster/*` identities.
-
-Consider accepting an unqualified local identity such as `camera` through future Icons
-collection lookup operations and CLI workflows without removing or rewriting the canonical
-`aster/camera` identity. Resolution must apply consistently to collection lookup and the CLI `show`, `export`,
-and `review` commands:
-
-1. Preserve explicitly qualified canonical identities exactly as supplied.
-2. When an icon input has no namespace, interpret it strictly as
-   `aster/<name>[@<variant>]`, even when other namespaces expose the same local identity.
-3. Resolve that Aster candidate when it exists and retain its complete canonical identity in
-   results, paths, and generated artefacts.
-4. When the Aster candidate does not exist, return a not-found result rather than selecting another
-   namespace automatically.
-5. The failure may suggest canonically qualified close names from `aster` and exact local-name
-   matches from other namespaces, but suggestions never become implicit selections.
-6. Require a qualified identity such as `retro/camera` when the user intends a non-Aster icon.
-
-Catalogue selection and namespaces remain separate concerns: a catalogue is a discovery provider,
-whereas a namespace belongs to the portable definition identity. The shortcut must not remove
-namespaces from source definitions, manifests, collection membership, metadata, or exports. The
-shared resolver may receive `aster` as explicit Aster-product policy, but neither Icons nor CLI may
-implement a fallback to another namespace. Their failure transport may remain boundary-specific:
-CLI returns a structured diagnostic, while a collection query follows its accepted API contract.
-
-Typed collection aliases already provide direct property access, and `members` provides ordinary
-array iteration. Neither applies this proposed identity resolver: `.icons.camera` is an authored
-collection-local key, not an abbreviation of `aster/camera`.
-
-## Collection query and discovery candidates
-
-Importance: **P2 - Conditional**
-
-The implemented collection model is immutable structural data: one typed alias dictionary plus
-its ordered frozen `members` list. Consumers can use ordinary array operations without adding
-behaviour to definitions. The [Core Collection contract](packages/core/collection/index.md) owns
-those current guarantees.
-
-Reconsider shared `get`, `has`, `filter`, `exclude`, query objects, or manager-like composition only
-after actual consumers demonstrate a repeated need beyond direct aliases and ordinary iteration.
-Any accepted API must specify input ownership, canonical identity resolution, empty and ambiguous
-results, dictionary-versus-list projections, order, reference retention, and construction or
-allocation costs. It must not make a collection definition mutable or register definitions during
-`Icon.define()` or `Collection.define()`.
-
-If independent icon or collection discovery later needs a lazy registry, prefer an explicitly
-constructed view over existing metadata manifests and exact loaders. Accept its scope and
-lifecycle separately; no global set, import-order registry, query API, or eager family aggregate
-is part of the current contract.
 
 ## Catalogue and command expansion
 
