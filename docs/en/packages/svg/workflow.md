@@ -85,7 +85,7 @@ silently replacing content.
 ```text
 accepted render context
     |
-    +--> root namespace, viewBox, viewport, colour, and accessibility
+    +--> root namespace, viewBox, viewport, colour, renderer identity, and accessibility
     +--> optional escaped title
     +--> geometry in portable paint order
     +--> technical, icon, node, and authorised caller presentation

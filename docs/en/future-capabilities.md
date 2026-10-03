@@ -25,7 +25,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | --- | --- | --- | --- |
 | 1 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
 | 2 | `P2` | Report installed package versions through the CLI. | Stable independently versioned packages make local compatibility diagnosis useful. |
-| 3 | `P2` | Add always-on SVG provenance markers. | The accepted root-attribute policy passes XML, consumer and release-candidate conformance. |
+| 3 | `P2` | Evaluate SVG artwork attribution. | The cost, XML failure policy and consumer consequences are measured after renderer identification is established. |
 | 4 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
 | 5 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
 | 6 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
@@ -42,22 +42,22 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | 17 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
 | 18 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
 
-## Always-on SVG provenance markers
+## Potential SVG artwork attribution
 
 Importance: **P2 - Conditional**
 
-The accepted delivery direction is to place `data-rendered-by="Aster"` on every SVG root emitted by
-`Svg.render(...)`, with `data-attribution` added only when the individual icon definition supplies
-`metadata.attribution`. The renderer identifies itself, not the artwork's author. Do not add a
-caller option, CLI flag, collection-level attribution or hard-coded artwork author. This changes
-the public byte-level output contract and must be verified before selecting the final `0.1.0`
-candidate.
+The renderer's fixed identification belongs to the [SVG render contract](packages/svg/render/index.md),
+not this roadmap. Separately evaluate whether `Svg.render(...)` should add `data-attribution`
+from the individual icon's `metadata.attribution`. An absent icon attribution must not be
+invented from collection metadata or a hard-coded author.
 
-These markers make source provenance easier to inspect but do not enforce ownership or replace
-the accompanying licence and credits. Anyone who controls an SVG file can remove them, and
-optimisation may discard non-visual attributes. Verify XML escaping, exact SVG and CLI output,
-Import's separate source-subset boundary, package documentation and packed consumers before
-publication. Do not add a watermark or a runtime dependency for this purpose.
+Before accepting this second marker, measure its code, markup, runtime and consumer costs. Core
+can retain attribution text that XML cannot represent, so compare error and omission policies
+explicitly instead of assuming that SVG can emit every portable string. Any accepted policy must
+preserve valid XML, honest authorship, deterministic output and atomic failure handling. Neither
+the existing renderer marker nor a possible artwork marker enforces ownership, survives every
+optimiser or replaces accompanying licences and credits. Do not add a watermark or runtime
+dependency for this purpose.
 
 ## Reviewed version proposals
 

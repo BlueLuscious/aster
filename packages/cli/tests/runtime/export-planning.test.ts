@@ -170,6 +170,10 @@ test("plans one deterministic immutable icon SVG export", async () => {
     );
     assert.equal(first.payload.plan.artefacts[0]?.mediaType, "image/svg+xml");
     assert.match(first.payload.plan.artefacts[0]?.content ?? "", /^<svg /u);
+    assert.match(
+      first.payload.plan.artefacts[0]?.content ?? "",
+      / data-rendered-by="Aster" role="img"/u,
+    );
     assert.match(first.payload.plan.artefacts[0]?.content ?? "", /width="32"/u);
     assert.match(
       first.payload.plan.artefacts[0]?.content ?? "",
