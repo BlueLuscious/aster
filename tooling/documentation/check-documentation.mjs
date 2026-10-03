@@ -25,7 +25,7 @@ const defaultWorkspaceRoot = repositoryPaths.resolve(
 /**
  * @description Verifies canonical documentation for one explicit workspace.
  * @param {string} workspaceRoot - Absolute repository root to verify.
- * @returns {Promise<{ issues: string[], markdownFileCount: number }>} Stable verification result.
+ * @returns {Promise<Readonly<{ issues: readonly string[], markdownFileCount: number }>>} Immutable verification result.
  */
 export async function verifyDocumentation(workspaceRoot) {
   return documentationVerifiers.create().verify(workspaceRoot);

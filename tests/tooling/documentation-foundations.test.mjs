@@ -50,9 +50,12 @@ test("reports required hierarchy entries through an injected filesystem", async 
     issues,
   );
 
-  assert.deepEqual(issues.snapshot(), [
+  const snapshot = issues.snapshot();
+
+  assert.deepEqual(snapshot, [
     "Missing canonical documentation entry: docs/en/project/index.md",
   ]);
+  assert.ok(Object.isFrozen(snapshot));
 });
 
 test("reports missing and stale package documentation membership", async () => {
@@ -147,9 +150,40 @@ test("coordinates explicit roots, acquisition and policy order", async () => {
   );
   const workspaceRoot = resolve("explicit-workspace");
 
-  assert.deepEqual(await verifier.verify(workspaceRoot), {
+  const report = await verifier.verify(workspaceRoot);
+
+  assert.deepEqual(report, {
     issues: ["root issue", "document issue"],
     markdownFileCount: 1,
   });
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.issues));
   assert.deepEqual(observed, [workspaceRoot, resolve(workspaceRoot, "docs/en"), 1]);
+});
+
+test("isolates acquired documents before invoking asynchronous policies", async () => {
+  const sourceDocument = { path: "first.md", content: "# First\n" };
+  const sourceDocuments = [sourceDocument];
+  const verifier = new DocumentationVerifier(
+    [],
+    { async read() { return sourceDocuments; } },
+    {
+      async inspect(context) {
+        sourceDocument.content = "# Changed\n";
+        sourceDocuments.push({ path: "second.md", content: "# Second\n" });
+
+        assert.ok(Object.isFrozen(context.documents));
+        assert.ok(Object.isFrozen(context.documents[0]));
+        assert.deepEqual(context.documents, [
+          { path: "first.md", content: "# First\n" },
+        ]);
+      },
+    },
+    new RepositoryPathResolver(),
+  );
+
+  assert.deepEqual(await verifier.verify(resolve("fixture")), {
+    issues: [],
+    markdownFileCount: 1,
+  });
 });

@@ -46,7 +46,7 @@ export class DocumentationVerifier {
   /**
    * @description Verifies canonical documentation for one explicit workspace.
    * @param {string} workspaceRoot - Absolute repository root to verify.
-   * @returns {Promise<{ issues: string[], markdownFileCount: number }>} Stable verification result.
+   * @returns {Promise<Readonly<{ issues: readonly string[], markdownFileCount: number }>>} Immutable verification result.
    */
   async verify(workspaceRoot) {
     const issues = new DocumentationIssueCollector();
@@ -65,12 +65,19 @@ export class DocumentationVerifier {
       await inspector.inspect(rootContext, issues);
     }
 
-    const documents = await this.#documents.read(documentationRoot);
+    const documents = Object.freeze(
+      (await this.#documents.read(documentationRoot)).map((document) =>
+        Object.freeze({ path: document.path, content: document.content }),
+      ),
+    );
     /** @type {import("../types/internal/documentation-context.type.mjs").TDocumentationContext} */
     const context = Object.freeze({ workspaceRoot, documentationRoot, documents });
 
     await this.#documentInspector.inspect(context, issues);
 
-    return { issues: issues.snapshot(), markdownFileCount: documents.length };
+    return Object.freeze({
+      issues: issues.snapshot(),
+      markdownFileCount: documents.length,
+    });
   }
 }
