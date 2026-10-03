@@ -10,7 +10,11 @@ import type {
 import type { SourceDiagnostic } from "../../diagnostic/contracts/index.js";
 import type { DiagnosticResultType } from "../../diagnostic/types/index.js";
 import type { IconImportSourceType } from "../../source/types/index.js";
-import type { IconDefinition, IconMetadata } from "@luscious-garden/aster-core";
+import {
+  iconNodeKinds,
+  type IconDefinition,
+  type IconMetadata,
+} from "@luscious-garden/aster-core";
 import { DiagnosticResultFactory } from "../../diagnostic/runtime/diagnostic-result.factory.js";
 import { diagnosticSeverities } from "../../diagnostic/constants/diagnostic-severities.constant.js";
 import { IconImportError } from "../../error/index.js";
@@ -92,7 +96,7 @@ export class IconAdoptionService {
   }
 
   /**
-   * @description Validates draft evidence and combines it with complete reviewed metadata.
+   * @description Validates draft evidence against canonical geometry and combines reviewed metadata.
    * @param request - Draft and metadata construction request.
    * @returns Portable definition or blocking diagnostics.
    */
@@ -117,12 +121,12 @@ export class IconAdoptionService {
       "request.draft.metrics",
       ["primitiveCount", "pathCommandCount"],
     );
-    this.#validator.integer(
+    const primitiveCount = this.#validator.integer(
       metrics.primitiveCount,
       1,
       "request.draft.metrics.primitiveCount",
     );
-    this.#validator.integer(
+    const pathCommandCount = this.#validator.integer(
       metrics.pathCommandCount,
       0,
       "request.draft.metrics.pathCommandCount",
@@ -148,10 +152,51 @@ export class IconAdoptionService {
       "request.draft.provenance.sourceId",
     );
 
-    return this.#definitionFactory.create({
+    const defined = this.#definitionFactory.create({
       draft: record.draft as IconImportDraft,
       metadata: record.metadata as IconMetadata,
     });
+
+    if (defined.successful) {
+      this.#assertMetricConsistency(defined.value, primitiveCount, pathCommandCount);
+    }
+
+    return defined;
+  }
+
+  /**
+   * @description Checks supplied draft counts against validated canonical geometry.
+   * @param definition - Accepted portable icon definition.
+   * @param primitiveCount - Validated supplied primitive count.
+   * @param pathCommandCount - Validated supplied path-operation count.
+   * @returns Nothing.
+   */
+  #assertMetricConsistency(
+    definition: IconDefinition,
+    primitiveCount: number,
+    pathCommandCount: number,
+  ): void {
+    if (primitiveCount !== definition.nodes.length) {
+      throw new IconImportError(
+        "request.draft.metrics.primitiveCount",
+        `expected primitive count to match ${definition.nodes.length} canonical nodes`,
+      );
+    }
+
+    let canonicalPathCommandCount = 0;
+
+    for (const node of definition.nodes) {
+      if (node.kind === iconNodeKinds.path) {
+        canonicalPathCommandCount += node.commands.length;
+      }
+    }
+
+    if (pathCommandCount !== canonicalPathCommandCount) {
+      throw new IconImportError(
+        "request.draft.metrics.pathCommandCount",
+        `expected path command count to match ${canonicalPathCommandCount} canonical commands`,
+      );
+    }
   }
 
   /**

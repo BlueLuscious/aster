@@ -25,8 +25,11 @@ without returning partial output.
 `IconImport.define()` accepts an inspected or otherwise supplied draft only after validating its
 complete field set, non-empty primitive count, non-negative path-command count, built-in format and
 canonical logical source identifier. Core then validates and isolates identity, view box, geometry
-and reviewed metadata. Invalid draft envelope or evidence throws `IconImportError`; invalid
-Core geometry or metadata returns a blocking adoption diagnostic.
+and reviewed metadata. A successful definition also requires `primitiveCount` to match its canonical
+node count and `pathCommandCount` to match the sum of its canonical path command counts. Invalid
+draft envelope or inconsistent metrics throw `IconImportError`; invalid Core geometry or metadata
+returns a blocking adoption diagnostic. Matching metrics establish internal consistency, not proof
+that a separately supplied draft came from its stated source.
 
 One collection is represented by one host-prepared `adoptMany()` request. Several collections are
 independent calls whose grouping remains host-owned. Import has no collection registry, membership
