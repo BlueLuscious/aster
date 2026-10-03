@@ -163,7 +163,12 @@ test("plans immutable technical evidence for one icon", async () => {
       );
       assert.match(plan.document.icon.markup, /^<svg /u);
       assert.ok(Object.isFrozen(plan.document.icon));
+      assert.ok(Object.isFrozen(plan.document.icon.identity));
+      assert.ok(Object.isFrozen(plan.document.icon.metadata));
+      assert.ok(Object.isFrozen(plan.document.icon.viewBox));
       assert.ok(Object.isFrozen(plan.document.icon.primitiveKinds));
+      assert.ok(Object.isFrozen(plan.document.icon.memberships));
+      assert.ok(Object.isFrozen(plan.document.icon.memberships[0]));
     }
   }
 });

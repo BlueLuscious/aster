@@ -37,6 +37,8 @@ feature-owned policies. `ArchitectureVerifier` then invokes these inspectors in 
 `ArchitectureIssueCollector` receives every finding without throwing on policy failure and returns
 an immutable ordered snapshot. Acquisition failures such as unreadable or malformed repository
 authorities remain operational failures rather than architecture findings.
+The package inspector copies the recognised package-to-policy map at construction so later changes
+to the caller's map cannot alter its scope. Policy instances remain borrowed collaborators.
 
 The internal `IArchitectureInspector` contract supplies one explicit workspace root and ordered
 issue collector to each independent inspection responsibility. It permits deterministic

@@ -162,6 +162,16 @@ const acceptedCollectionInput: CollectionDefinitionInput<{ camera: IconDefinitio
 const exactCamera: IconDefinition = collection.icons.camera;
 const revalidatedCamera: IconDefinition = revalidatedCollection.icons.camera;
 const orderedCamera: IconDefinition | undefined = collection.members[0];
+// @ts-expect-error Canonical icon geometry cannot be extended after construction.
+camera.nodes.push({ kind: "circle", cx: 6, cy: 6, radius: 2 });
+// @ts-expect-error Canonical intrinsic tags cannot be changed after construction.
+camera.metadata.tags?.push("changed");
+// @ts-expect-error Canonical default paint cannot be changed after construction.
+camera.metadata.presentation.defaults.stroke = "none";
+// @ts-expect-error Ordered collection membership is readonly.
+collection.members.push(camera);
+// @ts-expect-error Ordered members retain readonly canonical identities.
+collection.members[0]!.identity.name = "changed";
 const cameraAlias: keyof typeof collection.icons = "camera";
 const variantAlias: keyof typeof cameraCollection.icons = "cameraStippled";
 const namespaceAlias: keyof typeof cameraCollection.icons = "externalCamera";

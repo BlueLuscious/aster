@@ -24,15 +24,15 @@ export class IconIdentityNormaliser {
    */
   normalise(value: unknown, path = "definition.identity"): IconIdentity {
     const record = this.#validator.record(value, path);
-    this.#validator.exactFields(record, ["namespace", "name", "variant"], path);
+    this.#validator.exactFields(record, ["namespace", "name", "variant"], path, ["name"]);
 
     const namespace =
-      "namespace" in record
+      Object.hasOwn(record, "namespace")
         ? this.#validator.text(record.namespace, `${path}.namespace`)
         : undefined;
     const name = this.#validator.text(record.name, `${path}.name`);
     const variant =
-      "variant" in record
+      Object.hasOwn(record, "variant")
         ? this.#validator.text(record.variant, `${path}.variant`)
         : undefined;
 

@@ -176,6 +176,8 @@ test("runs the complete Core scenario matrix through public values", async () =>
   );
   const report = await runner.run();
 
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.scenarios));
   assert.equal(report.schemaVersion, 5);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
@@ -269,6 +271,8 @@ test("runs the complete Import scenario matrix through public operations", async
   );
   const report = await runner.run();
 
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.scenarios));
   assert.equal(report.schemaVersion, 2);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
@@ -334,6 +338,8 @@ test("runs the complete SVG scenario matrix through public values", async () => 
   );
   const report = await runner.run();
 
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.scenarios));
   assert.equal(report.schemaVersion, 2);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
@@ -521,6 +527,11 @@ test("runs the complete CLI scenario matrix through explicit runners", async () 
   );
   const report = await runner.run();
 
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.scenarios));
+  assert.ok(Object.isFrozen(report.asyncScenarios));
+  assert.ok(Object.isFrozen(report.evaluationScenarios));
+  assert.ok(Object.isFrozen(report.coldScenarios));
   assert.equal(report.schemaVersion, 4);
   assert.deepEqual(
     synchronous.map((scenario) => scenario.name),
@@ -749,6 +760,8 @@ test("runs the complete Icons distribution scenario matrix", async () => {
   );
   const report = await runner.run();
 
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.imports));
   assert.equal(report.schemaVersion, 1);
   assert.equal(report.package, "@luscious-garden/aster-icons");
   assert.deepEqual(
@@ -780,6 +793,7 @@ test("inspects an isolated emitted-package fixture deterministically", async () 
       JSON.stringify({
         exports: { "./zeta": "./dist/zeta.js", ".": "./dist/index.js" },
         sideEffects: false,
+        dependencies: { zeta: "^1.0.0", alpha: "^2.0.0" },
       }),
       "utf8",
     );
@@ -791,7 +805,9 @@ test("inspects an isolated emitted-package fixture deterministically", async () 
     );
     await writeFile(resolve(root, "dist", "ignored.map"), "{}\n", "utf8");
 
-    assert.deepEqual(await inspector.inspect(root), {
+    const report = await inspector.inspect(root);
+
+    assert.deepEqual(report, {
       files: 3,
       bytes:
         Buffer.byteLength(moduleSource)
@@ -808,8 +824,12 @@ test("inspects an isolated emitted-package fixture deterministically", async () 
       types: undefined,
       bin: undefined,
       engines: undefined,
-      dependencies: undefined,
+      dependencies: { alpha: "^2.0.0", zeta: "^1.0.0" },
     });
+    assert.ok(Object.isFrozen(report));
+    assert.ok(Object.isFrozen(report.exports));
+    assert.ok(Object.isFrozen(report.dependencies));
+    assert.deepEqual(Object.keys(report.dependencies), ["alpha", "zeta"]);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

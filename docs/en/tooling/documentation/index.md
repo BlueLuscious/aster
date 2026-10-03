@@ -31,7 +31,9 @@ feature-owned policies. `DocumentationVerifier` preserves this stable execution 
    once and in deterministic order.
 4. `CanonicalDocumentInspector` applies local-reference and local-link policies to each document.
 
-`DocumentationIssueCollector` accumulates every policy finding in inspection order. Filesystem
+`DocumentationIssueCollector` accumulates every policy finding in inspection order and returns an
+immutable snapshot. The completed verification report and its issue list are frozen; acquisition
+and policy collaborators remain borrowed. Filesystem
 failures, malformed URI encoding, or unreadable authorities remain operational failures rather
 than being converted into documentation findings.
 
@@ -40,7 +42,9 @@ than being converted into documentation findings.
 `CanonicalDocumentReader` produces internal `TCanonicalDocument` values containing an absolute
 path and exact UTF-8 content. `TDocumentationContext` combines the explicit workspace root,
 canonical documentation root, and ordered acquired documents. Policies consume that context and
-never derive authority from the ambient current directory.
+never derive authority from the ambient current directory. The verifier snapshots document
+records before asynchronous policies run, so a custom reader cannot change the active inspection
+set or its reported count after acquisition.
 
 Filesystem acquisition, path handling, directory discovery, and deterministic traversal come from
 [Shared Tooling](../shared/index.md). Documentation policy does not leak into that shared boundary.

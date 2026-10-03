@@ -31,6 +31,7 @@ export class IconPresentationPolicyNormaliser {
       record,
       ["defaults", "overrides", "defaultSize", "minimumSize"],
       path,
+      ["defaults", "overrides"],
     );
 
     const defaults = this.#presentationNormaliser.normalise(
@@ -64,11 +65,11 @@ export class IconPresentationPolicyNormaliser {
       ),
     );
     const defaultSize =
-      "defaultSize" in record
+      Object.hasOwn(record, "defaultSize")
         ? this.#validator.positiveNumber(record.defaultSize, `${path}.defaultSize`)
         : undefined;
     const minimumSize =
-      "minimumSize" in record
+      Object.hasOwn(record, "minimumSize")
         ? this.#validator.positiveNumber(record.minimumSize, `${path}.minimumSize`)
         : undefined;
 

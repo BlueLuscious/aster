@@ -39,7 +39,7 @@ export class ImportBaselineRunner {
 
   /**
    * @description Runs representative inspection, definition, emission and adoption comparisons.
-   * @returns {Promise<object>} Immutable serialisable Import baseline report.
+   * @returns {Promise<object>} Frozen Import report envelope retaining injected evidence by reference.
    */
   async run() {
     const scenarios = [

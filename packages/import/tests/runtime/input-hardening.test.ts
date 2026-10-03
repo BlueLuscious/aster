@@ -149,6 +149,131 @@ test("rejects accessor-owned fields across public operations without executing t
   assert.equal(reads, 0);
 });
 
+test("rejects malformed draft metrics and provenance before definition construction", () => {
+  const inspected = IconImport.inspect(source());
+  assert.equal(inspected.successful, true);
+
+  if (!inspected.successful) {
+    throw new Error("Expected an accepted source draft.");
+  }
+
+  const draft = inspected.value;
+  const cases = [
+    {
+      draft: { ...draft, metrics: { ...draft.metrics, primitiveCount: 0 } },
+      path: "request.draft.metrics.primitiveCount",
+    },
+    {
+      draft: { ...draft, metrics: { ...draft.metrics, primitiveCount: -1 } },
+      path: "request.draft.metrics.primitiveCount",
+    },
+    {
+      draft: { ...draft, metrics: { ...draft.metrics, pathCommandCount: 0.5 } },
+      path: "request.draft.metrics.pathCommandCount",
+    },
+    {
+      draft: { ...draft, metrics: { ...draft.metrics, unexpected: true } },
+      path: "request.draft.metrics.unexpected",
+    },
+    {
+      draft: {
+        ...draft,
+        metrics: { primitiveCount: draft.metrics.primitiveCount },
+      },
+      path: "request.draft.metrics.pathCommandCount",
+    },
+    {
+      draft: {
+        ...draft,
+        provenance: { ...draft.provenance, format: "unknown" },
+      },
+      path: "request.draft.provenance.format",
+    },
+    {
+      draft: {
+        ...draft,
+        provenance: { ...draft.provenance, sourceId: "../outside.svg" },
+      },
+      path: "request.draft.provenance.sourceId",
+    },
+    {
+      draft: { ...draft, provenance: { format: iconImportFormats.svg } },
+      path: "request.draft.provenance.sourceId",
+    },
+  ];
+
+  for (const item of cases) {
+    assert.throws(
+      () => IconImport.define({ draft: item.draft, metadata } as never),
+      (error: unknown) =>
+        error instanceof IconImportError && error.path === item.path,
+      item.path,
+    );
+  }
+});
+
+test("rejects draft metrics inconsistent with canonical geometry", () => {
+  const inspected = IconImport.inspect(source("inconsistent-metrics"));
+  assert.equal(inspected.successful, true);
+
+  if (!inspected.successful) {
+    throw new Error("Expected an accepted source draft.");
+  }
+
+  const draft = inspected.value;
+  const cases = [
+    {
+      metrics: { ...draft.metrics, primitiveCount: 999 },
+      path: "request.draft.metrics.primitiveCount",
+    },
+    {
+      metrics: { ...draft.metrics, pathCommandCount: 0 },
+      path: "request.draft.metrics.pathCommandCount",
+    },
+    {
+      metrics: { ...draft.metrics, pathCommandCount: 999 },
+      path: "request.draft.metrics.pathCommandCount",
+    },
+  ];
+
+  for (const item of cases) {
+    assert.throws(
+      () => IconImport.define({
+        draft: { ...draft, metrics: item.metrics },
+        metadata,
+      }),
+      (error: unknown) =>
+        error instanceof IconImportError && error.path === item.path,
+      item.path,
+    );
+  }
+});
+
+test("accepts matching metrics from a separately supplied mixed-geometry draft", () => {
+  const inspected = IconImport.inspect({
+    ...source("matching-metrics"),
+    content: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="2"/><path d="M1 1 2 2 h3 v4 Z"/></svg>',
+  });
+  assert.equal(inspected.successful, true);
+
+  if (!inspected.successful) {
+    throw new Error("Expected an accepted mixed-geometry draft.");
+  }
+
+  const draft = structuredClone(inspected.value);
+  assert.deepEqual(draft.metrics, { primitiveCount: 2, pathCommandCount: 5 });
+
+  const defined = IconImport.define({ draft, metadata });
+  assert.equal(defined.successful, true);
+
+  if (!defined.successful) {
+    throw new Error("Expected a definition from matching draft metrics.");
+  }
+
+  assert.equal(defined.value.nodes.length, 2);
+  assert.equal(defined.value.nodes[1]?.kind, "path");
+});
+
 test("preserves caller-controlled Proxy failures at every public boundary", () => {
   const operations = [
     (value: never) => IconImport.inspect(value),

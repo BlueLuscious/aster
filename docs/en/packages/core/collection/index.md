@@ -54,6 +54,8 @@ prototypes, and invalid aliases. Valid own aliases such as `constructor` and `to
 inherited properties; dynamic dictionary consumers must check `Object.hasOwn()` before treating a
 property as authored membership. Accessor descriptors are rejected without invoking their getters;
 proxy execution remains outside the [Core trust boundary](../workflow.md#security-and-trust-boundary).
+Accepted aliases are written as own data properties, so inherited setters cannot alter the
+canonical dictionary during construction.
 
 ## Runtime
 

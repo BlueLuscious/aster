@@ -1,5 +1,6 @@
 import { asterCommandPayloadKinds } from "../../command/constants/aster-command-payload-kinds.constant.js";
 import { asterCommandNames } from "../../command/constants/aster-command-names.constant.js";
+import type { AsterCommandInvocationType } from "../../command/types/index.js";
 import { AsterCatalogue, AsterCommands } from "../../index.js";
 import { ReviewDocumentSerialiser } from "../../review/runtime/review-document.serialiser.js";
 import { reviewOutputSchema } from "../output/constants/review-output-schema.constant.js";
@@ -97,6 +98,7 @@ export class NodeShell {
    * @description Executes one supplied argv sequence without directly mutating process state.
    * @param argv - Tokens following the executable and script paths.
    * @returns Complete stream effects and exit status for the entrypoint to commit.
+   * @remarks The command boundary validates raw export tokens before executing a request.
    */
   async execute(argv: readonly string[]): Promise<TShellExecution> {
     const json = argv.includes(commandLineTokens.options.json);
@@ -107,7 +109,10 @@ export class NodeShell {
 
     try {
       const parsed = this.#parser.parse(argv);
-      const result = await AsterCommands.execute(parsed.invocation, this.#context);
+      const result = await AsterCommands.execute(
+        parsed.invocation as AsterCommandInvocationType,
+        this.#context,
+      );
 
       if (
         !parsed.json

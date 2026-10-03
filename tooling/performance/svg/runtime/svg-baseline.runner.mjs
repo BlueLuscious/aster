@@ -40,7 +40,7 @@ export class SvgBaselineRunner {
 
   /**
    * @description Runs representative public SVG rendering comparisons.
-   * @returns {Promise<object>} Immutable serialisable SVG baseline report.
+   * @returns {Promise<object>} Frozen SVG report envelope retaining injected evidence by reference.
    */
   async run() {
     /** @type {import("../../shared/contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario[]} */

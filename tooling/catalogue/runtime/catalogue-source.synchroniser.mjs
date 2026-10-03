@@ -101,7 +101,20 @@ export class CatalogueSourceSynchroniser {
     this.#paths = paths;
     this.#relationships = relationships;
     this.#files = files;
-    this.#families = Object.freeze([...families]);
+    this.#families = Object.freeze(
+      families.map((family) =>
+        Object.freeze({
+          kind: family.kind,
+          sourceDirectory: family.sourceDirectory,
+          sourceSuffix: family.sourceSuffix,
+          symbolSuffix: family.symbolSuffix,
+          definitionFactory: family.definitionFactory,
+          definitionModule: family.definitionModule,
+          excludedDirectories: Object.freeze([...family.excludedDirectories]),
+          facadeDirectory: family.facadeDirectory,
+        }),
+      ),
+    );
     this.#facadeRoot = facadeRoot;
   }
 

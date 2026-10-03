@@ -85,7 +85,7 @@ export class CliBaselineRunner {
 
   /**
    * @description Runs representative CLI attribution and distribution comparisons.
-   * @returns {Promise<object>} Immutable serialisable CLI baseline report.
+   * @returns {Promise<object>} Frozen CLI report envelope retaining injected evidence by reference.
    */
   async run() {
     const presentationResult = await this.#fixtures.commands.execute(

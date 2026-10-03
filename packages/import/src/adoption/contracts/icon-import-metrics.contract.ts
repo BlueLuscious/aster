@@ -3,12 +3,12 @@
  */
 export interface IconImportMetrics {
   /**
-   * @description Number of accepted portable geometry primitives.
+   * @description Number of accepted primitives, equal to the canonical node count.
    */
   readonly primitiveCount: number;
 
   /**
-   * @description Number of portable path operations produced from accepted source.
+   * @description Number of portable path operations, equal to the canonical path command count.
    */
   readonly pathCommandCount: number;
 }

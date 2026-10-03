@@ -35,7 +35,7 @@ export class IconsBaselineRunner {
 
   /**
    * @description Runs the current Icons public import and emitted-distribution comparison.
-   * @returns {Promise<object>} Immutable serialisable Icons baseline report.
+   * @returns {Promise<object>} Frozen Icons report envelope retaining injected evidence by reference.
    */
   async run() {
     const imports = Object.values(iconsBaseline.scenarios).map((scenario) =>

@@ -36,6 +36,15 @@ const source = {
 
 const api: IconImportApi = IconImport;
 const inspected: DiagnosticResultType<IconImportDraft> = api.inspect(source);
+
+if (inspected.successful) {
+  const acceptedDraft: IconImportDraft = inspected.value;
+  void acceptedDraft;
+} else {
+  // @ts-expect-error Failed inspection has no draft value.
+  void inspected.value;
+}
+
 const outputs: readonly [
   IconAdoptionOutput?,
   IconAdoptionBatchOutput?,
