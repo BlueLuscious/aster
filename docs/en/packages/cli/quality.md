@@ -125,7 +125,7 @@ repository workflows. It currently demonstrates:
   show;
 - isolated exact icon and collection resolution with no cross-invocation cache, redundant member
   loader calls, partial state, or native provider failure leakage;
-- eight evaluated Icons modules for exact built-in icon Export and Review rather than complete
+- nine evaluated Icons modules for exact built-in icon Export and Review rather than complete
   catalogue evaluation;
 - complete icon and collection export planning without partial artefacts;
 - deterministic self-contained review HTML, semantic navigation, offline assets, fixed visual

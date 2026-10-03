@@ -32,6 +32,9 @@ Export. This preserves provider filtering, unavailable-provider, not-found, ambi
 membership, and canonical ordering semantics without a review-specific lookup implementation.
 Selection accepts metadata before invoking one exact icon or collection loader, and no plan is
 constructed until the complete definition agrees with that discovery evidence.
+Each icon's markup comes directly from the public renderer, including its fixed root marker.
+Review does not infer or add an SVG marker; [SVG Render Result](../../svg/render/index.md) owns
+the output contract.
 
 ```text
 structured review invocation

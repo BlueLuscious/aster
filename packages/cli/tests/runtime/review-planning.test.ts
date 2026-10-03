@@ -162,6 +162,10 @@ test("plans immutable technical evidence for one icon", async () => {
         [representativeCollection.identity],
       );
       assert.match(plan.document.icon.markup, /^<svg /u);
+      assert.match(
+        plan.document.icon.markup,
+        / data-rendered-by="Aster" aria-hidden="true"/u,
+      );
       assert.ok(Object.isFrozen(plan.document.icon));
       assert.ok(Object.isFrozen(plan.document.icon.identity));
       assert.ok(Object.isFrozen(plan.document.icon.metadata));

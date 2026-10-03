@@ -651,6 +651,9 @@ test("returns the same complete export through standalone and programmatic hosts
     result.payload.plan.artefacts.map((artefact) => artefact.path),
     expectedCollectionPaths,
   );
+  assert.ok(result.payload.plan.artefacts.every((artefact) =>
+    artefact.content.match(/data-rendered-by="Aster"/gu)?.length === 1
+  ));
 });
 
 test("returns and publishes a complete review from the clean consumer", async () => {
@@ -707,6 +710,9 @@ test("returns and publishes a complete review from the clean consumer", async ()
   assert.doesNotMatch(document, /<script|https?:\/\/(?!www\.w3\.org\/2000\/svg)/u);
 
   assert.equal(plan.document.icons.length, expectedCollectionPaths.length);
+  assert.ok(plan.document.icons.every((icon) =>
+    icon.markup.match(/data-rendered-by="Aster"/gu)?.length === 1
+  ));
 
   for (const path of expectedCollectionPaths) {
     assert.ok(document.includes(path.slice(0, -4)));

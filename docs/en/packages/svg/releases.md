@@ -1,5 +1,14 @@
 # SVG Release Notes
 
+## Unreleased
+
+**Breaking output change:** `Svg.render(...)` now includes the fixed
+`data-rendered-by="Aster"` attribute on every successful root `<svg>`. The public call signature,
+geometry and accessibility policy are unchanged, but exact SVG bytes differ from the published
+`0.1.0-rc.1`. Consumers comparing markup byte-for-byte must update their fixtures. The next
+candidate version and compatible dependent versions require separate release review; no new
+version is assigned here.
+
 ## 0.1.0-rc.1
 
 Status: **Published on 22 September 2026**. This is the formal release candidate for the first

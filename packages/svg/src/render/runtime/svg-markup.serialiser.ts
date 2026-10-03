@@ -64,6 +64,7 @@ export class SvgMarkupSerialiser {
       ...(context.colour === undefined
         ? []
         : [this.#attribute("color", context.colour)]),
+      this.#attribute("data-rendered-by", "Aster"),
       ...(context.decorative
         ? [
             this.#attribute("aria-hidden", "true"),
