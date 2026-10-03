@@ -59,7 +59,14 @@ test("exposes Amellus through every collection-neutral CLI workflow", async () =
   );
   assert.equal(shown.payload.collection.identity.name, "amellus");
   assert.equal(shown.payload.collection.icons.length, AmellusCollection.members.length);
+  assert.equal(JSON.stringify(shown.payload).includes("data-rendered-by"), false);
   assert.equal(exported.payload.plan.artefacts.length, AmellusCollection.members.length);
   assert.equal(reviewed.payload.plan.document.kind, "collection");
   assert.equal(reviewed.payload.plan.document.icons.length, AmellusCollection.members.length);
+  assert.ok(exported.payload.plan.artefacts.every((artefact) =>
+    artefact.content.match(/data-rendered-by="Aster"/gu)?.length === 1
+  ));
+  assert.ok(reviewed.payload.plan.document.icons.every((icon) =>
+    icon.markup.match(/data-rendered-by="Aster"/gu)?.length === 1
+  ));
 });

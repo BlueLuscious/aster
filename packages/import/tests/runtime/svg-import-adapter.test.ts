@@ -21,6 +21,34 @@ function inspect(fixture: string) {
   return IconImport.inspect(source);
 }
 
+test("rejects renderer and unrelated data attributes outside the import subset", () => {
+  const inspectSource = (content: string) => IconImport.inspect({
+    format: iconImportFormats.svg,
+    sourceId: "inline/renderer-marker.svg",
+    identity: { namespace: "aster", name: "marker-evidence" },
+    content,
+  });
+  const source = (extra = "") =>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"${extra}><line x1="0" y1="0" x2="24" y2="24"/></svg>`;
+
+  assert.equal(inspectSource(source()).successful, true);
+
+  for (const name of ["data-rendered-by", "data-example"]) {
+    const content = source(` ${name}="Aster"`);
+    const result = inspectSource(content);
+
+    assert.equal(result.successful, false, name);
+    assert.deepEqual(
+      result.diagnostics.map((diagnostic) => diagnostic.code),
+      ["ASTER-TECHNICAL-005"],
+      name,
+    );
+    const span = result.diagnostics[0]?.span;
+    assert.ok(span);
+    assert.equal(content.slice(span.start.offset, span.end.offset), name);
+  }
+});
+
 test("rejects unsafe XML and unsupported SVG source families", () => {
   const fixtures = [
     "unsafe/doctype.svg",
