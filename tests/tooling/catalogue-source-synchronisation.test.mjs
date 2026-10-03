@@ -13,7 +13,10 @@ import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 
 import { NodeCatalogueSourceFileSystem } from "../../tooling/catalogue/runtime/node-catalogue-source-file-system.mjs";
+import { catalogueSourceGeneration } from "../../tooling/catalogue/constants/catalogue-source-generation.constant.mjs";
+import { CatalogueSourceSynchroniser } from "../../tooling/catalogue/runtime/catalogue-source.synchroniser.mjs";
 import { synchroniseIconsCatalogue } from "../../tooling/catalogue/synchronise-icons-catalogue.mjs";
+import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
 
 const generatedOutputPaths = Object.freeze({
   manifest: "src/generated/manifest/index.ts",
@@ -27,6 +30,51 @@ const generatedOutputPaths = Object.freeze({
 const completeGeneratedOutputPaths = Object.freeze(
   Object.values(generatedOutputPaths),
 );
+
+test("isolates injected source-family configuration before synchronisation", async () => {
+  const root = resolve("fixture");
+  const family = {
+    ...catalogueSourceGeneration.families[0],
+    excludedDirectories: ["original"],
+  };
+  const families = [family];
+  const inspected = [];
+  const output = (relativePath) => Object.freeze({
+    path: resolve(root, relativePath),
+    relativePath,
+    content: "",
+  });
+  const synchroniser = new CatalogueSourceSynchroniser(
+    { async exists() { return false; } },
+    {
+      reset() {},
+      async inspect(_packageRoot, candidate) {
+        inspected.push(candidate);
+        return Object.freeze([]);
+      },
+    },
+    {},
+    { plan() { return Object.freeze([]); } },
+    { plan() { return output("manifest"); } },
+    { plan() { return output("dynamic"); } },
+    new RepositoryPathResolver(),
+    { validate() {} },
+    { async collect() { return Object.freeze([]); } },
+    families,
+    catalogueSourceGeneration.facadeRoot,
+  );
+
+  families.length = 0;
+  family.sourceDirectory = "changed";
+  family.excludedDirectories.push("changed");
+  await synchroniser.synchronise(root, true);
+
+  assert.equal(inspected.length, 1);
+  assert.equal(inspected[0].sourceDirectory, "src/glyphs");
+  assert.deepEqual(inspected[0].excludedDirectories, ["original"]);
+  assert.ok(Object.isFrozen(inspected[0]));
+  assert.ok(Object.isFrozen(inspected[0].excludedDirectories));
+});
 
 function pascalCase(slug) {
   return slug

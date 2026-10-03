@@ -147,6 +147,9 @@ cannot drift independently. The
 synchroniser builds the complete immutable inspection set before asking the serialiser for any
 output, so source failures cannot partially replace generated files. Static document and value
 caches are scoped to one complete synchronisation and cleared before the next inspection.
+The synchroniser copies each injected source-family descriptor and its excluded-directory list at
+construction; later changes to the caller's configuration cannot redirect discovery. Filesystem,
+inspector and planner capabilities remain borrowed collaborators.
 
 ## Internal contracts
 

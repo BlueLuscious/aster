@@ -4,7 +4,9 @@ import test from "node:test";
 import { ArchitectureIssueCollector } from "../../tooling/architecture/runtime/architecture-issue.collector.mjs";
 import { ArchitectureVerifier } from "../../tooling/architecture/runtime/architecture-verifier.mjs";
 import { ModuleSpecifierExtractor } from "../../tooling/architecture/runtime/module-specifier.extractor.mjs";
+import { PackageArchitectureInspector } from "../../tooling/architecture/runtime/package-architecture.inspector.mjs";
 import { WorkspaceDependencyGraph } from "../../tooling/architecture/runtime/workspace-dependency.graph.mjs";
+import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
 
 test("extracts static module specifiers in source order", () => {
   const extractor = new ModuleSpecifierExtractor();
@@ -60,4 +62,30 @@ test("coordinates injected inspectors against one explicit root", async () => {
     "second issue",
   ]);
   assert.deepEqual(observedRoots, ["explicit-workspace", "explicit-workspace"]);
+});
+
+test("isolates the package policy registry from later map mutations", async () => {
+  const inspected = [];
+  const policies = new Map([
+    ["@luscious-garden/aster-test", {
+      async inspect() {
+        inspected.push("original");
+      },
+    }],
+  ]);
+  const inspector = new PackageArchitectureInspector(
+    { async exists() { return true; } },
+    { async read() { return { name: "@luscious-garden/aster-test", type: "module" }; } },
+    { async read() { return ["test"]; } },
+    { read() { return {}; } },
+    { async inspect() {} },
+    policies,
+    new RepositoryPathResolver(),
+    () => new WorkspaceDependencyGraph(),
+  );
+
+  policies.clear();
+  await inspector.inspect("workspace", new ArchitectureIssueCollector());
+
+  assert.deepEqual(inspected, ["original"]);
 });
