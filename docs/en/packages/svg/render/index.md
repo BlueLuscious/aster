@@ -43,8 +43,8 @@ The root attribute order is:
 The fixed data attribute identifies Aster as the renderer, not the author of the artwork. It
 appears on every successfully rendered root, regardless of the icon's identity, collection or
 attribution metadata. The renderer does not currently emit `data-attribution`, a licence
-attribute or an inferred artwork author. This marker is informational: a consumer can remove it,
-and it does not replace the icon's licence or attribution obligations.
+attribute or an inferred artwork author. This marker is informational: a consumer can remove it
+and an optimiser may strip it. It does not replace the icon's licence or attribution obligations.
 
 Decorative accessibility attributes are ordered as `aria-hidden`, then `focusable`. Semantic
 attributes are ordered as `role`, then `aria-label`. An optional `title` is the first child and

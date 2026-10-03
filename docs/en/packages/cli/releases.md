@@ -14,6 +14,12 @@ reviewed together before publication. The published `0.1.0-rc.1` remains on the 
 contract. See [Catalogue](catalogue/index.md) and [Compatibility](compatibility.md) for current
 provider guarantees.
 
+**Breaking output change:** Export SVG artefacts and Review SVG evidence inherit the fixed
+`data-rendered-by="Aster"` root attribute from the public SVG renderer. Exact SVG and generated
+review HTML bytes therefore differ from `0.1.0-rc.1`; consumers comparing complete outputs must
+update their fixtures. CLI does not add its own marker or change command grammar. A compatible
+SVG dependency version must be reviewed before publishing these CLI outputs.
+
 ## 0.1.0-rc.1
 
 Status: **Published on 22 September 2026**. This is the formal release candidate for the first

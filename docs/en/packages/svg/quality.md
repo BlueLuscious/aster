@@ -56,8 +56,8 @@ direction owns the other.
 ## Distribution snapshot
 
 The package emits native ES2022 ESM with one public root export and `sideEffects: false`.
-The unminified TypeScript distribution contains 22 JavaScript modules totalling 32,335 bytes and
-22 declaration files totalling 9,232 bytes. Its sole production dependency is the public
+The current unminified TypeScript distribution contains 22 JavaScript modules totalling 32,566
+bytes and 22 declaration files totalling 9,388 bytes. Its sole production dependency is the public
 `@luscious-garden/aster-core` package root. These values are inspection evidence, not fixed compatibility or
 performance promises.
 
@@ -71,7 +71,7 @@ and recognised reverse dependency restrictions.
 
 Existing runtime evidence covers:
 
-- exact representative standalone markup and stable attribute order;
+- exact representative standalone markup, the fixed renderer marker and stable attribute order;
 - deterministic structured-path serialisation without source-parser duplication or geometry repair;
 - every portable geometry kind and complete presentation output order;
 - authorised presentation precedence and hexadecimal paint canonicalisation;
