@@ -24,22 +24,23 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
 | 1 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
-| 2 | `P2` | Report installed package versions through the CLI. | Stable independently versioned packages make local compatibility diagnosis useful. |
-| 3 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 4 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 5 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 6 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 7 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 8 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 9 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 10 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 11 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 12 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 13 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
-| 14 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
-| 15 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 16 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 17 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 2 | `P2` | Report installed package versions through the CLI. | The maintainer accepted implementation before stable `0.1.0`; installed-version reporting needs no compatibility diagnosis. |
+| 3 | `P2` | Consider published release history through the CLI. | The first stable release exists and published package versions can be mapped reliably to release notes. |
+| 4 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 5 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 6 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 7 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 8 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 9 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 11 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 12 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 13 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 14 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
+| 15 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
+| 16 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 17 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 18 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
 
 ## Reviewed version proposals
 
@@ -82,9 +83,12 @@ The implemented `aster version` command reports only the installed
 `@luscious-garden/aster-cli` package version supplied by its executable host. It deliberately does
 not imply one shared version for the independently versioned Core, Icons, SVG, and CLI packages.
 
-After the stable package baseline exists, consider extending the exact shell grammar with:
+The maintainer accepted implementing this capability before stable `0.1.0`. The proposed exact
+shell grammar is:
 
 ```sh
+aster version core
+aster version icons --json
 aster version --all
 aster version --all --json
 ```
@@ -92,8 +96,32 @@ aster version --all --json
 The extended command should report the public Aster package versions actually resolved by the
 installed CLI without loading catalogue providers or querying the network. Human and JSON output
 must distinguish package identities explicitly, retain plain `aster version` as the CLI version,
-and omit the private Import package from public installation claims. Missing or incompatible
-packages require deterministic diagnostics rather than an invented ecosystem version.
+accept only `core`, `icons`, `svg` and `cli` as individual selectors, and omit the private Import
+package from public installation claims. Individual selection reads only the chosen package;
+`--all` requires all four. Neither form invents an ecosystem version or reports partial results
+when required metadata cannot be acquired after startup.
+Broken installations that prevent the CLI from starting remain Node or package-manager failures;
+dependency-range compatibility checking is not part of this command.
+
+## Published release history
+
+Importance: **P2 - Conditional**
+
+After the first stable release, consider an explicit remote command such as
+`aster releases [core|icons|svg|cli]` for published package versions and their release details.
+It must not change the meaning or offline behaviour of local `aster version` requests.
+
+The npm registry is the authority for which versions of each package were published. GitHub
+Releases may enrich those records with reviewed notes, publication context and approved assets,
+but one repository release can contain several independently versioned packages, and the initial
+`0.1.0-rc.1` publication has no companion GitHub Release. Do not infer package membership or
+version mapping by scraping free-form release text. Accept a documented mapping before combining
+the two sources or claiming a complete per-package history.
+
+Any remote workflow needs explicit network, registry, pagination, timeout, offline and failure
+semantics. It must not silently update installed packages or publish releases. Until a real
+consumer justifies that host boundary, use [npm's package metadata query](https://docs.npmjs.com/cli/v11/commands/npm-view/)
+and the [GitHub Releases API](https://docs.github.com/en/rest/releases/releases) directly.
 
 ## Catalogue and command expansion
 
