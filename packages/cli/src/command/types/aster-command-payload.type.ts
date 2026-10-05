@@ -5,6 +5,7 @@ import type {
 } from "../../catalogue/contracts/index.js";
 import type { asterCommandPayloadKinds } from "../constants/aster-command-payload-kinds.constant.js";
 import type { AsterCommandDescriptor } from "../contracts/index.js";
+import type { AsterInstalledPackageVersion } from "../contracts/aster-installed-package-version.contract.js";
 import type { AsterExportPlan } from "../../export/contracts/index.js";
 import type { AsterReviewPlan } from "../../review/contracts/index.js";
 
@@ -126,4 +127,11 @@ export type AsterCommandPayloadType =
        * @description Product version supplied by the execution host.
        */
       productVersion: string;
+    }>
+  | Readonly<{
+      /** @description Discriminator for explicit installed public package evidence. */
+      kind: typeof asterCommandPayloadKinds.packageVersions;
+
+      /** @description Selected package versions in canonical public order. */
+      packages: readonly AsterInstalledPackageVersion[];
     }>;

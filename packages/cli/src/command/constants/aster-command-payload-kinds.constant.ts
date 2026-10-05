@@ -22,4 +22,6 @@ export const asterCommandPayloadKinds = Object.freeze({
   help: "help",
   /** @description Payload containing explicit product metadata. */
   version: "version",
+  /** @description Payload containing installed public package versions. */
+  packageVersions: "package-versions",
 } as const);

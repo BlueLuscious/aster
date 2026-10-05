@@ -1,8 +1,9 @@
 import { readFile } from "node:fs/promises";
 import { findPackageJSON } from "node:module";
 import { installedAsterPackages } from "../constants/installed-aster-packages.constant.js";
-import type { IInstalledPackageVersion } from "../contracts/internal/installed-package-version.contract.js";
-import type { TInstalledPackageSelector } from "../types/internal/installed-package-selector.type.js";
+import { asterVersionScopes } from "../../../command/constants/aster-version-scopes.constant.js";
+import type { AsterInstalledPackageVersion } from "../../../command/contracts/aster-installed-package-version.contract.js";
+import type { AsterVersionScopeType } from "../../../command/types/aster-version-scope.type.js";
 
 /**
  * @description Reads public package versions resolved from the installed CLI's module context.
@@ -27,9 +28,9 @@ export class InstalledPackageVersionReader {
    * @returns Frozen manifest evidence for the requested package set.
    */
   async read(
-    selection: TInstalledPackageSelector | "all",
-  ): Promise<readonly IInstalledPackageVersion[]> {
-    const packages = selection === "all"
+    selection: AsterVersionScopeType,
+  ): Promise<readonly AsterInstalledPackageVersion[]> {
+    const packages = selection === asterVersionScopes.all
       ? installedAsterPackages
       : installedAsterPackages.filter(({ selector }) => selector === selection);
 
@@ -49,7 +50,7 @@ export class InstalledPackageVersionReader {
    * @param expectedName - Exact public identity of the requested package.
    * @returns Frozen package identity and installed version.
    */
-  async #readManifest(expectedName: string): Promise<IInstalledPackageVersion> {
+  async #readManifest(expectedName: string): Promise<AsterInstalledPackageVersion> {
     const path = findPackageJSON(expectedName, this.#base);
 
     if (path === undefined) {

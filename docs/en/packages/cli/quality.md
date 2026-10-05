@@ -82,8 +82,8 @@ read process state, access the filesystem, or write output.
 
 Import, DOM, browser, framework, network, package-manager, Flora, and repository-tooling imports are
 absent from production source. Node imports occur only in the private shell entrypoint, output-path
-resolver, and filesystem adapter. The host-neutral TypeScript project excludes the complete shell
-tree and admits neither Node nor DOM ambient types.
+resolver, filesystem adapter, and installed-version reader. The host-neutral TypeScript project
+excludes the complete shell tree and admits neither Node nor DOM ambient types.
 
 `@luscious-garden/aster-icons` remains a regular dependency because the package publishes `AsterCatalogue` and the
 standalone executable composes it by default. Discovery evaluates only its manifest modules;
@@ -98,6 +98,7 @@ command package requires an independent Flora or host consumer rather than depen
 | Root import | ESM root | Six runtime exports | None |
 | `help` | Structured invocation or argv | Frozen descriptor payload | Human or JSON output |
 | `version` | Structured invocation and product metadata | Frozen version payload | Human or JSON output |
+| `version` with a package scope | Explicit host-supplied installed package evidence | Frozen package-versions payload | One package or the ordered public family, human or JSON |
 | `list`, `search`, `show` | Explicit catalogue providers | Frozen discovery payload | Human or JSON output |
 | Icon export | Exact icon selection and render options | One immutable SVG artefact plan | Human, JSON, raw SVG, or output-root publication |
 | Collection export | Exact collection selection and complete membership resolution | Canonically ordered immutable SVG artefact plan | Human, JSON, or output-root publication |

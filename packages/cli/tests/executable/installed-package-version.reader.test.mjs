@@ -6,6 +6,7 @@ import test from "node:test";
 import { pathToFileURL } from "node:url";
 import { installedAsterPackages } from "../../dist/shell/version/constants/installed-aster-packages.constant.js";
 import { InstalledPackageVersionReader } from "../../dist/shell/version/runtime/installed-package-version.reader.js";
+import { NodeShell } from "../../dist/shell/runtime/node-shell.js";
 
 const versions = Object.freeze({
   core: "0.2.0",
@@ -140,4 +141,91 @@ test("rejects a selector outside the closed public package family", async (conte
   const reader = new InstalledPackageVersionReader(fixture.base);
 
   await assert.rejects(reader.read("import"), TypeError);
+});
+
+test("reports named and complete versions from the installed CLI context", async (context) => {
+  const fixture = await createFixture();
+  context.after(() => removeFixture(fixture.root));
+  const shell = new NodeShell("Aster", versions.cli, process.cwd(), fixture.base);
+
+  const named = await shell.execute(["version", "icons"]);
+  const namedJson = await shell.execute(["version", "svg", "--json"]);
+  const all = await shell.execute(["version", "--all"]);
+  const allJson = await shell.execute(["version", "--all", "--json"]);
+
+  assert.deepEqual(named, {
+    stdout: `@luscious-garden/aster-icons ${versions.icons}\n`,
+    stderr: "",
+    exitCode: 0,
+  });
+  assert.deepEqual(JSON.parse(namedJson.stdout), {
+    ok: true,
+    command: "version",
+    payload: {
+      kind: "package-versions",
+      packages: [{ name: "@luscious-garden/aster-svg", version: versions.svg }],
+    },
+  });
+  assert.equal(namedJson.stderr, "");
+  assert.equal(namedJson.exitCode, 0);
+  assert.equal(all.stdout, [
+    "Installed Aster packages:",
+    `  @luscious-garden/aster-core ${versions.core}`,
+    `  @luscious-garden/aster-icons ${versions.icons}`,
+    `  @luscious-garden/aster-svg ${versions.svg}`,
+    `  @luscious-garden/aster-cli ${versions.cli}`,
+    "",
+  ].join("\n"));
+  assert.equal(all.stderr, "");
+  assert.equal(all.exitCode, 0);
+  assert.deepEqual(JSON.parse(allJson.stdout).payload.packages.map((entry) => entry.version), [
+    versions.core,
+    versions.icons,
+    versions.svg,
+    versions.cli,
+  ]);
+  assert.equal(allJson.stderr, "");
+  assert.equal(allJson.exitCode, 0);
+
+  await writeFile(manifestPath(fixture.root, "icons"), "{broken", "utf8");
+  assert.deepEqual(await shell.execute(["version", "core"]), {
+    stdout: `@luscious-garden/aster-core ${versions.core}\n`,
+    stderr: "",
+    exitCode: 0,
+  });
+});
+
+test("plain version does not read broken package metadata", async (context) => {
+  const fixture = await createFixture();
+  context.after(() => removeFixture(fixture.root));
+  const shell = new NodeShell("Aster", versions.cli, process.cwd(), fixture.base);
+
+  for (const { selector } of installedAsterPackages) {
+    await writeFile(manifestPath(fixture.root, selector), "{broken", "utf8");
+  }
+
+  assert.deepEqual(await shell.execute(["version"]), {
+    stdout: `Aster ${versions.cli}\n`,
+    stderr: "",
+    exitCode: 0,
+  });
+  assert.deepEqual(JSON.parse((await shell.execute(["version", "--json"])).stdout), {
+    ok: true,
+    command: "version",
+    payload: { kind: "version", productName: "Aster", productVersion: versions.cli },
+  });
+
+  for (const argv of [["version", "core"], ["version", "--all"]]) {
+    const result = await shell.execute(argv);
+    assert.equal(result.exitCode, 1);
+    assert.equal(result.stdout, "");
+    assert.match(result.stderr, /^\[ASTER-CLI-999\] standalone shell failed unexpectedly\n$/u);
+    assert.doesNotMatch(result.stderr, /aster-cli-version-|package\.json/u);
+  }
+
+  const json = await shell.execute(["version", "icons", "--json"]);
+  assert.equal(json.exitCode, 1);
+  assert.equal(json.stderr, "");
+  assert.equal(JSON.parse(json.stdout).diagnostic.code, "ASTER-CLI-999");
+  assert.doesNotMatch(json.stdout, /aster-cli-version-|package\.json/u);
 });

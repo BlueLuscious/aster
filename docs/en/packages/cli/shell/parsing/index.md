@@ -20,6 +20,11 @@ and ownership-gated replacement intent. `--replace` is a singleton flag and can 
 default or explicit review root. JSON cannot be combined with review publication options.
 `CommandLineError` carries stable parser evidence for shell diagnostic adaptation.
 
+`VersionCommandLineParser` accepts the plain CLI version, one of the public package selectors
+`core`, `icons`, `svg`, or `cli`, or the standalone `--all` option. `--json` may accompany any of
+these forms but is removed before invocation. `HelpCommandLineParser` accepts every registered
+command name, including `review` and `version`, for command-specific help.
+
 No argument defaults to `help`. Unknown commands, duplicate singleton options, repeated `--json`,
 missing option values, and trailing unsupported tokens are rejected before programmatic command
 execution. The accepted grammar is documented by [CLI Shell](../index.md).

@@ -8,7 +8,7 @@ subpath.
 | Class | Responsibility |
 | --- | --- |
 | `CommandInvocationNormaliser` | Dispatches acceptance to explicit command-owned normalisers documented by [Command Invocation](../invocation/index.md). |
-| `CommandContextNormaliser` | Validates explicit providers and product metadata, snapshots discovery and exact-loader capabilities, rejects duplicate identities, and freezes the context container. |
+| `CommandContextNormaliser` | Validates explicit providers, product metadata, and optional installed package-version evidence; snapshots discovery and exact-loader capabilities, rejects duplicate identities, and freezes the context container. |
 | `CommandKernel` | Isolates descriptors, orders definitions, coordinates both normalisers, dispatches explicitly, and sanitises thrown definition failures. |
 | `CommandDiagnosticFactory` | Constructs isolated deeply frozen command diagnostics. |
 | `CommandResultFactory` | Constructs immutable closed success payloads and structured failures. |

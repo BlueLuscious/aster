@@ -32,8 +32,10 @@ aster export icon <identity> [--catalogue <provider>] [render-options] --json
 aster export collection <identity> [--catalogue <provider>] [render-options] --json
 aster review icon <identity> [--catalogue <provider>] [--output <root>] [--replace]
 aster review collection <identity> [--catalogue <provider>] [--output <root>] [--replace]
-aster help [export|review|list|search|show]
+aster help [export|help|list|review|search|show|version]
 aster version
+aster version <core|icons|svg|cli> [--json]
+aster version --all [--json]
 ```
 
 Export render options are `--size`, `--colour`, `--fill`, `--stroke`, `--stroke-width`, and
@@ -51,6 +53,13 @@ Icon export without `--json` or `--output` writes one raw SVG document. JSON mod
 complete host-neutral plan for either subject. Collection export requires JSON or an output root.
 `--json` and `--output` are mutually exclusive shell concerns and never enter
 `AsterCommandInvocationType` together.
+
+Plain `aster version` reports the installed CLI version alone. Named version requests read only
+the selected public package manifest; `--all` reads Core, Icons, SVG, and CLI in that order.
+Both forms report installed versions resolved from the CLI executable, not the caller's working
+directory or the latest versions on a registry. The private Import package is not reported.
+Malformed installed metadata causes one failure without partial output. The
+[Version Metadata](version/index.md) feature owns manifest acquisition.
 
 Review returns a headless technical plan. JSON presents that plan without effects. Human execution
 serialises and publishes static HTML beneath `aster-review` or an explicit `--output` root.
@@ -107,7 +116,7 @@ into the programmatic command API.
 | `CommandLineParser` | Dispatches argv adaptation to explicit command-owned parsers. |
 | `CommandOutputPresenter` | Selects human or JSON presentation, streams, and exit status. |
 | `ShellDiagnosticFactory` | Adapts parser, output-host, and unexpected shell faults into canonical command diagnostics. |
-| `NodeShell` | Executes the host-neutral command before optionally publishing its complete export or review plan. |
+| `NodeShell` | Acquires requested installed versions or executes the host-neutral command before optionally publishing a complete export or review plan. |
 
 The executable entrypoint is the only module that imports `node:process` or uses the CommonJS
 manifest bridge. Node path and output-filesystem imports occur in private [Output](output/index.md);

@@ -117,6 +117,60 @@ test("renders default and selected human help without loading shell state", () =
   assert.doesNotMatch(selected.stdout, /  list:/u);
 });
 
+test("exposes version and review help through the standalone parser", () => {
+  for (const command of ["version", "review"]) {
+    const result = run(["help", command]);
+    assert.equal(result.status, 0);
+    assert.equal(result.stderr, "");
+    assert.match(result.stdout, new RegExp(`^Aster commands:\\n  ${command}:`, "u"));
+  }
+});
+
+test("keeps the executable CLI version distinct from named package queries", () => {
+  const plain = run(["version"]);
+  const plainJson = run(["version", "--json"]);
+  const named = run(["version", "cli"]);
+  const namedJson = run(["version", "cli", "--json"]);
+
+  assert.equal(plain.stdout, `Aster ${packageVersion}\n`);
+  assert.deepEqual(JSON.parse(plainJson.stdout), {
+    ok: true,
+    command: "version",
+    payload: { kind: "version", productName: "Aster", productVersion: packageVersion },
+  });
+  assert.equal(named.stdout, `@luscious-garden/aster-cli ${packageVersion}\n`);
+  assert.deepEqual(JSON.parse(namedJson.stdout).payload, {
+    kind: "package-versions",
+    packages: [{ name: "@luscious-garden/aster-cli", version: packageVersion }],
+  });
+
+  for (const result of [plain, plainJson, named, namedJson]) {
+    assert.equal(result.status, 0);
+    assert.equal(result.stderr, "");
+  }
+});
+
+test("rejects invalid and mixed version selectors as usage failures", () => {
+  for (const argv of [
+    ["version", "import"],
+    ["version", "Core"],
+    ["version", "--all", "core"],
+    ["version", "core", "--all"],
+    ["version", "--all", "--all"],
+    ["version", "--package", "core"],
+  ]) {
+    const result = run(argv);
+    assert.equal(result.status, 2);
+    assert.equal(result.stdout, "");
+    assert.match(result.stderr, /^\[ASTER-CLI-001\]/u);
+  }
+
+  const json = run(["version", "import", "--json"]);
+  assert.equal(json.status, 2);
+  assert.equal(json.stderr, "");
+  assert.equal(JSON.parse(json.stdout).diagnostic.code, "ASTER-CLI-001");
+});
+
 test("renders list, search, show, and version as deterministic human text", () => {
   const listed = run(["list", "catalogues"]);
   const searched = run(["search", representativeIdentity]);
