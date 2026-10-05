@@ -97,9 +97,10 @@ behaviour.
 
 ## Runtime Composition
 
-The shell is divided into [Parsing](parsing/index.md), [Presentation](presentation/index.md), and
-[Output](output/index.md) subfeatures. `NodeShell` coordinates those private boundaries without
-moving their host authority into the programmatic command API.
+The shell is divided into [Parsing](parsing/index.md), [Presentation](presentation/index.md),
+[Output](output/index.md), and private [Version Metadata](version/index.md) subfeatures.
+`NodeShell` coordinates the active command and output boundaries without moving host authority
+into the programmatic command API.
 
 | Class | Responsibility |
 | --- | --- |
@@ -108,11 +109,13 @@ moving their host authority into the programmatic command API.
 | `ShellDiagnosticFactory` | Adapts parser, output-host, and unexpected shell faults into canonical command diagnostics. |
 | `NodeShell` | Executes the host-neutral command before optionally publishing its complete export or review plan. |
 
-The executable entrypoint is the only module that imports `node:process`. Node path and filesystem
-imports occur only in the private [Output](output/index.md) subfeature. The host-neutral compiler excludes the
-complete shell tree. The referenced shell project consumes host-neutral declarations, admits Node
-types, and emits only the private binary modules. Importing `@luscious-garden/aster-cli` resolves only the
-side-effect-free programmatic root and never evaluates the entrypoint.
+The executable entrypoint is the only module that imports `node:process` or uses the CommonJS
+manifest bridge. Node path and output-filesystem imports occur in private [Output](output/index.md);
+the private [Version Metadata](version/index.md) reader owns installed package resolution and
+manifest reads. The host-neutral compiler excludes the complete shell tree. The referenced shell
+project consumes host-neutral declarations, admits Node types, and emits only private binary
+modules. Importing `@luscious-garden/aster-cli` resolves only the side-effect-free programmatic
+root and never evaluates the entrypoint.
 
 Host-neutral command semantics remain authoritative in [CLI Command](../command/index.md),
 [CLI Export](../export/index.md), and [CLI Review](../review/index.md). [CLI Workflow](../workflow.md)
