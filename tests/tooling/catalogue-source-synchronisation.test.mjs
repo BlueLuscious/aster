@@ -53,7 +53,6 @@ test("isolates injected source-family configuration before synchronisation", asy
         return Object.freeze([]);
       },
     },
-    {},
     { plan() { return Object.freeze([]); } },
     { plan() { return output("manifest"); } },
     { plan() { return output("dynamic"); } },

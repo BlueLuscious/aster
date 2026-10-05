@@ -52,8 +52,9 @@ contracts or runtime dependencies.
 ## Shared compiler baseline
 
 `tsconfig.base.json` defines ES2022 ESM, strict typing, exact optional properties, unchecked-index
-protection, native class-field semantics, declaration generation, and no ambient type packages by
-default. Production packages extend that baseline with their own source and output boundaries.
+protection, unused local and parameter rejection, native class-field semantics, declaration
+generation, and no ambient type packages by default. Production packages extend that baseline
+with their own source and output boundaries.
 Tests and repository tooling opt into Node capabilities independently. `tsconfig.tooling.json`
 applies strict `checkJs` analysis to every authored tooling module without emitting distribution
 files. Built package modules loaded by performance probes remain outside that source boundary and

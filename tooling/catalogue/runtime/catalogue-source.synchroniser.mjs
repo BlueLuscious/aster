@@ -15,12 +15,6 @@ export class CatalogueSourceSynchroniser {
   #modules;
 
   /**
-   * @description Deterministic TypeScript source serialiser.
-   * @type {import("./catalogue-source.serialiser.mjs").CatalogueSourceSerialiser}
-   */
-  #serialiser;
-
-  /**
    * @description Generated public facade planning authority.
    * @type {import("./catalogue-source-facade.planner.mjs").CatalogueSourceFacadePlanner}
    */
@@ -69,7 +63,6 @@ export class CatalogueSourceSynchroniser {
    * @description Creates one deterministic catalogue source synchroniser.
    * @param {import("../contracts/internal/catalogue-source-file-system.contract.mjs").ICatalogueSourceFileSystem} fileSystem - Generated source persistence capability.
    * @param {import("./catalogue-source-module.inspector.mjs").CatalogueSourceModuleInspector} modules - Canonical source-module inspector.
-   * @param {import("./catalogue-source.serialiser.mjs").CatalogueSourceSerialiser} serialiser - Generated source serialiser.
    * @param {import("./catalogue-source-facade.planner.mjs").CatalogueSourceFacadePlanner} facades - Generated public facade planner.
    * @param {import("./catalogue-source-manifest.planner.mjs").CatalogueSourceManifestPlanner} manifest - Metadata-only distribution manifest planner.
    * @param {import("./catalogue-source-dynamic.planner.mjs").CatalogueSourceDynamicPlanner} dynamic - Exact asynchronous definition-loader planner.
@@ -82,7 +75,6 @@ export class CatalogueSourceSynchroniser {
   constructor(
     fileSystem,
     modules,
-    serialiser,
     facades,
     manifest,
     dynamic,
@@ -94,7 +86,6 @@ export class CatalogueSourceSynchroniser {
   ) {
     this.#fileSystem = fileSystem;
     this.#modules = modules;
-    this.#serialiser = serialiser;
     this.#facades = facades;
     this.#manifest = manifest;
     this.#dynamic = dynamic;
