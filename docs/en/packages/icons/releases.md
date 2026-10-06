@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+Prepared in the `0.1.0-rc.2` source candidate; publication and registry evidence are pending.
+
 **Breaking change:** `AmellusCollection.icons` becomes a concrete readonly alias dictionary and
 `AmellusCollection.members` becomes its ordered member list. Use `.icons.camera` or
 `.icons.arrowLeft` for known icons, and migrate array indexing, counting and traversal to
@@ -9,9 +11,9 @@
 remain unchanged. Direct icon imports and exact loader routes retain the same canonical objects.
 
 This representation requires the corresponding typed-collection Core implementation and is not
-available in the published `0.1.0-rc.1` tarball. Release versions and dependency ranges must be
-reviewed together before publication. Current usage and import costs are documented by
-[Canonical Collections](collections/index.md), with source grammar owned by
+available in the published `0.1.0-rc.1` tarball. The candidate version and packed dependency
+ranges must be reviewed together before publication. Current usage and import costs are documented
+by [Canonical Collections](collections/index.md), with source grammar owned by
 [Catalogue Source Tooling](../../tooling/catalogue/index.md).
 
 ## 0.1.0-rc.1

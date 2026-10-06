@@ -12,8 +12,9 @@ dependency.
 The example below assumes `@luscious-garden/aster-svg` is installed independently by the consumer.
 
 Install both exact candidate versions for this example with
-`pnpm add @luscious-garden/aster-icons@0.1.0-rc.1 @luscious-garden/aster-svg@0.1.0-rc.1`. To use a definition without SVG rendering,
-install only `@luscious-garden/aster-icons`; it brings its compatible Core dependency.
+`pnpm add @luscious-garden/aster-icons@0.1.0-rc.2 @luscious-garden/aster-svg@0.1.0-rc.2`.
+To use a definition without SVG rendering, install only `@luscious-garden/aster-icons`; it brings
+its compatible Core dependency.
 
 Canonical `*.icon.ts` and `*.collection.ts` modules are editable sources. Package builds
 deterministically synchronise their manifests, exact loader maps and stable public facades before
@@ -26,7 +27,7 @@ import { Svg } from "@luscious-garden/aster-svg";
 const markup = Svg.render(ArrowLeft);
 ```
 
-The current source checkout exposes collection icons by a typed local alias and provides an
+The `0.1.0-rc.2` candidate exposes collection icons by a typed local alias and provides an
 ordered list for iteration:
 
 ```ts
@@ -40,8 +41,8 @@ Both views contain the same canonical icon objects. Importing Amellus evaluates 
 members even when only `.icons.camera` is read; import `@luscious-garden/aster-icons/camera` directly
 when only that icon is needed.
 
-This collection representation awaits publication. The published `0.1.0-rc.1` candidate exposes
-the earlier member array; the [release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases.md)
+The earlier `0.1.0-rc.1` candidate exposes the member array through `.icons`; the
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases.md)
 describe the migration.
 
 The package currently provides the accepted Amellus foundational collection. See the

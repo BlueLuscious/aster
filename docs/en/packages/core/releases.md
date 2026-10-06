@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+Prepared in the `0.1.0-rc.2` source candidate; publication and registry evidence are pending.
+
 **Breaking change:** Collection authoring replaces the `icons` array with a typed alias dictionary.
 `CollectionDefinitionInput<TIconMap>` describes authored fields;
 `CollectionDefinition<TIconMap>` adds the frozen ordered `members` list derived once from that
@@ -15,8 +17,8 @@ dictionary's property order. Do not author a separate `members` list.
 
 Complete definitions may be revalidated, but any submitted member view must match the dictionary's
 canonical values and order. Icon identity, geometry, metadata, and construction semantics remain
-unchanged. Release version and dependent-package ranges require coordinated review before
-publication under the [project compatibility policy](../../project/versioning.md).
+unchanged. The candidate version and dependent-package ranges require coordinated pack review
+before publication under the [project compatibility policy](../../project/versioning.md).
 The [Collection contract](collection/index.md) and [Workflow](workflow.md) describe the current
 implementation.
 

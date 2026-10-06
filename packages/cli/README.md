@@ -10,7 +10,7 @@ icon or collection definition when a host executes Export or Review through that
 The standalone Node package also exposes the `aster` executable:
 
 ```sh
-pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.1
+pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.2
 ```
 
 The executable supports Node `>=24.10.0 <25`; installation brings compatible Core, Icons and SVG
@@ -27,8 +27,8 @@ pnpm exec aster review collection amellus --output ./aster-review
 pnpm exec aster version
 ```
 
-The published `0.1.0-rc.1` package supports plain `aster version`, which reports the installed
-CLI version. The current unreleased source also accepts these local, offline package queries:
+Plain `aster version` reports the installed CLI version. The `0.1.0-rc.2` candidate also accepts
+these local, offline package queries:
 
 ```sh
 pnpm exec aster version core
@@ -37,7 +37,7 @@ pnpm exec aster version --all
 ```
 
 They read the public packages resolved by the installed CLI, not the latest registry versions.
-They are **not** available in the pinned `0.1.0-rc.1` installation above. See the
+They are **not** available in the earlier `0.1.0-rc.1` candidate. See the
 [CLI Shell documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/shell/index.md)
 for their exact output and failure behaviour.
 

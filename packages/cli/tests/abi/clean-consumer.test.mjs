@@ -37,9 +37,15 @@ const asterCollectionDefinitions = await Promise.all(
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const workspaceRoot = resolve(packageRoot, "../..");
-const packageVersion = JSON.parse(
-  await readFile(resolve(packageRoot, "package.json"), "utf8"),
-).version;
+const packageNames = Object.freeze(["core", "icons", "svg", "cli"]);
+const packageVersions = Object.freeze(Object.fromEntries(
+  await Promise.all(packageNames.map(async (name) => [
+    name,
+    JSON.parse(await readFile(resolve(workspaceRoot, "packages", name, "package.json"), "utf8"))
+      .version,
+  ])),
+));
+const packageVersion = packageVersions.cli;
 assert.ok(asterIconDefinitions.length > 0, "Expected the packed icon family to be non-empty.");
 assert.ok(
   asterCollectionDefinitions.length > 0,
@@ -222,7 +228,6 @@ before(async () => {
   const tarballRoot = resolve(consumerRoot, "tarballs");
 
   await mkdir(tarballRoot, { recursive: true });
-  const packageNames = ["core", "icons", "svg", "cli"];
   packedPackages = Object.fromEntries(
     await Promise.all(
       packageNames.map(async (name) => [
@@ -268,12 +273,12 @@ after(async () => {
 test("installs independent package versions with bounded public dependency ranges", async () => {
   const expectedDependencies = {
     core: undefined,
-    icons: { "@luscious-garden/aster-core": "^0.1.0-rc.1" },
-    svg: { "@luscious-garden/aster-core": "^0.1.0-rc.1" },
+    icons: { "@luscious-garden/aster-core": `^${packageVersions.core}` },
+    svg: { "@luscious-garden/aster-core": `^${packageVersions.core}` },
     cli: {
-      "@luscious-garden/aster-core": "^0.1.0-rc.1",
-      "@luscious-garden/aster-icons": "^0.1.0-rc.1",
-      "@luscious-garden/aster-svg": "^0.1.0-rc.1",
+      "@luscious-garden/aster-core": `^${packageVersions.core}`,
+      "@luscious-garden/aster-icons": `^${packageVersions.icons}`,
+      "@luscious-garden/aster-svg": `^${packageVersions.svg}`,
     },
   };
 
@@ -283,7 +288,7 @@ test("installs independent package versions with bounded public dependency range
       "utf8",
     ));
 
-    assert.equal(manifest.version, "0.1.0-rc.1");
+    assert.equal(manifest.version, packageVersions[name]);
     assert.deepEqual(manifest.dependencies, dependencies);
     assert.equal(
       manifest.homepage,
@@ -538,7 +543,7 @@ test("type-checks cross-package usage against packed declarations", async () => 
     "export const markup: string = Svg.render(icon);",
     "export const listed = await AsterCommands.execute(",
     '  { command: "list", subject: "catalogues" },',
-    '  { catalogues: [AsterCatalogue], productName: "Aster", productVersion: "0.1.0-rc.1" },',
+    '  { catalogues: [AsterCatalogue], productName: "Aster", productVersion: "1.2.3" },',
     ");",
     "",
   ].join("\n"), "utf8");
