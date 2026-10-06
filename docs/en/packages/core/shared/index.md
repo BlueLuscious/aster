@@ -16,8 +16,9 @@ host authority, parser behaviour, registry, or mutable global state.
 
 `IconValueValidator` accepts unknown authored values and returns only locally validated primitive
 representations. Object records may use `Object.prototype` or a null prototype, but accepted fields
-must be own enumerable string-keyed data properties. Arrays must be dense and cannot carry symbols,
-accessors, hidden elements, or authored non-index properties. The validator does not infer domain
+must be own enumerable string-keyed data properties. Arrays must use the native `Array.prototype`
+and be dense; subclasses and arrays with symbols, accessors, hidden elements, or authored non-index
+properties are rejected before inherited methods can run. The validator does not infer domain
 semantics such as node cardinality, presentation precedence, identity relationships, or renderer
 authority; those rules remain with their owning features.
 

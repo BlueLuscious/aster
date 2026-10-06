@@ -233,6 +233,19 @@ test("rejects complete definitions whose submitted members disagree", () => {
   );
 });
 
+test("rejects inherited array behaviour in submitted collection members", () => {
+  class AuthoredMembers<T> extends Array<T> {}
+
+  const search = icon();
+  const original = collection("inherited-members", { search });
+  const members = new AuthoredMembers(search);
+
+  assert.throws(
+    () => Collection.define({ ...original, members } as never),
+    /collection\.members.*expected an ordinary array/u,
+  );
+});
+
 test("rejects duplicate identities and invalid collection metadata", () => {
   const search = icon();
 
