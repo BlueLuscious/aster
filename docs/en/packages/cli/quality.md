@@ -20,9 +20,11 @@ The package exposes only the root subpath and publishes six immutable runtime va
 Its public type surface comprises:
 
 - `AsterCommandSet`, `AsterCommandDescriptor`, and `AsterCommandContext`;
+- `AsterInstalledPackageVersion`, the host-provided public package evidence contract;
 - `AsterCommandNameType`, `AsterCommandListSubjectType`, `AsterCommandShowSubjectType`,
   `AsterCommandInvocationType`, `AsterCommandPayloadKindType`, `AsterCommandPayloadType`, and
   `AsterCommandResultType`;
+- `AsterInstalledPackageSelectorType` and `AsterVersionScopeType`;
 - `AsterCommandDiagnosticType`, `AsterCommandDiagnosticCodeType`, and
   `AsterCommandDiagnosticCategoryType`;
 - `CatalogueProvider`, `CatalogueDiscovery`, `CatalogueDiscoveryIconRecord`,
@@ -68,7 +70,7 @@ definitions, normalisers, queries, presenters, filesystem capabilities, or Node 
 | Built-in provider | Dynamically acquires canonical Icons manifests for discovery and definitions only through exact-loader capabilities. | Package loading only |
 | Shell | Parses argv, presents output, maps process status, and composes output publication. | Node process and filesystem |
 
-`help` and `version` do not load catalogue providers. Importing the package root constructs
+`help` and `version` do not invoke catalogue discovery. Importing the package root constructs
 stateless command services and the built-in provider wrapper but does not evaluate `@luscious-garden/aster-icons`,
 read process state, access the filesystem, or write output.
 
@@ -136,7 +138,11 @@ repository workflows. It currently demonstrates:
 - equivalent standalone and independent programmatic results;
 - human, JSON, and raw SVG presentation with deterministic streams and statuses;
 - output-path rejection, exclusive staging, absent-target publication, and current-stage cleanup;
-- clean consumption through locally packed and package-manager-installed Aster packages.
+- clean consumption through locally packed and package-manager-installed Aster packages;
+- independently versioned Core, Icons, SVG, and CLI manifests resolved by a packed executable
+  rather than the caller's working directory, with no Icons definition or network import;
+- atomic human and JSON failures for damaged post-startup metadata, while missing Core or SVG
+  before startup remains a native Node error.
 
 Subprocess-based executable and clean-consumer evidence requires an environment that permits child
 Node processes. A blocked subprocess reports no process status and is not a CLI result.
@@ -170,7 +176,7 @@ behaviour or distribution structure.
 | Startup and package cost | Cold Node control, root import, executable startup, command execution, provider loading, export, presentation, emitted distribution, and packed installation are measured independently. | Retain the current structure until a repeatable CLI-owned mechanism satisfies the documented comparison rules. |
 
 No current evidence authorises mutable caches, global registries, automatic discovery,
-inheritance hierarchies, trusted-definition shortcuts, bundling, or API growth.
+inheritance hierarchies, trusted-definition shortcuts, bundling, or further speculative API growth.
 
 ## Baseline scenario boundary
 

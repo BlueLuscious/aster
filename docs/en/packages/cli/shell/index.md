@@ -33,7 +33,7 @@ aster export collection <identity> [--catalogue <provider>] [render-options] --j
 aster review icon <identity> [--catalogue <provider>] [--output <root>] [--replace]
 aster review collection <identity> [--catalogue <provider>] [--output <root>] [--replace]
 aster help [export|help|list|review|search|show|version]
-aster version
+aster version [--json]
 aster version <core|icons|svg|cli> [--json]
 aster version --all [--json]
 ```
@@ -58,8 +58,23 @@ Plain `aster version` reports the installed CLI version alone. Named version req
 the selected public package manifest; `--all` reads Core, Icons, SVG, and CLI in that order.
 Both forms report installed versions resolved from the CLI executable, not the caller's working
 directory or the latest versions on a registry. The private Import package is not reported.
-Malformed installed metadata causes one failure without partial output. The
-[Version Metadata](version/index.md) feature owns manifest acquisition.
+The human result for a named request is one `@luscious-garden/aster-<package> <version>` line;
+`--all` prefixes the ordered package lines with `Installed Aster packages:`. JSON uses the
+existing result envelope with `command: "version"` and a `package-versions` payload whose
+`packages` array contains either the selected record or all four records:
+
+```json
+{"ok":true,"command":"version","payload":{"kind":"package-versions","packages":[{"name":"@luscious-garden/aster-core","version":"0.1.0-rc.1"}]}}
+```
+
+The version in this example illustrates the result shape; actual values come from the installed
+manifests. Plain `version --json` retains its separate `version` payload with `productName` and
+`productVersion`. Neither form queries the network, checks dependency compatibility, or reports
+published release history. Malformed installed metadata after startup produces status `1` and
+one sanitised `ASTER-CLI-999` failure, without a partial list. Human mode writes that failure
+to stderr; JSON mode writes one failure result to stdout. Missing Core or SVG before the CLI
+starts remains a native Node failure. The [Version Metadata](version/index.md) feature owns
+manifest acquisition.
 
 Review returns a headless technical plan. JSON presents that plan without effects. Human execution
 serialises and publishes static HTML beneath `aster-review` or an explicit `--output` root.

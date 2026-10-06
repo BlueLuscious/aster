@@ -25,7 +25,7 @@ The command composition performs this flow:
 8. Return one immutable structured success or sanitised failure result.
 
 Provider registration order, locale, filesystem enumeration, and current directory do not alter
-accepted command results. `help` and `version` do not load providers. Importing the package root
+accepted command results. `help` and `version` do not invoke provider discovery. Importing the package root
 does not execute this workflow.
 
 ## Export planning

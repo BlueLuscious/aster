@@ -7,8 +7,8 @@ derived `members` list. Providers using the previous icon array must construct t
 through the matching `Collection.define()` implementation. Inconsistent keyed and ordered views
 are rejected during Core revalidation before command plans become observable.
 
-Metadata-only discovery retains its existing identity arrays. Command grammar, canonical identity
-selection, ordered export and review results remain unchanged. This integration requires the
+Metadata-only discovery retains its existing identity arrays. Catalogue identity selection and
+ordered export and review results remain unchanged. This integration requires the
 corresponding Core and Icons implementations; package versions and dependency ranges must be
 reviewed together before publication. The published `0.1.0-rc.1` remains on the previous collection
 contract. See [Catalogue](catalogue/index.md) and [Compatibility](compatibility.md) for current
@@ -19,6 +19,20 @@ provider guarantees.
 review HTML bytes therefore differ from `0.1.0-rc.1`; consumers comparing complete outputs must
 update their fixtures. CLI does not add its own marker or change command grammar. A compatible
 SVG dependency version must be reviewed before publishing these CLI outputs.
+
+**Compatible capability:** The standalone CLI now accepts
+`aster version <core|icons|svg|cli>` and `aster version --all`, each with optional `--json`.
+Named requests read only the selected public package manifest; `--all` reports Core, Icons,
+SVG and CLI in that order. Versions come from the packages resolved by the installed CLI, not
+from the caller's directory or the registry. The programmatic command accepts an optional
+version scope with explicit host-supplied package evidence and returns a distinct
+`package-versions` payload. Plain `aster version` and its original JSON payload remain unchanged;
+the private Import package is not reported. `help version` and `help review` also resolve through
+the accepted shell help path. Missing or invalid post-startup metadata fails without partial
+output. This capability is **not** present in the published `0.1.0-rc.1` archive and introduces
+no new runtime dependency. Review the CLI version and its existing Core, Icons and SVG dependency
+ranges with the next candidate before publication. See [CLI Shell](shell/index.md) and
+[Version Metadata](shell/version/index.md) for the current contract.
 
 ## 0.1.0-rc.1
 

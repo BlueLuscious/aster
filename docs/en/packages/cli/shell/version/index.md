@@ -27,5 +27,9 @@ directory. The shell invokes the reader only for `aster version <core|icons|svg|
 `aster version --all`, with optional `--json`. Plain `aster version` and its JSON form use the
 entrypoint's own version and do not read the other package manifests. Acquisition failure after
 startup produces one sanitised shell failure, not a partial version list.
+If Core or SVG prevents the executable from starting, Node reports its native dependency error
+before this reader or the shell failure path can run. The version field is checked for a
+non-empty string without surrounding whitespace, not for SemVer compatibility with the other
+installed packages.
 
 The [shell feature](../index.md) owns the executable composition and presentation boundary.
