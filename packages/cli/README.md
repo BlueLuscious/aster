@@ -24,7 +24,22 @@ pnpm exec aster export icon aster/camera
 pnpm exec aster export collection amellus --output ./icons
 pnpm exec aster review icon aster/camera --json
 pnpm exec aster review collection amellus --output ./aster-review
+pnpm exec aster version
 ```
+
+The published `0.1.0-rc.1` package supports plain `aster version`, which reports the installed
+CLI version. The current unreleased source also accepts these local, offline package queries:
+
+```sh
+pnpm exec aster version core
+pnpm exec aster version icons --json
+pnpm exec aster version --all
+```
+
+They read the public packages resolved by the installed CLI, not the latest registry versions.
+They are **not** available in the pinned `0.1.0-rc.1` installation above. See the
+[CLI Shell documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/shell/index.md)
+for their exact output and failure behaviour.
 
 The programmatic root returns complete immutable export and technical review plans and performs no
 filesystem effect. The standalone Node executable serialises and publishes self-contained review

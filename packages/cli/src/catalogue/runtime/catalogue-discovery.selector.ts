@@ -64,7 +64,9 @@ export class CatalogueDiscoverySelector {
       ? this.#icons(scoped.value, identity)
       : this.#collections(scoped.value, identity);
 
-    if (candidates.length === 0) {
+    const candidate = candidates[0];
+
+    if (candidate === undefined) {
       return this.#failure(
         commandDiagnosticSchema.categories.notFound,
         commandDiagnosticSchema.codes.notFound,
@@ -84,7 +86,7 @@ export class CatalogueDiscoverySelector {
 
     return Object.freeze({
       accepted: true,
-      value: candidates[0] as TCatalogueDiscoverySelection,
+      value: candidate,
     });
   }
 

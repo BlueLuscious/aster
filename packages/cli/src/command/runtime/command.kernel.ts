@@ -1,4 +1,3 @@
-import { asterCommandNames } from "../constants/aster-command-names.constant.js";
 import { commandDiagnosticSchema } from "../constants/command-diagnostic-schema.constant.js";
 import type { ICommandDefinition } from "../contracts/internal/command-definition.contract.js";
 import type {
@@ -14,6 +13,7 @@ import { CommandContextNormaliser } from "./command-context.normaliser.js";
 import { CommandDiagnosticFactory } from "./command-diagnostic.factory.js";
 import { CommandInvocationNormaliser } from "../invocation/runtime/command-invocation.normaliser.js";
 import { CommandResultFactory } from "./command-result.factory.js";
+import { isAsterCommandName } from "./is-aster-command-name.js";
 
 /**
  * @description Coordinates immutable invocation acceptance, capability acceptance, and dispatch.
@@ -171,9 +171,7 @@ export class CommandKernel implements AsterCommandSet {
       typeof descriptor !== "object" ||
       descriptor === null ||
       typeof descriptor.name !== "string" ||
-      !(Object.values(asterCommandNames) as readonly string[]).includes(
-        descriptor.name,
-      ) ||
+      !isAsterCommandName(descriptor.name) ||
       typeof descriptor.summary !== "string" ||
       descriptor.summary.length === 0 ||
       descriptor.summary.trim() !== descriptor.summary ||
@@ -219,9 +217,6 @@ export class CommandKernel implements AsterCommandSet {
     }
 
     const command = descriptor.value;
-    return typeof command === "string" &&
-      (Object.values(asterCommandNames) as readonly string[]).includes(command)
-      ? (command as AsterCommandNameType)
-      : undefined;
+    return isAsterCommandName(command) ? command : undefined;
   }
 }

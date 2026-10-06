@@ -6,6 +6,7 @@ import type {
 } from "../../types/index.js";
 import type { TAcceptanceResult } from "../../types/internal/acceptance-result.type.js";
 import { StructuredDataInspector } from "../../../shared/runtime/structured-data.inspector.js";
+import { isAsterCommandName } from "../../runtime/is-aster-command-name.js";
 import { InvocationRejectionFactory } from "./invocation-rejection.factory.js";
 
 /**
@@ -43,33 +44,24 @@ export class HelpInvocationNormaliser implements ICommandInvocationNormaliser {
       return this.#rejections.invalid("help invocation contains an unknown field");
     }
 
-    if (
-      Object.hasOwn(record, "commandName")
-      && !this.#isCommandName(record.commandName)
-    ) {
-      return this.#rejections.invalid(
-        "expected help commandName to identify an accepted command",
-      );
+    let commandName: AsterCommandNameType | undefined;
+
+    if (Object.hasOwn(record, "commandName")) {
+      if (!isAsterCommandName(record.commandName)) {
+        return this.#rejections.invalid(
+          "expected help commandName to identify an accepted command",
+        );
+      }
+
+      commandName = record.commandName;
     }
 
     return Object.freeze({
       accepted: true,
       value: Object.freeze({
         command: this.command,
-        ...(Object.hasOwn(record, "commandName")
-          ? { commandName: record.commandName as AsterCommandNameType }
-          : {}),
+        ...(commandName === undefined ? {} : { commandName }),
       }),
     });
-  }
-
-  /**
-   * @description Determines whether a candidate identifies one accepted command.
-   * @param value - Candidate command identity.
-   * @returns Whether the identity belongs to the composed command family.
-   */
-  #isCommandName(value: unknown): value is AsterCommandNameType {
-    return typeof value === "string"
-      && (Object.values(asterCommandNames) as readonly string[]).includes(value);
   }
 }

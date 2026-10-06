@@ -1,4 +1,5 @@
 import type { asterCommandNames } from "../constants/aster-command-names.constant.js";
+import type { AsterVersionScopeType } from "./aster-version-scope.type.js";
 import type { AsterCommandListSubjectType } from "./aster-command-list-subject.type.js";
 import type { AsterCommandNameType } from "./aster-command-name.type.js";
 import type { AsterCommandShowSubjectType } from "./aster-command-show-subject.type.js";
@@ -174,4 +175,9 @@ export type AsterCommandInvocationType =
        * @description Selects explicit product version metadata.
        */
       command: typeof asterCommandNames.version;
+
+      /**
+       * @description Optional public package selector or complete installed package family.
+       */
+      scope?: AsterVersionScopeType;
     }>;

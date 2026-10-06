@@ -12,7 +12,8 @@ output.
 | --- | --- | --- |
 | `AsterCommandSet` | Declares stable command-set identity, canonical descriptors, and asynchronous execution. | Accepts `AsterCommandInvocationType` and `AsterCommandContext`; returns `AsterCommandResultType`. |
 | `AsterCommandDescriptor` | Carries one command identity, summary, and accepted usage forms. | Uses `AsterCommandNameType`; definitions own the source metadata and the kernel exposes isolated copies. |
-| `AsterCommandContext` | Supplies the complete capability set for one execution. | Retains explicit `CatalogueProvider` values plus product name and version; contains no host effects. |
+| `AsterCommandContext` | Supplies the complete capability set for one execution. | Retains explicit `CatalogueProvider` values, product name and version, and optional installed package-version evidence; contains no host effects. |
+| `AsterInstalledPackageVersion` | Describes one host-supplied installed public package name and version. | Used by optional context evidence and the `package-versions` payload; acquisition belongs to the shell or another host. |
 
 The internal `ICommandDefinition` pairs one descriptor with one executable handler. Definitions are
 provided explicitly to the kernel and never registered globally.
@@ -22,11 +23,13 @@ provided explicitly to the kernel and never registered globally.
 | Type | Responsibility | Relations |
 | --- | --- | --- |
 | `AsterCommandNameType` | Closed identity union for `export`, `review`, `list`, `search`, `show`, `help`, and `version`. | Derived from the internal immutable command-name authority. |
+| `AsterInstalledPackageSelectorType` | Closed union for `core`, `icons`, `svg`, and `cli`. | Used by the optional `version` invocation scope; `all` selects the complete public family. |
+| `AsterVersionScopeType` | One installed package selector or the complete `all` scope. | Used by scoped version invocations and the private installed-manifest reader. |
 | `AsterCommandListSubjectType` | Closed subject union for `catalogues`, `collections`, and `icons`. | Derived from the list branch of the immutable command-subject authority. |
 | `AsterCommandShowSubjectType` | Closed subject union for `icon` and `collection`. | Derived from the show branch of the immutable command-subject authority. |
 | `AsterCommandInvocationType` | Discriminated structured request union with command-specific subjects and filters. | Validated and isolated by the [Command Invocation](invocation/index.md) subfeature. |
 | `AsterCommandPayloadKindType` | Closed discriminator union for every current success payload. | Derived from the immutable payload-kind authority. |
-| `AsterCommandPayloadType` | Closed union of export, review, list, search, show, help, and version payloads. | Retains artefact plans, public catalogue results, or command descriptors according to its kind. |
+| `AsterCommandPayloadType` | Closed union of export, review, list, search, show, help, plain version, and installed package-version payloads. | Retains artefact plans, public catalogue results, command descriptors, or explicit version evidence according to its kind. |
 | `AsterCommandResultType` | Generic structured success or failure outcome. | Success defaults to `AsterCommandPayloadType`; failure retains `AsterCommandDiagnosticType`. |
 | `AsterCommandDiagnosticType` | Stable code, category, message, and optional related-value evidence. | Its categories and codes derive from one immutable runtime schema. |
 | `AsterCommandDiagnosticCodeType` | Closed stable diagnostic-code union. | Derived from the code branch of the immutable diagnostic schema. |
@@ -52,6 +55,13 @@ contracts and execution flow are documented by [CLI Export](../export/index.md).
 Review accepts an exact icon or collection identity and an optional provider filter. It returns a
 technical plan without accepting host output state. Its contracts and execution flow are
 documented by [CLI Review](../review/index.md).
+
+`{ command: "version" }` retains the original product-only payload. Supplying `scope` with one
+public package selector or `"all"` requires explicit `packageVersions` in the context and returns
+the distinct `package-versions` payload. The command validates and isolates evidence but does not
+read manifests, query a registry, or infer any missing version. `all` returns Core, Icons, SVG,
+and CLI in that order; named requests return exactly one record. Invalid evidence produces an
+`ASTER-CLI-002` context diagnostic.
 
 The exact implemented standalone grammar is documented by [CLI Shell](../shell/index.md). Node
 token parsing and output publication are not part of the command kernel.

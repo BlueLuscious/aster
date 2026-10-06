@@ -67,6 +67,24 @@ Export and Review add public SVG rendering proportional to selected definitions.
 remains comparable to collection Export without adding a material isolated hotspot. Cold startup
 is dominated by fresh Node startup and ESM graph acquisition rather than command execution.
 
+## Installed-version cold-start check
+
+One local Windows x64 check under Node `24.10.0` measured the built executable in alternating
+fresh-process rounds, discarding the first and taking the median of ten samples per form:
+
+| Form | Median elapsed time |
+| --- | ---: |
+| Node control | 43.51 ms |
+| `aster version` | 215.05 ms |
+| `aster version core` | 219.33 ms |
+| `aster version --all` | 217.87 ms |
+
+The named and aggregate requests showed no material cold-start difference from plain version
+in that run. This one-off check is not a new performance baseline or CI threshold. The earlier
+163.21 ms executable-version median above predates other CLI changes and cannot isolate this
+feature's before-and-after cost. Exact packed-consumer correctness remains the acceptance
+evidence; a performance optimisation still requires the comparison rules below.
+
 No runtime optimisation was retained from that investigation. Caching accepted snapshots,
 retaining mutable memoisation, trusting canonical object provenance, bundling private modules, or
 weakening reconstruction would change correctness or distribution boundaries without evidence of
@@ -111,7 +129,8 @@ deterministic comparison authority.
 
 ## Distribution evidence
 
-The measured native ES2022 ESM output contains 294 files and 385,535 unminified bytes:
+The historical schema-version-four native ES2022 ESM measurement contained 294 files and
+385,535 unminified bytes:
 
 - 170 JavaScript modules totalling 270,283 bytes;
 - 124 declaration files totalling 115,252 bytes;

@@ -8,3 +8,5 @@ export type { AsterCommandPayloadKindType } from "./aster-command-payload-kind.t
 export type { AsterCommandPayloadType } from "./aster-command-payload.type.js";
 export type { AsterCommandResultType } from "./aster-command-result.type.js";
 export type { AsterCommandShowSubjectType } from "./aster-command-show-subject.type.js";
+export type { AsterInstalledPackageSelectorType } from "./aster-installed-package-selector.type.js";
+export type { AsterVersionScopeType } from "./aster-version-scope.type.js";

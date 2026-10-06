@@ -34,6 +34,7 @@ checks and human approval.
 | [Export](export/index.md) | Selects exact catalogue definitions and constructs immutable host-neutral SVG artefact plans. |
 | [Review](review/index.md) | Constructs immutable technical plans through public SVG rendering and serialises self-contained static review documents. |
 | [Shell](shell/index.md) | Adapts Node argv, presents human or JSON output, and commits documented process effects. |
+| [Shell Version Metadata](shell/version/index.md) | Resolves installed public package manifests from the executable's own dependency context. |
 | [Shell Parsing](shell/parsing/index.md) | Adapts standalone argv through explicit command-owned parsers. |
 | [Shell Presentation](shell/presentation/index.md) | Produces deterministic human or JSON stream results. |
 | [Shell Output](shell/output/index.md) | Publishes complete export trees and static review documents through the private Node filesystem boundary. |
@@ -73,9 +74,12 @@ plugin-loader, or repository-tooling authority.
 The package exposes only its root `"."`. It exports these types:
 
 - `AsterCommandSet`, `AsterCommandDescriptor`, and `AsterCommandContext`;
+- `AsterInstalledPackageVersion`, the optional host-supplied installed package record;
 - `AsterCommandNameType`, `AsterCommandListSubjectType`, `AsterCommandShowSubjectType`,
   `AsterCommandInvocationType`, `AsterCommandPayloadKindType`, `AsterCommandPayloadType`, and
   `AsterCommandResultType`;
+- `AsterInstalledPackageSelectorType` and `AsterVersionScopeType`, the named and aggregate
+  version-selection types;
 - `AsterCommandDiagnosticType`, `AsterCommandDiagnosticCodeType`, and
   `AsterCommandDiagnosticCategoryType`;
 - `CatalogueProvider`, `CatalogueDiscovery`, `CatalogueDiscoveryIconRecord`,
@@ -120,7 +124,9 @@ families, exact optional properties, and absence of DOM ambient types. Runtime t
   hostile authored-text containment;
 - absent-root review publication, exact ownership-gated replacement, staged commitment, and
   rollback after replacement commit failure;
-- exact shell render options, raw SVG redirection, and staged output-root publication.
+- exact shell render options, raw SVG redirection, and staged output-root publication;
+- unchanged plain CLI version output, named and aggregate installed-package versions, and
+  sanitised metadata failures from a packed consumer.
 
 Built-executable integration tests additionally verify human and JSON presentation, exact stream
 selection, exit status, argument rejection, and silent public-root imports. Package conformance

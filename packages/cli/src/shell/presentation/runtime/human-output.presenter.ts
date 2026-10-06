@@ -81,6 +81,13 @@ export class HumanOutputPresenter {
         return this.#help.present(payload.descriptors);
       case asterCommandPayloadKinds.version:
         return `${payload.productName} ${payload.productVersion}`;
+      case asterCommandPayloadKinds.packageVersions:
+        return payload.packages.length === 1
+          ? `${payload.packages[0]?.name} ${payload.packages[0]?.version}`
+          : [
+              "Installed Aster packages:",
+              ...payload.packages.map(({ name, version }) => `  ${name} ${version}`),
+            ].join("\n");
     }
   }
 
