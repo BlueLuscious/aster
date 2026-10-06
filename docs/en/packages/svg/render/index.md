@@ -134,5 +134,8 @@ Mirror-policy geometry rendered in right-to-left direction is wrapped once:
 ```
 
 `T` is the canonical numeric result of `2 * minX + width`, including view boxes with positive or
-negative minima. Mirroring occurs only for explicit right-to-left direction under the Mirror
-policy. Left-to-right output and the Preserve and Manual policies emit no generated transform.
+negative minima. When an intermediate operation overflows but `T` remains representable, the
+renderer uses equivalent arithmetic to recover it. If `T` cannot be represented as a finite number,
+rendering raises `SvgRenderError` at `definition.viewBox` rather than emitting `Infinity`.
+Mirroring occurs only for explicit right-to-left direction under the Mirror policy. Left-to-right
+output and the Preserve and Manual policies emit no generated transform.

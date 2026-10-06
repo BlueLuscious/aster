@@ -6,9 +6,12 @@ import { svgNumberPatternSource } from "../constants/svg-number-pattern-source.c
  */
 export class SvgNumberParser {
   /**
-   * @description Complete accepted SVG number grammar.
+   * @description Complete accepted SVG number with only schema-owned surrounding whitespace.
    */
-  readonly #completePattern = new RegExp(`^(?:${svgNumberPatternSource})$`, "u");
+  readonly #completePattern = new RegExp(
+    `^${svgLexicalPatternSources.whitespace}*(?:${svgNumberPatternSource})${svgLexicalPatternSources.whitespace}*$`,
+    "u",
+  );
 
   /**
    * @description Repeated accepted SVG number grammar.
@@ -36,13 +39,11 @@ export class SvgNumberParser {
    * @returns Parsed finite number, or `undefined` for malformed input.
    */
   parse(value: string): number | undefined {
-    const trimmed = value.trim();
-
-    if (!this.#completePattern.test(trimmed)) {
+    if (!this.#completePattern.test(value)) {
       return undefined;
     }
 
-    const parsed = Number(trimmed);
+    const parsed = Number(value);
 
     if (!Number.isFinite(parsed)) {
       return undefined;

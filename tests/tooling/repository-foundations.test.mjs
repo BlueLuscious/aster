@@ -20,6 +20,12 @@ test("resolves containment without accepting sibling or parent paths", () => {
   assert.equal(paths.contains(root, paths.resolve(root, "..")), false);
 });
 
+test("rejects paths on another Windows volume", { skip: process.platform !== "win32" }, () => {
+  const paths = new RepositoryPathResolver();
+
+  assert.equal(paths.contains("C:\\aster", "D:\\external\\icon.md"), false);
+});
+
 test("reads optional directories and walks selected files deterministically", async () => {
   const root = await mkdtemp(join(tmpdir(), "aster-repository-foundations-"));
   const fileSystem = new NodeRepositoryFileSystem();

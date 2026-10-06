@@ -194,6 +194,27 @@ test("accepts only the finite exact XML declaration grammar", () => {
   assert.deepEqual(codes(rejected), ["ASTER-SAFETY-008"]);
 });
 
+test("accepts only schema whitespace as ignorable SVG text", () => {
+  const contentWith = (text: string) =>
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${text}<path d="M0 0H1"/></svg>`;
+
+  assert.equal(inspect(contentWith(" \t "), "ordinary-text-space").successful, true);
+
+  for (const [name, text] of [
+    ["non-breaking-text-space", "\u00a0"],
+    ["narrow-text-space", "\u202f"],
+  ] as const) {
+    const content = contentWith(text);
+    const result = inspect(content, name);
+
+    assert.equal(result.successful, false, name);
+    assert.deepEqual(codes(result), ["ASTER-TECHNICAL-003"]);
+    const span = result.diagnostics[0]?.span;
+    assert.ok(span !== undefined);
+    assert.equal(content.slice(span.start.offset, span.end.offset), text);
+  }
+});
+
 test("contains namespace aliases and misleading inert delimiters", () => {
   const accepted = inspect([
     '<s:svg xmlns:s="http://www.w3.org/2000/svg" viewBox="0 0 24 24" id="fake > boundary">',

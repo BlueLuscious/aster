@@ -62,11 +62,16 @@ test("reports missing and stale package documentation membership", async () => {
   const paths = new RepositoryPathResolver();
   const workspaceRoot = resolve("fixture");
   const packagesRoot = resolve(workspaceRoot, "packages");
+  const documentedPackagesRoot = resolve(workspaceRoot, "docs/en/packages");
   const issues = new DocumentationIssueCollector();
   const inspector = new PackageDocumentationMirroringInspector(
     {
       async read(path) {
-        return path === packagesRoot ? ["core", "svg"] : ["core", "ghost"];
+        if (path === packagesRoot) {
+          return ["core", "svg"];
+        }
+
+        return path === documentedPackagesRoot ? ["core", "ghost"] : [];
       },
     },
     paths,
@@ -119,6 +124,32 @@ test("applies local-reference and link policies in document order", async () => 
     "docs/en/index.md contains a local planning path",
     "docs/en/index.md contains a broken local link: missing.md",
     "docs/en/index.md links outside the repository: ../../../outside.md",
+  ]);
+});
+
+test("reports malformed local link encoding and continues inspecting links", async () => {
+  const paths = new RepositoryPathResolver();
+  const workspaceRoot = resolve("fixture");
+  const document = {
+    path: resolve(workspaceRoot, "docs/en/index.md"),
+    content: "[Malformed](%GG) [Missing](missing.md)",
+  };
+  const issues = new DocumentationIssueCollector();
+  const policy = new LocalLinkPolicy(
+    { async exists() { return false; } },
+    new MarkdownLinkTargetExtractor(),
+    paths,
+  );
+
+  await policy.inspect({
+    workspaceRoot,
+    documentationRoot: resolve(workspaceRoot, "docs/en"),
+    documents: [document],
+  }, document, issues);
+
+  assert.deepEqual(issues.snapshot(), [
+    "docs/en/index.md contains invalid local link encoding: %GG",
+    "docs/en/index.md contains a broken local link: missing.md",
   ]);
 });
 

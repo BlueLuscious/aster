@@ -47,7 +47,21 @@ export class LocalLinkPolicy {
         continue;
       }
 
-      const targetWithoutFragment = decodeURIComponent(targetPath);
+      let targetWithoutFragment;
+
+      try {
+        targetWithoutFragment = decodeURIComponent(targetPath);
+      } catch (error) {
+        if (!(error instanceof URIError)) {
+          throw error;
+        }
+
+        issues.add(
+          `${this.#paths.display(context.workspaceRoot, document.path)} contains invalid local link encoding: ${target}`,
+        );
+        continue;
+      }
+
       const resolvedTarget = this.#paths.resolve(
         this.#paths.dirname(document.path),
         targetWithoutFragment,

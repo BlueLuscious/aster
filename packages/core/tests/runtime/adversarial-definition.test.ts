@@ -374,6 +374,42 @@ test("rejects sparse arrays and arrays with authored properties", () => {
   );
 });
 
+test("rejects inherited array behaviour before normalising nodes or tags", () => {
+  class AuthoredArray<T> extends Array<T> {}
+
+  let mapCalls = 0;
+  Object.defineProperty(AuthoredArray.prototype, "map", {
+    value() {
+      mapCalls += 1;
+      throw new Error("inherited map executed");
+    },
+  });
+
+  const authoredNodes = createInput();
+  authoredNodes.nodes = new AuthoredArray(...authoredNodes.nodes);
+  expectDefinitionError(
+    () => Icon.define(authoredNodes as never),
+    "definition.nodes",
+  );
+
+  const authoredTags = createInput();
+  authoredTags.metadata.tags = new AuthoredArray(...authoredTags.metadata.tags);
+  expectDefinitionError(
+    () => Icon.define(authoredTags as never),
+    "definition.metadata.tags",
+  );
+  assert.equal(mapCalls, 0);
+});
+
+test("returns ordinary frozen arrays from ordinary authored sequences", () => {
+  const accepted = Icon.define(createInput() as never);
+
+  assert.equal(Object.getPrototypeOf(accepted.nodes), Array.prototype);
+  assert.equal(Object.getPrototypeOf(accepted.metadata.tags), Array.prototype);
+  assert.ok(Object.isFrozen(accepted.nodes));
+  assert.ok(Object.isFrozen(accepted.metadata.tags));
+});
+
 test("accepts null-prototype records and returns canonical plain data", () => {
   const authored = createInput();
   const nullPrototype = Object.assign(Object.create(null), authored);

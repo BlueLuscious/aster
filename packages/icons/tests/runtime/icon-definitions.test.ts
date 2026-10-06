@@ -11,6 +11,7 @@ import {
 import {
   asterOriginalIconAuthorship,
 } from "../../src/authoring/constants/aster-original-icon-authorship.constant.js";
+import { AmellusCollection } from "../../src/collections/a/amellus/amellus.collection.js";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
@@ -77,9 +78,8 @@ function numericGeometryValues(definition: IconDefinition): readonly number[] {
   return values;
 }
 
-test("composes original authorship and the Amellus visual profile", () => {
-  const definitions = iconDefinitions;
-  const identities = new Set<string>();
+test("composes original authorship and visual policy for Amellus members", () => {
+  const definitions = AmellusCollection.members;
 
   assert.ok(
     definitions.length > 0,
@@ -91,8 +91,6 @@ test("composes original authorship and the Amellus visual profile", () => {
       definition.identity.namespace,
       asterOriginalIconAuthorship.namespace,
     );
-    assert.equal(identities.has(definition.identity.name), false);
-    identities.add(definition.identity.name);
     assert.deepEqual(definition.viewBox, amellusIconAuthoringProfile.viewBox);
     assert.deepEqual(
       definition.metadata.presentation,

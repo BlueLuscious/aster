@@ -30,12 +30,12 @@ export class ExportOptionsNormaliser {
   /**
    * @description Canonical short hexadecimal paint grammar.
    */
-  readonly #shortHexPattern = new RegExp(iconPaintSchema.shortHexPatternSource, "u");
+  readonly #shortHexPattern = new RegExp(iconPaintSchema.shortHexPatternSource, "iu");
 
   /**
    * @description Canonical long hexadecimal paint grammar.
    */
-  readonly #longHexPattern = new RegExp(iconPaintSchema.longHexPatternSource, "u");
+  readonly #longHexPattern = new RegExp(iconPaintSchema.longHexPatternSource, "iu");
 
   /**
    * @description Accepts optional common or icon-specific export options.

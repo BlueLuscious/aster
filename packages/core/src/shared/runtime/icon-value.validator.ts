@@ -183,7 +183,7 @@ export class IconValueValidator {
   }
 
   /**
-   * @description Accepts one dense array containing only enumerable data elements.
+   * @description Accepts one ordinary dense array containing only enumerable data elements.
    * @param value - Unknown value to inspect.
    * @param path - Logical value path.
    * @returns Accepted mutable input array.
@@ -191,6 +191,10 @@ export class IconValueValidator {
   array(value: unknown, path: string): unknown[] {
     if (!Array.isArray(value)) {
       throw new IconDefinitionError(path, "expected an array");
+    }
+
+    if (Object.getPrototypeOf(value) !== Array.prototype) {
+      throw new IconDefinitionError(path, "expected an ordinary array");
     }
 
     let elementCount = 0;

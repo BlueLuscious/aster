@@ -33,6 +33,14 @@ show, and later exact selection; it is not a public provider result.
 the discovery icon records required by that subject. It contains no complete definition.
 `TCatalogueSelection` is the downstream immutable result containing the isolated definition and
 canonically ordered icon evidence required by Export or Review.
+Each `TCatalogueSelectedIcon` pairs one accepted Core `IconDefinition` with its independent,
+canonically ordered collection memberships inside that selection; it does not alter the definition.
+
+`TAsterIconManifestEntry` and `TAsterCollectionManifestEntry` are private structural views of the
+built-in Icons manifest records. The discovery factory reads their metadata and ordered member
+keys to construct provider-neutral discovery records; these types neither load definitions nor
+become public CLI catalogue contracts. The manifest's public records and generation boundary
+belong to the [Icons Distribution Manifest](../../../icons/manifest/index.md).
 
 ```text
 explicit providers --> discover --> discovery normaliser --> accepted discoveries

@@ -13,7 +13,7 @@ The package:
 - authors each icon as one immutable `Icon.define(...)` value;
 - composes [original authorship and visual authoring authorities](authoring/index.md) without
   embedding collection membership;
-- exposes the [representative icon set](icons/index.md) through isolated definition subpaths;
+- exposes the [authored glyph corpus](glyphs/index.md) through isolated definition subpaths;
 - exposes independent [canonical collections](collections/index.md) through isolated collection
   subpaths;
 - exposes the [distribution manifest](manifest/index.md) without loading complete definitions;

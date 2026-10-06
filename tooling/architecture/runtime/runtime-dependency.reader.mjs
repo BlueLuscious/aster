@@ -7,10 +7,10 @@ export class RuntimeDependencyReader {
   /**
    * @description Reads all accepted runtime dependency fields into one lookup.
    * @param {Record<string, unknown>} manifest - Package manifest to inspect.
-   * @returns {Record<string, string>} Production dependency names and specifiers.
+   * @returns {Record<string, unknown>} Production dependency names and specifiers.
    */
   read(manifest) {
-    /** @type {Record<string, string>} */
+    /** @type {Record<string, unknown>} */
     const dependencies = {};
 
     for (const field of packageBoundaries.runtimeDependencyFields) {

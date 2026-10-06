@@ -29,7 +29,7 @@ export class ImportPackagePolicy {
   /**
    * @description Inspects Import privacy, dependencies, parser pinning, exports, and compiler options.
    * @param {import("../types/internal/workspace-package-record.type.mjs").TWorkspacePackageRecord} record - Acquired Import package record.
-   * @param {Record<string, string>} dependencies - Combined production dependencies.
+   * @param {Record<string, unknown>} dependencies - Combined production dependencies.
    * @param {ReadonlySet<string>} workspaceDependencies - Direct workspace dependencies.
    * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after Import policy is inspected.
