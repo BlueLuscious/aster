@@ -65,7 +65,7 @@ const packageSelector: AsterInstalledPackageSelectorType = "icons";
 const completeVersionScope: AsterVersionScopeType = "all";
 const packageVersion: AsterInstalledPackageVersion = {
   name: "@luscious-garden/aster-icons",
-  version: "0.1.0-rc.1",
+  version: "1.2.3",
 };
 const versionContext: AsterCommandContext = {
   ...context,
