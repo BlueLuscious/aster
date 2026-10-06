@@ -564,6 +564,39 @@ test("applies only the mirror policy to explicitly right-to-left geometry", () =
   );
 });
 
+test("keeps RTL mirror translations finite at numeric boundaries", () => {
+  const base = createDefinition();
+  const definition = (minX: number): IconDefinition =>
+    Icon.define({
+      ...base,
+      viewBox: {
+        ...base.viewBox,
+        minX,
+        width: Number.MAX_VALUE,
+      },
+      metadata: {
+        ...base.metadata,
+        rtl: iconRtlPolicies[0],
+      },
+    });
+
+  assert.match(
+    Svg.render(definition(-Number.MAX_VALUE), {
+      direction: iconDirections[1],
+    }),
+    /transform="matrix\(-1 0 0 1 -1\.7976931348623157e\+308 0\)"/u,
+  );
+
+  expectRenderError(
+    () => Svg.render(definition(Number.MAX_VALUE), {
+      direction: iconDirections[1],
+    }),
+    "definition.viewBox",
+  );
+
+  assert.doesNotMatch(Svg.render(definition(Number.MAX_VALUE)), /transform=/u);
+});
+
 test("enforces icon-owned viewport boundaries and canonical dimensions", () => {
   const definition = createDefinition();
 
