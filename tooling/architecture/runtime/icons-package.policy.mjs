@@ -22,7 +22,7 @@ export class IconsPackagePolicy {
   /**
    * @description Inspects Icons visibility, dependencies, exports, and compiler options.
    * @param {import("../types/internal/workspace-package-record.type.mjs").TWorkspacePackageRecord} record - Acquired Icons package record.
-   * @param {Record<string, string>} dependencies - Combined production dependencies.
+   * @param {Record<string, unknown>} dependencies - Combined production dependencies.
    * @param {ReadonlySet<string>} workspaceDependencies - Direct workspace dependencies.
    * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after Icons policy is inspected.
