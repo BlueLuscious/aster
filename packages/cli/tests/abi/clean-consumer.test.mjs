@@ -174,7 +174,7 @@ async function installedManifestPath(selector) {
     "package.json",
   ));
 
-  assert.match(relative(consumerRoot, path), /^node_modules[\\/]/u);
+  assert.match(relative(await realpath(consumerRoot), path), /^node_modules[\\/]/u);
   return path;
 }
 
