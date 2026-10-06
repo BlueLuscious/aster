@@ -21,6 +21,10 @@ standalone state. Doctypes, entity references, CDATA, arbitrary processing instr
 executable or embedded elements, external resources and foreign namespaces are rejected.
 Comments remain inert and cannot make apparent markup executable.
 
+Only text matching the [shared SVG whitespace grammar](../shared/index.md) is ignorable between
+elements. Other character data, including Unicode spaces outside that grammar, produces a located
+blocking diagnostic.
+
 ## Parser limits
 
 Limits count JavaScript UTF-16 code units and parser-observed XML structure. A value at its limit is
