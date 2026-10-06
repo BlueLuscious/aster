@@ -1,18 +1,22 @@
 ﻿import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import {
+  cp,
   mkdir,
   mkdtemp,
   readFile,
   readdir,
+  realpath,
+  rename,
   rm,
   writeFile,
 } from "node:fs/promises";
+import { findPackageJSON } from "node:module";
 import { tmpdir } from "node:os";
-import { basename, dirname, resolve } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 import process from "node:process";
 import test, { after, before } from "node:test";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
@@ -139,7 +143,7 @@ function runModule(source) {
   );
 }
 
-function runExecutable(arguments_) {
+function runExecutable(arguments_, cwd = consumerRoot) {
   return spawnSync(
     process.execPath,
     [
@@ -155,10 +159,62 @@ function runExecutable(arguments_) {
       ...arguments_,
     ],
     {
-      cwd: consumerRoot,
+      cwd,
       encoding: "utf8",
     },
   );
+}
+
+async function installedManifestPath(selector) {
+  const path = await realpath(resolve(
+    consumerRoot,
+    "node_modules",
+    "@luscious-garden",
+    `aster-${selector}`,
+    "package.json",
+  ));
+
+  assert.match(relative(consumerRoot, path), /^node_modules[\\/]/u);
+  return path;
+}
+
+async function withInstalledManifests(updates, action) {
+  const originals = [];
+
+  try {
+    for (const [selector, update] of Object.entries(updates)) {
+      const path = await installedManifestPath(selector);
+      const original = await readFile(path, "utf8");
+      originals.push({ path, original });
+      const content = typeof update === "string"
+        ? update
+        : JSON.stringify({ ...JSON.parse(original), ...update });
+      await writeFile(path, content, "utf8");
+    }
+
+    return await action();
+  } finally {
+    for (const { path, original } of originals) {
+      await writeFile(path, original, "utf8");
+    }
+  }
+}
+
+function assertMetadataFailure(arguments_) {
+  const human = runExecutable(arguments_);
+  const machine = runExecutable([...arguments_, "--json"]);
+
+  assert.equal(human.status, 1);
+  assert.equal(human.stdout, "");
+  assert.equal(human.stderr, "[ASTER-CLI-999] standalone shell failed unexpectedly\n");
+  assert.equal(machine.status, 1);
+  assert.equal(machine.stderr, "");
+  const result = JSON.parse(machine.stdout);
+  assert.equal(result.ok, false);
+  assert.equal(result.command, undefined);
+  assert.equal(result.diagnostic.code, "ASTER-CLI-999");
+  assert.equal(result.payload, undefined);
+  assert.doesNotMatch(machine.stdout, /aster-cli-consumer-|package\.json/u);
 }
 
 before(async () => {
@@ -198,6 +254,7 @@ before(async () => {
     "install",
     "--offline",
     "--ignore-scripts",
+    "--package-import-method=copy",
     "--frozen-lockfile=false",
   ]);
 
@@ -563,6 +620,204 @@ test("links and executes the packed CLI binary through the package manager", () 
 
   assertSuccessfulProcess(linked, "execute linked Aster binary");
   assert.equal(linked.stdout, `Aster ${packageVersion}\n`);
+});
+
+test("reports independently versioned packages resolved from the packed executable", async () => {
+  const versions = Object.freeze({
+    core: "0.2.4",
+    icons: "0.3.1",
+    svg: "0.9.0-rc.2",
+    cli: "0.1.7",
+  });
+  const packages = Object.entries(versions).map(([selector, version]) => ({
+    name: `@luscious-garden/aster-${selector}`,
+    version,
+  }));
+  const packedExecutable = await realpath(resolve(
+    consumerRoot,
+    "node_modules",
+    "@luscious-garden",
+    "aster-cli",
+    "dist",
+    "shell",
+    "aster.js",
+  ));
+
+  await withInstalledManifests(
+    Object.fromEntries(Object.entries(versions).map(([selector, version]) => [
+      selector,
+      { version },
+    ])),
+    async () => {
+      for (const selector of Object.keys(versions)) {
+        assert.equal(
+          await realpath(findPackageJSON(
+            `@luscious-garden/aster-${selector}`,
+            pathToFileURL(packedExecutable).href,
+          )),
+          await installedManifestPath(selector),
+        );
+      }
+
+      const all = runExecutable(["version", "--all", "--json"]);
+      assertSuccessfulProcess(all, "report packed package versions as JSON");
+      assert.equal(all.stderr, "");
+      assert.deepEqual(JSON.parse(all.stdout), {
+        ok: true,
+        command: "version",
+        payload: { kind: "package-versions", packages },
+      });
+
+      const human = runExecutable(["version", "--all"], workspaceRoot);
+      assertSuccessfulProcess(human, "report packed package versions outside the consumer");
+      assert.equal(human.stderr, "");
+      assert.equal(human.stdout, [
+        "Installed Aster packages:",
+        ...packages.map(({ name, version }) => `  ${name} ${version}`),
+        "",
+      ].join("\n"));
+
+      for (const [selector, version] of Object.entries(versions)) {
+        const name = `@luscious-garden/aster-${selector}`;
+        const named = runExecutable(["version", selector]);
+        const namedJson = runExecutable(["version", selector, "--json"]);
+        assertSuccessfulProcess(named, `report packed ${selector} version`);
+        assertSuccessfulProcess(namedJson, `report packed ${selector} version as JSON`);
+        assert.equal(named.stdout, `${name} ${version}\n`);
+        assert.equal(named.stderr, "");
+        assert.equal(namedJson.stderr, "");
+        assert.deepEqual(JSON.parse(namedJson.stdout), {
+          ok: true,
+          command: "version",
+          payload: {
+            kind: "package-versions",
+            packages: [{ name, version }],
+          },
+        });
+      }
+
+      const plain = runExecutable(["version"]);
+      const plainJson = runExecutable(["version", "--json"]);
+      assertSuccessfulProcess(plain, "report packed CLI product version");
+      assertSuccessfulProcess(plainJson, "report packed CLI product version as JSON");
+      assert.equal(plain.stdout, `Aster ${versions.cli}\n`);
+      assert.equal(plain.stderr, "");
+      assert.deepEqual(JSON.parse(plainJson.stdout), {
+        ok: true,
+        command: "version",
+        payload: {
+          kind: "version",
+          productName: "Aster",
+          productVersion: versions.cli,
+        },
+      });
+
+      const linked = runPnpm(["--dir", consumerRoot, "exec", "aster", "version", "--all"]);
+      assertSuccessfulProcess(linked, "report installed versions through linked Aster binary");
+      assert.equal(linked.stdout, human.stdout);
+    },
+  );
+});
+
+test("fails atomically for damaged installed metadata after startup", async () => {
+  await withInstalledManifests({ icons: "{broken" }, async () => {
+    assertMetadataFailure(["version", "icons"]);
+    assertMetadataFailure(["version", "--all"]);
+    assertSuccessfulProcess(runExecutable(["version", "core"]), "read unaffected Core metadata");
+    assertSuccessfulProcess(runExecutable(["version"]), "read plain CLI version");
+  });
+
+  await withInstalledManifests({ svg: { name: "@luscious-garden/other" } }, async () => {
+    assertMetadataFailure(["version", "svg"]);
+    assertMetadataFailure(["version", "--all"]);
+  });
+
+  const manifest = await installedManifestPath("icons");
+  const hidden = `${manifest}.missing`;
+  await rename(manifest, hidden);
+  try {
+    assertMetadataFailure(["version", "icons"]);
+    assertMetadataFailure(["version", "--all"]);
+  } finally {
+    await rename(hidden, manifest);
+  }
+});
+
+test("leaves missing pre-bootstrap dependencies to native Node errors", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "aster-cli-native-"));
+  const packagesRoot = resolve(root, "node_modules", "@luscious-garden");
+
+  try {
+    await mkdir(packagesRoot, { recursive: true });
+    await cp(await realpath(resolve(
+      consumerRoot,
+      "node_modules",
+      "@luscious-garden",
+      "aster-cli",
+    )), resolve(packagesRoot, "aster-cli"), { recursive: true });
+    const entrypoint = resolve(packagesRoot, "aster-cli", "dist", "shell", "aster.js");
+    const execute = () => spawnSync(process.execPath, [entrypoint, "version"], {
+      cwd: root,
+      encoding: "utf8",
+    });
+
+    const withoutCore = execute();
+    assert.equal(withoutCore.status, 1);
+    assert.equal(withoutCore.stdout, "");
+    assert.match(withoutCore.stderr, /ERR_MODULE_NOT_FOUND/u);
+    assert.match(withoutCore.stderr, /@luscious-garden\/aster-core/u);
+    assert.doesNotMatch(withoutCore.stderr, /ASTER-CLI-999/u);
+
+    await cp(await realpath(resolve(
+      consumerRoot,
+      "node_modules",
+      "@luscious-garden",
+      "aster-core",
+    )), resolve(packagesRoot, "aster-core"), { recursive: true });
+
+    const withoutSvg = execute();
+    assert.equal(withoutSvg.status, 1);
+    assert.equal(withoutSvg.stdout, "");
+    assert.match(withoutSvg.stderr, /ERR_MODULE_NOT_FOUND/u);
+    assert.match(withoutSvg.stderr, /@luscious-garden\/aster-svg/u);
+    assert.doesNotMatch(withoutSvg.stderr, /ASTER-CLI-999/u);
+  } finally {
+    assert.match(relative(resolve(tmpdir()), resolve(root)), /^aster-cli-native-[^\\/]+$/u);
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("keeps packed version requests free of icon and network imports", async () => {
+  const guardPath = resolve(consumerRoot, "version-import-guard.mjs");
+  await writeFile(guardPath, [
+    'import { registerHooks } from "node:module";',
+    "const blocked = /^(?:@luscious-garden\\/aster-icons(?:\\/|$)|node:(?:http|https|net|tls|dns|dgram)(?:\\/|$))/u;",
+    "registerHooks({",
+    "  resolve(specifier, context, nextResolve) {",
+    "    if (blocked.test(specifier)) throw new Error(`Unexpected version dependency ${specifier}`);",
+    "    return nextResolve(specifier, context);",
+    "  },",
+    "});",
+    'globalThis.fetch = () => { throw new Error("Unexpected version fetch"); };',
+    "",
+  ].join("\n"), "utf8");
+
+  for (const arguments_ of [
+    ["version"],
+    ["version", "icons"],
+    ["version", "--all"],
+    ["version", "--all", "--json"],
+  ]) {
+    const result = spawnSync(process.execPath, [
+      "--import",
+      pathToFileURL(guardPath).href,
+      resolve(consumerRoot, "node_modules", "@luscious-garden", "aster-cli", "dist", "shell", "aster.js"),
+      ...arguments_,
+    ], { cwd: consumerRoot, encoding: "utf8" });
+
+    assertSuccessfulProcess(result, `execute guarded ${arguments_.join(" ")}`);
+    assert.equal(result.stderr, "");
+  }
 });
 
 test("returns the same result through the executable and an independent plugin host", () => {
