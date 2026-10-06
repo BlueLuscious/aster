@@ -209,7 +209,7 @@ test("renders standalone options and one collection as a JSON export plan", () =
     "--size",
     "32",
     "--colour",
-    "#00ff00",
+    "#00FF00",
     "--direction",
     "rtl",
     "--label",

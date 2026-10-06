@@ -186,6 +186,29 @@ test("plans one deterministic immutable icon SVG export", async () => {
   }
 });
 
+test("accepts uppercase hexadecimal paint through export planning", async () => {
+  for (const [colour, expected] of [
+    ["#ABC", "#aabbcc"],
+    ["#ABCDEF", "#abcdef"],
+  ] as const) {
+    const result = await AsterCommands.execute({
+      command: "export",
+      subject: "icon",
+      identity: representativeIdentity,
+      options: { colour },
+    }, context);
+
+    if (!result.ok || result.payload.kind !== "export") {
+      assert.fail(`Expected an SVG export for ${colour}.`);
+    }
+
+    assert.match(
+      result.payload.plan.artefacts[0]?.content ?? "",
+      new RegExp(` color="${expected}"`, "u"),
+    );
+  }
+});
+
 test("loads only exact base, variant, and collection export definitions", async () => {
   const base = createIcon("camera", { namespace: "testing" });
   const variant = createIcon("camera", {
