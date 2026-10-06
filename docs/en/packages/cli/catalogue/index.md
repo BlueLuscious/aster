@@ -39,7 +39,10 @@ loader result for an identity promised by discovery is provider failure, not `no
 The internal exact resolver reconstructs loaded values through Core and requires their identity,
 metadata, and collection membership to agree with accepted discovery. Icon resolution invokes one
 icon loader. Collection resolution invokes one collection loader and consumes only the members
-carried by that definition; it does not issue redundant member loader calls. Export and Review use
+carried by that definition's ordered `members` list; it does not issue redundant member loader
+calls. Core validates the alias dictionary and its derived list before CLI compares canonical
+membership with discovery. Collection-local aliases never become CLI identity shortcuts or
+discovery fields. Export and Review use
 this metadata-first exact-resolution path before constructing any plan.
 
 Context acceptance snapshots all three callable capabilities without invoking them and preserves

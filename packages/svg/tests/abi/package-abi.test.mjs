@@ -93,7 +93,7 @@ test("renders deterministic markup from one explicit built-package definition", 
   assert.equal(first, second);
   assert.equal(
     first,
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#112233" role="img" aria-label="Circle"><circle cx="12" cy="12" r="4" fill="none" fill-rule="nonzero" stroke="#abcdef" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" opacity="1" fill-opacity="1" stroke-opacity="1"/></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" color="#112233" data-rendered-by="Aster" role="img" aria-label="Circle"><circle cx="12" cy="12" r="4" fill="none" fill-rule="nonzero" stroke="#abcdef" stroke-width="2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" opacity="1" fill-opacity="1" stroke-opacity="1"/></svg>',
   );
 });
 

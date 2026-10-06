@@ -1,4 +1,4 @@
-import { dirname, relative, resolve, sep } from "node:path";
+import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 
 /**
  * @description Resolves, relates, and presents repository filesystem paths deterministically.
@@ -41,7 +41,9 @@ export class RepositoryPathResolver {
   contains(root, target) {
     const relation = relative(resolve(root), resolve(target));
 
-    return relation === "" || (relation !== ".." && !relation.startsWith(`..${sep}`));
+    return relation === "" || (
+      !isAbsolute(relation) && relation !== ".." && !relation.startsWith(`..${sep}`)
+    );
   }
 
   /**

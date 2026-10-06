@@ -32,8 +32,10 @@ aster export icon <identity> [--catalogue <provider>] [render-options] --json
 aster export collection <identity> [--catalogue <provider>] [render-options] --json
 aster review icon <identity> [--catalogue <provider>] [--output <root>] [--replace]
 aster review collection <identity> [--catalogue <provider>] [--output <root>] [--replace]
-aster help [export|review|list|search|show]
-aster version
+aster help [export|help|list|review|search|show|version]
+aster version [--json]
+aster version <core|icons|svg|cli> [--json]
+aster version --all [--json]
 ```
 
 Export render options are `--size`, `--colour`, `--fill`, `--stroke`, `--stroke-width`, and
@@ -51,6 +53,28 @@ Icon export without `--json` or `--output` writes one raw SVG document. JSON mod
 complete host-neutral plan for either subject. Collection export requires JSON or an output root.
 `--json` and `--output` are mutually exclusive shell concerns and never enter
 `AsterCommandInvocationType` together.
+
+Plain `aster version` reports the installed CLI version alone. Named version requests read only
+the selected public package manifest; `--all` reads Core, Icons, SVG, and CLI in that order.
+Both forms report installed versions resolved from the CLI executable, not the caller's working
+directory or the latest versions on a registry. The private Import package is not reported.
+The human result for a named request is one `@luscious-garden/aster-<package> <version>` line;
+`--all` prefixes the ordered package lines with `Installed Aster packages:`. JSON uses the
+existing result envelope with `command: "version"` and a `package-versions` payload whose
+`packages` array contains either the selected record or all four records:
+
+```json
+{"ok":true,"command":"version","payload":{"kind":"package-versions","packages":[{"name":"@luscious-garden/aster-core","version":"0.1.0-rc.1"}]}}
+```
+
+The version in this example illustrates the result shape; actual values come from the installed
+manifests. Plain `version --json` retains its separate `version` payload with `productName` and
+`productVersion`. Neither form queries the network, checks dependency compatibility, or reports
+published release history. Malformed installed metadata after startup produces status `1` and
+one sanitised `ASTER-CLI-999` failure, without a partial list. Human mode writes that failure
+to stderr; JSON mode writes one failure result to stdout. Missing Core or SVG before the CLI
+starts remains a native Node failure. The [Version Metadata](version/index.md) feature owns
+manifest acquisition.
 
 Review returns a headless technical plan. JSON presents that plan without effects. Human execution
 serialises and publishes static HTML beneath `aster-review` or an explicit `--output` root.
@@ -97,22 +121,25 @@ behaviour.
 
 ## Runtime Composition
 
-The shell is divided into [Parsing](parsing/index.md), [Presentation](presentation/index.md), and
-[Output](output/index.md) subfeatures. `NodeShell` coordinates those private boundaries without
-moving their host authority into the programmatic command API.
+The shell is divided into [Parsing](parsing/index.md), [Presentation](presentation/index.md),
+[Output](output/index.md), and private [Version Metadata](version/index.md) subfeatures.
+`NodeShell` coordinates the active command and output boundaries without moving host authority
+into the programmatic command API.
 
 | Class | Responsibility |
 | --- | --- |
 | `CommandLineParser` | Dispatches argv adaptation to explicit command-owned parsers. |
 | `CommandOutputPresenter` | Selects human or JSON presentation, streams, and exit status. |
 | `ShellDiagnosticFactory` | Adapts parser, output-host, and unexpected shell faults into canonical command diagnostics. |
-| `NodeShell` | Executes the host-neutral command before optionally publishing its complete export or review plan. |
+| `NodeShell` | Acquires requested installed versions or executes the host-neutral command before optionally publishing a complete export or review plan. |
 
-The executable entrypoint is the only module that imports `node:process`. Node path and filesystem
-imports occur only in the private [Output](output/index.md) subfeature. The host-neutral compiler excludes the
-complete shell tree. The referenced shell project consumes host-neutral declarations, admits Node
-types, and emits only the private binary modules. Importing `@luscious-garden/aster-cli` resolves only the
-side-effect-free programmatic root and never evaluates the entrypoint.
+The executable entrypoint is the only module that imports `node:process` or uses the CommonJS
+manifest bridge. Node path and output-filesystem imports occur in private [Output](output/index.md);
+the private [Version Metadata](version/index.md) reader owns installed package resolution and
+manifest reads. The host-neutral compiler excludes the complete shell tree. The referenced shell
+project consumes host-neutral declarations, admits Node types, and emits only private binary
+modules. Importing `@luscious-garden/aster-cli` resolves only the side-effect-free programmatic
+root and never evaluates the entrypoint.
 
 Host-neutral command semantics remain authoritative in [CLI Command](../command/index.md),
 [CLI Export](../export/index.md), and [CLI Review](../review/index.md). [CLI Workflow](../workflow.md)

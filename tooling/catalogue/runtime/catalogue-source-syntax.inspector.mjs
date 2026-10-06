@@ -1,5 +1,6 @@
 import ts from "typescript";
 
+import { catalogueCollectionIconAliasPatternSource } from "../constants/catalogue-collection-icon-alias-pattern-source.constant.mjs";
 import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family-kinds.constant.mjs";
 import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
@@ -7,6 +8,12 @@ import { CatalogueSourceError } from "./catalogue-source.error.mjs";
  * @description Validates canonical definition syntax, authored identity and collection membership.
  */
 export class CatalogueSourceSyntaxInspector {
+  /** @description Compiled collection-local icon alias grammar. */
+  #collectionIconAliasPattern = new RegExp(
+    catalogueCollectionIconAliasPatternSource,
+    "u",
+  );
+
   /** @description Metadata-only canonical source inspection capability. */
   #manifests;
 
@@ -330,39 +337,60 @@ export class CatalogueSourceSyntaxInspector {
   #collectionMemberReferences(sourcePath, sourceFile, definition) {
     const icons = this.#propertyValue(sourcePath, definition, "icons", true);
 
-    if (icons === undefined || !ts.isArrayLiteralExpression(icons)) {
+    if (icons === undefined || !ts.isObjectLiteralExpression(icons)) {
       throw new CatalogueSourceError(
-        `${sourcePath} must declare icons as an array literal.`,
+        `${sourcePath} must declare icons as an object literal.`,
       );
     }
 
     const imports = this.#namedImports(sourcePath, sourceFile);
     const references = [];
+    const aliases = new Set();
     const members = new Set();
 
-    for (const member of icons.elements) {
-      if (!ts.isIdentifier(member)) {
+    for (const property of icons.properties) {
+      if (
+        !ts.isPropertyAssignment(property)
+        || !ts.isIdentifier(property.name)
+        || !ts.isIdentifier(property.initializer)
+      ) {
         throw new CatalogueSourceError(
-          `${sourcePath} collection members must be imported identifiers.`,
+          `${sourcePath} collection icons must use direct lower camel-case properties assigned to imported identifiers.`,
         );
       }
 
-      if (members.has(member.text)) {
+      const alias = property.name.text;
+      const member = property.initializer.text;
+
+      if (!this.#collectionIconAliasPattern.test(alias)) {
         throw new CatalogueSourceError(
-          `${sourcePath} contains duplicate collection member ${member.text}.`,
+          `${sourcePath} collection icon alias ${alias} must use lower camel-case syntax.`,
         );
       }
 
-      const reference = imports.get(member.text);
+      if (aliases.has(alias)) {
+        throw new CatalogueSourceError(
+          `${sourcePath} contains duplicate collection icon alias ${alias}.`,
+        );
+      }
+
+      if (members.has(member)) {
+        throw new CatalogueSourceError(
+          `${sourcePath} contains duplicate collection member ${member}.`,
+        );
+      }
+
+      const reference = imports.get(member);
 
       if (reference === undefined) {
         throw new CatalogueSourceError(
-          `${sourcePath} collection member ${member.text} must use a runtime named import.`,
+          `${sourcePath} collection member ${member} must use a runtime named import.`,
         );
       }
 
-      members.add(member.text);
-      references.push(reference);
+      aliases.add(alias);
+      members.add(member);
+      references.push(Object.freeze({ alias, ...reference }));
     }
 
     return Object.freeze(references);
@@ -372,7 +400,7 @@ export class CatalogueSourceSyntaxInspector {
    * @description Indexes static named imports by their local source identifier.
    * @param {string} sourcePath - Absolute source path used for failure context.
    * @param {import("typescript").SourceFile} sourceFile - Parsed TypeScript source.
-   * @returns {ReadonlyMap<string, import("../contracts/internal/catalogue-collection-member-reference.contract.mjs").ICatalogueCollectionMemberReference>} Named import records.
+   * @returns {ReadonlyMap<string, Omit<import("../contracts/internal/catalogue-collection-member-reference.contract.mjs").ICatalogueCollectionMemberReference, "alias">>} Named import records before collection-local alias assignment.
    */
   #namedImports(sourcePath, sourceFile) {
     const imports = new Map();

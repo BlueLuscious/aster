@@ -50,20 +50,28 @@ test("reports required hierarchy entries through an injected filesystem", async 
     issues,
   );
 
-  assert.deepEqual(issues.snapshot(), [
+  const snapshot = issues.snapshot();
+
+  assert.deepEqual(snapshot, [
     "Missing canonical documentation entry: docs/en/project/index.md",
   ]);
+  assert.ok(Object.isFrozen(snapshot));
 });
 
 test("reports missing and stale package documentation membership", async () => {
   const paths = new RepositoryPathResolver();
   const workspaceRoot = resolve("fixture");
   const packagesRoot = resolve(workspaceRoot, "packages");
+  const documentedPackagesRoot = resolve(workspaceRoot, "docs/en/packages");
   const issues = new DocumentationIssueCollector();
   const inspector = new PackageDocumentationMirroringInspector(
     {
       async read(path) {
-        return path === packagesRoot ? ["core", "svg"] : ["core", "ghost"];
+        if (path === packagesRoot) {
+          return ["core", "svg"];
+        }
+
+        return path === documentedPackagesRoot ? ["core", "ghost"] : [];
       },
     },
     paths,
@@ -119,6 +127,32 @@ test("applies local-reference and link policies in document order", async () => 
   ]);
 });
 
+test("reports malformed local link encoding and continues inspecting links", async () => {
+  const paths = new RepositoryPathResolver();
+  const workspaceRoot = resolve("fixture");
+  const document = {
+    path: resolve(workspaceRoot, "docs/en/index.md"),
+    content: "[Malformed](%GG) [Missing](missing.md)",
+  };
+  const issues = new DocumentationIssueCollector();
+  const policy = new LocalLinkPolicy(
+    { async exists() { return false; } },
+    new MarkdownLinkTargetExtractor(),
+    paths,
+  );
+
+  await policy.inspect({
+    workspaceRoot,
+    documentationRoot: resolve(workspaceRoot, "docs/en"),
+    documents: [document],
+  }, document, issues);
+
+  assert.deepEqual(issues.snapshot(), [
+    "docs/en/index.md contains invalid local link encoding: %GG",
+    "docs/en/index.md contains a broken local link: missing.md",
+  ]);
+});
+
 test("coordinates explicit roots, acquisition and policy order", async () => {
   const paths = new RepositoryPathResolver();
   const observed = [];
@@ -147,9 +181,40 @@ test("coordinates explicit roots, acquisition and policy order", async () => {
   );
   const workspaceRoot = resolve("explicit-workspace");
 
-  assert.deepEqual(await verifier.verify(workspaceRoot), {
+  const report = await verifier.verify(workspaceRoot);
+
+  assert.deepEqual(report, {
     issues: ["root issue", "document issue"],
     markdownFileCount: 1,
   });
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.issues));
   assert.deepEqual(observed, [workspaceRoot, resolve(workspaceRoot, "docs/en"), 1]);
+});
+
+test("isolates acquired documents before invoking asynchronous policies", async () => {
+  const sourceDocument = { path: "first.md", content: "# First\n" };
+  const sourceDocuments = [sourceDocument];
+  const verifier = new DocumentationVerifier(
+    [],
+    { async read() { return sourceDocuments; } },
+    {
+      async inspect(context) {
+        sourceDocument.content = "# Changed\n";
+        sourceDocuments.push({ path: "second.md", content: "# Second\n" });
+
+        assert.ok(Object.isFrozen(context.documents));
+        assert.ok(Object.isFrozen(context.documents[0]));
+        assert.deepEqual(context.documents, [
+          { path: "first.md", content: "# First\n" },
+        ]);
+      },
+    },
+    new RepositoryPathResolver(),
+  );
+
+  assert.deepEqual(await verifier.verify(resolve("fixture")), {
+    issues: [],
+    markdownFileCount: 1,
+  });
 });

@@ -27,8 +27,10 @@ Identity-specific assertions remain only where the identity carries the behaviou
 Declared directional arrow pairs therefore retain exact RTL and relationship evidence; generic
 validity, membership and discovery do not select a named icon or collection.
 
-Compile-time tests verify isolated definition imports, immutable loader contracts, manifest
-contracts and rejected mutation. Runtime tests compare every metadata-only
+Compile-time tests verify isolated definition imports, concrete collection alias inference,
+unknown-alias rejection, readonly dictionary properties, immutable loader contracts, manifest
+contracts and rejected mutation. Runtime tests require the ordered `members` view to agree with
+the authored dictionary and retain the same canonical icon references. They compare every metadata-only
 manifest entry with canonical definitions, reject embedded geometry and verify deep freezing.
 They also require loader and manifest keys to agree exactly, freeze every loader and resolve every
 loader to its canonical definition.
@@ -62,7 +64,8 @@ a second handwritten icon or collection inventory.
 A clean consumer installs actual locally packed Core and Icons tarballs with scripts disabled and
 without registry access. Evidence compares the installed Icons payload with the complete emitted
 distribution plus its package metadata, rejects source and test trees, compiles isolated icon,
-collection, manifest and dynamic imports through published declarations, and executes the emitted
+collection, manifest and dynamic imports through packed declarations, rejects unknown collection
+aliases and alias mutation, and executes ordered membership access in the emitted
 JavaScript without any workspace source file. Separate failure evidence removes one installed
 facade and verifies that loader invocation preserves the native `ERR_MODULE_NOT_FOUND` rejection.
 

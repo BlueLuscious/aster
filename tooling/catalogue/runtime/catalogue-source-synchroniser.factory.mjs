@@ -47,7 +47,6 @@ export class CatalogueSourceSynchroniserFactory {
           ),
         ),
       ),
-      serialiser,
       new CatalogueSourceFacadePlanner(
         serialiser,
         paths,

@@ -83,5 +83,9 @@ workflow suite because that suite has just rebuilt every package and no subseque
 invalidate its output. Frozen dependency installation remains a CI and release prerequisite rather
 than a test responsibility.
 
+CI runs the same frozen installation and complete verification gate on Ubuntu and Windows. Both
+jobs must pass; Windows also executes platform-specific path checks that are skipped on Ubuntu.
+Local verification remains useful but does not replace either clean CI environment.
+
 Package-specific guarantees remain with the corresponding [package documentation](../packages/index.md),
 and private repository verification behaviour remains with [Repository Tooling](../tooling/index.md).

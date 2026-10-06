@@ -18,6 +18,7 @@ payloads to command-family collaborators:
 | `ExportHumanOutputPresenter` | Presents raw icon SVG, export plans, and truthful publication summaries. |
 | `ReviewHumanOutputPresenter` | Presents deterministic headless plan summaries and committed or replaced review destinations. |
 | `HelpHumanOutputPresenter` | Presents canonical command descriptors and usage forms. |
+| `HumanOutputPresenter` | Also formats the selected package as one line or the complete installed family with an explicit heading. |
 | `HumanTextFormatter` | Formats shared counts and deterministic sequences. |
 | `ShellIdentityFormatter` | Formats portable provider, collection, and icon identities. |
 

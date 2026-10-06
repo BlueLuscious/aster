@@ -100,6 +100,7 @@ export class IconNodeNormaliser {
           record,
           ["kind", "x", "y", "width", "height", "radiusX", "radiusY"],
           path,
+          ["kind", "x", "y", "width", "height"],
         );
         return this.#normaliseRect(record, presentation, path);
       case iconNodeKinds.line:
@@ -152,11 +153,11 @@ export class IconNodeNormaliser {
     path: string,
   ): IconNodeType {
     const radiusX =
-      "radiusX" in record
+      Object.hasOwn(record, "radiusX")
         ? this.#validator.nonNegativeNumber(record.radiusX, `${path}.radiusX`)
         : undefined;
     const radiusY =
-      "radiusY" in record
+      Object.hasOwn(record, "radiusY")
         ? this.#validator.nonNegativeNumber(record.radiusY, `${path}.radiusY`)
         : undefined;
 
@@ -182,7 +183,7 @@ export class IconNodeNormaliser {
     record: Record<string, unknown>,
     path: string,
   ): object {
-    const input: Record<string, unknown> = {};
+    const input: Record<string, unknown> = Object.create(null);
 
     for (const field of iconPresentationFields) {
       if (Object.hasOwn(record, field)) {
@@ -202,17 +203,20 @@ export class IconNodeNormaliser {
    * @param record - Authored node record.
    * @param geometryFields - Fields owned by the selected geometry.
    * @param path - Logical node path.
+   * @param requiredFields - Geometry fields that must be present.
    * @returns Nothing.
    */
   #acceptNodeFields(
     record: Record<string, unknown>,
     geometryFields: readonly string[],
     path: string,
+    requiredFields: readonly string[] = geometryFields,
   ): void {
     this.#validator.exactFields(
       record,
       [...geometryFields, ...iconPresentationFields],
       path,
+      requiredFields,
     );
   }
 }

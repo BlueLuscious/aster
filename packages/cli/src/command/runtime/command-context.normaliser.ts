@@ -10,8 +10,10 @@ import type {
 } from "../../catalogue/contracts/index.js";
 import { CanonicalIdentityValidator } from "../../shared/runtime/canonical-identity.validator.js";
 import { StructuredDataInspector } from "../../shared/runtime/structured-data.inspector.js";
+import { asterInstalledPackageNames } from "../constants/aster-installed-package-names.constant.js";
 import { commandDiagnosticSchema } from "../constants/command-diagnostic-schema.constant.js";
 import type { AsterCommandContext } from "../contracts/index.js";
+import type { AsterInstalledPackageVersion } from "../contracts/aster-installed-package-version.contract.js";
 import type { TAcceptanceResult } from "../types/internal/acceptance-result.type.js";
 import { CommandDiagnosticFactory } from "./command-diagnostic.factory.js";
 
@@ -44,10 +46,11 @@ export class CommandContextNormaliser {
       "catalogues",
       "productName",
       "productVersion",
+      "packageVersions",
     ], ["catalogues", "productName", "productVersion"]);
 
     if (record === undefined) {
-      return this.#invalid("expected only catalogues, productName, and productVersion");
+      return this.#invalid("expected only catalogues, productName, productVersion, and optional packageVersions");
     }
 
     const providerValues = this.#data.array(record.catalogues);
@@ -62,6 +65,14 @@ export class CommandContextNormaliser {
 
     if (!this.#isNonEmptyString(record.productVersion)) {
       return this.#invalid("expected context.productVersion to be a non-empty string");
+    }
+
+    const packageVersions = record.packageVersions === undefined
+      ? undefined
+      : this.#acceptPackageVersions(record.packageVersions);
+
+    if (Object.hasOwn(record, "packageVersions") && packageVersions === undefined) {
+      return this.#invalid("expected context.packageVersions to contain unique public package names and versions");
     }
 
     const catalogues: CatalogueProvider[] = [];
@@ -98,6 +109,7 @@ export class CommandContextNormaliser {
         catalogues: Object.freeze([...catalogues]),
         productName: record.productName,
         productVersion: record.productVersion,
+        ...(packageVersions === undefined ? {} : { packageVersions }),
       }),
     });
   }
@@ -125,6 +137,46 @@ export class CommandContextNormaliser {
    */
   #isNonEmptyString(value: unknown): value is string {
     return typeof value === "string" && value.length > 0 && value.trim() === value;
+  }
+
+  /**
+   * @description Copies valid package evidence without trusting host-owned containers.
+   * @param value - Candidate sequence of installed package manifests.
+   * @returns Frozen canonical records or no value after rejection.
+   */
+  #acceptPackageVersions(value: unknown): readonly AsterInstalledPackageVersion[] | undefined {
+    const entries = this.#data.array(value);
+
+    if (
+      entries === undefined
+      || entries.length === 0
+      || entries.length > Object.keys(asterInstalledPackageNames).length
+    ) {
+      return undefined;
+    }
+
+    const accepted: AsterInstalledPackageVersion[] = [];
+    const names = new Set<string>();
+
+    for (const entry of entries) {
+      const record = this.#data.record(entry, ["name", "version"], ["name", "version"]);
+
+      if (
+        record === undefined
+        || typeof record.name !== "string"
+        || !Object.values(asterInstalledPackageNames).some((name) => name === record.name)
+        || !this.#isNonEmptyString(record.version)
+        || names.has(record.name)
+      ) {
+        return undefined;
+      }
+
+      const name = record.name;
+      names.add(name);
+      accepted.push(Object.freeze({ name, version: record.version }));
+    }
+
+    return Object.freeze(accepted);
   }
 
   /**

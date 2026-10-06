@@ -195,6 +195,16 @@ test("resolves isolated runtime and declaration facades without source files", a
     'import { AsterCollectionLoaders, AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     "const icon: IconDefinition = Camera;",
     "const collection: CollectionDefinition = AmellusCollection;",
+    "const cameraFromCollection: IconDefinition = AmellusCollection.icons.camera;",
+    "const orderedMembers: readonly IconDefinition[] = AmellusCollection.members;",
+    'const cameraAlias: keyof typeof AmellusCollection.icons = "camera";',
+    "// @ts-expect-error Packed declarations reject unknown collection aliases.",
+    "AmellusCollection.icons.unknown;",
+    "if (false) {",
+    "  // @ts-expect-error Packed collection alias properties are readonly.",
+    "  AmellusCollection.icons.camera = Camera;",
+    "}",
+    "if (cameraFromCollection !== Camera || cameraAlias !== \"camera\" || !Object.values(collection.icons).every((member, index) => member === orderedMembers[index])) throw new Error(\"Packed collection membership mismatch.\");",
     "const iconEntry: IconManifestEntry | undefined = AsterIconManifest.find(({ key }) => key === \"aster/camera\");",
     "const collectionEntry: CollectionManifestEntry | undefined = AsterCollectionManifest.find(({ key }) => key === \"amellus\");",
     'const iconLoader: IconDefinitionLoader | undefined = AsterIconLoaders["aster/camera"];',
@@ -202,7 +212,7 @@ test("resolves isolated runtime and declaration facades without source files", a
     'if (iconLoader === undefined || collectionLoader === undefined) throw new Error("Expected loaders.");',
     "const loadedIcon = await iconLoader();",
     "const loadedCollection = await collectionLoader();",
-    "export const result = `${icon.identity.name}:${collection.identity.name}:${iconEntry?.symbol}:${collectionEntry?.symbol}:${loadedIcon.identity.name}:${loadedCollection.identity.name}`;",
+    "export const result = `${icon.identity.name}:${collection.identity.name}:${iconEntry?.symbol}:${collectionEntry?.symbol}:${loadedIcon.identity.name}:${loadedCollection.identity.name}:${orderedMembers === loadedCollection.members}`;",
     "",
   ].join("\n");
   await writeFile(resolve(consumerRoot, "consumer.ts"), source, "utf8");
@@ -253,7 +263,7 @@ test("resolves isolated runtime and declaration facades without source files", a
   assert.equal(executed.stderr, "");
   assert.equal(
     executed.stdout,
-    "camera:amellus:Camera:AmellusCollection:camera:amellus",
+    "camera:amellus:Camera:AmellusCollection:camera:amellus:true",
   );
 });
 

@@ -115,7 +115,7 @@ test("resolves canonical built-in icon and collection definitions", async () => 
     assert.equal(collection.value.collection?.identity.name, "amellus");
     assert.equal(
       collection.value.icons.length,
-      collection.value.collection?.icons.length,
+      collection.value.collection?.members.length,
     );
   }
 });
@@ -179,14 +179,14 @@ test("resolves and isolates one exact icon without collection loading or caching
 test("resolves one collection loader and projects only its required members", async () => {
   const bravo = authoredIcon("bravo");
   const alpha = authoredIcon("alpha");
-  const source: CollectionDefinition = {
+  const source = structuredClone(Collection.define({
     identity: { namespace: "testing", name: "essentials" },
-    icons: [bravo, alpha],
+    icons: { bravo, alpha },
     metadata: {
       displayName: "Essentials",
       tags: ["testing"],
     },
-  };
+  }));
   const membership = [source.identity];
   const discovery: CatalogueDiscovery = {
     icons: [
@@ -197,7 +197,7 @@ test("resolves one collection loader and projects only its required members", as
     collections: [{
       identity: source.identity,
       metadata: source.metadata,
-      icons: source.icons.map((icon) => icon.identity),
+      icons: source.members.map((icon) => icon.identity),
     }],
   };
   let iconLoads = 0;
@@ -227,7 +227,8 @@ test("resolves one collection loader and projects only its required members", as
   );
 
   (source.metadata as unknown as { displayName: string }).displayName = "Changed";
-  (source.icons as unknown as IconDefinition[])[0] = authoredIcon("changed");
+  (source.icons as unknown as Record<string, IconDefinition>).bravo =
+    authoredIcon("changed");
 
   assert.equal(resolved.accepted, true);
   assert.equal(iconLoads, 0);
@@ -324,7 +325,7 @@ test("rejects collection identity, metadata, and membership drift without partia
   const bravo = Icon.define(authoredIcon("bravo"));
   const canonical = Collection.define({
     identity: { namespace: "testing", name: "essentials" },
-    icons: [alpha, bravo],
+    icons: { alpha, bravo },
     metadata: { displayName: "Essentials" },
   });
   const membership = [canonical.identity];
@@ -333,7 +334,7 @@ test("rejects collection identity, metadata, and membership drift without partia
     collections: [{
       identity: canonical.identity,
       metadata: canonical.metadata,
-      icons: canonical.icons.map((icon) => icon.identity),
+      icons: canonical.members.map((icon) => icon.identity),
     }],
   };
   const cases = [
@@ -355,7 +356,11 @@ test("rejects collection identity, metadata, and membership drift without partia
     },
     {
       name: "membership mismatch",
-      definition: Collection.define({ ...canonical, icons: [bravo, alpha] }),
+      definition: Collection.define({
+        identity: canonical.identity,
+        icons: { bravo, alpha },
+        metadata: canonical.metadata,
+      }),
       message: "collection testing/essentials loader returned members inconsistent with discovery",
     },
   ] as const;
@@ -405,7 +410,7 @@ test("sanitises missing, failed, and invalid exact collection definitions", asyn
   const alpha = Icon.define(authoredIcon("alpha"));
   const canonical = Collection.define({
     identity: { namespace: "testing", name: "essentials" },
-    icons: [alpha],
+    icons: { alpha },
     metadata: { displayName: "Essentials" },
   });
   const discovery: CatalogueDiscovery = {
@@ -413,7 +418,7 @@ test("sanitises missing, failed, and invalid exact collection definitions", asyn
     collections: [{
       identity: canonical.identity,
       metadata: canonical.metadata,
-      icons: canonical.icons.map((icon) => icon.identity),
+      icons: canonical.members.map((icon) => icon.identity),
     }],
   };
   const cases = [
@@ -432,6 +437,14 @@ test("sanitises missing, failed, and invalid exact collection definitions", asyn
     {
       name: "invalid",
       load: async () => ({ identity: canonical.identity }) as CollectionDefinition,
+      message: "selected collection definition is invalid",
+    },
+    {
+      name: "inconsistent complete definition",
+      load: async () => ({
+        ...canonical,
+        members: [],
+      }) as CollectionDefinition,
       message: "selected collection definition is invalid",
     },
   ] as const;

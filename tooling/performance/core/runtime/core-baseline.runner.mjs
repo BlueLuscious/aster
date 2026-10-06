@@ -43,7 +43,7 @@ export class CoreBaselineRunner {
 
   /**
    * @description Runs representative icon and collection construction comparisons.
-   * @returns {Promise<object>} Immutable serialisable Core baseline report.
+   * @returns {Promise<object>} Frozen Core report envelope retaining injected evidence by reference.
    */
   async run() {
     /** @type {import("../../shared/contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario[]} */
@@ -99,6 +99,30 @@ export class CoreBaselineRunner {
         execute: (iterations) =>
           this.#defineCollection(
             this.#fixtures.canonicalCollection,
+            iterations,
+          ),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.collectionRepresentativeMutable,
+        execute: (iterations) =>
+          this.#defineCollection(
+            this.#fixtures.representativeMutableCollection,
+            iterations,
+          ),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.collectionRepresentativeCanonical,
+        execute: (iterations) =>
+          this.#defineCollection(
+            this.#fixtures.representativeCanonicalCollection,
+            iterations,
+          ),
+      }),
+      Object.freeze({
+        ...coreBaseline.scenarios.collectionLargeCanonical,
+        execute: (iterations) =>
+          this.#defineCollection(
+            this.#fixtures.largeCanonicalCollection,
             iterations,
           ),
       }),
@@ -170,7 +194,7 @@ export class CoreBaselineRunner {
 
   /**
    * @description Reconstructs one prepared collection repeatedly through the public API.
-   * @param {import("@luscious-garden/aster-core").CollectionDefinition} source - Prepared collection input.
+   * @param {import("@luscious-garden/aster-core").CollectionDefinitionInput} source - Prepared collection input.
    * @param {number} iterations - Number of public API operations to execute.
    * @returns {number} Deterministic checksum preventing discarded scenario results.
    */
@@ -181,7 +205,7 @@ export class CoreBaselineRunner {
       const collection = Collection.define(source);
       checksum = (
         checksum +
-        collection.icons.length +
+        collection.members.length +
         collection.identity.name.length
       ) >>> 0;
     }

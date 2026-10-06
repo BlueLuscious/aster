@@ -75,8 +75,34 @@ function adoptionRequest(
 
 test("authors one portable definition and renders deterministic review SVG", () => {
   const definition = authorArrowLeft();
-  assert.equal(Svg.render(definition), Svg.render(definition));
+  const markup = Svg.render(definition);
+
+  assert.equal(markup, Svg.render(definition));
+  assert.match(markup, / data-rendered-by="Aster" aria-hidden="true"/u);
   assert.doesNotMatch(Svg.render(definition), /Arrow Left|mirror|ISC|BlueLuscious/u);
+});
+
+test("parses rendered XML while keeping Import's narrower source subset", () => {
+  const definition = authorArrowLeft();
+  const markup = Svg.render(definition);
+  const result = IconImport.inspect({
+    format: iconImportFormats.svg,
+    sourceId: "workflow/rendered-arrow-left.svg",
+    identity: definition.identity,
+    content: markup,
+  });
+
+  assert.equal(result.successful, false);
+  assert.equal(
+    result.diagnostics.some((diagnostic) => diagnostic.code.startsWith("ASTER-SYNTAX-")),
+    false,
+  );
+  assert.ok(result.diagnostics.some((diagnostic) =>
+    diagnostic.code === "ASTER-TECHNICAL-005" &&
+    diagnostic.span !== undefined &&
+    markup.slice(diagnostic.span.start.offset, diagnostic.span.end.offset) ===
+      "data-rendered-by"
+  ));
 });
 
 test("adopts equivalent SVG into editable TypeScript and the same portable definition", () => {
@@ -212,9 +238,9 @@ test("plans one discovered collection through CLI and SVG boundaries", async () 
     throw new Error("Expected successful canonical collection export planning.");
   }
 
-  assert.equal(result.payload.plan.artefacts.length, collection.icons.length);
+  assert.equal(result.payload.plan.artefacts.length, collection.members.length);
   assert.deepEqual(
     result.payload.plan.artefacts.map((artefact) => artefact.content).sort(),
-    collection.icons.map((definition) => Svg.render(definition)).sort(),
+    collection.members.map((definition) => Svg.render(definition)).sort(),
   );
 });

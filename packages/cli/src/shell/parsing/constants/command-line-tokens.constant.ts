@@ -1,5 +1,6 @@
 import { asterCommandNames } from "../../../command/constants/aster-command-names.constant.js";
 import { asterCommandSubjects } from "../../../command/constants/aster-command-subjects.constant.js";
+import { asterVersionScopes } from "../../../command/constants/aster-version-scopes.constant.js";
 
 /**
  * @description Immutable standalone-shell tokens that adapt argv into structured commands.
@@ -22,6 +23,8 @@ export const commandLineTokens = Object.freeze({
   }),
   /** @description Closed standalone option-token vocabulary. */
   options: Object.freeze({
+    /** @description Option selecting the complete public installed package family. */
+    all: `--${asterVersionScopes.all}`,
     /** @description Option selecting one catalogue provider. */
     catalogue: "--catalogue",
     /** @description Option filtering by collection membership. */

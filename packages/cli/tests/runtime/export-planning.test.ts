@@ -83,7 +83,10 @@ function createCollection(
 ): CollectionDefinition {
   return Collection.define({
     identity: { namespace: "testing", name },
-    icons,
+    icons: Object.fromEntries(icons.map((icon, index) => [
+      `icon${index + 1}`,
+      icon,
+    ])),
     metadata: { displayName: name },
   });
 }
@@ -113,7 +116,7 @@ function createFixture(
     icons: icons.map((definition) => ({
       definition,
       memberships: collections
-        .filter((collection) => collection.icons.some((icon) =>
+        .filter((collection) => collection.members.some((icon) =>
           JSON.stringify(icon.identity) === JSON.stringify(definition.identity),
         ))
         .map((collection) => collection.identity),
@@ -167,6 +170,10 @@ test("plans one deterministic immutable icon SVG export", async () => {
     );
     assert.equal(first.payload.plan.artefacts[0]?.mediaType, "image/svg+xml");
     assert.match(first.payload.plan.artefacts[0]?.content ?? "", /^<svg /u);
+    assert.match(
+      first.payload.plan.artefacts[0]?.content ?? "",
+      / data-rendered-by="Aster" role="img"/u,
+    );
     assert.match(first.payload.plan.artefacts[0]?.content ?? "", /width="32"/u);
     assert.match(
       first.payload.plan.artefacts[0]?.content ?? "",
@@ -176,6 +183,29 @@ test("plans one deterministic immutable icon SVG export", async () => {
     assert.ok(Object.isFrozen(first.payload.plan));
     assert.ok(Object.isFrozen(first.payload.plan.artefacts));
     assert.ok(Object.isFrozen(first.payload.plan.artefacts[0]));
+  }
+});
+
+test("accepts uppercase hexadecimal paint through export planning", async () => {
+  for (const [colour, expected] of [
+    ["#ABC", "#aabbcc"],
+    ["#ABCDEF", "#abcdef"],
+  ] as const) {
+    const result = await AsterCommands.execute({
+      command: "export",
+      subject: "icon",
+      identity: representativeIdentity,
+      options: { colour },
+    }, context);
+
+    if (!result.ok || result.payload.kind !== "export") {
+      assert.fail(`Expected an SVG export for ${colour}.`);
+    }
+
+    assert.match(
+      result.payload.plan.artefacts[0]?.content ?? "",
+      new RegExp(` color="${expected}"`, "u"),
+    );
   }
 });
 
@@ -256,7 +286,7 @@ test("plans collection members in canonical path order", async () => {
   if (result.ok && result.payload.kind === "export") {
     const paths = result.payload.plan.artefacts.map((artefact) => artefact.path);
     assert.equal(result.payload.plan.subject, "collection");
-    assert.equal(paths.length, representativeCollection.icons.length);
+    assert.equal(paths.length, representativeCollection.members.length);
     assert.deepEqual(paths, [...paths].sort());
     assert.equal(new Set(paths).size, paths.length);
   }

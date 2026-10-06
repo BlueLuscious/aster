@@ -75,6 +75,211 @@ function freezeEnumerableGraph(value: unknown): void {
   Object.freeze(value);
 }
 
+function probeInheritedGetter(
+  field: string,
+  inheritedValue: unknown,
+  operation: () => unknown,
+): { reads: number; result: unknown; error: unknown } {
+  const previous = Object.getOwnPropertyDescriptor(Object.prototype, field);
+  let reads = 0;
+  let result: unknown;
+  let error: unknown;
+
+  Object.defineProperty(Object.prototype, field, {
+    configurable: true,
+    get() {
+      reads += 1;
+      return inheritedValue;
+    },
+  });
+
+  try {
+    result = operation();
+  } catch (caught) {
+    error = caught;
+  } finally {
+    if (previous === undefined) {
+      Reflect.deleteProperty(Object.prototype, field);
+    } else {
+      Object.defineProperty(Object.prototype, field, previous);
+    }
+  }
+
+  return { reads, result, error };
+}
+
+function probeInheritedSetter(
+  field: string,
+  operation: () => unknown,
+): { writes: number; result: unknown; error: unknown } {
+  const previous = Object.getOwnPropertyDescriptor(Object.prototype, field);
+  let writes = 0;
+  let result: unknown;
+  let error: unknown;
+
+  Object.defineProperty(Object.prototype, field, {
+    configurable: true,
+    set() {
+      writes += 1;
+    },
+  });
+
+  try {
+    result = operation();
+  } catch (caught) {
+    error = caught;
+  } finally {
+    if (previous === undefined) {
+      Reflect.deleteProperty(Object.prototype, field);
+    } else {
+      Object.defineProperty(Object.prototype, field, previous);
+    }
+  }
+
+  return { writes, result, error };
+}
+
+test("does not read inherited optional icon fields", () => {
+  const identity = createInput();
+  Reflect.deleteProperty(identity.identity, "namespace");
+  const inheritedNamespace = probeInheritedGetter("namespace", "external", () =>
+    Icon.define(identity as never),
+  );
+  assert.equal(inheritedNamespace.reads, 0);
+  assert.equal(inheritedNamespace.error, undefined);
+  assert.equal(
+    Object.hasOwn((inheritedNamespace.result as ReturnType<typeof Icon.define>).identity, "namespace"),
+    false,
+  );
+
+  const presentation = createInput();
+  const inheritedOpacity = probeInheritedGetter("fillOpacity", 0.5, () =>
+    Icon.define(presentation as never),
+  );
+  assert.equal(inheritedOpacity.reads, 0);
+  assert.equal(inheritedOpacity.error, undefined);
+  assert.equal(
+    Object.hasOwn(
+      (inheritedOpacity.result as ReturnType<typeof Icon.define>).metadata.presentation.defaults,
+      "fillOpacity",
+    ),
+    false,
+  );
+
+  const rectangle = createInput();
+  rectangle.nodes = [{ kind: "rect", x: 0, y: 0, width: 8, height: 8 }] as never;
+  const inheritedRadius = probeInheritedGetter("radiusX", 2, () =>
+    Icon.define(rectangle as never),
+  );
+  assert.equal(inheritedRadius.reads, 0);
+  assert.equal(inheritedRadius.error, undefined);
+  assert.equal(
+    Object.hasOwn((inheritedRadius.result as ReturnType<typeof Icon.define>).nodes[0]!, "radiusX"),
+    false,
+  );
+});
+
+test("does not accept inherited collection identity or metadata fields", () => {
+  const identity = probeInheritedGetter("namespace", "external", () =>
+    Collection.define({
+      identity: { name: "minimal" },
+      icons: {},
+      metadata: { displayName: "Minimal" },
+    }),
+  );
+  assert.equal(identity.reads, 0);
+  assert.equal(identity.error, undefined);
+  assert.equal(
+    Object.hasOwn((identity.result as ReturnType<typeof Collection.define>).identity, "namespace"),
+    false,
+  );
+
+  const description = probeInheritedGetter("description", "inherited", () =>
+    Collection.define({
+      identity: { name: "minimal" },
+      icons: {},
+      metadata: { displayName: "Minimal" },
+    }),
+  );
+  assert.equal(description.reads, 0);
+  assert.equal(description.error, undefined);
+  assert.equal(
+    Object.hasOwn(
+      (description.result as ReturnType<typeof Collection.define>).metadata,
+      "description",
+    ),
+    false,
+  );
+
+  const missingMetadata = probeInheritedGetter("displayName", "inherited", () =>
+    Collection.define({
+      identity: { name: "minimal" },
+      icons: {},
+      metadata: {},
+    } as never),
+  );
+  assert.equal(missingMetadata.reads, 0);
+  assert.ok(missingMetadata.error instanceof IconDefinitionError);
+  assert.equal(missingMetadata.error.path, "collection.metadata.displayName");
+});
+
+test("does not invoke an inherited setter while constructing collection aliases", () => {
+  const camera = Icon.define(createInput() as never);
+  const probe = probeInheritedSetter("camera", () =>
+    Collection.define({
+      identity: { name: "minimal" },
+      icons: { camera },
+      metadata: { displayName: "Minimal" },
+    }),
+  );
+
+  assert.equal(probe.writes, 0);
+  assert.equal(probe.error, undefined);
+  assert.equal((probe.result as ReturnType<typeof Collection.define>).icons.camera, camera);
+});
+
+test("does not invoke an inherited setter while copying node presentation", () => {
+  const icon = createInput();
+  icon.nodes = [{ ...icon.nodes[0], fill: "none" }] as never;
+  const probe = probeInheritedSetter("fill", () => Icon.define(icon as never));
+
+  assert.equal(probe.writes, 0);
+  assert.equal(probe.error, undefined);
+  assert.equal((probe.result as ReturnType<typeof Icon.define>).nodes[0]?.fill, "none");
+});
+
+test("rejects missing required fields without invoking inherited getters", () => {
+  const icon = createInput();
+  Reflect.deleteProperty(icon, "viewBox");
+  const inheritedViewBox = probeInheritedGetter("viewBox", createInput().viewBox, () =>
+    Icon.define(icon as never),
+  );
+  assert.equal(inheritedViewBox.reads, 0);
+  assert.ok(inheritedViewBox.error instanceof IconDefinitionError);
+  assert.equal(inheritedViewBox.error.path, "definition.viewBox");
+
+  const metadata = createInput();
+  Reflect.deleteProperty(metadata.metadata, "deprecated");
+  const inheritedDeprecated = probeInheritedGetter("deprecated", false, () =>
+    Icon.define(metadata as never),
+  );
+  assert.equal(inheritedDeprecated.reads, 0);
+  assert.ok(inheritedDeprecated.error instanceof IconDefinitionError);
+  assert.equal(inheritedDeprecated.error.path, "definition.metadata.deprecated");
+
+  const path = createInput();
+  path.nodes = [{
+    kind: "path",
+    commands: [{ x: 0, y: 0 }, { kind: "line", x: 1, y: 1 }],
+  }] as never;
+  const inheritedKind = probeInheritedGetter("kind", "move", () =>
+    Icon.define(path as never),
+  );
+  assert.equal(inheritedKind.reads, 0);
+  assert.ok(inheritedKind.error instanceof IconDefinitionError);
+  assert.equal(inheritedKind.error.path, "definition.nodes[0].commands[0].kind");
+});
+
 test("rejects symbolic, hidden, and accessor-owned fields", () => {
   const symbolic = createInput();
   Object.defineProperty(symbolic, Symbol("hidden"), {
@@ -169,6 +374,42 @@ test("rejects sparse arrays and arrays with authored properties", () => {
   );
 });
 
+test("rejects inherited array behaviour before normalising nodes or tags", () => {
+  class AuthoredArray<T> extends Array<T> {}
+
+  let mapCalls = 0;
+  Object.defineProperty(AuthoredArray.prototype, "map", {
+    value() {
+      mapCalls += 1;
+      throw new Error("inherited map executed");
+    },
+  });
+
+  const authoredNodes = createInput();
+  authoredNodes.nodes = new AuthoredArray(...authoredNodes.nodes);
+  expectDefinitionError(
+    () => Icon.define(authoredNodes as never),
+    "definition.nodes",
+  );
+
+  const authoredTags = createInput();
+  authoredTags.metadata.tags = new AuthoredArray(...authoredTags.metadata.tags);
+  expectDefinitionError(
+    () => Icon.define(authoredTags as never),
+    "definition.metadata.tags",
+  );
+  assert.equal(mapCalls, 0);
+});
+
+test("returns ordinary frozen arrays from ordinary authored sequences", () => {
+  const accepted = Icon.define(createInput() as never);
+
+  assert.equal(Object.getPrototypeOf(accepted.nodes), Array.prototype);
+  assert.equal(Object.getPrototypeOf(accepted.metadata.tags), Array.prototype);
+  assert.ok(Object.isFrozen(accepted.nodes));
+  assert.ok(Object.isFrozen(accepted.metadata.tags));
+});
+
 test("accepts null-prototype records and returns canonical plain data", () => {
   const authored = createInput();
   const nullPrototype = Object.assign(Object.create(null), authored);
@@ -212,7 +453,7 @@ test("does not retain frozen authored graphs with hidden state", () => {
     () =>
       Collection.define({
         identity: { name: "adversarial" },
-        icons: [authored],
+        icons: { authored },
         metadata: { displayName: "Adversarial" },
       } as never),
     "definition",
@@ -232,9 +473,9 @@ test("reconstructs frozen graphs that contain repeated object aliases", () => {
 
   const retained = Collection.define({
     identity: { name: "aliases" },
-    icons: [authored],
+    icons: { authored },
     metadata: { displayName: "Aliases" },
-  } as never).icons[0];
+  } as never).icons.authored;
 
   assert.notEqual(retained, authored);
   assert.equal(retained?.nodes[0]?.kind, "polyline");
@@ -253,9 +494,9 @@ test("reconstructs frozen valid input that is not already canonical", () => {
 
   const retained = Collection.define({
     identity: { name: "normalised" },
-    icons: [authored],
+    icons: { authored },
     metadata: { displayName: "Normalised" },
-  } as never).icons[0];
+  } as never).icons.authored;
 
   assert.notEqual(retained, authored);
   assert.equal(retained?.metadata.displayName, "Search");
@@ -274,9 +515,9 @@ test("reconstructs frozen input with non-canonical field order", () => {
 
   const retained = Collection.define({
     identity: { name: "field-order" },
-    icons: [authored],
+    icons: { authored },
     metadata: { displayName: "Field Order" },
-  } as never).icons[0];
+  } as never).icons.authored;
 
   assert.notEqual(retained, authored);
   assert.deepEqual(Object.keys(retained ?? {}), [

@@ -1,5 +1,6 @@
 import type { TSvgElementInput } from "../types/internal/svg-element-input.type.js";
 import type { TSvgParsingIssue } from "../types/internal/svg-parsing-issue.type.js";
+import { svgLexicalPatternSources } from "../../shared/constants/svg-lexical-pattern-sources.constant.js";
 import { svgSourceAttributeNames } from "../../shared/constants/svg-source-attribute-names.constant.js";
 import { svgSourceElementSchema } from "../../shared/constants/svg-source-element-schema.constant.js";
 import { svgSourceElementRoles } from "../../shared/constants/svg-source-element-roles.constant.js";
@@ -9,6 +10,14 @@ import { svgParsingIssueKinds } from "../constants/svg-parsing-issue-kinds.const
  * @description Enforces parser-stage structural behaviour for the accepted SVG source subset.
  */
 export class SvgSubsetValidator {
+  /**
+   * @description Shared SVG whitespace grammar used to classify ignorable character data.
+   */
+  readonly #whitespaceOnlyPattern = new RegExp(
+    svgLexicalPatternSources.whitespaceOnly,
+    "u",
+  );
+
   /**
    * @description Inspects one safe element for parser-stage subset violations.
    * @param element - Parser-neutral located element input.
@@ -80,7 +89,7 @@ export class SvgSubsetValidator {
     endOffset: number,
     insideRoot: boolean,
   ): TSvgParsingIssue | undefined {
-    if (text.trim().length === 0) {
+    if (this.#whitespaceOnlyPattern.test(text)) {
       return undefined;
     }
 

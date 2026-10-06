@@ -23,9 +23,9 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P2` | Add informational SVG attribution markers. | `0.1.0-rc.1` proves technical release readiness; the renderer's default-versus-opt-in output policy remains to be accepted. |
-| 2 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 3 | `P2` | Automate reviewed version proposals. | `0.1.0-rc.1` supplies one manually reviewed multi-package release; the automation boundary remains to be accepted. |
+| 1 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
+| 2 | `P2` | Consider published release history through the CLI. | The first stable release exists and published package versions can be mapped reliably to release notes. |
+| 3 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
 | 4 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
 | 5 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
 | 6 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
@@ -35,25 +35,11 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | 10 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
 | 11 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
 | 12 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 13 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 14 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 15 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
-
-## Informational SVG attribution markers
-
-Importance: **P2 - Conditional**
-
-Technical release readiness is complete. Consider placing `data-attribution` and
-`data-rendered-by="Aster"` on rendered SVG roots. Attribution must come from the individual icon's
-metadata rather than the collection or a hard-coded author. Decide whether the markers belong to
-every `Svg.render(...)` result or an explicit SVG export mode before changing the public output
-contract. A missing attribution must not be invented.
-
-These markers make source provenance easier to inspect but do not enforce ownership or replace
-the accompanying licence and credits. Anyone who controls an SVG file can remove them, and
-optimisation may discard non-visual attributes. If accepted, update exact SVG and CLI output
-evidence, package documentation, and packed-consumer tests, then repeat release conformance
-before publication. Do not add a watermark or a runtime dependency for this purpose.
+| 13 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
+| 14 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
+| 15 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 16 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 17 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
 
 ## Reviewed version proposals
 
@@ -68,6 +54,45 @@ explicit human approval.
 
 This is a near-term follow-up to a proven manual release process, not a prerequisite for the
 first pre-release and not a reason to introduce a release framework prematurely.
+
+## Coexisting API versions
+
+Importance: **P2 - Conditional**
+
+The package's own Semantic Versioning identity already versions its exported APIs under the
+[project versioning policy](project/versioning.md). Separate API versions such as `v1` and `v2`
+inside one package are not required today and must not block the first stable publication.
+
+Consider versioned entrypoints or explicitly selected compatibility implementations only when a
+real consumer needs incompatible API contracts simultaneously within one installed package and
+ordinary package pinning or migration cannot satisfy that requirement. A breaking package release
+alone does not justify retaining several API generations inside its replacement.
+
+Before accepting coexistence, define selection semantics, supported version combinations,
+compatibility evidence, maintenance ownership, migration and retirement rules, and distribution
+costs. Do not add `/v1` imports, versioned classes, separate per-API counters or duplicated
+implementations speculatively. Independent schema or protocol revisions identify their own format
+or negotiation boundary and do not establish a need for coexisting package APIs.
+
+## Published release history
+
+Importance: **P2 - Conditional**
+
+After the first stable release, consider an explicit remote command such as
+`aster releases [core|icons|svg|cli]` for published package versions and their release details.
+It must not change the meaning or offline behaviour of local `aster version` requests.
+
+The npm registry is the authority for which versions of each package were published. GitHub
+Releases may enrich those records with reviewed notes, publication context and approved assets,
+but one repository release can contain several independently versioned packages, and the initial
+`0.1.0-rc.1` publication has no companion GitHub Release. Do not infer package membership or
+version mapping by scraping free-form release text. Accept a documented mapping before combining
+the two sources or claiming a complete per-package history.
+
+Any remote workflow needs explicit network, registry, pagination, timeout, offline and failure
+semantics. It must not silently update installed packages or publish releases. Until a real
+consumer justifies that host boundary, use [npm's package metadata query](https://docs.npmjs.com/cli/v11/commands/npm-view/)
+and the [GitHub Releases API](https://docs.github.com/en/rest/releases/releases) directly.
 
 ## Catalogue and command expansion
 
@@ -300,6 +325,24 @@ An independent project should expose host-neutral kernels and a small explicit p
 boundary. Aster would consume it only as development tooling and retain thin process entrypoints.
 Do not extract by copying every verifier, introducing automatic rule discovery or mutable global
 registries, or combining contributor tooling with the user-facing multi-ecosystem CLI.
+
+## Additional package registry
+
+Importance: **P2 - Conditional**
+
+The [publication procedure](project/publication.md#distribution-channels) owns the accepted
+distribution channels. An additional GitHub Packages registry is optional and must not block the
+first stable release or require a repository transfer or package rename speculatively.
+
+Reconsider it only when a concrete consumer needs GitHub-hosted dependency installation rather
+than a release page or downloadable archive. Before acceptance, verify the GitHub account or
+organisation namespace independently from the npm scope, repository association, package
+visibility, publisher permissions, and authentication requirements even for public consumers.
+Define whether both registries receive identical approved archives, how dependency resolution and
+dist-tags are verified, and how partial publication is recovered without silently rebuilding a
+released version. See the [GitHub npm registry documentation](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-npm-registry).
+
+No second-registry workflow, token, scope mapping or automatic publication is currently accepted.
 
 ## Aster Studio
 

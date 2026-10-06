@@ -1,7 +1,3 @@
-import type {
-  IconDirectionType,
-  IconPaintType,
-} from "@luscious-garden/aster-core";
 import type { AsterExportSubjectType } from "../../../export/types/index.js";
 import { commandLineTokens } from "../constants/command-line-tokens.constant.js";
 import type { TParsedExportCommandOptions } from "../types/internal/parsed-export-command-options.type.js";
@@ -76,16 +72,16 @@ export class ExportCommandLineOptionParser {
           );
           break;
         case commandLineTokens.options.colour:
-          this.#set(parsed, "colour", value as IconPaintType, option);
+          this.#set(parsed, "colour", value, option);
           break;
         case commandLineTokens.options.fill:
-          this.#set(parsed, "fill", value as IconPaintType, option);
+          this.#set(parsed, "fill", value, option);
           break;
         case commandLineTokens.options.stroke:
-          this.#set(parsed, "stroke", value as IconPaintType, option);
+          this.#set(parsed, "stroke", value, option);
           break;
         case commandLineTokens.options.direction:
-          this.#set(parsed, "direction", value as IconDirectionType, option);
+          this.#set(parsed, "direction", value, option);
           break;
         case commandLineTokens.options.label:
           this.#set(parsed, "label", value, option);

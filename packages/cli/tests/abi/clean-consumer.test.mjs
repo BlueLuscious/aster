@@ -1,18 +1,22 @@
 ﻿import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import {
+  cp,
   mkdir,
   mkdtemp,
   readFile,
   readdir,
+  realpath,
+  rename,
   rm,
   writeFile,
 } from "node:fs/promises";
+import { findPackageJSON } from "node:module";
 import { tmpdir } from "node:os";
-import { basename, dirname, resolve } from "node:path";
+import { basename, dirname, relative, resolve } from "node:path";
 import process from "node:process";
 import test, { after, before } from "node:test";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
@@ -33,16 +37,22 @@ const asterCollectionDefinitions = await Promise.all(
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const workspaceRoot = resolve(packageRoot, "../..");
-const packageVersion = JSON.parse(
-  await readFile(resolve(packageRoot, "package.json"), "utf8"),
-).version;
+const packageNames = Object.freeze(["core", "icons", "svg", "cli"]);
+const packageVersions = Object.freeze(Object.fromEntries(
+  await Promise.all(packageNames.map(async (name) => [
+    name,
+    JSON.parse(await readFile(resolve(workspaceRoot, "packages", name, "package.json"), "utf8"))
+      .version,
+  ])),
+));
+const packageVersion = packageVersions.cli;
 assert.ok(asterIconDefinitions.length > 0, "Expected the packed icon family to be non-empty.");
 assert.ok(
   asterCollectionDefinitions.length > 0,
   "Expected the packed collection family to be non-empty.",
 );
 const representativeCollection = asterCollectionDefinitions.find(
-  (collection) => collection.icons.length > 0,
+  (collection) => collection.members.length > 0,
 );
 assert.ok(
   representativeCollection,
@@ -64,7 +74,7 @@ const representativeTag = taggedIcon.metadata.tags?.[0];
 assert.ok(representativeTag, "Expected one representative packed icon tag.");
 const representativeTagLiteral = JSON.stringify(representativeTag);
 const expectedCollectionPaths = Object.freeze(
-  representativeCollection.icons
+  representativeCollection.members
     .map(
       (icon) => `${
         icon.identity.namespace === undefined
@@ -139,7 +149,7 @@ function runModule(source) {
   );
 }
 
-function runExecutable(arguments_) {
+function runExecutable(arguments_, cwd = consumerRoot) {
   return spawnSync(
     process.execPath,
     [
@@ -155,10 +165,62 @@ function runExecutable(arguments_) {
       ...arguments_,
     ],
     {
-      cwd: consumerRoot,
+      cwd,
       encoding: "utf8",
     },
   );
+}
+
+async function installedManifestPath(selector) {
+  const path = await realpath(resolve(
+    consumerRoot,
+    "node_modules",
+    "@luscious-garden",
+    `aster-${selector}`,
+    "package.json",
+  ));
+
+  assert.match(relative(await realpath(consumerRoot), path), /^node_modules[\\/]/u);
+  return path;
+}
+
+async function withInstalledManifests(updates, action) {
+  const originals = [];
+
+  try {
+    for (const [selector, update] of Object.entries(updates)) {
+      const path = await installedManifestPath(selector);
+      const original = await readFile(path, "utf8");
+      originals.push({ path, original });
+      const content = typeof update === "string"
+        ? update
+        : JSON.stringify({ ...JSON.parse(original), ...update });
+      await writeFile(path, content, "utf8");
+    }
+
+    return await action();
+  } finally {
+    for (const { path, original } of originals) {
+      await writeFile(path, original, "utf8");
+    }
+  }
+}
+
+function assertMetadataFailure(arguments_) {
+  const human = runExecutable(arguments_);
+  const machine = runExecutable([...arguments_, "--json"]);
+
+  assert.equal(human.status, 1);
+  assert.equal(human.stdout, "");
+  assert.equal(human.stderr, "[ASTER-CLI-999] standalone shell failed unexpectedly\n");
+  assert.equal(machine.status, 1);
+  assert.equal(machine.stderr, "");
+  const result = JSON.parse(machine.stdout);
+  assert.equal(result.ok, false);
+  assert.equal(result.command, undefined);
+  assert.equal(result.diagnostic.code, "ASTER-CLI-999");
+  assert.equal(result.payload, undefined);
+  assert.doesNotMatch(machine.stdout, /aster-cli-consumer-|package\.json/u);
 }
 
 before(async () => {
@@ -166,7 +228,6 @@ before(async () => {
   const tarballRoot = resolve(consumerRoot, "tarballs");
 
   await mkdir(tarballRoot, { recursive: true });
-  const packageNames = ["core", "icons", "svg", "cli"];
   packedPackages = Object.fromEntries(
     await Promise.all(
       packageNames.map(async (name) => [
@@ -198,6 +259,7 @@ before(async () => {
     "install",
     "--offline",
     "--ignore-scripts",
+    "--package-import-method=copy",
     "--frozen-lockfile=false",
   ]);
 
@@ -211,12 +273,12 @@ after(async () => {
 test("installs independent package versions with bounded public dependency ranges", async () => {
   const expectedDependencies = {
     core: undefined,
-    icons: { "@luscious-garden/aster-core": "^0.1.0-rc.1" },
-    svg: { "@luscious-garden/aster-core": "^0.1.0-rc.1" },
+    icons: { "@luscious-garden/aster-core": `^${packageVersions.core}` },
+    svg: { "@luscious-garden/aster-core": `^${packageVersions.core}` },
     cli: {
-      "@luscious-garden/aster-core": "^0.1.0-rc.1",
-      "@luscious-garden/aster-icons": "^0.1.0-rc.1",
-      "@luscious-garden/aster-svg": "^0.1.0-rc.1",
+      "@luscious-garden/aster-core": `^${packageVersions.core}`,
+      "@luscious-garden/aster-icons": `^${packageVersions.icons}`,
+      "@luscious-garden/aster-svg": `^${packageVersions.svg}`,
     },
   };
 
@@ -226,7 +288,7 @@ test("installs independent package versions with bounded public dependency range
       "utf8",
     ));
 
-    assert.equal(manifest.version, "0.1.0-rc.1");
+    assert.equal(manifest.version, packageVersions[name]);
     assert.deepEqual(manifest.dependencies, dependencies);
     assert.equal(
       manifest.homepage,
@@ -275,10 +337,16 @@ test("installs only accepted public package files and notices", async () => {
   }
 });
 
-test("executes published README examples through packed package entrypoints", async () => {
+test("executes packaged README examples through packed package entrypoints", async () => {
   const examples = [
-    { name: "core", result: 'Camera.identity.name === "camera"' },
-    { name: "icons", result: 'markup.startsWith("<svg ")' },
+    {
+      name: "core",
+      result: 'Camera.identity.name === "camera" && InterfaceIcons.icons.camera === Camera && InterfaceIcons.members[0] === Camera',
+    },
+    {
+      name: "icons",
+      result: 'markup.startsWith("<svg ") && cameraMarkup.startsWith("<svg ") && collectionMarkup.length === AmellusCollection.members.length && collectionMarkup.every((entry) => entry.startsWith("<svg "))',
+    },
     { name: "svg", result: 'markup.includes("<circle ")' },
   ];
 
@@ -287,11 +355,15 @@ test("executes published README examples through packed package entrypoints", as
       resolve(consumerRoot, "node_modules", "@luscious-garden", `aster-${name}`, "README.md"),
       "utf8",
     );
-    const source = readme.match(/```ts\r?\n([\s\S]*?)\r?\n```/)?.[1];
+    const sources = Array.from(
+      readme.matchAll(/```ts\r?\n([\s\S]*?)\r?\n```/gu),
+      (match) => match[1],
+    );
 
-    assert.ok(source, `Missing executable ${name} README example.`);
+    assert.ok(sources.length > 0, `Missing executable ${name} README example.`);
     assert.ok(!readme.includes("../../docs/"), `Broken ${name} package documentation link.`);
 
+    const source = sources.join("\n\n");
     const executed = runModule(`${source}\nif (!(${result})) throw new Error("README example failed");`);
 
     assert.equal(executed.status, 0, `${name}: ${executed.stderr}`);
@@ -354,9 +426,67 @@ test("composes packed Core, Icons, and SVG through public consumer entrypoints",
   });
 });
 
+test("preserves canonical ownership across packed authoring and command boundaries", () => {
+  const executed = runModule([
+    'import { Collection, Icon } from "@luscious-garden/aster-core";',
+    'import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
+    'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
+    'import { Svg } from "@luscious-garden/aster-svg";',
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
+    "const entry = AsterIconManifest[0];",
+    'if (entry === undefined) throw new Error("Missing packed icon entry.");',
+    "const source = await AsterIconLoaders[entry.key]();",
+    "const authored = structuredClone(source);",
+    "const canonical = Icon.define(authored);",
+    "const collection = Collection.define({",
+    '  identity: { name: "packed-ownership" },',
+    "  icons: { probe: canonical },",
+    '  metadata: { displayName: "Packed Ownership" },',
+    "});",
+    "const markup = Svg.render(canonical);",
+    'authored.identity.name = "changed";',
+    'authored.nodes[0].kind = "changed";',
+    'authored.nodes.push({ kind: "circle", cx: 12, cy: 12, radius: 2 });',
+    'authored.metadata.displayName = "Changed";',
+    "const result = await AsterCommands.execute(",
+    '  { command: "export", subject: "icon", identity: entry.key },',
+    '  { catalogues: [AsterCatalogue], productName: "Aster", productVersion: "0.0.0" },',
+    ");",
+    'if (!result.ok) throw new Error("Packed export failed.");',
+    "process.stdout.write(JSON.stringify({",
+    "  isolated: canonical.identity.name === source.identity.name",
+    "    && canonical.nodes.length === source.nodes.length",
+    "    && canonical.nodes[0].kind === source.nodes[0].kind",
+    "    && canonical.metadata.displayName === source.metadata.displayName,",
+    "  frozen: Object.isFrozen(canonical) && Object.isFrozen(canonical.nodes)",
+    "    && Object.isFrozen(canonical.nodes[0]) && Object.isFrozen(canonical.metadata),",
+    "  retained: collection.icons.probe === canonical && collection.members[0] === canonical,",
+    "  membershipFrozen: Object.isFrozen(collection.icons) && Object.isFrozen(collection.members),",
+    "  manifestFrozen: Object.isFrozen(AsterIconManifest) && Object.isFrozen(entry),",
+    "  rendered: Svg.render(canonical) === markup && markup.startsWith('<svg '),",
+    "  planFrozen: Object.isFrozen(result.payload.plan)",
+    "    && Object.isFrozen(result.payload.plan.artefacts)",
+    "    && Object.isFrozen(result.payload.plan.artefacts[0]),",
+    "}));",
+  ].join("\n"));
+
+  assert.equal(executed.status, 0, executed.stderr);
+  assert.equal(executed.stderr, "");
+  assert.deepEqual(JSON.parse(executed.stdout), {
+    isolated: true,
+    frozen: true,
+    retained: true,
+    membershipFrozen: true,
+    manifestFrozen: true,
+    rendered: true,
+    planFrozen: true,
+  });
+});
+
 test("type-checks cross-package usage against packed declarations", async () => {
   await writeFile(resolve(consumerRoot, "consumer.ts"), [
     'import type { IconDefinition } from "@luscious-garden/aster-core";',
+    'import { Collection } from "@luscious-garden/aster-core";',
     'import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
     'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     'import { Svg } from "@luscious-garden/aster-svg";',
@@ -366,10 +496,54 @@ test("type-checks cross-package usage against packed declarations", async () => 
     "const loader = AsterIconLoaders[entry.key];",
     'if (loader === undefined) throw new Error("Missing loader");',
     "const icon: IconDefinition = await loader();",
+    "const authored = {",
+    "  ...icon,",
+    '  nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],',
+    '  metadata: { ...icon.metadata, displayName: "  Packed Icon  " },',
+    "} satisfies IconDefinition;",
+    "const collectionInput = {",
+    '  identity: { name: "packed-authored" },',
+    "  icons: { probe: authored },",
+    '  metadata: { displayName: "Packed Authored" },',
+    "};",
+    "const collection = Collection.define(collectionInput);",
+    "const literalCollection = Collection.define({",
+    "  ...collectionInput,",
+    "  icons: {",
+    "    probe: {",
+    "      ...authored,",
+    '      metadata: { ...authored.metadata, displayName: "  Packed Icon  " as const },',
+    "    },",
+    "  },",
+    "});",
+    "const canonicalMember: IconDefinition = collection.icons.probe;",
+    "const optionalAliases: { probe?: IconDefinition } = {};",
+    "const optionalCollection = Collection.define({",
+    '  identity: { name: "packed-optional" },',
+    "  icons: optionalAliases,",
+    '  metadata: { displayName: "Packed Optional" },',
+    "});",
+    "const optionalMember: IconDefinition | undefined = optionalCollection.icons.probe;",
+    "if (false) {",
+    "  // @ts-expect-error Optional aliases remain optional in packed declarations.",
+    "  const requiredMember: IconDefinition = optionalCollection.icons.probe;",
+    "  // @ts-expect-error Packed canonical nodes are readonly despite mutable authoring.",
+    '  collection.icons.probe.nodes.push({ kind: "circle", cx: 6, cy: 6, radius: 2 });',
+    "  // @ts-expect-error Packed canonical metadata is readonly despite mutable authoring.",
+    '  collection.icons.probe.metadata.displayName = "Changed";',
+    "  // @ts-expect-error Normalised output cannot retain the authored metadata literal.",
+    '  const authoredLiteral: "  Packed Icon  " = literalCollection.icons.probe.metadata.displayName;',
+    "  // @ts-expect-error Packed canonical membership still rejects unknown aliases.",
+    "  collection.icons.unknown;",
+    "  void authoredLiteral;",
+    "  void requiredMember;",
+    "}",
+    "void canonicalMember;",
+    "void optionalMember;",
     "export const markup: string = Svg.render(icon);",
     "export const listed = await AsterCommands.execute(",
     '  { command: "list", subject: "catalogues" },',
-    '  { catalogues: [AsterCatalogue], productName: "Aster", productVersion: "0.1.0-rc.1" },',
+    '  { catalogues: [AsterCatalogue], productName: "Aster", productVersion: "1.2.3" },',
     ");",
     "",
   ].join("\n"), "utf8");
@@ -451,6 +625,204 @@ test("links and executes the packed CLI binary through the package manager", () 
 
   assertSuccessfulProcess(linked, "execute linked Aster binary");
   assert.equal(linked.stdout, `Aster ${packageVersion}\n`);
+});
+
+test("reports independently versioned packages resolved from the packed executable", async () => {
+  const versions = Object.freeze({
+    core: "0.2.4",
+    icons: "0.3.1",
+    svg: "0.9.0-rc.2",
+    cli: "0.1.7",
+  });
+  const packages = Object.entries(versions).map(([selector, version]) => ({
+    name: `@luscious-garden/aster-${selector}`,
+    version,
+  }));
+  const packedExecutable = await realpath(resolve(
+    consumerRoot,
+    "node_modules",
+    "@luscious-garden",
+    "aster-cli",
+    "dist",
+    "shell",
+    "aster.js",
+  ));
+
+  await withInstalledManifests(
+    Object.fromEntries(Object.entries(versions).map(([selector, version]) => [
+      selector,
+      { version },
+    ])),
+    async () => {
+      for (const selector of Object.keys(versions)) {
+        assert.equal(
+          await realpath(findPackageJSON(
+            `@luscious-garden/aster-${selector}`,
+            pathToFileURL(packedExecutable).href,
+          )),
+          await installedManifestPath(selector),
+        );
+      }
+
+      const all = runExecutable(["version", "--all", "--json"]);
+      assertSuccessfulProcess(all, "report packed package versions as JSON");
+      assert.equal(all.stderr, "");
+      assert.deepEqual(JSON.parse(all.stdout), {
+        ok: true,
+        command: "version",
+        payload: { kind: "package-versions", packages },
+      });
+
+      const human = runExecutable(["version", "--all"], workspaceRoot);
+      assertSuccessfulProcess(human, "report packed package versions outside the consumer");
+      assert.equal(human.stderr, "");
+      assert.equal(human.stdout, [
+        "Installed Aster packages:",
+        ...packages.map(({ name, version }) => `  ${name} ${version}`),
+        "",
+      ].join("\n"));
+
+      for (const [selector, version] of Object.entries(versions)) {
+        const name = `@luscious-garden/aster-${selector}`;
+        const named = runExecutable(["version", selector]);
+        const namedJson = runExecutable(["version", selector, "--json"]);
+        assertSuccessfulProcess(named, `report packed ${selector} version`);
+        assertSuccessfulProcess(namedJson, `report packed ${selector} version as JSON`);
+        assert.equal(named.stdout, `${name} ${version}\n`);
+        assert.equal(named.stderr, "");
+        assert.equal(namedJson.stderr, "");
+        assert.deepEqual(JSON.parse(namedJson.stdout), {
+          ok: true,
+          command: "version",
+          payload: {
+            kind: "package-versions",
+            packages: [{ name, version }],
+          },
+        });
+      }
+
+      const plain = runExecutable(["version"]);
+      const plainJson = runExecutable(["version", "--json"]);
+      assertSuccessfulProcess(plain, "report packed CLI product version");
+      assertSuccessfulProcess(plainJson, "report packed CLI product version as JSON");
+      assert.equal(plain.stdout, `Aster ${versions.cli}\n`);
+      assert.equal(plain.stderr, "");
+      assert.deepEqual(JSON.parse(plainJson.stdout), {
+        ok: true,
+        command: "version",
+        payload: {
+          kind: "version",
+          productName: "Aster",
+          productVersion: versions.cli,
+        },
+      });
+
+      const linked = runPnpm(["--dir", consumerRoot, "exec", "aster", "version", "--all"]);
+      assertSuccessfulProcess(linked, "report installed versions through linked Aster binary");
+      assert.equal(linked.stdout, human.stdout);
+    },
+  );
+});
+
+test("fails atomically for damaged installed metadata after startup", async () => {
+  await withInstalledManifests({ icons: "{broken" }, async () => {
+    assertMetadataFailure(["version", "icons"]);
+    assertMetadataFailure(["version", "--all"]);
+    assertSuccessfulProcess(runExecutable(["version", "core"]), "read unaffected Core metadata");
+    assertSuccessfulProcess(runExecutable(["version"]), "read plain CLI version");
+  });
+
+  await withInstalledManifests({ svg: { name: "@luscious-garden/other" } }, async () => {
+    assertMetadataFailure(["version", "svg"]);
+    assertMetadataFailure(["version", "--all"]);
+  });
+
+  const manifest = await installedManifestPath("icons");
+  const hidden = `${manifest}.missing`;
+  await rename(manifest, hidden);
+  try {
+    assertMetadataFailure(["version", "icons"]);
+    assertMetadataFailure(["version", "--all"]);
+  } finally {
+    await rename(hidden, manifest);
+  }
+});
+
+test("leaves missing pre-bootstrap dependencies to native Node errors", async () => {
+  const root = await mkdtemp(resolve(tmpdir(), "aster-cli-native-"));
+  const packagesRoot = resolve(root, "node_modules", "@luscious-garden");
+
+  try {
+    await mkdir(packagesRoot, { recursive: true });
+    await cp(await realpath(resolve(
+      consumerRoot,
+      "node_modules",
+      "@luscious-garden",
+      "aster-cli",
+    )), resolve(packagesRoot, "aster-cli"), { recursive: true });
+    const entrypoint = resolve(packagesRoot, "aster-cli", "dist", "shell", "aster.js");
+    const execute = () => spawnSync(process.execPath, [entrypoint, "version"], {
+      cwd: root,
+      encoding: "utf8",
+    });
+
+    const withoutCore = execute();
+    assert.equal(withoutCore.status, 1);
+    assert.equal(withoutCore.stdout, "");
+    assert.match(withoutCore.stderr, /ERR_MODULE_NOT_FOUND/u);
+    assert.match(withoutCore.stderr, /@luscious-garden\/aster-core/u);
+    assert.doesNotMatch(withoutCore.stderr, /ASTER-CLI-999/u);
+
+    await cp(await realpath(resolve(
+      consumerRoot,
+      "node_modules",
+      "@luscious-garden",
+      "aster-core",
+    )), resolve(packagesRoot, "aster-core"), { recursive: true });
+
+    const withoutSvg = execute();
+    assert.equal(withoutSvg.status, 1);
+    assert.equal(withoutSvg.stdout, "");
+    assert.match(withoutSvg.stderr, /ERR_MODULE_NOT_FOUND/u);
+    assert.match(withoutSvg.stderr, /@luscious-garden\/aster-svg/u);
+    assert.doesNotMatch(withoutSvg.stderr, /ASTER-CLI-999/u);
+  } finally {
+    assert.match(relative(resolve(tmpdir()), resolve(root)), /^aster-cli-native-[^\\/]+$/u);
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("keeps packed version requests free of icon and network imports", async () => {
+  const guardPath = resolve(consumerRoot, "version-import-guard.mjs");
+  await writeFile(guardPath, [
+    'import { registerHooks } from "node:module";',
+    "const blocked = /^(?:@luscious-garden\\/aster-icons(?:\\/|$)|node:(?:http|https|net|tls|dns|dgram)(?:\\/|$))/u;",
+    "registerHooks({",
+    "  resolve(specifier, context, nextResolve) {",
+    "    if (blocked.test(specifier)) throw new Error(`Unexpected version dependency ${specifier}`);",
+    "    return nextResolve(specifier, context);",
+    "  },",
+    "});",
+    'globalThis.fetch = () => { throw new Error("Unexpected version fetch"); };',
+    "",
+  ].join("\n"), "utf8");
+
+  for (const arguments_ of [
+    ["version"],
+    ["version", "icons"],
+    ["version", "--all"],
+    ["version", "--all", "--json"],
+  ]) {
+    const result = spawnSync(process.execPath, [
+      "--import",
+      pathToFileURL(guardPath).href,
+      resolve(consumerRoot, "node_modules", "@luscious-garden", "aster-cli", "dist", "shell", "aster.js"),
+      ...arguments_,
+    ], { cwd: consumerRoot, encoding: "utf8" });
+
+    assertSuccessfulProcess(result, `execute guarded ${arguments_.join(" ")}`);
+    assert.equal(result.stderr, "");
+  }
 });
 
 test("returns the same result through the executable and an independent plugin host", () => {
@@ -539,6 +911,9 @@ test("returns the same complete export through standalone and programmatic hosts
     result.payload.plan.artefacts.map((artefact) => artefact.path),
     expectedCollectionPaths,
   );
+  assert.ok(result.payload.plan.artefacts.every((artefact) =>
+    artefact.content.match(/data-rendered-by="Aster"/gu)?.length === 1
+  ));
 });
 
 test("returns and publishes a complete review from the clean consumer", async () => {
@@ -595,6 +970,9 @@ test("returns and publishes a complete review from the clean consumer", async ()
   assert.doesNotMatch(document, /<script|https?:\/\/(?!www\.w3\.org\/2000\/svg)/u);
 
   assert.equal(plan.document.icons.length, expectedCollectionPaths.length);
+  assert.ok(plan.document.icons.every((icon) =>
+    icon.markup.match(/data-rendered-by="Aster"/gu)?.length === 1
+  ));
 
   for (const path of expectedCollectionPaths) {
     assert.ok(document.includes(path.slice(0, -4)));

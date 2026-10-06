@@ -6,7 +6,7 @@ The package exposes portable contracts, frozen runtime vocabularies, and the imm
 `Collection` API objects. It ships as dependency-free ES2022 ESM with a single approved root
 export.
 
-Install the exact candidate version with `pnpm add @luscious-garden/aster-core@0.1.0-rc.1`.
+Install the exact candidate version with `pnpm add @luscious-garden/aster-core@0.1.0-rc.2`.
 This package has no runtime dependencies.
 
 ```ts
@@ -27,6 +27,25 @@ const Camera = Icon.define({
   },
 });
 ```
+
+The `0.1.0-rc.2` candidate supports typed collection aliases and an ordered member list:
+
+```ts
+import { Collection } from "@luscious-garden/aster-core";
+
+const InterfaceIcons = Collection.define({
+  identity: { name: "interface-icons" },
+  icons: { camera: Camera },
+  metadata: { displayName: "Interface Icons" },
+});
+
+InterfaceIcons.icons.camera; // Known readonly alias.
+InterfaceIcons.members; // Frozen ordered [Camera], derived once.
+```
+
+The earlier `0.1.0-rc.1` candidate accepts an icon array; the
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/releases.md)
+describe the migration. Definitions remain immutable data without lookup or mutation methods.
 
 See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/index.md) and
 [initial release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/releases.md) for

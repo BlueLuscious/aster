@@ -5,6 +5,7 @@ import { join, resolve } from "node:path";
 import test from "node:test";
 import { pathToFileURL } from "node:url";
 
+import { Collection } from "@luscious-garden/aster-core";
 import { cliBaseline } from "../../tooling/performance/cli/constants/cli-baseline.constant.mjs";
 import { cliCommandEvaluation } from "../../tooling/performance/cli/constants/cli-command-evaluation.constant.mjs";
 import { CliBaselineFixtureFactory } from "../../tooling/performance/cli/runtime/cli-baseline-fixture.factory.mjs";
@@ -76,7 +77,7 @@ test("prepares one stable synthetic benchmark catalogue", () => {
     fixture.icons.length,
     benchmarkCatalogueFixture.corpusSize,
   );
-  assert.equal(fixture.collection.icons.length, fixture.icons.length);
+  assert.equal(fixture.collection.members.length, fixture.icons.length);
   assert.equal(fixture.snapshot.icons.length, fixture.icons.length);
   assert.equal(fixture.snapshot.collections.length, 1);
   assert.equal(fixture.icon, fixture.icons[0]);
@@ -94,12 +95,51 @@ test("prepares distinct mutable and canonical Core benchmark fixtures", () => {
   assert.deepEqual(fixtures.mutableIcons, fixtures.canonicalIcons);
   assert.equal(Object.isFrozen(fixtures.mutableCollection), false);
   assert.deepEqual(fixtures.mutableCollection, fixtures.canonicalCollection);
-  assert.equal(fixtures.emptyCollection.icons.length, 0);
-  assert.equal(fixtures.singleCanonicalCollection.icons.length, 1);
+  assert.equal(Object.keys(fixtures.emptyCollection.icons).length, 0);
+  assert.equal(Object.keys(fixtures.singleCanonicalCollection.icons).length, 1);
   assert.equal(
-    fixtures.singleCanonicalCollection.icons[0],
+    fixtures.singleCanonicalCollection.icons.fixture1,
     fixtures.canonicalIcons[0],
   );
+  assert.equal(
+    Object.keys(fixtures.representativeCanonicalCollection.icons).length,
+    coreBaseline.collectionSizes.representative,
+  );
+  assert.equal(
+    Object.keys(fixtures.largeCanonicalCollection.icons).length,
+    coreBaseline.collectionSizes.large,
+  );
+  assert.equal(
+    Object.hasOwn(fixtures.representativeCanonicalCollection, "members"),
+    false,
+  );
+  assert.deepEqual(
+    fixtures.representativeMutableCollection,
+    fixtures.representativeCanonicalCollection,
+  );
+  assert.notEqual(
+    fixtures.representativeMutableCollection.icons.scale1,
+    fixtures.representativeCanonicalCollection.icons.scale1,
+  );
+  assert.equal(
+    fixtures.representativeCanonicalCollection.icons.scale1,
+    fixtures.largeCanonicalCollection.icons.scale1,
+  );
+  assert.equal(
+    new Set(Object.values(fixtures.largeCanonicalCollection.icons)
+      .map((icon) => icon.identity.name)).size,
+    coreBaseline.collectionSizes.large,
+  );
+  const large = Collection.define(fixtures.largeCanonicalCollection);
+  const authoredIcons = Object.values(fixtures.largeCanonicalCollection.icons);
+
+  assert.equal(large.members.length, authoredIcons.length);
+  assert.equal(Object.getOwnPropertyDescriptor(large, "members")?.value, large.members);
+  assert.ok(Object.isFrozen(large.members));
+  assert.ok(large.members.every((icon, index) =>
+    icon === authoredIcons[index]
+    && icon === large.icons[`scale${index + 1}`]
+  ));
   assert.equal(fixtures.straightPath.nodes[0]?.commands.length, 2);
   assert.equal(fixtures.curvedPath.nodes[0]?.commands.length, 4);
   assert.equal(fixtures.compoundPath.nodes[0]?.commands.length, 8);
@@ -136,7 +176,9 @@ test("runs the complete Core scenario matrix through public values", async () =>
   );
   const report = await runner.run();
 
-  assert.equal(report.schemaVersion, 4);
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.scenarios));
+  assert.equal(report.schemaVersion, 5);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
     Object.values(coreBaseline.scenarios).map((scenario) => scenario.name),
@@ -149,10 +191,20 @@ test("runs the complete Core scenario matrix through public values", async () =>
   assert.equal(measured[6]?.checksum, 34);
   const completeCollectionChecksum =
     2 *
-    (fixtures.canonicalCollection.icons.length +
+    (fixtures.canonicalCollection.members.length +
       fixtures.canonicalCollection.identity.name.length);
   assert.equal(measured[7]?.checksum, completeCollectionChecksum);
   assert.equal(measured[8]?.checksum, completeCollectionChecksum);
+  const representativeChecksum = 2 * (
+    coreBaseline.collectionSizes.representative
+    + fixtures.representativeCanonicalCollection.identity.name.length
+  );
+  assert.equal(measured[9]?.checksum, representativeChecksum);
+  assert.equal(measured[10]?.checksum, representativeChecksum);
+  assert.equal(measured[11]?.checksum, 2 * (
+    coreBaseline.collectionSizes.large
+    + fixtures.largeCanonicalCollection.identity.name.length
+  ));
   assert.deepEqual(report.distribution, { packagePath: "packages/core" });
 });
 
@@ -219,6 +271,8 @@ test("runs the complete Import scenario matrix through public operations", async
   );
   const report = await runner.run();
 
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.scenarios));
   assert.equal(report.schemaVersion, 2);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
@@ -284,6 +338,8 @@ test("runs the complete SVG scenario matrix through public values", async () => 
   );
   const report = await runner.run();
 
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.scenarios));
   assert.equal(report.schemaVersion, 2);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
@@ -471,6 +527,11 @@ test("runs the complete CLI scenario matrix through explicit runners", async () 
   );
   const report = await runner.run();
 
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.scenarios));
+  assert.ok(Object.isFrozen(report.asyncScenarios));
+  assert.ok(Object.isFrozen(report.evaluationScenarios));
+  assert.ok(Object.isFrozen(report.coldScenarios));
   assert.equal(report.schemaVersion, 4);
   assert.deepEqual(
     synchronous.map((scenario) => scenario.name),
@@ -699,6 +760,8 @@ test("runs the complete Icons distribution scenario matrix", async () => {
   );
   const report = await runner.run();
 
+  assert.ok(Object.isFrozen(report));
+  assert.ok(Object.isFrozen(report.imports));
   assert.equal(report.schemaVersion, 1);
   assert.equal(report.package, "@luscious-garden/aster-icons");
   assert.deepEqual(
@@ -730,6 +793,7 @@ test("inspects an isolated emitted-package fixture deterministically", async () 
       JSON.stringify({
         exports: { "./zeta": "./dist/zeta.js", ".": "./dist/index.js" },
         sideEffects: false,
+        dependencies: { zeta: "^1.0.0", alpha: "^2.0.0" },
       }),
       "utf8",
     );
@@ -741,7 +805,9 @@ test("inspects an isolated emitted-package fixture deterministically", async () 
     );
     await writeFile(resolve(root, "dist", "ignored.map"), "{}\n", "utf8");
 
-    assert.deepEqual(await inspector.inspect(root), {
+    const report = await inspector.inspect(root);
+
+    assert.deepEqual(report, {
       files: 3,
       bytes:
         Buffer.byteLength(moduleSource)
@@ -758,8 +824,12 @@ test("inspects an isolated emitted-package fixture deterministically", async () 
       types: undefined,
       bin: undefined,
       engines: undefined,
-      dependencies: undefined,
+      dependencies: { alpha: "^2.0.0", zeta: "^1.0.0" },
     });
+    assert.ok(Object.isFrozen(report));
+    assert.ok(Object.isFrozen(report.exports));
+    assert.ok(Object.isFrozen(report.dependencies));
+    assert.deepEqual(Object.keys(report.dependencies), ["alpha", "zeta"]);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

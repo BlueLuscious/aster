@@ -39,12 +39,12 @@ export class IconPresentationNormaliser {
    */
   normalise(value: unknown, path: string): IconPresentation {
     const record = this.#validator.record(value, path);
-    this.#validator.exactFields(record, iconPresentationFields, path);
+    this.#validator.exactFields(record, iconPresentationFields, path, []);
 
     const fill =
-      "fill" in record ? this.#normalisePaint(record.fill, `${path}.fill`) : undefined;
+      Object.hasOwn(record, "fill") ? this.#normalisePaint(record.fill, `${path}.fill`) : undefined;
     const fillRule =
-      "fillRule" in record
+      Object.hasOwn(record, "fillRule")
         ? this.#normaliseEnumeration(
             record.fillRule,
             iconPresentationEnumerations.fillRule,
@@ -52,15 +52,15 @@ export class IconPresentationNormaliser {
           )
         : undefined;
     const stroke =
-      "stroke" in record
+      Object.hasOwn(record, "stroke")
         ? this.#normalisePaint(record.stroke, `${path}.stroke`)
         : undefined;
     const strokeWidth =
-      "strokeWidth" in record
+      Object.hasOwn(record, "strokeWidth")
         ? this.#validator.nonNegativeNumber(record.strokeWidth, `${path}.strokeWidth`)
         : undefined;
     const strokeLineCap =
-      "strokeLineCap" in record
+      Object.hasOwn(record, "strokeLineCap")
         ? this.#normaliseEnumeration(
             record.strokeLineCap,
             iconPresentationEnumerations.strokeLineCap,
@@ -68,7 +68,7 @@ export class IconPresentationNormaliser {
           )
         : undefined;
     const strokeLineJoin =
-      "strokeLineJoin" in record
+      Object.hasOwn(record, "strokeLineJoin")
         ? this.#normaliseEnumeration(
             record.strokeLineJoin,
             iconPresentationEnumerations.strokeLineJoin,
@@ -76,22 +76,22 @@ export class IconPresentationNormaliser {
           )
         : undefined;
     const strokeMiterLimit =
-      "strokeMiterLimit" in record
+      Object.hasOwn(record, "strokeMiterLimit")
         ? this.#validator.positiveNumber(
             record.strokeMiterLimit,
             `${path}.strokeMiterLimit`,
           )
         : undefined;
     const opacity =
-      "opacity" in record
+      Object.hasOwn(record, "opacity")
         ? this.#validator.opacity(record.opacity, `${path}.opacity`)
         : undefined;
     const fillOpacity =
-      "fillOpacity" in record
+      Object.hasOwn(record, "fillOpacity")
         ? this.#validator.opacity(record.fillOpacity, `${path}.fillOpacity`)
         : undefined;
     const strokeOpacity =
-      "strokeOpacity" in record
+      Object.hasOwn(record, "strokeOpacity")
         ? this.#validator.opacity(record.strokeOpacity, `${path}.strokeOpacity`)
         : undefined;
 

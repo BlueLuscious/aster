@@ -33,6 +33,14 @@ show, and later exact selection; it is not a public provider result.
 the discovery icon records required by that subject. It contains no complete definition.
 `TCatalogueSelection` is the downstream immutable result containing the isolated definition and
 canonically ordered icon evidence required by Export or Review.
+Each `TCatalogueSelectedIcon` pairs one accepted Core `IconDefinition` with its independent,
+canonically ordered collection memberships inside that selection; it does not alter the definition.
+
+`TAsterIconManifestEntry` and `TAsterCollectionManifestEntry` are private structural views of the
+built-in Icons manifest records. The discovery factory reads their metadata and ordered member
+keys to construct provider-neutral discovery records; these types neither load definitions nor
+become public CLI catalogue contracts. The manifest's public records and generation boundary
+belong to the [Icons Distribution Manifest](../../../icons/manifest/index.md).
 
 ```text
 explicit providers --> discover --> discovery normaliser --> accepted discoveries
@@ -65,14 +73,23 @@ membership claims become sanitised diagnostics associated with the accepted prov
 
 Exact resolution begins only after metadata selection has resolved provider scope, identity, and
 ambiguity. An icon selection invokes `loadIcon()` once. A collection selection invokes
-`loadCollection()` once and uses the complete members carried by that collection definition; it
+`loadCollection()` once and uses the ordered `definition.members` carried by that collection; it
 does not invoke individual icon loaders.
 
 Every loaded value crosses `Icon.define()` or `Collection.define()` before command state can retain
-it. The consistency validator then compares canonical identity and metadata. Collection resolution
+it. A complete collection supplies its alias dictionary and derived member list; Core checks that
+the two views agree, reconstructs their containers, and retains or isolates their icons according
+to the [Core Collection contract](../../../core/collection/index.md). The consistency validator then
+compares canonical identity and metadata. Collection resolution
 also compares the ordered member identities and validates every loaded member against its accepted
 icon discovery record. Results are isolated and deeply immutable even when a provider returns
 mutable authored data.
+
+Discovery collection records continue using their metadata-only `icons` identity array. They
+contain neither aliases nor complete definitions. Renaming a collection-local alias does not
+change CLI matching, member identities, export paths, or review output. The resolver indexes
+validated `definition.members` by canonical identity and produces canonically ordered selected
+icon evidence independently of dictionary lookup names.
 
 An absent provider, missing value, rejected loader, malformed definition, identity mismatch,
 metadata mismatch, or membership mismatch becomes one sanitised `catalogue-unavailable`

@@ -10,9 +10,10 @@ Current findings remain in [Core Quality](quality.md).
 
 ## Representative evidence
 
-The schema-version-four baseline uses public Core APIs and a fixed sixteen-definition synthetic
-catalogue rather than Core implementation classes or product artwork. All canonical values,
-mutable clones and collection variants are prepared before timing begins.
+The schema-version-five baseline uses public Core APIs and a fixed sixteen-definition synthetic
+geometry corpus rather than Core implementation classes or product artwork. Scale scenarios
+reuse that geometry under unique identities in dictionaries of 26 and 256 icons. All canonical
+values, mutable clones and collection variants are prepared before timing begins.
 
 | Workload | Evidence | Pressure represented |
 | --- | --- | --- |
@@ -25,15 +26,42 @@ mutable clones and collection variants are prepared before timing begins.
 | Single canonical member | `Collection.define()` over one canonical frozen synthetic icon. | Per-member revalidation, duplicate identity, canonical comparison, and retention cost. |
 | Complete mutable collection | `Collection.define()` over mutable clones of all sixteen synthetic icons. | Complete member reconstruction and duplicate detection without canonical identity retention. |
 | Complete canonical collection | `Collection.define()` over the canonical sixteen-member synthetic collection. | Complete revalidation, canonical comparison, identity retention, ordering, and collection freezing. |
+| Representative mutable dictionary | `Collection.define()` over an authored dictionary containing 26 mutable synthetic icons, without a submitted `members` list. | Alias validation, complete icon reconstruction, duplicate detection, and one-time member derivation. |
+| Representative canonical dictionary | `Collection.define()` over the equivalent 26-member authored dictionary with canonical frozen icons. | Canonical retention, alias validation, ordering, and one-time member derivation. |
+| Large canonical dictionary | `Collection.define()` over an authored dictionary containing 256 distinct canonical synthetic icons. | Construction scaling with fixed geometry complexity and unique identities. |
 
 Mutable and canonical variants are structurally equivalent. Their comparison distinguishes input
 state and retention pressure; it does not grant provenance or permit a validation shortcut. The
 three path scenarios provide complexity-specific evidence and do not use product artwork.
 
+The complete sixteen-member scenarios revalidate a definition containing both `icons` and
+`members`. The authored dictionary scenarios derive `members` without validating a submitted
+sequence. Their different trust-boundary work makes them unsuitable for a direct per-member
+timing comparison. All dictionary views retain canonical icon references when validation permits;
+the benchmark never times repeated property access as collection construction.
+
+## Typed collection scaling
+
+Three reports captured on 24 September 2026 with Node `24.10.0` on Windows x64 produced these
+medians across report medians:
+
+| Scenario | Median elapsed time |
+| --- | ---: |
+| Empty authored collection | 1,875 ns per operation |
+| Representative mutable dictionary, 26 members | 248,329 ns per operation |
+| Representative canonical dictionary, 26 members | 314,361 ns per operation |
+| Large canonical dictionary, 256 members | 3,311,084 ns per operation |
+
+The large dictionary has approximately 9.85 times as many members and took approximately 10.5
+times as long in this comparison. This is bounded near-linear construction evidence for these
+fixed inputs, not a hardware-independent complexity or timing guarantee. Geometry complexity,
+metadata and input canonicality also affect validation cost. Reading a constructed collection's
+`members` remains a data-property access and performs no reconstruction.
+
 ## Investigation baseline
 
 The following schema-version-two findings used the former product pilot and remain historical
-investigation evidence; they are not directly comparable with schema-version-four reports.
+investigation evidence; they are not directly comparable with schema-version-five reports.
 Three complete reports captured under the same Node, operating-system, architecture, hardware,
 scenario, and workspace conditions produced these medians across report medians:
 
@@ -92,7 +120,7 @@ pnpm benchmark:core
 ```
 
 The command builds only Core before running Node with explicit garbage-collection access. It
-prints schema-version-four JSON to standard output and writes no
+prints schema-version-five JSON to standard output and writes no
 artefact. The report contains:
 
 - Node, operating-system, and architecture identity;

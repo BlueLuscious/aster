@@ -27,9 +27,9 @@ export class CollectionIdentityNormaliser {
     path = "collection.identity",
   ): CollectionIdentity {
     const record = this.#validator.record(value, path);
-    this.#validator.exactFields(record, ["namespace", "name"], path);
+    this.#validator.exactFields(record, ["namespace", "name"], path, ["name"]);
     const namespace =
-      "namespace" in record
+      Object.hasOwn(record, "namespace")
         ? this.#validator.text(record.namespace, `${path}.namespace`)
         : undefined;
     const name = this.#validator.text(record.name, `${path}.name`);

@@ -1,4 +1,8 @@
-import type { CollectionDefinition } from "../../collection/contracts/index.js";
+import type {
+  CollectionDefinition,
+  CollectionDefinitionInput,
+  CollectionIconMap,
+} from "../../collection/contracts/index.js";
 
 /**
  * @description Public immutable authority for constructing portable collections.
@@ -6,8 +10,11 @@ import type { CollectionDefinition } from "../../collection/contracts/index.js";
 export interface CollectionApi {
   /**
    * @description Validates authored data and creates an isolated immutable collection.
-   * @param definition - Authored render-neutral collection object.
-   * @returns Canonical deeply frozen collection definition.
+   * @param input - Authored render-neutral collection object or complete definition to revalidate.
+   * @returns Canonical deeply frozen collection definition retaining concrete aliases.
+   * @typeParam TIconMap - Concrete collection-local icon alias map.
    */
-  define(definition: CollectionDefinition): CollectionDefinition;
+  define<TIconMap extends CollectionIconMap>(
+    input: CollectionDefinitionInput<TIconMap>,
+  ): CollectionDefinition<TIconMap>;
 }

@@ -64,6 +64,7 @@ export class SvgMarkupSerialiser {
       ...(context.colour === undefined
         ? []
         : [this.#attribute("color", context.colour)]),
+      this.#attribute("data-rendered-by", "Aster"),
       ...(context.decorative
         ? [
             this.#attribute("aria-hidden", "true"),
@@ -222,8 +223,18 @@ export class SvgMarkupSerialiser {
    * @returns Escaped matrix attribute with a canonical translation.
    */
   #mirrorTransform(context: ISvgRenderContext): string {
-    const translation =
-      2 * context.definition.viewBox.minX + context.definition.viewBox.width;
+    const { minX, width } = context.definition.viewBox;
+    const directTranslation = 2 * minX + width;
+    const translation = Number.isFinite(directTranslation)
+      ? directTranslation
+      : minX + (minX + width);
+
+    if (!Number.isFinite(translation)) {
+      throw new SvgRenderError(
+        "definition.viewBox",
+        "RTL mirror translation cannot be represented as a finite number",
+      );
+    }
 
     return `matrix(-1 0 0 1 ${this.#numberSerialiser.serialise(translation)} 0)`;
   }

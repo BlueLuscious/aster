@@ -1,4 +1,6 @@
+import { Icon } from "@luscious-garden/aster-core";
 import { BenchmarkCatalogueFixtureFactory } from "../../shared/runtime/benchmark-catalogue-fixture.factory.mjs";
+import { coreBaseline } from "../constants/core-baseline.constant.mjs";
 
 /**
  * @description Prepares equivalent mutable and canonical Core benchmark inputs outside timed work.
@@ -12,6 +14,14 @@ export class CoreBaselineFixtureFactory {
     const catalogue = new BenchmarkCatalogueFixtureFactory().create();
     const canonicalIcons = catalogue.icons;
     const firstIcon = catalogue.icon;
+    const scaledIcons = Object.freeze(Array.from(
+      { length: coreBaseline.collectionSizes.large },
+      (_, index) => this.#scaledIcon(canonicalIcons, index),
+    ));
+    const representativeCollection = this.#scaledCollection(
+      scaledIcons.slice(0, coreBaseline.collectionSizes.representative),
+      "representative",
+    );
 
     return Object.freeze({
       canonicalIcons,
@@ -20,14 +30,17 @@ export class CoreBaselineFixtureFactory {
       mutableCollection: this.#clone(catalogue.collection),
       emptyCollection: {
         identity: { namespace: "benchmark", name: "empty" },
-        icons: [],
+        icons: {},
         metadata: { displayName: "Benchmark Empty" },
       },
       singleCanonicalCollection: {
         identity: { namespace: "benchmark", name: "single-canonical" },
-        icons: [firstIcon],
+        icons: { fixture1: firstIcon },
         metadata: { displayName: "Benchmark Single Canonical" },
       },
+      representativeMutableCollection: this.#clone(representativeCollection),
+      representativeCanonicalCollection: representativeCollection,
+      largeCanonicalCollection: this.#scaledCollection(scaledIcons, "large"),
       straightPath: this.#pathDefinition("straight", [
         { kind: "move", x: 2, y: 12 },
         { kind: "line", x: 22, y: 12 },
@@ -71,6 +84,49 @@ export class CoreBaselineFixtureFactory {
         { kind: "line", x: 22, y: 22 },
         { kind: "close" },
       ]),
+    });
+  }
+
+  /**
+   * @description Creates one canonical scaled icon with a distinct identity and varied corpus geometry.
+   * @param {readonly import("@luscious-garden/aster-core").IconDefinition[]} corpus - Prepared fixed geometry corpus.
+   * @param {number} index - Zero-based scaled icon position.
+   * @returns {import("@luscious-garden/aster-core").IconDefinition} Canonical scaled icon.
+   */
+  #scaledIcon(corpus, index) {
+    const source = corpus[index % corpus.length];
+
+    if (source === undefined) {
+      throw new TypeError("The Core scale scenario requires prepared icons.");
+    }
+
+    return Icon.define({
+      ...source,
+      identity: {
+        namespace: "benchmark",
+        name: `scale-${String(index + 1).padStart(3, "0")}`,
+      },
+      metadata: {
+        ...source.metadata,
+        displayName: `Scale Fixture ${index + 1}`,
+      },
+    });
+  }
+
+  /**
+   * @description Prepares an authored dictionary without precomputing its derived member view.
+   * @param {readonly import("@luscious-garden/aster-core").IconDefinition[]} icons - Canonical scaled icons in authored order.
+   * @param {string} name - Stable benchmark collection identity.
+   * @returns {import("@luscious-garden/aster-core").CollectionDefinitionInput} Frozen authored collection input.
+   */
+  #scaledCollection(icons, name) {
+    return Object.freeze({
+      identity: Object.freeze({ namespace: "benchmark", name }),
+      icons: Object.freeze(Object.fromEntries(icons.map((icon, index) => [
+        `scale${index + 1}`,
+        icon,
+      ]))),
+      metadata: Object.freeze({ displayName: `Benchmark ${name}` }),
     });
   }
 

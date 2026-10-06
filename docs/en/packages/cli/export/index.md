@@ -38,6 +38,9 @@ portable identities.
 `SvgExportArtefactFactory` preflights every logical path and rejects collisions before rendering
 through the public `Svg` API; it then translates target failures into Aster command diagnostics.
 `ExportPlanQuery` publishes a result only after the complete selection renders successfully.
+Each artefact retains the complete SVG output, including its fixed renderer marker. Export neither
+adds nor rewrites that marker; [SVG Render Result](../../svg/render/index.md) owns its exact bytes
+and root attribute order.
 
 ```text
 structured export invocation

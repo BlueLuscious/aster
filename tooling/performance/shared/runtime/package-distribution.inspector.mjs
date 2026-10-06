@@ -51,7 +51,7 @@ export class PackageDistributionInspector {
   /**
    * @description Reads modules, declarations, exports, and side-effect metadata for one package.
    * @param {string} packagePath - Workspace-relative or absolute package root.
-   * @returns {Promise<{ files: number, bytes: number, moduleFiles: number, moduleBytes: number, declarationFiles: number, declarationBytes: number, exports: readonly string[], sideEffects: unknown, type: unknown, main: unknown, types: unknown, bin: unknown, engines: unknown, dependencies: unknown }>} Distribution summary.
+   * @returns {Promise<{ files: number, bytes: number, moduleFiles: number, moduleBytes: number, declarationFiles: number, declarationBytes: number, exports: readonly string[], sideEffects: unknown, type: unknown, main: unknown, types: unknown, bin: unknown, engines: unknown, dependencies: unknown }>} Frozen distribution envelope with shallowly copied manifest records.
    */
   async inspect(packagePath) {
     const packageRoot = this.#paths.resolve(packagePath);
@@ -98,7 +98,7 @@ export class PackageDistributionInspector {
   /**
    * @description Copies one optional manifest record into deterministic lexical key order.
    * @param {unknown} value - Candidate manifest member.
-   * @returns {unknown} Immutable ordered record or the original scalar manifest value.
+   * @returns {unknown} Shallowly frozen ordered record or the original scalar manifest value.
    */
   #record(value) {
     if (value === undefined) {

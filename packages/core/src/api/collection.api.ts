@@ -1,4 +1,8 @@
-import type { CollectionDefinition } from "../collection/contracts/index.js";
+import type {
+  CollectionDefinition,
+  CollectionDefinitionInput,
+  CollectionIconMap,
+} from "../collection/contracts/index.js";
 import { CollectionDefinitionFactory } from "../collection/runtime/collection-definition.factory.js";
 import type { CollectionApi } from "./contracts/index.js";
 
@@ -13,10 +17,13 @@ const collectionDefinitionFactory = new CollectionDefinitionFactory();
 export const Collection: CollectionApi = Object.freeze({
   /**
    * @description Validates authored data and creates an immutable collection.
-   * @param definition - Authored render-neutral collection object.
-   * @returns Canonical deeply frozen collection definition.
+   * @param input - Authored render-neutral collection object or complete definition to revalidate.
+   * @returns Canonical deeply frozen collection definition retaining concrete aliases.
+   * @typeParam TIconMap - Concrete collection-local icon alias map.
    */
-  define(definition: CollectionDefinition): CollectionDefinition {
-    return collectionDefinitionFactory.create(definition);
+  define<TIconMap extends CollectionIconMap>(
+    input: CollectionDefinitionInput<TIconMap>,
+  ): CollectionDefinition<TIconMap> {
+    return collectionDefinitionFactory.create<TIconMap>(input);
   },
 });

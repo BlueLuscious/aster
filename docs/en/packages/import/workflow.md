@@ -35,7 +35,9 @@ external metadata files.
 Path nodes are emitted as structured command objects. Re-importing equivalent compact SVG and
 authoring those same canonical commands in TypeScript therefore produce byte-equivalent SVG when
 rendered with the same definition metadata and options; exact preservation of source spelling is
-not promised.
+not promised. This equivalence concerns supported authored SVG source, not re-importing a complete
+`Svg.render(...)` result. The [SVG adapter](formats/svg/index.md) defines that narrower input
+boundary.
 
 Repository conformance exercises both direct TypeScript-first authorship and adopted editable
 modules through the built Core, Import and SVG package roots. Independent host-owned batches are

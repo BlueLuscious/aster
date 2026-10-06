@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, rmdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
@@ -50,6 +50,32 @@ test("rejects documentation for a missing package", async () => {
     assert.ok(
       result.issues.some((issue) => /missing packages member: ghost/u.test(issue)),
     );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("compares authored feature directories without treating generated output as a feature", async () => {
+  const root = await createFixture();
+
+  try {
+    await writeDocument(root, "docs/en/packages/icons/index.md", "# Icons\n");
+    await writeDocument(root, "docs/en/packages/icons/old/index.md", "# Old\n");
+    await mkdir(resolve(root, "packages/icons/src/glyphs"), { recursive: true });
+    await mkdir(resolve(root, "packages/icons/src/generated"), { recursive: true });
+
+    const result = await verifyDocumentation(root);
+
+    assert.deepEqual(result.issues, [
+      "Missing icons feature documentation for source member: glyphs",
+      "Documentation describes a missing icons source feature: old",
+    ]);
+
+    await writeDocument(root, "docs/en/packages/icons/glyphs/index.md", "# Glyphs\n");
+    await rm(resolve(root, "docs/en/packages/icons/old/index.md"));
+    await rmdir(resolve(root, "docs/en/packages/icons/old"));
+
+    assert.deepEqual((await verifyDocumentation(root)).issues, []);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

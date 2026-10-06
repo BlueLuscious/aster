@@ -29,16 +29,19 @@ export class IconValueValidator {
   }
 
   /**
-   * @description Rejects unknown, symbolic, hidden, or accessor-owned object fields.
+   * @description Rejects invalid own fields and requires all mandatory fields to be owned.
+   * @remarks Every accepted field is mandatory unless a narrower required sequence is supplied.
    * @param value - Object record whose keys are inspected.
    * @param accepted - Closed field sequence.
    * @param path - Logical object path.
+   * @param required - Fields that must be own enumerable data properties.
    * @returns Nothing.
    */
   exactFields(
     value: Record<string, unknown>,
     accepted: readonly string[],
     path: string,
+    required: readonly string[] = accepted,
   ): void {
     for (const field of Reflect.ownKeys(value)) {
       if (typeof field !== "string") {
@@ -52,6 +55,15 @@ export class IconValueValidator {
       }
 
       this.dataProperty(value, field, fieldPath);
+    }
+
+    for (const field of required) {
+      if (!Object.hasOwn(value, field)) {
+        throw new IconDefinitionError(
+          `${path}.${field}`,
+          "expected an enumerable data field",
+        );
+      }
     }
   }
 
@@ -171,7 +183,7 @@ export class IconValueValidator {
   }
 
   /**
-   * @description Accepts one dense array containing only enumerable data elements.
+   * @description Accepts one ordinary dense array containing only enumerable data elements.
    * @param value - Unknown value to inspect.
    * @param path - Logical value path.
    * @returns Accepted mutable input array.
@@ -179,6 +191,10 @@ export class IconValueValidator {
   array(value: unknown, path: string): unknown[] {
     if (!Array.isArray(value)) {
       throw new IconDefinitionError(path, "expected an array");
+    }
+
+    if (Object.getPrototypeOf(value) !== Array.prototype) {
+      throw new IconDefinitionError(path, "expected an ordinary array");
     }
 
     let elementCount = 0;

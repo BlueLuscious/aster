@@ -26,6 +26,8 @@ The first supported ABI consists of:
 - every public command, catalogue, export, and review contract and type exported through the root;
 - the `aster` command-set identity;
 - the `export`, `review`, `list`, `search`, `show`, `help`, and `version` invocation variants;
+- optional named and `all` version scopes, explicit installed-package evidence, and the
+  `package-versions` result alongside the unchanged plain `version` result;
 - current payload and catalogue-result discriminators;
 - current diagnostic codes and categories;
 - deterministic ordering, canonicalisation, and expected-failure semantics.
@@ -74,6 +76,12 @@ The public provider ABI contains metadata discovery plus exact icon and collecti
 contains no complete-provider snapshot contract. Discovery commands invoke no definition loader;
 Export and Review load only the exact accepted target after metadata selection.
 
+Complete collection loaders return the current Core `CollectionDefinition` with a typed `icons`
+dictionary and its derived ordered `members` list. Revalidation rejects a submitted list that
+disagrees with the dictionary. The metadata-only discovery contract still exposes member
+identities in its `icons` array; collection aliases never change identity resolution. Provider
+migration from the published RC is recorded in the [CLI release notes](releases.md).
+
 Provider and membership guarantees are owned by the
 [CLI Catalogue](catalogue/index.md).
 
@@ -115,6 +123,10 @@ Package conformance builds the distribution and verifies:
 - exclusive Node process authority in the executable entrypoint;
 - package dry-run, local tarball installation, strict engine acceptance, binary linking, and root
   import behaviour in a temporary consumer containing no workspace source files;
+- independently versioned installed manifests resolved from the packed CLI rather than the caller
+  directory, plus exact named and aggregate human and JSON results;
+- sanitised post-startup metadata failures, native pre-startup dependency failures, and version
+  execution without Icons module or network acquisition;
 - standalone and independent programmatic-host discovery and complete export equivalence;
 - explicit catalogue registration and registration-order independence;
 - byte-equivalent publication of the complete built-in collection from a clean consumer;

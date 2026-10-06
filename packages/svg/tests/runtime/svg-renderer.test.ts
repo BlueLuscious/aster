@@ -95,8 +95,15 @@ test("renders exact golden markup with accepted presentation precedence", () => 
 
   assert.equal(
     markup,
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="32" height="32" color="#aabbcc" role="img" aria-label="Visible &quot;shape&quot; &amp; state"><title>Shape &lt;preview&gt;</title><path d="M 2 8 L 22 8" fill="#445566" fill-rule="nonzero" stroke="#112233" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" opacity="1" fill-opacity="1" stroke-opacity="1"/></svg>',
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="32" height="32" color="#aabbcc" data-rendered-by="Aster" role="img" aria-label="Visible &quot;shape&quot; &amp; state"><title>Shape &lt;preview&gt;</title><path d="M 2 8 L 22 8" fill="#445566" fill-rule="nonzero" stroke="#112233" stroke-width="0" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="4" opacity="1" fill-opacity="1" stroke-opacity="1"/></svg>',
   );
+});
+
+test("identifies the renderer exactly once on decorative roots", () => {
+  const markup = Svg.render(createDefinition());
+
+  assert.match(markup, / height="24" data-rendered-by="Aster" aria-hidden="true"/u);
+  assert.equal(markup.match(/data-rendered-by=/gu)?.length, 1);
 });
 
 test("serialises every portable primitive in paint and attribute order", () => {
@@ -161,7 +168,7 @@ test("serialises every portable primitive in paint and attribute order", () => {
 
   assert.equal(
     Svg.render(definition),
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 1 28 20" width="28" height="20" aria-hidden="true" focusable="false"><path d="M 0 0 L 1 0"${presentation}/><circle cx="4" cy="5" r="2"${presentation}/><ellipse cx="8" cy="9" rx="3" ry="2"${presentation}/><rect x="1" y="2" width="6" height="7" rx="1" ry="2"${presentation}/><line x1="0" y1="1" x2="2" y2="3"${presentation}/><polyline points="0 1 2 3"${presentation}/><polygon points="0 1 2 3 4 5"${presentation}/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 1 28 20" width="28" height="20" data-rendered-by="Aster" aria-hidden="true" focusable="false"><path d="M 0 0 L 1 0"${presentation}/><circle cx="4" cy="5" r="2"${presentation}/><ellipse cx="8" cy="9" rx="3" ry="2"${presentation}/><rect x="1" y="2" width="6" height="7" rx="1" ry="2"${presentation}/><line x1="0" y1="1" x2="2" y2="3"${presentation}/><polyline points="0 1 2 3"${presentation}/><polygon points="0 1 2 3 4 5"${presentation}/></svg>`,
   );
 });
 
@@ -555,6 +562,39 @@ test("applies only the mirror policy to explicitly right-to-left geometry", () =
     }),
     /<g transform="matrix\(-1 0 0 1 30 0\)">/u,
   );
+});
+
+test("keeps RTL mirror translations finite at numeric boundaries", () => {
+  const base = createDefinition();
+  const definition = (minX: number): IconDefinition =>
+    Icon.define({
+      ...base,
+      viewBox: {
+        ...base.viewBox,
+        minX,
+        width: Number.MAX_VALUE,
+      },
+      metadata: {
+        ...base.metadata,
+        rtl: iconRtlPolicies[0],
+      },
+    });
+
+  assert.match(
+    Svg.render(definition(-Number.MAX_VALUE), {
+      direction: iconDirections[1],
+    }),
+    /transform="matrix\(-1 0 0 1 -1\.7976931348623157e\+308 0\)"/u,
+  );
+
+  expectRenderError(
+    () => Svg.render(definition(Number.MAX_VALUE), {
+      direction: iconDirections[1],
+    }),
+    "definition.viewBox",
+  );
+
+  assert.doesNotMatch(Svg.render(definition(Number.MAX_VALUE)), /transform=/u);
 });
 
 test("enforces icon-owned viewport boundaries and canonical dimensions", () => {

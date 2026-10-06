@@ -28,6 +28,7 @@ test("renders the complete real icon corpus deterministically", async () => {
 
     for (const markup of scenarios) {
       assert.match(markup, /^<svg xmlns="http:\/\/www\.w3\.org\/2000\/svg"/u);
+      assert.equal(markup.match(/data-rendered-by="Aster"/gu)?.length, 1);
       assert.match(markup, /<\/svg>$/u);
       outputs.add(markup);
     }

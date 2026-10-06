@@ -55,11 +55,12 @@ export class IconMetadataNormaliser {
         "replacedBy",
       ],
       path,
+      ["displayName", "rtl", "presentation", "deprecated"],
     );
 
     const displayName = this.#validator.text(record.displayName, `${path}.displayName`);
     const tags =
-      "tags" in record
+      Object.hasOwn(record, "tags")
         ? this.#normaliseTags(record.tags, `${path}.tags`)
         : undefined;
     const rtl = this.#normaliseRtl(record.rtl, `${path}.rtl`);
@@ -67,16 +68,16 @@ export class IconMetadataNormaliser {
       record.presentation,
     );
     const licence =
-      "licence" in record
+      Object.hasOwn(record, "licence")
         ? this.#validator.text(record.licence, `${path}.licence`)
         : undefined;
     const attribution =
-      "attribution" in record
+      Object.hasOwn(record, "attribution")
         ? this.#validator.text(record.attribution, `${path}.attribution`)
         : undefined;
     const deprecated = this.#validator.boolean(record.deprecated, `${path}.deprecated`);
     const replacedBy =
-      "replacedBy" in record
+      Object.hasOwn(record, "replacedBy")
         ? this.#identityNormaliser.normalise(record.replacedBy, `${path}.replacedBy`)
         : undefined;
 

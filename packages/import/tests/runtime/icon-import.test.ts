@@ -292,6 +292,56 @@ test("rejects non-SVG Unicode whitespace in path and numeric sequences", () => {
   );
 });
 
+test("rejects non-SVG Unicode whitespace around individual numeric attributes", () => {
+  const cases = [
+    {
+      name: "geometry-non-breaking-space",
+      attributes: 'cx="\u00a012" cy="12" r="2"',
+      value: "\u00a012",
+      code: "ASTER-SYNTAX-003",
+    },
+    {
+      name: "presentation-narrow-space",
+      attributes: 'cx="12" cy="12" r="2" stroke-width="1.5\u202f"',
+      value: "1.5\u202f",
+      code: "ASTER-SYNTAX-005",
+    },
+  ] as const;
+
+  for (const { name, attributes, value, code } of cases) {
+    const content = [
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">',
+      `<circle ${attributes}/></svg>`,
+    ].join("");
+    const result = IconImport.inspect({
+      format: iconImportFormats.svg,
+      sourceId: `paths/${name}.svg`,
+      identity: { namespace: "paths", name },
+      content,
+    });
+
+    assert.equal(result.successful, false, name);
+    assert.deepEqual(
+      result.diagnostics.map((diagnostic) => diagnostic.code),
+      [code],
+    );
+    const span = result.diagnostics[0]?.span;
+    assert.ok(span !== undefined);
+    assert.equal(content.slice(span.start.offset, span.end.offset), value);
+  }
+
+  const accepted = IconImport.inspect({
+    format: iconImportFormats.svg,
+    sourceId: "paths/ordinary-numeric-space.svg",
+    identity: { namespace: "paths", name: "ordinary-numeric-space" },
+    content: [
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">',
+      '<circle cx=" 12 " cy="12" r="2" stroke-width=" 1.5 "/></svg>',
+    ].join(""),
+  });
+  assert.equal(accepted.successful, true);
+});
+
 test("rejects finite SVG operands whose absolute path expansion overflows", () => {
   for (const [name, data] of [
     ["relative-overflow", "M1e308 0 l1e308 0"],

@@ -81,8 +81,12 @@ export const asterCommandDescriptors = Object.freeze({
     /** @description Canonical version command identity. */
     name: asterCommandNames.version,
     /** @description Concise purpose shown by general help presentation. */
-    summary: "Show explicit Aster product metadata.",
+    summary: "Show the CLI version or installed public package versions.",
     /** @description Complete accepted version invocation forms. */
-    usage: Object.freeze(["version"]),
+    usage: Object.freeze([
+      "version",
+      "version <core|icons|svg|cli>",
+      "version --all",
+    ]),
   }),
 }) satisfies Readonly<Record<string, AsterCommandDescriptor>>;

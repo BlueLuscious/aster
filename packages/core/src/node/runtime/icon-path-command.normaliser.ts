@@ -119,7 +119,7 @@ export class IconPathCommandNormaliser {
    */
   #normaliseCommand(value: unknown, path: string): IconPathCommandType {
     const record = this.#validator.record(value, path);
-    this.#validator.exactFields(record, this.#commandFields, path);
+    this.#validator.exactFields(record, this.#commandFields, path, ["kind"]);
 
     switch (record.kind) {
       case iconPathCommandKinds.move:

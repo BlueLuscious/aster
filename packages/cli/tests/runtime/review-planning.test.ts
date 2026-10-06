@@ -83,7 +83,10 @@ function createCollection(
 ): CollectionDefinition {
   return Collection.define({
     identity: { namespace: "testing", name },
-    icons,
+    icons: Object.fromEntries(icons.map((icon, index) => [
+      `icon${index + 1}`,
+      icon,
+    ])),
     metadata: {
       displayName: name,
       description: `Review ${name}`,
@@ -159,8 +162,17 @@ test("plans immutable technical evidence for one icon", async () => {
         [representativeCollection.identity],
       );
       assert.match(plan.document.icon.markup, /^<svg /u);
+      assert.match(
+        plan.document.icon.markup,
+        / data-rendered-by="Aster" aria-hidden="true"/u,
+      );
       assert.ok(Object.isFrozen(plan.document.icon));
+      assert.ok(Object.isFrozen(plan.document.icon.identity));
+      assert.ok(Object.isFrozen(plan.document.icon.metadata));
+      assert.ok(Object.isFrozen(plan.document.icon.viewBox));
       assert.ok(Object.isFrozen(plan.document.icon.primitiveKinds));
+      assert.ok(Object.isFrozen(plan.document.icon.memberships));
+      assert.ok(Object.isFrozen(plan.document.icon.memberships[0]));
     }
   }
 });

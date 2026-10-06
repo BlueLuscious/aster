@@ -20,6 +20,11 @@ and ownership-gated replacement intent. `--replace` is a singleton flag and can 
 default or explicit review root. JSON cannot be combined with review publication options.
 `CommandLineError` carries stable parser evidence for shell diagnostic adaptation.
 
+`VersionCommandLineParser` accepts the plain CLI version, one of the public package selectors
+`core`, `icons`, `svg`, or `cli`, or the standalone `--all` option. `--json` may accompany any of
+these forms but is removed before invocation. `HelpCommandLineParser` accepts every registered
+command name, including `review` and `version`, for command-specific help.
+
 No argument defaults to `help`. Unknown commands, duplicate singleton options, repeated `--json`,
 missing option values, and trailing unsupported tokens are rejected before programmatic command
 execution. The accepted grammar is documented by [CLI Shell](../index.md).
@@ -28,10 +33,14 @@ execution. The accepted grammar is documented by [CLI Shell](../index.md).
 
 | Type | Responsibility |
 | --- | --- |
-| `TParsedCommandLine` | Carries the accepted host-neutral invocation plus shell-owned JSON, output-root, and replacement selections. |
+| `TParsedCommandLine` | Carries the host-neutral request plus shell-owned JSON, output-root, and replacement selections. |
+| `TParsedCommandInvocation` | Distinguishes parsed requests from command-validated export options. |
+| `TParsedExportCommandInvocation` | Carries export render tokens as raw strings until command validation. |
 | `TParsedCommandOptions` | Accumulates catalogue, collection, and repeated tag filters for discovery parsers before invocation construction. |
-| `TParsedExportCommandOptions` | Accumulates export filters, render values, accessibility text, and shell-owned output root before final validation. |
+| `TParsedExportCommandOptions` | Accumulates export filters, raw render tokens, accessibility text, and shell-owned output root before final validation. |
 
 The two option types are private mutable parser assembly values. `TParsedCommandLine` is their
 immutable accepted result and prevents shell-only `--json`, `--output`, or `--replace` state from
-entering the programmatic invocation contracts.
+entering the programmatic invocation contracts. Parsed export paint and direction tokens remain
+strings until `ExportOptionsNormaliser` validates them; invalid values produce command usage
+diagnostics rather than being treated as canonical portable options by the parser.

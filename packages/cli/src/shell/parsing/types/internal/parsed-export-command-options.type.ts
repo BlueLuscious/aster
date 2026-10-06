@@ -1,10 +1,5 @@
-import type {
-  IconDirectionType,
-  IconPaintType,
-} from "@luscious-garden/aster-core";
-
 /**
- * @description Mutable export-specific options accumulated from one standalone argv sequence.
+ * @description Mutable export-specific argv values before portable option validation.
  */
 export type TParsedExportCommandOptions = {
   /**
@@ -18,34 +13,34 @@ export type TParsedExportCommandOptions = {
   output?: string;
 
   /**
-   * @description Optional positive rendered dimension.
+   * @description Optional finite dimension awaiting portable domain validation.
    */
   size?: number;
 
   /**
-   * @description Optional inherited portable colour.
+   * @description Optional unvalidated inherited colour token.
    */
-  colour?: IconPaintType;
+  colour?: string;
 
   /**
-   * @description Optional explicit portable fill paint.
+   * @description Optional unvalidated fill paint token.
    */
-  fill?: IconPaintType;
+  fill?: string;
 
   /**
-   * @description Optional explicit portable stroke paint.
+   * @description Optional unvalidated stroke paint token.
    */
-  stroke?: IconPaintType;
+  stroke?: string;
 
   /**
-   * @description Optional non-negative rendered stroke width.
+   * @description Optional finite stroke width awaiting portable domain validation.
    */
   strokeWidth?: number;
 
   /**
-   * @description Optional explicit rendered direction.
+   * @description Optional unvalidated direction token.
    */
-  direction?: IconDirectionType;
+  direction?: string;
 
   /**
    * @description Optional icon-only accessible label.

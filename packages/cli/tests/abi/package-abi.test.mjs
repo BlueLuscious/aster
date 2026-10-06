@@ -172,10 +172,11 @@ test("emits host-neutral declarations with only accepted public package imports"
   }
 });
 
-test("limits Node process authority and the manifest bridge to the private entrypoint", async () => {
+test("limits Node process and manifest authority to private shell owners", async () => {
   const modules = await collectDistributionFiles(".js");
   const nodeOwners = [];
   const requireOwners = [];
+  const requireBridgeOwners = [];
 
   assert.ok(modules.length > 0);
 
@@ -196,6 +197,10 @@ test("limits Node process authority and the manifest bridge to the private entry
 
     if (/\brequire\s*\(/gu.test(source)) {
       requireOwners.push(modulePath);
+    }
+
+    if (/\bcreateRequire\s*\(/gu.test(source)) {
+      requireBridgeOwners.push(modulePath);
     }
 
     assert.deepEqual(
@@ -231,8 +236,13 @@ test("limits Node process authority and the manifest bridge to the private entry
     ],
     ["shell/output/runtime/output-location.resolver.js", ["node:path"]],
     ["shell/output/runtime/review-output-path.resolver.js", ["node:path"]],
+    [
+      "shell/version/runtime/installed-package-version.reader.js",
+      ["node:fs/promises", "node:module"],
+    ],
   ]);
   assert.deepEqual(requireOwners, ["shell/aster.js"]);
+  assert.deepEqual(requireBridgeOwners, ["shell/aster.js"]);
 });
 
 test("acquires built-in Icons manifests and definitions only through its lazy provider", async () => {

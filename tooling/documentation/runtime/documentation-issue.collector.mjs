@@ -18,10 +18,10 @@ export class DocumentationIssueCollector {
   }
 
   /**
-   * @description Copies all accumulated documentation findings.
-   * @returns {string[]} Findings in inspection order.
+   * @description Creates an immutable snapshot of all accumulated documentation findings.
+   * @returns {readonly string[]} Findings in inspection order.
    */
   snapshot() {
-    return [...this.#issues];
+    return Object.freeze([...this.#issues]);
   }
 }

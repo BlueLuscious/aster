@@ -36,7 +36,7 @@ export class PackageArchitectureInspector {
   #modules;
 
   /**
-   * @description Recognised package policies keyed by package identity.
+   * @description Snapshot of recognised package policy bindings, retaining policy collaborators by reference.
    * @type {ReadonlyMap<string, import("../contracts/internal/package-architecture-policy.contract.mjs").IPackageArchitecturePolicy>}
    */
   #policies;
@@ -79,7 +79,7 @@ export class PackageArchitectureInspector {
     this.#directories = directories;
     this.#dependencies = dependencies;
     this.#modules = modules;
-    this.#policies = policies;
+    this.#policies = new Map(policies);
     this.#paths = paths;
     this.#graphFactory = graphFactory;
   }

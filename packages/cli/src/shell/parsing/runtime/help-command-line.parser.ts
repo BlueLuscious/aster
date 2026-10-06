@@ -1,4 +1,5 @@
 import { commandLineTokens } from "../constants/command-line-tokens.constant.js";
+import { isAsterCommandName } from "../../../command/runtime/is-aster-command-name.js";
 import type { ICommandLineCommandParser } from "../contracts/internal/command-line-command-parser.contract.js";
 import type { TParsedCommandLine } from "../types/internal/parsed-command-line.type.js";
 import { CommandLineError } from "./command-line.error.js";
@@ -30,10 +31,7 @@ export class HelpCommandLineParser implements ICommandLineCommandParser {
 
     if (
       commandName !== undefined
-      && commandName !== commandLineTokens.commands.export
-      && commandName !== commandLineTokens.commands.list
-      && commandName !== commandLineTokens.commands.search
-      && commandName !== commandLineTokens.commands.show
+      && !isAsterCommandName(commandName)
     ) {
       throw new CommandLineError(
         "help command must identify an accepted command",

@@ -63,11 +63,19 @@ A collection filename `<collection-slug>.collection.ts` follows the same convers
 `Collection`. For example, `amellus.collection.ts` exports `AmellusCollection`.
 
 Collections use `src/collections/<initial>/<name>/<name>.collection.ts`; they do not have variants.
-Their explicit
-`icons` sequence may contain only identifiers acquired through named relative imports. Every member
+Their explicit `icons` field must be an object literal whose lower camel-case property names are
+assigned directly to identifiers acquired through named relative runtime imports. For example,
+`icons: { camera: Camera, cameraStippled: CameraStippled }` declares two ordered aliases. Every member
 specifier and imported symbol must resolve to one icon discovered in the same complete inspection.
 Removing a referenced icon, pointing outside canonical sources, or spelling its exported symbol incorrectly
 therefore fails before generated outputs are touched.
+
+The accepted dictionary grammar rejects arrays, shorthand properties, quoted or computed keys,
+spreads, accessors, calls, nested values, non-runtime imports, duplicate aliases, and duplicate
+member references. `catalogueCollectionIconAliasPatternSource` owns the static source grammar;
+Core independently validates the portable runtime dictionary at its public construction boundary.
+Valid aliases may shadow inherited names. The static inspector never evaluates a definition to
+discover its aliases or members.
 
 Names begin with one ASCII lowercase letter and continue with lowercase alphanumeric segments
 separated by one hyphen. Variants use portable Core slug syntax. Every canonical export must call
@@ -139,6 +147,9 @@ cannot drift independently. The
 synchroniser builds the complete immutable inspection set before asking the serialiser for any
 output, so source failures cannot partially replace generated files. Static document and value
 caches are scoped to one complete synchronisation and cleared before the next inspection.
+The synchroniser copies each injected source-family descriptor and its excluded-directory list at
+construction; later changes to the caller's configuration cannot redirect discovery. Filesystem,
+inspector and planner capabilities remain borrowed collaborators.
 
 ## Internal contracts
 
@@ -146,7 +157,7 @@ caches are scoped to one complete synchronisation and cleared before the next in
 | --- | --- |
 | `ICatalogueSourceFamily` | Configures one canonical source family and its Core factory, physical root and generated facade root. |
 | `ICatalogueSourceIdentity` | Carries the path-owned name, optional variant, symbol and public subpath produced by layout normalisation. |
-| `ICatalogueCollectionMemberReference` | Retains one collection member's local symbol, imported symbol and canonical module specifier for relationship validation. |
+| `ICatalogueCollectionMemberReference` | Retains one collection-local alias, local imported identifier, exported symbol and canonical module specifier for relationship validation. |
 | `ICatalogueIconManifestData` | Carries statically extracted metadata for one icon manifest entry without portable geometry. |
 | `ICatalogueCollectionManifestData` | Carries statically extracted collection metadata and ordered member keys. |
 | `ICatalogueSourceSyntaxInspection` | Couples one module's static manifest data with any collection member references found by syntax inspection. |
@@ -176,6 +187,22 @@ exposes a platform path separator in generated TypeScript.
 `pnpm --dir packages/icons run check:catalogue` performs a read-only comparison and fails when an
 output is absent or stale. Root `pnpm check` runs the read-only check before any build so CI cannot
 silently accept uncommitted generated drift.
+
+Collection membership follows one source-to-runtime flow:
+
+1. syntax inspection reads the ordered `icons` dictionary and retains each alias and named import;
+2. relationship validation resolves those imports against canonical icon modules;
+3. manifest planning emits ordered canonical identity keys in the collection entry's `members`;
+4. the exact collection loader targets its isolated facade;
+5. evaluating that collection calls Core, which derives `CollectionDefinition.members` from the
+   same authored dictionary.
+
+Manifest `members` are lightweight identity strings; definition `members` are complete icon
+objects. Neither generated manifest nor loader map becomes a second authored membership authority,
+and source aliases do not replace canonical manifest keys. Adding or removing a member requires
+editing only its collection's named imports and alias dictionary, then rebuilding. Removing an
+icon still referenced by a collection fails relationship validation rather than rewriting the
+curated dictionary automatically.
 
 ## Publication safety
 

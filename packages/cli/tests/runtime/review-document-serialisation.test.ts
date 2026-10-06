@@ -84,10 +84,11 @@ test("serialises byte-identical self-contained icon evidence", async () => {
   assert.match(first, /16 px[\s\S]*24 px[\s\S]*32 px[\s\S]*48 px/u);
   assert.match(first, /Regular comparison grid/u);
   assert.match(first, /No safe-area profile is retained/u);
+  assert.match(first, /data-rendered-by="Aster"/u);
   assert.doesNotMatch(first, /<script|<link|<img|@import|url\(/u);
 
   const digest = createHash("sha256").update(first).digest("hex");
-  assert.equal(digest, "b9b8b9ef99f37dd3516d7f3a6ba62350c2eebf0adbce856262724f5d65994850");
+  assert.equal(digest, "ec08e544a128b9f171396a0223f52f946a770747a4e804896a0a5f267417a171");
 });
 
 test("serialises collections in canonical navigable order", async () => {
@@ -103,7 +104,7 @@ test("serialises collections in canonical navigable order", async () => {
   });
   const collection = Collection.define({
     identity: { namespace: "testing", name: "ordered" },
-    icons: [zeta, alpha],
+    icons: { zeta, alpha },
     metadata: { displayName: "Ordered" },
   });
   const provider = createCatalogueProvider("testing", {
@@ -151,7 +152,7 @@ test("escapes hostile authored text and explicit attribute contexts", async () =
   });
   const collection = Collection.define({
     identity: { namespace: "testing", name: "hostile" },
-    icons: [icon],
+    icons: { hostile: icon },
     metadata: {
       displayName: dangerous,
       description: "<strong>not markup</strong>",
@@ -185,7 +186,7 @@ test("escapes hostile authored text and explicit attribute contexts", async () =
 test("renders an explicit empty collection state", async () => {
   const collection = Collection.define({
     identity: { namespace: "testing", name: "empty" },
-    icons: [],
+    icons: {},
     metadata: { displayName: "Empty" },
   });
   const provider = createCatalogueProvider("testing", {

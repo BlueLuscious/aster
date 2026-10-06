@@ -8,6 +8,39 @@ dependency sequencing; each package owns its [release notes](../packages/index.m
 `@luscious-garden/aster-import` participated in repository verification but was not packed or
 published as part of this release.
 
+The operational steps from [Prepare the candidate](#prepare-the-candidate) target the prepared
+`0.1.0-rc.2` source. They do not authorise its publication or imply that its registry packages
+or companion GitHub pre-release already exist.
+
+## Distribution channels
+
+npm remains the primary package distribution registry. Subsequent npm releases are accompanied
+by a manually approved GitHub Release that records the exact published package versions, release
+notes and reviewed source commit. This procedure does not establish that a companion GitHub
+Release already exists for the historical npm publication recorded below.
+
+A GitHub Release is based on a Git tag targeting the approved `master` commit; that tag is
+independent from npm dist-tags such as `next` and `latest`. Mark a release containing candidate
+packages as a pre-release. A coordinated release may list several independently versioned
+packages without implying that every package shares one version.
+
+Attach the same approved `.tgz` archives that were published to npm, together with their SHA-256
+checksums. Do not rebuild or repack them for GitHub. GitHub's automatically generated source ZIP
+and tar archives are not substitutes for the compiled npm package archives. See
+[GitHub's release documentation](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases).
+
+Confirm npm publication and registry-consumer verification for every package listed before
+publishing its companion GitHub Release. Creating the tag, publishing the release and uploading
+assets remain separately approved human operations; no workflow performs them automatically.
+Record the release URL in the affected package release notes and verify that each downloaded
+package asset matches its approved hash. Keep the release as a draft if publication is incomplete.
+
+GitHub Packages is a different registry, not the release page. It is not part of the accepted
+distribution procedure and does not block candidate or stable publication. A GitHub organisation,
+repository transfer, second npm scope or registry-routing change is not required for the selected
+npm-and-Releases path. Reconsider an additional registry only through the separately conditional
+[future capability](../future-capabilities.md#additional-package-registry).
+
 ## Reviewed candidate
 
 The first public set has four independently versioned `0.1.0-rc.1` packages. A frozen offline
@@ -95,7 +128,7 @@ Choose a new absolute directory outside the repository for release artefacts. In
 expected files. Dry-run inventory and actual pack are separate checks:
 
 ```powershell
-$releaseDir = "C:\absolute\path\to\aster-release-0.1.0-rc.1"
+$releaseDir = "C:\absolute\path\to\aster-release-0.1.0-rc.2"
 New-Item -ItemType Directory -Path $releaseDir
 
 pnpm --dir packages/core pack --dry-run --json
@@ -109,10 +142,11 @@ pnpm --dir packages/svg pack --pack-destination "$releaseDir"
 pnpm --dir packages/cli pack --pack-destination "$releaseDir"
 ```
 
-Inspect each resulting `aster-{core,icons,svg,cli}-0.1.0-rc.1.tgz` rather than assuming the workspace
-manifest is what npm will receive. Check the packaged `package.json`, README, notices, exports,
-CLI binary, and dependency ranges. Core must have no production dependency; Icons and SVG must
-depend on Core `^0.1.0-rc.1`; CLI must depend on Core, Icons and SVG `^0.1.0-rc.1`. Every archive must
+Inspect each resulting `luscious-garden-aster-{core,icons,svg,cli}-0.1.0-rc.2.tgz` rather than
+assuming the workspace manifest is what npm will receive. Check the packaged `package.json`,
+README, notices, exports, CLI binary, and dependency ranges. Core must have no production
+dependency; Icons and SVG must
+depend on Core `^0.1.0-rc.2`; CLI must depend on Core, Icons and SVG `^0.1.0-rc.2`. Every archive must
 contain only its `dist/`, `package.json`, `README.md`, `LICENSE`, and, for Icons,
 `ARTWORK-LICENCE.md`. There must be no `workspace:` range, private Import, tests, credentials,
 tooling, or source tree. Record a SHA-256 digest for each final archive and do not repack between
@@ -120,8 +154,8 @@ approval and publication. Use the same tarballs for dry-run and live commands.
 
 ```powershell
 Get-ChildItem -LiteralPath $releaseDir -Filter "*.tgz" | Get-FileHash -Algorithm SHA256
-tar -tf "$releaseDir/luscious-garden-aster-core-0.1.0-rc.1.tgz"
-tar -xOf "$releaseDir/luscious-garden-aster-core-0.1.0-rc.1.tgz" package/package.json
+tar -tf "$releaseDir/luscious-garden-aster-core-0.1.0-rc.2.tgz"
+tar -xOf "$releaseDir/luscious-garden-aster-core-0.1.0-rc.2.tgz" package/package.json
 ```
 
 Repeat the archive inspection for Icons, SVG and CLI.
@@ -138,17 +172,17 @@ Before publishing, inspect the selected registry and authenticated identity:
 ```sh
 npm config get registry
 npm whoami --registry=https://registry.npmjs.org/
-npm view @luscious-garden/aster-core@0.1.0-rc.1 version --registry=https://registry.npmjs.org/
-npm view @luscious-garden/aster-icons@0.1.0-rc.1 version --registry=https://registry.npmjs.org/
-npm view @luscious-garden/aster-svg@0.1.0-rc.1 version --registry=https://registry.npmjs.org/
-npm view @luscious-garden/aster-cli@0.1.0-rc.1 version --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-core@0.1.0-rc.2 version --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-icons@0.1.0-rc.2 version --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-svg@0.1.0-rc.2 version --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-cli@0.1.0-rc.2 version --registry=https://registry.npmjs.org/
 ```
 
 The registry must be `https://registry.npmjs.org/` for these commands. Confirm through the npm
 account or organisation controls that the publisher may publish under `@luscious-garden` and that
 the four names are eligible. `whoami` proves authentication, not scope authority. A not-found
 response from `npm view` does not grant ownership or prove that a name is available. An existing
-`0.1.0-rc.1` is a stop condition, not a prompt to overwrite it. Do not put credentials in repository
+`0.1.0-rc.2` is a stop condition, not a prompt to overwrite it. Do not put credentials in repository
 files or CI variables for this manual procedure. Use interactive npm authentication and required
 two-factor authentication; never paste an OTP or token into logs or a pull request. See npm's
 [scoped public package guide](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages/)
@@ -165,20 +199,20 @@ tags because a package's first registry version may also acquire `latest`. A dry
 publication.
 
 ```powershell
-npm publish "$releaseDir/luscious-garden-aster-core-0.1.0-rc.1.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/luscious-garden-aster-icons-0.1.0-rc.1.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/luscious-garden-aster-svg-0.1.0-rc.1.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/luscious-garden-aster-cli-0.1.0-rc.1.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-core-0.1.0-rc.2.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-icons-0.1.0-rc.2.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-svg-0.1.0-rc.2.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-cli-0.1.0-rc.2.tgz" --dry-run --access public --tag next --registry=https://registry.npmjs.org/
 ```
 
 Stop for explicit human go/no-go after comparing the dry-run file lists, archive hashes, release
 notes, rights, and registry access. If approved, publish the same tarballs in dependency order:
 
 ```powershell
-npm publish "$releaseDir/luscious-garden-aster-core-0.1.0-rc.1.tgz" --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/luscious-garden-aster-icons-0.1.0-rc.1.tgz" --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/luscious-garden-aster-svg-0.1.0-rc.1.tgz" --access public --tag next --registry=https://registry.npmjs.org/
-npm publish "$releaseDir/luscious-garden-aster-cli-0.1.0-rc.1.tgz" --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-core-0.1.0-rc.2.tgz" --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-icons-0.1.0-rc.2.tgz" --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-svg-0.1.0-rc.2.tgz" --access public --tag next --registry=https://registry.npmjs.org/
+npm publish "$releaseDir/luscious-garden-aster-cli-0.1.0-rc.2.tgz" --access public --tag next --registry=https://registry.npmjs.org/
 ```
 
 Stop on the first failure. Do not publish a dependent package before its required predecessors
@@ -191,26 +225,29 @@ automatic rollback of already published packages.
 After registry propagation, inspect each published version, dependency map and dist-tags:
 
 ```sh
-npm view @luscious-garden/aster-core@0.1.0-rc.1 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
-npm view @luscious-garden/aster-icons@0.1.0-rc.1 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
-npm view @luscious-garden/aster-svg@0.1.0-rc.1 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
-npm view @luscious-garden/aster-cli@0.1.0-rc.1 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-core@0.1.0-rc.2 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-icons@0.1.0-rc.2 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-svg@0.1.0-rc.2 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
+npm view @luscious-garden/aster-cli@0.1.0-rc.2 version dependencies dist-tags --json --registry=https://registry.npmjs.org/
 ```
 
 In a fresh external project without workspace links, install exact versions from npm, not the
 local tarballs. After initialising that project, run:
 
 ```sh
-pnpm add @luscious-garden/aster-core@0.1.0-rc.1 @luscious-garden/aster-icons@0.1.0-rc.1 @luscious-garden/aster-svg@0.1.0-rc.1
-pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.1
+pnpm add @luscious-garden/aster-core@0.1.0-rc.2 @luscious-garden/aster-icons@0.1.0-rc.2 @luscious-garden/aster-svg@0.1.0-rc.2
+pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.2
 pnpm exec aster version
+pnpm exec aster version core
+pnpm exec aster version --all --json
 pnpm exec aster list icons
 ```
 
 Repeat the package README examples to verify a Core definition, isolated Icons import, and SVG
-render under Node `>=24.10.0 <25`. Confirm the actual dist-tags and accessible README/licence
-notices on the npm pages. Record the publication date, artefact hashes and registry links in the
-package release notes before closing each future release.
+render under Node `>=24.10.0 <25`. Confirm typed collection aliases and ordered members, plus
+the fixed `data-rendered-by="Aster"` root marker. Confirm the actual dist-tags and accessible
+README/licence notices on the npm pages. Record the publication date, artefact hashes and registry
+links in the package release notes before closing each future release.
 
 ## Promote a stable release
 

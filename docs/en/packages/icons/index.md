@@ -13,7 +13,7 @@ The package:
 - authors each icon as one immutable `Icon.define(...)` value;
 - composes [original authorship and visual authoring authorities](authoring/index.md) without
   embedding collection membership;
-- exposes the [representative icon set](icons/index.md) through isolated definition subpaths;
+- exposes the [authored glyph corpus](glyphs/index.md) through isolated definition subpaths;
 - exposes independent [canonical collections](collections/index.md) through isolated collection
   subpaths;
 - exposes the [distribution manifest](manifest/index.md) without loading complete definitions;
@@ -48,7 +48,8 @@ external material into an editable module, but that module becomes ordinary huma
 source and has no runtime or rebuild dependency on Import or the original input.
 
 Icons and collections are independent. An icon remains valid without membership and can belong to
-several collections; a collection owns only its explicit member sequence. Canonical collection
+several collections; a collection owns its explicit alias dictionary and derives an ordered
+`members` list once. Canonical collection
 modules therefore aggregate existing icon values instead of generating, cloning or decorating
 them.
 
@@ -76,6 +77,9 @@ Each canonical collection is imported through its isolated subpath:
 
 ```ts
 import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";
+
+const camera = AmellusCollection.icons.camera;
+const orderedIcons = AmellusCollection.members;
 ```
 
 Per-icon subpaths are the authoritative minimal imports and resolve through generated facades that
@@ -151,7 +155,9 @@ It does not evaluate a sibling icon. Consumers explicitly pass the resulting
 value to a renderer or adapter.
 
 Importing an isolated collection evaluates its module and declared members. The collection retains
-the same canonical icon objects and does not reconstruct or modify them.
+the same canonical icon objects after Core revalidates them and derives the keyed and ordered
+views. Reading one alias still requires that collection's complete declared member graph. Prefer
+the direct icon subpath when the collection itself is unnecessary.
 
 Complete discovery requires the manifest. Complete definition loading requires deliberate
 iteration over the loader maps; no supported import evaluates either complete family by default.

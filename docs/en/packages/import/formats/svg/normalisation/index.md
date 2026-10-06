@@ -10,6 +10,11 @@ become ordinary lines, smooth-curve controls are reflected explicitly, arc flags
 and every authored contour is retained in order. The resulting path node contains immutable
 structured commands and no raw SVG `d` value.
 
+Its private `TSvgPathNormalisationState` tracks the current absolute point, contour origin and
+eligible cubic or quadratic control point during one path traversal. Relative coordinates and
+smooth controls use that state before the normaliser emits immutable Core commands; it is not
+retained in the resulting draft or definition.
+
 Finite SVG operands can overflow when relative coordinates or reflected smooth controls become
 absolute. A failed expansion produces the stable invalid-path diagnostic at the authored `d`
 value span and returns no draft; it never exposes non-finite portable commands. The internal

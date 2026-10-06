@@ -1,5 +1,8 @@
 import { asterCommandPayloadKinds } from "../../command/constants/aster-command-payload-kinds.constant.js";
 import { asterCommandNames } from "../../command/constants/aster-command-names.constant.js";
+import type { AsterCommandContext } from "../../command/contracts/index.js";
+import type { AsterVersionScopeType } from "../../command/types/aster-version-scope.type.js";
+import type { AsterCommandInvocationType } from "../../command/types/index.js";
 import { AsterCatalogue, AsterCommands } from "../../index.js";
 import { ReviewDocumentSerialiser } from "../../review/runtime/review-document.serialiser.js";
 import { reviewOutputSchema } from "../output/constants/review-output-schema.constant.js";
@@ -70,6 +73,11 @@ export class NodeShell {
   readonly #currentDirectory: string;
 
   /**
+   * @description Installed entrypoint URL used as the package-resolution base.
+   */
+  readonly #entrypoint: URL;
+
+  /**
    * @description Explicit immutable command context owned by this executable composition.
    */
   readonly #context;
@@ -79,13 +87,16 @@ export class NodeShell {
    * @param productName - Stable product name for the version command.
    * @param productVersion - Installed package version for the version command.
    * @param currentDirectory - Explicit absolute host directory for output resolution.
+   * @param entrypoint - Installed CLI entrypoint used for package-version resolution.
    */
   constructor(
     productName: string,
     productVersion: string,
     currentDirectory: string,
+    entrypoint: URL,
   ) {
     this.#currentDirectory = currentDirectory;
+    this.#entrypoint = new URL(entrypoint.href);
     this.#context = Object.freeze({
       catalogues: Object.freeze([AsterCatalogue]),
       productName,
@@ -97,6 +108,7 @@ export class NodeShell {
    * @description Executes one supplied argv sequence without directly mutating process state.
    * @param argv - Tokens following the executable and script paths.
    * @returns Complete stream effects and exit status for the entrypoint to commit.
+   * @remarks The command boundary validates raw export tokens before executing a request.
    */
   async execute(argv: readonly string[]): Promise<TShellExecution> {
     const json = argv.includes(commandLineTokens.options.json);
@@ -107,7 +119,15 @@ export class NodeShell {
 
     try {
       const parsed = this.#parser.parse(argv);
-      const result = await AsterCommands.execute(parsed.invocation, this.#context);
+      const invocation = parsed.invocation;
+      const context = invocation.command === asterCommandNames.version
+        && invocation.scope !== undefined
+        ? await this.#versionContext(invocation.scope)
+        : this.#context;
+      const result = await AsterCommands.execute(
+        invocation as AsterCommandInvocationType,
+        context,
+      );
 
       if (
         !parsed.json
@@ -147,5 +167,20 @@ export class NodeShell {
           : this.#diagnostics.unexpected();
       return this.#output.present(result, json);
     }
+  }
+
+  /**
+   * @description Acquires only requested manifest evidence without loading package entrypoints.
+   * @param scope - Named public package or the complete installed family.
+   * @returns Explicit immutable command context containing installed version evidence.
+   */
+  async #versionContext(
+    scope: AsterVersionScopeType,
+  ): Promise<AsterCommandContext> {
+    const { InstalledPackageVersionReader } = await import(
+      "../version/runtime/installed-package-version.reader.js"
+    );
+    const packageVersions = await new InstalledPackageVersionReader(this.#entrypoint).read(scope);
+    return Object.freeze({ ...this.#context, packageVersions });
   }
 }

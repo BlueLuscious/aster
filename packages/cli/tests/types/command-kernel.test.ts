@@ -21,6 +21,9 @@ import type {
   AsterReviewPlan,
   AsterReviewSubjectType,
   AsterCommandShowSubjectType,
+  AsterInstalledPackageSelectorType,
+  AsterInstalledPackageVersion,
+  AsterVersionScopeType,
   CatalogueCollectionResult,
   CatalogueDiscovery,
   CatalogueDiscoveryCollectionRecord,
@@ -57,6 +60,31 @@ const context: AsterCommandContext = {
   productName: "Aster",
   productVersion: "0.0.0",
 };
+
+const packageSelector: AsterInstalledPackageSelectorType = "icons";
+const completeVersionScope: AsterVersionScopeType = "all";
+const packageVersion: AsterInstalledPackageVersion = {
+  name: "@luscious-garden/aster-icons",
+  version: "1.2.3",
+};
+const versionContext: AsterCommandContext = {
+  ...context,
+  packageVersions: [packageVersion],
+};
+const namedVersionInvocation: AsterCommandInvocationType = {
+  command: "version",
+  scope: packageSelector,
+};
+const allVersionInvocation: AsterCommandInvocationType = {
+  command: "version",
+  scope: "all",
+};
+
+// @ts-expect-error Private Import is not a public installed package selector.
+const privatePackageSelector: AsterInstalledPackageSelectorType = "import";
+
+// @ts-expect-error Unknown version scopes are outside the public invocation contract.
+const unknownVersionInvocation: AsterCommandInvocationType = { command: "version", scope: "import" };
 
 const descriptor: AsterCommandDescriptor = {
   name: "search",
@@ -217,6 +245,14 @@ void failure;
 void listSubject;
 void payloadKind;
 void provider;
+void packageSelector;
+void completeVersionScope;
+void packageVersion;
+void versionContext;
+void namedVersionInvocation;
+void allVersionInvocation;
+void privatePackageSelector;
+void unknownVersionInvocation;
 void showSubject;
 void terminalElement;
 void undefinedFilter;

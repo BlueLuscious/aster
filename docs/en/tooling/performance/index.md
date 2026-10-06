@@ -62,7 +62,7 @@ deliberate measurement evidence.
 | --- | --- |
 | `CoreBaselineFixtureFactory`, `SvgBaselineFixtureFactory`, `ImportBaselineFixtureFactory`, `CliBaselineFixtureFactory` | Prepare complete package-specific public values and scale evidence outside timed work. |
 | `CoreBaselineFactory`, `SvgBaselineFactory`, `IconsBaselineFactory`, `ImportBaselineFactory`, `CliBaselineFactory` | Compose fresh package runners from shared repository and benchmark capabilities. |
-| `CoreBaselineRunner`, `SvgBaselineRunner`, `IconsBaselineRunner`, `ImportBaselineRunner`, `CliBaselineRunner` | Own each package's independent scenario matrix and final immutable report. |
+| `CoreBaselineRunner`, `SvgBaselineRunner`, `IconsBaselineRunner`, `ImportBaselineRunner`, `CliBaselineRunner` | Own each package's independent scenario matrix and frozen report envelope. |
 | `CliColdStartRunner` | Repeats cold root-import and executable scenarios, validates their exact process contract and summarises timings. |
 | `CliCommandEvaluationProbe` | Instruments emitted CLI and Icons modules while executing one real built-in catalogue workflow in a disposable process. |
 | `CliCommandEvaluationRunner` | Repeats built-in workflows in fresh processes and rejects unstable command results or evaluated-module sets. |
@@ -83,6 +83,13 @@ instrumentation because their semantics cross its provider integration boundary;
 public specifier scenarios while the shared import runner and disposable probe own generic import
 measurement.
 
+Baseline runners freeze their report envelope and scenario lists, but retain injected environment,
+measurement and distribution evidence by reference. The default collaborators produce stable
+evidence; custom collaborators own their nested values. The distribution inspector freezes its
+summary and lexically ordered copies of manifest records, not arbitrary nested JSON values.
+Prepared mutable Core fixtures remain mutable by design so the corresponding scenarios measure
+construction from non-canonical input.
+
 ## Core comparison
 
 Run:
@@ -92,8 +99,10 @@ pnpm benchmark:core
 ```
 
 The command builds Core, prepares mutable and canonical variants of the fixed synthetic corpus
-outside timed loops, runs Node with explicit garbage-collection access, prints one JSON report and
-writes no artefact. Exact scenarios, interpretation, and acceptance rules are defined by the
+plus authored alias dictionaries of 26 and 256 synthetic icons outside timed loops, runs Node with
+explicit garbage-collection access, prints one JSON report and writes no artefact. The dictionary
+scenarios include one-time `members` derivation; complete-definition scenarios also validate the
+submitted member view. Exact scenarios, interpretation, and acceptance rules are defined by the
 [Core Quality Baseline](../../packages/core/quality-baseline.md).
 
 ## SVG comparison

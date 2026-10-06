@@ -1,15 +1,18 @@
-# Canonical Icon Definitions
+# Canonical Glyphs
 
 Status: **Accepted**
 
-The `icons` feature contains one canonical TypeScript module and one named immutable value per
+The `glyphs` feature contains one canonical TypeScript module and one named immutable value per
 authored icon. The metadata manifest and exact loader map provide complete discovery without a
-package-wide definition aggregate. The current corpus contains all twenty-six definitions accepted for foundational Amellus
-membership. Seventeen definitions remain primitive-first. Nine use structured absolute path
-commands, combined with clearer primitives where appropriate, and contain no raw SVG path text.
+package-wide definition aggregate. The current corpus contains all twenty-six definitions
+accepted for foundational Amellus membership. Seventeen definitions remain primitive-first. Nine
+use structured absolute path commands, combined with clearer primitives where appropriate, and
+contain no raw SVG path text.
 
-Canonical source modules use `<icon-slug>.icon.ts`. The semantic role remains internal to the
-source layout: public imports omit it and retain `@luscious-garden/aster-icons/<icon-slug>`.
+Canonical source modules live under `src/glyphs/<initial>/<name>/` and use
+`<icon-slug>.icon.ts`. The physical directory and file role remain private: public imports use
+`@luscious-garden/aster-icons/<icon-slug>`. The [authoring workflow](../workflow.md) owns the exact
+base and rendition layouts.
 
 ## Authored corpus
 
