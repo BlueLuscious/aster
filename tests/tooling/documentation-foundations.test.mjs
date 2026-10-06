@@ -122,6 +122,32 @@ test("applies local-reference and link policies in document order", async () => 
   ]);
 });
 
+test("reports malformed local link encoding and continues inspecting links", async () => {
+  const paths = new RepositoryPathResolver();
+  const workspaceRoot = resolve("fixture");
+  const document = {
+    path: resolve(workspaceRoot, "docs/en/index.md"),
+    content: "[Malformed](%GG) [Missing](missing.md)",
+  };
+  const issues = new DocumentationIssueCollector();
+  const policy = new LocalLinkPolicy(
+    { async exists() { return false; } },
+    new MarkdownLinkTargetExtractor(),
+    paths,
+  );
+
+  await policy.inspect({
+    workspaceRoot,
+    documentationRoot: resolve(workspaceRoot, "docs/en"),
+    documents: [document],
+  }, document, issues);
+
+  assert.deepEqual(issues.snapshot(), [
+    "docs/en/index.md contains invalid local link encoding: %GG",
+    "docs/en/index.md contains a broken local link: missing.md",
+  ]);
+});
+
 test("coordinates explicit roots, acquisition and policy order", async () => {
   const paths = new RepositoryPathResolver();
   const observed = [];

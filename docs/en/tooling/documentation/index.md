@@ -33,9 +33,9 @@ feature-owned policies. `DocumentationVerifier` preserves this stable execution 
 
 `DocumentationIssueCollector` accumulates every policy finding in inspection order and returns an
 immutable snapshot. The completed verification report and its issue list are frozen; acquisition
-and policy collaborators remain borrowed. Filesystem
-failures, malformed URI encoding, or unreadable authorities remain operational failures rather
-than being converted into documentation findings.
+and policy collaborators remain borrowed. Malformed percent-encoding in a local link becomes a
+documentation finding without preventing inspection of subsequent links. Filesystem failures and
+unreadable authorities remain operational failures.
 
 ## Acquisition
 
@@ -60,7 +60,7 @@ each document rather than regrouping findings by policy.
 | `DocumentationHierarchyInspector` | Requires canonical documentation entry points. |
 | `PackageDocumentationMirroringInspector` | Detects undocumented and stale package members. |
 | `LocalReferencePolicy` | Rejects local plans, implementation identifiers, and contributor-machine paths. |
-| `LocalLinkPolicy` | Rejects repository escapes and absent local link targets. |
+| `LocalLinkPolicy` | Rejects repository escapes, absent local link targets and malformed local target encoding. |
 
 `MarkdownLinkTargetExtractor` performs only the lexical extraction needed by local-link policy. It
 does not parse Markdown generally, validate external URLs, inspect anchors, or evaluate prose.
@@ -84,5 +84,6 @@ general documentation-quality score.
 
 Fixture tests create self-contained temporary canonical hierarchies and exercise accepted roots,
 package mirroring, collection independence, non-canonical-root exclusion, broken links, and local
-references. Focused tests verify every isolated inspector or policy, local-link extraction,
+references. Focused tests verify every isolated inspector or policy, malformed local link encoding,
+continued link inspection, local-link extraction,
 per-document ordering, explicit roots, acquisition count, and overall orchestration.
