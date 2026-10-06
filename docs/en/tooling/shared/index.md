@@ -38,7 +38,8 @@ contracts do not form part of an Aster package ABI.
 
 ## Tests
 
-Foundation tests verify path containment, sibling and parent rejection, deterministic directory
+Foundation tests verify path containment, sibling, parent and cross-volume rejection on Windows,
+deterministic directory
 and file ordering, absent optional roots, strict JSON acquisition, and malformed input. Existing
 feature fixtures continue to verify observable command behaviour after adopting these shared
 capabilities.
