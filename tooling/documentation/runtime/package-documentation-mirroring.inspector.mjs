@@ -1,7 +1,7 @@
 import { documentationHierarchy } from "../constants/documentation-hierarchy.constant.mjs";
 
 /**
- * @description Inspects package documentation membership against real workspace packages.
+ * @description Inspects package and authored feature documentation against workspace sources.
  */
 export class PackageDocumentationMirroringInspector {
   /**
@@ -27,10 +27,10 @@ export class PackageDocumentationMirroringInspector {
   }
 
   /**
-   * @description Compares source package and package documentation membership.
+   * @description Compares source packages and their authored features with documentation.
    * @param {import("../types/internal/documentation-context.type.mjs").TDocumentationContext} context - Documentation verification context.
    * @param {import("./documentation-issue.collector.mjs").DocumentationIssueCollector} issues - Ordered issue collector.
-   * @returns {Promise<void>} Completion after both member sets are compared.
+   * @returns {Promise<void>} Completion after package and authored feature membership is compared.
    */
   async inspect(context, issues) {
     const sourceMembers = await this.#directories.read(
@@ -43,12 +43,43 @@ export class PackageDocumentationMirroringInspector {
     for (const member of sourceMembers) {
       if (!documentedMembers.includes(member)) {
         issues.add(`Missing packages documentation for repository member: ${member}`);
+        continue;
       }
+
+      await this.#inspectFeatures(context, member, issues);
     }
 
     for (const member of documentedMembers) {
       if (!sourceMembers.includes(member)) {
         issues.add(`Documentation describes a missing packages member: ${member}`);
+      }
+    }
+  }
+
+  /**
+   * @description Compares one package's authored feature roots with its feature documentation.
+   * @param {import("../types/internal/documentation-context.type.mjs").TDocumentationContext} context - Documentation verification context.
+   * @param {string} member - Workspace package directory name.
+   * @param {import("./documentation-issue.collector.mjs").DocumentationIssueCollector} issues - Ordered issue collector.
+   * @returns {Promise<void>} Completion after feature membership is compared.
+   */
+  async #inspectFeatures(context, member, issues) {
+    const sourceFeatures = (await this.#directories.read(
+      this.#paths.resolve(context.workspaceRoot, documentationHierarchy.packages, member, "src"),
+    )).filter((feature) => feature !== "generated");
+    const documentedFeatures = await this.#directories.read(
+      this.#paths.resolve(context.documentationRoot, documentationHierarchy.packages, member),
+    );
+
+    for (const feature of sourceFeatures) {
+      if (!documentedFeatures.includes(feature)) {
+        issues.add(`Missing ${member} feature documentation for source member: ${feature}`);
+      }
+    }
+
+    for (const feature of documentedFeatures) {
+      if (!sourceFeatures.includes(feature)) {
+        issues.add(`Documentation describes a missing ${member} source feature: ${feature}`);
       }
     }
   }

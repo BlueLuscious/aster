@@ -62,11 +62,16 @@ test("reports missing and stale package documentation membership", async () => {
   const paths = new RepositoryPathResolver();
   const workspaceRoot = resolve("fixture");
   const packagesRoot = resolve(workspaceRoot, "packages");
+  const documentedPackagesRoot = resolve(workspaceRoot, "docs/en/packages");
   const issues = new DocumentationIssueCollector();
   const inspector = new PackageDocumentationMirroringInspector(
     {
       async read(path) {
-        return path === packagesRoot ? ["core", "svg"] : ["core", "ghost"];
+        if (path === packagesRoot) {
+          return ["core", "svg"];
+        }
+
+        return path === documentedPackagesRoot ? ["core", "ghost"] : [];
       },
     },
     paths,

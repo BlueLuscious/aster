@@ -126,7 +126,7 @@ Every retained feature protects a current boundary:
 | --- | --- |
 | Architecture | Detects source, manifest, dependency, compiler, host-authority, and private-tooling boundary drift before publication. |
 | Catalogue | Detects source, relationship and generated distribution drift and reconstructs owned outputs deterministically. |
-| Documentation | Detects broken local links, stale package mirroring, contributor-local references, and missing current entry points. |
+| Documentation | Detects broken local links, stale package and feature mirroring, contributor-local references, and missing current entry points. |
 | Workspace | Deletes only a verified package's direct generated distribution through an explicit destructive policy. |
 | Performance | Produces reproducible package-specific comparison reports without CI thresholds or production dependencies. |
 | Shared | Serves multiple retained tooling features with filesystem, path, JSON, directory, and traversal capabilities. |
