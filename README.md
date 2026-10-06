@@ -5,8 +5,10 @@ cataloguing and distributing icon collections. Its canonical model is designed t
 serve Lilium, Protea and other consumers without assigning framework ownership to
 the icon source.
 
-The repository is in pre-release development. Core, Icons, SVG and CLI publish their first
+The repository is in pre-release development. Core, Icons, SVG and CLI published their first
 `0.1.0-rc.1` release candidates through the `@luscious-garden` npm scope.
+The source is preparing `0.1.0-rc.2`; the installation examples below remain pinned to the
+published `rc.1` until the new candidate passes release approval.
 
 ## Pre-release consumption
 

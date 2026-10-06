@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+Prepared in the `0.1.0-rc.2` source candidate; publication and registry evidence are pending.
+
 **Breaking change:** Complete collection loaders now return the Core alias dictionary and its
 derived `members` list. Providers using the previous icon array must construct their collection
 through the matching `Collection.define()` implementation. Inconsistent keyed and ordered views
@@ -9,10 +11,10 @@ are rejected during Core revalidation before command plans become observable.
 
 Metadata-only discovery retains its existing identity arrays. Catalogue identity selection and
 ordered export and review results remain unchanged. This integration requires the
-corresponding Core and Icons implementations; package versions and dependency ranges must be
-reviewed together before publication. The published `0.1.0-rc.1` remains on the previous collection
-contract. See [Catalogue](catalogue/index.md) and [Compatibility](compatibility.md) for current
-provider guarantees.
+corresponding Core and Icons implementations; the candidate version and packed dependency ranges
+must be reviewed together before publication. The published `0.1.0-rc.1` remains on the previous
+collection contract. See [Catalogue](catalogue/index.md) and [Compatibility](compatibility.md)
+for current provider guarantees.
 
 **Breaking output change:** Export SVG artefacts and Review SVG evidence inherit the fixed
 `data-rendered-by="Aster"` root attribute from the public SVG renderer. Exact SVG and generated
@@ -30,8 +32,8 @@ version scope with explicit host-supplied package evidence and returns a distinc
 the private Import package is not reported. `help version` and `help review` also resolve through
 the accepted shell help path. Missing or invalid post-startup metadata fails without partial
 output. This capability is **not** present in the published `0.1.0-rc.1` archive and introduces
-no new runtime dependency. Review the CLI version and its existing Core, Icons and SVG dependency
-ranges with the next candidate before publication. See [CLI Shell](shell/index.md) and
+no new runtime dependency. Review the CLI candidate and its Core, Icons and SVG packed dependency
+ranges before publication. See [CLI Shell](shell/index.md) and
 [Version Metadata](shell/version/index.md) for the current contract.
 
 ## 0.1.0-rc.1

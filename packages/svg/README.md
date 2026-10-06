@@ -3,7 +3,8 @@
 Framework-independent SVG rendering for portable Aster icon definitions.
 
 Install the exact candidate versions with
-`pnpm add @luscious-garden/aster-core@0.1.0-rc.1 @luscious-garden/aster-svg@0.1.0-rc.1` to author and render definitions directly.
+`pnpm add @luscious-garden/aster-core@0.1.0-rc.2 @luscious-garden/aster-svg@0.1.0-rc.2` to author
+and render definitions directly.
 
 ```ts
 import { Icon } from "@luscious-garden/aster-core";
@@ -29,6 +30,10 @@ const markup = Svg.render(Camera, {
   label: "Camera",
 });
 ```
+
+Every successful root SVG includes the fixed `data-rendered-by="Aster"` attribute. See the
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/releases.md)
+if you compare rendered markup byte-for-byte.
 
 See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/index.md) and
 [initial release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/releases.md) for

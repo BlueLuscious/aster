@@ -10,8 +10,10 @@ respective [package documentation](../packages/index.md).
 
 Aster has no stable public release or compatibility commitment to external consumers. Core,
 Icons, SVG, and CLI published their initial `0.1.0-rc.1` release candidates on 22 September 2026.
-`@luscious-garden/aster-import` also uses `0.1.0-rc.1` for independent internal version tracking
-but remains private.
+The source now prepares `0.1.0-rc.2` for those four packages and independently tracks the private
+`@luscious-garden/aster-import` at the same candidate version; no `rc.2` registry publication is
+implied.
+
 Repository conformance proves the current implementation against its documented boundaries but
 does not turn pre-release versions into stable compatibility commitments.
 The [manual publication procedure](publication.md) records the separate registry and human
@@ -20,7 +22,8 @@ go/no-go checks; this policy does not authorise publication by itself.
 The shared initial number is a convenient starting point, not a lockstep policy. Core has no
 production dependency. Icons and SVG depend on Core; CLI depends on all three. Each public edge
 uses `workspace:^` in source and must resolve to a caret range on the installed dependency's
-version when packed. For the initial candidates, this is `^0.1.0-rc.1`, which excludes `0.2.0`.
+version when packed. The published initial candidates use `^0.1.0-rc.1`; the prepared `rc.2`
+source must pack `^0.1.0-rc.2` on each public runtime edge. Both ranges exclude `0.2.0`.
 Import also uses `workspace:^` for its Core edge, even though it is not packed for publication.
 Development-only workspace dependencies retain `workspace:*` because they are not runtime
 requirements of a distributed package.
