@@ -27,21 +27,26 @@ pnpm exec aster review collection amellus --output ./aster-review
 pnpm exec aster version
 ```
 
-Plain `aster version` reports the installed CLI version. The `0.1.0-rc.2` candidate also accepts
-these local, offline package queries:
+Plain `aster version` reports the CLI executable that actually ran. The current source also
+accepts these local, offline queries:
 
 ```sh
 pnpm exec aster version core
 pnpm exec aster version icons --json
 pnpm exec aster version --all
+pnpm exec aster version icons --deps
+pnpm exec aster version --all --deps --json
+pnpm exec aster version --deps --location
 ```
 
 Core, Icons, SVG and `--all` inspect direct project installations; `version` and `version cli`
-describe the CLI actually running. `--deps` groups each selected package with its direct installed
-Aster dependencies, while `--location` identifies the executed CLI module. None queries the
-registry. These queries are **not** available in the earlier `0.1.0-rc.1` candidate. A project-only
-CLI normally needs `pnpm exec aster`, a package script, or an explicit local binary path; bare
-`aster` needs a command resolvable by the shell. See the
+describe the CLI actually running. `--deps` shows each selected package separately from its
+direct installed Aster runtime dependencies; `--location` identifies the executed CLI module.
+None queries the registry. The published `0.1.0-rc.2` CLI instead resolves named packages from
+its own installation and does not include `--deps` or `--location`; this source correction needs
+a new candidate before it can be installed from npm. A project-only CLI normally needs
+`pnpm exec aster`, a package script, or an explicit local binary path; bare `aster` needs a
+command resolvable by the shell. See the
 [CLI Shell documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/shell/index.md)
 for their exact output and failure behaviour.
 

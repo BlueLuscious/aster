@@ -26,7 +26,10 @@ required dependency invalidates the complete request without partial output.
 `CliLocationReader` runs only for `--location`. It reports the loaded CLI module path and compares
 canonical package-manifest paths with the project's directly installed CLI, when available.
 Comparison outcomes are `same`, `different`, `absent`, `no-project` and `unavailable`. A different
-path does not prove a global installation; no command-selection behaviour changes.
+path does not prove a global installation; no command-selection behaviour changes. The comparison
+uses canonical paths so package-manager links and Windows path spelling do not turn one
+installation into a false mismatch. The [shell guide](../index.md) owns the user-facing command
+examples and output shapes.
 
 The manifest reader accepts UTF-8 BOM JSON and requires exact known package names and non-empty,
 unpadded string versions. It validates the root's known direct Aster dependency declarations and

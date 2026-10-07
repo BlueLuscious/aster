@@ -22,7 +22,8 @@ session's `PATH`. Use the package manager's execution command, a package script,
 local binary path to run it without a global installation. Bare `aster` works only when the shell
 can already resolve that command. If the local binary is missing, `pnpm exec aster` may instead
 find another `aster` on `PATH`. `aster version --location` reports which CLI module ran; it does
-not select one.
+not select one. Package scripts can invoke a locally installed binary through the package
+manager's script `PATH` without making it globally available.
 
 The initial grammar is:
 
@@ -76,18 +77,48 @@ heading. JSON uses `command: "version"` and source-tagged `package-versions` evi
 
 The version is illustrative. `version --json` retains its separate `version` payload with
 `productName` and `productVersion`. `--deps` groups each selected root separately from only its
-direct installed Aster runtime dependencies. Bare `version --deps` and `version cli --deps` are
-equivalent; `version --all --deps` groups all direct project roots. Empty groups explicitly say
-they have no Aster dependencies. JSON uses one shape for single and multiple roots:
+direct installed Aster runtime dependencies. It does not include the root in its own dependency
+list, development, peer or optional dependencies, or the transitive closure. Bare `version --deps`
+and `version cli --deps` are equivalent; `version --all --deps` groups all direct project roots.
+Core has no Aster runtime dependencies, and an empty project has no groups. Human output keeps
+the roots separate; JSON uses one shape for single and multiple roots:
 
 ```json
 {"ok":true,"command":"version","payload":{"kind":"package-dependencies","source":"project","groups":[{"root":{"name":"@luscious-garden/aster-icons","version":"0.1.0-rc.2"},"dependencies":[{"name":"@luscious-garden/aster-core","version":"0.1.0-rc.2"}]}]}}
 ```
 
+An aggregate human result keeps separate roots rather than flattening their dependencies:
+
+```text
+Project Aster package dependencies:
+@luscious-garden/aster-core 0.1.0-rc.2
+  (no Aster dependencies)
+
+@luscious-garden/aster-icons 0.1.0-rc.2
+  @luscious-garden/aster-core 0.1.0-rc.2
+```
+
+For example, these commands inspect different installations when an external CLI runs inside a
+project with its own Icons package:
+
+```sh
+pnpm exec aster version icons --deps
+pnpm exec aster version --all --deps --json
+pnpm exec aster version cli --deps --location
+```
+
+The first uses the project's direct Icons installation and its own Core dependency; the second
+groups every direct project Aster package; the third uses the executed CLI and its dependencies.
+The JSON `source` identifies where each root was selected, not where every dependency appears in
+the project. A project-local CLI appears in `--all --deps` only when directly installed, even if
+another CLI executable handled the command.
+
 `--location` is available only for the executed CLI forms, optionally with `--deps`. It adds the
-loaded module's absolute path and a separate comparison with the project's direct CLI to human
-and JSON results; it does not label every different installation as global. All version queries
-are offline. Malformed or missing required installed metadata produces status `1` and a sanitised
+loaded module's absolute path, not the PowerShell or package-manager shim, and a separate
+comparison with the project's direct CLI to human and JSON results. The comparison can be
+`same`, `different`, `absent`, `no-project` or `unavailable`; a different installation is not
+necessarily global. Calls without the flag expose no location path. All version queries are
+offline. Malformed or missing required installed metadata produces status `1` and a sanitised
 `ASTER-CLI-011` failure, without partial output. Human failures go to stderr and JSON failures
 to stdout. Missing Core or SVG before the CLI starts remains a native Node failure. See
 [Version Metadata](version/index.md) for acquisition and validation boundaries.
