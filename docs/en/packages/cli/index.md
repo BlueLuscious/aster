@@ -19,8 +19,8 @@ boundary. Metadata commands evaluate only manifest modules; complete definitions
 explicit exact-loader capabilities. Importing `@luscious-garden/aster-cli` or reading help metadata does not
 evaluate Icons.
 
-The [initial release notes](releases.md) record this package's candidate public capability and
-accepted limits. The [project publication procedure](../../project/publication.md) owns registry
+The [release notes](releases.md) record this package's version history and migrations. The
+[project publication procedure](../../project/publication.md) owns registry
 checks and human approval.
 
 ## Features

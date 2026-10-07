@@ -1,8 +1,14 @@
 # Icons Release Notes
 
-## Unreleased
+## 0.1.0
 
-No Icons package change has been accepted since `0.1.0-rc.2`.
+Status: **Prepared in source; not yet published**.
+
+The first stable Icons package retains the accepted definitions, collection membership and public
+exports from `0.1.0-rc.2`. It adds no icon or runtime capability. The stable archive must declare
+Core `^0.1.0`. Consumers coming directly from `0.1.0-rc.1` must apply the
+collection migration described below. Registry links, archive hashes and the publication date
+will be recorded after the exact stable archive is approved and published.
 
 ## 0.1.0-rc.2
 

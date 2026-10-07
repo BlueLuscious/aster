@@ -1,6 +1,6 @@
 # Aster Project
 
-Status: **Pre-release**
+Status: **Stable source prepared; public release pending**
 
 Aster is a framework-agnostic icon platform. It defines portable immutable icons and collections,
 provides deterministic SVG rendering, supports explicit catalogue workflows, and can adopt
@@ -66,11 +66,10 @@ by each owning package rather than repeated here.
 
 ## Maturity and releases
 
-Aster has no stable public release. Core, Icons, SVG, and CLI published `0.1.0-rc.1` as their
-initial release candidates on 22 September 2026, Icons contains its first accepted collection,
-and Import remains deliberately private. The release passed clean source, packed-consumer and
-anonymous registry-consumer verification. Pre-release availability does not establish a stable
-compatibility promise.
+Aster has no stable public release. Core, Icons, SVG and CLI remain available as verified release
+candidates on npm while the `0.1.0` source is prepared for separate approval and publication.
+Icons contains its first accepted collection, and Import remains deliberately private.
+Pre-release availability does not establish a stable compatibility promise.
 
 Independently installable packages own separate Semantic Versioning sequences and coordinate only
 where their dependency contracts require it. The complete

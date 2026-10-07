@@ -72,7 +72,7 @@ is not reported. None reports the latest registry version. A named request emits
 heading. JSON uses `command: "version"` and source-tagged `package-versions` evidence:
 
 ```json
-{"ok":true,"command":"version","payload":{"kind":"package-versions","source":"project","packages":[{"name":"@luscious-garden/aster-core","version":"0.1.0-rc.2"}]}}
+{"ok":true,"command":"version","payload":{"kind":"package-versions","source":"project","packages":[{"name":"@luscious-garden/aster-core","version":"0.1.0"}]}}
 ```
 
 The version is illustrative. `version --json` retains its separate `version` payload with
@@ -84,18 +84,18 @@ Core has no Aster runtime dependencies, and an empty project has no groups. Huma
 the roots separate; JSON uses one shape for single and multiple roots:
 
 ```json
-{"ok":true,"command":"version","payload":{"kind":"package-dependencies","source":"project","groups":[{"root":{"name":"@luscious-garden/aster-icons","version":"0.1.0-rc.2"},"dependencies":[{"name":"@luscious-garden/aster-core","version":"0.1.0-rc.2"}]}]}}
+{"ok":true,"command":"version","payload":{"kind":"package-dependencies","source":"project","groups":[{"root":{"name":"@luscious-garden/aster-icons","version":"0.1.0"},"dependencies":[{"name":"@luscious-garden/aster-core","version":"0.1.0"}]}]}}
 ```
 
 An aggregate human result keeps separate roots rather than flattening their dependencies:
 
 ```text
 Project Aster package dependencies:
-@luscious-garden/aster-core 0.1.0-rc.2
+@luscious-garden/aster-core 0.1.0
   (no Aster dependencies)
 
-@luscious-garden/aster-icons 0.1.0-rc.2
-  @luscious-garden/aster-core 0.1.0-rc.2
+@luscious-garden/aster-icons 0.1.0
+  @luscious-garden/aster-core 0.1.0
 ```
 
 For example, these commands inspect different installations when an external CLI runs inside a

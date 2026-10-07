@@ -25,8 +25,8 @@ The package:
 The package does not render SVG, create framework components, access DOM or filesystem APIs,
 import SVG sources, run Import, discover paths, or own repository tooling.
 
-The [initial release notes](releases.md) record this package's candidate public capability and
-accepted limits. The [project publication procedure](../../project/publication.md) owns registry
+The [release notes](releases.md) record this package's version history and migrations. The
+[project publication procedure](../../project/publication.md) owns registry
 checks and human approval.
 
 ## Rights Boundary

@@ -2,8 +2,8 @@
 
 Framework-independent SVG rendering for portable Aster icon definitions.
 
-Install the exact candidate versions with
-`pnpm add @luscious-garden/aster-core@0.1.0-rc.2 @luscious-garden/aster-svg@0.1.0-rc.2` to author
+Install these versions with
+`pnpm add @luscious-garden/aster-core@0.1.0 @luscious-garden/aster-svg@0.1.0` to author
 and render definitions directly.
 
 ```ts
@@ -36,7 +36,7 @@ Every successful root SVG includes the fixed `data-rendered-by="Aster"` attribut
 if you compare rendered markup byte-for-byte.
 
 See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/index.md) and
-[initial release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/releases.md) for
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/releases.md) for
 responsibilities, exports, and rendering semantics.
 
 ## Licence
