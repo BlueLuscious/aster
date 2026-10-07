@@ -7,8 +7,8 @@ The package exposes the frozen `AsterCommands` composition for deterministic `ex
 `AsterCatalogue` adapts canonical `@luscious-garden/aster-icons` manifests for discovery and loads only an exact
 icon or collection definition when a host executes Export or Review through that provider.
 
-The standalone Node package also exposes the `aster` executable. Install this candidate by
-exact version after publication:
+The standalone Node package also exposes the `aster` executable. Install this published candidate
+by exact version:
 
 ```sh
 pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.3
@@ -28,8 +28,8 @@ pnpm exec aster review collection amellus --output ./aster-review
 pnpm exec aster version
 ```
 
-Plain `aster version` reports the CLI executable that actually ran. The current source also
-accepts these local, offline queries:
+Plain `aster version` reports the CLI executable that actually ran. This version also accepts
+these local, offline queries:
 
 ```sh
 pnpm exec aster version core
@@ -44,8 +44,8 @@ Core, Icons, SVG and `--all` inspect direct project installations; `version` and
 describe the CLI actually running. `--deps` shows each selected package separately from its
 direct installed Aster runtime dependencies; `--location` identifies the executed CLI module.
 None queries the registry. The published `0.1.0-rc.2` CLI instead resolves named packages from
-its own installation and does not include `--deps` or `--location`; the `0.1.0-rc.3` candidate
-corrects that behaviour. A project-only CLI normally needs
+its own installation and does not include `--deps` or `--location`; `0.1.0-rc.3` corrects that
+behaviour. A project-only CLI normally needs
 `pnpm exec aster`, a package script, or an explicit local binary path; bare `aster` needs a
 command resolvable by the shell. See the
 [CLI Shell documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/shell/index.md)
