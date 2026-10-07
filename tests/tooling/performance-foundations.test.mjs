@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { glob, mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { glob, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
@@ -464,6 +464,12 @@ test("prepares immutable CLI benchmark fixtures", () => {
   assert.equal(fixtures.invocations.exportIcon.identity, "benchmark/fixture-01");
   assert.equal(fixtures.invocations.reviewCollection.identity, "benchmark");
   assert.equal(fixtures.context.catalogues[0]?.identity, "fixture");
+});
+
+test("matches CLI cold-process output to the package manifest", async () => {
+  const manifest = JSON.parse(await readFile(resolve("packages/cli/package.json"), "utf8"));
+
+  assert.equal(cliBaseline.coldScenarios.executableVersion.stdout, `Aster ${manifest.version}\n`);
 });
 
 test("runs the complete CLI scenario matrix through explicit runners", async () => {

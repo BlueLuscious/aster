@@ -11,8 +11,8 @@ respective [package documentation](../packages/index.md).
 Aster has no stable public release or compatibility commitment to external consumers. Core,
 Icons, SVG, and CLI published `0.1.0-rc.1` on 22 September 2026 and `0.1.0-rc.2` on
 6 October 2026. The private `@luscious-garden/aster-import` remains versioned in source but is
-not published. The current source corrects CLI version-source behaviour after `rc.2`; it is not
-yet a published candidate.
+not published. CLI `0.1.0-rc.3` is prepared in source to correct version-source behaviour after
+`rc.2`; it is not yet published.
 
 Repository conformance proves the current implementation against its documented boundaries but
 does not turn pre-release versions into stable compatibility commitments.
