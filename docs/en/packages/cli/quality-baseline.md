@@ -67,7 +67,7 @@ Export and Review add public SVG rendering proportional to selected definitions.
 remains comparable to collection Export without adding a material isolated hotspot. Cold startup
 is dominated by fresh Node startup and ESM graph acquisition rather than command execution.
 
-## Installed-version cold-start check
+## Published-candidate installed-version cold-start check
 
 One local Windows x64 check under Node `24.10.0` measured the built executable in alternating
 fresh-process rounds, discarding the first and taking the median of ten samples per form:
@@ -79,11 +79,29 @@ fresh-process rounds, discarding the first and taking the median of ten samples 
 | `aster version core` | 219.33 ms |
 | `aster version --all` | 217.87 ms |
 
-The named and aggregate requests showed no material cold-start difference from plain version
-in that run. This one-off check is not a new performance baseline or CI threshold. The earlier
+The `rc.2` named and aggregate requests resolved from the executed CLI installation. They
+showed no material cold-start difference from plain version in that run. This one-off check is
+not a new performance baseline or CI threshold. The earlier
 163.21 ms executable-version median above predates other CLI changes and cannot isolate this
 feature's before-and-after cost. Exact packed-consumer correctness remains the acceptance
 evidence; a performance optimisation still requires the comparison rules below.
+
+The corrected project-version source was measured separately in eight fresh Node processes per
+form after one warm-up, using the built executable on local Windows x64. Indicative medians were:
+
+| Form | Median elapsed time |
+| --- | ---: |
+| `aster version` | 212.7 ms |
+| `aster version core` | 222.3 ms |
+| `aster version --all` | 226.6 ms |
+| `aster version core --deps` | 222.1 ms |
+| `aster version cli --deps` | 219.2 ms |
+| `aster version --all --deps` | 225.9 ms |
+| `aster version --location` | 224.6 ms |
+| `aster version cli --deps --location` | 225.9 ms |
+
+Fresh Node startup dominates these small differences. This second local check does not compare
+equivalent installations or hardware with the earlier candidate and is not a CI threshold.
 
 No runtime optimisation was retained from that investigation. Caching accepted snapshots,
 retaining mutable memoisation, trusting canonical object provenance, bundling private modules, or

@@ -20,11 +20,14 @@ The package exposes only the root subpath and publishes six immutable runtime va
 Its public type surface comprises:
 
 - `AsterCommandSet`, `AsterCommandDescriptor`, and `AsterCommandContext`;
-- `AsterInstalledPackageVersion`, the host-provided public package evidence contract;
+- `AsterInstalledPackageVersion`, `AsterPackageVersionEvidence`,
+  `AsterPackageDependencyGroup`, `AsterPackageDependencyEvidence`, and
+  `AsterCliLocationEvidence`, the host-provided version evidence contracts;
 - `AsterCommandNameType`, `AsterCommandListSubjectType`, `AsterCommandShowSubjectType`,
   `AsterCommandInvocationType`, `AsterCommandPayloadKindType`, `AsterCommandPayloadType`, and
   `AsterCommandResultType`;
-- `AsterInstalledPackageSelectorType` and `AsterVersionScopeType`;
+- `AsterInstalledPackageSelectorType`, `AsterVersionScopeType`,
+  `AsterPackageVersionSourceType`, and `AsterCliLocationStatusType`;
 - `AsterCommandDiagnosticType`, `AsterCommandDiagnosticCodeType`, and
   `AsterCommandDiagnosticCategoryType`;
 - `CatalogueProvider`, `CatalogueDiscovery`, `CatalogueDiscoveryIconRecord`,
@@ -100,7 +103,9 @@ command package requires an independent Flora or host consumer rather than depen
 | Root import | ESM root | Six runtime exports | None |
 | `help` | Structured invocation or argv | Frozen descriptor payload | Human or JSON output |
 | `version` | Structured invocation and product metadata | Frozen version payload | Human or JSON output |
-| `version` with a package scope | Explicit host-supplied installed package evidence | Frozen package-versions payload | One package or the ordered public family, human or JSON |
+| `version` with a package scope | Executed CLI identity or explicit direct project package evidence | Frozen package-versions payload | One package or the ordered direct project family, human or JSON |
+| `version` with dependencies | Explicit source-tagged dependency groups for the selected roots | Frozen package-dependencies payload | Separate root groups, human or JSON |
+| Executed-CLI `version` with location | Opt-in module and project-CLI comparison evidence | Location on the selected version payload | Executed module path, human or JSON |
 | `list`, `search`, `show` | Explicit catalogue providers | Frozen discovery payload | Human or JSON output |
 | Icon export | Exact icon selection and render options | One immutable SVG artefact plan | Human, JSON, raw SVG, or output-root publication |
 | Collection export | Exact collection selection and complete membership resolution | Canonically ordered immutable SVG artefact plan | Human, JSON, or output-root publication |
@@ -139,8 +144,9 @@ repository workflows. It currently demonstrates:
 - human, JSON, and raw SVG presentation with deterministic streams and statuses;
 - output-path rejection, exclusive staging, absent-target publication, and current-stage cleanup;
 - clean consumption through locally packed and package-manager-installed Aster packages;
-- independently versioned Core, Icons, SVG, and CLI manifests resolved by a packed executable
-  rather than the caller's working directory, with no Icons definition or network import;
+- independently versioned direct project packages and executed-CLI dependencies, including
+  divergent nested Core copies and a project CLI different from the executed CLI, with no Icons
+  definition or network import;
 - atomic human and JSON failures for damaged post-startup metadata, while missing Core or SVG
   before startup remains a native Node error.
 

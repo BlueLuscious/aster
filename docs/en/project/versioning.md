@@ -9,10 +9,10 @@ respective [package documentation](../packages/index.md).
 ## Current maturity
 
 Aster has no stable public release or compatibility commitment to external consumers. Core,
-Icons, SVG, and CLI published their initial `0.1.0-rc.1` release candidates on 22 September 2026.
-The source now prepares `0.1.0-rc.2` for those four packages and independently tracks the private
-`@luscious-garden/aster-import` at the same candidate version; no `rc.2` registry publication is
-implied.
+Icons, SVG, and CLI published `0.1.0-rc.1` on 22 September 2026 and `0.1.0-rc.2` on
+6 October 2026. The private `@luscious-garden/aster-import` remains versioned in source but is
+not published. The current source corrects CLI version-source behaviour after `rc.2`; it is not
+yet a published candidate.
 
 Repository conformance proves the current implementation against its documented boundaries but
 does not turn pre-release versions into stable compatibility commitments.
@@ -22,8 +22,9 @@ go/no-go checks; this policy does not authorise publication by itself.
 The shared initial number is a convenient starting point, not a lockstep policy. Core has no
 production dependency. Icons and SVG depend on Core; CLI depends on all three. Each public edge
 uses `workspace:^` in source and must resolve to a caret range on the installed dependency's
-version when packed. The published initial candidates use `^0.1.0-rc.1`; the prepared `rc.2`
-source must pack `^0.1.0-rc.2` on each public runtime edge. Both ranges exclude `0.2.0`.
+version when packed. The published `rc.1` set uses `^0.1.0-rc.1` and the published `rc.2` set
+uses `^0.1.0-rc.2` on each public runtime edge. Review every newly packed edge independently
+when a package advances; neither range admits `0.2.0`.
 Import also uses `workspace:^` for its Core edge, even though it is not packed for publication.
 Development-only workspace dependencies retain `workspace:*` because they are not runtime
 requirements of a distributed package.
@@ -32,9 +33,10 @@ The `rc.1` suffix is part of the package's Semantic Versioning identity and mark
 release candidate for `0.1.0`. The npm `next` dist-tag is independent registry metadata that
 selects which published version consumers receive through that tag. The first publication also
 assigned `latest` to each package while no earlier version existed. The registry returned a
-`400 Bad Request` when the maintainer attempted to remove that initial default tag. Both tags
-currently resolve to `0.1.0-rc.1`. This registry state neither publishes nor aliases the later
-stable `0.1.0` release, which will replace `latest` explicitly.
+`400 Bad Request` when the maintainer attempted to remove that initial default tag. After the
+second candidate publication, `next` resolves to `0.1.0-rc.2` and `latest` remains on
+`0.1.0-rc.1`. This registry state neither publishes nor aliases the later stable `0.1.0`
+release, which will replace `latest` explicitly.
 
 ## Version ownership
 
@@ -72,8 +74,10 @@ evidence. When an upstream contract changes incompatibly, its release must prece
 compatible releases of dependent packages. Release notes identify the affected package set,
 required migration, and compatible versions; unrelated packages remain untouched.
 
-Publish Core first, then Icons and SVG in either order, then CLI, but only after all four final
-tarballs pass clean-consumer conformance. A package release note must name its own version,
+For a coordinated four-package set, publish Core first, then Icons and SVG in either order, then
+CLI. A single-package release may reuse already published compatible dependencies, but the
+complete installable set must pass clean-consumer conformance. A package release note must name
+its own version,
 classify each change as compatible capability, compatible correction, or breaking change, and
 state any affected public contract, supported dependency range, and consumer migration. An
 unchanged dependent package needs no new release when its already published range covers the

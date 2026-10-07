@@ -26,8 +26,9 @@ The first supported ABI consists of:
 - every public command, catalogue, export, and review contract and type exported through the root;
 - the `aster` command-set identity;
 - the `export`, `review`, `list`, `search`, `show`, `help`, and `version` invocation variants;
-- optional named and `all` version scopes, explicit installed-package evidence, and the
-  `package-versions` result alongside the unchanged plain `version` result;
+- optional named and `all` version scopes, direct-dependency and CLI-location requests,
+  source-tagged host evidence, and `package-versions` and `package-dependencies` results
+  alongside the unchanged plain `version` result;
 - current payload and catalogue-result discriminators;
 - current diagnostic codes and categories;
 - deterministic ordering, canonicalisation, and expected-failure semantics.
@@ -123,8 +124,8 @@ Package conformance builds the distribution and verifies:
 - exclusive Node process authority in the executable entrypoint;
 - package dry-run, local tarball installation, strict engine acceptance, binary linking, and root
   import behaviour in a temporary consumer containing no workspace source files;
-- independently versioned installed manifests resolved from the packed CLI rather than the caller
-  directory, plus exact named and aggregate human and JSON results;
+- independently versioned direct project packages and executed-CLI dependencies, including
+  distinct nested dependency copies, aggregate root groups and opt-in CLI-location evidence;
 - sanitised post-startup metadata failures, native pre-startup dependency failures, and version
   execution without Icons module or network acquisition;
 - standalone and independent programmatic-host discovery and complete export equivalence;

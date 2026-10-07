@@ -17,6 +17,14 @@ pnpm add --save-dev @luscious-garden/aster-cli
 pnpm exec aster list catalogues
 ```
 
+A project-only installation does not normally add `node_modules/.bin` to an ordinary PowerShell
+session's `PATH`. Use the package manager's execution command, a package script, or the explicit
+local binary path to run it without a global installation. Bare `aster` works only when the shell
+can already resolve that command. If the local binary is missing, `pnpm exec aster` may instead
+find another `aster` on `PATH`. `aster version --location` reports which CLI module ran; it does
+not select one. Package scripts can invoke a locally installed binary through the package
+manager's script `PATH` without making it globally available.
+
 The initial grammar is:
 
 ```text
@@ -33,9 +41,10 @@ aster export collection <identity> [--catalogue <provider>] [render-options] --j
 aster review icon <identity> [--catalogue <provider>] [--output <root>] [--replace]
 aster review collection <identity> [--catalogue <provider>] [--output <root>] [--replace]
 aster help [export|help|list|review|search|show|version]
-aster version [--json]
-aster version <core|icons|svg|cli> [--json]
-aster version --all [--json]
+aster version [--deps] [--location] [--json]
+aster version cli [--deps] [--location] [--json]
+aster version <core|icons|svg> [--deps] [--json]
+aster version --all [--deps] [--json]
 ```
 
 Export render options are `--size`, `--colour`, `--fill`, `--stroke`, `--stroke-width`, and
@@ -54,27 +63,65 @@ complete host-neutral plan for either subject. Collection export requires JSON o
 `--json` and `--output` are mutually exclusive shell concerns and never enter
 `AsterCommandInvocationType` together.
 
-Plain `aster version` reports the installed CLI version alone. Named version requests read only
-the selected public package manifest; `--all` reads Core, Icons, SVG, and CLI in that order.
-Both forms report installed versions resolved from the CLI executable, not the caller's working
-directory or the latest versions on a registry. The private Import package is not reported.
-The human result for a named request is one `@luscious-garden/aster-<package> <version>` line;
-`--all` prefixes the ordered package lines with `Installed Aster packages:`. JSON uses the
-existing result envelope with `command: "version"` and a `package-versions` payload whose
-`packages` array contains either the selected record or all four records:
+Plain `aster version` reports the CLI that actually ran; `version cli` names that same CLI.
+Named Core, Icons and SVG requests read directly installed packages of the current project.
+`--all` lists the project's directly installed public Aster packages, including a project CLI
+only if installed there. It can therefore differ from `version cli`. The private Import package
+is not reported. None reports the latest registry version. A named request emits one
+`@luscious-garden/aster-<package> <version>` line; `--all` has a `Project Aster packages:`
+heading. JSON uses `command: "version"` and source-tagged `package-versions` evidence:
 
 ```json
-{"ok":true,"command":"version","payload":{"kind":"package-versions","packages":[{"name":"@luscious-garden/aster-core","version":"0.1.0-rc.1"}]}}
+{"ok":true,"command":"version","payload":{"kind":"package-versions","source":"project","packages":[{"name":"@luscious-garden/aster-core","version":"0.1.0-rc.2"}]}}
 ```
 
-The version in this example illustrates the result shape; actual values come from the installed
-manifests. Plain `version --json` retains its separate `version` payload with `productName` and
-`productVersion`. Neither form queries the network, checks dependency compatibility, or reports
-published release history. Malformed installed metadata after startup produces status `1` and
-one sanitised `ASTER-CLI-999` failure, without a partial list. Human mode writes that failure
-to stderr; JSON mode writes one failure result to stdout. Missing Core or SVG before the CLI
-starts remains a native Node failure. The [Version Metadata](version/index.md) feature owns
-manifest acquisition.
+The version is illustrative. `version --json` retains its separate `version` payload with
+`productName` and `productVersion`. `--deps` groups each selected root separately from only its
+direct installed Aster runtime dependencies. It does not include the root in its own dependency
+list, development, peer or optional dependencies, or the transitive closure. Bare `version --deps`
+and `version cli --deps` are equivalent; `version --all --deps` groups all direct project roots.
+Core has no Aster runtime dependencies, and an empty project has no groups. Human output keeps
+the roots separate; JSON uses one shape for single and multiple roots:
+
+```json
+{"ok":true,"command":"version","payload":{"kind":"package-dependencies","source":"project","groups":[{"root":{"name":"@luscious-garden/aster-icons","version":"0.1.0-rc.2"},"dependencies":[{"name":"@luscious-garden/aster-core","version":"0.1.0-rc.2"}]}]}}
+```
+
+An aggregate human result keeps separate roots rather than flattening their dependencies:
+
+```text
+Project Aster package dependencies:
+@luscious-garden/aster-core 0.1.0-rc.2
+  (no Aster dependencies)
+
+@luscious-garden/aster-icons 0.1.0-rc.2
+  @luscious-garden/aster-core 0.1.0-rc.2
+```
+
+For example, these commands inspect different installations when an external CLI runs inside a
+project with its own Icons package:
+
+```sh
+pnpm exec aster version icons --deps
+pnpm exec aster version --all --deps --json
+pnpm exec aster version cli --deps --location
+```
+
+The first uses the project's direct Icons installation and its own Core dependency; the second
+groups every direct project Aster package; the third uses the executed CLI and its dependencies.
+The JSON `source` identifies where each root was selected, not where every dependency appears in
+the project. A project-local CLI appears in `--all --deps` only when directly installed, even if
+another CLI executable handled the command.
+
+`--location` is available only for the executed CLI forms, optionally with `--deps`. It adds the
+loaded module's absolute path, not the PowerShell or package-manager shim, and a separate
+comparison with the project's direct CLI to human and JSON results. The comparison can be
+`same`, `different`, `absent`, `no-project` or `unavailable`; a different installation is not
+necessarily global. Calls without the flag expose no location path. All version queries are
+offline. Malformed or missing required installed metadata produces status `1` and a sanitised
+`ASTER-CLI-011` failure, without partial output. Human failures go to stderr and JSON failures
+to stdout. Missing Core or SVG before the CLI starts remains a native Node failure. See
+[Version Metadata](version/index.md) for acquisition and validation boundaries.
 
 Review returns a headless technical plan. JSON presents that plan without effects. Human execution
 serialises and publishes static HTML beneath `aster-review` or an explicit `--output` root.

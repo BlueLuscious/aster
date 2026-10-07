@@ -237,8 +237,18 @@ test("limits Node process and manifest authority to private shell owners", async
     ["shell/output/runtime/output-location.resolver.js", ["node:path"]],
     ["shell/output/runtime/review-output-path.resolver.js", ["node:path"]],
     [
-      "shell/version/runtime/installed-package-version.reader.js",
-      ["node:fs/promises", "node:module"],
+      "shell/version/runtime/cli-location.reader.js",
+      ["node:fs/promises", "node:module", "node:url"],
+    ],
+    ["shell/version/runtime/cli-package-version.reader.js", ["node:module"]],
+    [
+      "shell/version/runtime/installed-package-dependency.reader.js",
+      ["node:module", "node:url"],
+    ],
+    ["shell/version/runtime/package-manifest.reader.js", ["node:fs/promises"]],
+    [
+      "shell/version/runtime/project-package-version.reader.js",
+      ["node:fs/promises", "node:module", "node:path", "node:url"],
     ],
   ]);
   assert.deepEqual(requireOwners, ["shell/aster.js"]);

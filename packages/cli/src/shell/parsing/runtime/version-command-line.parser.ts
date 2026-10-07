@@ -16,40 +16,54 @@ export class VersionCommandLineParser implements ICommandLineCommandParser {
   readonly command = commandLineTokens.commands.version;
 
   /**
-   * @description Parses plain, named, or complete installed version requests.
+   * @description Parses project, executed-CLI, dependency, and location version requests.
    * @param tokens - Command tokens beginning with `version`.
    * @param json - Whether machine-readable presentation was requested.
    * @returns Structured version invocation and presentation selection.
    */
   parse(tokens: readonly string[], json: boolean): TParsedCommandLine {
-    if (tokens.length > 2) {
-      throw new CommandLineError(
-        "version accepts only one package selector or --all",
-        this.command,
-      );
-    }
-
-    const selector = tokens[1];
-
     let scope: AsterVersionScopeType | undefined;
+    let dependencies = false;
+    let location = false;
 
-    if (selector === commandLineTokens.options.all) {
-      scope = asterVersionScopes.all;
-    } else if (selector !== undefined) {
-      if (!isAsterInstalledPackageSelector(selector)) {
-        throw new CommandLineError(
-          "version requires core, icons, svg, cli, or --all",
-          this.command,
-        );
+    for (const token of tokens.slice(1)) {
+      if (token === commandLineTokens.options.deps) {
+        if (dependencies) {
+          throw new CommandLineError("option --deps cannot be repeated", this.command);
+        }
+        dependencies = true;
+        continue;
       }
 
-      scope = selector;
+      if (token === commandLineTokens.options.location) {
+        if (location) {
+          throw new CommandLineError("option --location cannot be repeated", this.command);
+        }
+        location = true;
+        continue;
+      }
+
+      if (token === commandLineTokens.options.all || isAsterInstalledPackageSelector(token)) {
+        if (scope !== undefined) {
+          throw new CommandLineError("version accepts one package selector", this.command);
+        }
+        scope = token === commandLineTokens.options.all ? asterVersionScopes.all : token;
+        continue;
+      }
+
+      throw new CommandLineError("version requires core, icons, svg, cli, --all, --deps, or --location", this.command);
+    }
+
+    if (location && scope !== undefined && scope !== "cli") {
+      throw new CommandLineError("--location applies only to the executed CLI", this.command);
     }
 
     return Object.freeze({
       invocation: Object.freeze({
         command: this.command,
         ...(scope === undefined ? {} : { scope }),
+        ...(dependencies ? { dependencies: true } : {}),
+        ...(location ? { location: true } : {}),
       }),
       json,
     });

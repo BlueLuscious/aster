@@ -2,13 +2,21 @@
 
 ## Unreleased
 
-Prepared in the `0.1.0-rc.2` source candidate; publication and registry evidence are pending.
+No SVG package change has been accepted since `0.1.0-rc.2`.
+
+## 0.1.0-rc.2
+
+Status: **Published on 6 October 2026** under the npm `next` tag.
+
+Registry: [`@luscious-garden/aster-svg@0.1.0-rc.2`](https://www.npmjs.com/package/@luscious-garden/aster-svg/v/0.1.0-rc.2)
+
+Approved archive SHA-256: `bec106a2ef85bb8d4d17d896aeebb0145aef575b09d7f6c5d2f8919b17d1b7ff`.
 
 **Breaking output change:** `Svg.render(...)` now includes the fixed
 `data-rendered-by="Aster"` attribute on every successful root `<svg>`. The public call signature,
 geometry and accessibility policy are unchanged, but exact SVG bytes differ from the published
-`0.1.0-rc.1`. Consumers comparing markup byte-for-byte must update their fixtures. The candidate
-version and compatible dependent versions require pack review before publication.
+`0.1.0-rc.1`. Consumers comparing markup byte-for-byte must update their fixtures. The published
+package depends on Core `^0.1.0-rc.2`; CLI `0.1.0-rc.2` consumes this renderer.
 
 ## 0.1.0-rc.1
 
