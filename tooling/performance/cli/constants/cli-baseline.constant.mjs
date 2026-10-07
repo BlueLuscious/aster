@@ -1,3 +1,14 @@
+import { readFileSync } from "node:fs";
+
+/** @description CLI manifest version used to verify exact cold-process output. */
+const cliVersion = JSON.parse(
+  readFileSync(new URL("../../../../packages/cli/package.json", import.meta.url), "utf8"),
+).version;
+
+if (typeof cliVersion !== "string" || cliVersion.length === 0) {
+  throw new TypeError("Invalid CLI package version for cold-process verification.");
+}
+
 /**
  * @description Immutable report identity and scenario configuration for the CLI comparison.
  */
@@ -131,7 +142,7 @@ export const cliBaseline = Object.freeze({
       /** @description Exact executable arguments used by the scenario. */
       arguments: Object.freeze(["version"]),
       /** @description Exact standard output required from the executable. */
-      stdout: "Aster 0.1.0-rc.2\n",
+      stdout: `Aster ${cliVersion}\n`,
     }),
   }),
 });
