@@ -1,16 +1,15 @@
 # Manual Publication
 
-Status: **Completed for `0.1.0-rc.1` on 22 September 2026**.
+Status: **`0.1.0-rc.1` and `0.1.0-rc.2` published; replacement candidate pending approval**.
 
-This records the human-controlled procedure and evidence for the first public `0.1.0-rc.1`
-release of Core, Icons, SVG and CLI. The [versioning policy](versioning.md) owns compatibility and
-dependency sequencing; each package owns its [release notes](../packages/index.md). Private
-`@luscious-garden/aster-import` participated in repository verification but was not packed or
-published as part of this release.
+This records the human-controlled procedure and evidence for both published candidate sets of
+Core, Icons, SVG and CLI. The [versioning policy](versioning.md) owns compatibility and dependency
+sequencing; each package owns its [release notes](../packages/index.md). Private
+`@luscious-garden/aster-import` participated in repository verification but was not published.
 
-The operational steps from [Prepare the candidate](#prepare-the-candidate) target the prepared
-`0.1.0-rc.2` source. They do not authorise its publication or imply that its registry packages
-or companion GitHub pre-release already exist.
+The version-specific commands below record the completed `0.1.0-rc.2` procedure. They are not
+commands for a future candidate: npm versions cannot be republished. A new candidate requires
+its own reviewed package versions, archive paths, dependency ranges, hashes and human go/no-go.
 
 ## Distribution channels
 
@@ -41,7 +40,7 @@ repository transfer, second npm scope or registry-routing change is not required
 npm-and-Releases path. Reconsider an additional registry only through the separately conditional
 [future capability](../future-capabilities.md#additional-package-registry).
 
-## Reviewed candidate
+## First candidate review
 
 The first public set has four independently versioned `0.1.0-rc.1` packages. A frozen offline
 workspace installation, complete repository verification, pack inventories and isolated
@@ -69,7 +68,7 @@ external consumer without registry credentials installed all four exact versions
 CLI, listed the complete icon catalogue and rendered an imported icon. Specialist legal review
 remains optional if additional certainty about the software/artwork boundary is required.
 
-## Published artefacts
+## First candidate artefacts
 
 | Package | Registry | SHA-256 |
 | --- | --- | --- |
@@ -77,6 +76,36 @@ remains optional if additional certainty about the software/artwork boundary is 
 | Icons | [`0.1.0-rc.1`](https://www.npmjs.com/package/@luscious-garden/aster-icons/v/0.1.0-rc.1) | `DDE0653DBD7C94E75E7FEA880C24ED1A641566DD077516650BA1AEEA8B2DEA63` |
 | SVG | [`0.1.0-rc.1`](https://www.npmjs.com/package/@luscious-garden/aster-svg/v/0.1.0-rc.1) | `C2FCD1EA1C64052486710F13AB49662184DDF61B7AE820B935BC948F1B140831` |
 | CLI | [`0.1.0-rc.1`](https://www.npmjs.com/package/@luscious-garden/aster-cli/v/0.1.0-rc.1) | `39E5C9A172CEDE79EDC20A13F4127EB702C1A1F0471CC5C8B4328CF74248D364` |
+
+## Second candidate artefacts
+
+The maintainer published the reviewed `0.1.0-rc.2` archives from `master` commit
+`a0815e2f53fc99a98462ac3a88d05e36782224c5` on 6 October 2026. Anonymous registry
+installation and CLI, Icons and SVG checks passed. `next` points to these versions; `latest`
+still points to `rc.1`. No companion GitHub pre-release was created before the later CLI
+version-source discrepancy was found.
+
+| Package | Registry | SHA-256 |
+| --- | --- | --- |
+| Core | [`0.1.0-rc.2`](https://www.npmjs.com/package/@luscious-garden/aster-core/v/0.1.0-rc.2) | `c79b9d5b592980500344057c310c43a67acda30787f5e19c96c5a831a344052e` |
+| Icons | [`0.1.0-rc.2`](https://www.npmjs.com/package/@luscious-garden/aster-icons/v/0.1.0-rc.2) | `d0d8d01eec13c97055bfdf9842ac8d331d5648f8bd55cf33ac1c5fe83a04da3d` |
+| SVG | [`0.1.0-rc.2`](https://www.npmjs.com/package/@luscious-garden/aster-svg/v/0.1.0-rc.2) | `bec106a2ef85bb8d4d17d896aeebb0145aef575b09d7f6c5d2f8919b17d1b7ff` |
+| CLI | [`0.1.0-rc.2`](https://www.npmjs.com/package/@luscious-garden/aster-cli/v/0.1.0-rc.2) | `403e6882abb1b10bbd0d06ac9d355731898d4d4102b9f156a7c1d198968b27e2` |
+
+## Next candidate boundary
+
+Only the CLI implementation has changed since the second candidate. A CLI-only
+`0.1.0-rc.3` alongside the already published Core, Icons and SVG `0.1.0-rc.2` is the narrowest
+candidate to review; it is not yet approved or published. Before accepting it, inspect the newly
+packed CLI's dependency ranges, verify the exact mixed set from an anonymous clean consumer,
+promote the reviewed correction through `develop` and `master` with green CI, and obtain a new
+go/no-go for its immutable archive. A coordinated four-package candidate remains possible only
+if the mixed set fails its compatibility or release-evidence review.
+
+If unchanged published archives are reused, retain their original approved hashes and source
+commit. Do not repack them under the new CLI revision. A companion GitHub pre-release must list
+each package's exact version, source provenance and archive hash; its tag and assets require
+separate approval. Do not label the mixed set as if every package were `rc.3`.
 
 ## Decision boundary
 
@@ -90,9 +119,9 @@ manually reviewed change only when the release materially affects it.
 The intended pre-release channel is `next`. The registry also assigned `latest` to each first
 package version even though publication explicitly supplied `--tag next`. It returned a
 `400 Bad Request` when the maintainer attempted to remove Core's initial `latest` tag.
-Consequently, both `next` and `latest` currently resolve to `0.1.0-rc.1`; consumers should still
-select `@next` or the exact version to express pre-release intent. The future stable `0.1.0`
-release will replace `latest` through a separate human decision.
+Consequently, `next` currently resolves to `0.1.0-rc.2` and `latest` to `0.1.0-rc.1`; consumers
+should still select `@next` or the exact version to express pre-release intent. The future
+stable `0.1.0` release will replace `latest` through a separate human decision.
 See [npm publish](https://docs.npmjs.com/cli/v11/commands/npm-publish/) and
 [dist-tags](https://docs.npmjs.com/adding-dist-tags-to-packages/).
 
@@ -101,15 +130,21 @@ See [npm publish](https://docs.npmjs.com/cli/v11/commands/npm-publish/) and
 Complete the release-readiness work on its topic branch and merge it into `develop` only through
 a reviewed pull request with green CI. After the candidate source and release evidence are
 accepted, promote that exact reviewed revision to `master` and require green CI there as well.
-Generate the final archives from a clean checkout of the approved `master` revision so the
-published source baseline and the repository's production branch remain identical.
+Generate each newly published archive from a clean checkout of the approved `master` revision.
+Already published compatible archives retain their original reviewed source commit and hash;
+reusing them does not make them artefacts of the new commit.
 
-Do not publish archives produced before the final promotion, even when their contents appear
-equivalent. Repacking changes the artefact under review and therefore requires new hashes and a
-repeat of the dry-run inspection. Branch promotion, tagging and registry publication remain
+Do not publish newly built archives produced before the final promotion, even when their contents
+appear equivalent. Repacking changes the artefact under review and therefore requires new hashes
+and a repeat of the dry-run inspection. Branch promotion, tagging and registry publication remain
 separate human decisions; none follows automatically from a successful check.
 
 ## Prepare the candidate
+
+The commands from here through [Verify the published result](#verify-the-published-result)
+document the historical `rc.2` publication. Its versions and archive paths must not be reused
+for another registry write. Prepare new version-specific commands only after the next candidate
+set and its source provenance have been approved.
 
 Use Node `24.10.0` and pnpm `10.28.1` from a clean, reviewed Git revision. Inspect
 `git status --short` and do not package unreviewed local modifications. The complete verification gate also
@@ -193,6 +228,9 @@ check before proceeding.
 
 ## Dry-run and publish
 
+The live `rc.2` commands in this historical record have already succeeded. Do not run them
+again or substitute a new archive without a separately approved version-specific procedure.
+
 Run every dry-run against its approved archive. `--access public` is explicit for these scoped
 packages; `--tag next` requests the intended pre-release channel. Inspect actual post-publication
 tags because a package's first registry version may also acquire `latest`. A dry-run is not
@@ -253,7 +291,7 @@ links in the package release notes before closing each future release.
 
 Do not present the release candidate as stable merely by moving an npm dist-tag. A stable
 `0.1.0` release is a different Semantic Versioning identity and requires a reviewed source
-change that removes the `-rc.1` suffix from the five workspace package versions, updates public
+change that removes the active candidate suffix from the five workspace package versions, updates public
 dependency evidence to `^0.1.0`, and updates release notes and installation guidance. Repeat the
 complete verification, clean tarball generation, hashes, registry checks and human go/no-go for
 that exact stable commit. Publish the four new stable archives in dependency order under

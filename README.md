@@ -5,17 +5,17 @@ cataloguing and distributing icon collections. Its canonical model is designed t
 serve Lilium, Protea and other consumers without assigning framework ownership to
 the icon source.
 
-The repository is in pre-release development. Core, Icons, SVG and CLI published their first
-`0.1.0-rc.1` release candidates through the `@luscious-garden` npm scope.
-The source is preparing `0.1.0-rc.2`; the installation examples below remain pinned to the
-published `rc.1` until the new candidate passes release approval.
+The repository is in pre-release development. Core, Icons, SVG and CLI have published
+`0.1.0-rc.1` and `0.1.0-rc.2` through the `@luscious-garden` npm scope. The examples below pin
+the published `rc.2` set; the current source corrects CLI version queries but that correction
+has not yet been published.
 
 ## Pre-release consumption
 
 Install the exact candidate versions for canonical icons and SVG rendering:
 
 ```sh
-pnpm add @luscious-garden/aster-icons@0.1.0-rc.1 @luscious-garden/aster-svg@0.1.0-rc.1
+pnpm add @luscious-garden/aster-icons@0.1.0-rc.2 @luscious-garden/aster-svg@0.1.0-rc.2
 ```
 
 ```ts
@@ -26,7 +26,7 @@ const markup = Svg.render(ArrowLeft);
 ```
 
 Authoring a new definition directly requires `@luscious-garden/aster-core`; the standalone CLI can be installed
-with `pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.1` and run with `pnpm exec aster list icons` on Node
+with `pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.2` and run with `pnpm exec aster list icons` on Node
 `>=24.10.0 <25`. The [publication record](docs/en/project/publication.md) preserves the release
 controls and evidence for these packages.
 

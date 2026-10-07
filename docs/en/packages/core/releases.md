@@ -2,13 +2,21 @@
 
 ## Unreleased
 
-Prepared in the `0.1.0-rc.2` source candidate; publication and registry evidence are pending.
+No Core package change has been accepted since `0.1.0-rc.2`.
+
+## 0.1.0-rc.2
+
+Status: **Published on 6 October 2026** under the npm `next` tag.
+
+Registry: [`@luscious-garden/aster-core@0.1.0-rc.2`](https://www.npmjs.com/package/@luscious-garden/aster-core/v/0.1.0-rc.2)
+
+Approved archive SHA-256: `c79b9d5b592980500344057c310c43a67acda30787f5e19c96c5a831a344052e`.
 
 **Breaking change:** Collection authoring replaces the `icons` array with a typed alias dictionary.
 `CollectionDefinitionInput<TIconMap>` describes authored fields;
 `CollectionDefinition<TIconMap>` adds the frozen ordered `members` list derived once from that
 dictionary. The input constraint is `CollectionIconMap`. Known aliases retain exact readonly
-TypeScript keys. The published `0.1.0-rc.1` tarball still uses the previous representation.
+TypeScript keys. The earlier `0.1.0-rc.1` tarball uses the previous representation.
 
 Migrate `icons: [Camera, Search]` to `icons: { camera: Camera, search: Search }`. Use
 `collection.icons.camera` for known property access and replace array traversal, counting, or
@@ -17,8 +25,8 @@ dictionary's property order. Do not author a separate `members` list.
 
 Complete definitions may be revalidated, but any submitted member view must match the dictionary's
 canonical values and order. Icon identity, geometry, metadata, and construction semantics remain
-unchanged. The candidate version and dependent-package ranges require coordinated pack review
-before publication under the [project compatibility policy](../../project/versioning.md).
+unchanged. Icons, SVG and CLI `0.1.0-rc.2` were published with Core `^0.1.0-rc.2` dependencies
+under the [project compatibility policy](../../project/versioning.md).
 The [Collection contract](collection/index.md) and [Workflow](workflow.md) describe the current
 implementation.
 
