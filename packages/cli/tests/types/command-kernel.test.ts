@@ -23,6 +23,12 @@ import type {
   AsterCommandShowSubjectType,
   AsterInstalledPackageSelectorType,
   AsterInstalledPackageVersion,
+  AsterCliLocationEvidence,
+  AsterCliLocationStatusType,
+  AsterPackageDependencyEvidence,
+  AsterPackageDependencyGroup,
+  AsterPackageVersionEvidence,
+  AsterPackageVersionSourceType,
   AsterVersionScopeType,
   CatalogueCollectionResult,
   CatalogueDiscovery,
@@ -67,9 +73,29 @@ const packageVersion: AsterInstalledPackageVersion = {
   name: "@luscious-garden/aster-icons",
   version: "1.2.3",
 };
+const packageVersionSource: AsterPackageVersionSourceType = "project";
+const packageVersionEvidence: AsterPackageVersionEvidence = {
+  source: packageVersionSource,
+  packages: [packageVersion],
+};
+const dependencyGroup: AsterPackageDependencyGroup = {
+  root: packageVersion,
+  dependencies: [],
+};
+const dependencyEvidence: AsterPackageDependencyEvidence = {
+  source: "project",
+  groups: [dependencyGroup],
+};
+const locationStatus: AsterCliLocationStatusType = "different";
+const locationEvidence: AsterCliLocationEvidence = {
+  entrypoint: "C:\\project\\node_modules\\aster-cli\\dist\\shell\\aster.js",
+  projectCli: locationStatus,
+};
 const versionContext: AsterCommandContext = {
   ...context,
-  packageVersions: [packageVersion],
+  packageVersions: packageVersionEvidence,
+  packageDependencies: dependencyEvidence,
+  cliLocation: locationEvidence,
 };
 const namedVersionInvocation: AsterCommandInvocationType = {
   command: "version",
@@ -78,6 +104,34 @@ const namedVersionInvocation: AsterCommandInvocationType = {
 const allVersionInvocation: AsterCommandInvocationType = {
   command: "version",
   scope: "all",
+};
+const cliDependenciesInvocation: AsterCommandInvocationType = {
+  command: "version",
+  scope: "cli",
+  dependencies: true,
+};
+
+const coreDependenciesInvocation: AsterCommandInvocationType = {
+  command: "version",
+  scope: "core",
+  dependencies: true,
+};
+const allDependenciesInvocation: AsterCommandInvocationType = {
+  command: "version",
+  scope: "all",
+  dependencies: true,
+};
+const locatedCliInvocation: AsterCommandInvocationType = {
+  command: "version",
+  scope: "cli",
+  dependencies: true,
+  location: true,
+};
+
+const invalidDependenciesInvocation: AsterCommandInvocationType = {
+  command: "version",
+  // @ts-expect-error The dependency flag is absent or true, never false.
+  dependencies: false,
 };
 
 // @ts-expect-error Private Import is not a public installed package selector.
@@ -248,9 +302,20 @@ void provider;
 void packageSelector;
 void completeVersionScope;
 void packageVersion;
+void packageVersionSource;
+void packageVersionEvidence;
+void dependencyGroup;
+void dependencyEvidence;
+void locationStatus;
+void locationEvidence;
 void versionContext;
 void namedVersionInvocation;
 void allVersionInvocation;
+void cliDependenciesInvocation;
+void coreDependenciesInvocation;
+void allDependenciesInvocation;
+void locatedCliInvocation;
+void invalidDependenciesInvocation;
 void privatePackageSelector;
 void unknownVersionInvocation;
 void showSubject;

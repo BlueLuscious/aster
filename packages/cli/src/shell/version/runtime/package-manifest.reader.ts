@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import type { AsterInstalledPackageVersion } from "../../../command/contracts/aster-installed-package-version.contract.js";
+import { asterPublicPackages } from "../constants/aster-public-packages.constant.js";
 
 /**
  * @description Reads package manifests without importing their JavaScript entrypoints.
@@ -36,6 +37,58 @@ export class PackageManifestReader {
    */
   async version(path: string, expectedName: string): Promise<AsterInstalledPackageVersion> {
     const manifest = await this.read(path);
+    return this.#version(manifest, expectedName);
+  }
+
+  /**
+   * @description Reads one installed root and its declared direct Aster runtime dependencies.
+   * @param path - Absolute path of the installed root manifest.
+   * @param expectedName - Exact published identity of that root.
+   * @returns Canonical root record and ordered direct dependency names.
+   */
+  async installed(path: string, expectedName: string): Promise<Readonly<{
+    /** @description Validated installed package identity and version. */
+    root: AsterInstalledPackageVersion;
+    /** @description Known direct Aster runtime dependency names. */
+    dependencyNames: readonly string[];
+  }>> {
+    const manifest = await this.read(path);
+    const root = this.#version(manifest, expectedName);
+    const declared = manifest.dependencies;
+
+    if (declared !== undefined && !this.#isRecord(declared)) {
+      throw new TypeError("Invalid installed Aster dependency declarations");
+    }
+
+    const dependencyNames: string[] = [];
+
+    for (const { name } of asterPublicPackages) {
+      if (declared === undefined || !Object.hasOwn(declared, name)) {
+        continue;
+      }
+
+      const range = declared[name];
+
+      if (name === expectedName || typeof range !== "string" || range.length === 0 || range.trim() !== range) {
+        throw new TypeError("Invalid installed Aster dependency declaration");
+      }
+
+      dependencyNames.push(name);
+    }
+
+    return Object.freeze({ root, dependencyNames: Object.freeze(dependencyNames) });
+  }
+
+  /**
+   * @description Validates an installed manifest's exact identity and version.
+   * @param manifest - Parsed installed package manifest.
+   * @param expectedName - Exact published package name requested by the caller.
+   * @returns Frozen installed package record.
+   */
+  #version(
+    manifest: Readonly<Record<string, unknown>>,
+    expectedName: string,
+  ): AsterInstalledPackageVersion {
     const version = manifest.version;
 
     if (

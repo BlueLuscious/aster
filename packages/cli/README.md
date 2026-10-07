@@ -36,8 +36,12 @@ pnpm exec aster version icons --json
 pnpm exec aster version --all
 ```
 
-They read the public packages resolved by the installed CLI, not the latest registry versions.
-They are **not** available in the earlier `0.1.0-rc.1` candidate. See the
+Core, Icons, SVG and `--all` inspect direct project installations; `version` and `version cli`
+describe the CLI actually running. `--deps` groups each selected package with its direct installed
+Aster dependencies, while `--location` identifies the executed CLI module. None queries the
+registry. These queries are **not** available in the earlier `0.1.0-rc.1` candidate. A project-only
+CLI normally needs `pnpm exec aster`, a package script, or an explicit local binary path; bare
+`aster` needs a command resolvable by the shell. See the
 [CLI Shell documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/shell/index.md)
 for their exact output and failure behaviour.
 

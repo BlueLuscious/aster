@@ -1,5 +1,7 @@
 import type { CatalogueProvider } from "../../catalogue/contracts/index.js";
-import type { AsterInstalledPackageVersion } from "./aster-installed-package-version.contract.js";
+import type { AsterPackageVersionEvidence } from "./aster-package-version-evidence.contract.js";
+import type { AsterPackageDependencyEvidence } from "./aster-package-dependency-evidence.contract.js";
+import type { AsterCliLocationEvidence } from "./aster-cli-location-evidence.contract.js";
 
 /**
  * @description Complete explicit host capabilities supplied to one command execution.
@@ -21,7 +23,13 @@ export interface AsterCommandContext {
   readonly productVersion: string;
 
   /**
-   * @description Optional explicit evidence for installed public package-version queries.
+   * @description Optional source-tagged evidence for installed public package-version queries.
    */
-  readonly packageVersions?: readonly AsterInstalledPackageVersion[];
+  readonly packageVersions?: AsterPackageVersionEvidence;
+
+  /** @description Optional source-tagged direct dependency groups for version queries. */
+  readonly packageDependencies?: AsterPackageDependencyEvidence;
+
+  /** @description Optional host evidence for an explicitly requested CLI location. */
+  readonly cliLocation?: AsterCliLocationEvidence;
 }

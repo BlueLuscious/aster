@@ -212,13 +212,13 @@ function assertMetadataFailure(arguments_) {
 
   assert.equal(human.status, 1);
   assert.equal(human.stdout, "");
-  assert.equal(human.stderr, "[ASTER-CLI-999] standalone shell failed unexpectedly\n");
+  assert.match(human.stderr, /^\[ASTER-CLI-011\] /u);
   assert.equal(machine.status, 1);
   assert.equal(machine.stderr, "");
   const result = JSON.parse(machine.stdout);
   assert.equal(result.ok, false);
-  assert.equal(result.command, undefined);
-  assert.equal(result.diagnostic.code, "ASTER-CLI-999");
+  assert.equal(result.command, "version");
+  assert.equal(result.diagnostic.code, "ASTER-CLI-011");
   assert.equal(result.payload, undefined);
   assert.doesNotMatch(machine.stdout, /aster-cli-consumer-|package\.json/u);
 }
@@ -627,7 +627,7 @@ test("links and executes the packed CLI binary through the package manager", () 
   assert.equal(linked.stdout, `Aster ${packageVersion}\n`);
 });
 
-test("reports independently versioned packages resolved from the packed executable", async () => {
+test("distinguishes packed project versions from executed-CLI dependency versions", async () => {
   const versions = Object.freeze({
     core: "0.2.4",
     icons: "0.3.1",
@@ -670,17 +670,28 @@ test("reports independently versioned packages resolved from the packed executab
       assert.deepEqual(JSON.parse(all.stdout), {
         ok: true,
         command: "version",
-        payload: { kind: "package-versions", packages },
+        payload: { kind: "package-versions", source: "project", aggregate: true, packages },
       });
 
-      const human = runExecutable(["version", "--all"], workspaceRoot);
-      assertSuccessfulProcess(human, "report packed package versions outside the consumer");
+      const human = runExecutable(["version", "--all"]);
+      assertSuccessfulProcess(human, "report project package versions");
       assert.equal(human.stderr, "");
       assert.equal(human.stdout, [
-        "Installed Aster packages:",
+        "Project Aster packages:",
         ...packages.map(({ name, version }) => `  ${name} ${version}`),
         "",
       ].join("\n"));
+
+      const dependencies = runExecutable(["version", "cli", "--deps", "--json"], workspaceRoot);
+      assertSuccessfulProcess(dependencies, "report executed CLI dependencies outside the consumer");
+      assert.deepEqual(JSON.parse(dependencies.stdout).payload, {
+        kind: "package-dependencies",
+        source: "cli",
+        groups: [{
+          root: packages[3],
+          dependencies: packages.slice(0, 3),
+        }],
+      });
 
       for (const [selector, version] of Object.entries(versions)) {
         const name = `@luscious-garden/aster-${selector}`;
@@ -696,6 +707,7 @@ test("reports independently versioned packages resolved from the packed executab
           command: "version",
           payload: {
             kind: "package-versions",
+            source: selector === "cli" ? "cli" : "project",
             packages: [{ name, version }],
           },
         });
@@ -718,7 +730,7 @@ test("reports independently versioned packages resolved from the packed executab
       });
 
       const linked = runPnpm(["--dir", consumerRoot, "exec", "aster", "version", "--all"]);
-      assertSuccessfulProcess(linked, "report installed versions through linked Aster binary");
+      assertSuccessfulProcess(linked, "report project versions through linked Aster binary");
       assert.equal(linked.stdout, human.stdout);
     },
   );

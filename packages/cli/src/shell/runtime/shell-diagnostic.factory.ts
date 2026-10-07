@@ -5,6 +5,8 @@ import type { AsterCommandResultType } from "../../command/types/index.js";
 import { outputErrorKinds } from "../output/constants/output-error-kinds.constant.js";
 import { OutputError } from "../output/runtime/output.error.js";
 import { CommandLineError } from "../parsing/runtime/command-line.error.js";
+import { CliPackageVersionError } from "../version/runtime/cli-package-version.error.js";
+import { ProjectPackageVersionError } from "../version/runtime/project-package-version.error.js";
 
 /**
  * @description Adapts shell-owned parsing and execution faults into command-result diagnostics.
@@ -53,6 +55,23 @@ export class ShellDiagnosticFactory {
         conflict
           ? commandDiagnosticSchema.codes.outputConflict
           : commandDiagnosticSchema.codes.outputFailure,
+        error.message,
+      ),
+    });
+  }
+
+  /**
+   * @description Converts one expected source-specific version lookup failure into safe evidence.
+   * @param error - Project or executed-CLI package-version acquisition failure.
+   * @returns Immutable version failure without native filesystem details.
+   */
+  packageVersion(error: ProjectPackageVersionError | CliPackageVersionError): AsterCommandResultType {
+    return Object.freeze({
+      ok: false,
+      command: asterCommandNames.version,
+      diagnostic: this.#diagnostics.create(
+        commandDiagnosticSchema.categories.versionUnavailable,
+        commandDiagnosticSchema.codes.versionUnavailable,
         error.message,
       ),
     });

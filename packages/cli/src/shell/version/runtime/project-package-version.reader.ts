@@ -5,8 +5,11 @@ import { pathToFileURL } from "node:url";
 import { asterPublicPackages } from "../constants/aster-public-packages.constant.js";
 import { asterVersionScopes } from "../../../command/constants/aster-version-scopes.constant.js";
 import type { AsterInstalledPackageVersion } from "../../../command/contracts/aster-installed-package-version.contract.js";
+import type { AsterPackageDependencyGroup } from "../../../command/contracts/aster-package-dependency-group.contract.js";
+import { asterInstalledPackageNames } from "../../../command/constants/aster-installed-package-names.constant.js";
 import type { AsterVersionScopeType } from "../../../command/types/aster-version-scope.type.js";
 import { PackageManifestReader } from "./package-manifest.reader.js";
+import { InstalledPackageDependencyReader } from "./installed-package-dependency.reader.js";
 import { ProjectPackageVersionError } from "./project-package-version.error.js";
 
 /**
@@ -22,6 +25,9 @@ export class ProjectPackageVersionReader {
    * @description Shared JSON and installed-version validation authority.
    */
   readonly #manifests = new PackageManifestReader();
+
+  /** @description Direct dependency resolver shared by single- and multi-root queries. */
+  readonly #dependencies = new InstalledPackageDependencyReader();
 
   /**
    * @description Binds project discovery to an explicit host directory, not the CLI location.
@@ -41,6 +47,77 @@ export class ProjectPackageVersionReader {
    * @returns Frozen installed versions in canonical public package order.
    */
   async read(selection: AsterVersionScopeType): Promise<readonly AsterInstalledPackageVersion[]> {
+    const selected = await this.#select(selection);
+    return Object.freeze(selected.map(({ record }) => record));
+  }
+
+  /**
+   * @description Reads independent direct-dependency groups for selected project packages.
+   * @param selection - Named public package or the project's complete direct package set.
+   * @returns Frozen groups in canonical root order.
+   */
+  async readDependencies(selection: AsterVersionScopeType): Promise<readonly AsterPackageDependencyGroup[]> {
+    const selected = await this.#select(selection);
+    const groups: AsterPackageDependencyGroup[] = [];
+
+    for (const { record, manifestPath } of selected) {
+      try {
+        groups.push(await this.#dependencies.read(manifestPath, record.name));
+      } catch {
+        throw new ProjectPackageVersionError(`Invalid or unavailable dependencies for ${record.name}`);
+      }
+    }
+
+    return Object.freeze(groups);
+  }
+
+  /**
+   * @description Finds a direct project CLI for opt-in executable comparison without failing it.
+   * @returns Found manifest path or an explicit unavailable-comparison outcome.
+   */
+  async probeDirectCli(): Promise<
+    | Readonly<{ kind: "found"; manifestPath: string }>
+    | Readonly<{ kind: "absent" | "no-project" | "unavailable" }>
+  > {
+    try {
+      const projectManifestPath = await this.#findProjectManifest();
+
+      if (projectManifestPath === undefined) {
+        return Object.freeze({ kind: "no-project" });
+      }
+
+      const projectManifest = await this.#manifests.read(projectManifestPath);
+      const declarations = this.#declarations(projectManifest);
+      const name = asterInstalledPackageNames.cli;
+
+      if (!declarations.has(name)) {
+        return Object.freeze({ kind: "absent" });
+      }
+
+      const manifestPath = this.#resolveInstalledManifestPath(name, pathToFileURL(projectManifestPath).href);
+
+      if (manifestPath === undefined) {
+        return Object.freeze({ kind: "absent" });
+      }
+
+      await this.#manifests.version(manifestPath, name);
+      return Object.freeze({ kind: "found", manifestPath });
+    } catch {
+      return Object.freeze({ kind: "unavailable" });
+    }
+  }
+
+  /**
+   * @description Selects only directly declared installed project packages with their paths.
+   * @param selection - Named public selector or all directly declared packages.
+   * @returns Frozen selected records and manifest paths in canonical order.
+   */
+  async #select(selection: AsterVersionScopeType): Promise<readonly Readonly<{
+    /** @description Validated installed package record. */
+    record: AsterInstalledPackageVersion;
+    /** @description Installed manifest used as the dependency-resolution base. */
+    manifestPath: string;
+  }>[]> {
     const packages = selection === asterVersionScopes.all
       ? asterPublicPackages
       : asterPublicPackages.filter(({ selector }) => selector === selection);
@@ -50,6 +127,10 @@ export class ProjectPackageVersionReader {
     }
 
     const projectManifestPath = await this.#findProjectManifest();
+
+    if (projectManifestPath === undefined) {
+      throw new ProjectPackageVersionError("No project package.json found from the current directory");
+    }
     let projectManifest: Readonly<Record<string, unknown>>;
 
     try {
@@ -60,7 +141,7 @@ export class ProjectPackageVersionReader {
 
     const declarations = this.#declarations(projectManifest);
     const base = pathToFileURL(projectManifestPath).href;
-    const versions: AsterInstalledPackageVersion[] = [];
+    const selected: Readonly<{ record: AsterInstalledPackageVersion; manifestPath: string }>[] = [];
 
     for (const { name } of packages) {
       const required = declarations.get(name);
@@ -73,9 +154,9 @@ export class ProjectPackageVersionReader {
         continue;
       }
 
-      const version = await this.#readInstalledVersion(name, base);
+      const installed = await this.#readInstalledPackage(name, base);
 
-      if (version === undefined) {
+      if (installed === undefined) {
         if (selection === asterVersionScopes.all && !required) {
           continue;
         }
@@ -83,17 +164,17 @@ export class ProjectPackageVersionReader {
         throw new ProjectPackageVersionError(`${name} is not installed for the current project`);
       }
 
-      versions.push(version);
+      selected.push(installed);
     }
 
-    return Object.freeze(versions);
+    return Object.freeze(selected);
   }
 
   /**
    * @description Selects the nearest package manifest without aggregating workspace packages.
-   * @returns Absolute manifest path for the current project.
+   * @returns Absolute current-project manifest path, or none when there is no project.
    */
-  async #findProjectManifest(): Promise<string> {
+  async #findProjectManifest(): Promise<string | undefined> {
     let directory = this.#currentDirectory;
 
     while (true) {
@@ -120,7 +201,7 @@ export class ProjectPackageVersionReader {
       const parent = dirname(directory);
 
       if (parent === directory) {
-        throw new ProjectPackageVersionError("No project package.json found from the current directory");
+        return undefined;
       }
 
       directory = parent;
@@ -170,32 +251,41 @@ export class ProjectPackageVersionReader {
    * @description Resolves a declared package from the project rather than the executable.
    * @param expectedName - Exact public package name declared by the project.
    * @param base - File URL of the selected project manifest.
-   * @returns Installed version or no version when the package is absent.
+   * @returns Installed record and manifest path or no value when the package is absent.
    */
-  async #readInstalledVersion(
+  async #readInstalledPackage(
     expectedName: string,
     base: string,
-  ): Promise<AsterInstalledPackageVersion | undefined> {
-    let path: string | undefined;
-
-    try {
-      path = findPackageJSON(expectedName, base);
-    } catch (error) {
-      if (this.#hasCode(error, "ERR_MODULE_NOT_FOUND")) {
-        return undefined;
-      }
-
-      throw new ProjectPackageVersionError(`${expectedName} cannot be resolved from the current project`);
-    }
+  ): Promise<Readonly<{ record: AsterInstalledPackageVersion; manifestPath: string }> | undefined> {
+    const path = this.#resolveInstalledManifestPath(expectedName, base);
 
     if (path === undefined) {
       return undefined;
     }
 
     try {
-      return await this.#manifests.version(path, expectedName);
+      const record = await this.#manifests.version(path, expectedName);
+      return Object.freeze({ record, manifestPath: path });
     } catch {
       throw new ProjectPackageVersionError(`Invalid installed manifest for ${expectedName}`);
+    }
+  }
+
+  /**
+   * @description Resolves one installed package manifest from the selected project manifest.
+   * @param expectedName - Exact published package identity.
+   * @param base - File URL of the selected project manifest.
+   * @returns Installed manifest path or no value when the package is absent.
+   */
+  #resolveInstalledManifestPath(expectedName: string, base: string): string | undefined {
+    try {
+      return findPackageJSON(expectedName, base);
+    } catch (error) {
+      if (this.#hasCode(error, "ERR_MODULE_NOT_FOUND")) {
+        return undefined;
+      }
+
+      throw new ProjectPackageVersionError(`${expectedName} cannot be resolved from the current project`);
     }
   }
 

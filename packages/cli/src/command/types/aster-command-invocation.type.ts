@@ -180,4 +180,10 @@ export type AsterCommandInvocationType =
        * @description Optional public package selector or complete installed package family.
        */
       scope?: AsterVersionScopeType;
+
+      /** @description Requests direct Aster runtime dependencies for the selected root or roots. */
+      dependencies?: true;
+
+      /** @description Requests the executed CLI module location on CLI-rooted forms. */
+      location?: true;
     }>;

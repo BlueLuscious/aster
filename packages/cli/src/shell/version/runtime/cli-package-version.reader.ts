@@ -1,12 +1,11 @@
 import { findPackageJSON } from "node:module";
-import { asterPublicPackages } from "../constants/aster-public-packages.constant.js";
-import { asterVersionScopes } from "../../../command/constants/aster-version-scopes.constant.js";
-import type { AsterInstalledPackageVersion } from "../../../command/contracts/aster-installed-package-version.contract.js";
-import type { AsterVersionScopeType } from "../../../command/types/aster-version-scope.type.js";
-import { PackageManifestReader } from "./package-manifest.reader.js";
+import { asterInstalledPackageNames } from "../../../command/constants/aster-installed-package-names.constant.js";
+import type { AsterPackageDependencyGroup } from "../../../command/contracts/aster-package-dependency-group.contract.js";
+import { CliPackageVersionError } from "./cli-package-version.error.js";
+import { InstalledPackageDependencyReader } from "./installed-package-dependency.reader.js";
 
 /**
- * @description Reads public package versions resolved from the installed CLI's module context.
+ * @description Reads direct Aster dependencies from the executed CLI's installed manifest.
  */
 export class CliPackageVersionReader {
   /**
@@ -15,9 +14,9 @@ export class CliPackageVersionReader {
   readonly #base: string;
 
   /**
-   * @description Shared strict manifest reader for the selected installed package.
+   * @description Shared strict direct-dependency acquisition authority.
    */
-  readonly #manifests = new PackageManifestReader();
+  readonly #dependencies = new InstalledPackageDependencyReader();
 
   /**
    * @description Binds package resolution to one executable rather than the process directory.
@@ -28,40 +27,27 @@ export class CliPackageVersionReader {
   }
 
   /**
-   * @description Reads exactly the selected public packages in canonical output order.
-   * @param selection - One package selector or the complete public package family.
-   * @returns Frozen manifest evidence for the requested package set.
+   * @description Reads the executed CLI as root with only its declared Aster dependencies.
+   * @returns Frozen dependency group resolved relative to the installed CLI.
    */
-  async read(
-    selection: AsterVersionScopeType,
-  ): Promise<readonly AsterInstalledPackageVersion[]> {
-    const packages = selection === asterVersionScopes.all
-      ? asterPublicPackages
-      : asterPublicPackages.filter(({ selector }) => selector === selection);
+  async readDependencies(): Promise<AsterPackageDependencyGroup> {
+    const name = asterInstalledPackageNames.cli;
+    let path: string | undefined;
 
-    if (packages.length === 0) {
-      throw new TypeError("Unknown public Aster package selector");
+    try {
+      path = findPackageJSON(name, this.#base);
+    } catch {
+      throw new CliPackageVersionError(`${name} is unavailable for the executed CLI`);
     }
-
-    const versions = await Promise.all(
-      packages.map(({ name }) => this.#readManifest(name)),
-    );
-
-    return Object.freeze(versions);
-  }
-
-  /**
-   * @description Resolves and validates one package's own manifest without importing its code.
-   * @param expectedName - Exact public identity of the requested package.
-   * @returns Frozen package identity and installed version.
-   */
-  async #readManifest(expectedName: string): Promise<AsterInstalledPackageVersion> {
-    const path = findPackageJSON(expectedName, this.#base);
 
     if (path === undefined) {
-      throw new TypeError("Installed Aster package manifest not found");
+      throw new CliPackageVersionError(`${name} is unavailable for the executed CLI`);
     }
 
-    return this.#manifests.version(path, expectedName);
+    try {
+      return await this.#dependencies.read(path, name);
+    } catch {
+      throw new CliPackageVersionError(`Invalid or unavailable dependencies for ${name}`);
+    }
   }
 }

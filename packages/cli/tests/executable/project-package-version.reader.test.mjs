@@ -3,7 +3,7 @@ import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import test from "node:test";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { NodeShell } from "../../dist/shell/runtime/node-shell.js";
 import { asterPublicPackages } from "../../dist/shell/version/constants/aster-public-packages.constant.js";
 import { CliPackageVersionReader } from "../../dist/shell/version/runtime/cli-package-version.reader.js";
@@ -55,6 +55,9 @@ test("keeps project versions distinct from the executed CLI dependencies", async
   await writeProject(fixture.project, { dependencies: { [names.icons]: "0.1.0-rc.1" } });
   await install(fixture.project, "icons", "0.1.0-rc.1", { exports: { ".": null } });
   await install(fixture.cliRoot, "icons", "0.1.0-rc.2");
+  await install(fixture.cliRoot, "cli", "0.1.0-rc.2", {
+    dependencies: { [names.icons]: "^0.1.0" },
+  });
 
   const project = new ProjectPackageVersionReader(fixture.project);
   const cli = new CliPackageVersionReader(fixture.entrypoint);
@@ -62,12 +65,181 @@ test("keeps project versions distinct from the executed CLI dependencies", async
   assert.deepEqual(await project.read("icons"), [
     { name: names.icons, version: "0.1.0-rc.1" },
   ]);
-  assert.deepEqual(await cli.read("icons"), [
-    { name: names.icons, version: "0.1.0-rc.2" },
-  ]);
+  assert.deepEqual(await cli.readDependencies(), {
+    root: { name: names.cli, version: "0.1.0-rc.2" },
+    dependencies: [{ name: names.icons, version: "0.1.0-rc.2" }],
+  });
   assert.deepEqual(await project.read("all"), [
     { name: names.icons, version: "0.1.0-rc.1" },
   ]);
+});
+
+test("routes each shell version form to the agreed project or CLI source", async (context) => {
+  const fixture = await createFixture(context);
+  await writeProject(fixture.project, { dependencies: { [names.icons]: "0.1.0-rc.1" } });
+  await install(fixture.project, "icons", "0.1.0-rc.1");
+  for (const selector of ["core", "icons", "svg"]) {
+    await install(fixture.cliRoot, selector, "0.1.0-rc.2");
+  }
+  await install(fixture.cliRoot, "cli", "0.1.0-rc.2", {
+    dependencies: { [names.core]: "^0.1.0", [names.icons]: "^0.1.0", [names.svg]: "^0.1.0" },
+  });
+
+  const shell = new NodeShell("Aster", "0.1.0-rc.2", fixture.project, fixture.entrypoint);
+  const named = await shell.execute(["version", "icons", "--json"]);
+  const all = await shell.execute(["version", "--all"]);
+  const allJson = await shell.execute(["version", "--all", "--json"]);
+  const cli = await shell.execute(["version", "cli", "--json"]);
+  const dependencies = await shell.execute(["version", "cli", "--deps", "--json"]);
+
+  assert.deepEqual(JSON.parse(named.stdout).payload, {
+    kind: "package-versions",
+    source: "project",
+    packages: [{ name: names.icons, version: "0.1.0-rc.1" }],
+  });
+  assert.deepEqual(all, {
+    stdout: `Project Aster packages:\n  ${names.icons} 0.1.0-rc.1\n`,
+    stderr: "",
+    exitCode: 0,
+  });
+  assert.deepEqual(JSON.parse(allJson.stdout).payload, {
+    kind: "package-versions",
+    source: "project",
+    aggregate: true,
+    packages: [{ name: names.icons, version: "0.1.0-rc.1" }],
+  });
+  assert.deepEqual(JSON.parse(cli.stdout).payload, {
+    kind: "package-versions",
+    source: "cli",
+    packages: [{ name: names.cli, version: "0.1.0-rc.2" }],
+  });
+  assert.deepEqual(JSON.parse(dependencies.stdout).payload, {
+    kind: "package-dependencies",
+    source: "cli",
+    groups: [{
+      root: { name: names.cli, version: "0.1.0-rc.2" },
+      dependencies: ["core", "icons", "svg"].map((selector) => ({
+        name: names[selector], version: "0.1.0-rc.2",
+      })),
+    }],
+  });
+  assert.ok([named, allJson, cli, dependencies].every(({ exitCode }) => exitCode === 0));
+});
+
+test("reports a directly installed project CLI separately from the executed CLI", async (context) => {
+  const fixture = await createFixture(context);
+  await writeProject(fixture.project, { devDependencies: { [names.cli]: "0.1.0-rc.1" } });
+  await install(fixture.project, "core", "0.1.0-rc.1");
+  await install(fixture.project, "cli", "0.1.0-rc.1", {
+    dependencies: { [names.core]: "^0.1.0" },
+  });
+  await install(fixture.cliRoot, "icons", "0.1.0-rc.2");
+  await install(fixture.cliRoot, "cli", "0.1.0-rc.2", {
+    dependencies: { [names.icons]: "^0.1.0" },
+  });
+
+  const shell = new NodeShell("Aster", "0.1.0-rc.2", fixture.project, fixture.entrypoint);
+  const all = await shell.execute(["version", "--all", "--json"]);
+  const namedCli = await shell.execute(["version", "cli", "--json"]);
+  const projectDependencies = await shell.execute(["version", "--all", "--deps", "--json"]);
+  const executedDependencies = await shell.execute(["version", "cli", "--deps", "--json"]);
+
+  assert.deepEqual(JSON.parse(all.stdout).payload, {
+    kind: "package-versions",
+    source: "project",
+    aggregate: true,
+    packages: [{ name: names.cli, version: "0.1.0-rc.1" }],
+  });
+  assert.deepEqual(JSON.parse(namedCli.stdout).payload, {
+    kind: "package-versions",
+    source: "cli",
+    packages: [{ name: names.cli, version: "0.1.0-rc.2" }],
+  });
+  assert.deepEqual(JSON.parse(projectDependencies.stdout).payload, {
+    kind: "package-dependencies", source: "project", groups: [{
+      root: { name: names.cli, version: "0.1.0-rc.1" },
+      dependencies: [{ name: names.core, version: "0.1.0-rc.1" }],
+    }],
+  });
+  assert.deepEqual(JSON.parse(executedDependencies.stdout).payload, {
+    kind: "package-dependencies", source: "cli", groups: [{
+      root: { name: names.cli, version: "0.1.0-rc.2" },
+      dependencies: [{ name: names.icons, version: "0.1.0-rc.2" }],
+    }],
+  });
+  assert.equal(all.exitCode, 0);
+  assert.equal(namedCli.exitCode, 0);
+  assert.equal(projectDependencies.exitCode, 0);
+  assert.equal(executedDependencies.exitCode, 0);
+});
+
+test("reports the executed CLI module and canonical project comparison only on request", async (context) => {
+  const fixture = await createFixture(context);
+  const loaded = fileURLToPath(fixture.entrypoint);
+  await install(fixture.cliRoot, "cli", "0.1.0-rc.2");
+  await writeProject(fixture.project, { devDependencies: { [names.cli]: "^0.1.0" } });
+  await install(fixture.project, "cli", "0.1.0-rc.2");
+  const shell = new NodeShell("Aster", "0.1.0-rc.2", fixture.project, fixture.entrypoint);
+
+  const plain = await shell.execute(["version", "--location", "--json"]);
+  const named = await shell.execute(["version", "cli", "--location", "--json"]);
+  assert.deepEqual(JSON.parse(plain.stdout).payload.location, {
+    entrypoint: loaded, projectCli: "different",
+  });
+  assert.deepEqual(JSON.parse(named.stdout).payload.location, {
+    entrypoint: loaded, projectCli: "different",
+  });
+  assert.match((await shell.execute(["version", "--location"])).stdout, /Project CLI: different installation/u);
+  assert.equal(JSON.parse((await shell.execute(["version", "--json"])).stdout).payload.location, undefined);
+
+  await writeProject(fixture.cliRoot, { dependencies: { [names.cli]: "^0.1.0" } });
+  const same = new NodeShell("Aster", "0.1.0-rc.2", fixture.cliRoot, fixture.entrypoint);
+  assert.equal(JSON.parse((await same.execute(["version", "cli", "--location", "--json"])).stdout).payload.location.projectCli, "same");
+  assert.equal(JSON.parse((await same.execute(["version", "--location", "--deps", "--json"])).stdout).payload.location.projectCli, "same");
+  assert.equal(JSON.parse((await same.execute(["version", "cli", "--deps", "--location", "--json"])).stdout).payload.location.projectCli, "same");
+
+  await writeProject(fixture.project, {});
+  assert.equal(JSON.parse((await shell.execute(["version", "--location", "--json"])).stdout).payload.location.projectCli, "absent");
+  await writeFile(join(fixture.project, "package.json"), "{broken", "utf8");
+  assert.equal(JSON.parse((await shell.execute(["version", "--location", "--json"])).stdout).payload.location.projectCli, "unavailable");
+
+  const outside = join(fixture.root, "without project");
+  await mkdir(outside);
+  const noProject = new NodeShell("Aster", "0.1.0-rc.2", outside, fixture.entrypoint);
+  assert.equal(JSON.parse((await noProject.execute(["version", "--location", "--json"])).stdout).payload.location.projectCli, "no-project");
+});
+
+test("renders empty projects and reports missing project versions as expected errors", async (context) => {
+  const fixture = await createFixture(context);
+  const shell = new NodeShell("Aster", "0.1.0-rc.2", fixture.project, fixture.entrypoint);
+
+  assert.deepEqual(await shell.execute(["version", "--all"]), {
+    stdout: "Project Aster packages:\n  (none)\n",
+    stderr: "",
+    exitCode: 0,
+  });
+  assert.deepEqual(JSON.parse((await shell.execute(["version", "--all", "--json"])).stdout).payload, {
+    kind: "package-versions",
+    source: "project",
+    aggregate: true,
+    packages: [],
+  });
+  assert.deepEqual(JSON.parse((await shell.execute(["version", "--all", "--deps", "--json"])).stdout).payload, {
+    kind: "package-dependencies", source: "project", groups: [],
+  });
+
+  const missing = await shell.execute(["version", "icons"]);
+  assert.equal(missing.exitCode, 1);
+  assert.match(missing.stderr, /^\[ASTER-CLI-011\] .*not a direct dependency/u);
+
+  const outside = join(fixture.root, "outside");
+  await mkdir(outside);
+  const outsideShell = new NodeShell("Aster", "0.1.0-rc.2", outside, fixture.entrypoint);
+  const noProject = await outsideShell.execute(["version", "--all", "--json"]);
+  assert.equal(noProject.exitCode, 1);
+  assert.equal(JSON.parse(noProject.stdout).diagnostic.code, "ASTER-CLI-011");
+  assert.doesNotMatch(noProject.stdout, /aster-cli-project-version-/u);
+  assert.equal((await outsideShell.execute(["version", "cli"])).exitCode, 0);
 });
 
 test("reads direct production and development packages in canonical order", async (context) => {
@@ -91,6 +263,60 @@ test("reads direct production and development packages in canonical order", asyn
   ]);
   assert.ok(Object.isFrozen(result));
   assert.ok(result.every((entry) => Object.isFrozen(entry)));
+});
+
+test("groups direct project roots without flattening or inheriting development dependencies", async (context) => {
+  const fixture = await createFixture(context);
+  await writeProject(fixture.project, {
+    dependencies: { [names.icons]: "^0.1.0", [names.svg]: "^0.1.0", [names.core]: "^0.1.0" },
+  });
+  await install(fixture.project, "core", "0.1.1");
+  await install(fixture.project, "icons", "0.1.2", {
+    dependencies: { [names.core]: "^0.1.0" },
+  });
+  await install(fixture.project, "svg", "0.1.3", {
+    dependencies: { [names.core]: "^0.2.0" },
+    devDependencies: { [names.icons]: "^0.1.0" },
+  });
+  const svgRoot = dirname(installedManifestPath(fixture.project, "svg"));
+  await install(svgRoot, "core", "0.2.4");
+
+  const shell = new NodeShell("Aster", "0.1.0-rc.2", fixture.project, fixture.entrypoint);
+  const all = await shell.execute(["version", "--all", "--deps", "--json"]);
+  assert.equal(all.exitCode, 0);
+  assert.deepEqual(JSON.parse(all.stdout).payload, {
+    kind: "package-dependencies", source: "project", groups: [
+      { root: { name: names.core, version: "0.1.1" }, dependencies: [] },
+      { root: { name: names.icons, version: "0.1.2" },
+        dependencies: [{ name: names.core, version: "0.1.1" }] },
+      { root: { name: names.svg, version: "0.1.3" },
+        dependencies: [{ name: names.core, version: "0.2.4" }] },
+    ],
+  });
+  assert.deepEqual(await shell.execute(["version", "core", "--deps"]), {
+    stdout: `Project Aster package dependencies:\n${names.core} 0.1.1\n  (no Aster dependencies)\n`,
+    stderr: "", exitCode: 0,
+  });
+  const svg = await shell.execute(["version", "svg", "--deps", "--json"]);
+  assert.deepEqual(JSON.parse(svg.stdout).payload.groups[0].dependencies, [
+    { name: names.core, version: "0.2.4" },
+  ]);
+});
+
+test("fails the whole dependency query for a missing direct runtime dependency", async (context) => {
+  const fixture = await createFixture(context);
+  await writeProject(fixture.project, { dependencies: { [names.icons]: "^0.1.0" } });
+  await install(fixture.project, "icons", "0.1.2", {
+    dependencies: { [names.core]: "^0.1.0" },
+  });
+  const shell = new NodeShell("Aster", "0.1.0-rc.2", fixture.project, fixture.entrypoint);
+  for (const argv of [["version", "icons", "--deps"], ["version", "--all", "--deps"]]) {
+    const result = await shell.execute(argv);
+    assert.equal(result.exitCode, 1);
+    assert.match(result.stderr, /^\[ASTER-CLI-011\]/u);
+    assert.equal(result.stdout, "");
+  }
+  assert.equal((await shell.execute(["version", "icons"])).exitCode, 0);
 });
 
 test("omits absent optional packages from all but rejects a named absence", async (context) => {
@@ -151,12 +377,15 @@ test("fails without falling back to an installed CLI dependency", async (context
   const fixture = await createFixture(context);
   await writeProject(fixture.project, { dependencies: { [names.icons]: "^0.1.0" } });
   await install(fixture.cliRoot, "icons", "0.1.9");
+  await install(fixture.cliRoot, "cli", "0.1.0-rc.2", {
+    dependencies: { [names.icons]: "^0.1.0" },
+  });
 
   const reader = new ProjectPackageVersionReader(fixture.project);
 
   await assert.rejects(reader.read("icons"), ProjectPackageVersionError);
   await assert.rejects(reader.read("all"), ProjectPackageVersionError);
-  assert.deepEqual(await new CliPackageVersionReader(fixture.entrypoint).read("icons"), [
+  assert.deepEqual((await new CliPackageVersionReader(fixture.entrypoint).readDependencies()).dependencies, [
     { name: names.icons, version: "0.1.9" },
   ]);
 });
