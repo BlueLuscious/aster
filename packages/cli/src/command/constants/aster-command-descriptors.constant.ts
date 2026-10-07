@@ -76,17 +76,18 @@ export const asterCommandDescriptors = Object.freeze({
     /** @description Complete accepted help invocation forms. */
     usage: Object.freeze(["help", "help <command>"]),
   }),
-  /** @description Help metadata for installed product-version discovery. */
+  /** @description Help metadata for executable and project package-version discovery. */
   version: Object.freeze({
     /** @description Canonical version command identity. */
     name: asterCommandNames.version,
     /** @description Concise purpose shown by general help presentation. */
-    summary: "Show the CLI version or installed public package versions.",
+    summary: "Show the executed CLI or current project's installed Aster package versions.",
     /** @description Complete accepted version invocation forms. */
     usage: Object.freeze([
-      "version",
-      "version <core|icons|svg|cli>",
-      "version --all",
+      "version [--deps] [--location] [--json]",
+      "version cli [--deps] [--location] [--json]",
+      "version <core|icons|svg> [--deps] [--json]",
+      "version --all [--deps] [--json]",
     ]),
   }),
 }) satisfies Readonly<Record<string, AsterCommandDescriptor>>;

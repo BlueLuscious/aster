@@ -1,4 +1,7 @@
 import { asterCommandPayloadKinds } from "../../../command/constants/aster-command-payload-kinds.constant.js";
+import { asterPackageVersionSources } from "../../../command/constants/aster-package-version-sources.constant.js";
+import { asterCliLocationStatuses } from "../../../command/constants/aster-cli-location-statuses.constant.js";
+import type { AsterCliLocationEvidence } from "../../../command/contracts/aster-cli-location-evidence.contract.js";
 import type { AsterCommandResultType } from "../../../command/types/index.js";
 import type { TExportOutputPublication } from "../../output/types/internal/export-output-publication.type.js";
 import type { TReviewOutputPublication } from "../../output/types/internal/review-output-publication.type.js";
@@ -80,15 +83,62 @@ export class HumanOutputPresenter {
       case asterCommandPayloadKinds.help:
         return this.#help.present(payload.descriptors);
       case asterCommandPayloadKinds.version:
-        return `${payload.productName} ${payload.productVersion}`;
+        return [
+          `${payload.productName} ${payload.productVersion}`,
+          ...this.#locationLines(payload.location),
+        ].join("\n");
       case asterCommandPayloadKinds.packageVersions:
-        return payload.packages.length === 1
-          ? `${payload.packages[0]?.name} ${payload.packages[0]?.version}`
-          : [
-              "Installed Aster packages:",
-              ...payload.packages.map(({ name, version }) => `  ${name} ${version}`),
-            ].join("\n");
+        if (payload.aggregate !== true) {
+          return [
+            `${payload.packages[0]?.name} ${payload.packages[0]?.version}`,
+            ...this.#locationLines(payload.location),
+          ].join("\n");
+        }
+
+        return [
+          "Project Aster packages:",
+          ...(payload.packages.length === 0
+            ? ["  (none)"]
+            : payload.packages.map(({ name, version }) => `  ${name} ${version}`)),
+        ].join("\n");
+      case asterCommandPayloadKinds.packageDependencies:
+        return [
+          payload.source === asterPackageVersionSources.cli
+            ? "Executed CLI dependencies:"
+            : "Project Aster package dependencies:",
+          ...(payload.groups.length === 0
+            ? ["  (none)"]
+            : payload.groups.flatMap(({ root, dependencies }, index) => [
+              ...(index === 0 ? [] : [""]),
+              `${root.name} ${root.version}`,
+              ...(dependencies.length === 0
+                ? ["  (no Aster dependencies)"]
+                : dependencies.map(({ name, version }) => `  ${name} ${version}`)),
+            ])),
+          ...(payload.location === undefined ? [] : ["", ...this.#locationLines(payload.location)]),
+        ].join("\n");
     }
+  }
+
+  /**
+   * @description Presents opt-in executed-CLI module and project comparison evidence.
+   * @param location - Explicitly requested location evidence, when present.
+   * @returns Human location lines without a trailing newline.
+   */
+  #locationLines(location: AsterCliLocationEvidence | undefined): readonly string[] {
+    if (location === undefined) {
+      return [];
+    }
+
+    const comparison = {
+      [asterCliLocationStatuses.same]: "same installation as the project CLI",
+      [asterCliLocationStatuses.different]: "different installation from the project CLI",
+      [asterCliLocationStatuses.absent]: "no directly installed project CLI",
+      [asterCliLocationStatuses.noProject]: "no current project",
+      [asterCliLocationStatuses.unavailable]: "comparison unavailable",
+    }[location.projectCli];
+
+    return [`CLI module: ${location.entrypoint}`, `Project CLI: ${comparison}`];
   }
 
   /**

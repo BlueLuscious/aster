@@ -24,4 +24,6 @@ export const asterCommandPayloadKinds = Object.freeze({
   version: "version",
   /** @description Payload containing installed public package versions. */
   packageVersions: "package-versions",
+  /** @description Payload containing installed roots and their direct Aster dependencies. */
+  packageDependencies: "package-dependencies",
 } as const);

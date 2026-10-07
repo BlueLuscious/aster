@@ -22,6 +22,8 @@ export const commandDiagnosticSchema = Object.freeze({
     outputConflict: "output-conflict",
     /** @description Output host could not complete publication. */
     outputFailure: "output-failure",
+    /** @description Requested package versions could not be acquired from their stated source. */
+    versionUnavailable: "version-unavailable",
     /** @description Unexpected command execution failure. */
     executionFailure: "execution-failure",
   } as const),
@@ -47,6 +49,8 @@ export const commandDiagnosticSchema = Object.freeze({
     outputConflict: "ASTER-CLI-009",
     /** @description Stable code for an output-host operation failure. */
     outputFailure: "ASTER-CLI-010",
+    /** @description Stable code for unavailable project or executed-CLI package versions. */
+    versionUnavailable: "ASTER-CLI-011",
     /** @description Stable terminal code for an unexpected execution failure. */
     executionFailure: "ASTER-CLI-999",
   } as const),

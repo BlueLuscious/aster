@@ -12,8 +12,12 @@ output.
 | --- | --- | --- |
 | `AsterCommandSet` | Declares stable command-set identity, canonical descriptors, and asynchronous execution. | Accepts `AsterCommandInvocationType` and `AsterCommandContext`; returns `AsterCommandResultType`. |
 | `AsterCommandDescriptor` | Carries one command identity, summary, and accepted usage forms. | Uses `AsterCommandNameType`; definitions own the source metadata and the kernel exposes isolated copies. |
-| `AsterCommandContext` | Supplies the complete capability set for one execution. | Retains explicit `CatalogueProvider` values, product name and version, and optional installed package-version evidence; contains no host effects. |
-| `AsterInstalledPackageVersion` | Describes one host-supplied installed public package name and version. | Used by optional context evidence and the `package-versions` payload; acquisition belongs to the shell or another host. |
+| `AsterCommandContext` | Supplies the complete capability set for one execution. | Retains explicit providers, product identity, and optional source-tagged package, dependency, and CLI-location evidence; contains no host effects. |
+| `AsterInstalledPackageVersion` | Describes one host-supplied installed public package name and version. | Used by package-version and dependency evidence; acquisition belongs to the shell or another host. |
+| `AsterPackageVersionEvidence` | Identifies the source and installed records for a package-version request. | Supplies `packageVersions` in `AsterCommandContext`; its `source` is `project` or `cli`. |
+| `AsterPackageDependencyGroup` | Separates one installed root from its direct installed Aster runtime dependencies. | Each member of `AsterPackageDependencyEvidence.groups` is independently resolved by the host. |
+| `AsterPackageDependencyEvidence` | Groups dependency results by their selected-root source. | Supplies `packageDependencies` in `AsterCommandContext`; the root is never repeated in its own dependency list. |
+| `AsterCliLocationEvidence` | Identifies the executed CLI module and its comparison with the project's direct CLI. | Supplies opt-in `cliLocation` in `AsterCommandContext`; not a command-selection mechanism. |
 
 The internal `ICommandDefinition` pairs one descriptor with one executable handler. Definitions are
 provided explicitly to the kernel and never registered globally.
@@ -25,11 +29,13 @@ provided explicitly to the kernel and never registered globally.
 | `AsterCommandNameType` | Closed identity union for `export`, `review`, `list`, `search`, `show`, `help`, and `version`. | Derived from the internal immutable command-name authority. |
 | `AsterInstalledPackageSelectorType` | Closed union for `core`, `icons`, `svg`, and `cli`. | Used by the optional `version` invocation scope; `all` selects the complete public family. |
 | `AsterVersionScopeType` | One installed package selector or the complete `all` scope. | Used by scoped version invocations and the private installed-manifest reader. |
+| `AsterPackageVersionSourceType` | Closed `project` or `cli` provenance of selected package roots. | Shared by package-version and dependency evidence. |
+| `AsterCliLocationStatusType` | Closed `same`, `different`, `absent`, `no-project`, or `unavailable` comparison outcome. | Used by `AsterCliLocationEvidence`, not inferred from version strings. |
 | `AsterCommandListSubjectType` | Closed subject union for `catalogues`, `collections`, and `icons`. | Derived from the list branch of the immutable command-subject authority. |
 | `AsterCommandShowSubjectType` | Closed subject union for `icon` and `collection`. | Derived from the show branch of the immutable command-subject authority. |
 | `AsterCommandInvocationType` | Discriminated structured request union with command-specific subjects and filters. | Validated and isolated by the [Command Invocation](invocation/index.md) subfeature. |
 | `AsterCommandPayloadKindType` | Closed discriminator union for every current success payload. | Derived from the immutable payload-kind authority. |
-| `AsterCommandPayloadType` | Closed union of export, review, list, search, show, help, plain version, and installed package-version payloads. | Retains artefact plans, public catalogue results, command descriptors, or explicit version evidence according to its kind. |
+| `AsterCommandPayloadType` | Closed union of export, review, discovery, help, product version, package versions, and package dependencies. | Retains source-tagged version evidence and optional CLI location only when requested. |
 | `AsterCommandResultType` | Generic structured success or failure outcome. | Success defaults to `AsterCommandPayloadType`; failure retains `AsterCommandDiagnosticType`. |
 | `AsterCommandDiagnosticType` | Stable code, category, message, and optional related-value evidence. | Its categories and codes derive from one immutable runtime schema. |
 | `AsterCommandDiagnosticCodeType` | Closed stable diagnostic-code union. | Derived from the code branch of the immutable diagnostic schema. |
@@ -56,12 +62,15 @@ Review accepts an exact icon or collection identity and an optional provider fil
 technical plan without accepting host output state. Its contracts and execution flow are
 documented by [CLI Review](../review/index.md).
 
-`{ command: "version" }` retains the original product-only payload. Supplying `scope` with one
-public package selector or `"all"` requires explicit `packageVersions` in the context and returns
-the distinct `package-versions` payload. The command validates and isolates evidence but does not
-read manifests, query a registry, or infer any missing version. `all` returns Core, Icons, SVG,
-and CLI in that order; named requests return exactly one record. Invalid evidence produces an
-`ASTER-CLI-002` context diagnostic.
+`{ command: "version" }` retains the product-only payload. The `cli` scope uses the same executed
+CLI version supplied by the host. Named library scopes and `all` require `project`-sourced
+`packageVersions`; `all` returns only directly installed known Aster packages in canonical order,
+and may be empty. Setting `dependencies: true` instead requires complete source-tagged
+`packageDependencies`: the executed CLI for absent or `cli` scope, or project roots for named
+libraries and `all`. Each `groups` entry has one `root` and its own direct `dependencies`.
+Setting `location: true` is accepted only for absent or `cli` scope and requires `cliLocation`.
+The command validates and isolates host evidence but does not read manifests, query a registry,
+or infer missing versions. Missing or mismatched evidence produces `ASTER-CLI-002`.
 
 The exact implemented standalone grammar is documented by [CLI Shell](../shell/index.md). Node
 token parsing and output publication are not part of the command kernel.

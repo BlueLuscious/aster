@@ -34,7 +34,7 @@ checks and human approval.
 | [Export](export/index.md) | Selects exact catalogue definitions and constructs immutable host-neutral SVG artefact plans. |
 | [Review](review/index.md) | Constructs immutable technical plans through public SVG rendering and serialises self-contained static review documents. |
 | [Shell](shell/index.md) | Adapts Node argv, presents human or JSON output, and commits documented process effects. |
-| [Shell Version Metadata](shell/version/index.md) | Resolves installed public package manifests from the executable's own dependency context. |
+| [Shell Version Metadata](shell/version/index.md) | Resolves direct project installations separately from the executed CLI and its own dependencies. |
 | [Shell Parsing](shell/parsing/index.md) | Adapts standalone argv through explicit command-owned parsers. |
 | [Shell Presentation](shell/presentation/index.md) | Produces deterministic human or JSON stream results. |
 | [Shell Output](shell/output/index.md) | Publishes complete export trees and static review documents through the private Node filesystem boundary. |
@@ -74,12 +74,15 @@ plugin-loader, or repository-tooling authority.
 The package exposes only its root `"."`. It exports these types:
 
 - `AsterCommandSet`, `AsterCommandDescriptor`, and `AsterCommandContext`;
-- `AsterInstalledPackageVersion`, the optional host-supplied installed package record;
+- `AsterInstalledPackageVersion`, `AsterPackageVersionEvidence`,
+  `AsterPackageDependencyGroup`, `AsterPackageDependencyEvidence`, and
+  `AsterCliLocationEvidence`, the host-supplied version evidence family;
 - `AsterCommandNameType`, `AsterCommandListSubjectType`, `AsterCommandShowSubjectType`,
   `AsterCommandInvocationType`, `AsterCommandPayloadKindType`, `AsterCommandPayloadType`, and
   `AsterCommandResultType`;
-- `AsterInstalledPackageSelectorType` and `AsterVersionScopeType`, the named and aggregate
-  version-selection types;
+- `AsterInstalledPackageSelectorType`, `AsterVersionScopeType`,
+  `AsterPackageVersionSourceType`, and `AsterCliLocationStatusType`, the version-selection and
+  provenance types;
 - `AsterCommandDiagnosticType`, `AsterCommandDiagnosticCodeType`, and
   `AsterCommandDiagnosticCategoryType`;
 - `CatalogueProvider`, `CatalogueDiscovery`, `CatalogueDiscoveryIconRecord`,

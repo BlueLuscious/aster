@@ -6,6 +6,9 @@ import type {
 import type { asterCommandPayloadKinds } from "../constants/aster-command-payload-kinds.constant.js";
 import type { AsterCommandDescriptor } from "../contracts/index.js";
 import type { AsterInstalledPackageVersion } from "../contracts/aster-installed-package-version.contract.js";
+import type { AsterCliLocationEvidence } from "../contracts/aster-cli-location-evidence.contract.js";
+import type { AsterPackageDependencyGroup } from "../contracts/aster-package-dependency-group.contract.js";
+import type { AsterPackageVersionSourceType } from "./aster-package-version-source.type.js";
 import type { AsterExportPlan } from "../../export/contracts/index.js";
 import type { AsterReviewPlan } from "../../review/contracts/index.js";
 
@@ -127,11 +130,35 @@ export type AsterCommandPayloadType =
        * @description Product version supplied by the execution host.
        */
       productVersion: string;
+
+      /** @description Requested executed-CLI location, absent from ordinary version results. */
+      location?: AsterCliLocationEvidence;
     }>
   | Readonly<{
       /** @description Discriminator for explicit installed public package evidence. */
       kind: typeof asterCommandPayloadKinds.packageVersions;
 
+      /** @description Project or executed-CLI installation measured by the query. */
+      source: AsterPackageVersionSourceType;
+
+      /** @description Marks a complete requested view, even when it has one or no members. */
+      aggregate?: true;
+
       /** @description Selected package versions in canonical public order. */
       packages: readonly AsterInstalledPackageVersion[];
+      /** @description Requested executed-CLI location on a named CLI version result. */
+      location?: AsterCliLocationEvidence;
+    }>
+  | Readonly<{
+      /** @description Discriminator for installed root and direct-dependency groups. */
+      kind: typeof asterCommandPayloadKinds.packageDependencies;
+
+      /** @description Source from which the root packages were selected. */
+      source: AsterPackageVersionSourceType;
+
+      /** @description Independent root groups in canonical package order. */
+      groups: readonly AsterPackageDependencyGroup[];
+
+      /** @description Requested executed-CLI location on CLI-rooted queries. */
+      location?: AsterCliLocationEvidence;
     }>;
