@@ -1,6 +1,6 @@
 # Versioning and Releases
 
-Status: **Pre-release**
+Status: **Stable `0.1.0` prepared in source; public release pending**
 
 This document defines Aster's cross-package compatibility and release posture. Package-specific
 public surfaces, failure guarantees, distribution evidence, and quality gates remain with their
@@ -9,10 +9,10 @@ respective [package documentation](../packages/index.md).
 ## Current maturity
 
 Aster has no stable public release or compatibility commitment to external consumers. Core,
-Icons, SVG, and CLI published `0.1.0-rc.1` on 22 September 2026 and `0.1.0-rc.2` on
-6 October 2026. CLI alone published `0.1.0-rc.3` on 7 October 2026 to correct version-source
-behaviour. Core, Icons and SVG remain at `rc.2`; the private `@luscious-garden/aster-import`
-remains versioned in source but is not published.
+Icons, SVG and CLI have published release candidates; the accepted CLI correction is in its
+`0.1.0-rc.3` candidate, while Core, Icons and SVG remain at `0.1.0-rc.2` on npm. All five
+workspace manifests now prepare `0.1.0`, but those source versions are not yet published. The
+private `@luscious-garden/aster-import` remains versioned in source without a public release.
 
 Repository conformance proves the current implementation against its documented boundaries but
 does not turn pre-release versions into stable compatibility commitments.
@@ -23,8 +23,9 @@ The shared initial number is a convenient starting point, not a lockstep policy.
 production dependency. Icons and SVG depend on Core; CLI depends on all three. Each public edge
 uses `workspace:^` in source and must resolve to a caret range on the installed dependency's
 version when packed. The published `rc.1` set uses `^0.1.0-rc.1` and the published `rc.2` set
-uses `^0.1.0-rc.2` on each public runtime edge. Review every newly packed edge independently
-when a package advances; neither range admits `0.2.0`.
+uses `^0.1.0-rc.2` on each public runtime edge. The stable archives must resolve their public
+runtime edges to `^0.1.0`; inspect each packed edge independently before publication. None of
+these ranges admits `0.2.0`.
 Import also uses `workspace:^` for its Core edge, even though it is not packed for publication.
 Development-only workspace dependencies retain `workspace:*` because they are not runtime
 requirements of a distributed package.

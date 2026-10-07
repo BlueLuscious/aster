@@ -1,5 +1,15 @@
 # CLI Release Notes
 
+## 0.1.0
+
+Status: **Prepared in source; not yet published**.
+
+The first stable CLI package retains the command behaviour accepted in `0.1.0-rc.3`; there is no
+new command or migration from that candidate. The stable archive must declare runtime
+dependencies on Core, Icons and SVG at `^0.1.0`. Consumers upgrading from earlier candidates
+should review the version-source correction below. Registry links, archive hashes and the
+publication date will be recorded after the exact stable archive is approved and published.
+
 ## 0.1.0-rc.3
 
 Status: **Published on 7 October 2026** under the npm `next` tag.

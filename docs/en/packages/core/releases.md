@@ -1,8 +1,14 @@
 # Core Release Notes
 
-## Unreleased
+## 0.1.0
 
-No Core package change has been accepted since `0.1.0-rc.2`.
+Status: **Prepared in source; not yet published**.
+
+The first stable Core package retains the public API and behaviour accepted in `0.1.0-rc.2`.
+There is no new runtime capability or migration from that candidate. Core has no runtime
+dependencies. Consumers coming directly from `0.1.0-rc.1` must apply the collection migration
+described below. Registry links, archive hashes and the publication date will be recorded after
+the exact stable archive is approved and published.
 
 ## 0.1.0-rc.2
 
