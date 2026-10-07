@@ -123,6 +123,9 @@ test("exposes version and review help through the standalone parser", () => {
     assert.equal(result.status, 0);
     assert.equal(result.stderr, "");
     assert.match(result.stdout, new RegExp(`^Aster commands:\\n  ${command}:`, "u"));
+    if (command === "version") {
+      assert.match(result.stdout, /aster version cli \[--deps\] \[--location\]/u);
+    }
   }
 });
 
@@ -141,6 +144,7 @@ test("keeps the executable CLI version distinct from named package queries", () 
   assert.equal(named.stdout, `@luscious-garden/aster-cli ${packageVersion}\n`);
   assert.deepEqual(JSON.parse(namedJson.stdout).payload, {
     kind: "package-versions",
+    source: "cli",
     packages: [{ name: "@luscious-garden/aster-cli", version: packageVersion }],
   });
 
@@ -158,6 +162,12 @@ test("rejects invalid and mixed version selectors as usage failures", () => {
     ["version", "core", "--all"],
     ["version", "--all", "--all"],
     ["version", "--package", "core"],
+    ["version", "cli", "--deps", "--deps"],
+    ["version", "cli", "--location", "--location"],
+    ["version", "core", "--location"],
+    ["version", "--all", "--location"],
+    ["version", "core", "--deps", "--location"],
+    ["version", "cli", "--all"],
   ]) {
     const result = run(argv);
     assert.equal(result.status, 2);
@@ -169,6 +179,11 @@ test("rejects invalid and mixed version selectors as usage failures", () => {
   assert.equal(json.status, 2);
   assert.equal(json.stderr, "");
   assert.equal(JSON.parse(json.stdout).diagnostic.code, "ASTER-CLI-001");
+
+  const invalidLocation = run(["version", "core", "--location", "--json"]);
+  assert.equal(invalidLocation.status, 2);
+  assert.equal(invalidLocation.stderr, "");
+  assert.equal(JSON.parse(invalidLocation.stdout).diagnostic.code, "ASTER-CLI-001");
 });
 
 test("renders list, search, show, and version as deterministic human text", () => {

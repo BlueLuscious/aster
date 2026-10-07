@@ -28,16 +28,16 @@ export class VersionInvocationNormaliser implements ICommandInvocationNormaliser
   readonly #rejections = new InvocationRejectionFactory();
 
   /**
-   * @description Accepts plain or explicitly scoped version invocations.
+   * @description Accepts plain, scoped, dependency, and opt-in location requests.
    * @param value - Candidate version invocation.
    * @returns Accepted immutable version invocation or usage rejection.
    */
   normalise(value: unknown): TAcceptanceResult<AsterCommandInvocationType> {
-    const record = this.#data.record(value, ["command", "scope"], ["command"]);
+    const record = this.#data.record(value, ["command", "scope", "dependencies", "location"], ["command"]);
 
     if (record === undefined || record.command !== this.command) {
       return this.#rejections.invalid(
-        "version invocation accepts only command and optional scope",
+        "version invocation accepts only command, scope, dependencies, and location",
       );
     }
 
@@ -53,11 +53,23 @@ export class VersionInvocationNormaliser implements ICommandInvocationNormaliser
       scope = candidate;
     }
 
+    if (Object.hasOwn(record, "dependencies") && record.dependencies !== true) {
+      return this.#rejections.invalid("version dependencies must be true when supplied");
+    }
+
+    if (Object.hasOwn(record, "location")) {
+      if (record.location !== true || (scope !== undefined && scope !== "cli")) {
+        return this.#rejections.invalid("version location requires the executed CLI");
+      }
+    }
+
     return Object.freeze({
       accepted: true,
       value: Object.freeze({
         command: this.command,
         ...(scope === undefined ? {} : { scope }),
+        ...(record.dependencies === true ? { dependencies: true } : {}),
+        ...(record.location === true ? { location: true } : {}),
       }),
     });
   }

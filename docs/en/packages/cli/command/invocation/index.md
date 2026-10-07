@@ -20,7 +20,7 @@ there is no mutable registry, reflection, or automatic command discovery.
 | `SearchInvocationNormaliser` | Search queries and optional discovery filters. |
 | `ShowInvocationNormaliser` | Exact icon or collection lookup requests. |
 | `HelpInvocationNormaliser` | General or command-specific help requests. |
-| `VersionInvocationNormaliser` | Plain version requests and the optional `core`, `icons`, `svg`, `cli`, or `all` scope. |
+| `VersionInvocationNormaliser` | Plain or scoped version requests, optional direct-dependency groups, and opt-in executed-CLI location. |
 
 `InvocationFilterNormaliser` owns the shared provider, collection, and tag filter grammar.
 `InvocationRejectionFactory` constructs canonical usage failures without coupling the normalisers
@@ -29,6 +29,8 @@ to command execution.
 Version scope acceptance uses the same immutable public package-selector authority as the shell.
 The aggregate `all` discriminator is defined once for structured requests and adapted to the
 standalone `--all` token; no runtime package is selected by an unchecked type assertion.
+`dependencies: true` applies to any version scope, while `location: true` applies only to absent
+or `cli` scope. The [Command](../index.md) document owns the evidence and result contracts.
 
 ## Acceptance boundary
 

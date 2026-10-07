@@ -13,7 +13,7 @@ import {
 } from "node:fs/promises";
 import { findPackageJSON } from "node:module";
 import { tmpdir } from "node:os";
-import { basename, dirname, relative, resolve } from "node:path";
+import { basename, delimiter, dirname, relative, resolve } from "node:path";
 import process from "node:process";
 import test, { after, before } from "node:test";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -89,14 +89,15 @@ const expectedCollectionPaths = Object.freeze(
 let consumerRoot;
 let packedPackages;
 
-function runPnpm(arguments_) {
-  const options = {
+function runPnpm(arguments_, options = {}) {
+  const settings = {
     cwd: workspaceRoot,
     encoding: "utf8",
+    ...options,
   };
 
   if (process.platform !== "win32") {
-    return spawnSync("pnpm", arguments_, options);
+    return spawnSync("pnpm", arguments_, settings);
   }
 
   const command = [
@@ -106,7 +107,7 @@ function runPnpm(arguments_) {
     ),
   ].join(" ");
 
-  return spawnSync(command, { ...options, shell: true });
+  return spawnSync(command, { ...settings, shell: true });
 }
 
 function assertSuccessfulProcess(result, operation) {
@@ -149,12 +150,12 @@ function runModule(source) {
   );
 }
 
-function runExecutable(arguments_, cwd = consumerRoot) {
+function runInstalledExecutable(installationRoot, arguments_, cwd = installationRoot) {
   return spawnSync(
     process.execPath,
     [
       resolve(
-        consumerRoot,
+        installationRoot,
         "node_modules",
         "@luscious-garden",
         "aster-cli",
@@ -171,25 +172,29 @@ function runExecutable(arguments_, cwd = consumerRoot) {
   );
 }
 
-async function installedManifestPath(selector) {
+function runExecutable(arguments_, cwd = consumerRoot) {
+  return runInstalledExecutable(consumerRoot, arguments_, cwd);
+}
+
+async function installedManifestPath(selector, installationRoot = consumerRoot) {
   const path = await realpath(resolve(
-    consumerRoot,
+    installationRoot,
     "node_modules",
     "@luscious-garden",
     `aster-${selector}`,
     "package.json",
   ));
 
-  assert.match(relative(await realpath(consumerRoot), path), /^node_modules[\\/]/u);
+  assert.match(relative(await realpath(installationRoot), path), /^node_modules[\\/]/u);
   return path;
 }
 
-async function withInstalledManifests(updates, action) {
+async function withInstalledManifests(updates, action, installationRoot = consumerRoot) {
   const originals = [];
 
   try {
     for (const [selector, update] of Object.entries(updates)) {
-      const path = await installedManifestPath(selector);
+      const path = await installedManifestPath(selector, installationRoot);
       const original = await readFile(path, "utf8");
       originals.push({ path, original });
       const content = typeof update === "string"
@@ -206,21 +211,65 @@ async function withInstalledManifests(updates, action) {
   }
 }
 
-function assertMetadataFailure(arguments_) {
-  const human = runExecutable(arguments_);
-  const machine = runExecutable([...arguments_, "--json"]);
+function assertMetadataFailure(arguments_, cwd = consumerRoot) {
+  const human = runExecutable(arguments_, cwd);
+  const machine = runExecutable([...arguments_, "--json"], cwd);
 
   assert.equal(human.status, 1);
   assert.equal(human.stdout, "");
-  assert.equal(human.stderr, "[ASTER-CLI-999] standalone shell failed unexpectedly\n");
+  assert.match(human.stderr, /^\[ASTER-CLI-011\] /u);
   assert.equal(machine.status, 1);
   assert.equal(machine.stderr, "");
   const result = JSON.parse(machine.stdout);
   assert.equal(result.ok, false);
-  assert.equal(result.command, undefined);
-  assert.equal(result.diagnostic.code, "ASTER-CLI-999");
+  assert.equal(result.command, "version");
+  assert.equal(result.diagnostic.code, "ASTER-CLI-011");
   assert.equal(result.payload, undefined);
   assert.doesNotMatch(machine.stdout, /aster-cli-consumer-|package\.json/u);
+}
+
+async function createPackedProject(context) {
+  const projectRoot = await mkdtemp(resolve(consumerRoot, "independent-project-"));
+  context.after(async () => {
+    assert.match(
+      relative(resolve(consumerRoot), resolve(projectRoot)),
+      /^independent-project-[^\\/]+$/u,
+    );
+    await rm(projectRoot, { recursive: true, force: true });
+  });
+  const specifications = Object.fromEntries(
+    ["core", "icons", "svg"].map((selector) => [
+      `@luscious-garden/aster-${selector}`,
+      `file:../tarballs/${packedPackages[selector].filename}`,
+    ]),
+  );
+
+  await writeFile(resolve(projectRoot, "package.json"), `${JSON.stringify({
+    private: true,
+    type: "module",
+    dependencies: specifications,
+    pnpm: { overrides: specifications },
+  })}\n`, "utf8");
+  await writeFile(resolve(projectRoot, ".npmrc"), "engine-strict=true\n", "utf8");
+
+  const installed = runPnpm([
+    "--dir", projectRoot, "install", "--offline", "--ignore-scripts",
+    "--package-import-method=copy", "--frozen-lockfile=false",
+  ]);
+  assertSuccessfulProcess(installed, "install independent packed project");
+  return projectRoot;
+}
+
+async function installNestedCore(projectRoot, selector, version) {
+  const packageRoot = dirname(await installedManifestPath(selector, projectRoot));
+  const target = resolve(packageRoot, "node_modules", "@luscious-garden", "aster-core");
+  assert.match(relative(await realpath(projectRoot), target), /^node_modules[\\/]/u);
+  await mkdir(dirname(target), { recursive: true });
+  await cp(dirname(await installedManifestPath("core", projectRoot)), target, { recursive: true });
+  const manifestPath = resolve(target, "package.json");
+  const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
+  await writeFile(manifestPath, JSON.stringify({ ...manifest, version }), "utf8");
+  return manifestPath;
 }
 
 before(async () => {
@@ -491,6 +540,12 @@ test("type-checks cross-package usage against packed declarations", async () => 
     'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     'import { Svg } from "@luscious-garden/aster-svg";',
     'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
+    'import type { AsterCliLocationEvidence, AsterCommandInvocationType, AsterCommandPayloadType, AsterPackageDependencyEvidence } from "@luscious-garden/aster-cli";',
+    'const versionRequest: AsterCommandInvocationType = { command: "version", scope: "cli", dependencies: true, location: true };',
+    'const location: AsterCliLocationEvidence = { entrypoint: "/aster/cli.js", projectCli: "same" };',
+    'const dependencyEvidence: AsterPackageDependencyEvidence = { source: "cli", groups: [{ root: { name: "@luscious-garden/aster-cli", version: "1.0.0" }, dependencies: [] }] };',
+    'const dependencyPayload: AsterCommandPayloadType = { kind: "package-dependencies", ...dependencyEvidence, location };',
+    "void versionRequest; void dependencyPayload;",
     "const entry = AsterIconManifest[0];",
     'if (entry === undefined) throw new Error("Missing icon");',
     "const loader = AsterIconLoaders[entry.key];",
@@ -627,7 +682,7 @@ test("links and executes the packed CLI binary through the package manager", () 
   assert.equal(linked.stdout, `Aster ${packageVersion}\n`);
 });
 
-test("reports independently versioned packages resolved from the packed executable", async () => {
+test("distinguishes packed project versions from executed-CLI dependency versions", async () => {
   const versions = Object.freeze({
     core: "0.2.4",
     icons: "0.3.1",
@@ -670,17 +725,28 @@ test("reports independently versioned packages resolved from the packed executab
       assert.deepEqual(JSON.parse(all.stdout), {
         ok: true,
         command: "version",
-        payload: { kind: "package-versions", packages },
+        payload: { kind: "package-versions", source: "project", aggregate: true, packages },
       });
 
-      const human = runExecutable(["version", "--all"], workspaceRoot);
-      assertSuccessfulProcess(human, "report packed package versions outside the consumer");
+      const human = runExecutable(["version", "--all"]);
+      assertSuccessfulProcess(human, "report project package versions");
       assert.equal(human.stderr, "");
       assert.equal(human.stdout, [
-        "Installed Aster packages:",
+        "Project Aster packages:",
         ...packages.map(({ name, version }) => `  ${name} ${version}`),
         "",
       ].join("\n"));
+
+      const dependencies = runExecutable(["version", "cli", "--deps", "--json"], workspaceRoot);
+      assertSuccessfulProcess(dependencies, "report executed CLI dependencies outside the consumer");
+      assert.deepEqual(JSON.parse(dependencies.stdout).payload, {
+        kind: "package-dependencies",
+        source: "cli",
+        groups: [{
+          root: packages[3],
+          dependencies: packages.slice(0, 3),
+        }],
+      });
 
       for (const [selector, version] of Object.entries(versions)) {
         const name = `@luscious-garden/aster-${selector}`;
@@ -696,6 +762,7 @@ test("reports independently versioned packages resolved from the packed executab
           command: "version",
           payload: {
             kind: "package-versions",
+            source: selector === "cli" ? "cli" : "project",
             packages: [{ name, version }],
           },
         });
@@ -718,10 +785,225 @@ test("reports independently versioned packages resolved from the packed executab
       });
 
       const linked = runPnpm(["--dir", consumerRoot, "exec", "aster", "version", "--all"]);
-      assertSuccessfulProcess(linked, "report installed versions through linked Aster binary");
+      assertSuccessfulProcess(linked, "report project versions through linked Aster binary");
       assert.equal(linked.stdout, human.stdout);
     },
   );
+});
+
+test("keeps a packed external CLI separate from independent project roots and nested Core copies", async (context) => {
+  const projectRoot = await createPackedProject(context);
+  const names = Object.freeze(Object.fromEntries(packageNames.map((selector) => [
+    selector, `@luscious-garden/aster-${selector}`,
+  ])));
+  const externalEntrypoint = resolve(
+    consumerRoot, "node_modules", "@luscious-garden", "aster-cli", "dist", "shell", "aster.js",
+  );
+
+  const before = runExecutable(["version", "--all", "--json"], projectRoot);
+  assertSuccessfulProcess(before, "report only directly installed project packages");
+  assert.deepEqual(JSON.parse(before.stdout).payload.packages.map(({ name }) => name), [
+    names.core, names.icons, names.svg,
+  ]);
+  const externalLocation = runExecutable(["version", "--location", "--json"], projectRoot);
+  assertSuccessfulProcess(externalLocation, "identify the external packed CLI");
+  assert.equal(JSON.parse(externalLocation.stdout).payload.location.projectCli, "absent");
+  assert.equal(
+    await realpath(JSON.parse(externalLocation.stdout).payload.location.entrypoint),
+    await realpath(externalEntrypoint),
+  );
+  assert.doesNotMatch(runExecutable(["version", "--json"], projectRoot).stdout, /independent-project-/u);
+
+  const fallback = runPnpm(
+    ["--dir", projectRoot, "exec", "aster", "version", "--location", "--json"],
+    { env: { ...process.env, PATH: `${resolve(consumerRoot, "node_modules", ".bin")}${delimiter}${process.env.PATH ?? ""}` } },
+  );
+  assertSuccessfulProcess(fallback, "execute a non-local Aster binary from a project without CLI");
+  assert.equal(JSON.parse(fallback.stdout).payload.location.projectCli, "absent");
+  assert.equal(
+    await realpath(JSON.parse(fallback.stdout).payload.location.entrypoint),
+    await realpath(externalEntrypoint),
+  );
+
+  const iconsCore = await installNestedCore(projectRoot, "icons", "0.3.3");
+  const svgCore = await installNestedCore(projectRoot, "svg", "0.4.4");
+  await withInstalledManifests({
+    core: { version: "0.2.4" },
+    icons: {
+      version: "0.3.1",
+      dependencies: { [names.core]: "*" },
+      devDependencies: { [names.svg]: "*" },
+      peerDependencies: { [names.cli]: "*" },
+    },
+    svg: {
+      version: "0.4.5",
+      dependencies: { [names.core]: "*" },
+      optionalDependencies: { [names.icons]: "*" },
+    },
+  }, async () => {
+    for (const [selector, expectedPath] of [["icons", iconsCore], ["svg", svgCore]]) {
+      const base = pathToFileURL(await installedManifestPath(selector, projectRoot)).href;
+      assert.equal(await realpath(findPackageJSON(names.core, base)), await realpath(expectedPath));
+    }
+
+    const all = runExecutable(["version", "--all", "--json"], projectRoot);
+    assertSuccessfulProcess(all, "report divergent direct project versions");
+    assert.deepEqual(JSON.parse(all.stdout).payload.packages, [
+      { name: names.core, version: "0.2.4" },
+      { name: names.icons, version: "0.3.1" },
+      { name: names.svg, version: "0.4.5" },
+    ]);
+
+    const groups = runExecutable(["version", "--all", "--deps", "--json"], projectRoot);
+    assertSuccessfulProcess(groups, "report each independent project dependency group");
+    assert.deepEqual(JSON.parse(groups.stdout).payload, {
+      kind: "package-dependencies",
+      source: "project",
+      groups: [
+        { root: { name: names.core, version: "0.2.4" }, dependencies: [] },
+        { root: { name: names.icons, version: "0.3.1" },
+          dependencies: [{ name: names.core, version: "0.3.3" }] },
+        { root: { name: names.svg, version: "0.4.5" },
+          dependencies: [{ name: names.core, version: "0.4.4" }] },
+      ],
+    });
+    const human = runExecutable(["version", "--all", "--deps"], projectRoot);
+    assertSuccessfulProcess(human, "present independent project dependency groups");
+    assert.equal(human.stdout, [
+      "Project Aster package dependencies:",
+      `${names.core} 0.2.4`,
+      "  (no Aster dependencies)",
+      "",
+      `${names.icons} 0.3.1`,
+      `  ${names.core} 0.3.3`,
+      "",
+      `${names.svg} 0.4.5`,
+      `  ${names.core} 0.4.4`,
+      "",
+    ].join("\n"));
+
+    const cli = runExecutable(["version", "cli", "--deps", "--json"], projectRoot);
+    const alias = runExecutable(["version", "--deps", "--json"], projectRoot);
+    assertSuccessfulProcess(cli, "read the external CLI dependency tree");
+    assert.equal(alias.status, cli.status);
+    assert.equal(alias.stdout, cli.stdout);
+    assert.equal(alias.stderr, cli.stderr);
+    assert.deepEqual(JSON.parse(cli.stdout).payload.groups[0].dependencies, [
+      { name: names.core, version: packageVersions.core },
+      { name: names.icons, version: packageVersions.icons },
+      { name: names.svg, version: packageVersions.svg },
+    ]);
+    const humanAlias = runExecutable(["version", "--deps"], projectRoot);
+    const humanNamed = runExecutable(["version", "cli", "--deps"], projectRoot);
+    assert.equal(humanAlias.status, humanNamed.status);
+    assert.equal(humanAlias.stdout, humanNamed.stdout);
+    assert.equal(humanAlias.stderr, humanNamed.stderr);
+    const locatedAlias = runExecutable(["version", "--deps", "--location", "--json"], projectRoot);
+    const locatedNamed = runExecutable(["version", "cli", "--location", "--deps", "--json"], projectRoot);
+    assert.equal(locatedAlias.status, locatedNamed.status);
+    assert.equal(locatedAlias.stdout, locatedNamed.stdout);
+    assert.equal(locatedAlias.stderr, locatedNamed.stderr);
+    for (const output of [all.stdout, groups.stdout, human.stdout, cli.stdout, humanAlias.stdout]) {
+      assert.doesNotMatch(output, /aster-cli-consumer-/u);
+    }
+
+    const original = await readFile(svgCore, "utf8");
+    try {
+      await writeFile(svgCore, "{broken", "utf8");
+      assertMetadataFailure(["version", "--all", "--deps"], projectRoot);
+      assertSuccessfulProcess(
+        runExecutable(["version", "--all"], projectRoot),
+        "read unaffected project root versions",
+      );
+    } finally {
+      await writeFile(svgCore, original, "utf8");
+    }
+  }, projectRoot);
+});
+
+test("selects a directly installed CLI for aggregate roots without substituting the executed CLI", async (context) => {
+  const projectRoot = await createPackedProject(context);
+  const projectManifestPath = resolve(projectRoot, "package.json");
+  const projectManifest = JSON.parse(await readFile(projectManifestPath, "utf8"));
+  const cliName = "@luscious-garden/aster-cli";
+  const coreName = "@luscious-garden/aster-core";
+  const cliSpecification = `file:../tarballs/${packedPackages.cli.filename}`;
+  await writeFile(projectManifestPath, `${JSON.stringify({
+    ...projectManifest,
+    devDependencies: { [cliName]: cliSpecification },
+    pnpm: { overrides: { ...projectManifest.pnpm.overrides, [cliName]: cliSpecification } },
+  })}\n`, "utf8");
+  const installed = runPnpm([
+    "--dir", projectRoot, "install", "--offline", "--ignore-scripts",
+    "--package-import-method=copy", "--frozen-lockfile=false",
+  ]);
+  assertSuccessfulProcess(installed, "install the project's own packed CLI");
+  assert.notEqual(await installedManifestPath("cli", projectRoot), await installedManifestPath("cli"));
+  const nestedCore = await installNestedCore(projectRoot, "cli", "0.5.5");
+
+  await withInstalledManifests({ cli: { version: "0.1.0-rc.1" } }, async () => {
+    const localCli = runInstalledExecutable(projectRoot, ["version", "--location", "--json"]);
+    const externalCli = runExecutable(["version", "--location", "--json"], projectRoot);
+    assertSuccessfulProcess(localCli, "execute the direct project CLI");
+    assertSuccessfulProcess(externalCli, "execute a different packed CLI from the project");
+    assert.equal(JSON.parse(localCli.stdout).payload.productVersion, "0.1.0-rc.1");
+    assert.equal(JSON.parse(localCli.stdout).payload.location.projectCli, "same");
+    assert.equal(JSON.parse(externalCli.stdout).payload.productVersion, packageVersion);
+    assert.equal(JSON.parse(externalCli.stdout).payload.location.projectCli, "different");
+
+    const linked = runPnpm([
+      "--dir", projectRoot, "exec", "aster", "version", "--location", "--json",
+    ]);
+    assertSuccessfulProcess(linked, "prefer the direct project CLI when installed");
+    assert.equal(JSON.parse(linked.stdout).payload.location.projectCli, "same");
+    assert.equal(
+      await realpath(JSON.parse(linked.stdout).payload.location.entrypoint),
+      await realpath(resolve(projectRoot, "node_modules", cliName, "dist", "shell", "aster.js")),
+    );
+
+    const all = runExecutable(["version", "--all", "--json"], projectRoot);
+    assertSuccessfulProcess(all, "include only the direct project CLI in the project package set");
+    assert.deepEqual(JSON.parse(all.stdout).payload.packages.map(({ name }) => name), [
+      coreName, "@luscious-garden/aster-icons", "@luscious-garden/aster-svg", cliName,
+    ]);
+    assert.equal(JSON.parse(all.stdout).payload.packages[3].version, "0.1.0-rc.1");
+
+    const projectGroups = runExecutable(["version", "--all", "--deps", "--json"], projectRoot);
+    const externalGroups = runExecutable(["version", "cli", "--deps", "--json"], projectRoot);
+    assertSuccessfulProcess(projectGroups, "group the directly installed project CLI");
+    assertSuccessfulProcess(externalGroups, "retain the selected external CLI dependency tree");
+    const localGroup = JSON.parse(projectGroups.stdout).payload.groups[3];
+    assert.deepEqual(localGroup.root, { name: cliName, version: "0.1.0-rc.1" });
+    assert.deepEqual(localGroup.dependencies[0], { name: coreName, version: "0.5.5" });
+    assert.deepEqual(JSON.parse(externalGroups.stdout).payload.groups[0].root, {
+      name: cliName, version: packageVersion,
+    });
+    assert.deepEqual(JSON.parse(externalGroups.stdout).payload.groups[0].dependencies[0], {
+      name: coreName, version: packageVersions.core,
+    });
+    assert.equal(
+      await realpath(findPackageJSON(coreName, pathToFileURL(await installedManifestPath("cli", projectRoot)).href)),
+      await realpath(nestedCore),
+    );
+  }, projectRoot);
+});
+
+test("keeps the executed CLI available without a current project", async (context) => {
+  const outside = await mkdtemp(resolve(tmpdir(), "aster-cli-no-project-"));
+  context.after(async () => {
+    assert.match(relative(resolve(tmpdir()), resolve(outside)), /^aster-cli-no-project-[^\\/]+$/u);
+    await rm(outside, { recursive: true, force: true });
+  });
+  const location = runExecutable(["version", "--location", "--json"], outside);
+  const dependencies = runExecutable(["version", "--deps", "--json"], outside);
+  assertSuccessfulProcess(location, "report the executed CLI without a project");
+  assertSuccessfulProcess(dependencies, "report CLI dependencies without a project");
+  assert.equal(JSON.parse(location.stdout).payload.location.projectCli, "no-project");
+  assert.equal(JSON.parse(dependencies.stdout).payload.source, "cli");
+  const absentProject = runExecutable(["version", "--all", "--json"], outside);
+  assert.equal(absentProject.status, 1);
+  assert.equal(JSON.parse(absentProject.stdout).diagnostic.code, "ASTER-CLI-011");
+  assert.doesNotMatch(absentProject.stdout, /aster-cli-no-project-/u);
 });
 
 test("fails atomically for damaged installed metadata after startup", async () => {

@@ -1,8 +1,9 @@
 import { asterCommandPayloadKinds } from "../../command/constants/aster-command-payload-kinds.constant.js";
 import { asterCommandNames } from "../../command/constants/aster-command-names.constant.js";
 import type { AsterCommandContext } from "../../command/contracts/index.js";
+import type { AsterCommandInvocationType, AsterCommandResultType } from "../../command/types/index.js";
 import type { AsterVersionScopeType } from "../../command/types/aster-version-scope.type.js";
-import type { AsterCommandInvocationType } from "../../command/types/index.js";
+import { asterPackageVersionSources } from "../../command/constants/aster-package-version-sources.constant.js";
 import { AsterCatalogue, AsterCommands } from "../../index.js";
 import { ReviewDocumentSerialiser } from "../../review/runtime/review-document.serialiser.js";
 import { reviewOutputSchema } from "../output/constants/review-output-schema.constant.js";
@@ -16,6 +17,8 @@ import { ReviewOutputPublisher } from "../output/runtime/review-output.publisher
 import { commandLineTokens } from "../parsing/constants/command-line-tokens.constant.js";
 import { CommandLineError } from "../parsing/runtime/command-line.error.js";
 import { CommandLineParser } from "../parsing/runtime/command-line.parser.js";
+import { CliPackageVersionError } from "../version/runtime/cli-package-version.error.js";
+import { ProjectPackageVersionError } from "../version/runtime/project-package-version.error.js";
 import { CommandOutputPresenter } from "../presentation/runtime/command-output.presenter.js";
 import type { TShellExecution } from "../presentation/types/internal/shell-execution.type.js";
 import { ShellDiagnosticFactory } from "./shell-diagnostic.factory.js";
@@ -121,8 +124,10 @@ export class NodeShell {
       const parsed = this.#parser.parse(argv);
       const invocation = parsed.invocation;
       const context = invocation.command === asterCommandNames.version
-        && invocation.scope !== undefined
-        ? await this.#versionContext(invocation.scope)
+        && (invocation.dependencies === true
+          || invocation.location === true
+          || (invocation.scope !== undefined && invocation.scope !== "cli"))
+        ? await this.#versionContext(invocation)
         : this.#context;
       const result = await AsterCommands.execute(
         invocation as AsterCommandInvocationType,
@@ -160,27 +165,108 @@ export class NodeShell {
 
       return this.#output.present(result, parsed.json);
     } catch (error) {
-      const result = error instanceof CommandLineError
-        ? this.#diagnostics.usage(error)
-        : error instanceof OutputError && outputCommand !== undefined
-          ? this.#diagnostics.output(error, outputCommand)
-          : this.#diagnostics.unexpected();
+      const result = this.#diagnose(error, outputCommand);
       return this.#output.present(result, json);
     }
   }
 
   /**
-   * @description Acquires only requested manifest evidence without loading package entrypoints.
-   * @param scope - Named public package or the complete installed family.
-   * @returns Explicit immutable command context containing installed version evidence.
+   * @description Selects the stable shell diagnostic for a caught host-boundary failure.
+   * @param error - Unknown failure from parsing, output publication, or version acquisition.
+   * @param outputCommand - Output command identified before a publication failure.
+   * @returns Safe structured failure without native exception details.
+   */
+  #diagnose(
+    error: unknown,
+    outputCommand: typeof asterCommandNames.export | typeof asterCommandNames.review | undefined,
+  ): AsterCommandResultType {
+    if (error instanceof CommandLineError) {
+      return this.#diagnostics.usage(error);
+    }
+
+    if (error instanceof OutputError && outputCommand !== undefined) {
+      return this.#diagnostics.output(error, outputCommand);
+    }
+
+    if (error instanceof ProjectPackageVersionError || error instanceof CliPackageVersionError) {
+      return this.#diagnostics.packageVersion(error);
+    }
+
+    return this.#diagnostics.unexpected();
+  }
+
+  /**
+   * @description Acquires the requested project or executed-CLI evidence lazily.
+   * @param invocation - Accepted version request requiring installed manifest evidence.
+   * @returns Immutable command context with only the requested host evidence.
    */
   async #versionContext(
-    scope: AsterVersionScopeType,
+    invocation: Extract<AsterCommandInvocationType, { command: typeof asterCommandNames.version }>,
   ): Promise<AsterCommandContext> {
-    const { InstalledPackageVersionReader } = await import(
-      "../version/runtime/installed-package-version.reader.js"
+    const cliLocation = invocation.location === true
+      ? await this.#readCliLocation()
+      : undefined;
+
+    if (invocation.dependencies === true) {
+      const cli = invocation.scope === undefined || invocation.scope === "cli";
+      const groups = cli
+        ? await this.#readCliDependencies()
+        : await this.#readProjectDependencies(invocation.scope);
+      return Object.freeze({
+        ...this.#context,
+        packageDependencies: Object.freeze({
+          source: cli ? asterPackageVersionSources.cli : asterPackageVersionSources.project,
+          groups,
+        }),
+        ...(cliLocation === undefined ? {} : { cliLocation }),
+      });
+    }
+
+    if (invocation.scope === undefined || invocation.scope === "cli") {
+      return Object.freeze({
+        ...this.#context,
+        ...(cliLocation === undefined ? {} : { cliLocation }),
+      });
+    }
+
+    const { ProjectPackageVersionReader } = await import(
+      "../version/runtime/project-package-version.reader.js"
     );
-    const packageVersions = await new InstalledPackageVersionReader(this.#entrypoint).read(scope);
+    const packages = await new ProjectPackageVersionReader(this.#currentDirectory).read(invocation.scope);
+    const packageVersions = Object.freeze({ source: asterPackageVersionSources.project, packages });
     return Object.freeze({ ...this.#context, packageVersions });
+  }
+
+  /**
+   * @description Acquires the executed CLI root and its direct Aster dependencies lazily.
+   * @returns One root group without treating the CLI as its own dependency.
+   */
+  async #readCliDependencies() {
+    const { CliPackageVersionReader } = await import(
+      "../version/runtime/cli-package-version.reader.js"
+    );
+    const group = await new CliPackageVersionReader(this.#entrypoint).readDependencies();
+    return Object.freeze([group]);
+  }
+
+  /**
+   * @description Acquires each selected project root's direct dependencies lazily.
+   * @param scope - Named library or all directly installed project packages.
+   * @returns Independent root groups in canonical order.
+   */
+  async #readProjectDependencies(scope: AsterVersionScopeType) {
+    const { ProjectPackageVersionReader } = await import(
+      "../version/runtime/project-package-version.reader.js"
+    );
+    return new ProjectPackageVersionReader(this.#currentDirectory).readDependencies(scope);
+  }
+
+  /**
+   * @description Reads the loaded CLI module path only for an explicit location request.
+   * @returns Executed entrypoint and direct project CLI comparison.
+   */
+  async #readCliLocation() {
+    const { CliLocationReader } = await import("../version/runtime/cli-location.reader.js");
+    return new CliLocationReader(this.#entrypoint, this.#currentDirectory).read();
   }
 }

@@ -11,9 +11,16 @@ import type {
 import { CanonicalIdentityValidator } from "../../shared/runtime/canonical-identity.validator.js";
 import { StructuredDataInspector } from "../../shared/runtime/structured-data.inspector.js";
 import { asterInstalledPackageNames } from "../constants/aster-installed-package-names.constant.js";
+import { asterCliLocationStatuses } from "../constants/aster-cli-location-statuses.constant.js";
+import { asterPackageVersionSources } from "../constants/aster-package-version-sources.constant.js";
 import { commandDiagnosticSchema } from "../constants/command-diagnostic-schema.constant.js";
 import type { AsterCommandContext } from "../contracts/index.js";
 import type { AsterInstalledPackageVersion } from "../contracts/aster-installed-package-version.contract.js";
+import type { AsterPackageVersionEvidence } from "../contracts/aster-package-version-evidence.contract.js";
+import type { AsterPackageDependencyEvidence } from "../contracts/aster-package-dependency-evidence.contract.js";
+import type { AsterPackageDependencyGroup } from "../contracts/aster-package-dependency-group.contract.js";
+import type { AsterCliLocationEvidence } from "../contracts/aster-cli-location-evidence.contract.js";
+import type { AsterCliLocationStatusType } from "../types/aster-cli-location-status.type.js";
 import type { TAcceptanceResult } from "../types/internal/acceptance-result.type.js";
 import { CommandDiagnosticFactory } from "./command-diagnostic.factory.js";
 
@@ -47,10 +54,12 @@ export class CommandContextNormaliser {
       "productName",
       "productVersion",
       "packageVersions",
+      "packageDependencies",
+      "cliLocation",
     ], ["catalogues", "productName", "productVersion"]);
 
     if (record === undefined) {
-      return this.#invalid("expected only catalogues, productName, productVersion, and optional packageVersions");
+      return this.#invalid("expected product metadata, catalogues, and optional version evidence only");
     }
 
     const providerValues = this.#data.array(record.catalogues);
@@ -72,7 +81,23 @@ export class CommandContextNormaliser {
       : this.#acceptPackageVersions(record.packageVersions);
 
     if (Object.hasOwn(record, "packageVersions") && packageVersions === undefined) {
-      return this.#invalid("expected context.packageVersions to contain unique public package names and versions");
+      return this.#invalid("expected context.packageVersions to contain a source and unique public package versions");
+    }
+
+    const packageDependencies = record.packageDependencies === undefined
+      ? undefined
+      : this.#acceptPackageDependencies(record.packageDependencies);
+
+    if (Object.hasOwn(record, "packageDependencies") && packageDependencies === undefined) {
+      return this.#invalid("expected context.packageDependencies to contain valid root groups");
+    }
+
+    const cliLocation = record.cliLocation === undefined
+      ? undefined
+      : this.#acceptCliLocation(record.cliLocation);
+
+    if (Object.hasOwn(record, "cliLocation") && cliLocation === undefined) {
+      return this.#invalid("expected context.cliLocation to identify the executed CLI");
     }
 
     const catalogues: CatalogueProvider[] = [];
@@ -110,6 +135,8 @@ export class CommandContextNormaliser {
         productName: record.productName,
         productVersion: record.productVersion,
         ...(packageVersions === undefined ? {} : { packageVersions }),
+        ...(packageDependencies === undefined ? {} : { packageDependencies }),
+        ...(cliLocation === undefined ? {} : { cliLocation }),
       }),
     });
   }
@@ -140,16 +167,19 @@ export class CommandContextNormaliser {
   }
 
   /**
-   * @description Copies valid package evidence without trusting host-owned containers.
-   * @param value - Candidate sequence of installed package manifests.
-   * @returns Frozen canonical records or no value after rejection.
+   * @description Copies source-tagged package evidence without trusting host-owned containers.
+   * @param value - Candidate provenance and installed package manifests.
+   * @returns Frozen canonical evidence or no value after rejection.
    */
-  #acceptPackageVersions(value: unknown): readonly AsterInstalledPackageVersion[] | undefined {
-    const entries = this.#data.array(value);
+  #acceptPackageVersions(value: unknown): AsterPackageVersionEvidence | undefined {
+    const record = this.#data.record(value, ["source", "packages"], ["source", "packages"]);
+    const source = record?.source;
+    const entries = this.#data.array(record?.packages);
 
     if (
-      entries === undefined
-      || entries.length === 0
+      (source !== asterPackageVersionSources.project && source !== asterPackageVersionSources.cli)
+      || (source === asterPackageVersionSources.cli && entries?.length === 0)
+      || entries === undefined
       || entries.length > Object.keys(asterInstalledPackageNames).length
     ) {
       return undefined;
@@ -159,24 +189,126 @@ export class CommandContextNormaliser {
     const names = new Set<string>();
 
     for (const entry of entries) {
-      const record = this.#data.record(entry, ["name", "version"], ["name", "version"]);
+      const acceptedEntry = this.#acceptInstalledVersion(entry);
+
+      if (acceptedEntry === undefined || names.has(acceptedEntry.name)) {
+        return undefined;
+      }
+
+      names.add(acceptedEntry.name);
+      accepted.push(acceptedEntry);
+    }
+
+    return Object.freeze({ source, packages: Object.freeze(accepted) });
+  }
+
+  /**
+   * @description Accepts one installed public package record without trusting its container.
+   * @param value - Candidate installed package record.
+   * @returns Frozen canonical record or no value after rejection.
+   */
+  #acceptInstalledVersion(value: unknown): AsterInstalledPackageVersion | undefined {
+    const record = this.#data.record(value, ["name", "version"], ["name", "version"]);
+
+    if (
+      record === undefined
+      || typeof record.name !== "string"
+      || !Object.values(asterInstalledPackageNames).some((name) => name === record.name)
+      || !this.#isNonEmptyString(record.version)
+    ) {
+      return undefined;
+    }
+
+    return Object.freeze({ name: record.name, version: record.version });
+  }
+
+  /**
+   * @description Accepts independent installed root and dependency groups.
+   * @param value - Candidate source-tagged group evidence.
+   * @returns Frozen group evidence or no value after rejection.
+   */
+  #acceptPackageDependencies(value: unknown): AsterPackageDependencyEvidence | undefined {
+    const record = this.#data.record(value, ["source", "groups"], ["source", "groups"]);
+    const source = record?.source;
+    const groups = this.#data.array(record?.groups);
+
+    if (
+      (source !== asterPackageVersionSources.project && source !== asterPackageVersionSources.cli)
+      || groups === undefined
+      || groups.length > Object.keys(asterInstalledPackageNames).length
+      || (source === asterPackageVersionSources.cli && groups.length !== 1)
+    ) {
+      return undefined;
+    }
+
+    const accepted: AsterPackageDependencyGroup[] = [];
+    const roots = new Set<string>();
+
+    for (const group of groups) {
+      const candidate = this.#data.record(group, ["root", "dependencies"], ["root", "dependencies"]);
+      const root = this.#acceptInstalledVersion(candidate?.root);
+      const dependencies = this.#data.array(candidate?.dependencies);
 
       if (
-        record === undefined
-        || typeof record.name !== "string"
-        || !Object.values(asterInstalledPackageNames).some((name) => name === record.name)
-        || !this.#isNonEmptyString(record.version)
-        || names.has(record.name)
+        root === undefined
+        || dependencies === undefined
+        || dependencies.length > Object.keys(asterInstalledPackageNames).length - 1
+        || roots.has(root.name)
       ) {
         return undefined;
       }
 
-      const name = record.name;
-      names.add(name);
-      accepted.push(Object.freeze({ name, version: record.version }));
+      const names = new Set<string>([root.name]);
+      const acceptedDependencies: AsterInstalledPackageVersion[] = [];
+
+      for (const dependency of dependencies) {
+        const entry = this.#acceptInstalledVersion(dependency);
+
+        if (entry === undefined || names.has(entry.name)) {
+          return undefined;
+        }
+
+        names.add(entry.name);
+        acceptedDependencies.push(entry);
+      }
+
+      roots.add(root.name);
+      accepted.push(Object.freeze({ root, dependencies: Object.freeze(acceptedDependencies) }));
     }
 
-    return Object.freeze(accepted);
+    return Object.freeze({ source, groups: Object.freeze(accepted) });
+  }
+
+  /**
+   * @description Accepts opt-in executable path and project comparison without exposing host APIs.
+   * @param value - Candidate executed-CLI location evidence.
+   * @returns Frozen location evidence or no value after rejection.
+   */
+  #acceptCliLocation(value: unknown): AsterCliLocationEvidence | undefined {
+    const record = this.#data.record(value, ["entrypoint", "projectCli"], ["entrypoint", "projectCli"]);
+    const projectCli = record?.projectCli;
+
+    if (
+      record === undefined
+      || !this.#isNonEmptyString(record.entrypoint)
+      || !this.#isCliLocationStatus(projectCli)
+    ) {
+      return undefined;
+    }
+
+    return Object.freeze({
+      entrypoint: record.entrypoint,
+      projectCli,
+    });
+  }
+
+  /**
+   * @description Narrows one value to the closed project-CLI comparison vocabulary.
+   * @param value - Candidate comparison status.
+   * @returns Whether the status belongs to the canonical runtime vocabulary.
+   */
+  #isCliLocationStatus(value: unknown): value is AsterCliLocationStatusType {
+    return Object.values(asterCliLocationStatuses).some((status) => status === value);
   }
 
   /**

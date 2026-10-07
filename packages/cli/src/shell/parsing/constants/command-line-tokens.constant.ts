@@ -25,6 +25,10 @@ export const commandLineTokens = Object.freeze({
   options: Object.freeze({
     /** @description Option selecting the complete public installed package family. */
     all: `--${asterVersionScopes.all}`,
+    /** @description Option selecting a root's direct Aster runtime dependencies. */
+    deps: "--deps",
+    /** @description Option revealing the executed CLI module location on CLI queries. */
+    location: "--location",
     /** @description Option selecting one catalogue provider. */
     catalogue: "--catalogue",
     /** @description Option filtering by collection membership. */

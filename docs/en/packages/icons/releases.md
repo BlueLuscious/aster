@@ -2,7 +2,15 @@
 
 ## Unreleased
 
-Prepared in the `0.1.0-rc.2` source candidate; publication and registry evidence are pending.
+No Icons package change has been accepted since `0.1.0-rc.2`.
+
+## 0.1.0-rc.2
+
+Status: **Published on 6 October 2026** under the npm `next` tag.
+
+Registry: [`@luscious-garden/aster-icons@0.1.0-rc.2`](https://www.npmjs.com/package/@luscious-garden/aster-icons/v/0.1.0-rc.2)
+
+Approved archive SHA-256: `d0d8d01eec13c97055bfdf9842ac8d331d5648f8bd55cf33ac1c5fe83a04da3d`.
 
 **Breaking change:** `AmellusCollection.icons` becomes a concrete readonly alias dictionary and
 `AmellusCollection.members` becomes its ordered member list. Use `.icons.camera` or
@@ -11,9 +19,9 @@ Prepared in the `0.1.0-rc.2` source candidate; publication and registry evidence
 remain unchanged. Direct icon imports and exact loader routes retain the same canonical objects.
 
 This representation requires the corresponding typed-collection Core implementation and is not
-available in the published `0.1.0-rc.1` tarball. The candidate version and packed dependency
-ranges must be reviewed together before publication. Current usage and import costs are documented
-by [Canonical Collections](collections/index.md), with source grammar owned by
+available in the earlier `0.1.0-rc.1` tarball. The published package depends on Core
+`^0.1.0-rc.2`. Current usage and import costs are documented by
+[Canonical Collections](collections/index.md), with source grammar owned by
 [Catalogue Source Tooling](../../tooling/catalogue/index.md).
 
 ## 0.1.0-rc.1
