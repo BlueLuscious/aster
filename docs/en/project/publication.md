@@ -1,6 +1,6 @@
 # Manual Publication
 
-Status: **`0.1.0-rc.1` and `0.1.0-rc.2` published; CLI-only `0.1.0-rc.3` published under `next`; stable `0.1.0` pending**.
+Status: **Release candidates published; stable `0.1.0` prepared in source but not published**.
 
 This records the human-controlled procedure and evidence for the published candidates of Core,
 Icons, SVG and CLI. The [versioning policy](versioning.md) owns compatibility and dependency
@@ -294,10 +294,10 @@ links in the package release notes before closing each future release.
 ## Promote a stable release
 
 Do not present the release candidate as stable merely by moving an npm dist-tag. A stable
-`0.1.0` release is a different Semantic Versioning identity and requires a reviewed source
-change that removes the active candidate suffix from the five workspace package versions, updates public
-dependency evidence to `^0.1.0`, and updates release notes and installation guidance. Repeat the
-complete verification, clean tarball generation, hashes, registry checks and human go/no-go for
-that exact stable commit. Publish the four new stable archives in dependency order under
-`latest` only after the release candidate has been accepted. Import participates in the stable
-source baseline but remains private and unpublished.
+`0.1.0` release is a different Semantic Versioning identity. The source manifests now use stable
+versions and the release notes and installation guidance prepare that identity; none of this
+publishes a package or moves a dist-tag. Verify that every packed public dependency resolves to
+`^0.1.0`. Repeat the complete verification, clean tarball generation, hashes, registry checks
+and human go/no-go for the exact approved stable commit. Publish the four new stable archives in
+dependency order under `latest` only after the release candidate has been accepted. Import
+participates in the stable source baseline but remains private and unpublished.

@@ -1,6 +1,6 @@
 {
   "name": "@luscious-garden/aster-svg",
-  "version": "0.1.0-rc.2",
+  "version": "0.1.0",
   "description": "Framework-independent SVG rendering for portable Aster icon definitions.",
   "type": "module",
   "author": "BlueLuscious",

@@ -11,8 +11,8 @@ The package contains no renderer, framework, DOM, filesystem, Import, or global 
 dependency.
 The example below assumes `@luscious-garden/aster-svg` is installed independently by the consumer.
 
-Install both exact candidate versions for this example with
-`pnpm add @luscious-garden/aster-icons@0.1.0-rc.2 @luscious-garden/aster-svg@0.1.0-rc.2`.
+Install both packages for this example with
+`pnpm add @luscious-garden/aster-icons@0.1.0 @luscious-garden/aster-svg@0.1.0`.
 To use a definition without SVG rendering, install only `@luscious-garden/aster-icons`; it brings
 its compatible Core dependency.
 
@@ -27,8 +27,7 @@ import { Svg } from "@luscious-garden/aster-svg";
 const markup = Svg.render(ArrowLeft);
 ```
 
-The `0.1.0-rc.2` candidate exposes collection icons by a typed local alias and provides an
-ordered list for iteration:
+Collections expose icons by typed local alias and provide an ordered list for iteration:
 
 ```ts
 import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";
@@ -41,14 +40,13 @@ Both views contain the same canonical icon objects. Importing Amellus evaluates 
 members even when only `.icons.camera` is read; import `@luscious-garden/aster-icons/camera` directly
 when only that icon is needed.
 
-The earlier `0.1.0-rc.1` candidate exposes the member array through `.icons`; the
-[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases.md)
-describe the migration.
+The [release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases.md)
+describe migration from earlier candidates.
 
 The package currently provides the accepted Amellus foundational collection. See the
 [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/index.md),
 [authoring workflow](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/workflow.md),
-[initial release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases.md) and
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases.md) and
 [Amellus collection authority](https://github.com/BlueLuscious/aster/blob/master/docs/en/collections/amellus/index.md).
 
 ## Licence
