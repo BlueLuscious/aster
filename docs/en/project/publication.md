@@ -13,24 +13,24 @@ its own reviewed package versions, archive paths, dependency ranges, hashes and 
 
 ## Distribution channels
 
-npm remains the primary package distribution registry. Subsequent npm releases are accompanied
-by a manually approved GitHub Release that records the exact published package versions, release
-notes and reviewed source commit. This procedure does not establish that a companion GitHub
-Release already exists for the historical npm publication recorded below.
+npm remains the primary package distribution registry. Release candidates use npm `next`
+without requiring a Git tag or GitHub pre-release. GitHub Releases begin with the first stable
+`0.1.0` publication, after its npm packages pass registry-consumer verification. That release
+requires separate approval and records the exact published package versions, release notes and
+reviewed source commit.
 
 A GitHub Release is based on a Git tag targeting the approved `master` commit; that tag is
-independent from npm dist-tags such as `next` and `latest`. Mark a release containing candidate
-packages as a pre-release. A coordinated release may list several independently versioned
-packages without implying that every package shares one version.
+independent from npm dist-tags such as `next` and `latest`. A coordinated release may list
+several independently versioned packages without implying that every package shares one version.
 
 Attach the same approved `.tgz` archives that were published to npm, together with their SHA-256
 checksums. Do not rebuild or repack them for GitHub. GitHub's automatically generated source ZIP
 and tar archives are not substitutes for the compiled npm package archives. See
 [GitHub's release documentation](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases).
 
-Confirm npm publication and registry-consumer verification for every package listed before
-publishing its companion GitHub Release. Creating the tag, publishing the release and uploading
-assets remain separately approved human operations; no workflow performs them automatically.
+Confirm stable npm publication and registry-consumer verification for every package listed before
+publishing its GitHub Release. Creating the tag, publishing the release and uploading assets
+remain separately approved human operations; no workflow performs them automatically.
 Record the release URL in the affected package release notes and verify that each downloaded
 package asset matches its approved hash. Keep the release as a draft if publication is incomplete.
 
@@ -82,8 +82,8 @@ remains optional if additional certainty about the software/artwork boundary is 
 The maintainer published the reviewed `0.1.0-rc.2` archives from `master` commit
 `a0815e2f53fc99a98462ac3a88d05e36782224c5` on 6 October 2026. Anonymous registry
 installation and CLI, Icons and SVG checks passed. At publication, `next` pointed to these
-versions; `latest` still points to `rc.1`. No companion GitHub pre-release was created before
-the later CLI version-source discrepancy was found.
+versions; `latest` still points to `rc.1`. No GitHub pre-release was created. A later CLI
+version-source discrepancy required a replacement candidate.
 
 | Package | Registry | SHA-256 |
 | --- | --- | --- |
@@ -108,7 +108,8 @@ The tarball downloaded from npm has the same SHA-256 as the approved archive. An
 consumer installed CLI `rc.3` with Core, Icons and SVG `rc.2` from npm and passed version,
 dependency, location, catalogue, SVG export and review checks. CLI `next` selects `rc.3`;
 Core, Icons and SVG `next` still select `rc.2`. Each package's `latest` remains on `rc.1`.
-The Git tag and companion GitHub pre-release remain uncreated and require separate approval.
+No candidate Git tag or GitHub pre-release was created; the first GitHub Release is reserved for
+the stable `0.1.0` set after its npm publication is verified.
 
 ## Decision boundary
 
