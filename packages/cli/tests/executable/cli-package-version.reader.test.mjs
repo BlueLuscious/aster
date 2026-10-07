@@ -4,8 +4,8 @@ import { tmpdir } from "node:os";
 import { dirname, join, relative, resolve } from "node:path";
 import test from "node:test";
 import { pathToFileURL } from "node:url";
-import { installedAsterPackages } from "../../dist/shell/version/constants/installed-aster-packages.constant.js";
-import { InstalledPackageVersionReader } from "../../dist/shell/version/runtime/installed-package-version.reader.js";
+import { asterPublicPackages } from "../../dist/shell/version/constants/aster-public-packages.constant.js";
+import { CliPackageVersionReader } from "../../dist/shell/version/runtime/cli-package-version.reader.js";
 import { NodeShell } from "../../dist/shell/runtime/node-shell.js";
 
 const versions = Object.freeze({
@@ -44,7 +44,7 @@ async function createFixture() {
   );
 
   try {
-    for (const { selector, name } of installedAsterPackages) {
+    for (const { selector, name } of asterPublicPackages) {
       const path = manifestPath(root, selector);
       await mkdir(dirname(path), { recursive: true });
       await writeFile(path, JSON.stringify({
@@ -67,7 +67,7 @@ async function createFixture() {
 test("resolves four independently versioned manifests relative to the CLI", async (context) => {
   const fixture = await createFixture();
   context.after(() => removeFixture(fixture.root));
-  const reader = new InstalledPackageVersionReader(fixture.base);
+  const reader = new CliPackageVersionReader(fixture.base);
 
   assert.notEqual(fixture.root, process.cwd());
 
@@ -86,7 +86,7 @@ test("resolves four independently versioned manifests relative to the CLI", asyn
 test("reads only the named package even when unrelated manifests are malformed", async (context) => {
   const fixture = await createFixture();
   context.after(() => removeFixture(fixture.root));
-  const reader = new InstalledPackageVersionReader(fixture.base);
+  const reader = new CliPackageVersionReader(fixture.base);
 
   await writeFile(manifestPath(fixture.root, "icons"), "{broken", "utf8");
   await writeFile(manifestPath(fixture.root, "svg"), "null", "utf8");
@@ -103,7 +103,7 @@ test("reads only the named package even when unrelated manifests are malformed",
 test("reads package metadata without loading a root export or definition module", async (context) => {
   const fixture = await createFixture();
   context.after(() => removeFixture(fixture.root));
-  const reader = new InstalledPackageVersionReader(fixture.base);
+  const reader = new CliPackageVersionReader(fixture.base);
 
   assert.deepEqual(await reader.read("icons"), [
     { name: "@luscious-garden/aster-icons", version: versions.icons },
@@ -113,7 +113,7 @@ test("reads package metadata without loading a root export or definition module"
 test("rejects absent and invalid selected manifests without partial evidence", async (context) => {
   const fixture = await createFixture();
   context.after(() => removeFixture(fixture.root));
-  const reader = new InstalledPackageVersionReader(fixture.base);
+  const reader = new CliPackageVersionReader(fixture.base);
   const path = manifestPath(fixture.root, "svg");
 
   await rm(path);
@@ -138,7 +138,7 @@ test("rejects absent and invalid selected manifests without partial evidence", a
 test("rejects a selector outside the closed public package family", async (context) => {
   const fixture = await createFixture();
   context.after(() => removeFixture(fixture.root));
-  const reader = new InstalledPackageVersionReader(fixture.base);
+  const reader = new CliPackageVersionReader(fixture.base);
 
   await assert.rejects(reader.read("import"), TypeError);
 });
@@ -200,7 +200,7 @@ test("plain version does not read broken package metadata", async (context) => {
   context.after(() => removeFixture(fixture.root));
   const shell = new NodeShell("Aster", versions.cli, process.cwd(), fixture.base);
 
-  for (const { selector } of installedAsterPackages) {
+  for (const { selector } of asterPublicPackages) {
     await writeFile(manifestPath(fixture.root, selector), "{broken", "utf8");
   }
 

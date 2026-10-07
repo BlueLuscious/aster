@@ -1,18 +1,23 @@
-import { readFile } from "node:fs/promises";
 import { findPackageJSON } from "node:module";
-import { installedAsterPackages } from "../constants/installed-aster-packages.constant.js";
+import { asterPublicPackages } from "../constants/aster-public-packages.constant.js";
 import { asterVersionScopes } from "../../../command/constants/aster-version-scopes.constant.js";
 import type { AsterInstalledPackageVersion } from "../../../command/contracts/aster-installed-package-version.contract.js";
 import type { AsterVersionScopeType } from "../../../command/types/aster-version-scope.type.js";
+import { PackageManifestReader } from "./package-manifest.reader.js";
 
 /**
  * @description Reads public package versions resolved from the installed CLI's module context.
  */
-export class InstalledPackageVersionReader {
+export class CliPackageVersionReader {
   /**
    * @description File URL of the installed CLI entrypoint used as the package-resolution base.
    */
   readonly #base: string;
+
+  /**
+   * @description Shared strict manifest reader for the selected installed package.
+   */
+  readonly #manifests = new PackageManifestReader();
 
   /**
    * @description Binds package resolution to one executable rather than the process directory.
@@ -31,11 +36,11 @@ export class InstalledPackageVersionReader {
     selection: AsterVersionScopeType,
   ): Promise<readonly AsterInstalledPackageVersion[]> {
     const packages = selection === asterVersionScopes.all
-      ? installedAsterPackages
-      : installedAsterPackages.filter(({ selector }) => selector === selection);
+      ? asterPublicPackages
+      : asterPublicPackages.filter(({ selector }) => selector === selection);
 
     if (packages.length === 0) {
-      throw new TypeError("Unknown installed Aster package selector");
+      throw new TypeError("Unknown public Aster package selector");
     }
 
     const versions = await Promise.all(
@@ -57,25 +62,6 @@ export class InstalledPackageVersionReader {
       throw new TypeError("Installed Aster package manifest not found");
     }
 
-    const candidate: unknown = JSON.parse(await readFile(path, "utf8"));
-
-    if (candidate === null || typeof candidate !== "object" || Array.isArray(candidate)) {
-      throw new TypeError("Invalid installed Aster package manifest");
-    }
-
-    const manifest = candidate as Record<string, unknown>;
-
-    if (
-      !Object.hasOwn(manifest, "name")
-      || manifest.name !== expectedName
-      || !Object.hasOwn(manifest, "version")
-      || typeof manifest.version !== "string"
-      || manifest.version.length === 0
-      || manifest.version.trim() !== manifest.version
-    ) {
-      throw new TypeError("Invalid installed Aster package manifest");
-    }
-
-    return Object.freeze({ name: expectedName, version: manifest.version });
+    return this.#manifests.version(path, expectedName);
   }
 }

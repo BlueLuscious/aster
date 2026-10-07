@@ -177,10 +177,10 @@ export class NodeShell {
   async #versionContext(
     scope: AsterVersionScopeType,
   ): Promise<AsterCommandContext> {
-    const { InstalledPackageVersionReader } = await import(
-      "../version/runtime/installed-package-version.reader.js"
+    const { CliPackageVersionReader } = await import(
+      "../version/runtime/cli-package-version.reader.js"
     );
-    const packageVersions = await new InstalledPackageVersionReader(this.#entrypoint).read(scope);
+    const packageVersions = await new CliPackageVersionReader(this.#entrypoint).read(scope);
     return Object.freeze({ ...this.#context, packageVersions });
   }
 }

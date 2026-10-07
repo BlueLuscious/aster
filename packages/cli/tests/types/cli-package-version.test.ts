@@ -1,6 +1,6 @@
-import { InstalledPackageVersionReader } from "../../src/shell/version/runtime/installed-package-version.reader.js";
+import { CliPackageVersionReader } from "../../src/shell/version/runtime/cli-package-version.reader.js";
 
-const reader = new InstalledPackageVersionReader(new URL("file:///aster/dist/shell/aster.js"));
+const reader = new CliPackageVersionReader(new URL("file:///aster/dist/shell/aster.js"));
 
 void reader.read("core");
 void reader.read("icons");
