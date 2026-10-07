@@ -7,10 +7,11 @@ The package exposes the frozen `AsterCommands` composition for deterministic `ex
 `AsterCatalogue` adapts canonical `@luscious-garden/aster-icons` manifests for discovery and loads only an exact
 icon or collection definition when a host executes Export or Review through that provider.
 
-The standalone Node package also exposes the `aster` executable:
+The standalone Node package also exposes the `aster` executable. Install this candidate by
+exact version after publication:
 
 ```sh
-pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.2
+pnpm add -D @luscious-garden/aster-cli@0.1.0-rc.3
 ```
 
 The executable supports Node `>=24.10.0 <25`; installation brings compatible Core, Icons and SVG
@@ -43,8 +44,8 @@ Core, Icons, SVG and `--all` inspect direct project installations; `version` and
 describe the CLI actually running. `--deps` shows each selected package separately from its
 direct installed Aster runtime dependencies; `--location` identifies the executed CLI module.
 None queries the registry. The published `0.1.0-rc.2` CLI instead resolves named packages from
-its own installation and does not include `--deps` or `--location`; this source correction needs
-a new candidate before it can be installed from npm. A project-only CLI normally needs
+its own installation and does not include `--deps` or `--location`; the `0.1.0-rc.3` candidate
+corrects that behaviour. A project-only CLI normally needs
 `pnpm exec aster`, a package script, or an explicit local binary path; bare `aster` needs a
 command resolvable by the shell. See the
 [CLI Shell documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/shell/index.md)
@@ -56,7 +57,7 @@ HTML to `aster-review` by default or to an explicit output root. Existing owned 
 be replaced only through the explicit `--replace` option.
 
 See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/index.md) and
-[initial release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/releases.md) for boundaries,
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/releases.md) for boundaries,
 contracts, and implemented behaviour.
 
 ## Licence

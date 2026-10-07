@@ -1,6 +1,9 @@
 # CLI Release Notes
 
-## Unreleased
+## 0.1.0-rc.3
+
+Status: **Prepared in source; not published.** Publication requires separate archive review and
+maintainer approval.
 
 **Breaking semantic correction:** `version core`, `version icons`, `version svg` and
 `version --all` now inspect packages directly installed in the current project. The published
@@ -15,9 +18,9 @@ installed Aster runtime dependencies. `version --deps` aliases `version cli --de
 Optional `--location` on executed-CLI queries reports the loaded module and its relationship to
 the current project's direct CLI. See [CLI Shell](shell/index.md) for grammar and output.
 
-These changes are in source only. They require a newly approved CLI candidate; the published
-`0.1.0-rc.2` archive is immutable. Core, Icons and SVG have no source changes relative to their
-published `0.1.0-rc.2` packages.
+The CLI candidate depends on Core, Icons and SVG `^0.1.0-rc.2`; those three published packages
+remain at `0.1.0-rc.2` with no source changes. The published CLI `0.1.0-rc.2` archive is
+immutable. This candidate has not yet been packed from an approved `master` commit or published.
 
 ## 0.1.0-rc.2
 

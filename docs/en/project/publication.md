@@ -1,6 +1,6 @@
 # Manual Publication
 
-Status: **`0.1.0-rc.1` and `0.1.0-rc.2` published; replacement candidate pending approval**.
+Status: **`0.1.0-rc.1` and `0.1.0-rc.2` published; CLI-only `0.1.0-rc.3` prepared in source but not published**.
 
 This records the human-controlled procedure and evidence for both published candidate sets of
 Core, Icons, SVG and CLI. The [versioning policy](versioning.md) owns compatibility and dependency
@@ -94,18 +94,39 @@ version-source discrepancy was found.
 
 ## Next candidate boundary
 
-Only the CLI implementation has changed since the second candidate. A CLI-only
-`0.1.0-rc.3` alongside the already published Core, Icons and SVG `0.1.0-rc.2` is the narrowest
-candidate to review; it is not yet approved or published. Before accepting it, inspect the newly
-packed CLI's dependency ranges, verify the exact mixed set from an anonymous clean consumer,
-promote the reviewed correction through `develop` and `master` with green CI, and obtain a new
-go/no-go for its immutable archive. A coordinated four-package candidate remains possible only
-if the mixed set fails its compatibility or release-evidence review.
+Only the CLI implementation has changed since the second candidate. The maintainer selected a
+CLI-only `0.1.0-rc.3` alongside the already published Core, Icons and SVG `0.1.0-rc.2`; this
+selects scope, not a publication go. The corrected CLI source reached `master` at `79f4bfd`.
+Before publication, inspect the newly packed CLI's dependency ranges, verify the exact mixed
+set in an anonymous clean consumer, promote the versioned candidate through `develop` and
+`master` with green CI, and obtain a new go/no-go for its immutable archive. A coordinated
+four-package candidate remains possible only if the mixed set fails its compatibility or
+release-evidence review.
 
 If unchanged published archives are reused, retain their original approved hashes and source
 commit. Do not repack them under the new CLI revision. A companion GitHub pre-release must list
 each package's exact version, source provenance and archive hash; its tag and assets require
 separate approval. Do not label the mixed set as if every package were `rc.3`.
+
+## Third candidate preparation
+
+Only CLI receives a new archive. Until the versioned candidate reaches `master` with green CI,
+any branch-built tarball is a disposable preflight artefact, not a publishable one. From a clean
+checkout of the approved `master` commit, repeat the locked install and full verification gate
+in [Prepare the candidate](#prepare-the-candidate), then pack CLI alone into a new absolute
+artefact directory. Inspect its manifest, README, licence, executable, declarations and export
+map. It must declare version `0.1.0-rc.3` and Core, Icons and SVG runtime ranges
+`^0.1.0-rc.2`, with no `workspace:` edge. Retain the published upstream archives and hashes in
+the [second candidate artefact record](#second-candidate-artefacts).
+
+Before any registry write, install the new CLI tarball alongside exact Core, Icons and SVG
+`0.1.0-rc.2` from npm in an isolated project without credentials or workspace links. Verify
+`version`, named project versions, `--all`, `--deps`, `--location`, JSON output and representative
+icon export and review. Inspect and hash the exact CLI archive, run a dry-run against that same
+archive, and obtain a separate maintainer go/no-go. Do not run the historical four-package
+`rc.2` publish commands below for this candidate. After publication, repeat the mixed-set check
+using CLI `0.1.0-rc.3` from npm rather than the local tarball, and record its actual dist-tags,
+hash and release evidence.
 
 ## Decision boundary
 
