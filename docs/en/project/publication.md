@@ -1,9 +1,9 @@
 # Manual Publication
 
-Status: **`0.1.0-rc.1` and `0.1.0-rc.2` published; CLI-only `0.1.0-rc.3` prepared in source but not published**.
+Status: **`0.1.0-rc.1` and `0.1.0-rc.2` published; CLI-only `0.1.0-rc.3` published under `next`; stable `0.1.0` pending**.
 
-This records the human-controlled procedure and evidence for both published candidate sets of
-Core, Icons, SVG and CLI. The [versioning policy](versioning.md) owns compatibility and dependency
+This records the human-controlled procedure and evidence for the published candidates of Core,
+Icons, SVG and CLI. The [versioning policy](versioning.md) owns compatibility and dependency
 sequencing; each package owns its [release notes](../packages/index.md). Private
 `@luscious-garden/aster-import` participated in repository verification but was not published.
 
@@ -13,24 +13,24 @@ its own reviewed package versions, archive paths, dependency ranges, hashes and 
 
 ## Distribution channels
 
-npm remains the primary package distribution registry. Subsequent npm releases are accompanied
-by a manually approved GitHub Release that records the exact published package versions, release
-notes and reviewed source commit. This procedure does not establish that a companion GitHub
-Release already exists for the historical npm publication recorded below.
+npm remains the primary package distribution registry. Release candidates use npm `next`
+without requiring a Git tag or GitHub pre-release. GitHub Releases begin with the first stable
+`0.1.0` publication, after its npm packages pass registry-consumer verification. That release
+requires separate approval and records the exact published package versions, release notes and
+reviewed source commit.
 
 A GitHub Release is based on a Git tag targeting the approved `master` commit; that tag is
-independent from npm dist-tags such as `next` and `latest`. Mark a release containing candidate
-packages as a pre-release. A coordinated release may list several independently versioned
-packages without implying that every package shares one version.
+independent from npm dist-tags such as `next` and `latest`. A coordinated release may list
+several independently versioned packages without implying that every package shares one version.
 
 Attach the same approved `.tgz` archives that were published to npm, together with their SHA-256
 checksums. Do not rebuild or repack them for GitHub. GitHub's automatically generated source ZIP
 and tar archives are not substitutes for the compiled npm package archives. See
 [GitHub's release documentation](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases).
 
-Confirm npm publication and registry-consumer verification for every package listed before
-publishing its companion GitHub Release. Creating the tag, publishing the release and uploading
-assets remain separately approved human operations; no workflow performs them automatically.
+Confirm stable npm publication and registry-consumer verification for every package listed before
+publishing its GitHub Release. Creating the tag, publishing the release and uploading assets
+remain separately approved human operations; no workflow performs them automatically.
 Record the release URL in the affected package release notes and verify that each downloaded
 package asset matches its approved hash. Keep the release as a draft if publication is incomplete.
 
@@ -81,9 +81,9 @@ remains optional if additional certainty about the software/artwork boundary is 
 
 The maintainer published the reviewed `0.1.0-rc.2` archives from `master` commit
 `a0815e2f53fc99a98462ac3a88d05e36782224c5` on 6 October 2026. Anonymous registry
-installation and CLI, Icons and SVG checks passed. `next` points to these versions; `latest`
-still points to `rc.1`. No companion GitHub pre-release was created before the later CLI
-version-source discrepancy was found.
+installation and CLI, Icons and SVG checks passed. At publication, `next` pointed to these
+versions; `latest` still points to `rc.1`. No GitHub pre-release was created. A later CLI
+version-source discrepancy required a replacement candidate.
 
 | Package | Registry | SHA-256 |
 | --- | --- | --- |
@@ -92,41 +92,24 @@ version-source discrepancy was found.
 | SVG | [`0.1.0-rc.2`](https://www.npmjs.com/package/@luscious-garden/aster-svg/v/0.1.0-rc.2) | `bec106a2ef85bb8d4d17d896aeebb0145aef575b09d7f6c5d2f8919b17d1b7ff` |
 | CLI | [`0.1.0-rc.2`](https://www.npmjs.com/package/@luscious-garden/aster-cli/v/0.1.0-rc.2) | `403e6882abb1b10bbd0d06ac9d355731898d4d4102b9f156a7c1d198968b27e2` |
 
-## Next candidate boundary
+## Third candidate artefact
 
-Only the CLI implementation has changed since the second candidate. The maintainer selected a
-CLI-only `0.1.0-rc.3` alongside the already published Core, Icons and SVG `0.1.0-rc.2`; this
-selects scope, not a publication go. The corrected CLI source reached `master` at `79f4bfd`.
-Before publication, inspect the newly packed CLI's dependency ranges, verify the exact mixed
-set in an anonymous clean consumer, promote the versioned candidate through `develop` and
-`master` with green CI, and obtain a new go/no-go for its immutable archive. A coordinated
-four-package candidate remains possible only if the mixed set fails its compatibility or
-release-evidence review.
+The maintainer approved the CLI-only `0.1.0-rc.3` archive from `master` commit
+`b9c5644a8cfe5cb15e4991c88f2a32411dd938ea` and published it on 7 October 2026 under
+`next`. Core, Icons and SVG retain their [published `0.1.0-rc.2` archives](#second-candidate-artefacts),
+source revision and hashes; private Import was not published. The CLI archive contains 337
+files and declares only Core, Icons and SVG `^0.1.0-rc.2` as runtime dependencies.
 
-If unchanged published archives are reused, retain their original approved hashes and source
-commit. Do not repack them under the new CLI revision. A companion GitHub pre-release must list
-each package's exact version, source provenance and archive hash; its tag and assets require
-separate approval. Do not label the mixed set as if every package were `rc.3`.
+| Package | Registry | SHA-256 |
+| --- | --- | --- |
+| CLI | [`0.1.0-rc.3`](https://www.npmjs.com/package/@luscious-garden/aster-cli/v/0.1.0-rc.3) | `1ccbaed95e0b995851c2ae4acaa197b05d52281ca0f0fd8f989f89a8b5a559cf` |
 
-## Third candidate preparation
-
-Only CLI receives a new archive. Until the versioned candidate reaches `master` with green CI,
-any branch-built tarball is a disposable preflight artefact, not a publishable one. From a clean
-checkout of the approved `master` commit, repeat the locked install and full verification gate
-in [Prepare the candidate](#prepare-the-candidate), then pack CLI alone into a new absolute
-artefact directory. Inspect its manifest, README, licence, executable, declarations and export
-map. It must declare version `0.1.0-rc.3` and Core, Icons and SVG runtime ranges
-`^0.1.0-rc.2`, with no `workspace:` edge. Retain the published upstream archives and hashes in
-the [second candidate artefact record](#second-candidate-artefacts).
-
-Before any registry write, install the new CLI tarball alongside exact Core, Icons and SVG
-`0.1.0-rc.2` from npm in an isolated project without credentials or workspace links. Verify
-`version`, named project versions, `--all`, `--deps`, `--location`, JSON output and representative
-icon export and review. Inspect and hash the exact CLI archive, run a dry-run against that same
-archive, and obtain a separate maintainer go/no-go. Do not run the historical four-package
-`rc.2` publish commands below for this candidate. After publication, repeat the mixed-set check
-using CLI `0.1.0-rc.3` from npm rather than the local tarball, and record its actual dist-tags,
-hash and release evidence.
+The tarball downloaded from npm has the same SHA-256 as the approved archive. An anonymous
+consumer installed CLI `rc.3` with Core, Icons and SVG `rc.2` from npm and passed version,
+dependency, location, catalogue, SVG export and review checks. CLI `next` selects `rc.3`;
+Core, Icons and SVG `next` still select `rc.2`. Each package's `latest` remains on `rc.1`.
+No candidate Git tag or GitHub pre-release was created; the first GitHub Release is reserved for
+the stable `0.1.0` set after its npm publication is verified.
 
 ## Decision boundary
 
@@ -140,9 +123,9 @@ manually reviewed change only when the release materially affects it.
 The intended pre-release channel is `next`. The registry also assigned `latest` to each first
 package version even though publication explicitly supplied `--tag next`. It returned a
 `400 Bad Request` when the maintainer attempted to remove Core's initial `latest` tag.
-Consequently, `next` currently resolves to `0.1.0-rc.2` and `latest` to `0.1.0-rc.1`; consumers
-should still select `@next` or the exact version to express pre-release intent. The future
-stable `0.1.0` release will replace `latest` through a separate human decision.
+The [third candidate artefact record](#third-candidate-artefact) owns the current dist-tag
+values. Consumers should select `@next` or an exact version to express pre-release intent. The
+future stable `0.1.0` release will replace `latest` through a separate human decision.
 See [npm publish](https://docs.npmjs.com/cli/v11/commands/npm-publish/) and
 [dist-tags](https://docs.npmjs.com/adding-dist-tags-to-packages/).
 

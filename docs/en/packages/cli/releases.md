@@ -2,8 +2,11 @@
 
 ## 0.1.0-rc.3
 
-Status: **Prepared in source; not published.** Publication requires separate archive review and
-maintainer approval.
+Status: **Published on 7 October 2026** under the npm `next` tag.
+
+Registry: [`@luscious-garden/aster-cli@0.1.0-rc.3`](https://www.npmjs.com/package/@luscious-garden/aster-cli/v/0.1.0-rc.3).
+The approved archive hash and registry checks are recorded in the
+[third candidate artefact evidence](../../project/publication.md#third-candidate-artefact).
 
 **Breaking semantic correction:** `version core`, `version icons`, `version svg` and
 `version --all` now inspect packages directly installed in the current project. The published
@@ -18,9 +21,10 @@ installed Aster runtime dependencies. `version --deps` aliases `version cli --de
 Optional `--location` on executed-CLI queries reports the loaded module and its relationship to
 the current project's direct CLI. See [CLI Shell](shell/index.md) for grammar and output.
 
-The CLI candidate depends on Core, Icons and SVG `^0.1.0-rc.2`; those three published packages
+The CLI release depends on Core, Icons and SVG `^0.1.0-rc.2`; those three published packages
 remain at `0.1.0-rc.2` with no source changes. The published CLI `0.1.0-rc.2` archive is
-immutable. This candidate has not yet been packed from an approved `master` commit or published.
+immutable. The `rc.3` archive was built from the approved `master` commit and installed from npm
+in an anonymous consumer.
 
 ## 0.1.0-rc.2
 
