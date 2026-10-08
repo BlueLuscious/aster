@@ -1,6 +1,6 @@
 # CLI Workflow
 
-Status: **Pre-release**
+Status: **Accepted**
 
 This document describes how `@luscious-garden/aster-cli` turns one explicit invocation into an observable result
 without merging host-neutral command behaviour with standalone Node effects. Feature contracts and

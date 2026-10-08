@@ -1,6 +1,6 @@
 # CLI Compatibility and Conformance
 
-Status: **Pre-release**
+Status: **Accepted**
 
 This document defines the compatibility-bearing surface and release evidence for `@luscious-garden/aster-cli`.
 Detailed command, catalogue, and executable semantics remain owned by their respective package

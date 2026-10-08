@@ -2,13 +2,16 @@
 
 ## 0.1.0
 
-Status: **Prepared in source; not yet published**.
+Status: **Published on 8 October 2026 (UTC)**.
+
+Registry: [`@luscious-garden/aster-icons@0.1.0`](https://www.npmjs.com/package/@luscious-garden/aster-icons/v/0.1.0)
+
+Approved archive SHA-256: `FAC1022637EA3AC316E2B236172B09487989D5A184844BA5DE88E9042A8B583B`.
 
 The first stable Icons package retains the accepted definitions, collection membership and public
-exports from `0.1.0-rc.2`. It adds no icon or runtime capability. The stable archive must declare
+exports from `0.1.0-rc.2`. It adds no icon or runtime capability. The published archive declares
 Core `^0.1.0`. Consumers coming directly from `0.1.0-rc.1` must apply the
-collection migration described below. Registry links, archive hashes and the publication date
-will be recorded after the exact stable archive is approved and published.
+collection migration described below. The downloaded npm archive matches the approved hash.
 
 ## 0.1.0-rc.2
 

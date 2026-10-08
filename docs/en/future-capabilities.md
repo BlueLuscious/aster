@@ -52,8 +52,8 @@ and compatibility rationale; commit scopes alone do not determine a version incr
 notes and package versions remain independently reviewable, and npm publication always requires
 explicit human approval.
 
-This is a near-term follow-up to a proven manual release process, not a prerequisite for the
-first pre-release and not a reason to introduce a release framework prematurely.
+This remains an optional follow-up to the proven manual candidate and stable release process,
+not a reason to introduce a release framework without an accepted automation boundary.
 
 ## Coexisting API versions
 
@@ -61,7 +61,7 @@ Importance: **P2 - Conditional**
 
 The package's own Semantic Versioning identity already versions its exported APIs under the
 [project versioning policy](project/versioning.md). Separate API versions such as `v1` and `v2`
-inside one package are not required today and must not block the first stable publication.
+inside one package are not required for the published `0.1.0` baseline.
 
 Consider versioned entrypoints or explicitly selected compatibility implementations only when a
 real consumer needs incompatible API contracts simultaneously within one installed package and
@@ -78,7 +78,7 @@ or negotiation boundary and do not establish a need for coexisting package APIs.
 
 Importance: **P2 - Conditional**
 
-After the first stable release, consider an explicit remote command such as
+With the first stable npm release available, consider an explicit remote command such as
 `aster releases [core|icons|svg|cli]` for published package versions and their release details.
 It must not change the meaning or offline behaviour of local `aster version` requests.
 
@@ -331,8 +331,8 @@ registries, or combining contributor tooling with the user-facing multi-ecosyste
 Importance: **P2 - Conditional**
 
 The [publication procedure](project/publication.md#distribution-channels) owns the accepted
-distribution channels. An additional GitHub Packages registry is optional and must not block the
-first stable release or require a repository transfer or package rename speculatively.
+distribution channels. Published `0.1.0` uses npm alone; an additional GitHub Packages registry
+is optional and does not justify a speculative repository transfer or package rename.
 
 Reconsider it only when a concrete consumer needs GitHub-hosted dependency installation rather
 than a release page or downloadable archive. Before acceptance, verify the GitHub account or

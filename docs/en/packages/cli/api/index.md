@@ -1,6 +1,6 @@
 # CLI API
 
-Status: **Pre-release**
+Status: **Accepted**
 
 The API feature is the explicit composition root for the immutable host-neutral `AsterCommands`
 value. It wires command definitions, invocation normalisers, catalogue queries, export planning,

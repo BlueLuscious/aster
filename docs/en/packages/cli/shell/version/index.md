@@ -1,6 +1,6 @@
 # CLI Shell Version Metadata
 
-Status: **Pre-release**
+Status: **Accepted**
 
 The shell reads local installed manifests without importing package entrypoints or contacting a
 registry. This host-only feature is not part of the public programmatic CLI API. The

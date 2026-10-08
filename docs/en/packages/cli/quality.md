@@ -1,9 +1,9 @@
 # CLI Quality
 
-Status: **Hardened Pre-release**
+Status: **Accepted**
 
 This document records the hardened observable `@luscious-garden/aster-cli` boundary, its conformance evidence,
-and the constraints retained for the pre-release contract. The implemented execution path is documented by the
+and the constraints retained for the accepted public contract. The implemented execution path is documented by the
 [CLI Workflow](workflow.md).
 
 ## Public inventory

@@ -16,12 +16,12 @@ Collection lifecycle: **Active**
 | Public subpath | `@luscious-garden/aster-icons/collections/amellus` |
 | Curator and original artwork author | BlueLuscious |
 | Artwork licence | [Aster Artwork Licence 1.0](../../../../packages/icons/ARTWORK-LICENCE.md) |
-| Lifecycle | Active foundational collection accepted for pre-release distribution. |
+| Lifecycle | Active foundational collection distributed by Icons. |
 
 `Amellus` is the frozen identity for Aster's foundational minimalist general-purpose collection.
 `AmellusCollection` now retains the complete accepted inventory through the portable Core
 collection boundary. Its Active lifecycle accepts the current artwork and collection contract for
-pre-release distribution without creating a stable-version compatibility promise.
+public distribution; package versioning governs compatibility.
 
 ## Naming decision
 
@@ -125,8 +125,8 @@ the collection name only: their text and images are not artwork sources and conf
 licence on Amellus.
 
 The accepted provenance, artwork licence, attribution, static visual review, package conformance
-and pilot disposition support the Active pre-release lifecycle. Publication and stable-version
-compatibility remain separate project release decisions.
+and pilot disposition support the Active lifecycle. Package publication and compatibility remain
+separate from curatorial acceptance under the [project versioning policy](../../project/versioning.md).
 
 ## Static visual acceptance
 

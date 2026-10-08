@@ -1,6 +1,6 @@
 # CLI Shell Output
 
-Status: **Pre-release**
+Status: **Accepted**
 
 The output subfeature is the private Node filesystem boundary that publishes complete export trees
 and self-contained static reviews. No filesystem contract, Node type, or output implementation is

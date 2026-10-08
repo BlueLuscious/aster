@@ -2,14 +2,17 @@
 
 ## 0.1.0
 
-Status: **Prepared in source; not yet published**.
+Status: **Published on 8 October 2026 (UTC)**.
+
+Registry: [`@luscious-garden/aster-svg@0.1.0`](https://www.npmjs.com/package/@luscious-garden/aster-svg/v/0.1.0)
+
+Approved archive SHA-256: `058393A298363E42A4BFFE9A81CE4ACBAC452FF630F6C0C52A6FABB86B162A4C`.
 
 The first stable SVG package retains the rendering behaviour accepted in `0.1.0-rc.2`, including
 the fixed `data-rendered-by="Aster"` root attribute. There is no new renderer capability or
-migration from that candidate. The stable archive must declare Core `^0.1.0`.
+migration from that candidate. The published archive declares Core `^0.1.0`.
 Consumers coming directly from `0.1.0-rc.1` must update exact-output fixtures as described below.
-Registry links, archive hashes and the publication date will be recorded after the exact stable
-archive is approved and published.
+The downloaded npm archive matches the approved hash.
 
 ## 0.1.0-rc.2
 

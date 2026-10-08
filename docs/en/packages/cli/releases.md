@@ -2,13 +2,17 @@
 
 ## 0.1.0
 
-Status: **Prepared in source; not yet published**.
+Status: **Published on 8 October 2026 (UTC)**.
+
+Registry: [`@luscious-garden/aster-cli@0.1.0`](https://www.npmjs.com/package/@luscious-garden/aster-cli/v/0.1.0)
+
+Approved archive SHA-256: `13FF0D03511846A1CD724CBE9C950AA0F0D49AE4206F175D73F525D390C9883D`.
 
 The first stable CLI package retains the command behaviour accepted in `0.1.0-rc.3`; there is no
-new command or migration from that candidate. The stable archive must declare runtime
+new command or migration from that candidate. The published archive declares runtime
 dependencies on Core, Icons and SVG at `^0.1.0`. Consumers upgrading from earlier candidates
-should review the version-source correction below. Registry links, archive hashes and the
-publication date will be recorded after the exact stable archive is approved and published.
+should review the version-source correction below. The downloaded npm archive matches the
+approved hash.
 
 ## 0.1.0-rc.3
 

@@ -9,11 +9,11 @@ The current package set is:
 
 | Package | Status | Responsibility |
 | --- | --- | --- |
-| [`@luscious-garden/aster-core`](core/index.md) | Pre-release | Independent portable icon and collection definitions, immutable construction, and render-neutral contracts. |
+| [`@luscious-garden/aster-core`](core/index.md) | Published `0.1.0` | Independent portable icon and collection definitions, immutable construction, and render-neutral contracts. |
 | [`@luscious-garden/aster-import`](import/index.md) | Private | Host-independent adoption of external icon sources into portable definitions and editable TypeScript. |
-| [`@luscious-garden/aster-icons`](icons/index.md) | Pre-release | Accepted canonical portable icons and the opt-in Amellus collection aggregate. |
-| [`@luscious-garden/aster-svg`](svg/index.md) | Pre-release | Hardened framework-independent standalone SVG rendering. |
-| [`@luscious-garden/aster-cli`](cli/index.md) | Pre-release | Host-neutral command execution, explicit catalogue discovery, deterministic SVG export planning, and a thin standalone Node output host. |
+| [`@luscious-garden/aster-icons`](icons/index.md) | Published `0.1.0` | Accepted canonical portable icons and the opt-in Amellus collection aggregate. |
+| [`@luscious-garden/aster-svg`](svg/index.md) | Published `0.1.0` | Hardened framework-independent standalone SVG rendering. |
+| [`@luscious-garden/aster-cli`](cli/index.md) | Published `0.1.0` | Host-neutral command execution, explicit catalogue discovery, deterministic SVG export planning, and a thin standalone Node output host. |
 
 The accepted production dependency direction is:
 

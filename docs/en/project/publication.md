@@ -1,10 +1,10 @@
 # Manual Publication
 
-Status: **Release candidates published; stable `0.1.0` prepared in source but not published**.
+Status: **Stable `0.1.0` published on npm; companion GitHub Release pending approval**.
 
-This records the human-controlled procedure and evidence for the published candidates of Core,
-Icons, SVG and CLI. The [versioning policy](versioning.md) owns compatibility and dependency
-sequencing; each package owns its [release notes](../packages/index.md). Private
+This records the human-controlled procedure and distribution evidence for Core, Icons, SVG and
+CLI. The [versioning policy](versioning.md) owns compatibility and dependency sequencing; each
+package owns its [release notes](../packages/index.md). Private
 `@luscious-garden/aster-import` participated in repository verification but was not published.
 
 The version-specific commands below record the completed `0.1.0-rc.2` procedure. They are not
@@ -14,10 +14,9 @@ its own reviewed package versions, archive paths, dependency ranges, hashes and 
 ## Distribution channels
 
 npm remains the primary package distribution registry. Release candidates use npm `next`
-without requiring a Git tag or GitHub pre-release. GitHub Releases begin with the first stable
-`0.1.0` publication, after its npm packages pass registry-consumer verification. That release
-requires separate approval and records the exact published package versions, release notes and
-reviewed source commit.
+without requiring a Git tag or GitHub pre-release. The first GitHub Release is planned for
+stable `0.1.0` after its verified npm publication. That release still requires separate approval
+and must record the exact published package versions, release notes and reviewed source commit.
 
 A GitHub Release is based on a Git tag targeting the approved `master` commit; that tag is
 independent from npm dist-tags such as `next` and `latest`. A coordinated release may list
@@ -39,6 +38,23 @@ distribution procedure and does not block candidate or stable publication. A Git
 repository transfer, second npm scope or registry-routing change is not required for the selected
 npm-and-Releases path. Reconsider an additional registry only through the separately conditional
 [future capability](../future-capabilities.md#additional-package-registry).
+
+## First stable publication
+
+The maintainer published Core, Icons, SVG and CLI `0.1.0` in dependency order on 8 October 2026
+(UTC) from the approved `master` commit `e5b83299bd755f61fd17dae4769ef10b4f15c22c`.
+Each package's release notes own its npm link, publication date, approved SHA-256 and migration
+guidance: [Core](../packages/core/releases.md), [Icons](../packages/icons/releases.md),
+[SVG](../packages/svg/releases.md) and [CLI](../packages/cli/releases.md). Private Import was not
+published.
+
+Public registry downloads matched all four approved archives byte for byte. A fresh consumer
+without npm credentials installed the exact stable versions from the registry and passed Core,
+Icons, Amellus collection, SVG and CLI workflows. Every package's `latest` tag resolves to
+`0.1.0`; `next` still points to Core, Icons and SVG `0.1.0-rc.2` and CLI `0.1.0-rc.3`. No
+separate `stable` tag was created. Candidate tags were not moved during this publication;
+changing or removing `next` requires a separate decision. A Git tag and GitHub Release have
+not yet been created or approved.
 
 ## First candidate review
 
@@ -82,8 +98,8 @@ remains optional if additional certainty about the software/artwork boundary is 
 The maintainer published the reviewed `0.1.0-rc.2` archives from `master` commit
 `a0815e2f53fc99a98462ac3a88d05e36782224c5` on 6 October 2026. Anonymous registry
 installation and CLI, Icons and SVG checks passed. At publication, `next` pointed to these
-versions; `latest` still points to `rc.1`. No GitHub pre-release was created. A later CLI
-version-source discrepancy required a replacement candidate.
+versions; at that time, `latest` still pointed to `rc.1`. No GitHub pre-release was created.
+A later CLI version-source discrepancy required a replacement candidate.
 
 | Package | Registry | SHA-256 |
 | --- | --- | --- |
@@ -107,9 +123,9 @@ files and declares only Core, Icons and SVG `^0.1.0-rc.2` as runtime dependencie
 The tarball downloaded from npm has the same SHA-256 as the approved archive. An anonymous
 consumer installed CLI `rc.3` with Core, Icons and SVG `rc.2` from npm and passed version,
 dependency, location, catalogue, SVG export and review checks. CLI `next` selects `rc.3`;
-Core, Icons and SVG `next` still select `rc.2`. Each package's `latest` remains on `rc.1`.
-No candidate Git tag or GitHub pre-release was created; the first GitHub Release is reserved for
-the stable `0.1.0` set after its npm publication is verified.
+Core, Icons and SVG `next` still select `rc.2`. At that time, each package's `latest` remained
+on `rc.1`. No candidate Git tag or GitHub pre-release was created; the first GitHub Release is
+reserved for the verified stable `0.1.0` set, subject to separate approval.
 
 ## Decision boundary
 
@@ -123,9 +139,10 @@ manually reviewed change only when the release materially affects it.
 The intended pre-release channel is `next`. The registry also assigned `latest` to each first
 package version even though publication explicitly supplied `--tag next`. It returned a
 `400 Bad Request` when the maintainer attempted to remove Core's initial `latest` tag.
-The [third candidate artefact record](#third-candidate-artefact) owns the current dist-tag
-values. Consumers should select `@next` or an exact version to express pre-release intent. The
-future stable `0.1.0` release will replace `latest` through a separate human decision.
+The [first stable publication](#first-stable-publication) records the current dist-tags.
+Consumers should select an exact candidate version to express historical pre-release intent;
+the unchanged `@next` selectors still point to those older candidates. Stable `0.1.0` now owns
+`latest` through separate publication rather than relabelling a candidate.
 See [npm publish](https://docs.npmjs.com/cli/v11/commands/npm-publish/) and
 [dist-tags](https://docs.npmjs.com/adding-dist-tags-to-packages/).
 
@@ -293,11 +310,9 @@ links in the package release notes before closing each future release.
 
 ## Promote a stable release
 
-Do not present the release candidate as stable merely by moving an npm dist-tag. A stable
-`0.1.0` release is a different Semantic Versioning identity. The source manifests now use stable
-versions and the release notes and installation guidance prepare that identity; none of this
-publishes a package or moves a dist-tag. Verify that every packed public dependency resolves to
-`^0.1.0`. Repeat the complete verification, clean tarball generation, hashes, registry checks
-and human go/no-go for the exact approved stable commit. Publish the four new stable archives in
-dependency order under `latest` only after the release candidate has been accepted. Import
-participates in the stable source baseline but remains private and unpublished.
+Do not present a release candidate as stable merely by moving an npm dist-tag. Stable `0.1.0`
+was published as four distinct Semantic Versioning identities with public dependencies at
+`^0.1.0`, not by relabelling candidate archives. For a future stable release, repeat the
+complete verification, clean tarball generation, hashes, registry checks and human go/no-go
+for its exact approved source. Publish affected packages in dependency order under `latest`
+only after accepting their candidates. Import remains private and unpublished.
