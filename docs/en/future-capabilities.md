@@ -23,7 +23,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P0` | Consolidate canonical documentation before the next planned package publication. | The ownership review is complete; remaining documentation and README conformance must pass before publication. |
+| 1 | `P0` | Publish the consolidated package READMEs in the next reviewed releases. | Integrate the verified documentation, assess all accumulated package changes and approve the selected archives separately. |
 | 2 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
 | 3 | `P2` | Consider published release history through the CLI. | The first stable release exists and published package versions can be mapped reliably to release notes. |
 | 4 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
@@ -46,25 +46,41 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 Importance: **P0 - Required before the next planned package publication**
 
-The ownership review has established separate [project policies](project/index.md),
-[publication procedure](project/publication.md) and [dated publication records](project/publications/index.md).
-Complete the remaining package, collection, tooling and README review: give each stable fact one
-self-sufficient owner and replace repeated or stale explanations with links.
+Documentation and README consolidation is delivered; integration into `develop` with green CI
+remains the acceptance gate. [Project](project/index.md), [packages](packages/index.md),
+[collections](collections/index.md) and [tooling](tooling/index.md) own current explanations.
+[Private Import history](packages/import/releases/index.md) records source versions, not public
+publications. Approved public release notes and legal terms remain unchanged.
 
-Remove the four old public-package `releases.md` compatibility pages. Current READMEs use
-`releases/index.md`; loss of the old published README routes is accepted. New archives do not
-rewrite earlier README contents.
+The remaining distribution assessment compares README changes with the public `0.1.0` baseline:
 
-Add private Import history for `0.1.0-rc.1`, `0.1.0-rc.2` and `0.1.0` under
-`packages/import/releases/`, explicitly labelled as internal source history. No npm publication,
-GitHub Release or downloadable public asset is implied.
+| Package | Distributed change | Compatibility and dependency consequence |
+| --- | --- | --- |
+| [Core](packages/core/index.md) | Focused construction example and canonical guide/history links. | Documentation-only patch classification; no runtime dependencies. |
+| [Icons](packages/icons/index.md) | Isolated-import example, loading boundary and canonical usage/rights/history links. | Documentation-only patch classification; the existing Core caret range needs no change for this work. |
+| [SVG](packages/svg/index.md) | Focused rendering example and canonical semantics/history links. | Documentation-only patch classification; the existing Core caret range needs no change for this work. |
+| [CLI](packages/cli/index.md) | Minimal commands, shell invocation guidance and programmatic/history links. | Documentation-only patch classification; existing Core, Icons and SVG caret ranges need no change for this work. |
+| [Import](packages/import/index.md) | Workspace-only inspection example and private history links. | Remains private; documentation alone requires no public version or dependency change. |
 
-Complete and verify documentation on `develop`; further accepted capabilities may accumulate
-there before another release is selected. Review each package's complete changes since its last
-publication, including distributed README changes, under [versioning](project/versioning.md).
-Use the accepted [release-note convention](project/versioning.md#release-note-convention) for future
-notes without reformatting approved history. Publish only affected packages after the separately
-approved [promotion and archive procedure](project/publication.md#branch-promotion).
+Only the four public package READMEs change distributed public contents. Repository guides and
+the root README alone do not require package releases. This assessment changes no versions,
+manifests, exports, runtime behaviour or published archives. The
+[loader-map limitation](packages/icons/dynamic/index.md#arbitrary-key-access) is not repaired by
+documentation and requires its separate correction and verification.
+
+The four obsolete public-package history pages are removed; current READMEs link each package's
+`releases/index.md`. Old published READMEs still contain branch-based URLs to the removed routes,
+which will break when deletion reaches `master`. That loss is accepted. New archives cannot
+repair earlier README contents, and no compatibility aliases will be retained.
+
+Further accepted changes may accumulate on `develop` before release selection. Reassess each
+package's complete diff since its last publication under [versioning](project/versioning.md);
+the documentation-only patch classification does not select the final version or classify later
+runtime work. Existing published caret ranges admit compatible patch updates without forcing an
+otherwise unchanged dependant to release. Verify the final selected combination and use the
+[release-note convention](project/versioning.md#release-note-convention), preserving approved
+history. Publish only affected packages after separate approval of
+[promotion and archives](project/publication.md#branch-promotion).
 
 ## Reviewed version proposals
 

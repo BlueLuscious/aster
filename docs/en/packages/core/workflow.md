@@ -69,7 +69,7 @@ Accepted definitions are plain data without getters, mutation methods or lifecyc
 After construction, Core performs no further work until an explicit consumer receives the value.
 
 The [package dependency graph](../index.md) identifies those consumers. Icons owns distribution;
-SVG owns target rendering; Import owns source acquisition and interpretation; CLI owns catalogue
+SVG owns target rendering; Import owns acquired-source inspection and adoption; CLI owns catalogue
 and host operations. Their responsibilities do not enlarge Core's portable model.
 
 ## Security and trust boundary
