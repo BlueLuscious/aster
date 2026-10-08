@@ -1,9 +1,13 @@
 # Import Formats
 
-`iconImportFormats` is the immutable runtime authority for built-in source discriminators and
-currently contains only `svg`. `IconImportFormatType` is derived from that authority.
+`iconImportFormats` is the frozen runtime authority for built-in source discriminators; it
+currently contains only `svg`. `IconImportFormatType` derives the same closed literal union and
+tags [source](../source/index.md) and adoption provenance.
 
-Each format provides a private `IIconImportAdapter<Source>` implementation. Adapter composition is
-explicit and immutable; Import has no plugin discovery or mutable global registry. A new format is
-justified only by an actual source family and must produce the same neutral `IconImportDraft`.
+The private `IIconImportAdapter<Source>` pairs an exact format identity with inspection of its
+accepted acquired source, returning `DiagnosticResultType<IconImportDraft>`. The immutable
+registry is composed explicitly by the [API](../api/index.md), without plugin discovery or mutable
+registration. An unknown discriminator is malformed invocation.
 
+The [SVG adapter](../formats/svg/index.md) owns the initial implementation. Additional formats
+require an actual source family and conformance against the same neutral draft boundary.

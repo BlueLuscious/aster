@@ -1,39 +1,26 @@
 # Import Compatibility
 
-`@luscious-garden/aster-import` is a private ES2022 ESM workspace package. Its `0.1.0` source version tracks internal
-changes independently; it is not published and carries no external compatibility promise while
-its first real host remains unimplemented.
+Import is a private ES2022 ESM workspace package. Its source version tracks internal changes,
+not external publication or a compatibility promise to registry consumers. The
+[private history](releases/index.md) records accepted version boundaries.
 
-## Dependencies
+## Distribution boundary
 
-Import depends on the public root of `@luscious-garden/aster-core` through `workspace:^` and pins
-`xmlsax-typescript` `1.0.0` behind its private SVG parser boundary. It does not depend on Icons,
-SVG, CLI, repository tooling, Node, DOM, framework or filesystem APIs.
+Only the [root API](api/index.md#composition-and-exports) is exported. Runtime classes, adapter and
+parser contracts, validation evidence and implementation subpaths are private. Distribution emits
+ESM JavaScript and declarations, without CommonJS, source maps, alternate targets, Node/DOM
+ambient dependencies or parser token types in declarations.
 
-The parser dependency is an implementation choice rather than part of the package ABI. Its token
-types, failures and messages remain private, and the [SVG parser authority](formats/svg/parser/index.md)
-defines the stable Aster-owned safety and source-evidence behaviour.
-
-The package exports one root only. Runtime values are limited to `IconImport`, `IconImportError`
-and `iconImportFormats`; contracts and types are declaration-only exports. Parser, adapter,
-validation, normalisation and runtime implementation subpaths are inaccessible through package
-exports.
-
-The emitted private distribution contains only ES2022 ESM `.js` modules and `.d.ts` declarations.
-It emits no CommonJS, source maps, alternate targets, Node or DOM declarations. Runtime modules may
-reference only the public `@luscious-garden/aster-core` root and the exact private parser dependency; declarations
-remain host-neutral and do not expose parser types.
+Runtime dependencies are public `@luscious-garden/aster-core` through `workspace:^` and pinned
+`xmlsax-typescript@1.0.0`, confined to the [SVG parser](formats/svg/parser/index.md). Import has no
+Icons, SVG, CLI, repository-tooling, filesystem, framework or network dependency.
 
 ## Consumer independence
 
-Core, Icons, SVG and CLI have no production dependency on Import. Import may consume Core, but it
-cannot reverse that direction. Emitted modules depend only on Core and can be consumed by SVG or
-another render target independently from Import.
+Core, Icons, SVG and CLI have no production dependency on Import. Editable modules depend only on
+Core and remain usable with another renderer or without Import. Icons may retain reviewed emitted
+content as ordinary authored source, not as an Import-owned generated artefact.
 
-Icons may retain a reviewed emitted module as ordinary human-owned `.icon.ts` source, but Import
-does not generate the Icons package, infer collection membership or remain in its distribution.
-TypeScript-first definitions and collections therefore remain fully usable when Import is absent.
-
-An additional source format requires an internal adapter and conformance evidence. It does not
-imply mutable registration, automatic discovery, a third-party plugin ABI or support for binary
-input. Those boundaries require separate evidence and an explicit package decision.
+New source formats require private adapters and conformance; they do not imply plugin registration,
+automatic discovery or binary-input support. Host acquisition and persistence remain separate.
+[Quality](quality.md) owns ABI checks and independently compiled emitted-module evidence.
