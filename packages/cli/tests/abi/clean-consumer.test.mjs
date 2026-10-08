@@ -374,6 +374,14 @@ test("installs only accepted public package files and notices", async () => {
 
     assert.ok(!readme.includes("/blob/develop/"), `Stale ${name} README branch link.`);
     assert.ok(readme.includes("/blob/master/"), `Missing ${name} release branch link.`);
+    assert.ok(
+      readme.includes(`/docs/en/packages/${name}/releases/index.md`),
+      `Missing ${name} canonical history link.`,
+    );
+    assert.ok(
+      !readme.includes(`/docs/en/packages/${name}/releases.md`),
+      `Obsolete ${name} history link.`,
+    );
     const unexpected = files.filter((file) => !(
       file.startsWith("dist/") || [
         "package.json",
@@ -390,13 +398,16 @@ test("executes packaged README examples through packed package entrypoints", asy
   const examples = [
     {
       name: "core",
-      result: 'Camera.identity.name === "camera" && InterfaceIcons.icons.camera === Camera && InterfaceIcons.members[0] === Camera',
+      result: 'Disc.identity.name === "disc" && Object.isFrozen(Disc) && Object.isFrozen(InterfaceIcons) && InterfaceIcons.icons.disc === Disc && InterfaceIcons.members[0] === Disc',
     },
     {
       name: "icons",
-      result: 'markup.startsWith("<svg ") && cameraMarkup.startsWith("<svg ") && collectionMarkup.length === AmellusCollection.members.length && collectionMarkup.every((entry) => entry.startsWith("<svg "))',
+      result: 'definition === Camera && definition.identity.namespace === "aster" && definition.identity.name === "camera" && Object.isFrozen(definition)',
     },
-    { name: "svg", result: 'markup.includes("<circle ")' },
+    {
+      name: "svg",
+      result: 'markup.startsWith("<svg ") && markup.includes(\'data-rendered-by="Aster"\') && markup.includes(\'role="img"\') && markup.includes(\'aria-label="Back"\')',
+    },
   ];
 
   for (const { name, result } of examples) {
