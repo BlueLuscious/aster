@@ -23,23 +23,49 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
-| 2 | `P2` | Consider published release history through the CLI. | The first stable release exists and published package versions can be mapped reliably to release notes. |
-| 3 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 4 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 5 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 6 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 7 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 8 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 9 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 10 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 11 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 12 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 13 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
-| 14 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
-| 15 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 16 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 17 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 1 | `P0` | Consolidate canonical documentation before the next planned package publication. | The first stable GitHub Releases are closed and the documentation ownership review is accepted. |
+| 2 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
+| 3 | `P2` | Consider published release history through the CLI. | The first stable release exists and published package versions can be mapped reliably to release notes. |
+| 4 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 5 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 6 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 7 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 8 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 9 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 11 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 12 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 13 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 14 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
+| 15 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
+| 16 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 17 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 18 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+
+## Canonical documentation and follow-up publication
+
+Importance: **P0 - Required before the next planned package publication**
+
+After the first stable GitHub Releases, audit every authority under `docs/en/` for its purpose,
+ownership, audience and links. Give each fact one self-sufficient canonical home; replace
+repeated or stale explanations with concise links, including in package READMEs. Review the
+boundary between durable publication procedure and version-specific evidence instead of copying
+either into every package page.
+
+Keep the existing public-package `releases.md` routes as short compatibility links because
+already-published README archives point to them. Future README archives should link directly to
+their package's canonical release index or version page. A live documentation correction does not
+change a previously published npm archive.
+
+Give private `@luscious-garden/aster-import` the same navigable documentation structure:
+`packages/import/releases/index.md` and one page per source version, explicitly labelled as an
+internal version history. This does not make Import public or require an npm publication, GitHub
+Release or downloadable release asset.
+
+Once the documentation is consistent, prepare a follow-up release for each public package whose
+distributed README changed, assigning its version under the [versioning policy](project/versioning.md).
+Publish only the affected packages after normal verification and explicit approval; do not advance
+all package versions merely because the repository documentation changed.
 
 ## Reviewed version proposals
 
@@ -83,11 +109,11 @@ With the first stable npm release available, consider an explicit remote command
 It must not change the meaning or offline behaviour of local `aster version` requests.
 
 The npm registry is the authority for which versions of each package were published. GitHub
-Releases may enrich those records with reviewed notes, publication context and approved assets,
-but one repository release can contain several independently versioned packages, and the initial
-`0.1.0-rc.1` publication has no companion GitHub Release. Do not infer package membership or
-version mapping by scraping free-form release text. Accept a documented mapping before combining
-the two sources or claiming a complete per-package history.
+Releases may enrich those records with reviewed notes, publication context and approved assets.
+The accepted release design uses one package-specific tag and GitHub Release per published package
+version, but the early release candidates have no companion GitHub Releases. Do not infer package
+membership or version mapping by scraping free-form release text. Accept a documented mapping
+before combining the two sources or claiming a complete per-package history.
 
 Any remote workflow needs explicit network, registry, pagination, timeout, offline and failure
 semantics. It must not silently update installed packages or publish releases. Until a real

@@ -32,11 +32,11 @@ const markup = Svg.render(Camera, {
 ```
 
 Every successful root SVG includes the fixed `data-rendered-by="Aster"` attribute. See the
-[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/releases.md)
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/releases/index.md)
 if you compare rendered markup byte-for-byte.
 
 See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/index.md) and
-[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/releases.md) for
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/releases/index.md) for
 responsibilities, exports, and rendering semantics.
 
 ## Licence

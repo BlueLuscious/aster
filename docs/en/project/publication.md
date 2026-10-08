@@ -1,6 +1,6 @@
 # Manual Publication
 
-Status: **Stable `0.1.0` published on npm; companion GitHub Release pending approval**.
+Status: **Stable `0.1.0` published on npm; four package-specific GitHub Releases pending approval**.
 
 This records the human-controlled procedure and distribution evidence for Core, Icons, SVG and
 CLI. The [versioning policy](versioning.md) owns compatibility and dependency sequencing; each
@@ -14,24 +14,30 @@ its own reviewed package versions, archive paths, dependency ranges, hashes and 
 ## Distribution channels
 
 npm remains the primary package distribution registry. Release candidates use npm `next`
-without requiring a Git tag or GitHub pre-release. The first GitHub Release is planned for
-stable `0.1.0` after its verified npm publication. That release still requires separate approval
-and must record the exact published package versions, release notes and reviewed source commit.
+without requiring a Git tag or GitHub pre-release. Each public package receives its own GitHub
+tag and Release after its stable npm publication has been verified. Publishing one package's
+Release does not approve the others.
 
-A GitHub Release is based on a Git tag targeting the approved `master` commit; that tag is
-independent from npm dist-tags such as `next` and `latest`. A coordinated release may list
-several independently versioned packages without implying that every package shares one version.
+A GitHub Release is based on a package-specific Git tag targeting the approved source commit;
+the tag is independent from npm dist-tags such as `next` and `latest`. The four `0.1.0` tags
+target the same approved commit because those archives came from the same source. Later package
+Releases may target different commits and versions. GitHub's repository-wide `Latest` label is
+not a package-version authority; each package's release index records its own history.
 
-Attach the same approved `.tgz` archives that were published to npm, together with their SHA-256
-checksums. Do not rebuild or repack them for GitHub. GitHub's automatically generated source ZIP
+Attach each package's exact approved npm `.tgz` to its own draft, and record its SHA-256 in the
+draft body. Do not rebuild or repack it for GitHub. GitHub's automatically generated source ZIP
 and tar archives are not substitutes for the compiled npm package archives. See
 [GitHub's release documentation](https://docs.github.com/en/repositories/releasing-projects-on-github/about-releases).
 
-Confirm stable npm publication and registry-consumer verification for every package listed before
-publishing its GitHub Release. Creating the tag, publishing the release and uploading assets
-remain separately approved human operations; no workflow performs them automatically.
-Record the release URL in the affected package release notes and verify that each downloaded
-package asset matches its approved hash. Keep the release as a draft if publication is incomplete.
+Confirm stable npm publication, archive hash and passing source CI before creating a package's
+tag and draft. A manually dispatched workflow may create only the approved tag and draft with
+its verified asset after the first human go. Review the draft's tag, title, notes and asset
+before a separate human go to publish it. No tag push or successful CI run publishes a Release.
+After publication, download the asset, verify its hash again and add the public URL to that
+package's release index. A partial operation stays visible for inspection; do not silently
+overwrite or delete its tag or draft.
+The [release tooling guide](../tooling/release/index.md) describes preparation, the draft-only
+manual Action and its draft-visibility limit.
 
 GitHub Packages is a different registry, not the release page. It is not part of the accepted
 distribution procedure and does not block candidate or stable publication. A GitHub organisation,
@@ -44,8 +50,9 @@ npm-and-Releases path. Reconsider an additional registry only through the separa
 The maintainer published Core, Icons, SVG and CLI `0.1.0` in dependency order on 8 October 2026
 (UTC) from the approved `master` commit `e5b83299bd755f61fd17dae4769ef10b4f15c22c`.
 Each package's release notes own its npm link, publication date, approved SHA-256 and migration
-guidance: [Core](../packages/core/releases.md), [Icons](../packages/icons/releases.md),
-[SVG](../packages/svg/releases.md) and [CLI](../packages/cli/releases.md). Private Import was not
+guidance: [Core](../packages/core/releases/0.1.0.md),
+[Icons](../packages/icons/releases/0.1.0.md), [SVG](../packages/svg/releases/0.1.0.md) and
+[CLI](../packages/cli/releases/0.1.0.md). Private Import was not
 published.
 
 Public registry downloads matched all four approved archives byte for byte. A fresh consumer
@@ -53,8 +60,10 @@ without npm credentials installed the exact stable versions from the registry an
 Icons, Amellus collection, SVG and CLI workflows. Every package's `latest` tag resolves to
 `0.1.0`; `next` still points to Core, Icons and SVG `0.1.0-rc.2` and CLI `0.1.0-rc.3`. No
 separate `stable` tag was created. Candidate tags were not moved during this publication;
-changing or removing `next` requires a separate decision. A Git tag and GitHub Release have
-not yet been created or approved.
+the superseded `next` pointers will remain on those candidates until a new candidate is
+approved. They do not identify the current stable versions; use `latest` or an exact stable
+version for that purpose. No npm dist-tag was changed during GitHub Release preparation.
+No package-specific Git tag or GitHub Release has yet been created or approved.
 
 ## First candidate review
 
@@ -65,10 +74,10 @@ tarball-consumer tests passed on Node `24.10.0` with pnpm `10.28.1` from clean c
 
 | Package | Packed files | Production dependencies | Package release notes |
 | --- | ---: | --- | --- |
-| `@luscious-garden/aster-core` | 167 | None | [Core](../packages/core/releases.md) |
-| `@luscious-garden/aster-icons` | 142 | Core `^0.1.0-rc.1` | [Icons](../packages/icons/releases.md) |
-| `@luscious-garden/aster-svg` | 47 | Core `^0.1.0-rc.1` | [SVG](../packages/svg/releases.md) |
-| `@luscious-garden/aster-cli` | 297 | Core, Icons and SVG `^0.1.0-rc.1` | [CLI](../packages/cli/releases.md) |
+| `@luscious-garden/aster-core` | 167 | None | [Core](../packages/core/releases/0.1.0-rc.1.md) |
+| `@luscious-garden/aster-icons` | 142 | Core `^0.1.0-rc.1` | [Icons](../packages/icons/releases/0.1.0-rc.1.md) |
+| `@luscious-garden/aster-svg` | 47 | Core `^0.1.0-rc.1` | [SVG](../packages/svg/releases/0.1.0-rc.1.md) |
+| `@luscious-garden/aster-cli` | 297 | Core, Icons and SVG `^0.1.0-rc.1` | [CLI](../packages/cli/releases/0.1.0-rc.1.md) |
 
 The archives contain emitted ESM and declarations, their manifests, READMEs and software
 licences; Icons alone also includes the artwork licence. They exclude private Import, source

@@ -27,7 +27,7 @@ registry, or global identity authority.
 | [Workflow](workflow.md) | End-to-end icon and collection construction, validation, isolation, and consumption flow. |
 | [Quality](quality.md) | Public inventory, consumer conformance, distribution evidence, and future pressure boundaries. |
 
-The [release notes](releases.md) record this package's version history and migrations. The
+The [release notes](releases/index.md) record this package's version history and migrations. The
 [project publication procedure](../../project/publication.md) owns registry
 checks and human approval.
 
