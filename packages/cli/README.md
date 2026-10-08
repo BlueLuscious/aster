@@ -53,7 +53,7 @@ HTML to `aster-review` by default or to an explicit output root. Existing owned 
 be replaced only through the explicit `--replace` option.
 
 See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/index.md) and
-[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/releases.md) for boundaries,
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/releases/index.md) for boundaries,
 contracts, and implemented behaviour.
 
 ## Licence
