@@ -114,7 +114,7 @@ jobs:
         with:
           node-version-file: .node-version
 
-      - name: Recheck source, npm archive, CI, tag and push-visible drafts
+      - name: Recheck source, npm archive, CI and visible releases
         env:
           PACKAGE: ${{ inputs.package }}
           VERSION: ${{ inputs.version }}
@@ -129,17 +129,27 @@ jobs:
           APPROVED_INTENT_SHA256: ${{ inputs.approved_intent_sha256 }}
         run: node tooling/release/materialise-release-draft.mjs "$RUNNER_TEMP/release-intent.json" "$RUNNER_TEMP/package-release-draft" "$APPROVED_SOURCE" "$APPROVED_SHA256" "$APPROVED_INTENT_SHA256"
 
-      - name: Create tag and draft with one verified archive
+      - name: Create the approved tag
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.files.outputs.tag }}
-          TITLE: ${{ steps.files.outputs.title }}
           SOURCE: ${{ steps.files.outputs.source }}
-          NOTES: ${{ steps.files.outputs.notes }}
+        run: |
+          created=$(gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
+            -f "ref=refs/tags/$TAG" -f "sha=$SOURCE" \
+            --jq '[.ref, .object.type, .object.sha] | join(" ")')
+          if [ "$created" != "refs/tags/$TAG commit $SOURCE" ]; then
+            echo "The created tag does not target the approved commit." >&2
+            exit 1
+          fi
+
+      - name: Create the draft and upload one verified archive
+        env:
+          GH_TOKEN: ${{ github.token }}
           ARCHIVE: ${{ steps.files.outputs.archive }}
-        run: gh release create "$TAG" "$ARCHIVE" --repo "$GITHUB_REPOSITORY" --draft --target "$SOURCE" --title "$TITLE" --notes-file "$NOTES"
+        run: node tooling/release/create-release-draft.mjs "$RUNNER_TEMP/release-intent.json" "$ARCHIVE" "$RUNNER_TEMP/release-id.txt"
 
       - name: Verify draft classification, tag target, notes and asset digest
         env:
           GH_TOKEN: ${{ github.token }}
-        run: node tooling/release/verify-release-draft.mjs "$RUNNER_TEMP/release-intent.json"
+        run: node tooling/release/verify-release-draft.mjs "$RUNNER_TEMP/release-intent.json" "$RUNNER_TEMP/release-id.txt"

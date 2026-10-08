@@ -20,12 +20,15 @@ approved package source commit. `approvalSha256` binds the proposed tag, title, 
 archive name, archive URL and archive hash into one exact approval value.
 
 Ordinary preparation performs no registry or GitHub write and needs no GitHub token for this
-public repository. Its `draftInspection: "not-visible"` field is intentional: GitHub does not
-expose unpublished drafts to a token without push access. It is not proof that no draft exists.
-The `--full` option additionally checks push-visible release listings and returns
-`draftInspection: "complete"` only when the token has repository push access and no matching
-draft exists. Supply a suitable `GH_TOKEN` or `GITHUB_TOKEN` through the environment; never put
-a token in a command argument or committed file.
+public repository. Its `releasePreflight: "public"` field means it checked the direct tag and
+Release endpoints but did not enumerate Releases; this is not proof that no draft exists. The
+`--full` option also checks the authenticated
+Release listing and returns `releasePreflight: "authenticated"` when that request succeeds
+without a visible match. GitHub may omit drafts from a listing for some credentials, so neither
+value proves that no draft exists. The write operation must still rely on GitHub rejecting an
+existing tag or Release rather than treating an empty listing as permission to overwrite one.
+Supply `GH_TOKEN` or `GITHUB_TOKEN` through the environment for `--full`; never put a token in a
+command argument or committed file.
 
 ## Manual Action
 
@@ -36,17 +39,22 @@ The `Package GitHub Release` workflow accepts only manual dispatch from `master`
   [package release history](../../packages/index.md). This mode never creates a tag or draft.
 - `draft` is the first write approval for one package. Enter the exact approved full source SHA,
   archive SHA-256, `approvalSha256` and `CREATE_DRAFT` confirmation. Its narrowly permissioned job
-  repeats preparation with draft visibility, verifies those inputs, downloads and hashes the npm
-  archive again, and
-  calls `gh release create --draft` with that exact archive. It then reads back the tag target,
-  draft classification, title, body and asset digest. A failure leaves any partial tag or draft
-  visible for inspection; it does not repair or delete it automatically.
+  repeats authenticated preparation, verifies those inputs, downloads and hashes the npm archive
+  again, and creates the approved tag at the exact source commit. It creates a new draft through
+  GitHub's Release API without asking GitHub to create or move a tag, then uploads the archive
+  through the `upload_url` returned by that creation. It reads the resulting draft back by its
+  numeric ID and verifies the tag target, classification, title, body and asset digest. This
+  avoids relying on a by-tag draft lookup that may be hidden from the Actions token. A conflicting
+  or failed GitHub write stops the job; any partial tag or draft remains for inspection rather
+  than being replaced or deleted.
 
 The workflow never publishes a Release or pushes to npm. Publishing a reviewed draft requires
 a separate human decision per package. After publication, download its asset, compare its hash
 with the version page and add the Release URL to the package's release index. GitHub's
 repository-wide `Latest` label does not determine a package's latest version.
 
-The draft job uses `contents: write` and `actions: read` only after manual dispatch. A tag
-created by that job is not expected to trigger another CI run; preparation checks the already
-approved source commit's CI explicitly.
+The draft job uses GitHub's automatically provided `GITHUB_TOKEN` with `contents: write` and
+`actions: read`; it needs no repository secret. A tag created by that job is not expected to
+trigger another CI run; preparation checks the already approved source commit's CI explicitly.
+If GitHub denies draft readback for this token, verification fails and the draft remains
+unpublished for human inspection.
