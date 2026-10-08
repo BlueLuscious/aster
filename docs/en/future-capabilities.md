@@ -52,20 +52,24 @@ repeated or stale explanations with concise links, including in package READMEs.
 boundary between durable publication procedure and version-specific evidence instead of copying
 either into every package page.
 
-Keep the existing public-package `releases.md` routes as short compatibility links because
-already-published README archives point to them. Future README archives should link directly to
-their package's canonical release index or version page. A live documentation correction does not
-change a previously published npm archive.
+Remove the old public-package `releases.md` compatibility pages and link current READMEs directly
+to their package's `releases/index.md` or version page. Published README archives retain their
+old branch-based links: removing those paths from `master` makes those links unavailable, even
+after replacement versions are published. The original files remain accessible through Git
+history; a new package archive does not rewrite an earlier one.
 
 Give private `@luscious-garden/aster-import` the same navigable documentation structure:
 `packages/import/releases/index.md` and one page per source version, explicitly labelled as an
 internal version history. This does not make Import public or require an npm publication, GitHub
 Release or downloadable release asset.
 
-Once the documentation is consistent, prepare a follow-up release for each public package whose
-distributed README changed, assigning its version under the [versioning policy](project/versioning.md).
-Publish only the affected packages after normal verification and explicit approval; do not advance
-all package versions merely because the repository documentation changed.
+Complete and verify the documentation work on `develop`; further accepted capabilities may
+accumulate there before another package release is selected. At that release decision, assess
+each package's complete changes since its last published version, including distributed README
+changes, under the [versioning policy](project/versioning.md). Commits provide review evidence;
+their count or scope alone does not determine a version. Promote the reviewed release to `master`
+and produce new archives through the [publication procedure](project/publication.md#branch-promotion).
+Publish only affected packages after normal verification and explicit approval.
 
 ## Reviewed version proposals
 
