@@ -1,0 +1,145 @@
+name: Package GitHub Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Prepare without writes, or create one approved draft
+        required: true
+        type: choice
+        options:
+          - prepare
+          - draft
+      package:
+        description: Public Aster package
+        required: true
+        type: choice
+        options:
+          - core
+          - icons
+          - svg
+          - cli
+      version:
+        description: Exact published npm version
+        required: true
+        type: string
+      approved_source:
+        description: Approved full source SHA, required for draft
+        required: false
+        type: string
+      approved_sha256:
+        description: Approved archive SHA-256, required for draft
+        required: false
+        type: string
+      approved_intent_sha256:
+        description: Approved intent SHA-256, required for draft
+        required: false
+        type: string
+      confirmation:
+        description: Enter CREATE_DRAFT for the draft operation
+        required: false
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: package-release-${{ inputs.package }}-${{ inputs.version }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Prepare release intent
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Require the reviewed master branch
+        run: test "$GITHUB_REF" = "refs/heads/master"
+
+      - name: Checkout reviewed documentation and tooling
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Verify public release evidence
+        env:
+          PACKAGE: ${{ inputs.package }}
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          node tooling/release/prepare-release.mjs "$PACKAGE" "$VERSION" > "$RUNNER_TEMP/release-intent.json"
+          cat "$RUNNER_TEMP/release-intent.json"
+
+      - name: Save reviewable release intent
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-intent-${{ inputs.package }}-${{ inputs.version }}
+          path: ${{ runner.temp }}/release-intent.json
+          if-no-files-found: error
+
+  draft:
+    name: Create approved draft only
+    needs: prepare
+    if: inputs.operation == 'draft'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Require explicit first approval
+        env:
+          CONFIRMATION: ${{ inputs.confirmation }}
+        run: |
+          if [ "$GITHUB_REF" != "refs/heads/master" ] || [ "$CONFIRMATION" != "CREATE_DRAFT" ]; then
+            echo "Draft creation requires master and explicit CREATE_DRAFT confirmation." >&2
+            exit 1
+          fi
+
+      - name: Checkout reviewed documentation and tooling
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Install Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+
+      - name: Recheck source, npm archive, CI, tag and push-visible drafts
+        env:
+          PACKAGE: ${{ inputs.package }}
+          VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ github.token }}
+        run: node tooling/release/prepare-release.mjs "$PACKAGE" "$VERSION" --full > "$RUNNER_TEMP/release-intent.json"
+
+      - name: Recheck human approval and materialise npm bytes
+        id: files
+        env:
+          APPROVED_SOURCE: ${{ inputs.approved_source }}
+          APPROVED_SHA256: ${{ inputs.approved_sha256 }}
+          APPROVED_INTENT_SHA256: ${{ inputs.approved_intent_sha256 }}
+        run: node tooling/release/materialise-release-draft.mjs "$RUNNER_TEMP/release-intent.json" "$RUNNER_TEMP/package-release-draft" "$APPROVED_SOURCE" "$APPROVED_SHA256" "$APPROVED_INTENT_SHA256"
+
+      - name: Create tag and draft with one verified archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.files.outputs.tag }}
+          TITLE: ${{ steps.files.outputs.title }}
+          SOURCE: ${{ steps.files.outputs.source }}
+          NOTES: ${{ steps.files.outputs.notes }}
+          ARCHIVE: ${{ steps.files.outputs.archive }}
+        run: gh release create "$TAG" "$ARCHIVE" --repo "$GITHUB_REPOSITORY" --draft --target "$SOURCE" --title "$TITLE" --notes-file "$NOTES"
+
+      - name: Verify draft classification, tag target, notes and asset digest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node tooling/release/verify-release-draft.mjs "$RUNNER_TEMP/release-intent.json"

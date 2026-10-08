@@ -16,6 +16,7 @@ The canonical documentation mirrors the real tooling feature roots:
 | [Catalogue](catalogue/index.md) | Recursively validates canonical Icons sources and synchronises manifests, loaders and public facades. |
 | [Documentation](documentation/index.md) | Verifies the current canonical hierarchy, package mirroring, links, and local exclusions. |
 | [Performance](performance/index.md) | Provides development-only package comparison infrastructure and independent scenario runners. |
+| [Release](release/index.md) | Prepares and verifies package-specific GitHub drafts from approved npm archives. |
 | [Shared](shared/index.md) | Supplies narrow filesystem, path, directory, traversal, and strict JSON foundations used by multiple tooling features. |
 | [Workspace](workspace/index.md) | Owns guarded repository and package maintenance operations such as distribution cleanup. |
 
@@ -79,6 +80,7 @@ The private root exposes stable orchestration contracts:
 | `pnpm benchmark:import` | Run the development-only [Import comparison](performance/index.md). |
 | `pnpm benchmark:svg` | Run the development-only [SVG comparison](performance/index.md). |
 | `pnpm lint` | Check authored TypeScript and JavaScript in packages, tooling, tests, and the lint configuration. |
+| `pnpm release:prepare -- <package> <version>` | Produce a read-only package Release intent from canonical notes, npm bytes and source CI. |
 | `pnpm format` | Explicitly format owned workspace manifests and quality-tool configuration. |
 | `pnpm format:check` | Check those files without writing. |
 | `pnpm test` | Run tooling fixtures, package tests, and cross-package workflows. |
