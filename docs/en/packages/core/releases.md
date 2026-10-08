@@ -2,13 +2,16 @@
 
 ## 0.1.0
 
-Status: **Prepared in source; not yet published**.
+Status: **Published on 8 October 2026 (UTC)**.
+
+Registry: [`@luscious-garden/aster-core@0.1.0`](https://www.npmjs.com/package/@luscious-garden/aster-core/v/0.1.0)
+
+Approved archive SHA-256: `263DCFECF88DFDD6B7119D02591686BC94C3DC6637DB53800249468194354B33`.
 
 The first stable Core package retains the public API and behaviour accepted in `0.1.0-rc.2`.
 There is no new runtime capability or migration from that candidate. Core has no runtime
 dependencies. Consumers coming directly from `0.1.0-rc.1` must apply the collection migration
-described below. Registry links, archive hashes and the publication date will be recorded after
-the exact stable archive is approved and published.
+described below. The downloaded npm archive matches the approved hash.
 
 ## 0.1.0-rc.2
 

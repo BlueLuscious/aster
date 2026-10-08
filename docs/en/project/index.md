@@ -1,6 +1,6 @@
 # Aster Project
 
-Status: **Stable source prepared; public release pending**
+Status: **Public `0.1.0` released**
 
 Aster is a framework-agnostic icon platform. It defines portable immutable icons and collections,
 provides deterministic SVG rendering, supports explicit catalogue workflows, and can adopt
@@ -15,10 +15,10 @@ target used to present it.
 
 | Boundary | Maturity | Project role |
 | --- | --- | --- |
-| [`@luscious-garden/aster-core`](../packages/core/index.md) | Pre-release | Defines and constructs the portable icon and collection model. |
-| [`@luscious-garden/aster-icons`](../packages/icons/index.md) | Pre-release | Publishes canonical TypeScript-first icons and explicit collection aggregates. |
-| [`@luscious-garden/aster-svg`](../packages/svg/index.md) | Pre-release | Renders portable definitions as deterministic standalone SVG markup. |
-| [`@luscious-garden/aster-cli`](../packages/cli/index.md) | Pre-release | Provides host-neutral catalogue commands and a thin standalone Node executable. |
+| [`@luscious-garden/aster-core`](../packages/core/index.md) | Published `0.1.0` | Defines and constructs the portable icon and collection model. |
+| [`@luscious-garden/aster-icons`](../packages/icons/index.md) | Published `0.1.0` | Publishes canonical TypeScript-first icons and explicit collection aggregates. |
+| [`@luscious-garden/aster-svg`](../packages/svg/index.md) | Published `0.1.0` | Renders portable definitions as deterministic standalone SVG markup. |
+| [`@luscious-garden/aster-cli`](../packages/cli/index.md) | Published `0.1.0` | Provides host-neutral catalogue commands and a thin standalone Node executable. |
 | [`@luscious-garden/aster-import`](../packages/import/index.md) | Private | Adopts explicit external sources into portable definitions and editable TypeScript. |
 | [Repository tooling](../tooling/index.md) | Private | Verifies and maintains this repository without entering production package graphs. |
 
@@ -66,10 +66,10 @@ by each owning package rather than repeated here.
 
 ## Maturity and releases
 
-Aster has no stable public release. Core, Icons, SVG and CLI remain available as verified release
-candidates on npm while the `0.1.0` source is prepared for separate approval and publication.
-Icons contains its first accepted collection, and Import remains deliberately private.
-Pre-release availability does not establish a stable compatibility promise.
+Core, Icons, SVG and CLI have their first non-prerelease `0.1.0` versions on npm. Icons contains
+its first accepted collection, and Import remains deliberately private. A release below `1.0.0`
+does not by itself promise a final public API; the [versioning policy](versioning.md) defines
+compatibility and migration requirements.
 
 Independently installable packages own separate Semantic Versioning sequences and coordinate only
 where their dependency contracts require it. The complete

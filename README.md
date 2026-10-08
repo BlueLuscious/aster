@@ -5,14 +5,13 @@ cataloguing and distributing icon collections. Its canonical model is designed t
 serve Lilium, Protea and other consumers without assigning framework ownership to
 the icon source.
 
-The first stable `0.1.0` source is prepared but has not yet been published. The examples below
-target that release after publication. See the [publication record](docs/en/project/publication.md)
-for currently available versions and the [package documentation](docs/en/packages/index.md) for
-release history.
+Core, Icons, SVG and CLI `0.1.0` are published on npm. See the
+[publication record](docs/en/project/publication.md) for distribution evidence and the
+[package documentation](docs/en/packages/index.md) for each package's release history.
 
 ## Package consumption
 
-After stable publication, install canonical icons and SVG rendering:
+Install canonical icons and SVG rendering:
 
 ```sh
 pnpm add @luscious-garden/aster-icons@0.1.0 @luscious-garden/aster-svg@0.1.0

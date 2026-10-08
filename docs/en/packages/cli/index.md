@@ -1,6 +1,6 @@
 # Aster CLI
 
-Status: **Pre-release**
+Status: **Accepted**
 
 `@luscious-garden/aster-cli` owns Aster's host-neutral command contracts, deterministic catalogue discovery, and
 the standalone Node host. The implementation provides the frozen programmatic `AsterCommands`

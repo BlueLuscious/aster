@@ -1,6 +1,6 @@
 # CLI Shell
 
-Status: **Pre-release**
+Status: **Accepted**
 
 The shell feature is the private Node adapter over the public `AsterCommands` composition. It owns
 argv tokenisation, the built-in executable context, presentation, optional output-tree

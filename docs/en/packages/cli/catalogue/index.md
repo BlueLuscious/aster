@@ -1,6 +1,6 @@
 # CLI Catalogue
 
-Status: **Pre-release**
+Status: **Accepted**
 
 The catalogue feature accepts explicit providers, isolates lightweight discovery metadata, and
 performs host-neutral catalogue queries. It has no ambient provider registry and does not infer
