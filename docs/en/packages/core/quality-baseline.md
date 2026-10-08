@@ -6,7 +6,8 @@ This document defines the evidence method used to compare `@luscious-garden/aste
 distribution changes. It is not a product benchmark, a hardware-independent promise, or a CI
 performance threshold.
 
-Current findings remain in [Core Quality](quality.md).
+[Core Quality](quality.md) owns correctness and consumer conformance. Shared sampling and report
+aggregation are specified by [Performance Tooling](../../tooling/performance/index.md#structure).
 
 ## Representative evidence
 
@@ -57,6 +58,31 @@ times as long in this comparison. This is bounded near-linear construction evide
 fixed inputs, not a hardware-independent complexity or timing guarantee. Geometry complexity,
 metadata and input canonicality also affect validation cost. Reading a constructed collection's
 `members` remains a data-property access and performs no reconstruction.
+
+## Historical construction comparison
+
+An earlier canonical-retention comparison used three baseline and three candidate reports under
+equivalent Node, operating-system, architecture, hardware, scenario and workspace conditions.
+These historical inputs predate the current structured-path and typed-collection scenarios.
+The median across report medians was:
+
+| Scenario | Hardened baseline | Retained candidate | Difference |
+| --- | ---: | ---: | ---: |
+| `core.icon.define` | 11,118 ns per operation | 11,540 ns per operation | 3.8% slower |
+| `core.collection.define` | 222,683 ns per operation | 197,876 ns per operation | 11.1% faster |
+
+The retained candidate removed a redundant dense-array pass, combined collection normalisation
+with duplicate detection, and replaced independent freezing inspection with canonical graph
+comparison. It also corrected retention of frozen but non-canonical input. Checksums and
+unrelated observable construction semantics remained unchanged.
+
+Heap observations did not meet the improvement threshold, so no memory reduction is claimed.
+The correction reduced constant traversal work; it established no scaling claim or CI threshold.
+
+The unminified baseline contained 72 JavaScript modules totalling 48,345 bytes and 72 declaration
+files totalling 33,535 bytes. The dedicated matcher candidate contained 73 JavaScript modules
+totalling 50,270 bytes and 73 declaration files totalling 34,366 bytes. These are historical
+comparison values, not current distribution counts or compatibility promises.
 
 ## Investigation baseline
 
@@ -120,20 +146,10 @@ pnpm benchmark:core
 ```
 
 The command builds only Core before running Node with explicit garbage-collection access. It
-prints schema-version-five JSON to standard output and writes no
-artefact. The report contains:
-
-- Node, operating-system, and architecture identity;
-- seven independently timed samples after an untimed warm-up;
-- minimum, median, and maximum elapsed nanoseconds per public API operation;
-- median non-negative heap growth per operation after pre-sample garbage collection;
-- a deterministic checksum proving that scenario results were consumed;
-- emitted Core module and declaration counts and bytes;
-- Core manifest export keys and its `sideEffects` declaration.
-
-Heap growth is a pressure indicator, not an exact allocation counter. Garbage-collector scheduling,
-processor power state, background load, and Node revisions can affect timing and memory. Reports
-are comparable only when those conditions and scenario configuration are equivalent.
+prints schema-version-five JSON to standard output and writes no artefact. It reports the
+scenario matrix above and the distribution built from the current checkout.
+[Performance Tooling](../../tooling/performance/index.md) owns shared report fields, sampling,
+heap-pressure interpretation and environmental comparison limits.
 
 ## Acceptance rules
 
@@ -157,11 +173,7 @@ provided a deterministic fixture exposes the scaling behaviour and the correctio
 
 ## Tooling boundary
 
-Generic measurement, statistics, Node-host, and package-distribution classes live in shared
-repository performance tooling. The Core factory composes those capabilities, while the Core runner
-owns only Core scenarios and fixture selection. A future package baseline must provide an
-independent factory, runner, and command; it may reuse shared measurement infrastructure without
-adding its scenarios to the Core command or importing Core configuration.
-
-Neither layer is shipped by Core, Icons, SVG, Import, or CLI. Raw reports are intentionally not
-committed because they are machine-specific and reproducible from the source revision.
+The [performance composition](../../tooling/performance/index.md#package-runtime-composition)
+owns private factories, runners and shared host capabilities. Core's baseline selects only Core
+fixtures and scenarios. None of that tooling ships in the package; machine-specific raw reports
+are reproducible disposable evidence, not committed artefacts.

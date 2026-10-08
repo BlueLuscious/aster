@@ -15,17 +15,18 @@ URLs, gradients, classes, styles, or events.
 
 ## Types
 
-| Type | Values or form | Responsibility |
+| Type | Values or form | Responsibility and relations |
 | --- | --- | --- |
-| `IconPaintType` | `none`, `currentColor`, or `#`-prefixed literal | Closed portable paint representation; runtime validates canonical hexadecimal sRGB. |
-| `IconFillRuleType` | `nonzero`, `evenodd` | Portable fill algorithm. |
-| `IconStrokeLineCapType` | `butt`, `round`, `square` | Portable stroke endpoint shape. |
-| `IconStrokeLineJoinType` | `miter`, `round`, `bevel` | Portable stroke corner shape. |
-| `IconPresentationOverrideType` | `fill`, `stroke`, `strokeWidth` | Capability an icon permits callers to override. |
+| `IconPaintType` | `none`, `currentColor`, or `#`-prefixed literal | Paint for `IconPresentation` and render options; runtime validates canonical hexadecimal sRGB. |
+| `IconFillRuleType` | `nonzero`, `evenodd` | Fill algorithm for `IconPresentation.fillRule`. |
+| `IconStrokeLineCapType` | `butt`, `round`, `square` | Endpoint shape for `IconPresentation.strokeLineCap`. |
+| `IconStrokeLineJoinType` | `miter`, `round`, `bevel` | Corner shape for `IconPresentation.strokeLineJoin`. |
+| `IconPresentationOverrideType` | `fill`, `stroke`, `strokeWidth` | Capability listed by `IconPresentationPolicy.overrides` and interpreted against caller render options. |
 
-Opacity values use the inclusive range from zero to one. Widths and corner radii are non-negative;
+Opacity values use the inclusive range from zero to one. Stroke widths are non-negative;
 miter limits and declared viewport sizes are positive. These numeric constraints require runtime
-validation.
+validation. Short hexadecimal sRGB colours expand to six lowercase
+digits and long hexadecimal colours are lowercased. Numeric negative zero becomes zero.
 
 ## Feature-owned authorities
 

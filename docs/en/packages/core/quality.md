@@ -2,191 +2,53 @@
 
 Status: **Accepted**
 
-This document inventories the observable `@luscious-garden/aster-core` boundary, records accepted consumer and
-distribution conformance, and identifies pressures that do not currently justify API or runtime
-growth. The measurement method is the [Core Quality Baseline](quality-baseline.md).
+This page owns conformance evidence for `@luscious-garden/aster-core`, not a second specification
+of its data model. [API](api/index.md) owns the exact public exports; the
+[feature map](index.md#documentation) leads to each contract, type and runtime authority.
+[Quality Baseline](quality-baseline.md) owns measured comparisons and their acceptance rules.
 
-## Public inventory
+## Evidence coverage
 
-The package exposes only the root subpath. Its runtime values are:
-
-- `Collection` and `Icon`;
-- `iconDirections` and `iconRtlPolicies`;
-- `iconNodeKinds` and `iconPathCommandKinds`;
-- `iconPaintSchema`, `iconPresentationOverrideOrder`, and `iconTechnicalPresentation`;
-- `IconDefinitionError`.
-
-Its public type surface comprises:
-
-- `CollectionApi`, `CollectionDefinitionInput`, `CollectionDefinition`, `CollectionIconMap`,
-  `CollectionIdentity`, and `CollectionMetadata`;
-- `IconApi`, `IconDefinition`, `IconIdentity`, `IconViewBox`, and `IconMetadata`;
-- `IconPoint`, `IconPathNode`, `IconCircleNode`, `IconEllipseNode`, `IconRectNode`,
-  `IconLineNode`, `IconPolylineNode`, `IconPolygonNode`, and `IconNodeType`;
-- `IconPathMoveCommand`, `IconPathLineCommand`, `IconPathCubicBezierCommand`,
-  `IconPathQuadraticBezierCommand`, `IconPathArcCommand`, `IconPathCloseCommand`, and
-  `IconPathCommandType`;
-- `IconPresentation`, `IconPresentationPolicy`, `IconPaintType`, `IconFillRuleType`,
-  `IconStrokeLineCapType`, `IconStrokeLineJoinType`, and `IconPresentationOverrideType`;
-- `IconRenderOptions`, `IconDirectionType`, and `IconRtlPolicyType`.
-
-Internal factories, normalisers, and validators are emitted as implementation modules but cannot
-be resolved through the package export map. `IconDefinitionError` is available only from the root;
-its implementation subpath remains unsupported.
-
-## Consumers
-
-| Consumer | Core authority used |
-| --- | --- |
-| `@luscious-garden/aster-icons` | Authors canonical icon and collection definitions. |
-| `@luscious-garden/aster-svg` | Revalidates definitions and interprets portable render options and presentation authorities. |
-| `@luscious-garden/aster-import` | Inspects external source evidence and delegates portable definition construction to Core. |
-| `@luscious-garden/aster-cli` | Describes and normalises catalogue icon and collection records without changing definitions. |
-| Repository workflows | Exercise TypeScript-first authoring, import equivalence, and package composition through public roots. |
-
-No consumer grants Core filesystem, DOM, terminal, process, framework, or catalogue-registry
-authority.
-
-## Public authority classification
-
-| Public value | Classification | Evidence |
+| Evidence | Guarantees exercised | Behaviour authority |
 | --- | --- | --- |
-| `Icon` and `Collection` | Portable domain authorities | Every canonical definition enters the ecosystem through their frozen `define()` operations. |
-| `iconNodeKinds` | Portable domain authority | SVG dispatches portable node kinds through this closed vocabulary. |
-| `iconPathCommandKinds` | Portable domain authority | Structured path contracts narrow absolute geometry without importing SVG command letters. |
-| `iconDirections` and `iconRtlPolicies` | Portable domain authorities | SVG resolves direction and RTL behaviour without owning either vocabulary. |
-| `iconPaintSchema` | Portable domain authority | Core validation and SVG option normalisation share its accepted paint grammar. |
-| `iconPresentationOverrideOrder` | Portable domain authority | Core and SVG require the same deterministic presentation override order. |
-| `iconTechnicalPresentation` | Portable domain authority | SVG omits Core-owned technical presentation fields from authored output. |
-| `IconDefinitionError` | Portable failure authority | Import and JavaScript consumers can distinguish invalid authored definitions without relying on a private class name. |
+| Runtime definition suites | Numeric and textual boundaries, geometry, metadata relationships, deterministic errors, canonical ordering, isolation and deep freezing. | [Definition Runtime](definition/runtime/index.md), [Node](node/index.md), [Metadata](metadata/index.md) and [Presentation](presentation/index.md). |
+| Adversarial input suite | Symbols, hidden fields, accessors, inherited fields, custom and null prototypes, sparse or extended arrays, cyclic values and proxy failures. | [Shared Runtime](shared/index.md) and [Trust Boundary](workflow.md#security-and-trust-boundary). |
+| Collection runtime suite | Empty and populated dictionaries, alias order, duplicate identities, many-to-many membership, canonical retention and complete-definition revalidation after structural cloning. | [Collection](collection/index.md). |
+| Type suites | Portable narrowing, readonly aliases and members, optional aliases, canonical output types for mutable input, and rejection of unsupported host concepts. | Feature contracts and types. |
+| Built-package ABI suite | Exact root exports, unsupported private subpaths, ESM and side-effect metadata, portable declarations and absence of reverse dependencies or host types. | [API](api/index.md#package-exports) and [Package Boundary](index.md#boundary). |
 
-Public contracts and types describe the portable data ABI independently of whether every leaf
-contract currently has a named external import. Individual geometry contracts remain deliberate
-domain vocabulary rather than consumer conveniences. Internal emitted modules remain outside the
-supported ABI because the package export map exposes only the root.
+The adversarial suite proves that ordinary accessors are not executed. Proxy failures remain
+outside the validation guarantee; a benchmark does not replace either class of correctness test.
 
-No current workflow justifies another immutable API operation. Consumers either define one complete
-icon or one complete collection, and none requires incremental membership composition. A future
-operation must therefore prove immutable return, duplicate, ordering, ownership, and failure
-semantics before it expands the API.
+## Consumer conformance
 
-## Distribution snapshot
+- Icons constructs definitions and collections through public Core authorities.
+- SVG revalidates definitions and consumes portable vocabularies without importing Core internals.
+- Import constructs accepted portable values through the public root while keeping source
+  diagnostics and host operations outside Core.
+- CLI isolates provider values through Core; its packed-consumer suite also compiles concrete
+  collection aliases, rejects mutation and verifies retained icon references and ordered members.
+- Repository workflow tests exercise TypeScript-first authoring, Import equivalence, collection
+  composition and SVG hand-off through built public package roots.
 
-Core emits native ES2022 ESM with one public root export and `sideEffects: false`.
-The historical canonical-retention comparison used an unminified distribution of 72 JavaScript
-modules totalling 48,345 bytes and 72 declaration files totalling 33,535 bytes. The comparison
-candidate included the dedicated matcher responsibility and contained 73 JavaScript modules
-totalling 50,270 bytes and 73 declaration files totalling 34,366 bytes. These values are comparison
-evidence for that earlier boundary, not the current structured-path and typed-collection output or
-a fixed compatibility promise. `pnpm benchmark:core` reports the distribution built from the
-current checkout.
+These tests verify the implemented [package relationships](../index.md), not hypothetical future
+adapters. The [project testing policy](../../project/testing.md) defines the role of package,
+packed-consumer and cross-package evidence.
 
-## Performance comparison
+## Public authority rationale
 
-Three baseline and three candidate reports were captured under the same Node, operating-system,
-architecture, hardware, scenario, and workspace conditions. The median across report medians was:
+Frozen construction objects and exported vocabularies are portable domain authorities, not
+catalogue state. Leaf contracts remain deliberate geometry and metadata vocabulary even when a
+particular contract has no named external import. Their descriptions belong to the owning
+features rather than a duplicate public inventory here.
 
-| Scenario | Hardened baseline | Retained candidate | Difference |
-| --- | ---: | ---: | ---: |
-| `core.icon.define` | 11,118 ns per operation | 11,540 ns per operation | 3.8% slower |
-| `core.collection.define` | 222,683 ns per operation | 197,876 ns per operation | 11.1% faster |
+Complete member reconstruction and identity-safe graph comparison remain required by the
+[collection retention contract](collection/index.md#runtime). The
+[measured matcher investigation](quality-baseline.md#attributed-investigation-outcome) did not
+justify replacing that implementation. Frozen-only shortcuts, branding, registries and mutable
+memoisation do not establish equivalent evidence.
 
-The candidate removes a redundant dense-array pass, combines collection normalisation with
-duplicate detection, and replaces independent freezing inspection with one canonical graph
-comparison. It also corrects retention of frozen but non-canonical input. Checksums and observable
-construction semantics remain unchanged.
-
-Heap observations did not meet the accepted improvement threshold, so no memory reduction is
-claimed. The correction changes constant traversal work rather than algorithmic complexity; no
-scaling claim or CI threshold follows from this evidence.
-
-## Focused performance investigation
-
-The granular six-scenario matrix subsequently isolated mutable and canonical icon construction,
-fixed collection overhead, single-member retention, and complete mutable and canonical
-collections. Three equivalent reports established the investigation baseline documented in
-[Core Quality Baseline](quality-baseline.md).
-
-CPU attribution identified strict field, descriptor, and dense-array inspection as essential work
-shared by mutable and canonical inputs. `CanonicalIconMatcher` accounted for a median 20.66% of
-self-time in complete canonical collection profiles and did not appear in the equivalent mutable
-scenario. Duplicate detection, identity-key construction, and freezing were not independent
-material hotspots.
-
-One controlled candidate replaced recursive authored-to-canonical correspondence with iterative
-stack traversal and authored-object visitation. It preserved exact values, field order,
-prototypes, frozen state, repeated-alias and cycle rejection, and canonical member identity. The
-median complete canonical collection result across three fresh reports changed from 208,472 to
-212,604 nanoseconds per operation, a 1.98% regression. Although observed heap pressure decreased,
-the candidate failed the accepted timing threshold and was reverted completely.
-
-Core therefore retains its existing implementation. The observed canonical-retention cost is a
-bounded consequence of complete semantic validation and identity-safe graph comparison, not an
-unfinished correction. Further work requires a new measured mechanism that preserves the same
-trust boundary; caching, branding, registries, mutable memoisation, and frozen-only shortcuts
-remain unacceptable substitutes for evidence.
-
-## Typed collection conformance
-
-Runtime and type evidence require concrete readonly aliases, deterministic dictionary order,
-duplicate canonical identity rejection, and a frozen `members` data property containing the same
-icon objects as the alias map. Type evidence also checks mutable authored members, optional
-aliases, and normalised literals: output values use the canonical readonly `IconDefinition`
-contract rather than retaining the authored member's subtype. Complete-definition revalidation
-checks any submitted member list against the authoritative dictionary, including after structural
-cloning has lost reference sharing. Reflective dictionary evidence covers symbols, accessors,
-hidden properties, ordinary and null prototypes, and valid aliases that shadow inherited names.
-
-Packed-consumer evidence compiles concrete collection aliases, rejects unknown aliases and
-mutation, and verifies direct-icon reference retention plus ordered traversal through the exact
-emitted declarations and modules. Repository workflows and CLI providers consume `members` for
-ordered complete-definition processing while keeping discovery records metadata-only.
-
-The scale scenarios prepare authored dictionaries of 26 and 256 synthetic icons before timing.
-They measure validation and one-time member derivation without consulting product artwork.
-Observed construction cost and its limits are recorded by the
-[Core Quality Baseline](quality-baseline.md#typed-collection-scaling). No query runtime, registry,
-cache, or construction shortcut is required by this evidence.
-
-## Future pressure boundaries
-
-| Pressure | Current evidence | Decision boundary |
-| --- | --- | --- |
-| Repeated complete icon validation | Collection construction still validates every member before canonical identity retention. | Retain this cost unless a future security model proves provenance without branding, registries, caches, or hidden state. |
-| Canonical graph comparison | Collection compares a successfully reconstructed member with frozen authored data before retaining object identity; focused profiling attributes material canonical-only cost to this responsibility. | Preserve exact values, key order, prototypes, topology, and adversarial protections. Reopen only with a distinct measured mechanism and equivalent reports. |
-| API composition ambiguity | `Icon` and `Collection` currently expose only `define()`; names such as `add()` do not state mutation, ownership, duplicate, or ordering semantics. | Require a demonstrated immutable composition workflow before adding an operation. Collection membership remains collection-owned. |
-| Definition instance pressure | Canonical definitions are plain deeply frozen data, while instance methods would add prototypes and behaviour to the portable value model. | Keep definitions structural; evaluate explicit immutable API operations before considering a separate value-object representation. |
-| Distribution granularity | TypeScript emits one module per source file with no bundling. | Treat file and byte counts as inspection evidence; do not add a bundler without a distribution requirement. |
-
-## Hardened input boundary
-
-Core accepts only plain records with own enumerable string-keyed data fields and dense arrays with
-canonical indexed data elements. Runtime evidence covers unknown fields, custom and null
-prototypes, symbols, hidden properties, accessors, sparse arrays, authored array properties,
-cycles, repeated aliases, mutation isolation, numeric boundaries, Unicode text, ASCII slugs,
-relationship invariants, deterministic errors, ordering, and many-to-many collection membership.
-
-Proxy traps and caller-controlled execution remain outside Core's sandbox authority. Their failures
-are propagated without being misclassified as `IconDefinitionError`.
-
-No pressure authorises caching, mutable singletons, global registries, trusted-object branding, or
-API growth by itself. Any future correction requires conformance evidence or a measured
-comparison.
-
-## Accepted conformance
-
-- Icons author definitions and collection membership only through public Core construction.
-- SVG revalidates portable definitions, consumes exported runtime vocabularies, and owns SVG,
-  accessibility-resolution, and target-error semantics independently.
-- Import creates Core values through the public root and owns parsing, source diagnostics,
-  normalisation, editable module emission, and filesystem-host separation independently.
-- CLI isolates provider values through public Core construction while keeping catalogue identity,
-  membership evidence, search, provenance, and discovery state outside Core.
-- Built package declarations and modules contain no reverse package dependency, Node or DOM type,
-  CommonJS output, repository-tooling import, or implementation-subpath dependency.
-- Repository workflows exercise TypeScript-first authoring, SVG import equivalence, collection
-  composition, and SVG hand-off through built public package roots.
-
-These guarantees are verified by package runtime and ABI suites, CLI clean-consumer and executable
-conformance, architecture checks, and repository workflow tests. They describe implemented
-relationships only and do not simulate future framework or target adapters.
+No implemented workflow requires incremental membership mutation or definition instances with
+behaviour. Any API expansion must establish ownership, immutable return, ordering, duplicate and
+failure semantics under the [compatibility policy](../../project/versioning.md). Distribution
+counts and machine-specific timings remain comparison evidence, not compatibility guarantees.

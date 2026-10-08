@@ -2,34 +2,20 @@
 
 Status: **Accepted**
 
-The API feature exposes the smallest public construction authorities for portable icons and
-collections. Each frozen API object owns one private factory instance.
+The API feature exposes frozen construction objects, each owning one private factory instance.
+There is no instance registry or incremental mutation API.
 
-## Contract
+## Contracts and values
 
-| Contract | Responsibility | Relations |
+| Contract | Operation | Responsibility and relations |
 | --- | --- | --- |
-| `IconApi` | Declares `define()` as the complete public value authority. | Accepts and returns `IconDefinition`. |
-| `CollectionApi` | Declares generic `define()` as the complete public collection authority. | Accepts `CollectionDefinitionInput<TIconMap>` and returns `CollectionDefinition<TIconMap>`. |
+| `IconApi` | `define(definition: IconDefinition): IconDefinition` | Describes the public `Icon` object; constructs one [portable definition](../definition/index.md). |
+| `CollectionApi` | `define<TIconMap extends CollectionIconMap>(definition: CollectionDefinitionInput<TIconMap>): CollectionDefinition<TIconMap>` | Describes the public `Collection` object; preserves authored aliases while returning [canonical membership](../collection/index.md). |
 
-## Value
-
-| Value | Members | Responsibility |
-| --- | --- | --- |
-| `Icon` | `define()` | Validates authored data and returns an isolated deeply frozen definition. |
-| `Collection` | `define()` | Validates authored data and returns a deeply frozen independent collection. |
-
-Both APIs are frozen and retain no icon, collection, or catalogue registry. Calling `define()`
-twice with equal authored values creates independent equal definitions.
-
-The API provides compile-time guidance through `IconDefinition`, while its internal factory
-accepts an unknown runtime value and validates it before reading the closed shape. TypeScript
-annotations are therefore never treated as runtime evidence.
-
-`Collection.define()` infers the authored alias map through a generic constrained by
-`CollectionIconMap`. It preserves known aliases as readonly properties and derives the ordered
-`members` list. The [Collection contract](../collection/index.md) owns alias, membership, and
-complete-definition revalidation semantics.
+TypeScript guides authoring; each factory validates unknown runtime input rather than treating an
+annotation as evidence. Successful calls return deeply frozen plain data. Equal authored input
+does not create a shared registry entry: separate construction calls produce independent results,
+except for canonical icon references deliberately retained by collections.
 
 ## Usage
 
@@ -37,32 +23,14 @@ complete-definition revalidation semantics.
 import { Collection, Icon } from "@luscious-garden/aster-core";
 
 const Camera = Icon.define({
-  identity: {
-    namespace: "example",
-    name: "camera",
-  },
-  viewBox: {
-    minX: 0,
-    minY: 0,
-    width: 24,
-    height: 24,
-  },
-  nodes: [
-    {
-      kind: "circle",
-      cx: 12,
-      cy: 12,
-      radius: 4,
-    },
-  ],
+  identity: { namespace: "example", name: "camera" },
+  viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
+  nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],
   metadata: {
     displayName: "Camera",
     rtl: "preserve",
     presentation: {
-      defaults: {
-        fill: "none",
-        stroke: "currentColor",
-      },
+      defaults: { fill: "none", stroke: "currentColor" },
       overrides: ["stroke"],
     },
     deprecated: false,
@@ -70,34 +38,22 @@ const Camera = Icon.define({
 });
 
 const InterfaceIcons = Collection.define({
-  identity: {
-    name: "interface-icons",
-  },
-  icons: {
-    camera: Camera,
-  },
-  metadata: {
-    displayName: "Interface Icons",
-  },
+  identity: { name: "interface-icons" },
+  icons: { camera: Camera },
+  metadata: { displayName: "Interface Icons" },
 });
 
-InterfaceIcons.icons.camera; // The same canonical Camera object.
-InterfaceIcons.members; // Frozen ordered [Camera], derived once.
+InterfaceIcons.icons.camera;
+InterfaceIcons.members;
 ```
 
-The accepted value is plain readonly data. Consumers inspect `identity`, `viewBox`, `nodes`, and
-`metadata` directly; no inspection facade or instance registry is required.
+The two membership views contain the same canonical `Camera` object. Consumers inspect definition
+fields directly; collection alias grammar, ordering, generic output and revalidation are owned by
+[Collection](../collection/index.md).
 
 ## Package exports
 
-`@luscious-garden/aster-core` approves only its root `"."` export. The root provides `Icon`, `Collection`,
-documented frozen portable runtime authorities, and all public contracts and types.
-
-No feature, runtime, manager, normaliser, validator, or shared implementation subpath is public.
-Unsupported subpaths fail through the package resolver rather than becoming compatibility
-contracts accidentally.
-
-The exact runtime value surface is:
+Only the root `"."` export is public. Its exact runtime values are:
 
 - `Collection`;
 - `Icon`;
@@ -110,13 +66,13 @@ The exact runtime value surface is:
 - `iconRtlPolicies`;
 - `iconTechnicalPresentation`.
 
-The package is native ES2022 ESM and declares its modules free of observable import side effects.
-This makes the export graph compatible with static consumer analysis without promising
-bundler-specific tree-shaking behaviour.
+The root also exports the public contracts and types documented by the
+[feature map](../index.md#documentation). Feature and implementation subpaths are unsupported,
+even when their modules exist in the emitted distribution.
 
 ## Failure
 
-Invalid authored data raises the deterministic error documented by
-[Immutable Definition Runtime](../definition/runtime/index.md). `IconDefinitionError` is exported
-from the root so JavaScript consumers can use `instanceof` and inspect its stable `code` and
-logical `path` without importing implementation modules.
+Invalid ordinary authored data raises [`IconDefinitionError`](../shared/index.md#error).
+Construction returns no partial definition. The
+[trust boundary](../workflow.md#security-and-trust-boundary) distinguishes data validation from
+caller-controlled execution.

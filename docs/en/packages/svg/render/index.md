@@ -13,7 +13,8 @@ Its [runtime composition](runtime/index.md) validates the complete input before 
 
 The string includes the SVG root and namespace but no XML declaration. It remains portable across
 server rendering, static generation, streams, tests, browser hosts, and future file exporters.
-It grants no DOM insertion or trusted-markup authority.
+It is the result contract used by `SvgApi` and the private serialiser; hosts can retain or transmit
+the string, but it grants no DOM insertion or trusted-markup authority.
 
 Equivalent accepted definitions, options, and renderer versions must produce byte-equivalent
 markup. Exact root, node, presentation, accessibility, direction, numeric, attribute-order, and
@@ -45,15 +46,12 @@ appears on every successfully rendered root, regardless of the icon's identity o
 This marker is informational: a consumer can remove it and an optimiser may strip it. It does
 not replace applicable licence or credit requirements.
 
-Decorative accessibility attributes are ordered as `aria-hidden`, then `focusable`. Semantic
-attributes are ordered as `role`, then `aria-label`. An optional `title` is the first child and
-always remains outside a generated RTL geometry group.
-
-Output is decorative by default when neither `label` nor `title` is present. Supplying either value
-selects semantic output by default; `label` is the accessible name when both are present, while
-`title` remains target title content. Explicit decorative output cannot carry a label or title,
-and explicit semantic output must provide at least one of them. Accepted text is trimmed, non-empty
-Unicode text without disallowed controls.
+Accessibility intent and label/title precedence follow
+[Core Render Options](../../core/render/index.md#option-semantics). SVG maps decorative output to
+`aria-hidden="true"`, then `focusable="false"`; semantic output uses `role="img"`, then
+`aria-label` with the resolved accessible name. An optional escaped `title` is the first child
+and always remains outside a generated RTL geometry group. Accepted option text is trimmed and
+must remain non-empty and representable under the XML rules below.
 
 ## Geometry mapping
 
@@ -89,11 +87,11 @@ Presentation follows geometry attributes in this order:
 9. `fill-opacity`;
 10. `stroke-opacity`.
 
-The renderer resolves Core's
-[technical presentation defaults](../../core/presentation/index.md#technical-defaults), icon
-defaults, node presentation, and authorised caller overrides before serialising each node. Caller
-overrides therefore remain authoritative even when a node contains an explicit value. The root
-does not rely on inherited fill or stroke to approximate this precedence.
+Each node uses Core's [presentation precedence](../../core/presentation/index.md#resolution-precedence).
+All ten effective fields, including values equal to the
+[technical defaults](../../core/presentation/index.md#technical-defaults), are emitted in the order
+above. The root does not rely on
+inherited fill or stroke to approximate this resolution.
 
 ## Numeric and text form
 
@@ -117,9 +115,8 @@ strings; no partial result or external target exists before the complete return 
 
 ## Viewport and colour
 
-Viewport size resolves from explicit `size`, icon `defaultSize`, or viewBox dimensions in that
-order. An explicit size below icon `minimumSize` is rejected rather than presented as
-author-approved output.
+Width and height follow the [portable viewport rules](../../core/render/index.md#option-semantics).
+A resolved square size produces equal root dimensions; otherwise each viewBox dimension is used.
 
 The portable `colour` option maps to the root SVG `color` attribute. SVG paint `none` cannot
 represent a colour context and is rejected when supplied as `colour`; it remains valid for fill
