@@ -1,6 +1,6 @@
 # Release Tooling
 
-Status: **Preparation implemented; no GitHub tag, draft or Release created**
+Status: **Preparation and draft creation verified for four package-specific `0.1.0` Releases**
 
 This private tooling prepares one public package Release at a time. It neither selects a new
 package version nor publishes to npm. The [publication policy](../../project/publication.md)
@@ -9,10 +9,11 @@ commit and approved archive hash.
 
 ## Read-only preparation
 
-Run `pnpm run release:prepare -- core 0.1.0`, replacing the package and version as needed. The
-command reads the canonical version page, the package manifest at its recorded source commit,
-the exact public npm archive, and the source commit's `master` push CI run. It requires successful
-Ubuntu and Windows jobs, recomputes the archive SHA-256, and rejects an existing Git tag or
+Run `pnpm run release:prepare -- <package> <version>` with the exact reviewed package and version
+before its Git tag or Release exists. The command reads the canonical version page, the package
+manifest at its recorded source commit, the exact public npm archive, and the source commit's
+`master` push CI run. It requires successful Ubuntu and Windows jobs, recomputes the archive
+SHA-256, and rejects an existing Git tag or
 published GitHub Release. The JSON output contains the proposed tag, title, GitHub-ready notes,
 archive URL and name, approved hash, direct runtime dependencies and CI evidence. Documentation
 links in the GitHub-ready body point to the current canonical pages; the tag still points to the

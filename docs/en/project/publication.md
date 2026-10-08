@@ -1,6 +1,6 @@
 # Manual Publication
 
-Status: **Stable `0.1.0` published on npm; four package-specific GitHub Releases pending approval**.
+Status: **Stable `0.1.0` published on npm and in four package-specific GitHub Releases**.
 
 This records the human-controlled procedure and distribution evidence for Core, Icons, SVG and
 CLI. The [versioning policy](versioning.md) owns compatibility and dependency sequencing; each
@@ -62,8 +62,11 @@ Icons, Amellus collection, SVG and CLI workflows. Every package's `latest` tag r
 separate `stable` tag was created. Candidate tags were not moved during this publication;
 the superseded `next` pointers will remain on those candidates until a new candidate is
 approved. They do not identify the current stable versions; use `latest` or an exact stable
-version for that purpose. No npm dist-tag was changed during GitHub Release preparation.
-No package-specific Git tag or GitHub Release has yet been created or approved.
+version for that purpose. No npm dist-tag was changed during GitHub Release preparation or
+publication. Four normal GitHub Releases were published on 8 October 2026 (UTC), each under its
+package-specific tag at the approved source commit. Their titles and notes match the canonical
+version pages, and each downloaded `.tgz` matches its approved npm archive SHA-256. The public
+Release URLs are recorded in the corresponding package release indexes.
 
 ## First candidate review
 
@@ -133,8 +136,8 @@ The tarball downloaded from npm has the same SHA-256 as the approved archive. An
 consumer installed CLI `rc.3` with Core, Icons and SVG `rc.2` from npm and passed version,
 dependency, location, catalogue, SVG export and review checks. CLI `next` selects `rc.3`;
 Core, Icons and SVG `next` still select `rc.2`. At that time, each package's `latest` remained
-on `rc.1`. No candidate Git tag or GitHub pre-release was created; the first GitHub Release is
-reserved for the verified stable `0.1.0` set, subject to separate approval.
+on `rc.1`. No candidate Git tag or GitHub pre-release was created; GitHub Releases were reserved
+for the verified stable `0.1.0` packages and later published after separate approvals.
 
 ## Decision boundary
 
