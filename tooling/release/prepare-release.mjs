@@ -36,10 +36,20 @@ function readText(path) {
   return readFile(path, "utf8");
 }
 
-if (process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] !== undefined &&
+  resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   const [slug, version, ...extra] = process.argv.slice(2);
-  if (slug === undefined || version === undefined || extra.length > 1 || (extra.length === 1 && extra[0] !== "--full")) {
-    process.stderr.write("Usage: pnpm run release:prepare -- <core|icons|svg|cli> <version> [--full]\n");
+  if (
+    slug === undefined ||
+    version === undefined ||
+    extra.length > 1 ||
+    (extra.length === 1 && extra[0] !== "--full")
+  ) {
+    process.stderr.write(
+      "Usage: pnpm run release:prepare -- <core|icons|svg|cli> <version> [--full]\n",
+    );
     process.exitCode = 1;
   } else {
     try {
@@ -49,12 +59,14 @@ if (process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(
         readText,
         fetchResponse: fetch,
         githubToken: process.env.GH_TOKEN ?? process.env.GITHUB_TOKEN ?? "",
-        inspectDrafts: extra[0] === "--full",
+        checkReleaseListing: extra[0] === "--full",
       });
       const intent = await preparer.prepare(slug, version);
       process.stdout.write(`${JSON.stringify(intent, null, 2)}\n`);
     } catch (error) {
-      process.stderr.write(`${error instanceof Error ? error.message : "Release preparation failed."}\n`);
+      process.stderr.write(
+        `${error instanceof Error ? error.message : "Release preparation failed."}\n`,
+      );
       process.exitCode = 1;
     }
   }
