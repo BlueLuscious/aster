@@ -23,7 +23,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P0` | Consolidate canonical documentation before the next planned package publication. | The first stable GitHub Releases are closed and the documentation ownership review is accepted. |
+| 1 | `P0` | Consolidate canonical documentation before the next planned package publication. | The ownership review is complete; remaining documentation and README conformance must pass before publication. |
 | 2 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
 | 3 | `P2` | Consider published release history through the CLI. | The first stable release exists and published package versions can be mapped reliably to release notes. |
 | 4 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
@@ -46,44 +46,37 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 Importance: **P0 - Required before the next planned package publication**
 
-After the first stable GitHub Releases, audit every authority under `docs/en/` for its purpose,
-ownership, audience and links. Give each fact one self-sufficient canonical home; replace
-repeated or stale explanations with concise links, including in package READMEs. Review the
-boundary between durable publication procedure and version-specific evidence instead of copying
-either into every package page.
+The ownership review has established separate [project policies](project/index.md),
+[publication procedure](project/publication.md) and [dated publication records](project/publications/index.md).
+Complete the remaining package, collection, tooling and README review: give each stable fact one
+self-sufficient owner and replace repeated or stale explanations with links.
 
-Remove the old public-package `releases.md` compatibility pages and link current READMEs directly
-to their package's `releases/index.md` or version page. Published README archives retain their
-old branch-based links: removing those paths from `master` makes those links unavailable, even
-after replacement versions are published. The original files remain accessible through Git
-history; a new package archive does not rewrite an earlier one.
+Remove the four old public-package `releases.md` compatibility pages. Current READMEs use
+`releases/index.md`; loss of the old published README routes is accepted. New archives do not
+rewrite earlier README contents.
 
-Give private `@luscious-garden/aster-import` the same navigable documentation structure:
-`packages/import/releases/index.md` and one page per source version, explicitly labelled as an
-internal version history. This does not make Import public or require an npm publication, GitHub
-Release or downloadable release asset.
+Add private Import history for `0.1.0-rc.1`, `0.1.0-rc.2` and `0.1.0` under
+`packages/import/releases/`, explicitly labelled as internal source history. No npm publication,
+GitHub Release or downloadable public asset is implied.
 
-Complete and verify the documentation work on `develop`; further accepted capabilities may
-accumulate there before another package release is selected. At that release decision, assess
-each package's complete changes since its last published version, including distributed README
-changes, under the [versioning policy](project/versioning.md). Commits provide review evidence;
-their count or scope alone does not determine a version. Promote the reviewed release to `master`
-and produce new archives through the [publication procedure](project/publication.md#branch-promotion).
-Publish only affected packages after normal verification and explicit approval.
+Complete and verify documentation on `develop`; further accepted capabilities may accumulate
+there before another release is selected. Review each package's complete changes since its last
+publication, including distributed README changes, under [versioning](project/versioning.md).
+Use the accepted [release-note convention](project/versioning.md#release-note-convention) for future
+notes without reformatting approved history. Publish only affected packages after the separately
+approved [promotion and archive procedure](project/publication.md#branch-promotion).
 
 ## Reviewed version proposals
 
 Importance: **P2 - Conditional**
 
-The manually reviewed `0.1.0-rc.1` release establishes real package version, dependency and
-release-note evidence. This satisfies the evidence trigger but does not accept an automation
-boundary. Any future proposal must identify the affected packages, dependency-range consequences
-and compatibility rationale; commit scopes alone do not determine a version increment. Release
-notes and package versions remain independently reviewable, and npm publication always requires
-explicit human approval.
+The verified [stable publication](project/publications/0.1.0.md) supplies concrete independent
+version, dependency and release-note evidence. It satisfies the evidence trigger, not an automation
+approval. A future proposal must identify affected packages, dependency-range consequences and
+compatibility rationale; commit scopes alone do not determine an increment.
 
-This remains an optional follow-up to the proven manual candidate and stable release process,
-not a reason to introduce a release framework without an accepted automation boundary.
+Versions and notes remain independently reviewable, and publication requires explicit human
+approval. Do not introduce a release framework without an accepted automation boundary.
 
 ## Coexisting API versions
 
