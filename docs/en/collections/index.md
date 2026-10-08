@@ -2,46 +2,47 @@
 
 Status: **Accepted**
 
-This directory documents Aster's real curated collection set. Collection-specific documentation
-is keyed by accepted curatorial identity and does not require one repository-level source root.
+This directory owns Aster's curated collection set and shared acceptance requirements. It is
+keyed by curatorial identity, independently of package and physical source layout.
 
-The current collection set contains [Amellus](amellus/index.md), Aster's Active foundational
-minimalist general-purpose collection. Its canonical definitions, visual language, provenance,
-licensing, static review and package conformance are accepted in the published Icons `0.1.0`.
+## Accepted set
 
-Active collection status does not imply that the exporting package has been published or that its
-public compatibility surface is stable. Project release maturity remains independently governed
-by [Versioning and Releases](../project/versioning.md).
+| Collection | Lifecycle | Curatorial authority |
+| --- | --- | --- |
+| [Amellus](amellus/index.md) | Active | Foundational minimalist general-purpose artwork, provenance and reviewed visual language. |
 
-## Collection authority
+A collection's lifecycle is distinct from package publication and compatibility.
+[Icons Collections](../packages/icons/collections/index.md) owns distribution and consumer access;
+[Versioning](../project/versioning.md) owns release policy.
 
-A collection document is valid only for an accepted curatorial identity with a canonical slug,
-named curator, lifecycle, artwork licence, intended use and provisional visual contract. Its
-directory records curatorial evidence; it does not create a package, source root, catalogue or
-distribution by existing.
+## Acceptance
 
-A Proposed collection may test its visual language and reference set before publication. When it
-accepts canonical authoring, its documentation must identify exactly one editable source authority
-and distinguish every derived artefact. Promotion to Active additionally requires reviewed
-canonical icons, provenance, licensing, technical and visual evidence, a supported distribution
-boundary and an accepted release posture.
+An accepted curatorial identity needs a canonical slug, named curator, lifecycle, intended use,
+effective artwork terms and visual contract. Documentation records those decisions; creating a
+directory does not create definitions, membership or a package.
 
-Catalogue size is not maturity or quality evidence. A smaller coherent collection with reviewed
-geometry, provenance, and visual behaviour is preferable to unreviewed expansion.
+A Proposed collection may evaluate references and visual language before distribution.
+Canonical authoring requires one editable source authority with clearly distinguished derived
+artefacts. Promotion to Active additionally requires reviewed artwork, provenance, effective
+rights, technical and visual evidence, a supported distribution route and an accepted release
+posture. Catalogue size alone establishes none of these.
 
-Collection membership remains separate from icon identity. Package documentation owns how
-`CollectionDefinition` and `@luscious-garden/aster-icons` represent membership; this tree owns why a curator groups
-those icons and what visual evidence governs them.
+Each collection authority must identify:
 
-Each collection document covers:
+- identity, curator, lifecycle, purpose and effective artwork terms;
+- visual rules, semantic inventory, representative stress coverage and accepted exceptions;
+- canonical authoring and membership sources, with links to their package workflow;
+- provenance, transformation authority for adapted work and technical/curatorial evidence;
+- presentation, variants, RTL, accessibility-relevant metadata and replacement/deprecation policy.
 
-- identity, status, curator, purpose, and licence;
-- visual design contract and representative references;
-- canonical authoring, metadata, interchange, and export workflow;
-- variants, presentation policy, RTL, and accessibility-relevant metadata;
-- accepted exceptions and visual review evidence;
-- package, version, deprecation, and replacement relationships.
+The [Icons rights boundary](../packages/icons/index.md#rights-boundary) links software and artwork
+legal authorities. A collection's curation licence does not automatically replace member terms.
 
-`docs/en/collections/` is a deliberate curatorial exception to package and tooling mirroring. It
-is keyed by collection identity because visual authority can exist independently from one source
-layout. It is not a precedent for unrelated topic-based documentation roots.
+## Representation boundary
+
+[Core Collection](../packages/core/collection/index.md) owns portable keyed/ordered membership;
+[Icons](../packages/icons/index.md) owns distribution. This tree owns why the curator groups the
+artwork and what visual evidence accepts it.
+
+This is a deliberate curatorial exception to package/tooling mirroring, not a generic topic root.
+A collection may remain independent of one source directory or exporting package.

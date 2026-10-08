@@ -57,8 +57,11 @@ The following policies apply:
 - stroke scales with the view box and is never defined as a constant device-pixel width;
 - `nonzero` remains the implicit fill rule where closed geometry requires a technical default.
 
-These rules are expressible through the existing Core presentation contract and render
-deterministically through SVG. The external spellings `currentColor` and `color` remain unchanged
+These rules are implemented by the internal
+[Amellus authoring profile](../../packages/icons/authoring/index.md#amellus-visual-input), not
+applied by collection membership. They use the
+[Core presentation contract](../../packages/core/presentation/index.md) and render deterministically
+through SVG. The external spellings `currentColor` and `color` remain unchanged
 because they belong to SVG and CSS rather than Aster's prose vocabulary.
 
 ## Form language
@@ -118,6 +121,13 @@ small corrections for pointed shapes, circular forms, asymmetric mass or diagona
 Each exception must identify the icon, affected rule, visible reason, `16px` and `24px` evidence,
 and curator decision. Repeated equivalent exceptions trigger review of this contract rather than
 copied waivers.
+
+Current [automated evidence](../../packages/icons/quality.md#evidence-coverage) checks the authored
+profile, half-unit numeric geometry, node presentation exclusions and complexity budgets. It
+does not establish recognisability, optical balance, clear spacing or visible stroke bounds;
+those remain human review responsibilities. An accepted exception must also reconcile the
+applicable conformance checks rather than bypassing them silently. The accepted human findings
+are recorded in the [collection overview](index.md#static-visual-acceptance).
 
 The representative stress set is defined in the [initial inventory](inventory.md). It covers
 curves, diagonals, symmetry, enclosures, detached details and mixed primitives, and remains the

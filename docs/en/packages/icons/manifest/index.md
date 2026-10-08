@@ -2,10 +2,9 @@
 
 Status: **Accepted**
 
-`@luscious-garden/aster-icons/manifest` exposes immutable metadata for discovery without importing icon geometry,
-presentation policy or complete collection definitions. It is the lightweight package surface for
-search, listing and later on-demand resolution; it is not a mutable registry and does not load a
-definition by itself.
+`@luscious-garden/aster-icons/manifest` exposes immutable discovery metadata without evaluating
+geometry, presentation policy or complete definitions. It performs no search or definition
+loading itself.
 
 ## Public values
 
@@ -16,73 +15,49 @@ import {
 } from "@luscious-garden/aster-icons/manifest";
 ```
 
-`AsterIconManifest` is ordered by canonical icon key. Each `IconManifestEntry` retains:
-
-- `key`, using `[<namespace>/]<name>[@<variant>]`;
-- the complete portable `identity`;
-- the named public export in `symbol`;
-- `displayName`, optional `tags` and the `rtl` policy;
-- optional effective `licence` and `attribution`;
-- `deprecated` and an optional complete `replacedBy` identity.
-
-For original Aster artwork, `licence` is `LicenseRef-Aster-Artwork-1.0`, whose complete terms
-are [shipped with the package](../../../../../packages/icons/ARTWORK-LICENCE.md). This metadata
-describes artwork rights; it does not change the [ISC software licence](../../../../../packages/icons/LICENSE)
-of the manifest implementation.
-
-`AsterCollectionManifest` is ordered by canonical collection key. Each
-`CollectionManifestEntry` retains:
-
-- `key`, using `[<namespace>/]<name>`;
-- the complete portable `identity`;
-- the named public export in `symbol`;
-- complete descriptive `metadata`;
-- ordered canonical icon keys in `members`.
-
-The manifest deliberately contains no `viewBox`, render nodes, presentation policy, icon object or
-embedded collection member definition. A collection member is a textual icon key, so inspecting a
-collection record does not evaluate that icon.
-
-## Generation
-
-Catalogue source tooling derives the manifest from accepted canonical `*.icon.ts` and
-`*.collection.ts` modules. It parses a finite data-only TypeScript subset and resolves local or
-relative imported constants without executing source modules. Imported authorities must use
-unambiguous runtime named imports and target exported top-level constants. Literals, arrays, object
-literals, property access, syntax-only TypeScript wrappers and one-argument `Object.freeze(...)`
-calls are accepted. Calls requiring execution, type-only or ambiguous bindings, duplicate or
-computed properties, unresolved values and cyclic references are rejected before generated outputs
-are changed.
-
-Identity names and variants remain path-owned. Collection membership remains explicitly authored
-and its order is preserved. Removing a source removes its record during the same deterministic
-synchronisation; removing a referenced icon is rejected as a dangling relationship instead of
-silently altering a collection.
-
-The generated values, records, nested identities, metadata, tag arrays, replacement identities and
-member arrays are all frozen. The generated module has type-only contract imports, so its emitted
-JavaScript imports no canonical definition module. The public manifest entrypoint re-exports only
-that data module.
+Both values are readonly arrays ordered by their canonical keys. Records and their retained
+identities, metadata, tags, replacement identities and member arrays are deeply frozen.
 
 ## Contracts
 
-`IconManifestEntry` describes one lightweight searchable icon record and relates discovery data to
-public Core identity and RTL contracts. `CollectionManifestEntry` describes one collection record,
-reuses public Core identity and metadata contracts, and replaces embedded definitions with ordered
-member keys. Both interfaces are public only through `@luscious-garden/aster-icons/manifest`.
+| Contract | Value | Responsibility and relations |
+| --- | --- | --- |
+| `IconManifestEntry` | Element of `AsterIconManifest` | Searchable icon metadata using Core `IconIdentity` and `IconRtlPolicyType`; its key also selects an exact icon loader. |
+| `CollectionManifestEntry` | Element of `AsterCollectionManifest` | Collection discovery using Core `CollectionIdentity` and `CollectionMetadata`; retains ordered member keys instead of embedded definitions. |
 
-The manifest does not promise selective package installation. Installing `@luscious-garden/aster-icons` still
-installs every published file; the manifest only prevents unrelated runtime evaluation and makes a
-future remote registry or `aster add` workflow possible without changing canonical definitions.
+These interfaces are public only through the manifest subpath.
 
-## Verification
+An icon entry contains:
 
-Runtime evidence compares every manifest record with definitions resolved through exact loaders,
-checks canonical ordering and recursively verifies immutability. Catalogue tooling tests cover
-deterministic creation, drift, additions, removals, static imported authorities, rejected executable
-syntax, cycles and stale-record cleanup. ABI and clean-consumer tests verify the exact
-`@luscious-garden/aster-icons/manifest` subpath, declarations and emitted dependency graph.
+- `key` in `[<namespace>/]<name>[@<variant>]` form;
+- complete `identity` and the public named export `symbol`;
+- `displayName`, optional intrinsic `tags` and `rtl`;
+- optional effective `licence` and `attribution`;
+- `deprecated` and optional complete `replacedBy` identity.
 
-Fresh-process evaluation is measured by the [Icons Quality Baseline](../quality-baseline.md).
-Canonical authoring and regeneration are defined by the [Icons Authoring Workflow](../workflow.md)
-and [Catalogue Source Tooling](../../../tooling/catalogue/index.md).
+A collection entry contains:
+
+- `key` in `[<namespace>/]<name>` form;
+- complete `identity` and public export `symbol`;
+- complete descriptive `metadata`;
+- `members` as ordered canonical icon keys, not collection aliases or icon objects.
+
+Neither entry contains `viewBox`, nodes or presentation policy. Textual collection member keys
+preserve authored order without evaluating members.
+[Core definitions](../../core/index.md) own the underlying identity/metadata contracts;
+the [rights boundary](../index.md#rights-boundary) owns legal-authority links.
+
+## Source projection
+
+[Catalogue Source Tooling](../../../tooling/catalogue/index.md) statically derives records from
+canonical icon and collection modules without executing them. It owns source grammar, imported
+constant resolution, relationship validation and synchronisation safety.
+
+The emitted manifest has only type-only contract imports and no runtime definition imports.
+Generated records are distribution projections, not editable membership sources. Removing a
+referenced icon is rejected by tooling rather than silently changing a collection.
+
+[Dynamic Loaders](../dynamic/index.md) resolves selected keys to complete definitions.
+[Distribution Costs](../index.md#distribution-costs) explains why metadata-only evaluation does
+not reduce the package acquired from npm. [Quality](../quality.md) owns exactness and freezing
+evidence; [Quality Baseline](../quality-baseline.md) owns fresh-process measurements.

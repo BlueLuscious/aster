@@ -4,6 +4,11 @@ Status: **Accepted**
 
 Collection lifecycle: **Active**
 
+Amellus is Aster's foundational minimalist general-purpose collection for application interfaces.
+This page owns its identity, provenance and accepted human review. The
+[visual contract](design-contract.md) owns design rules; the [inventory](inventory.md) owns
+concepts, semantic order and stress coverage.
+
 ## Identity
 
 | Field | Value |
@@ -12,155 +17,86 @@ Collection lifecycle: **Active**
 | Canonical slug | `amellus` |
 | Botanical identity | *Aster amellus* L. |
 | Catalogue identity | `{ name: "amellus" }` |
-| Canonical module | `amellus.collection.ts` |
+| Canonical collection | `AmellusCollection`, authored in `amellus.collection.ts` |
 | Public subpath | `@luscious-garden/aster-icons/collections/amellus` |
 | Curator and original artwork author | BlueLuscious |
-| Artwork licence | [Aster Artwork Licence 1.0](../../../../packages/icons/ARTWORK-LICENCE.md) |
-| Lifecycle | Active foundational collection distributed by Icons. |
-
-`Amellus` is the frozen identity for Aster's foundational minimalist general-purpose collection.
-`AmellusCollection` now retains the complete accepted inventory through the portable Core
-collection boundary. Its Active lifecycle accepts the current artwork and collection contract for
-public distribution; package versioning governs compatibility.
+| Artwork terms | [Aster Artwork Licence 1.0](../../../../packages/icons/ARTWORK-LICENCE.md) |
 
 ## Naming decision
 
-The
-[Garden Aster Species Registry](https://github.com/BlueLuscious/garden/blob/master/docs/en/products/aster/species-registry.md)
-owns Amellus's botanical assignment. Garden normally associates a major product with a botanical
-genus and may use one species of that genus for a durable identity inside the product. A species
-assignment is made only when the owned concept exists, remains taxonomically valid, has a clear
-product role, and benefits from a name that can survive implementation and package changes.
+The [Garden Aster Species Registry](https://github.com/BlueLuscious/garden/blob/master/docs/en/products/aster/species-registry.md)
+owns the botanical assignment. [Kew](https://powo.science.kew.org/taxon/urn%3Alsid%3Aipni.org%3Anames%3A331070-2/general-information)
+recognises *Aster amellus* L. as an accepted species;
+[IPNI](https://www.ipni.org/n/331068-2) records it as the designated type of *Aster*.
+That reference relationship supports the foundational collection's role. The short name denotes
+this full species assignment within Aster, not a second product genus or a geometry source.
 
-The accepted product genus is *Aster*. Kew Plants of the World Online recognises
-[*Aster amellus* L.](https://powo.science.kew.org/taxon/urn%3Alsid%3Aipni.org%3Anames%3A331070-2/general-information)
-as an accepted species. The International Plant Names Index records
-[*Aster amellus* as the designated type of *Aster*](https://www.ipni.org/n/331068-2).
-That type relationship gives `Amellus` a precise semantic role: it represents the reference
-collection from which Aster establishes its first release-quality general icon language.
+## Purpose and membership
 
-The epithet is not accepted merely because it sounds suitable. The evaluated candidates were:
+Amellus covers common navigation, action, status, communication, media and object metaphors.
+It provides a coherent neutral baseline rather than branded or domain-specific illustrations.
+Its [visual exclusions](design-contract.md) and [semantic distinctions](inventory.md) govern
+admission; unreviewed catalogue growth is not a maturity goal.
 
-| Candidate | Botanical evidence | Product fit | Outcome |
-| --- | --- | --- | --- |
-| `Amellus` | Kew accepts *Aster amellus*; IPNI records it as the designated type of *Aster*. | The type relationship directly supports a foundational and representative collection. | Accepted. |
-| `Alpinus` | Kew accepts [*Aster alpinus* L.](https://powo.science.kew.org/taxon/urn%3Alsid%3Aipni.org%3Anames%3A30147822-2/general-information) and associates it primarily with subalpine or subarctic biomes. | Its specialised environmental association suggests compactness or resilience more strongly than a neutral application baseline. | Not assigned; potentially useful for a future specialised collection. |
-| `Ageratoides` | Kew accepts [*Aster ageratoides* Turcz.](https://powo.science.kew.org/taxon/urn%3Alsid%3Aipni.org%3Anames%3A180576-1/general-information). | Its taxonomic validity does not provide a comparably direct semantic relationship to a foundational icon set. | Rejected for this collection. |
-
-Kew also recognises [`Amellus` as a separate genus](https://powo.science.kew.org/taxon/urn%3Alsid%3Aipni.org%3Anames%3A329857-2).
-The short display name is nevertheless unambiguous within Aster because the registry records the
-complete scientific assignment *Aster amellus*, and `Amellus` is not available as another Garden
-product identity while this assignment remains Used.
-
-## Product boundary
-
-Amellus is intended for common application navigation, actions, status, communication, media and
-object metaphors. It targets product interfaces that need a coherent neutral icon baseline rather
-than a branded, decorative or domain-specific illustration set. The initial inventory must remain
-small enough for each icon to receive individual semantic and visual review.
-
-The collection excludes:
-
-- brand marks, logos, flags, text, embedded type, photographs and raster content;
-- detailed illustrations or pictorial scenes that exceed a small-interface detail budget;
-- exhaustive domain catalogues and aliases that do not represent distinct icon geometry;
-- framework, DOM, component-library, editor or host-specific behaviour;
-- variants, weights, fills or duotone families without a separately accepted visual need;
-- mutable membership, mutable definitions or collection-owned icon identity.
-
-The collection identity is `{ name: "amellus" }`. It does not become an icon namespace. Icons
-remain independently defined under their own canonical identities, may exist without Amellus, and
-may belong to Amellus and other collections simultaneously. Removing an icon from Amellus changes
-membership only; it does not remove or rename the icon.
-
-## Collection specification
-
-The [visual design contract](design-contract.md) defines Amellus canvas, grid, safe-area,
-presentation, geometry, minimum-size and RTL rules. The [initial inventory](inventory.md) defines
-the bounded semantic set, search vocabulary, adjacent-concept distinctions and representative
-stress coverage accepted for the collection.
-
-These documents govern collection acceptance but do not create definitions, membership or
-generated catalogue output merely by existing. The canonical TypeScript collection module is the
-membership authority.
-
-## Pilot disposition
-
-The unpublished Experimental Aster collection has been removed. Its seven primitive-first icons
-were classified individually and retained as independent definitions in Amellus:
-
-| Icon | Disposition |
-| --- | --- |
-| `arrow-left` | Refined and retained with explicit logical RTL mirroring. |
-| `check` | Refined and retained as the asymmetric confirmation action. |
-| `close` | Retained as the centred diagonal dismissal action. |
-| `plus` | Retained as the centred orthogonal addition action. |
-| `search` | Refined and retained with its circle-and-handle construction. |
-| `settings` | Refined and retained as the collection's radial complexity case. |
-| `star` | Refined and retained as the geometric favourite and rating mark. |
-
-No pilot-only icon remains standalone or requires removal. Nine former raw-path candidates and
-their visually weak polygon replacements were discarded before being independently reauthored
-through portable structured commands for Amellus. The removed collection has no compatibility
-promise, alias or replacement export because it was never released.
+The canonical collection module's explicit dictionary is the membership authority.
+[Icons Collections](../../packages/icons/collections/index.md) owns imports, aliases, ordered
+members and runtime costs. The collection identity is not an icon namespace: member definitions
+keep independent identities and can exist outside Amellus or join other collections.
 
 ## Provenance and acceptance evidence
 
-Original Amellus artwork is authored and curated by BlueLuscious under the
-[Aster Artwork Licence](../../../../packages/icons/ARTWORK-LICENCE.md). The licence permits
-commercial product use but not sale or resale of the artwork as a standalone asset.
-[ISC](../../../../packages/icons/LICENSE) applies to the software implementation, not to the
-original visual artwork. Each accepted icon must retain:
+Current artwork is authored and curated by BlueLuscious. The
+[artwork licence](../../../../packages/icons/ARTWORK-LICENCE.md) owns its permissions and obligations;
+the [ISC notice](../../../../packages/icons/LICENSE) governs software and documentation.
+The [Icons rights boundary](../../packages/icons/index.md#rights-boundary) explains those scopes.
 
-- one canonical editable TypeScript definition and its independent portable identity;
-- the original author, effective artwork licence and an explicit third-party-source statement;
-- a concise semantic purpose, intrinsic search tags and any RTL behaviour;
-- deterministic Core validation and SVG rendering evidence;
-- visual evidence at the collection's accepted default and minimum sizes;
-- curator approval for recognisability, optical balance, family consistency and any exception.
+Each accepted icon retains:
 
-Third-party or adapted artwork requires source provenance, compatible licensing, transformation
-authority and explicit curatorial acceptance before inclusion. Botanical taxonomic pages support
-the collection name only: their text and images are not artwork sources and confer no artwork
-licence on Amellus.
+- one canonical editable TypeScript definition with independent portable identity;
+- original authorship, effective artwork licence and attribution, with an explicit source statement;
+- semantic purpose, intrinsic discovery terms and RTL policy;
+- deterministic Core and SVG evidence;
+- review at the accepted default and minimum sizes;
+- curator approval for recognition, optical balance, family consistency and any exception.
 
-The accepted provenance, artwork licence, attribution, static visual review, package conformance
-and pilot disposition support the Active lifecycle. Package publication and compatibility remain
-separate from curatorial acceptance under the [project versioning policy](../../project/versioning.md).
+Third-party or adapted candidates require identified sources, compatible terms, transformation
+authority and explicit curatorial approval before inclusion. Botanical references justify the
+name only; their text and images are not artwork sources or a licence for Amellus geometry.
+
+[Icons Quality](../../packages/icons/quality.md) owns automated conformance. The human findings
+below, provenance and [collection acceptance policy](../index.md#acceptance) support the Active
+lifecycle. Publication remains separate under the
+[project versioning policy](../../project/versioning.md).
 
 ## Static visual acceptance
 
-The complete twenty-six-icon collection has passed static visual review using the canonical
-catalogue and SVG rendering workflow. Evidence covered `16px`, `24px`, `32px` and `48px` sizes;
-light, dark and transparent backgrounds; neutral and contrasting foreground colours; construction
-grids; and view-box bounds.
+The complete inventory passed static visual review through the canonical catalogue and SVG
+workflow. The accepted review covered `16px`, `24px`, `32px` and `48px`; light, dark and
+transparent backgrounds; neutral and contrasting foregrounds; construction grids and view-box
+bounds.
 
-The review surface is reproduced from a built workspace without retaining derived HTML:
+Reconstruct the review surface from a built workspace:
 
 ```sh
 pnpm run build
 pnpm exec aster review collection amellus --output ./aster-review --replace
 ```
 
-The generated directory is disposable evidence and remains outside source control. The written
-findings below are the durable human acceptance record; the command reconstructs the exact visual
-surface whenever artwork or rendering behaviour changes.
+The generated directory is disposable evidence outside source control.
+[CLI Review](../../packages/cli/review/index.md) owns its composition and files; these written
+findings retain the human acceptance record, not a promise that regenerating HTML repeats that
+review automatically.
 
-The review accepted the following findings:
+The review accepted:
 
-- all icons retain recognisable silhouettes and usable negative space at the `16px` minimum;
-- the `1.5`-unit outline weight, round terminals and round joins remain coherent across primitive
-  and structured-path geometry;
-- arrows, action marks, media controls, status enclosures and object metaphors remain distinct when
-  compared as related families;
-- curved and organic forms remain deliberate, without visible polygonal stepping, cusps or
-  accidental flat sections;
-- detached details in `bell`, `info` and `warning` remain associated with their enclosing forms;
-- visible geometry remains within the view box after stroke expansion and uses the nominal safe
-  area consistently;
-- `arrow-left` and `arrow-right` remain exact directional counterparts and mirror under RTL, while
-  vertical arrows and non-directional subjects preserve their authored geometry.
+- recognisable silhouettes and usable negative space at the `16px` minimum;
+- coherent `1.5`-unit outline weight, round terminals and round joins across primitive/path geometry;
+- distinct arrows, action marks, media controls, status enclosures and object metaphors;
+- deliberate curves and organic forms without visible polygonal stepping, cusps or flat sections;
+- associated detached details in `bell`, `info` and `warning`;
+- visible geometry within the view box after stroke expansion and consistent nominal safe-area use;
+- exact horizontal arrow counterparts with RTL mirroring, while vertical arrows and
+  non-directional subjects preserve authored geometry.
 
-No collection-level exception or canonical geometry correction was required. Together with the
-completed provenance, pilot disposition and technical conformance evidence, this visual acceptance
-supports the collection's Active lifecycle.
+No collection-level exception or canonical geometry correction was required by that review.
+Changes to artwork or rendering require renewed technical and curatorial evidence.
