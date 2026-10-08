@@ -44,6 +44,7 @@ ordinary catalogue growth therefore cannot alter Core, SVG, or CLI operation inp
 | --- | --- |
 | `IBenchmarkHost` | Supplies availability checks, explicit garbage collection, monotonic time, heap usage and environment identity. |
 | `IBenchmarkScenario` | Describes one named synchronous or asynchronous operation, its sample operation count and checksum result. |
+| `IBenchmarkCatalogueFixture` | Carries the representative icon, fixed corpus, complete collection and provider snapshot shared by Core, SVG and CLI fixture factories. |
 | `IPackageDistributionInspector` | Reports one emitted package distribution without changing it. |
 | `ICoreBaselineFixtures` | Carries prepared canonical and mutable Core icon and collection values outside measured work. |
 | `ISvgBaselineFixtures` | Carries prepared definitions and options for primitive, corpus, override, RTL, escaping and point-sequence SVG scenarios. |
@@ -67,15 +68,8 @@ deliberate measurement evidence.
 | `CliCommandEvaluationProbe` | Instruments emitted CLI and Icons modules while executing one real built-in catalogue workflow in a disposable process. |
 | `CliCommandEvaluationRunner` | Repeats built-in workflows in fresh processes and rejects unstable command results or evaluated-module sets. |
 
-Each package owns an independent runner, factory, and command. `CoreBaselineFactory` composes the
-shared Node capabilities, while `CoreBaselineRunner` defines only Core icon and collection
-construction scenarios. `SvgBaselineFactory` and `SvgBaselineRunner` independently compose SVG
-definitions, options, rendering scenarios, and distribution evidence. `CliBaselineFactory` and
-`CliBaselineRunner` independently compose command, shell, cold-process, and distribution evidence.
-`ImportBaselineFactory` and `ImportBaselineRunner` independently compose source inspection,
-definition, emission, adoption, rejection, batch and distribution evidence. Any other baseline
-follows the same isolation, reuses shared capabilities, and never edits a global scenario registry
-or imports another package baseline's configuration.
+Each package owns an independent runner, factory, command and scenario matrix. Baselines reuse
+shared capabilities without a global scenario registry or another package baseline's configuration.
 
 The shared process host exists because CLI cold-start, CLI built-in command evaluation, and Icons
 module-evaluation evidence require isolated Node processes. CLI owns its command workflows and
@@ -90,72 +84,23 @@ summary and lexically ordered copies of manifest records, not arbitrary nested J
 Prepared mutable Core fixtures remain mutable by design so the corresponding scenarios measure
 construction from non-canonical input.
 
-## Core comparison
+## Package comparisons
 
-Run:
+Each command builds its package and required workspace dependencies, then prints one JSON report
+without writing an artefact. Measured operations use fixtures prepared outside timed work;
+operation baselines run with explicit garbage-collection access. Icons instead measures imports
+in fresh processes.
 
-```sh
-pnpm benchmark:core
-```
+| Command | Workload owner |
+| --- | --- |
+| `pnpm benchmark:core` | [Core baseline](../../packages/core/quality-baseline.md): canonical/mutable construction and alias dictionaries. |
+| `pnpm benchmark:icons` | [Icons baseline](../../packages/icons/quality-baseline.md): isolated definitions, manifest and dynamic imports. |
+| `pnpm benchmark:svg` | [SVG baseline](../../packages/svg/quality-baseline.md): public rendering and presentation overrides. |
+| `pnpm benchmark:cli` | [CLI baseline](../../packages/cli/quality-baseline.md): shell adaptation, commands, startup and module evaluation. |
+| `pnpm benchmark:import` | [Import baseline](../../packages/import/quality-baseline.md): inspection, definition, emission, adoption and rejection. |
 
-The command builds Core, prepares mutable and canonical variants of the fixed synthetic corpus
-plus authored alias dictionaries of 26 and 256 synthetic icons outside timed loops, runs Node with
-explicit garbage-collection access, prints one JSON report and writes no artefact. The dictionary
-scenarios include one-time `members` derivation; complete-definition scenarios also validate the
-submitted member view. Exact scenarios, interpretation, and acceptance rules are defined by the
-[Core Quality Baseline](../../packages/core/quality-baseline.md).
-
-## SVG comparison
-
-Run:
-
-```sh
-pnpm benchmark:svg
-```
-
-The command builds Core and SVG before measuring the fixed synthetic corpus, public rendering and
-distribution. Exact scenarios, attribution, retained decisions, and acceptance rules are defined
-by the [SVG Quality Baseline](../../packages/svg/quality-baseline.md).
-
-## Icons comparison
-
-Run:
-
-```sh
-pnpm benchmark:icons
-```
-
-The command builds Core and Icons before measuring fresh-process isolated-icon,
-isolated-collection, metadata-manifest and dynamic-loader imports plus emitted distribution. Exact
-scenarios, module instrumentation, findings and acceptance rules are defined by the
-[Icons Quality Baseline](../../packages/icons/quality-baseline.md).
-
-## CLI comparison
-
-Run:
-
-```sh
-pnpm benchmark:cli
-```
-
-The command builds Core, Icons, SVG, and CLI before measuring synchronous shell adaptation,
-asynchronous programmatic commands over a fixed synthetic provider, fresh Node startup, real
-built-in catalogue command module evaluation, and emitted distribution evidence. Exact scenarios,
-attribution, and acceptance rules are defined by the [CLI Quality
-Baseline](../../packages/cli/quality-baseline.md).
-
-## Import comparison
-
-Run:
-
-```sh
-pnpm benchmark:import
-```
-
-The command builds Core and Import, prepares accepted, rejected, editor-export and batch fixtures
-outside timed loops, and measures only public Import operations and emitted distribution. Exact
-scenarios, fixture sizes, exclusions and interpretation are defined by the
-[Import Quality Baseline](../../packages/import/quality-baseline.md).
+Each linked baseline owns exact scenarios, fixture sizes, distribution evidence, interpretation
+and package-specific acceptance rules. Shared tooling owns methodology and execution only.
 
 ## Comparison limits
 

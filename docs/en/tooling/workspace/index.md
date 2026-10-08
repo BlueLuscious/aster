@@ -34,7 +34,9 @@ The composition:
 - removes only the accepted generated boundary.
 
 Each package invokes the cleaner from its own `clean` script, and the root `pnpm clean` command only
-delegates. The root never discovers arbitrary deletion targets.
+delegates. The root never discovers arbitrary deletion targets. The stable entrypoint composes
+the runtime authorities and exports `cleanPackageOutput(packageRoot, outputDirectory)` for
+programmatic conformance; published packages import neither surface.
 
 ## Tests
 
@@ -44,9 +46,3 @@ that package inspection and policy acceptance occur before destructive execution
 
 The cleaner exposes no generic deletion operation. Filesystem removal remains behind the narrow
 internal cleanup capability, and accepted policy vocabulary remains owned by this feature.
-
-## Package scripts
-
-Each package invokes the stable cleanup entrypoint from its own `clean` script. The entrypoint
-composes runtime authorities and retains a programmatic cleanup function for tooling conformance;
-published packages do not import either surface.
