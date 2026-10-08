@@ -78,7 +78,10 @@ export class PackageDocumentationMirroringInspector {
     }
 
     for (const feature of documentedFeatures) {
-      if (!sourceFeatures.includes(feature)) {
+      if (
+        !sourceFeatures.includes(feature) &&
+        !documentationHierarchy.packageDocumentationOnlyDirectories.includes(feature)
+      ) {
         issues.add(`Documentation describes a missing ${member} source feature: ${feature}`);
       }
     }

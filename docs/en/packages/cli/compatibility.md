@@ -81,7 +81,7 @@ Complete collection loaders return the current Core `CollectionDefinition` with 
 dictionary and its derived ordered `members` list. Revalidation rejects a submitted list that
 disagrees with the dictionary. The metadata-only discovery contract still exposes member
 identities in its `icons` array; collection aliases never change identity resolution. Provider
-migration from the published RC is recorded in the [CLI release notes](releases.md).
+migration from the published RC is recorded in the [CLI release notes](releases/index.md).
 
 Provider and membership guarantees are owned by the
 [CLI Catalogue](catalogue/index.md).

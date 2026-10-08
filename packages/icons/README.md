@@ -40,13 +40,13 @@ Both views contain the same canonical icon objects. Importing Amellus evaluates 
 members even when only `.icons.camera` is read; import `@luscious-garden/aster-icons/camera` directly
 when only that icon is needed.
 
-The [release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases.md)
+The [release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases/index.md)
 describe migration from earlier candidates.
 
 The package currently provides the accepted Amellus foundational collection. See the
 [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/index.md),
 [authoring workflow](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/workflow.md),
-[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases.md) and
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/releases/index.md) and
 [Amellus collection authority](https://github.com/BlueLuscious/aster/blob/master/docs/en/collections/amellus/index.md).
 
 ## Licence

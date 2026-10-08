@@ -72,6 +72,8 @@ test("compares authored feature directories without treating generated output as
     ]);
 
     await writeDocument(root, "docs/en/packages/icons/glyphs/index.md", "# Glyphs\n");
+    await writeDocument(root, "docs/en/packages/icons/releases/index.md", "# Releases\n");
+    await writeDocument(root, "docs/en/packages/icons/releases/0.1.0.md", "# Icons 0.1.0\n");
     await rm(resolve(root, "docs/en/packages/icons/old/index.md"));
     await rmdir(resolve(root, "docs/en/packages/icons/old"));
 

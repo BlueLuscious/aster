@@ -43,12 +43,12 @@ InterfaceIcons.icons.camera; // Known readonly alias.
 InterfaceIcons.members; // Frozen ordered [Camera], derived once.
 ```
 
-The [release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/releases.md)
+The [release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/releases/index.md)
 describe migration from earlier candidates. Definitions remain immutable data without lookup or
 mutation methods.
 
 See the [canonical package documentation](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/index.md) and
-[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/releases.md) for
+[release notes](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/releases/index.md) for
 responsibilities, features, exports, and model relationships.
 
 ## Licence

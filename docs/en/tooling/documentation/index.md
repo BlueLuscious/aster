@@ -12,7 +12,8 @@ The verifier requires canonical entry points for the root, project, packages, to
 and future capabilities. It also verifies:
 
 - package and authored feature documentation mirror real workspace packages and their `src/`
-  feature roots; generated output is not treated as an authored feature;
+  feature roots; generated output is not treated as an authored feature, and each package's
+  `releases/` history is documentation rather than a source feature;
 - local Markdown links resolve within the repository;
 - canonical prose contains no local plans, task identifiers, or contributor-machine paths;
 - Markdown files are discovered and reported in deterministic order.

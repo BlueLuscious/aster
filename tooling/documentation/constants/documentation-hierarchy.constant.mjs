@@ -6,6 +6,8 @@ export const documentationHierarchy = Object.freeze({
   root: "docs/en",
   /** @description Workspace package directory mirrored by package documentation. */
   packages: "packages",
+  /** @description Package documentation directories that do not represent source features. */
+  packageDocumentationOnlyDirectories: Object.freeze(["releases"]),
   /** @description Required directory entry filename. */
   index: "index.md",
   /** @description Canonical documentation filename suffix. */
