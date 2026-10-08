@@ -18,6 +18,10 @@ and future capabilities. It also verifies:
 - canonical prose contains no local plans, task identifiers, or contributor-machine paths;
 - Markdown files are discovered and reported in deterministic order.
 
+Acquisition is limited to the accepted `docs/en/` hierarchy. Repository and package READMEs,
+licence files and other non-canonical roots are outside this command's scope; their accuracy and
+links require separate review. Local-link checking verifies files, not heading anchors.
+
 The exported `verifyDocumentation(workspaceRoot)` function returns issues and the inspected Markdown
 count without owning terminal or process state. Its command adapter resolves the repository root,
 prints the result, and sets failure exit state.
@@ -85,8 +89,7 @@ general documentation-quality score.
 
 ## Tests
 
-Fixture tests create self-contained temporary canonical hierarchies and exercise accepted roots,
-package and feature mirroring, collection independence, non-canonical-root exclusion, broken links, and local
-references. Focused tests verify every isolated inspector or policy, malformed local link encoding,
-continued link inspection, local-link extraction,
-per-document ordering, explicit roots, acquisition count, and overall orchestration.
+Fixtures verify canonical roots, package/feature mirroring, documentation-only release directories,
+collection independence, non-canonical-root exclusion, broken links and local references.
+Focused tests cover individual policies, malformed link encoding, continued inspection, explicit
+roots, per-document ordering, acquisition snapshots and orchestration.

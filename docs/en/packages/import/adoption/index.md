@@ -1,39 +1,52 @@
 # Import Adoption
 
-Adoption owns the target-neutral hand-off from inspected geometry to editable TypeScript.
+Adoption owns the format-neutral hand-off from inspected geometry to Core definitions and editable
+TypeScript. The [API](../api/index.md) composes the operations; the host owns review and persistence.
 
 ## Contracts
 
-- `IconImportDraft` contains deeply frozen identity, view box, nodes, metrics and provenance
-  without metadata.
-- `IconImportMetrics` records primitive and path-command review facts.
-- `IconImportProvenance` records the exact format and logical source identifier.
-- `IconImportDefinitionRequest` pairs one draft with complete `IconMetadata`.
-- `IconModuleEmissionRequest` pairs one accepted definition with logical provenance.
-- `IconModuleOutput` contains an exported symbol, suggested authored path and editable content.
-- `IconAdoptionRequest` combines one explicit source with reviewed metadata.
-- `IconAdoptionOutput` contains the draft, Core definition and editable module.
-- `IconAdoptionBatchOutput` contains canonically ordered all-or-nothing entries.
-- `TIconAdoptionDiagnosticDetails` derives the internal diagnostic code and message shape from the
-  immutable adoption diagnostic authority.
+| Contract | Responsibility and relations |
+| --- | --- |
+| `IconImportDraft` | Metadata-free Core identity, view box and ordered nodes, with `IconImportMetrics` and `IconImportProvenance`. |
+| `IconImportMetrics` | Primitive count and expanded portable path-command count for technical review and consistency checks. |
+| `IconImportProvenance` | Exact `IconImportFormatType` and host-owned logical source identifier. |
+| `IconImportDefinitionRequest` | Pairs one draft with complete host-reviewed Core `IconMetadata`. |
+| `IconModuleEmissionRequest` | Pairs a Core `IconDefinition` with non-empty canonical logical `sourceIds`. |
+| `IconModuleOutput` | Deterministic exported symbol, suggested relative authored path and complete LF-terminated editable content. |
+| `IconAdoptionRequest` | Combines an explicit `IconImportSourceType` with complete reviewed metadata. |
+| `IconAdoptionOutput` | Retains the successful draft, Core definition and editable module. |
+| `IconAdoptionBatchOutput` | Contains canonically ordered complete adoption entries, never partial success. |
 
-Definition construction always delegates to `Icon.define()`. Emission revalidates the definition,
-uses deterministic JSON-compatible TypeScript literals and never emits generated ownership,
-overwrite or rebuild policy. Batch adoption rejects duplicate identities and symbol collisions
-without returning partial output.
+`TIconAdoptionDiagnosticDetails` derives private code/message evidence from the immutable adoption
+diagnostic authority and is completed by the [diagnostic boundary](../diagnostic/index.md).
 
-`IconImport.define()` accepts an inspected or otherwise supplied draft only after validating its
-complete field set, non-empty primitive count, non-negative path-command count, built-in format and
-canonical logical source identifier. Core then validates and isolates identity, view box, geometry
-and reviewed metadata. A successful definition also requires `primitiveCount` to match its canonical
-node count and `pathCommandCount` to match the sum of its canonical path command counts. Invalid
-draft envelope or inconsistent metrics throw `IconImportError`; invalid Core geometry or metadata
-returns a blocking adoption diagnostic. Matching metrics establish internal consistency, not proof
-that a separately supplied draft came from its stated source.
+## Definition construction
 
-One collection is represented by one host-prepared `adoptMany()` request. Several collections are
-independent calls whose grouping remains host-owned. Import has no collection registry, membership
-model or cross-collection transaction because no current consumer requires those responsibilities.
+Supplied drafts must have the complete closed envelope, a positive primitive count, a non-negative
+path-command count, a built-in format and a canonical logical source identifier. Core then validates
+and isolates identity, view box, geometry and reviewed metadata through `Icon.define()`.
 
-Every successful adoption value and every failed diagnostic result is deeply frozen. Import does
-not retain mutable source, metadata, provenance arrays or batch requests supplied by the caller.
+Metrics must match the canonical node count and sum of portable path-command counts. Invalid
+envelopes or inconsistent metrics throw `IconImportError`; invalid Core geometry or metadata
+returns blocking adoption diagnostics. Matching metrics prove internal consistency, not that a
+separately supplied draft originated from its claimed source.
+
+## Editable emission
+
+Emission revalidates the definition through Core and uses deterministic JSON-compatible
+TypeScript literals. Path nodes contain structured commands rather than raw SVG `d` text.
+Source identifiers are informational provenance, not acquisition instructions.
+
+Output has no generated ownership marker, overwrite policy or rebuild lifecycle. Its only runtime
+dependency is Core. Once persisted, it is ordinary human-owned source; Import retains no relation
+that can regenerate or replace it.
+
+## Atomic adoption
+
+`adopt()` stops at the first blocking stage. `adoptMany()` requires a non-empty batch, rejects
+duplicate portable identities and emitted-symbol collisions, and returns canonical identity order.
+Any blocking entry or collision rejects the whole batch without partial output.
+
+Collection grouping is host-owned: one host-prepared batch is not a collection definition or
+cross-collection transaction. Successful graphs and diagnostic results are deeply frozen and
+isolated from later caller mutation.

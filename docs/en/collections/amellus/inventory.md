@@ -5,38 +5,41 @@ Status: **Accepted**
 The initial Amellus inventory contains twenty-six deliberately bounded application concepts. Every
 concept has an independent canonical definition: seventeen remain primitive-first, while nine use
 structured absolute path commands where curves, compound contours or rounded enclosures make the
-geometry clearer. The structured definitions replace visually weak polygon experiments without
-restoring raw SVG path strings to TypeScript authorship.
+geometry clearer. These construction choices provide visual stress coverage; the inventory does
+not impose that geometry on other collections or restore raw SVG path strings to authoring.
 
 `AmellusCollection` retains the complete inventory in the semantic order below. Membership does
 not alter icon identity, metadata or availability through independent icon distribution.
+This page owns semantic selection and review coverage. The
+[canonical collection module](../../../../packages/icons/src/collections/a/amellus/amellus.collection.ts)
+owns actual membership; [Glyphs](../../packages/icons/glyphs/index.md) owns independent imports.
 
 ## Concepts
 
-| Identity | Primary role | Canonical meaning | Search tags and aliases | Source disposition |
+| Identity | Primary role | Canonical meaning | Search tags and aliases | Construction |
 | --- | --- | --- | --- | --- |
-| `arrow-left` | Navigation | Logical previous or backward movement, authored pointing left. | `arrow`, `back`, `left`, `navigation`, `previous` | Refine candidate. |
-| `arrow-right` | Navigation | Logical next or forward movement, authored pointing right. | `arrow`, `forward`, `navigation`, `next`, `right` | New. |
-| `arrow-up` | Navigation | Literal upward movement without horizontal reading-direction semantics. | `arrow`, `navigation`, `top`, `up` | Directional expansion. |
-| `arrow-down` | Navigation | Literal downward movement without horizontal reading-direction semantics. | `arrow`, `bottom`, `down`, `navigation` | Directional expansion. |
+| `arrow-left` | Navigation | Logical previous or backward movement, authored pointing left. | `arrow`, `back`, `left`, `navigation`, `previous` | Line and open polyline. |
+| `arrow-right` | Navigation | Logical next or forward movement, authored pointing right. | `arrow`, `forward`, `navigation`, `next`, `right` | Line and open polyline. |
+| `arrow-up` | Navigation | Literal upward movement without horizontal reading-direction semantics. | `arrow`, `navigation`, `top`, `up` | Line and open polyline. |
+| `arrow-down` | Navigation | Literal downward movement without horizontal reading-direction semantics. | `arrow`, `bottom`, `down`, `navigation` | Line and open polyline. |
 | `home` | Navigation | Primary home or application landing destination. | `home`, `house`, `navigation`, `start` | Structured path with primitive roof. |
-| `menu` | Navigation | Reveal or represent a primary application menu. | `hamburger`, `menu`, `navigation` | New. |
-| `check` | Action and status | Confirm, complete or indicate a successful state. | `check`, `complete`, `confirm`, `done`, `success` | Refine candidate. |
-| `close` | Action | Close, dismiss or cancel the current surface or operation. | `cancel`, `close`, `dismiss`, `remove`, `x` | Refine candidate. |
-| `download` | Action | Transfer content towards local or retained storage. | `download`, `save`, `transfer` | New. |
-| `plus` | Action | Add or create one item. | `add`, `create`, `new`, `plus` | Refine candidate. |
-| `search` | Action | Find or inspect catalogue or application content. | `find`, `lookup`, `search` | Refine candidate. |
-| `settings` | Action and navigation | Open configuration or preferences. | `configuration`, `preferences`, `settings` | Refine candidate. |
+| `menu` | Navigation | Reveal or represent a primary application menu. | `hamburger`, `menu`, `navigation` | Three parallel lines. |
+| `check` | Action and status | Confirm, complete or indicate a successful state. | `check`, `complete`, `confirm`, `done`, `success` | Asymmetric open polyline. |
+| `close` | Action | Close, dismiss or cancel the current surface or operation. | `cancel`, `close`, `dismiss`, `remove`, `x` | Two crossing lines. |
+| `download` | Action | Transfer content towards local or retained storage. | `download`, `save`, `transfer` | Lines and open arrow polyline. |
+| `plus` | Action | Add or create one item. | `add`, `create`, `new`, `plus` | Two orthogonal lines. |
+| `search` | Action | Find or inspect catalogue or application content. | `find`, `lookup`, `search` | Circle and diagonal line. |
+| `settings` | Action and navigation | Open configuration or preferences. | `configuration`, `preferences`, `settings` | Two circles and eight radial lines. |
 | `heart` | Status | Mark affection, appreciation or a favourite relationship. | `favourite`, `heart`, `like`, `love` | Structured curved path. |
-| `info` | Status | Present neutral explanatory information. | `about`, `help`, `info`, `information` | New. |
+| `info` | Status | Present neutral explanatory information. | `about`, `help`, `info`, `information` | Circles and detached line. |
 | `lock` | Status and object | Represent locked, private or secured content. | `lock`, `privacy`, `secure`, `security` | Rounded rectangle with structured shackle. |
-| `star` | Status | Mark a featured, saved or rated item. | `bookmark`, `favourite`, `featured`, `rating`, `star` | Refine candidate. |
-| `warning` | Status | Indicate a condition requiring attention without implying success. | `alert`, `attention`, `caution`, `warning` | New. |
+| `star` | Status | Mark a featured, saved or rated item. | `bookmark`, `favourite`, `featured`, `rating`, `star` | Closed polygon. |
+| `warning` | Status | Indicate a condition requiring attention without implying success. | `alert`, `attention`, `caution`, `warning` | Polygon, line and circle. |
 | `camera` | Media | Represent photographic capture or camera media. | `camera`, `media`, `photo`, `photograph` | Structured enclosure with circular lens. |
-| `pause` | Media | Temporarily suspend media or an active process. | `hold`, `media`, `pause`, `playback` | New. |
-| `play` | Media | Start or resume media or a runnable process. | `media`, `play`, `playback`, `start` | New. |
+| `pause` | Media | Temporarily suspend media or an active process. | `hold`, `media`, `pause`, `playback` | Two parallel lines. |
+| `play` | Media | Start or resume media or a runnable process. | `media`, `play`, `playback`, `start` | Closed media polygon. |
 | `bell` | Communication | Represent notifications and notification controls. | `alert`, `bell`, `notification` | Structured curved path with detached baseline. |
-| `mail` | Communication | Represent an email message, inbox or written communication. | `email`, `envelope`, `inbox`, `mail`, `message` | New. |
+| `mail` | Communication | Represent an email message, inbox or written communication. | `email`, `envelope`, `inbox`, `mail`, `message` | Rounded rectangle and open polyline. |
 | `cloud` | Object | Represent remote or cloud-hosted content. | `cloud`, `remote`, `storage` | Structured arc path. |
 | `folder` | Object | Represent a directory or grouped file container. | `directory`, `files`, `folder` | Structured rounded path. |
 | `leaf` | Object | Represent a leaf, nature or environmental concern. | `environment`, `leaf`, `nature`, `plant` | Two structured curved paths. |

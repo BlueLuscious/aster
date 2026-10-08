@@ -1,31 +1,39 @@
 # Import Diagnostics
 
-`SourceDiagnostic` is stable Aster-owned evidence with code, severity, category, message, source
-identity and optional exact spans or related context. `DiagnosticResultType<Value>` is a frozen
-success-or-failure envelope: failure never carries a value and success never carries an error.
+Diagnostics report source or adoption rejection without exposing parser-native errors.
+`DiagnosticResultType<Value>` is a success/failure union with a frozen envelope and diagnostic
+sequence. The producing operation owns its value's immutability: success carries a value and
+may carry warnings; failure carries no value. Malformed invocation uses
+[Import Errors](../error/index.md) instead.
 
-Public supporting contracts are `SourcePosition`, `SourceSpan` and `DiagnosticRelatedContext`.
-Public types are `DiagnosticCodeType`, `DiagnosticCategoryType`, `DiagnosticSeverityType` and
-`DiagnosticResultType<Value>`. Categories are limited to syntax, safety, technical and adoption;
-severity is either error or warning.
+## Contracts and types
 
-`DiagnosticCodeType` is derived from the private immutable `diagnosticCodes` authority and accepts
-only codes currently emitted by Import. The complete `diagnosticCodePolicy` assigns exactly one
-category and severity to every code. Parser, validation and adoption producers therefore supply a
-code and occurrence evidence without independently selecting observable authority. These
-constants remain private because hosts consume diagnostic evidence but do not author Import
-diagnostics.
+| Symbol | Responsibility and relations |
+| --- | --- |
+| `SourceDiagnostic` | Stable code, severity, category, message and logical source identity, with optional `SourceSpan` and related contexts. |
+| `SourcePosition` | Zero-based UTF-16 offset plus one-based line and UTF-16 column in exact source text. |
+| `SourceSpan` | Inclusive start and exclusive end `SourcePosition` values. |
+| `DiagnosticRelatedContext` | Related logical source, explanatory message and optional exact span. |
+| `DiagnosticCodeType` | Closed codes derived from private `diagnosticCodes`; producers cannot invent observable codes. |
+| `DiagnosticCategoryType` | Closed syntax, safety, technical and adoption responsibility family. |
+| `DiagnosticSeverityType` | Blocking `error` or advisory `warning`. |
+| `DiagnosticResultType<Value>` | Operation result union associating an accepted value or rejection with ordered diagnostics. |
 
-Factories and aggregation remain private. A producer canonicalises and freezes each diagnostic
-once; aggregation then deduplicates and orders those canonical values without rebuilding them.
-Messages are stable single-line text, related contexts use canonical source order and equivalent
-evidence produces byte-for-byte deterministic results.
+LF and CRLF each count as one line break. Offsets refer to the caller's unnormalised text.
+[Source location](../formats/svg/parser/index.md#source-evidence) owns parser evidence; a diagnostic
+has a span only when the producer has a trustworthy locus.
 
-Internal diagnostic composition uses two documented shapes:
+## Canonical construction
 
-- `TDiagnosticDetails` carries the stable code and message owned by one diagnostic family before
-  occurrence-specific source evidence is added.
-- `TSourceDiagnosticInput` carries occurrence-specific source evidence completed by the code
-  policy during canonical construction.
-- `TIndexedDiagnostic` retains a diagnostic with its original insertion index so deterministic
-  aggregation can preserve stable order after canonical sorting.
+Private `diagnosticCodePolicy` assigns exactly one category and severity to each code. Factories
+complete occurrence evidence from that authority rather than letting producers select policies.
+Single-line messages and canonical related-source ordering make equivalent evidence deterministic.
+
+Each producer constructs and freezes a diagnostic once. Aggregation deduplicates and orders those
+values without rebuilding them. Private supporting types are:
+
+| Type | Responsibility and relations |
+| --- | --- |
+| `TDiagnosticDetails` | Stable family-owned code/message before occurrence evidence. |
+| `TSourceDiagnosticInput` | Occurrence evidence completed by code policy during construction. |
+| `TIndexedDiagnostic` | Diagnostic plus insertion index, preserving stable order after canonical sorting. |

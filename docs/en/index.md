@@ -1,24 +1,13 @@
 # Aster Documentation
 
-Aster is an independent icon platform for creating, describing, validating, distributing, and
-rendering curated icon collections.
+Canonical documentation uses British English and gives each subject one owner:
 
-Canonical documentation is written in British English and organised by its narrowest owner:
+- [Project](project/index.md): product purpose, implemented composition and shared policies.
+- [Packages](packages/index.md): the package set, dependencies and independent feature guides.
+- [Collections](collections/index.md): curatorial identity, visual rules, provenance and acceptance.
+- [Repository Tooling](tooling/index.md): private verification and maintenance capabilities.
+- [Future Capabilities](future-capabilities.md): conditional proposals, not current guarantees.
 
-- [Project](project/index.md) explains Aster's product boundary, package composition, dependency
-  direction, implemented workflows, and release posture.
-- [Garden's Aster record](https://github.com/BlueLuscious/garden/blob/master/docs/en/products/aster/index.md)
-  owns Aster's ecosystem identity and cross-product relationships without replacing this
-  repository's implementation authority.
-- [Packages](packages/index.md) document the production packages that exist in the repository.
-- [Repository Tooling](tooling/index.md) documents private verification and workspace-maintenance
-  features.
-- [Collections](collections/index.md) document accepted curated collection identities, visual
-  rules, provenance, and evidence.
-- [Future Capabilities](future-capabilities.md) records proposals and their activation triggers;
-  it does not define current product guarantees.
-
-Package documentation is created only when its corresponding repository structure exists.
-Collection-specific identity and design documentation is created when its curatorial ownership
-is accepted. Canonical source and workflow documentation is added only after the collection
-selects its authoring authority.
+Package and tooling guides follow their real implementation features. Collection guides follow
+accepted curatorial identities independently of source-directory layout. Each page explains its
+own responsibility and links to related owners rather than repeating their complete specifications.

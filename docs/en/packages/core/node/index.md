@@ -18,25 +18,28 @@ target. Root SVG and structural group elements are source or target structure, n
 
 ## Contracts
 
-| Contract | Geometry |
-| --- | --- |
-| `IconPoint` | One finite named `x` and `y` coordinate pair. |
-| `IconPathNode` | Ordered non-empty sequence of canonical absolute path commands. |
-| `IconPathMoveCommand` | Absolute starting coordinate for one path contour. |
-| `IconPathLineCommand` | Absolute endpoint for one straight segment. |
-| `IconPathCubicBezierCommand` | Absolute endpoint and two control coordinates for one cubic curve. |
-| `IconPathQuadraticBezierCommand` | Absolute endpoint and one control coordinate for one quadratic curve. |
-| `IconPathArcCommand` | Absolute endpoint, radii, rotation and semantic flags for one elliptical arc. |
-| `IconPathCloseCommand` | Closes the current contour to its starting coordinate. |
-| `IconCircleNode` | Centre and positive radius. |
-| `IconEllipseNode` | Centre and positive horizontal and vertical radii. |
-| `IconRectNode` | Origin, non-negative dimensions, and optional non-negative corner radii. |
-| `IconLineNode` | Start and end coordinates. |
-| `IconPolylineNode` | Ordered sequence of at least two points. |
-| `IconPolygonNode` | Ordered sequence of at least three points. |
+| Contract | Geometry responsibility | Relations |
+| --- | --- | --- |
+| `IconPoint` | One finite named `x` and `y` coordinate pair. | Coordinate contract reused by drawing/move commands and polyline/polygon points. |
+| `IconPathNode` | Ordered non-empty sequence of canonical absolute path commands. | Member of `IconNodeType`; retains `readonly IconPathCommandType[]`. |
+| `IconPathMoveCommand` | Absolute starting coordinate for one path contour. | Starts or restarts a contour in `IconPathCommandType`. |
+| `IconPathLineCommand` | Absolute endpoint for one straight segment. | Drawing member of `IconPathCommandType`. |
+| `IconPathCubicBezierCommand` | Absolute endpoint and two control coordinates for one cubic curve. | Drawing member of `IconPathCommandType`. |
+| `IconPathQuadraticBezierCommand` | Absolute endpoint and one control coordinate for one quadratic curve. | Drawing member of `IconPathCommandType`. |
+| `IconPathArcCommand` | Absolute endpoint, radii, rotation and semantic flags for one elliptical arc. | Drawing member of `IconPathCommandType`. |
+| `IconPathCloseCommand` | Closes the current contour to its starting coordinate. | Closure member of `IconPathCommandType`. |
+| `IconCircleNode` | Centre and positive radius. | Member of `IconNodeType`. |
+| `IconEllipseNode` | Centre and positive horizontal and vertical radii. | Member of `IconNodeType`. |
+| `IconRectNode` | Origin, non-negative dimensions, and optional non-negative corner radii. | Member of `IconNodeType`. |
+| `IconLineNode` | Start and end coordinates. | Member of `IconNodeType`. |
+| `IconPolylineNode` | Ordered sequence of at least two points. | Member of `IconNodeType`; retains `readonly IconPoint[]`. |
+| `IconPolygonNode` | Ordered sequence of at least three points. | Member of `IconNodeType`; retains `readonly IconPoint[]`. |
 
-Every node contract extends `IconPresentation`, so presentation remains explicit and closed while
+Every node contract extends [IconPresentation](../presentation/index.md), so presentation remains explicit and closed while
 geometry narrowing uses the literal `kind` discriminator.
+
+Every path command except closure extends `IconPoint` for its absolute endpoint. Curve controls,
+arc radii, rotation and flags remain named fields on the corresponding command contract.
 
 ## Types
 

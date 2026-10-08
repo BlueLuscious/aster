@@ -14,19 +14,36 @@ host authority, parser behaviour, registry, or mutable global state.
 | `IconValueValidator` | Provides plain-object, exact data-field, text, number, boolean, opacity, and dense-array assertions. | Used only by internal Core normalisers. |
 | `IconDefinitionError` | Represents deterministic invalid-definition failures with code `ASTER-CORE-001` and a logical object path. | Raised by validators and normalisers; exported only through the package root. |
 
-`IconValueValidator` accepts unknown authored values and returns only locally validated primitive
-representations. Object records may use `Object.prototype` or a null prototype, but accepted fields
+## Data acceptance
+
+`IconValueValidator` inspects unknown authored values before feature normalisers read or retain
+them. It does not clone records or freeze definitions; that work belongs to the normalisers.
+Object records may use `Object.prototype` or a null prototype, but accepted fields
 must be own enumerable string-keyed data properties. Arrays must use the native `Array.prototype`
 and be dense; subclasses and arrays with symbols, accessors, hidden elements, or authored non-index
-properties are rejected before inherited methods can run. The validator does not infer domain
+properties are rejected before inherited methods can run. Accessor descriptors are rejected
+without invoking ordinary getters, and inherited fields cannot satisfy required data. Proxy traps
+remain outside the [trust boundary](../workflow.md#security-and-trust-boundary).
+
+Text is trimmed and must remain non-empty; finite numeric values canonicalise negative zero.
+The validator does not infer domain
 semantics such as node cardinality, presentation precedence, identity relationships, or renderer
 authority; those rules remain with their owning features.
+
+## Error
 
 `IconDefinitionError` is a programming error for malformed authored portable data. Its message
 contains no host path, parser failure, source location, or environment state. Import source
 failures remain structured diagnostics rather than Core definition errors. Consumers can use the
-public frozen class for `instanceof` discrimination and inspect its stable static or instance
-`code` and logical `path`; the validators that produce it remain private.
+public frozen class for `instanceof` discrimination. It extends `TypeError`, has instance name
+`IconDefinitionError`, and exposes the same static and instance code `ASTER-CORE-001` alongside
+the logical `path`. Messages have the form:
+
+```text
+ASTER-CORE-001 at <path>: <reason>.
+```
+
+The validators that produce it remain private.
 
 Shared runtime classes are stateless and constructed by the normalisers that consume them. They do
 not require package-level singletons because they own no shared lifecycle, identity, or replaceable

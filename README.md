@@ -1,20 +1,15 @@
 # Aster
 
-Aster is a host-independent icon ecosystem for defining, validating, transforming,
-cataloguing and distributing icon collections. Its canonical model is designed to
-serve Lilium, Protea and other consumers without assigning framework ownership to
-the icon source.
+Aster provides immutable portable icon definitions, curated artwork, SVG rendering and catalogue
+commands without assigning framework ownership to icon sources. The
+[package guide](docs/en/packages/index.md) introduces the public packages and private Import compiler.
 
-Core, Icons, SVG and CLI `0.1.0` are published on npm. See the
-[publication record](docs/en/project/publication.md) for distribution evidence and the
-[package documentation](docs/en/packages/index.md) for each package's release history.
+## Usage
 
-## Package consumption
-
-Install canonical icons and SVG rendering:
+Install icons and rendering:
 
 ```sh
-pnpm add @luscious-garden/aster-icons@0.1.0 @luscious-garden/aster-svg@0.1.0
+pnpm add @luscious-garden/aster-icons @luscious-garden/aster-svg
 ```
 
 ```ts
@@ -24,43 +19,31 @@ import { Svg } from "@luscious-garden/aster-svg";
 const markup = Svg.render(ArrowLeft);
 ```
 
-Authoring a new definition directly requires `@luscious-garden/aster-core`; the standalone CLI can
-be installed with `pnpm add -D @luscious-garden/aster-cli@0.1.0` and run with
-`pnpm exec aster list icons` on Node `>=24.10.0 <25`.
+Use [Core](packages/core/README.md) to author definitions or [CLI](packages/cli/README.md) for
+standalone catalogue commands. Each package guide links its independent version history;
+[publication records](docs/en/project/publications/index.md) retain verified published combinations.
 
 ## Documentation
 
-- [Documentation home](docs/en/index.md)
-- [Project](docs/en/project/index.md)
-- [Publication procedure](docs/en/project/publication.md)
-- [Repository tooling](docs/en/tooling/index.md)
-- [Packages](docs/en/packages/index.md)
-- [Collections](docs/en/collections/index.md)
-- [Future capabilities](docs/en/future-capabilities.md)
-- [Garden ecosystem](https://github.com/BlueLuscious/garden)
-
-Canonical documentation is written in British English under `docs/en/`.
-Garden owns Aster's cross-product identity and ecosystem relationships; this repository remains
-authoritative for Aster's implementation, packages, collections, workflows, and releases.
+- [Documentation home](docs/en/index.md): canonical guides and their ownership.
+- [Project](docs/en/project/index.md): purpose, workflows, policies and ecosystem relationships.
+- [Packages](docs/en/packages/index.md): APIs, usage and version histories.
+- [Collections](docs/en/collections/index.md): artwork, provenance and visual rules.
+- [Future capabilities](docs/en/future-capabilities.md): proposals rather than current guarantees.
 
 ## Development
 
-The supported development runtime is declared in [.node-version](.node-version)
-and the workspace requires pnpm.
+Use the runtime in [.node-version](.node-version) and the package manager pinned in
+[package.json](package.json):
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm run verify
 ```
 
-Run the standalone documentation validation with:
-
-```sh
-pnpm run check:docs
-```
+[Repository tooling](docs/en/tooling/index.md) owns contributor commands and verification boundaries.
 
 ## Licence
 
-Aster's software and documentation are licensed under [ISC](LICENSE). BlueLuscious-owned icon and
-collection artwork identified by its metadata follows the separate
-[artwork licence](packages/icons/ARTWORK-LICENCE.md); other artwork retains its declared terms.
+Software and documentation follow [ISC](LICENSE). Marked BlueLuscious-owned artwork follows the
+separate [artwork licence](packages/icons/ARTWORK-LICENCE.md); other artwork retains its declared terms.

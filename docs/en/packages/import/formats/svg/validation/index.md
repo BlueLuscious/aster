@@ -28,8 +28,7 @@ technical validation pass.
 - `TSvgValidationIssue` is the discriminated internal failure evidence translated into stable
   diagnostics.
 
-Validation retains the portable Core `IconViewBox` directly. It does not allocate provisional grid
-values, stroke-width collections, located view-box wrappers or primitive bounds because no
-retained Import operation consumes them. Collection-specific review belongs to CLI host policy
-rather than this source adapter. The CLI review host derives its own non-canonical visual guides
-from accepted Core definitions and never widens Import validation metrics.
+Validation retains the portable Core `IconViewBox` directly. It owns no provisional visual grid,
+stroke-width collection or primitive bounds: the neutral draft consumes only geometry and the
+documented metrics. [Collection visual policy](../../../../../collections/index.md) and
+[CLI review guides](../../../../cli/review/index.md) are independent consumers, not Import rules.

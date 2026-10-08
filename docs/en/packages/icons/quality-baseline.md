@@ -7,6 +7,10 @@ and emitted distribution changes. It is not a bundle-size promise, hardware-inde
 guarantee or CI performance threshold. Current correctness evidence remains in
 [Icons Quality](quality.md).
 
+Shared fresh-process probing, sampling, aggregation and distribution inspection are owned by
+[Performance Tooling](../../tooling/performance/index.md). This page owns Icons scenarios and
+their interpretation, not a second implementation inventory.
+
 ## Representative evidence
 
 Each import scenario runs in seven fresh direct Node processes. A disposable synchronous module
@@ -42,7 +46,7 @@ authoring authorities, its generated barrel and aggregate constant even though n
 requested. That historical baseline justified removing the aggregate root; it is no longer an
 executable public scenario.
 
-After facade generation and eager-surface retirement, current deterministic module evidence is:
+After facade generation and eager-surface retirement, the recorded module sets were:
 
 | Scenario | Evaluated Icons modules |
 | --- | ---: |
@@ -71,7 +75,7 @@ correctness evidence; elapsed time remains informative supporting evidence affec
 
 ## Distribution evidence
 
-The typed-collection native ES2022 ESM output contains 138 files and 83,832 unminified bytes:
+The recorded typed-collection native ES2022 ESM output contained 138 files and 83,832 unminified bytes:
 
 - 69 JavaScript modules totalling 66,769 bytes;
 - 69 declaration files totalling 17,063 bytes;
@@ -80,10 +84,10 @@ The typed-collection native ES2022 ESM output contains 138 files and 83,832 unmi
 - `sideEffects: false`;
 - public `@luscious-garden/aster-core` as the only runtime dependency.
 
-The corresponding package tarball contains those 138 emitted files plus `package.json`, `README.md`,
-the [ISC software notice](../../../../packages/icons/LICENSE) and
-[artwork terms](../../../../packages/icons/ARTWORK-LICENCE.md). Clean-consumer evidence installs
-that actual tarball and rejects any additional source, test or repository-tooling surface.
+The corresponding tarball contained those emitted files plus package metadata, README and both
+legal authorities linked by the [rights boundary](index.md#rights-boundary).
+[Packed-consumer conformance](quality.md#evidence-coverage) owns complete-payload verification,
+including rejection of source, tests and repository tooling.
 
 The pre-migration control contained 68 files and 55,087 bytes. The accepted facade, manifest and
 loader responsibilities increase emitted file count while removing default package-wide runtime
@@ -104,13 +108,10 @@ pnpm benchmark:icons
 
 The command builds Core and Icons, starts fresh probe processes for isolated icon, isolated
 collection, manifest and dynamic imports, prints schema-version-one JSON
-and writes no artefact. Reports include environment identity, complete evaluated-module lists,
-public exports, import and process samples, emitted files and bytes, export keys, side effects and
-dependencies.
-
-Processor state, background load, storage, antivirus software, runtime revision and operating
-system can affect timings. Reports are comparable only under equivalent conditions. Module sets
-and distribution shape remain deterministic evidence.
+and writes no artefact. It reports actual module sets and distribution from the current checkout.
+[Performance Tooling](../../tooling/performance/index.md) owns shared report fields and comparison
+limits. Catalogue growth can legitimately change selected collection graphs and emitted counts;
+neither these snapshots nor timings establish a fixed size or count guarantee.
 
 ## Acceptance rules
 
@@ -126,7 +127,7 @@ authoritative.
 
 ## Tooling boundary
 
-Icons owns its baseline configuration, factory, runner and command. The fresh-process adapter,
-module-import probe, import runner, statistics and distribution inspector are shared private
-tooling because their contracts apply to more than one package baseline. None is shipped by Icons
-or imported by production packages.
+Icons selects its public specifiers and scenario configuration through the private
+[performance composition](../../tooling/performance/index.md#package-runtime-composition).
+Shared probing and measurement capabilities remain tooling-owned. None ships in Icons or enters
+production imports.

@@ -29,12 +29,9 @@ selection without owning or duplicating exact lookup policy.
 ## Runtime composition
 
 `ExportOptionsNormaliser` validates, copies, and freezes the closed programmatic option record.
-`CatalogueSubjectSelector` applies an optional exact provider scope to accepted discovery metadata
-before resolving only the selected icon or collection. Exact loader results cross Core validation
-and must agree with discovery identity, metadata, and membership before Export can retain them.
-An icon invokes one icon loader; a collection invokes one collection loader and consumes its
-validated members without redundant icon loads. `ExportPathFormatter` derives paths only from
-portable identities.
+The [catalogue subject selector](../catalogue/runtime/index.md#exact-definition-resolution)
+supplies the accepted exact definitions and independent membership evidence.
+`ExportPathFormatter` derives paths only from portable identities.
 `SvgExportArtefactFactory` preflights every logical path and rejects collisions before rendering
 through the public `Svg` API; it then translates target failures into Aster command diagnostics.
 `ExportPlanQuery` publishes a result only after the complete selection renders successfully.
@@ -52,7 +49,7 @@ invocation and option acceptance
 exact catalogue selection --> canonical identity ordering
           |
           v
-public SVG rendering ------> logical path collision check
+logical path preflight ----> public SVG rendering
           |
           v
 complete immutable export plan

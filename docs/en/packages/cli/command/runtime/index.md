@@ -8,7 +8,7 @@ subpath.
 | Class | Responsibility |
 | --- | --- |
 | `CommandInvocationNormaliser` | Dispatches acceptance to explicit command-owned normalisers documented by [Command Invocation](../invocation/index.md). |
-| `CommandContextNormaliser` | Validates explicit providers, product metadata, and optional installed package-version evidence; snapshots discovery and exact-loader capabilities, rejects duplicate identities, and freezes the context container. |
+| `CommandContextNormaliser` | Validates explicit providers, product metadata, and optional version, dependency and CLI-location evidence; snapshots discovery and exact-loader capabilities, rejects duplicate identities, and freezes the context container. |
 | `CommandKernel` | Isolates descriptors, orders definitions, coordinates both normalisers, dispatches explicitly, and sanitises thrown definition failures. |
 | `CommandDiagnosticFactory` | Constructs isolated deeply frozen command diagnostics. |
 | `CommandResultFactory` | Constructs immutable closed success payloads and structured failures. |
@@ -43,13 +43,14 @@ Descriptors are copied from definitions, their usage sequences are frozen, and t
 sequence is ordered lexically by command identity. Reading descriptors executes no command or
 provider.
 
-Structured records accept only own enumerable data properties on ordinary or null-prototype
-objects. Symbols, hidden fields, accessors, custom prototypes, unknown fields, sparse arrays, and
-authored array state are rejected. Provider objects are treated separately as capabilities: the
-normaliser snapshots their canonical identity and callable `discover`, `loadIcon`, and
-`loadCollection` members without executing accessors, then invokes accepted methods with their
-original receiver. Provider results remain untrusted and cross their catalogue acceptance
-boundaries before becoming command state.
+Structured data follows the [shared inspection boundary](../../shared/index.md). Providers are
+accepted separately as capabilities: context normalisation snapshots identity and callable
+`discover`, `loadIcon` and `loadCollection` members without invoking accessors, then preserves
+their original receiver. Results remain untrusted at [catalogue acceptance](../../catalogue/index.md).
+
+Version evidence is copied, validated and frozen with the context. The owning
+[version command](../index.md#invocation-semantics) checks that its source and selected roots
+satisfy the request; missing evidence is not inferred from providers or ambient installations.
 
 The runtime imports no Node module and writes no output. The public frozen `AsterCommands`
 composition delegates to this kernel; the standalone Node shell and independent programmatic

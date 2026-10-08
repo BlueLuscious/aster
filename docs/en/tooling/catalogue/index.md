@@ -2,248 +2,144 @@
 
 Status: **Accepted**
 
-The `catalogue` tooling feature recursively discovers canonical `@luscious-garden/aster-icons` TypeScript sources,
-validates their identities and relationships, and synchronises metadata-only distribution data,
-exact dynamic loaders and public definition facades. It is private
-repository infrastructure, not runtime discovery, a public package API, or an icon-authoring
-source.
+Catalogue tooling discovers canonical Icons TypeScript sources, validates identities and
+relationships, and synchronises metadata, exact dynamic loaders and public definition facades.
+It is private build infrastructure, not runtime discovery or an authoring source.
 
 ## Ownership
 
-Canonical `src/glyphs/**/*.icon.ts` and `src/collections/**/*.collection.ts` modules remain the
-editable sources of truth. The synchroniser exclusively owns:
+Editable sources live under `src/glyphs/**/*.icon.ts` and
+`src/collections/**/*.collection.ts`. The synchroniser exclusively owns:
 
 - `src/generated/manifest/index.ts`;
 - `src/generated/dynamic/index.ts`;
 - `src/generated/facades/icons/**/*.ts`;
 - `src/generated/facades/collections/*.ts`.
 
-These generated files remain versioned so clean source checkouts, editors and package consumers
-can resolve the package structure without first executing repository tooling. Their generated
-headers identify the reconstruction command and prohibit manual editing. The repository's
-`.gitattributes` keeps this generated subtree on LF line endings across checkout platforms so
-the read-only synchronisation check compares the same bytes that the serialiser produces.
+Generated files are versioned for clean-checkout resolution. Their headers name the reconstruction
+command and prohibit manual editing; `.gitattributes` keeps this subtree on LF so read-only checks
+compare serialised bytes consistently. Membership remains authored in each collection, never
+inferred from directories.
 
-Collection membership remains authored inside each canonical collection module. Synchronisation
-does not infer membership, alter icon definitions or create collections from directories.
-The facade root contains only minimal named re-exports and remains independent from the manifest
-and dynamic-loader output roots.
+## Source convention
 
-## Source Convention
+Discovery accepts exact role filenames recursively beneath configured roots, excluding unsupported
+files and non-file entries. An icon exports exactly one constant with the PascalCase form of its
+slug: `arrow-left.icon.ts` exports `ArrowLeft`.
 
-Only files with exact canonical roles are discovered recursively beneath their configured roots.
-The glyph root contains no generated subtree. Unsupported files and non-file directory entries do
-not enter canonical discovery.
-
-An icon filename `<icon-slug>.icon.ts` must export exactly one constant whose name is the PascalCase
-form of `<icon-slug>`. For example, `arrow-left.icon.ts` exports `ArrowLeft`.
-
-The inspector accepts only the nested identity layout:
+Only the nested layout is accepted:
 
 ```text
 src/glyphs/<initial>/<name>/<name>.icon.ts
 src/glyphs/<initial>/<name>/<name>-<variant>.icon.ts
+src/collections/<initial>/<name>/<name>.collection.ts
 ```
 
-Nested base and variant examples export `Camera`, `CameraStippled`, `CameraRetro` and
-`CameraRetroFilled` from:
+The initial directory equals the first letter of the complete name. Names begin with an ASCII
+lowercase letter and use lowercase alphanumeric segments separated by one hyphen; variants use
+Core's portable slug syntax.
+A base filename repeats the complete name, and a variant appends its declared variant. Thus
+`c/camera-retro/camera-retro-filled.icon.ts` declares name `camera-retro`, variant `filled`
+and export `CameraRetroFilled`, not name `camera`.
 
-```text
-src/glyphs/c/camera/camera.icon.ts
-src/glyphs/c/camera/camera-stippled.icon.ts
-src/glyphs/c/camera-retro/camera-retro.icon.ts
-src/glyphs/c/camera-retro/camera-retro-filled.icon.ts
-```
+Collections have no variants and append `Collection` to the PascalCase symbol:
+`amellus.collection.ts` exports `AmellusCollection`. Every definition calls its configured
+public `Icon.define(...)` or `Collection.define(...)` factory through a named runtime Core import.
+The direct object's literal identity must agree with the path.
 
-The first directory must equal the first ASCII lowercase letter of the complete icon name. A base
-filename repeats that name exactly. A variant filename appends one canonical variant slug, and its
-`Icon.define(...)` identity must declare the same `name` and `variant`.
+A collection's explicit `icons` object assigns lower camel-case aliases directly to identifiers
+from named relative runtime imports, for example `icons: { camera: Camera }`. Each imported
+specifier and symbol must resolve to one discovered canonical icon. The dictionary rejects arrays,
+shorthand, quoted/computed keys, spreads, accessors, calls, nested values, non-runtime imports,
+duplicate aliases and duplicate members. `catalogueCollectionIconAliasPatternSource` owns static
+alias grammar; [Core](../../packages/core/collection/index.md) independently validates runtime
+construction. Valid aliases may shadow inherited names.
 
-A collection filename `<collection-slug>.collection.ts` follows the same conversion and appends
-`Collection`. For example, `amellus.collection.ts` exports `AmellusCollection`.
+Static metadata authorities must be exported top-level constants acquired through named runtime
+imports. `CatalogueSourceValueResolver` interprets a finite data-only TypeScript subset, never
+executes source, and rejects executable or cyclic metadata. Inspection rejects invalid TypeScript
+or layout, mismatched identities, missing/additional exports, duplicate properties or identities,
+dangling members and conflicting public subpaths before publication.
 
-Collections use `src/collections/<initial>/<name>/<name>.collection.ts`; they do not have variants.
-Their explicit `icons` field must be an object literal whose lower camel-case property names are
-assigned directly to identifiers acquired through named relative runtime imports. For example,
-`icons: { camera: Camera, cameraStippled: CameraStippled }` declares two ordered aliases. Every member
-specifier and imported symbol must resolve to one icon discovered in the same complete inspection.
-Removing a referenced icon, pointing outside canonical sources, or spelling its exported symbol incorrectly
-therefore fails before generated outputs are touched.
-
-The accepted dictionary grammar rejects arrays, shorthand properties, quoted or computed keys,
-spreads, accessors, calls, nested values, non-runtime imports, duplicate aliases, and duplicate
-member references. `catalogueCollectionIconAliasPatternSource` owns the static source grammar;
-Core independently validates the portable runtime dictionary at its public construction boundary.
-Valid aliases may shadow inherited names. The static inspector never evaluates a definition to
-discover its aliases or members.
-
-Names begin with one ASCII lowercase letter and continue with lowercase alphanumeric segments
-separated by one hyphen. Variants use portable Core slug syntax. Every canonical export must call
-its configured public `Icon.define(...)` or `Collection.define(...)` factory, imported as one
-runtime named import from `@luscious-garden/aster-core`, with a direct object whose literal identity agrees with
-its path. Collection members and imported static metadata authorities must also use runtime named
-imports; imported authorities must be exported top-level constants. Invalid layout or TypeScript,
-mismatched identities, missing exports, additional exported constants, duplicate static
-properties, duplicate identities and dangling members are rejected before any generated file is
-written. Distinct public subpaths may expose the same symbol because their module scopes never
-converge in an aggregate barrel.
-
-The icon names `collections`, `dynamic` and `manifest` are reserved because those first-level
-subpaths belong to collection or integration families. A base icon therefore cannot shadow them.
-Each accepted base icon generates `src/generated/facades/icons/<name>.ts`; each rendition generates
-`src/generated/facades/icons/<name>/<variant>.ts`; and each collection generates
-`src/generated/facades/collections/<name>.ts`.
-
-Every accepted source also contributes one metadata-only record to
-`src/generated/manifest/index.ts`. The manifest retains complete identities, public symbols,
-searchable metadata and ordered collection member keys, but never geometry, presentation policy or
-complete definitions.
-
-Every accepted source also contributes one exact asynchronous loader to
-`src/generated/dynamic/index.ts`. Loader keys share the manifest key authority and target generated
-public facades rather than canonical source paths.
+The names `collections`, `dynamic` and `manifest` are reserved integration subpaths. Symbols may
+repeat across isolated module scopes; no aggregate definition barrel is generated.
 
 ## Composition
 
-```text
-NodeCatalogueSourceFileSystem
-        |
-        v
-RepositoryFileWalker --> CatalogueSourceModuleInspector
-                              |             |
-                              v             v
-                  CatalogueSourceLayout  CatalogueSourceSyntax
-                         Normaliser             Inspector
-                                                   |
-                                                   v
-                                 CatalogueSourceManifestInspector
-                                                   |
-                                                   v
-                                   CatalogueSourceValueResolver
-                              \             /
-                               v           v
-                    CatalogueSourceRelationshipInspector
-                                  |
-                   CatalogueSourceSynchroniser
-                      /          |          \
-                     v           v           v
-          CatalogueSource  CatalogueSource  CatalogueSource
-           FacadePlanner   ManifestPlanner   DynamicPlanner
-                 |               |                |
-                 v               v                v
-          CatalogueSourceFacadeResolver  CatalogueSourceKeySerialiser
-                      \           |           /
-                       v          v          v
-                    CatalogueSourceSerialiser
-```
+| Authority | Responsibility |
+| --- | --- |
+| `CatalogueSourceSynchroniserFactory` | Composes filesystem, inspection, planning and serialisation capabilities. |
+| `NodeCatalogueSourceFileSystem`, `RepositoryFileWalker` | Acquire selected source modules deterministically. |
+| `CatalogueSourceModuleInspector` | Coordinates module acquisition and inspection. |
+| `CatalogueSourceLayoutNormaliser` | Maps physical paths to identities, symbols and public subpaths. |
+| `CatalogueSourceSyntaxInspector` | Extracts factory calls, literal identity and membership references. |
+| `CatalogueSourceManifestInspector`, `CatalogueSourceValueResolver` | Validate and statically resolve descriptive metadata. |
+| `CatalogueSourceRelationshipInspector` | Validates references across complete source families. |
+| `CatalogueSourceFacadePlanner`, `CatalogueSourceFacadeResolver` | Plan minimal named re-exports and their logical paths. |
+| `CatalogueSourceManifestPlanner`, `CatalogueSourceDynamicPlanner` | Plan metadata records and exact deferred imports. |
+| `CatalogueSourceKeySerialiser` | Shares canonical key formation between generated integrations. |
+| `CatalogueSourceSynchroniser`, `CatalogueSourceSerialiser` | Complete immutable inspection and output planning, then publish changed outputs. |
 
-The module inspector coordinates acquisition only. The layout normaliser owns physical-path to
-identity and symbol mapping; the syntax inspector owns TypeScript factory, literal identity and
-membership extraction; the manifest inspector owns metadata shape; the value resolver statically
-interprets its finite data-only TypeScript subset; and the relationship inspector owns cross-family
-reference integrity. The facade, manifest and dynamic planners own their distinct output
-projections. Facade paths and canonical keys have shared authorities so generated integrations
-cannot drift independently. The
-synchroniser builds the complete immutable inspection set before asking the serialiser for any
-output, so source failures cannot partially replace generated files. Static document and value
-caches are scoped to one complete synchronisation and cleared before the next inspection.
-The synchroniser copies each injected source-family descriptor and its excluded-directory list at
-construction; later changes to the caller's configuration cannot redirect discovery. Filesystem,
-inspector and planner capabilities remain borrowed collaborators.
+The synchroniser snapshots source-family descriptors and excluded-directory lists at construction.
+Injected filesystem, inspector and planner capabilities remain borrowed. Static document/value
+caches last one complete inspection and are cleared before the next.
 
 ## Internal contracts
 
 | Contract | Responsibility and relationship |
 | --- | --- |
-| `ICatalogueSourceFamily` | Configures one canonical source family and its Core factory, physical root and generated facade root. |
-| `ICatalogueSourceIdentity` | Carries the path-owned name, optional variant, symbol and public subpath produced by layout normalisation. |
-| `ICatalogueCollectionMemberReference` | Retains one collection-local alias, local imported identifier, exported symbol and canonical module specifier for relationship validation. |
-| `ICatalogueIconManifestData` | Carries statically extracted metadata for one icon manifest entry without portable geometry. |
-| `ICatalogueCollectionManifestData` | Carries statically extracted collection metadata and ordered member keys. |
-| `ICatalogueSourceSyntaxInspection` | Couples one module's static manifest data with any collection member references found by syntax inspection. |
-| `ICatalogueSourceModule` | Combines canonical path identity, source location, manifest data and relationships for one validated module. |
-| `ICatalogueSourceFamilyInspection` | Groups the canonically ordered modules validated for one configured family. |
-| `ICatalogueSourceOutput` | Describes one deterministic generated relative path and its complete content. |
-| `ICatalogueSourcePlan` | Separates fixed generated outputs from the atomically published facade set. |
-| `ICatalogueSourceFileSystem` | Isolates recursive acquisition, text persistence and owned-directory replacement from catalogue policy. |
+| `ICatalogueSourceFamily` | Configures a family's Core factory, physical root and generated facade root. |
+| `ICatalogueSourceIdentity` | Carries path-owned name, optional variant, symbol and public subpath from layout normalisation. |
+| `ICatalogueCollectionMemberReference` | Retains an alias and its imported identifier, exported symbol and module specifier for relationship validation. |
+| `ICatalogueIconManifestData` | Carries statically extracted icon metadata without geometry. |
+| `ICatalogueCollectionManifestData` | Carries extracted collection metadata and ordered member keys. |
+| `ICatalogueIconManifestRecord` | Adds the canonical key, public symbol and identity to icon data for manifest serialisation. |
+| `ICatalogueCollectionManifestRecord` | Couples a canonical key, public symbol and identity with collection metadata and ordered member keys. |
+| `ICatalogueSourceSyntaxInspection` | Couples extracted manifest data with syntax-owned member references. |
+| `ICatalogueSourceModule` | Combines path identity, source location, manifest data and relationships for a validated module. |
+| `ICatalogueSourceFamilyInspection` | Groups canonically ordered validated modules for one family. |
+| `ICatalogueSourceOutput` | Describes a generated relative path and complete deterministic content. |
+| `ICatalogueSourcePlan` | Separates fixed outputs from the atomically published facade set. |
+| `ICatalogueSourceFileSystem` | Isolates acquisition, persistence and owned-directory replacement from policy. |
 
 ## Workflow
 
-Package authors:
+1. Create, change or remove a canonical definition.
+2. Update affected collections' named imports and alias dictionaries.
+3. Run `pnpm --dir packages/icons run build`, which synchronises before compilation.
 
-1. create or remove a canonical definition module;
-2. update explicit membership in any affected collection modules;
-3. run `pnpm --dir packages/icons run build`.
+`generate:catalogue` performs synchronisation directly; `check:catalogue` compares without writing.
+Root `pnpm check` runs the read-only check before building, so a build cannot hide uncommitted drift.
 
-The build runs `generate:catalogue` before compilation. Generation walks entries deterministically,
-normalises host paths to slash-separated records, validates every source family and cross-family
-relationship, statically extracts distribution metadata, serialises portable relative specifiers
-and exact loaders with LF line endings, and writes only changed independent outputs. It replaces the complete facade
-root through adjacent stage and rollback
-directories only when facade content or membership changes. A nested source therefore never
-exposes a platform path separator in generated TypeScript.
-
-`pnpm --dir packages/icons run generate:catalogue` performs synchronisation directly.
-`pnpm --dir packages/icons run check:catalogue` performs a read-only comparison and fails when an
-output is absent or stale. Root `pnpm check` runs the read-only check before any build so CI cannot
-silently accept uncommitted generated drift.
-
-Collection membership follows one source-to-runtime flow:
-
-1. syntax inspection reads the ordered `icons` dictionary and retains each alias and named import;
-2. relationship validation resolves those imports against canonical icon modules;
-3. manifest planning emits ordered canonical identity keys in the collection entry's `members`;
-4. the exact collection loader targets its isolated facade;
-5. evaluating that collection calls Core, which derives `CollectionDefinition.members` from the
-   same authored dictionary.
-
-Manifest `members` are lightweight identity strings; definition `members` are complete icon
-objects. Neither generated manifest nor loader map becomes a second authored membership authority,
-and source aliases do not replace canonical manifest keys. Adding or removing a member requires
-editing only its collection's named imports and alias dictionary, then rebuilding. Removing an
-icon still referenced by a collection fails relationship validation rather than rewriting the
-curated dictionary automatically.
+Planning emits base facades at `icons/<name>.ts`, variant facades at
+`icons/<name>/<variant>.ts` and collection facades at `collections/<name>.ts`.
+Manifest records and dynamic loaders share canonical keys; loaders target facades, not source
+paths. Generated specifiers use portable relative paths and LF text. The
+[Icons workflow](../../packages/icons/workflow.md) owns consumer-facing distribution and membership
+semantics; [manifest](../../packages/icons/manifest/index.md) and
+[dynamic](../../packages/icons/dynamic/index.md) guides own their public contracts.
 
 ## Publication safety
 
-The synchroniser completes discovery, path and syntax validation, symbol and public-subpath
-collision checks, cross-family membership validation and the complete output plan before replacing
-any generated file. A rejected source set therefore preserves all existing outputs. Check-only
-execution reports every missing, stale or obsolete path without creating or removing a file.
+Discovery, syntax, identities, relationships and the complete plan must succeed before any output
+changes. Check-only execution reports missing, stale or obsolete paths without creating or
+removing files.
 
-Catalogue tooling owns no review document, cache or temporary canonical source. Facade publication
-writes a complete adjacent stage, moves the previous facade root to a unique backup, publishes the
-stage and removes the backup. A failed publication restores the previous root; successful
-publication removes obsolete facade files and directories as one owned set. The generated
-manifest and dynamic map remain independently recoverable: an
-interrupted process is followed by
-`check:catalogue`, which reports every incomplete or stale output, and deterministic regeneration
-restores the set.
+Fixed manifest and dynamic outputs are written independently when content changes. The entire
+facade root is published through an adjacent stage and backup: failed publication restores the
+previous root, while success removes obsolete facades as one owned set. This is not a transaction
+across all three outputs. After interruption, read-only checking diagnoses drift and deterministic
+regeneration restores the set.
 
-## Canonical source boundary
+Cleanup may replace only `src/generated/facades`, never canonical glyph or collection roots.
+The synchroniser owns no review document, source cache or temporary canonical artwork.
 
-Each icon source lives beneath `src/glyphs/<initial>/<name>/`, independently from collection
-membership. Each collection source lives beneath `src/collections/<initial>/<name>/`. Generated
-facades preserve logical public subpaths without exposing either physical root. No compatibility
-barrel or aggregate definition index is generated.
+## Runtime boundary and verification
 
-Cleanup is deliberately finite. The synchroniser may replace only its
-`src/generated/facades` root; it must never recursively delete from a canonical icon or collection
-source root. The manifest remains a separate fixed output because it has a distinct public
-contract and lifecycle from minimal definition facades. The dynamic map is another fixed output;
-its lazy imports resolve those facades without owning their publication lifecycle.
+Generated manifest imports are type-only; dynamic imports defer facade evaluation. Consumers use
+ordinary ESM data without filesystem or repository-tooling access.
 
-## Runtime Boundary
-
-Generated outputs are ordinary side-effect-free ESM sources. The emitted manifest has no runtime
-imports because its contract imports are type-only. The emitted dynamic map has only deferred
-imports of generated definition facades. `@luscious-garden/aster-cli` and all consumers import immutable values
-without accessing Node, tooling paths or the filesystem.
-
-Conformance covers deterministic regeneration, idempotence, drift detection, nested addition and
-removal, stale manifest and loader removal, rejection of transitional flat sources, variant mapping,
-reserved public subpaths, stale facade cleanup, syntax and identity failure, static imported
-authorities, rejected executable or cyclic metadata, manifest-loader key equivalence and dangling
-collection membership. Package and CLI tests derive discovery from manifests and resolve complete
-definitions through exact loaders while retaining identity, ordering, membership and
-isolated-subpath checks.
+Conformance covers deterministic regeneration, idempotence, drift, nested addition/removal,
+variant mapping, reserved subpaths, stale-output cleanup, syntax/identity failures, static
+authorities, rejected executable/cyclic metadata, dangling members and manifest-loader key
+equivalence. Package and CLI tests verify isolated imports, discovery, identity and ordering.

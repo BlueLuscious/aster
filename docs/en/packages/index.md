@@ -2,48 +2,43 @@
 
 Status: **Accepted**
 
-This directory documents Aster's real package set and dependency relationships. Package-specific
-documentation is added only when its package exists under `packages/`.
+This directory owns Aster's real package set and production dependency relationships. Each package
+guide owns its APIs, features, exports, workflows and conformance; its release history owns version
+changes and migrations.
 
-The current package set is:
-
-| Package | Status | Responsibility |
+| Package | Distribution | Responsibility |
 | --- | --- | --- |
-| [`@luscious-garden/aster-core`](core/index.md) | Published `0.1.0` | Independent portable icon and collection definitions, immutable construction, and render-neutral contracts. |
-| [`@luscious-garden/aster-import`](import/index.md) | Private | Host-independent adoption of external icon sources into portable definitions and editable TypeScript. |
-| [`@luscious-garden/aster-icons`](icons/index.md) | Published `0.1.0` | Accepted canonical portable icons and the opt-in Amellus collection aggregate. |
-| [`@luscious-garden/aster-svg`](svg/index.md) | Published `0.1.0` | Hardened framework-independent standalone SVG rendering. |
-| [`@luscious-garden/aster-cli`](cli/index.md) | Published `0.1.0` | Host-neutral command execution, explicit catalogue discovery, deterministic SVG export planning, and a thin standalone Node output host. |
+| [Core](core/index.md) | Published | Portable icon/collection definitions, immutable construction and render-neutral contracts. |
+| [Icons](icons/index.md) | Published | Canonical artwork, isolated imports, explicit collections and lightweight discovery. |
+| [SVG](svg/index.md) | Published | Framework-independent standalone SVG rendering. |
+| [CLI](cli/index.md) | Published | Host-neutral catalogue commands, export/review planning and a standalone Node host. |
+| [Import](import/index.md) | Private | Adoption of acquired external sources into portable definitions and editable TypeScript. |
 
-The accepted production dependency direction is:
+## Production dependencies
+
+Arrows point from a package to its direct runtime dependencies:
 
 ```text
-@luscious-garden/aster-core <---- @luscious-garden/aster-icons
-      ^
-      +---------- @luscious-garden/aster-svg
-      +---------- @luscious-garden/aster-import ----> xmlsax-typescript
-      ^                  (private)
-      |
-@luscious-garden/aster-cli ------> @luscious-garden/aster-icons
-      |
-      +----------> @luscious-garden/aster-svg
+CLI    -> Core, Icons, SVG
+Icons  -> Core
+SVG    -> Core
+Import -> Core, xmlsax-typescript
+Core   -> (none)
 ```
 
-Core is the portable foundation and has no runtime dependency. Icons and SVG depend only on its
-public root. Private Import depends on Core plus its contained XML parser adapter. CLI consumes
-the public Core, Icons and SVG roots to provide catalogue and export workflows. No portable or
-rendering package depends on CLI or Import, and no package imports repository tooling.
+Cross-package code uses public exports, never implementation paths. Import's XML dependency remains
+behind its private parser adapter. No package depends on repository tooling, and the portable,
+artwork and rendering packages do not depend on CLI or Import. Runtime and development dependencies
+are distinct; manifests and the [architecture verifier](../tooling/architecture/index.md) establish
+their exact boundaries.
 
-Each package document covers:
+## Documentation ownership
 
-- public responsibility and explicit non-responsibilities;
-- features and internal composition;
-- runtime and development dependencies;
-- root and subpath exports;
-- contracts, types, APIs, and implemented flows;
-- target, compatibility, testing, and generation boundaries.
+A package introduction identifies responsibility, exports and useful navigation. Feature guides
+describe their contracts, types and implemented behaviour. Dedicated runtime subdocuments exist
+only where composition needs its own explanation; ordinary layer directories do not require
+additional pages.
 
-Feature documentation mirrors each real package-relative feature path when that feature owns a
-stable responsibility. Layer-only directories such as `runtime/`, `contracts/` and `types/` may
-be described by their owning feature document unless their composition requires a dedicated
-subdocument.
+Quality records own acceptance evidence, comparison baselines own measurements, and histories own
+release-specific facts. [Versioning](../project/versioning.md) governs compatibility across packages;
+[publication records](../project/publications/index.md) retain verification of distributed combinations.

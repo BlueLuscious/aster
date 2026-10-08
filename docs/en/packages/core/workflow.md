@@ -2,197 +2,84 @@
 
 Status: **Accepted**
 
-This document explains how authored values enter `@luscious-garden/aster-core`, become canonical immutable icon or
-collection definitions, and leave Core for independent consumers. Feature documents remain the
-authority for individual contracts and normalisers.
+This page traces authored input through Core construction and into independent consumers.
+Individual feature pages own field rules and canonical representations.
 
 ## Icon construction
 
-The public entry point is:
-
-```ts
-const icon = Icon.define(authoredDefinition);
-```
-
-The compile-time parameter is `IconDefinition`, but runtime construction never trusts that
-annotation. JavaScript callers, decoded data, generated modules, and TypeScript escape hatches can
-still supply malformed values.
-
-Construction proceeds as one synchronous transaction:
+`Icon.define(authoredDefinition)` starts one synchronous transaction:
 
 ```text
 authored value
     |
     v
-Icon API
+Icon API -> IconDefinitionFactory
     |
-    v
-IconDefinitionFactory
-    |
-    +--> validate exact root fields
-    +--> normalise identity
-    +--> normalise viewBox
-    +--> normalise and freeze ordered nodes
-    +--> normalise metadata and presentation policy
+    +--> closed definition shape
+    +--> identity and viewBox
+    +--> ordered geometry and presentation
+    +--> metadata and presentation policy
     |
     v
 isolated deeply frozen IconDefinition
 ```
 
-The root must be a plain closed object containing `identity`, `viewBox`, `nodes`, and `metadata`.
-Every retained domain field must be an own enumerable string-keyed data property. Unknown fields,
-symbols, non-enumerable fields, accessors, custom prototypes, sparse arrays, and authored array
-properties are rejected rather than ignored. Each feature normaliser validates its own numeric,
-textual, cardinality, vocabulary, ordering, and relationship rules before creating new retained
-objects.
+The [definition runtime](definition/runtime/index.md) composes those normalisers and reconstructs
+every retained object and sequence. [Shared data acceptance](shared/index.md#data-acceptance)
+applies before feature-specific normalisation. Invalid input returns no partially constructed
+value; numeric, textual, geometric and metadata constraints remain with their
+[feature owners](index.md#documentation).
 
-Required fields must be own enumerable data properties; inherited values cannot satisfy them.
-Optional fields are inspected only when owned, so inherited accessors do not supply portable
-definition data. This guarantee applies to ordinary records; proxy traps remain outside Core's
-trust boundary.
-
-Identity is canonical ASCII lowercase slug data. The viewBox has finite minima and positive finite
-dimensions. Nodes form a non-empty ordered sequence from the closed portable geometry union.
-Metadata resolves display information, intrinsic tags, RTL policy, presentation policy, licensing,
-deprecation, and optional replacement identity.
-
-Path nodes retain structured absolute commands rather than target-specific SVG text. Their command
-sequences validate exact shapes, finite operands and contour ordering before each command and the
-sequence are cloned and frozen. Textual path parsing and target serialisation remain consumer
-responsibilities.
-
-Canonicalisation includes trimming accepted text, normalising negative zero, expanding and
-lowercasing hexadecimal colours, ordering closed presentation capabilities, and cloning retained
-arrays and objects. The returned graph is deeply frozen and no mutable authored array or nested
-object is retained by reference.
-
-Invalid ordinary authored data raises one deterministic Core programming error before returning a
-definition. The error identifies the stable Core code and logical value path. A proxy trap may
-instead propagate its own failure, as described below. No partially normalised value is observable.
+The [API example](api/index.md#usage) demonstrates complete authoring. Construction is necessary
+even when TypeScript accepts the input shape: static readonly properties do not validate or freeze
+an object at runtime.
 
 ## Collection construction
 
-The collection entry point is:
-
-```ts
-const collection = Collection.define(authoredCollection);
-```
-
-Authored collection input contains `identity`, an `icons` alias dictionary, and `metadata`:
-
-```ts
-const collection = Collection.define({
-  identity: { name: "interface-icons" },
-  icons: { camera: Camera, search: Search },
-  metadata: { displayName: "Interface Icons" },
-});
-
-collection.icons.camera;
-collection.members; // Frozen ordered [Camera, Search].
-```
-
-`Camera` and `Search` are definitions constructed through `Icon.define()`. Collection construction
-validates the exact root fields and processes every dictionary value through the icon construction
-authority, ensuring that mutable or structurally invalid icon-shaped input cannot enter membership
-merely because TypeScript accepts its shape.
+`Collection.define(authoredCollection)` composes an independent identity and metadata value with
+keyed membership:
 
 ```text
 authored collection
     |
     v
-Collection API
+Collection API -> CollectionDefinitionFactory
+    |
+    +--> closed collection shape
+    +--> validate aliases and reconstruct every icon
+    +--> compare canonical graphs before reference retention
+    +--> reject duplicate identities
+    +--> freeze icons and derive members once
+    +--> check submitted members during complete-definition revalidation
+    +--> normalise collection identity and metadata
     |
     v
-CollectionDefinitionFactory
-    |
-    +--> validate exact collection fields
-    +--> validate plain alias dictionary and own data properties
-    +--> validate and isolate every icon member
-    +--> reject duplicate canonical icon identities
-    +--> freeze alias map and derive ordered members once
-    +--> verify submitted members when revalidating a complete definition
-    +--> normalise collection identity
-    +--> normalise collection metadata
-    |
-    v
-isolated deeply frozen CollectionDefinition
+deeply frozen CollectionDefinition
 ```
 
-An already deeply frozen canonical icon may be retained after successful reconstruction proves its
-complete shape and a dedicated matcher confirms equal prototypes, field order, primitive values,
-and graph topology without cycles, repeated aliases, hidden state, or accessor semantics. Every
-other valid candidate uses the isolated canonical reconstruction. Membership order is preserved,
-identities must be unique within one collection, and the same canonical icon may belong to multiple
-independent collections without acquiring collection state.
-
-`CollectionDefinitionInput<TIconMap>` describes authored input without `members`.
-`CollectionDefinition<TIconMap>` adds the derived list and readonly alias properties while
-preserving exact keys. Their relationship and alias grammar are defined by
-[Core Collection](collection/index.md).
-
-When a complete definition arrives from a provider or decoded data, Core permits its own `members`
-field only after checking that every submitted icon value and its order agree with the validated
-dictionary. Core reconstructs the two containers; canonical icon references may be retained,
-while mutable submitted icons are isolated. This also preserves agreement after a JSON round trip
-has lost shared object references.
-
-A collection may be empty. It remains a valid identity and metadata authority rather than an icon
-registry.
-
-## Result model
-
-Definitions are plain readonly data, not class instances, controllers, stores, or lifecycle
-objects. Consumers read fields directly:
-
-```ts
-icon.identity.name;
-collection.icons.camera;
-collection.members;
-```
-
-This representation remains serialisable, structurally interoperable, renderer-neutral, and easy
-to inspect. It deliberately has no getters, setters, mutation methods, hidden registration, or
-prototype-owned domain behaviour.
-
-`members` is an ordinary frozen data property. Repeated reads return the same array without
-repeating `Object.values()` or cloning its icon definitions.
-
-Future immutable composition helpers, if justified, belong to the frozen `Icon` or `Collection`
-API authorities and return a new canonical definition. They do not mutate an existing definition
-or turn the portable data graph into a live instance.
+The [Collection feature](collection/index.md) owns alias grammar, generic input/output,
+deterministic ordering and the canonical matcher. Its `icons` dictionary is the authored
+authority; `members` is a derived frozen data property, not a second membership source.
+A complete definition can be revalidated, including after a JSON round trip, only when both views
+agree in canonical values and order.
 
 ## Consumer hand-off
 
-After construction, Core performs no work until another explicit API receives the value:
+Accepted definitions are plain data without getters, mutation methods or lifecycle behaviour.
+After construction, Core performs no further work until an explicit consumer receives the value.
 
-- `@luscious-garden/aster-icons` exports canonical definitions and explicit collection aggregates;
-- `@luscious-garden/aster-svg` interprets one definition and render options as standalone SVG markup;
-- `@luscious-garden/aster-import` converts accepted external source evidence into Core values;
-- `@luscious-garden/aster-cli` reads definitions through explicit catalogue providers;
-- future adapters may map definitions into target-specific occurrences and lifecycle state.
-
-Those consumers may add target, catalogue, filesystem, process, or lifecycle responsibilities at
-their own boundaries. They cannot move those responsibilities back into Core.
+The [package dependency graph](../index.md) identifies those consumers. Icons owns distribution;
+SVG owns target rendering; Import owns acquired-source inspection and adoption; CLI owns catalogue
+and host operations. Their responsibilities do not enlarge Core's portable model.
 
 ## Security and trust boundary
 
-Core validates data invariants and protects accepted values from caller mutation. It is not a
-JavaScript sandbox: reflective inspection of a hostile proxy, or reading fields before an accessor
-descriptor is rejected, can execute caller-controlled behaviour before Core can classify the
-value. Such execution failures are propagated rather than relabelled as Core validation errors.
-Acquisition and decoding of untrusted bytes belong to an explicit host or source pipeline before
-Core construction.
+Core validates data and isolates accepted values; it is not a JavaScript sandbox. Ordinary
+accessor descriptors are rejected without invoking their getters, and inherited fields cannot
+satisfy the closed data contract. Reflective inspection of a hostile proxy can still execute
+caller-controlled traps. Such execution failures propagate without being relabelled as
+[`IconDefinitionError`](shared/index.md#error).
 
-Core itself owns no filesystem, network, DOM, process, parser, framework, catalogue registry, or
-global identity state. Importing it performs no registration or host initialisation.
-
-## Related documentation
-
-- [Core API](api/index.md) defines the public construction authorities and usage.
-- [Immutable Definition Runtime](definition/runtime/index.md) defines icon construction internals.
-- [Core Collection](collection/index.md) defines membership and collection construction.
-- [Core Node](node/index.md) defines the complete portable geometry union.
-- [Core Metadata](metadata/index.md) defines portable metadata and RTL policy.
-- [Core Presentation](presentation/index.md) defines paint data and presentation precedence.
-- [Core Render Options](render/index.md) defines target-independent caller input.
-- [Core Quality](quality.md) records accepted conformance evidence and future pressure boundaries.
+Acquire and decode untrusted bytes in an explicit host or source pipeline before construction.
+Core owns no filesystem, network, DOM, process, parser or global identity state. Importing the
+package performs no registration or host initialisation.

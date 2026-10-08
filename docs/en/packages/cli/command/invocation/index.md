@@ -10,7 +10,9 @@ does not parse argv, load catalogue providers, execute commands, or present outp
 
 `CommandInvocationNormaliser` is a narrow dispatcher composed explicitly by the package API root.
 It receives one `ICommandInvocationNormaliser` for each supported command and indexes those
-collaborators by their unique command identity. Duplicate identities fail during composition;
+collaborators by their unique command identity. This private contract associates that identity
+with `normalise(value)`, returning `TAcceptanceResult<AsterCommandInvocationType>`.
+Duplicate identities fail during composition;
 there is no mutable registry, reflection, or automatic command discovery.
 
 | Class | Accepted family |
@@ -34,6 +36,7 @@ or `cli` scope. The [Command](../index.md) document owns the evidence and result
 
 ## Acceptance boundary
 
+Record and array inspection follows the [shared data boundary](../../shared/index.md).
 The dispatcher inspects only the own enumerable data property named `command`. It does not execute
 getters or inspect unrelated command fields before selecting the owning normaliser. Each selected
 normaliser then validates the complete command-specific shape, rejects unknown fields, copies

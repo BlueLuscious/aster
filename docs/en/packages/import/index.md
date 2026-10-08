@@ -1,39 +1,32 @@
 # Import
 
-Status: **Private pre-release**
+Status: **Private workspace package**
 
-`@luscious-garden/aster-import` is the host-independent adoption compiler for explicitly acquired external icon
-sources. It inspects untrusted input, returns a metadata-free portable draft, combines that draft
-with complete host-reviewed Core metadata, and emits an editable `.icon.ts` module.
+`@luscious-garden/aster-import` is a host-independent adoption compiler for explicitly acquired
+external sources. It inspects untrusted text, combines a metadata-free draft with host-reviewed
+Core metadata and returns an editable `.icon.ts` module. It remains private even when its source
+version matches a public stable package.
 
-Import owns no filesystem, terminal, process, network, discovery, overwrite, cleanup, collection
-membership or generated-package authority. The emitted module becomes human-owned source
-immediately and depends only on [`@luscious-garden/aster-core`](../core/index.md).
+## Documentation
 
-## Features
+| Owner | Responsibility |
+| --- | --- |
+| [API](api/index.md) | Five synchronous operations, root exports and staged usage. |
+| [Adoption](adoption/index.md) | Drafts, reviewed construction, editable modules and atomic batches. |
+| [Source](source/index.md) and [formats](format/index.md) | Explicit acquired text and immutable adapter selection. |
+| [Diagnostics](diagnostic/index.md) and [errors](error/index.md) | Located result evidence versus malformed-invocation exceptions. |
+| [SVG adapter](formats/svg/index.md) | Strict source subset and parser/validation/normalisation hand-offs. |
+| [Shared](shared/index.md) | Private cross-feature value and identity validation. |
+| [Workflow](workflow.md) | Review and persistence hand-off to the host. |
+| [Compatibility](compatibility.md), [quality](quality.md) and [baseline](quality-baseline.md) | Private distribution, conformance and historical measurements. |
+| [Private version history](releases/index.md) | Reviewed source boundaries, not npm or GitHub Releases. |
 
-- [API](api/index.md) defines the immutable public composition.
-- [Adoption](adoption/index.md) defines drafts, definition construction and editable emission.
-- [Diagnostics](diagnostic/index.md) defines stable source evidence and result envelopes.
-- [Errors](error/index.md) defines malformed API invocation failures.
-- [Formats](format/index.md) defines the closed built-in format authority.
-- [SVG adapter](formats/svg/index.md) owns the initial external format implementation.
-- [Source](source/index.md) defines explicit acquired-source boundaries.
-- [Shared](shared/index.md) contains genuinely transversal private validation.
-- [Workflow](workflow.md) defines operation composition and host hand-off.
-- [Quality](quality.md) records safety, isolation, determinism and conformance evidence.
-- [Quality baseline](quality-baseline.md) inventories the observable boundary and defines measured
-  operation and distribution evidence.
-- [Compatibility](compatibility.md) defines the private distribution and consumer boundary.
+## Boundary
 
-## Flow
+Import owns no filesystem, terminal, process, network, source discovery, overwrite, cleanup,
+collection membership or package-generation authority. The host acquires and decodes input,
+reviews metadata and decides whether to retain emitted content as human-owned source.
 
-1. A host acquires and decodes a source without granting Import host authority.
-2. `IconImport.inspect()` isolates it and delegates to its exact format adapter.
-3. Successful inspection returns deeply frozen geometry and technical review evidence.
-4. `IconImport.define()` delegates complete construction to public Core authority.
-5. `IconImport.emit()` returns deterministic editable TypeScript with informational provenance.
-6. `adopt()` composes those stages; `adoptMany()` adds atomic collision checks and canonical order.
-
-The package is private while its first real host and additional format evidence remain deferred.
-Its package boundary is hardened independently from those future host decisions.
+Import depends on public Core construction and a confined private XML parser. Retained modules
+depend only on Core; rendering and future editing require neither Import nor the original source.
+[Compatibility](compatibility.md) owns the dependency and private-consumer guarantees.

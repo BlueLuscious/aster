@@ -28,8 +28,8 @@ provide events, or carry DOM or framework objects.
 | `decorative` | Explicit decorative or semantic accessibility intent. |
 | `direction` | Explicit `ltr` or `rtl` target direction. |
 
-Options never select a variant. Callers select a variant by supplying its distinct definition.
-Stroke widths remain in viewBox units and scale with geometry; constant device-pixel strokes are
+Callers select a variant by supplying its distinct definition. Stroke widths remain in viewBox
+units and scale with geometry; constant device-pixel strokes are
 target-specific and not portable.
 
 ## Types
