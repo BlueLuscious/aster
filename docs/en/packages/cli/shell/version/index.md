@@ -7,7 +7,8 @@ registry. This host-only feature is not part of the public programmatic CLI API.
 [shell guide](../index.md) defines the user-facing grammar and output.
 
 `ProjectPackageVersionReader` starts at the invocation directory and selects the nearest project
-`package.json`. Its direct package set comes from `dependencies`, `devDependencies` and
+`package.json`. This is one project, not an aggregate of workspace siblings. Its direct package
+set comes from `dependencies`, `devDependencies` and
 `optionalDependencies`; peer-only, hoisted-but-undeclared and transitive packages are excluded.
 An absent optional installation is omitted from `--all`, while a missing required installation
 or named package fails. Named Core, Icons and SVG queries use this source. `--all` uses it even
@@ -21,7 +22,8 @@ identity and version, and resolves only declared direct Aster `dependencies` rel
 installation. Development, peer, optional, unrelated and transitive dependencies do not enter
 these groups. Each project root in `--all --deps` is resolved independently; the same dependency
 may therefore have different installed versions in different groups. A missing or malformed
-required dependency invalidates the complete request without partial output.
+required dependency invalidates the complete request without partial output. An absent project
+fails a project query; an existing project with no direct Aster packages succeeds with empty results.
 
 `CliLocationReader` runs only for `--location`. It reports the loaded CLI module path and compares
 canonical package-manifest paths with the project's directly installed CLI, when available.
@@ -35,5 +37,7 @@ The manifest reader accepts UTF-8 BOM JSON and requires exact known package name
 unpadded string versions. It validates the root's known direct Aster dependency declarations and
 rejects a self-dependency. Package metadata resolution does not require exported `package.json`
 subpaths. Expected failures become sanitised `ASTER-CLI-011` diagnostics without native paths.
-If a dependency prevents the executable from starting, Node reports its own error before this
+Location comparison can return `unavailable` without failing the request. If required dependency
+acquisition fails when combined with location, the entire request fails without either partial
+view. If a dependency prevents the executable from starting, Node reports its own error before this
 feature runs. No SemVer-compatibility check or release-history lookup is performed.

@@ -7,7 +7,7 @@ argv tokenisation, the built-in executable context, presentation, optional outpu
 publication, stdout, stderr, and process exit status. It does not own command validation,
 catalogue queries, portable values, or provider normalisation.
 
-## Installation And Invocation
+## Installation and invocation
 
 An installed package exposes the `aster` binary. It may be installed as a project development
 dependency and invoked through the selected package manager:
@@ -25,7 +25,9 @@ find another `aster` on `PATH`. `aster version --location` reports which CLI mod
 not select one. Package scripts can invoke a locally installed binary through the package
 manager's script `PATH` without making it globally available.
 
-The initial grammar is:
+## Command grammar
+
+The implemented grammar is:
 
 ```text
 aster list catalogues
@@ -62,6 +64,8 @@ Icon export without `--json` or `--output` writes one raw SVG document. JSON mod
 complete host-neutral plan for either subject. Collection export requires JSON or an output root.
 `--json` and `--output` are mutually exclusive shell concerns and never enter
 `AsterCommandInvocationType` together.
+
+## Version queries
 
 Plain `aster version` reports the CLI that actually ran; `version cli` names that same CLI.
 Named Core, Icons and SVG requests read directly installed packages of the current project.
@@ -123,6 +127,8 @@ offline. Malformed or missing required installed metadata produces status `1` an
 to stdout. Missing Core or SVG before the CLI starts remains a native Node failure. See
 [Version Metadata](version/index.md) for acquisition and validation boundaries.
 
+## Catalogue and plan execution
+
 Review returns a headless technical plan. JSON presents that plan without effects. Human execution
 serialises and publishes static HTML beneath `aster-review` or an explicit `--output` root.
 `--replace` permits replacement only when the destination carries unchanged Aster review ownership
@@ -162,11 +168,9 @@ contract first.
 | `2` | Usage failure. | stderr | stdout |
 | `1` | Lookup, catalogue, render, output, execution, or shell failure. | stderr | stdout where JSON mode applies. |
 
-Presentation receives an immutable result and returns complete stream strings plus status before
-the entrypoint performs any process write. Presentation therefore cannot mutate or alter command
-behaviour.
+The [presentation boundary](presentation/index.md) plans complete streams before process writes.
 
-## Runtime Composition
+## Runtime composition
 
 The shell is divided into [Parsing](parsing/index.md), [Presentation](presentation/index.md),
 [Output](output/index.md), and private [Version Metadata](version/index.md) subfeatures.
@@ -178,15 +182,12 @@ into the programmatic command API.
 | `CommandLineParser` | Dispatches argv adaptation to explicit command-owned parsers. |
 | `CommandOutputPresenter` | Selects human or JSON presentation, streams, and exit status. |
 | `ShellDiagnosticFactory` | Adapts parser, output-host, and unexpected shell faults into canonical command diagnostics. |
-| `NodeShell` | Acquires requested installed versions or executes the host-neutral command before optionally publishing a complete export or review plan. |
+| `NodeShell` | Coordinates requested host evidence, command execution and optional complete export/review publication. |
 
-The executable entrypoint is the only module that imports `node:process` or uses the CommonJS
-manifest bridge. Node path and output-filesystem imports occur in private [Output](output/index.md);
-the private [Version Metadata](version/index.md) reader owns installed package resolution and
-manifest reads. The host-neutral compiler excludes the complete shell tree. The referenced shell
-project consumes host-neutral declarations, admits Node types, and emits only private binary
-modules. Importing `@luscious-garden/aster-cli` resolves only the side-effect-free programmatic
-root and never evaluates the entrypoint.
+The entrypoint alone reads argv and commits process streams/status. Private Output and Version
+Metadata collaborators own filesystem and installed-manifest access. The
+[compatibility boundary](../compatibility.md#runtime-compatibility) keeps Node types out of the
+programmatic root.
 
 Host-neutral command semantics remain authoritative in [CLI Command](../command/index.md),
 [CLI Export](../export/index.md), and [CLI Review](../review/index.md). [CLI Workflow](../workflow.md)

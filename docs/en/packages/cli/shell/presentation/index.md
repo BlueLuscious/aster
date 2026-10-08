@@ -18,14 +18,15 @@ payloads to command-family collaborators:
 | `ExportHumanOutputPresenter` | Presents raw icon SVG, export plans, and truthful publication summaries. |
 | `ReviewHumanOutputPresenter` | Presents deterministic headless plan summaries and committed or replaced review destinations. |
 | `HelpHumanOutputPresenter` | Presents canonical command descriptors and usage forms. |
-| `HumanOutputPresenter` | Also formats the selected package as one line or the complete installed family with an explicit heading. |
+| `HumanOutputPresenter` | Also formats product/package versions, separate dependency-root groups and optional CLI-location evidence. |
 | `HumanTextFormatter` | Formats shared counts and deterministic sequences. |
 | `ShellIdentityFormatter` | Formats portable provider, collection, and icon identities. |
 
 Expected human failures retain stable diagnostic codes and related values. JSON mode writes the
 same structured command result to stdout and writes nothing to stderr. Presentation returns
 complete strings before the entrypoint performs process writes, so it cannot alter command
-behaviour or partially emit a result.
+behaviour or partially emit a result. Exact framing, headings and statuses belong to
+[Shell](../index.md#presentation); presenters never acquire version evidence themselves.
 
 ## Internal types
 
