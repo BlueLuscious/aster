@@ -1,6 +1,6 @@
 # CLI Review
 
-Status: **Pre-release**
+Status: **Accepted**
 
 The review feature converts one exact icon or collection from explicit catalogue providers into a
 complete immutable technical document plan. Its internal static serialiser can then convert that

@@ -1,6 +1,6 @@
 # CLI Shell Parsing
 
-Status: **Pre-release**
+Status: **Accepted**
 
 The parsing subfeature adapts an explicit argv sequence into one immutable structured command
 invocation and shell-only presentation options. It does not read process state, execute commands,

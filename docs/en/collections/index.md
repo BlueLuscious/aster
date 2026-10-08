@@ -7,7 +7,7 @@ is keyed by accepted curatorial identity and does not require one repository-lev
 
 The current collection set contains [Amellus](amellus/index.md), Aster's Active foundational
 minimalist general-purpose collection. Its canonical definitions, visual language, provenance,
-licensing, static review and package conformance are accepted for a first pre-release.
+licensing, static review and package conformance are accepted in the published Icons `0.1.0`.
 
 Active collection status does not imply that the exporting package has been published or that its
 public compatibility surface is stable. Project release maturity remains independently governed

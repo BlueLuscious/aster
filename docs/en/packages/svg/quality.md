@@ -143,5 +143,6 @@ accepted ownership decision.
   accepted option matrix.
 - The result grants no filesystem, DOM, lifecycle, parsing, or trusted-markup authority.
 
-These guarantees establish the hardened pre-release boundary. Future compatibility policy may
-version them more strictly, but no consumer may depend on a broader implicit authority.
+These guarantees establish the accepted public rendering boundary. Future versions may evolve
+under the [project compatibility policy](../../project/versioning.md), but no consumer may depend
+on a broader implicit authority.

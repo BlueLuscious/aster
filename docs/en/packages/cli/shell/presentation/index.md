@@ -1,6 +1,6 @@
 # CLI Shell Presentation
 
-Status: **Pre-release**
+Status: **Accepted**
 
 The presentation subfeature converts an immutable command result and optional publication
 evidence into complete deterministic stream content and an exit status. It does not parse argv,

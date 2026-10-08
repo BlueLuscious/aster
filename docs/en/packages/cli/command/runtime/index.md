@@ -1,6 +1,6 @@
 # CLI Command Runtime
 
-Status: **Pre-release**
+Status: **Accepted**
 
 The internal runtime composes concrete responsibilities without exposing an implementation
 subpath.

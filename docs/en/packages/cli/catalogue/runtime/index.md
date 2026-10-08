@@ -1,6 +1,6 @@
 # CLI Catalogue Runtime
 
-Status: **Pre-release**
+Status: **Accepted**
 
 The internal catalogue runtime separates metadata discovery from complete-definition loading.
 None of these classes is exported through a package subpath.

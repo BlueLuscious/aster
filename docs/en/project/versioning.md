@@ -1,6 +1,6 @@
 # Versioning and Releases
 
-Status: **Stable `0.1.0` prepared in source; public release pending**
+Status: **Public `0.1.0` baseline released**
 
 This document defines Aster's cross-package compatibility and release posture. Package-specific
 public surfaces, failure guarantees, distribution evidence, and quality gates remain with their
@@ -8,14 +8,14 @@ respective [package documentation](../packages/index.md).
 
 ## Current maturity
 
-Aster has no stable public release or compatibility commitment to external consumers. Core,
-Icons, SVG and CLI have published release candidates; the accepted CLI correction is in its
-`0.1.0-rc.3` candidate, while Core, Icons and SVG remain at `0.1.0-rc.2` on npm. All five
-workspace manifests now prepare `0.1.0`, but those source versions are not yet published. The
-private `@luscious-garden/aster-import` remains versioned in source without a public release.
+Aster has published its first non-prerelease `0.1.0` versions of Core, Icons, SVG and CLI under
+the npm `latest` tag. The earlier candidates remain available by exact version. Private
+`@luscious-garden/aster-import` is versioned in source but has no public release. This initial
+public baseline is below `1.0.0` and does not promise a final, unchanging API; accepted
+contracts and migration obligations still follow the policy below.
 
 Repository conformance proves the current implementation against its documented boundaries but
-does not turn pre-release versions into stable compatibility commitments.
+does not replace the package compatibility policy.
 The [manual publication procedure](publication.md) records the separate registry and human
 go/no-go checks; this policy does not authorise publication by itself.
 
@@ -23,21 +23,19 @@ The shared initial number is a convenient starting point, not a lockstep policy.
 production dependency. Icons and SVG depend on Core; CLI depends on all three. Each public edge
 uses `workspace:^` in source and must resolve to a caret range on the installed dependency's
 version when packed. The published `rc.1` set uses `^0.1.0-rc.1` and the published `rc.2` set
-uses `^0.1.0-rc.2` on each public runtime edge. The stable archives must resolve their public
-runtime edges to `^0.1.0`; inspect each packed edge independently before publication. None of
+uses `^0.1.0-rc.2` on each public runtime edge. The published stable archives resolve their
+public runtime edges to `^0.1.0`. None of
 these ranges admits `0.2.0`.
 Import also uses `workspace:^` for its Core edge, even though it is not packed for publication.
 Development-only workspace dependencies retain `workspace:*` because they are not runtime
 requirements of a distributed package.
 
 The `rc.1` suffix is part of the package's Semantic Versioning identity and marks the first
-release candidate for `0.1.0`. The npm `next` dist-tag is independent registry metadata that
-selects which published version consumers receive through that tag. The first publication also
-assigned `latest` to each package while no earlier version existed. The registry returned a
-`400 Bad Request` when the maintainer attempted to remove that initial default tag. Current
-dist-tag values belong to the [publication record](publication.md#third-candidate-artefact);
-registry tags neither publish nor alias the later stable `0.1.0` release, which will replace
-`latest` explicitly.
+release candidate for `0.1.0`. npm dist-tags are independent registry metadata, not versions.
+The first candidate publication also assigned `latest` while no earlier package version
+existed; the separately published `0.1.0` archives now own `latest`. The older `next` pointers
+remain on their candidates pending a separate tag decision. The
+[publication record](publication.md#first-stable-publication) owns the observed registry state.
 
 ## Version ownership
 
