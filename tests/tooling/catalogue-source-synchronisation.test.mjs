@@ -16,6 +16,7 @@ import ts from "typescript";
 
 import { NodeCatalogueSourceFileSystem } from "../../tooling/catalogue/runtime/node-catalogue-source-file-system.mjs";
 import { catalogueSourceGeneration } from "../../tooling/catalogue/constants/catalogue-source-generation.constant.mjs";
+import { CatalogueSourceLayoutNormaliser } from "../../tooling/catalogue/runtime/catalogue-source-layout.normaliser.mjs";
 import { CatalogueSourceSynchroniser } from "../../tooling/catalogue/runtime/catalogue-source.synchroniser.mjs";
 import { synchroniseIconsCatalogue } from "../../tooling/catalogue/synchronise-icons-catalogue.mjs";
 import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
@@ -106,7 +107,7 @@ function collectionSourceWithIcons(name, imports = [], icons = []) {
     'import { Collection } from "@luscious-garden/aster-core";',
     ...imports,
     "",
-    `export const ${pascalCase(name)}Collection = Collection.define({`,
+    `export const ${pascalCase(name)} = Collection.define({`,
     `  identity: { name: "${name}" },`,
     "  icons: {",
     ...icons,
@@ -196,6 +197,55 @@ async function readGeneratedOutputs(root) {
   );
 }
 
+test("derives suffix-free definition symbols from canonical source names", () => {
+  const layouts = new CatalogueSourceLayoutNormaliser();
+  const [icons, collections] = catalogueSourceGeneration.families;
+
+  for (const { family, path, symbol } of [
+    { family: icons, path: "a/arrow-left/arrow-left.icon.ts", symbol: "ArrowLeft" },
+    { family: icons, path: "c/camera-retro/camera-retro-filled.icon.ts", symbol: "CameraRetroFilled" },
+    { family: collections, path: "s/sample/sample.collection.ts", symbol: "Sample" },
+    { family: collections, path: "s/sample-collection/sample-collection.collection.ts", symbol: "SampleCollection" },
+  ]) {
+    assert.equal(layouts.normalise(path, family).symbol, symbol);
+    assert.equal(Object.hasOwn(family, "symbolSuffix"), false);
+  }
+});
+
+test("rejects obsolete collection exports and unsupported factory imports before writing", async () => {
+  const root = await createPackageFixture();
+
+  try {
+    await synchroniseIconsCatalogue(root);
+    const expected = await readGeneratedOutputs(root);
+    const collectionPath = resolve(root, "src/collections/s/sample/sample.collection.ts");
+    const source = await readFile(collectionPath, "utf8");
+
+    for (const { invalidSource, pattern } of [
+      {
+        invalidSource: source.replace("export const Sample =", "export const SampleCollection ="),
+        pattern: /must export exactly one constant named Sample\./u,
+      },
+      {
+        invalidSource: source
+          .replace("import { Collection }", "import { Collection as CoreCollection }")
+          .replace("= Collection.define(", "= CoreCollection.define("),
+        pattern: /must initialise Collection\.define/u,
+      },
+      {
+        invalidSource: source.replace("@luscious-garden/aster-core", "not-aster-core"),
+        pattern: /must import Collection from @luscious-garden\/aster-core/u,
+      },
+    ]) {
+      await writeFile(collectionPath, invalidSource, "utf8");
+      await assert.rejects(synchroniseIconsCatalogue(root), pattern);
+      assert.deepEqual(await readGeneratedOutputs(root), expected);
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("reports every absent output without writing in check-only mode", async () => {
   const root = await createPackageFixture();
 
@@ -238,7 +288,7 @@ test("synchronises canonical modules deterministically and reports drift", async
         resolve(root, generatedOutputPaths.sampleCollectionFacade),
         "utf8",
       ),
-      /export \{ SampleCollection \} from "\.\.\/\.\.\/\.\.\/collections\/s\/sample\/sample\.collection\.js";/u,
+      /export \{ Sample \} from "\.\.\/\.\.\/\.\.\/collections\/s\/sample\/sample\.collection\.js";/u,
     );
     const manifest = await readFile(
       resolve(root, generatedOutputPaths.manifest),
@@ -250,6 +300,7 @@ test("synchronises canonical modules deterministically and reports drift", async
     assert.match(manifest, /key: "fixture\/zeta"/u);
     assert.match(manifest, /licence: "ISC"/u);
     assert.match(manifest, /members: Object\.freeze\(\["alpha-icon"\]\)/u);
+    assert.match(manifest, /symbol: "Sample"/u);
     assert.doesNotMatch(
       manifest,
       /\b(?:nodes|viewBox|presentation|Icon\.define|Collection\.define)\b/u,
@@ -263,6 +314,7 @@ test("synchronises canonical modules deterministically and reports drift", async
     assert.match(dynamic, /"alpha-icon": Object\.freeze/u);
     assert.match(dynamic, /"fixture\/zeta": Object\.freeze/u);
     assert.match(dynamic, /"sample": Object\.freeze/u);
+    assert.match(dynamic, /\.then\(\(\{ Sample \}\) => Sample\)/u);
     assert.match(
       dynamic,
       /import\("\.\.\/facades\/icons\/alpha-icon\.js"\)/u,
@@ -305,8 +357,8 @@ test("retains own constructor loaders without inherited fallback", async () => {
       collectionPath,
       collectionSource(
         "constructor",
-        ['import { Constructor } from "../../../glyphs/c/constructor/constructor.icon.js";'],
-        [{ alias: "disc", symbol: "Constructor" }],
+        ['import { Constructor as ConstructorIcon } from "../../../glyphs/c/constructor/constructor.icon.js";'],
+        [{ alias: "disc", symbol: "ConstructorIcon" }],
       ),
       "utf8",
     );
@@ -336,7 +388,7 @@ test("retains own constructor loaders without inherited fallback", async () => {
 
     const definitions = [
       { family: "icon", directory: "icons", symbol: "Constructor" },
-      { family: "collection", directory: "collections", symbol: "ConstructorCollection" },
+      { family: "collection", directory: "collections", symbol: "Constructor" },
     ];
 
     for (const { family, directory, symbol } of definitions) {
@@ -635,7 +687,7 @@ test("discovers nested base icons, variants and collections with portable specif
         resolve(root, "src/generated/facades/collections/archive.ts"),
         "utf8",
       ),
-      /export \{ ArchiveCollection \} from "\.\.\/\.\.\/\.\.\/collections\/a\/archive\/archive\.collection\.js";/u,
+      /export \{ Archive \} from "\.\.\/\.\.\/\.\.\/collections\/a\/archive\/archive\.collection\.js";/u,
     );
     assert.match(
       dynamic,

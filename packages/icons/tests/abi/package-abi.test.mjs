@@ -21,7 +21,6 @@ function pascalCase(slug) {
 async function collectDefinitionSubpaths(
   directory,
   suffix,
-  symbolSuffix = "",
   supportsVariants = false,
 ) {
   return Object.freeze(
@@ -46,7 +45,7 @@ async function collectDefinitionSubpaths(
             subpath,
             `${pascalCase(name)}${
               variant === undefined ? "" : pascalCase(variant)
-            }${symbolSuffix}`,
+            }`,
           ];
         })
         .sort(([left], [right]) => left.localeCompare(right)),
@@ -76,13 +75,11 @@ function moduleSpecifier(fromPath, targetPath) {
 const iconSubpaths = await collectDefinitionSubpaths(
   "glyphs",
   ".icon.js",
-  "",
   true,
 );
 const collectionSubpaths = await collectDefinitionSubpaths(
   "collections",
   ".collection.js",
-  "Collection",
 );
 
 async function collectDistributionFiles(extension) {

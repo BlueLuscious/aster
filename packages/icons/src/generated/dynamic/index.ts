@@ -104,7 +104,7 @@ export const AsterIconLoaders: IconDefinitionLoaderMap = Object.freeze(iconLoade
  */
 const collectionLoaders: CollectionDefinitionLoaderMap = {
   "amellus": Object.freeze(
-    () => import("../facades/collections/amellus.js").then(({ AmellusCollection }) => AmellusCollection),
+    () => import("../facades/collections/amellus.js").then(({ Amellus }) => Amellus),
   ),
 };
 Object.setPrototypeOf(collectionLoaders, null);
