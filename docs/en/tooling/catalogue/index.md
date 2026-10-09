@@ -114,7 +114,10 @@ Root `pnpm check` runs the read-only check before building, so a build cannot hi
 Planning emits base facades at `icons/<name>.ts`, variant facades at
 `icons/<name>/<variant>.ts` and collection facades at `collections/<name>.ts`.
 Manifest records and dynamic loaders share canonical keys; loaders target facades, not source
-paths. Generated specifiers use portable relative paths and LF text. The
+paths. One private serialiser method emits both typed loader-map literals, removes their
+prototypes and freezes them before export, preserving the
+[exact absence guarantee](../../packages/icons/dynamic/index.md#arbitrary-key-access).
+Generated specifiers use portable relative paths and LF text. The
 [Icons workflow](../../packages/icons/workflow.md) owns consumer-facing distribution and membership
 semantics; [manifest](../../packages/icons/manifest/index.md) and
 [dynamic](../../packages/icons/dynamic/index.md) guides own their public contracts.
@@ -142,4 +145,6 @@ ordinary ESM data without filesystem or repository-tooling access.
 Conformance covers deterministic regeneration, idempotence, drift, nested addition/removal,
 variant mapping, reserved subpaths, stale-output cleanup, syntax/identity failures, static
 authorities, rejected executable/cyclic metadata, dangling members and manifest-loader key
-equivalence. Package and CLI tests verify isolated imports, discovery, identity and ordering.
+equivalence. A generated-output fixture retains valid own `constructor` loaders in both families
+and verifies inherited-name absence. Package and CLI tests verify isolated imports, discovery,
+identity and ordering.

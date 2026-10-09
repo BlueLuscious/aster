@@ -46,27 +46,26 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 Importance: **P0 - Required before the next planned package publication**
 
-Documentation and README consolidation is delivered; integration into `develop` with green CI
-remains the acceptance gate. [Project](project/index.md), [packages](packages/index.md),
+Documentation and README consolidation is integrated into `develop` with green CI; reviewed
+publication remains pending. [Project](project/index.md), [packages](packages/index.md),
 [collections](collections/index.md) and [tooling](tooling/index.md) own current explanations.
 [Private Import history](packages/import/releases/index.md) records source versions, not public
 publications. Approved public release notes and legal terms remain unchanged.
 
-The remaining distribution assessment compares README changes with the public `0.1.0` baseline:
+The remaining distribution assessment compares accepted changes with the public `0.1.0` baseline:
 
 | Package | Distributed change | Compatibility and dependency consequence |
 | --- | --- | --- |
 | [Core](packages/core/index.md) | Focused construction example and canonical guide/history links. | Documentation-only patch classification; no runtime dependencies. |
-| [Icons](packages/icons/index.md) | Isolated-import example, loading boundary and canonical usage/rights/history links. | Documentation-only patch classification; the existing Core caret range needs no change for this work. |
+| [Icons](packages/icons/index.md) | Isolated-import example, canonical usage/rights/history links and the [exact loader-map absence correction](packages/icons/dynamic/index.md#arbitrary-key-access). | Compatible runtime fix plus documentation; assess both in the next release review. The existing Core caret range needs no change for this work. |
 | [SVG](packages/svg/index.md) | Focused rendering example and canonical semantics/history links. | Documentation-only patch classification; the existing Core caret range needs no change for this work. |
 | [CLI](packages/cli/index.md) | Minimal commands, shell invocation guidance and programmatic/history links. | Documentation-only patch classification; existing Core, Icons and SVG caret ranges need no change for this work. |
 | [Import](packages/import/index.md) | Workspace-only inspection example and private history links. | Remains private; documentation alone requires no public version or dependency change. |
 
-Only the four public package READMEs change distributed public contents. Repository guides and
-the root README alone do not require package releases. This assessment changes no versions,
-manifests, exports, runtime behaviour or published archives. The
-[loader-map limitation](packages/icons/dynamic/index.md#arbitrary-key-access) is not repaired by
-documentation and requires its separate correction and verification.
+The README work changes distributed contents in the four public packages; Icons additionally
+changes its generated runtime maps. Repository guides and the root README alone do not require
+package releases. This assessment selects no versions and changes no manifests, exports or
+published archives.
 
 The four obsolete public-package history pages are removed; current READMEs link each package's
 `releases/index.md`. Old published READMEs still contain branch-based URLs to the removed routes,
