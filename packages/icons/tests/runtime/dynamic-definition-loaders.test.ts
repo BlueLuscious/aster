@@ -35,6 +35,27 @@ test("keeps loader keys exactly aligned with manifest identities", () => {
   assert.equal(AsterCollectionLoaders.absent, undefined);
 });
 
+for (const { family, loaders } of [
+  { family: "icon", loaders: AsterIconLoaders },
+  { family: "collection", loaders: AsterCollectionLoaders },
+]) {
+  test(`keeps absent ${family} loader keys free of inherited properties`, () => {
+    for (const key of Object.getOwnPropertyNames(Object.prototype)) {
+      if (Object.hasOwn(loaders, key)) {
+        continue;
+      }
+
+      const selected = loaders[key]?.();
+
+      assert.equal(loaders[key], undefined, key);
+      assert.equal(selected, undefined, key);
+      assert.equal(key in loaders, false, key);
+    }
+
+    assert.equal(Object.getPrototypeOf(loaders), null);
+  });
+}
+
 test("loads every exact icon and collection definition asynchronously", async () => {
   for (const entry of AsterIconManifest) {
     const loader = AsterIconLoaders[entry.key];

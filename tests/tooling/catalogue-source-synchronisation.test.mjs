@@ -11,6 +11,8 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import test from "node:test";
+import { pathToFileURL } from "node:url";
+import ts from "typescript";
 
 import { NodeCatalogueSourceFileSystem } from "../../tooling/catalogue/runtime/node-catalogue-source-file-system.mjs";
 import { catalogueSourceGeneration } from "../../tooling/catalogue/constants/catalogue-source-generation.constant.mjs";
@@ -282,6 +284,102 @@ test("synchronises canonical modules deterministically and reports drift", async
 
     await synchroniseIconsCatalogue(root);
     assert.equal(await readFile(manifestPath, "utf8"), manifest);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("retains own constructor loaders without inherited fallback", async () => {
+  const root = await createPackageFixture();
+
+  try {
+    const iconPath = resolve(root, "src/glyphs/c/constructor/constructor.icon.ts");
+    const collectionPath = resolve(
+      root,
+      "src/collections/c/constructor/constructor.collection.ts",
+    );
+    await mkdir(dirname(iconPath), { recursive: true });
+    await mkdir(dirname(collectionPath), { recursive: true });
+    await writeFile(iconPath, iconSource("constructor"), "utf8");
+    await writeFile(
+      collectionPath,
+      collectionSource(
+        "constructor",
+        ['import { Constructor } from "../../../glyphs/c/constructor/constructor.icon.js";'],
+        [{ alias: "disc", symbol: "Constructor" }],
+      ),
+      "utf8",
+    );
+
+    const generated = await synchroniseIconsCatalogue(root);
+    assert.equal(generated.outputCount, completeGeneratedOutputPaths.length + 2);
+    const expected = await readGeneratedOutputs(root);
+    const current = await synchroniseIconsCatalogue(root, true);
+    assert.deepEqual(current.changedPaths, []);
+    const repeated = await synchroniseIconsCatalogue(root);
+    assert.deepEqual(repeated.changedPaths, []);
+    assert.deepEqual(await readGeneratedOutputs(root), expected);
+
+    const runtimePath = resolve(root, "runtime/generated/dynamic/index.mjs");
+    await mkdir(dirname(runtimePath), { recursive: true });
+    await writeFile(resolve(root, "runtime/package.json"), '{"type":"module"}\n', "utf8");
+    await writeFile(
+      runtimePath,
+      ts.transpileModule(expected[generatedOutputPaths.dynamic], {
+        compilerOptions: {
+          module: ts.ModuleKind.ES2022,
+          target: ts.ScriptTarget.ES2022,
+        },
+      }).outputText,
+      "utf8",
+    );
+
+    const definitions = [
+      { family: "icon", directory: "icons", symbol: "Constructor" },
+      { family: "collection", directory: "collections", symbol: "ConstructorCollection" },
+    ];
+
+    for (const { family, directory, symbol } of definitions) {
+      const facadePath = resolve(root, `runtime/generated/facades/${directory}/constructor.js`);
+      await mkdir(dirname(facadePath), { recursive: true });
+      await writeFile(
+        facadePath,
+        `export const ${symbol} = Object.freeze({ family: "${family}", identity: Object.freeze({ name: "constructor" }) });\n`,
+        "utf8",
+      );
+    }
+
+    const dynamic = await import(pathToFileURL(runtimePath).href);
+    assert.deepEqual(Object.keys(dynamic).sort(), ["AsterCollectionLoaders", "AsterIconLoaders"]);
+    assert.deepEqual(Object.keys(dynamic.AsterIconLoaders), ["alpha-icon", "constructor", "fixture/zeta"]);
+    assert.deepEqual(Object.keys(dynamic.AsterCollectionLoaders), ["constructor", "sample"]);
+
+    for (const { family, directory, symbol } of definitions) {
+      const loaders = family === "icon" ? dynamic.AsterIconLoaders : dynamic.AsterCollectionLoaders;
+      const direct = await import(
+        pathToFileURL(resolve(root, `runtime/generated/facades/${directory}/constructor.js`)).href,
+      );
+      assert.equal(Object.getPrototypeOf(loaders), null);
+      assert.ok(Object.isFrozen(loaders));
+      assert.ok(Object.hasOwn(loaders, "constructor"));
+      const loader = loaders.constructor;
+      assert.equal(typeof loader, "function");
+      assert.ok(Object.isFrozen(loader));
+      const pending = loader();
+      assert.ok(pending instanceof Promise);
+      assert.equal(await pending, direct[symbol]);
+      assert.equal(await loader(), direct[symbol]);
+
+      for (const key of Object.getOwnPropertyNames(Object.prototype)) {
+        if (Object.hasOwn(loaders, key)) {
+          continue;
+        }
+
+        assert.equal(loaders[key], undefined, key);
+        assert.equal(loaders[key]?.(), undefined, key);
+        assert.equal(key in loaders, false, key);
+      }
+    }
   } finally {
     await rm(root, { recursive: true, force: true });
   }

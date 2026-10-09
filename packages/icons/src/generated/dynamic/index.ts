@@ -7,9 +7,10 @@ import type {
 } from "../../dynamic/contracts/index.js";
 
 /**
- * @description Immutable exact asynchronous loaders for distributed Aster icon definitions.
+ * @description Exact loader entries for distributed Aster icon definitions before immutable publication.
+ * @remarks The local object is exported only after prototype removal and freezing.
  */
-export const AsterIconLoaders: IconDefinitionLoaderMap = Object.freeze({
+const iconLoaders: IconDefinitionLoaderMap = {
   "aster/arrow-down": Object.freeze(
     () => import("../facades/icons/arrow-down.js").then(({ ArrowDown }) => ArrowDown),
   ),
@@ -88,13 +89,28 @@ export const AsterIconLoaders: IconDefinitionLoaderMap = Object.freeze({
   "aster/warning": Object.freeze(
     () => import("../facades/icons/warning.js").then(({ Warning }) => Warning),
   ),
-});
+};
+Object.setPrototypeOf(iconLoaders, null);
 
 /**
- * @description Immutable exact asynchronous loaders for distributed Aster collections.
+ * @description Immutable exact asynchronous loaders for distributed Aster icon definitions.
+ * @remarks Prototype-free lookup resolves absent keys without inherited fallback.
  */
-export const AsterCollectionLoaders: CollectionDefinitionLoaderMap = Object.freeze({
+export const AsterIconLoaders: IconDefinitionLoaderMap = Object.freeze(iconLoaders);
+
+/**
+ * @description Exact loader entries for distributed Aster collections before immutable publication.
+ * @remarks The local object is exported only after prototype removal and freezing.
+ */
+const collectionLoaders: CollectionDefinitionLoaderMap = {
   "amellus": Object.freeze(
     () => import("../facades/collections/amellus.js").then(({ AmellusCollection }) => AmellusCollection),
   ),
-});
+};
+Object.setPrototypeOf(collectionLoaders, null);
+
+/**
+ * @description Immutable exact asynchronous loaders for distributed Aster collections.
+ * @remarks Prototype-free lookup resolves absent keys without inherited fallback.
+ */
+export const AsterCollectionLoaders: CollectionDefinitionLoaderMap = Object.freeze(collectionLoaders);
