@@ -26,6 +26,9 @@ identities, metadata, tags, replacement identities and member arrays are deeply 
 | `CollectionManifestEntry` | Element of `AsterCollectionManifest` | Collection discovery using Core `CollectionIdentity` and `CollectionMetadata`; retains ordered member keys instead of embedded definitions. |
 
 These interfaces are public only through the manifest subpath.
+Each `symbol` names the export at its definition's public subpath; it is not derived by a
+consumer-side suffix rule. [Collections](../collections/index.md#export-naming-migration) owns
+the collection export-naming migration.
 
 An icon entry contains:
 

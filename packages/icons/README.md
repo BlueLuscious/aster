@@ -9,6 +9,8 @@ The package brings its compatible Core dependency; it does not render markup.
 pnpm add @luscious-garden/aster-icons
 ```
 
+### Individual icons
+
 ```ts
 import { Camera } from "@luscious-garden/aster-icons/camera";
 
@@ -17,6 +19,22 @@ const definition = Camera;
 
 Pass the definition to a renderer such as
 [SVG](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/index.md).
+
+### Collections
+
+Access a collection's icons by alias or in their declared order:
+
+```ts
+import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
+
+const camera = Amellus.icons.camera;
+const orderedIcons = Amellus.members;
+```
+
+The example uses the source-tree export name. See the
+[Collections guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/collections/index.md)
+for the contract and published-version migration.
+
 Use an individual subpath when only one icon is needed; a collection import evaluates all its
 declared members. Installation acquires the complete package, independently of runtime imports.
 

@@ -17,7 +17,7 @@ concepts, semantic order and stress coverage.
 | Canonical slug | `amellus` |
 | Botanical identity | *Aster amellus* L. |
 | Catalogue identity | `{ name: "amellus" }` |
-| Canonical collection | `AmellusCollection`, authored in `amellus.collection.ts` |
+| Canonical collection | `Amellus`, authored in `amellus.collection.ts` |
 | Public subpath | `@luscious-garden/aster-icons/collections/amellus` |
 | Curator and original artwork author | BlueLuscious |
 | Artwork terms | [Aster Artwork Licence 1.0](../../../../packages/icons/ARTWORK-LICENCE.md) |

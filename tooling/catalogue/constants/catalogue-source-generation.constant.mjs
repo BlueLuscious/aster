@@ -25,8 +25,6 @@ export const catalogueSourceGeneration = Object.freeze({
       sourceDirectory: "src/glyphs",
       /** @description Filename suffix identifying canonical icon modules. */
       sourceSuffix: ".icon.ts",
-      /** @description Symbol suffix appended after slug conversion. */
-      symbolSuffix: "",
       /** @description Public Core factory expected in canonical icon modules. */
       definitionFactory: "Icon",
       /** @description Public package module owning the canonical icon factory. */
@@ -43,8 +41,6 @@ export const catalogueSourceGeneration = Object.freeze({
       sourceDirectory: "src/collections",
       /** @description Filename suffix identifying canonical collection modules. */
       sourceSuffix: ".collection.ts",
-      /** @description Symbol suffix appended after slug conversion. */
-      symbolSuffix: "Collection",
       /** @description Public Core factory expected in canonical collection modules. */
       definitionFactory: "Collection",
       /** @description Public package module owning the canonical collection factory. */

@@ -191,23 +191,27 @@ test("resolves isolated runtime and declaration facades without source files", a
     'import type { CollectionDefinitionLoader, CollectionDefinitionLoaderMap, IconDefinitionLoader, IconDefinitionLoaderMap } from "@luscious-garden/aster-icons/dynamic";',
     'import type { CollectionManifestEntry, IconManifestEntry } from "@luscious-garden/aster-icons/manifest";',
     'import { Camera } from "@luscious-garden/aster-icons/camera";',
-    'import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";',
+    'import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";',
+    'import * as collectionExports from "@luscious-garden/aster-icons/collections/amellus";',
     'import { AsterCollectionManifest, AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
     'import { AsterCollectionLoaders, AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     "const icon: IconDefinition = Camera;",
-    "const collection: CollectionDefinition = AmellusCollection;",
-    "const cameraFromCollection: IconDefinition = AmellusCollection.icons.camera;",
-    "const orderedMembers: readonly IconDefinition[] = AmellusCollection.members;",
-    'const cameraAlias: keyof typeof AmellusCollection.icons = "camera";',
+    "const collection: CollectionDefinition = Amellus;",
+    "const cameraFromCollection: IconDefinition = Amellus.icons.camera;",
+    "const orderedMembers: readonly IconDefinition[] = Amellus.members;",
+    'const cameraAlias: keyof typeof Amellus.icons = "camera";',
     "// @ts-expect-error Packed declarations reject unknown collection aliases.",
-    "AmellusCollection.icons.unknown;",
+    "Amellus.icons.unknown;",
     "if (false) {",
     "  // @ts-expect-error Packed collection alias properties are readonly.",
-    "  AmellusCollection.icons.camera = Camera;",
+    "  Amellus.icons.camera = Camera;",
     "}",
     "if (cameraFromCollection !== Camera || cameraAlias !== \"camera\" || !Object.values(collection.icons).every((member, index) => member === orderedMembers[index])) throw new Error(\"Packed collection membership mismatch.\");",
     "const iconEntry: IconManifestEntry | undefined = AsterIconManifest.find(({ key }) => key === \"aster/camera\");",
     "const collectionEntry: CollectionManifestEntry | undefined = AsterCollectionManifest.find(({ key }) => key === \"amellus\");",
+    'if (collectionEntry?.symbol !== "Amellus" || Object.keys(collectionExports).join(",") !== collectionEntry.symbol) throw new Error("Packed collection must expose only its canonical manifest symbol.");',
+    'if (collectionExports.Amellus !== Amellus || collectionEntry.identity.name !== Amellus.identity.name || JSON.stringify(collectionEntry.metadata) !== JSON.stringify(Amellus.metadata)) throw new Error("Packed collection metadata or identity mismatch.");',
+    'if (![Amellus, Amellus.identity, Amellus.metadata, Amellus.icons, Amellus.members].every(Object.isFrozen)) throw new Error("Packed collection values must remain frozen.");',
     'const iconLoader: IconDefinitionLoader | undefined = AsterIconLoaders["aster/camera"];',
     "const collectionLoader: CollectionDefinitionLoader | undefined = AsterCollectionLoaders.amellus;",
     "const iconMap: IconDefinitionLoaderMap = AsterIconLoaders;",
@@ -229,7 +233,7 @@ test("resolves isolated runtime and declaration facades without source files", a
     'if (iconLoader === undefined || collectionLoader === undefined) throw new Error("Expected loaders.");',
     "const loadedIcon = await iconLoader();",
     "const loadedCollection = await collectionLoader();",
-    'if (loadedIcon !== Camera || loadedCollection !== AmellusCollection || await iconLoader() !== Camera || await collectionLoader() !== AmellusCollection) throw new Error("Packed loaders must retain direct canonical objects.");',
+    'if (loadedIcon !== Camera || loadedCollection !== Amellus || await iconLoader() !== Camera || await collectionLoader() !== Amellus) throw new Error("Packed loaders must retain direct canonical objects.");',
     "export const result = `${icon.identity.name}:${collection.identity.name}:${iconEntry?.symbol}:${collectionEntry?.symbol}:${loadedIcon.identity.name}:${loadedCollection.identity.name}:${orderedMembers === loadedCollection.members}`;",
     "",
   ].join("\n");
@@ -281,7 +285,58 @@ test("resolves isolated runtime and declaration facades without source files", a
   assert.equal(executed.stderr, "");
   assert.equal(
     executed.stdout,
-    "camera:amellus:Camera:AmellusCollection:camera:amellus:true",
+    "camera:amellus:Camera:Amellus:camera:amellus:true",
+  );
+});
+
+test("rejects the obsolete collection export in installed declarations and native ESM", async () => {
+  const sourcePath = resolve(consumerRoot, "obsolete-collection-export.ts");
+  await writeFile(
+    sourcePath,
+    [
+      'import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";',
+      "void AmellusCollection;",
+      "",
+    ].join("\n"),
+    "utf8",
+  );
+  const compiled = spawnSync(
+    process.execPath,
+    [
+      resolve(workspaceRoot, "node_modules/typescript/bin/tsc"),
+      "--noEmit",
+      "--strict",
+      "--skipLibCheck",
+      "--target", "ES2022",
+      "--module", "NodeNext",
+      "--moduleResolution", "NodeNext",
+      sourcePath,
+    ],
+    { cwd: consumerRoot, encoding: "utf8" },
+  );
+
+  assert.equal(compiled.error, undefined, "TypeScript rejection probe could not start.");
+  assert.equal(compiled.status, 2, `${compiled.stdout}${compiled.stderr}`);
+  assert.equal(compiled.stderr, "");
+  assert.equal([...compiled.stdout.matchAll(/\berror TS\d+:/gu)].length, 1);
+  assert.match(compiled.stdout, /error TS2305:.*has no exported member 'AmellusCollection'/u);
+
+  const executed = spawnSync(
+    process.execPath,
+    [
+      "--input-type=module",
+      "--eval",
+      'import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";',
+    ],
+    { cwd: consumerRoot, encoding: "utf8" },
+  );
+
+  assert.equal(executed.error, undefined, "ESM rejection probe could not start.");
+  assert.equal(executed.status, 1, `${executed.stdout}${executed.stderr}`);
+  assert.equal(executed.stdout, "");
+  assert.match(
+    executed.stderr,
+    /SyntaxError:.*does not provide an export named 'AmellusCollection'/u,
   );
 });
 

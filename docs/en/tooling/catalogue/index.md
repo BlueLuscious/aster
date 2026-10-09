@@ -24,7 +24,7 @@ inferred from directories.
 ## Source convention
 
 Discovery accepts exact role filenames recursively beneath configured roots, excluding unsupported
-files and non-file entries. An icon exports exactly one constant with the PascalCase form of its
+files and non-file entries. Each source exports exactly one constant with the PascalCase form of its
 slug: `arrow-left.icon.ts` exports `ArrowLeft`.
 
 Only the nested layout is accepted:
@@ -42,10 +42,11 @@ A base filename repeats the complete name, and a variant appends its declared va
 `c/camera-retro/camera-retro-filled.icon.ts` declares name `camera-retro`, variant `filled`
 and export `CameraRetroFilled`, not name `camera`.
 
-Collections have no variants and append `Collection` to the PascalCase symbol:
-`amellus.collection.ts` exports `AmellusCollection`. Every definition calls its configured
-public `Icon.define(...)` or `Collection.define(...)` factory through a named runtime Core import.
-The direct object's literal identity must agree with the path.
+Collections have no variants or appended role suffix: `amellus.collection.ts` exports `Amellus`.
+Every definition calls its configured public `Icon.define(...)` or `Collection.define(...)`
+factory through an unaliased named runtime Core import. The direct object's literal identity
+must agree with the path. [Icons Collections](../../packages/icons/collections/index.md#export-naming-migration)
+owns consumer access and the export-naming migration.
 
 A collection's explicit `icons` object assigns lower camel-case aliases directly to identifiers
 from named relative runtime imports, for example `icons: { camera: Camera }`. Each imported

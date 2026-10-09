@@ -4,6 +4,8 @@ import type {
 } from "@luscious-garden/aster-core";
 import { ArrowLeft } from "../../src/generated/facades/icons/arrow-left.js";
 import { Search } from "../../src/generated/facades/icons/search.js";
+import { Amellus } from "../../src/generated/facades/collections/amellus.js";
+// @ts-expect-error Collection facades do not retain the obsolete named export.
 import { AmellusCollection } from "../../src/generated/facades/collections/amellus.js";
 import type {
   CollectionDefinitionLoader,
@@ -44,9 +46,9 @@ const selectedIcon: Promise<IconDefinition> | undefined =
   AsterIconLoaders[runtimeKey]?.();
 const selectedCollection: Promise<CollectionDefinition> | undefined =
   AsterCollectionLoaders[runtimeKey]?.();
-const amellusArrowLeft: IconDefinition = AmellusCollection.icons.arrowLeft;
+const amellusArrowLeft: IconDefinition = Amellus.icons.arrowLeft;
 const firstAmellusMember: IconDefinition | undefined =
-  AmellusCollection.members[0];
+  Amellus.members[0];
 
 // @ts-expect-error Canonical definitions are immutable.
 directDefinition.identity.name = "changed";
@@ -67,10 +69,10 @@ AsterIconManifest[0].key = "changed";
 AsterCollectionManifest[0].members.push("aster/changed");
 
 // @ts-expect-error Concrete collection aliases reject unknown glyph access.
-AmellusCollection.icons.absent;
+Amellus.icons.absent;
 
 // @ts-expect-error Concrete collection aliases are immutable.
-AmellusCollection.icons.arrowLeft = ArrowLeft;
+Amellus.icons.arrowLeft = ArrowLeft;
 
 // @ts-expect-error Canonical loader maps are immutable.
 AsterIconLoaders["aster/changed"] = iconLoader;
@@ -91,5 +93,6 @@ void selectedIcon;
 void selectedCollection;
 void amellusArrowLeft;
 void firstAmellusMember;
+void AmellusCollection;
 void component;
 void markup;
