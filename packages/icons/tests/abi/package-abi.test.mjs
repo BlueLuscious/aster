@@ -284,6 +284,30 @@ test("exposes exact asynchronous loaders without eager definitions", async () =>
   assert.equal((await amellusLoader()).identity.name, "amellus");
 });
 
+for (const { family, exportName } of [
+  { family: "icon", exportName: "AsterIconLoaders" },
+  { family: "collection", exportName: "AsterCollectionLoaders" },
+]) {
+  test(`keeps absent built ${family} loader keys free of inherited properties`, async () => {
+    const dynamic = await import("@luscious-garden/aster-icons/dynamic");
+    const loaders = dynamic[exportName];
+
+    assert.equal(Object.getPrototypeOf(loaders), null);
+    assert.ok(Object.isFrozen(loaders));
+    assert.ok(Object.values(loaders).every((loader) => Object.isFrozen(loader)));
+
+    for (const key of [...Object.getOwnPropertyNames(Object.prototype), "absent"]) {
+      if (Object.hasOwn(loaders, key)) {
+        continue;
+      }
+
+      assert.equal(loaders[key], undefined, key);
+      assert.equal(loaders[key]?.(), undefined, key);
+      assert.equal(key in loaders, false, key);
+    }
+  });
+}
+
 test("keeps every per-icon module isolated from sibling definitions", async () => {
   for (const subpath of Object.keys(iconSubpaths)) {
     const source = await readFile(

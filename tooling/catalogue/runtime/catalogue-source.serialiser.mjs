@@ -1,5 +1,7 @@
 import { posix } from "node:path";
 
+import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family-kinds.constant.mjs";
+
 /**
  * @description Serialises deterministic catalogue facades and integration artefacts.
  */
@@ -55,14 +57,29 @@ export class CatalogueSourceSerialiser {
    * @returns {string} Complete deterministic TypeScript dynamic-loader module.
    */
   dynamic(outputPath, icons, collections) {
-    const iconRecords = icons.map((record) =>
-      this.#loaderRecord(outputPath, record),
-    );
-    const collectionRecords = collections.map((record) =>
-      this.#loaderRecord(outputPath, record),
-    );
+    const maps = [
+      this.#loaderMap(outputPath, catalogueSourceFamilyKinds.icon, icons),
+      this.#loaderMap(outputPath, catalogueSourceFamilyKinds.collection, collections),
+    ];
 
-    return `${this.#header}import type {\n  CollectionDefinitionLoaderMap,\n  IconDefinitionLoaderMap,\n} from "../../dynamic/contracts/index.js";\n\n/**\n * @description Immutable exact asynchronous loaders for distributed Aster icon definitions.\n */\nexport const AsterIconLoaders: IconDefinitionLoaderMap = Object.freeze({\n${iconRecords.join("\n")}\n});\n\n/**\n * @description Immutable exact asynchronous loaders for distributed Aster collections.\n */\nexport const AsterCollectionLoaders: CollectionDefinitionLoaderMap = Object.freeze({\n${collectionRecords.join("\n")}\n});\n`;
+    return `${this.#header}import type {\n  CollectionDefinitionLoaderMap,\n  IconDefinitionLoaderMap,\n} from "../../dynamic/contracts/index.js";\n\n${maps.join("\n")}`;
+  }
+
+  /**
+   * @description Serialises one typed prototype-free immutable definition-loader map.
+   * @param {string} outputPath - Package-relative generated dynamic-loader path.
+   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily["kind"]} familyKind - Semantic loader family.
+   * @param {readonly { key: string, symbol: string, facadePath: string }[]} records - Canonically ordered validated loader records.
+   * @returns {string} Deterministic typed construction, prototype removal and immutable export.
+   */
+  #loaderMap(outputPath, familyKind, records) {
+    const isIcon = familyKind === catalogueSourceFamilyKinds.icon;
+    const prefix = isIcon ? "Icon" : "Collection";
+    const localName = isIcon ? "iconLoaders" : "collectionLoaders";
+    const subject = isIcon ? "icon definitions" : "collections";
+    const entries = records.map((record) => this.#loaderRecord(outputPath, record));
+
+    return `/**\n * @description Exact loader entries for distributed Aster ${subject} before immutable publication.\n * @remarks The local object is exported only after prototype removal and freezing.\n */\nconst ${localName}: ${prefix}DefinitionLoaderMap = {\n${entries.join("\n")}\n};\nObject.setPrototypeOf(${localName}, null);\n\n/**\n * @description Immutable exact asynchronous loaders for distributed Aster ${subject}.\n * @remarks Prototype-free lookup resolves absent keys without inherited fallback.\n */\nexport const Aster${prefix}Loaders: ${prefix}DefinitionLoaderMap = Object.freeze(${localName});\n`;
   }
 
   /**

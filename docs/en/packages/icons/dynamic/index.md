@@ -37,21 +37,23 @@ Import failures preserve their native rejection for the consumer to classify.
 
 ## Arbitrary key access
 
-The current generated maps are ordinary-prototype objects. An arbitrary property access can
-therefore find inherited properties such as `constructor`, which are not loader entries.
-For a string supplied at runtime, check own membership before invoking it:
+Both maps have a null prototype. Any string that is not an own canonical key resolves to
+`undefined`, including names such as `constructor`, `toString`, `valueOf`, `hasOwnProperty` and
+`__proto__`. Optional invocation is safe for a string supplied at runtime:
 
 ```ts
 const key: string = "aster/camera";
-const loader = Object.hasOwn(AsterIconLoaders, key)
-  ? AsterIconLoaders[key]
-  : undefined;
-const definition = await loader?.();
+const definition = await AsterIconLoaders[key]?.();
 ```
 
-An absent own entry produces no selection. Optional chaining alone does not exclude inherited
-properties. This is a current runtime limitation; inherited names are not supported fallback
-loaders.
+An absent key produces no selection. A permitted canonical key such as `constructor` still
+resolves to its own loader when present; inherited names are not blacklisted. This is exact
+lookup, not alias or fallback resolution.
+
+`Object.hasOwn(map, key)` remains available for an explicit membership check, but is not required
+to exclude inherited properties. Maps have no inherited Object methods; use static operations
+such as `Object.keys(map)`, not `map.hasOwnProperty(...)`. Copies made by consumers do not
+automatically retain the null prototype.
 
 ## Deferred evaluation
 

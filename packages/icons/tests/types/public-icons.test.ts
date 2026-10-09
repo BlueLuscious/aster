@@ -1,4 +1,5 @@
 import type {
+  CollectionDefinition,
   IconDefinition,
 } from "@luscious-garden/aster-core";
 import { ArrowLeft } from "../../src/generated/facades/icons/arrow-left.js";
@@ -34,6 +35,15 @@ const iconLoader: IconDefinitionLoader | undefined =
   AsterIconLoaders["aster/arrow-left"];
 const collectionLoader: CollectionDefinitionLoader | undefined =
   AsterCollectionLoaders.amellus;
+const runtimeKey: string = "__proto__";
+const constructorIconLoader: IconDefinitionLoader | undefined =
+  AsterIconLoaders["constructor"];
+const constructorCollectionLoader: CollectionDefinitionLoader | undefined =
+  AsterCollectionLoaders["constructor"];
+const selectedIcon: Promise<IconDefinition> | undefined =
+  AsterIconLoaders[runtimeKey]?.();
+const selectedCollection: Promise<CollectionDefinition> | undefined =
+  AsterCollectionLoaders[runtimeKey]?.();
 const amellusArrowLeft: IconDefinition = AmellusCollection.icons.arrowLeft;
 const firstAmellusMember: IconDefinition | undefined =
   AmellusCollection.members[0];
@@ -75,6 +85,10 @@ void iconLoaders;
 void collectionLoaders;
 void iconLoader;
 void collectionLoader;
+void constructorIconLoader;
+void constructorCollectionLoader;
+void selectedIcon;
+void selectedCollection;
 void amellusArrowLeft;
 void firstAmellusMember;
 void component;
