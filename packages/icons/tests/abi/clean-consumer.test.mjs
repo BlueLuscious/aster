@@ -5,6 +5,7 @@ import {
   mkdtemp,
   readFile,
   readdir,
+  realpath,
   rm,
   unlink,
   writeFile,
@@ -13,7 +14,7 @@ import { tmpdir } from "node:os";
 import { basename, dirname, relative, resolve } from "node:path";
 import process from "node:process";
 import test, { after, before } from "node:test";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const workspaceRoot = resolve(packageRoot, "../..");
@@ -187,7 +188,7 @@ test("includes both software and artwork terms in the installed package", async 
 test("resolves isolated runtime and declaration facades without source files", async () => {
   const source = [
     'import type { CollectionDefinition, IconDefinition } from "@luscious-garden/aster-core";',
-    'import type { CollectionDefinitionLoader, IconDefinitionLoader } from "@luscious-garden/aster-icons/dynamic";',
+    'import type { CollectionDefinitionLoader, CollectionDefinitionLoaderMap, IconDefinitionLoader, IconDefinitionLoaderMap } from "@luscious-garden/aster-icons/dynamic";',
     'import type { CollectionManifestEntry, IconManifestEntry } from "@luscious-garden/aster-icons/manifest";',
     'import { Camera } from "@luscious-garden/aster-icons/camera";',
     'import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";',
@@ -209,9 +210,26 @@ test("resolves isolated runtime and declaration facades without source files", a
     "const collectionEntry: CollectionManifestEntry | undefined = AsterCollectionManifest.find(({ key }) => key === \"amellus\");",
     'const iconLoader: IconDefinitionLoader | undefined = AsterIconLoaders["aster/camera"];',
     "const collectionLoader: CollectionDefinitionLoader | undefined = AsterCollectionLoaders.amellus;",
+    "const iconMap: IconDefinitionLoaderMap = AsterIconLoaders;",
+    "const collectionMap: CollectionDefinitionLoaderMap = AsterCollectionLoaders;",
+    'const runtimeKey: string = "__proto__";',
+    'const constructorIconLoader: IconDefinitionLoader | undefined = AsterIconLoaders["constructor"];',
+    'const constructorCollectionLoader: CollectionDefinitionLoader | undefined = AsterCollectionLoaders["constructor"];',
+    "const absentIcon: IconDefinition | undefined = await iconMap[runtimeKey]?.();",
+    "const absentCollection: CollectionDefinition | undefined = await collectionMap[runtimeKey]?.();",
+    'if (!Object.hasOwn(iconMap, "constructor") && constructorIconLoader !== undefined) throw new Error("Absent icon constructor key must not inherit a loader.");',
+    'if (!Object.hasOwn(collectionMap, "constructor") && constructorCollectionLoader !== undefined) throw new Error("Absent collection constructor key must not inherit a loader.");',
+    'if (absentIcon !== undefined || absentCollection !== undefined) throw new Error("Unknown loader lookup must be absent.");',
+    "if (false) {",
+    "  // @ts-expect-error Packed icon loader maps are readonly.",
+    '  iconMap["constructor"] = iconLoader;',
+    "  // @ts-expect-error Packed collection loader maps are readonly.",
+    '  collectionMap["constructor"] = collectionLoader;',
+    "}",
     'if (iconLoader === undefined || collectionLoader === undefined) throw new Error("Expected loaders.");',
     "const loadedIcon = await iconLoader();",
     "const loadedCollection = await collectionLoader();",
+    'if (loadedIcon !== Camera || loadedCollection !== AmellusCollection || await iconLoader() !== Camera || await collectionLoader() !== AmellusCollection) throw new Error("Packed loaders must retain direct canonical objects.");',
     "export const result = `${icon.identity.name}:${collection.identity.name}:${iconEntry?.symbol}:${collectionEntry?.symbol}:${loadedIcon.identity.name}:${loadedCollection.identity.name}:${orderedMembers === loadedCollection.members}`;",
     "",
   ].join("\n");
@@ -267,35 +285,86 @@ test("resolves isolated runtime and declaration facades without source files", a
   );
 });
 
-test("preserves native dynamic-import rejection details", async () => {
-  await unlink(
-    resolve(
-      consumerRoot,
-      "node_modules/@luscious-garden/aster-icons/dist/generated/facades/icons/camera.js",
-    ),
-  );
+test("preserves exact inherited-name absence in packed loader maps", () => {
   const executed = spawnSync(
     process.execPath,
     [
       "--input-type=module",
       "--eval",
       [
-        'const { AsterIconLoaders } = await import("@luscious-garden/aster-icons/dynamic");',
-        'const loader = AsterIconLoaders["aster/camera"];',
-        "try {",
-        "  await loader();",
-        "} catch (error) {",
-        "  process.stdout.write(JSON.stringify({ name: error.name, code: error.code }));",
+        'import assert from "node:assert/strict";',
+        'import { AsterCollectionLoaders, AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
+        'import { AsterCollectionManifest, AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
+        "for (const [loaders, manifest] of [[AsterIconLoaders, AsterIconManifest], [AsterCollectionLoaders, AsterCollectionManifest]]) {",
+        "  assert.deepEqual(Object.keys(loaders), manifest.map(({ key }) => key));",
+        "  assert.equal(Object.getPrototypeOf(loaders), null);",
+        "  assert.ok(Object.isFrozen(loaders));",
+        "  assert.ok(Object.values(loaders).every((loader) => Object.isFrozen(loader)));",
+        '  for (const key of [...Object.getOwnPropertyNames(Object.prototype), "absent"]) {',
+        "    if (Object.hasOwn(loaders, key)) continue;",
+        "    assert.equal(loaders[key], undefined, key);",
+        "    assert.equal(loaders[key]?.(), undefined, key);",
+        "    assert.equal(key in loaders, false, key);",
+        "  }",
         "}",
       ].join("\n"),
     ],
     { cwd: consumerRoot, encoding: "utf8" },
   );
 
-  assert.equal(executed.status, 0);
+  assertSuccessfulProcess(executed, "inspect packed loader-map absence");
   assert.equal(executed.stderr, "");
-  assert.deepEqual(JSON.parse(executed.stdout), {
-    name: "Error",
-    code: "ERR_MODULE_NOT_FOUND",
-  });
+  assert.equal(executed.stdout, "");
 });
+
+for (const { family, exportName, key, subpath } of [
+  { family: "icon", exportName: "AsterIconLoaders", key: "aster/camera", subpath: "camera" },
+  { family: "collection", exportName: "AsterCollectionLoaders", key: "amellus", subpath: "collections/amellus" },
+]) {
+  test(`preserves native ${family} dynamic-import rejection details`, async () => {
+    const facadePath = resolve(
+      consumerRoot,
+      "node_modules/@luscious-garden/aster-icons/dist/generated/facades",
+      family === "icon" ? `icons/${subpath}.js` : `${subpath}.js`,
+    );
+    const original = await readFile(facadePath);
+    const missingUrl = pathToFileURL(await realpath(facadePath)).href;
+
+    try {
+      await unlink(facadePath);
+      const executed = spawnSync(
+        process.execPath,
+        [
+          "--input-type=module",
+          "--eval",
+          [
+            'import assert from "node:assert/strict";',
+            `const { ${exportName} } = await import("@luscious-garden/aster-icons/dynamic");`,
+            `const loader = ${exportName}[${JSON.stringify(key)}];`,
+            "const failures = [];",
+            `for (const load of [loader, () => import("@luscious-garden/aster-icons/${subpath}")]) {`,
+            "  await assert.rejects(load, (error) => {",
+            "    failures.push({ name: error.name, code: error.code, url: error.url });",
+            '    return error.code === "ERR_MODULE_NOT_FOUND";',
+            "  });",
+            "}",
+            "assert.equal(failures[0].name, failures[1].name);",
+            "assert.equal(failures[0].code, failures[1].code);",
+            "process.stdout.write(JSON.stringify(failures[0]));",
+          ].join("\n"),
+        ],
+        { cwd: consumerRoot, encoding: "utf8" },
+      );
+
+      assertSuccessfulProcess(executed, `reject missing packed ${family} facade`);
+      assert.equal(executed.stderr, "");
+      assert.deepEqual(JSON.parse(executed.stdout), {
+        name: "Error",
+        code: "ERR_MODULE_NOT_FOUND",
+        url: missingUrl,
+      });
+    } finally {
+      await writeFile(facadePath, original);
+    }
+  });
+}
