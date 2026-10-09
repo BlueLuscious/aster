@@ -12,6 +12,7 @@ const commandContext = Object.freeze({
 });
 
 test("exposes Amellus through every collection-neutral CLI workflow", async () => {
+  assert.equal(await AsterCatalogue.loadCollection(Amellus.identity), Amellus);
   const listed = await AsterCommands.execute(
     { command: "list", subject: "icons", collection: "amellus" },
     commandContext,
@@ -58,6 +59,11 @@ test("exposes Amellus through every collection-neutral CLI workflow", async () =
     ["camera"],
   );
   assert.equal(shown.payload.collection.identity.name, "amellus");
+  assert.deepEqual(shown.payload.collection.metadata, Amellus.metadata);
+  assert.deepEqual(
+    shown.payload.collection.icons,
+    Amellus.members.map(({ identity }) => identity),
+  );
   assert.equal(shown.payload.collection.icons.length, Amellus.members.length);
   assert.equal(JSON.stringify(shown.payload).includes("data-rendered-by"), false);
   assert.equal(exported.payload.plan.artefacts.length, Amellus.members.length);

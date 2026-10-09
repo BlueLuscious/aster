@@ -4,7 +4,22 @@ import test from "node:test";
 import { Collection } from "@luscious-garden/aster-core";
 import { asterArtworkLicence } from "../../src/authoring/constants/aster-artwork-licence.constant.js";
 import { Amellus } from "../../src/collections/a/amellus/amellus.collection.js";
-import { AsterIconLoaders } from "../../src/dynamic/index.js";
+import { AsterCollectionLoaders, AsterIconLoaders } from "../../src/dynamic/index.js";
+
+test("exposes one canonical collection value through its facade and lazy loader", async () => {
+  const direct = await import("../../src/generated/facades/collections/amellus.js");
+  const loader = AsterCollectionLoaders.amellus;
+
+  assert.ok(loader);
+  assert.deepEqual(Object.keys(direct), ["Amellus"]);
+  assert.equal(Object.hasOwn(direct, "AmellusCollection"), false);
+  assert.equal(direct.Amellus, Amellus);
+  assert.equal(await loader(), Amellus);
+  assert.equal(await loader(), direct.Amellus);
+  assert.equal(Amellus.icons, direct.Amellus.icons);
+  assert.equal(Amellus.members, direct.Amellus.members);
+  assert.equal(Amellus.metadata, direct.Amellus.metadata);
+});
 
 test("derives ordered Amellus membership from its source-owned aliases", () => {
   const aliases = Object.keys(Amellus.icons);

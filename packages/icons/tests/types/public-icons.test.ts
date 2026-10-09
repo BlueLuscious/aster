@@ -5,6 +5,8 @@ import type {
 import { ArrowLeft } from "../../src/generated/facades/icons/arrow-left.js";
 import { Search } from "../../src/generated/facades/icons/search.js";
 import { Amellus } from "../../src/generated/facades/collections/amellus.js";
+// @ts-expect-error Collection facades do not retain the obsolete named export.
+import { AmellusCollection } from "../../src/generated/facades/collections/amellus.js";
 import type {
   CollectionDefinitionLoader,
   CollectionDefinitionLoaderMap,
@@ -91,5 +93,6 @@ void selectedIcon;
 void selectedCollection;
 void amellusArrowLeft;
 void firstAmellusMember;
+void AmellusCollection;
 void component;
 void markup;
