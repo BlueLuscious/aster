@@ -8,7 +8,7 @@ structured absolute path commands where curves, compound contours or rounded enc
 geometry clearer. These construction choices provide visual stress coverage; the inventory does
 not impose that geometry on other collections or restore raw SVG path strings to authoring.
 
-`AmellusCollection` retains the complete inventory in the semantic order below. Membership does
+`Amellus` retains the complete inventory in the semantic order below. Membership does
 not alter icon identity, metadata or availability through independent icon distribution.
 This page owns semantic selection and review coverage. The
 [canonical collection module](../../../../packages/icons/src/collections/a/amellus/amellus.collection.ts)

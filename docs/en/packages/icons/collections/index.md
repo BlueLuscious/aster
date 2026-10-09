@@ -7,12 +7,15 @@ Membership is explicit authoring, not inferred from the package manifest or sour
 
 ## Consumer access
 
-```ts
-import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";
+The following example describes the source-tree API. See the
+[export-naming migration](#export-naming-migration) for published-version availability.
 
-const camera = AmellusCollection.icons.camera;
-const arrowLeft = AmellusCollection.icons.arrowLeft;
-const orderedIcons = AmellusCollection.members;
+```ts
+import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
+
+const camera = Amellus.icons.camera;
+const arrowLeft = Amellus.icons.arrowLeft;
+const orderedIcons = Amellus.members;
 ```
 
 Known aliases retain exact readonly TypeScript keys. `members` is a frozen ordered list containing
@@ -30,7 +33,7 @@ Each `.collection.ts` module calls public `Collection.define()` with its own ide
 named icon imports and ordered alias dictionary. Adding a glyph does not silently add it to any
 collection; removing membership does not remove or rename the independent icon.
 
-The current authority is `AmellusCollection`. Its
+The current authority is `Amellus`. Its
 [curatorial overview](../../../collections/amellus/index.md) owns identity and provenance;
 the [inventory](../../../collections/amellus/inventory.md) owns semantic order and coverage.
 The canonical module's explicit dictionary remains the actual membership source.
@@ -48,3 +51,29 @@ complete member graph. These are distribution projections, not alternative membe
 [Catalogue Source Tooling](../../../tooling/catalogue/index.md#source-convention) owns enforced
 module conventions and synchronisation;
 [Quality](../quality.md) owns conformance.
+
+## Export-naming migration
+
+**Breaking change; not yet released.** The source-tree API removes the role suffix from
+collection value exports. Existing [published versions](../releases/index.md) retain their
+original exports; this guide does not announce a new package version.
+
+Keep the public subpath and replace the named import and its references:
+
+```ts
+// Before
+import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";
+
+// After
+import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
+```
+
+The old export is absent, with no compatibility alias. The Amellus
+`CollectionManifestEntry.symbol` also changes from `"AmellusCollection"` to `"Amellus"`;
+manifest-driven consumers must use the record's symbol, not append a suffix to its key.
+
+The `amellus` identity and loader key, public route, readonly icon aliases, member order, metadata,
+immutability and direct/loader object identity are unchanged. Core's `Collection.define` and
+collection contracts keep their domain names. This is a breaking export and manifest change
+under the [versioning policy](../../../project/versioning.md#compatibility-before-10), not a
+compatible patch or a change to collection membership.
