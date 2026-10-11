@@ -64,16 +64,18 @@ The remaining distribution assessment compares accepted changes with the public 
 
 The README work changes distributed contents in the four public packages; Icons additionally
 changes its runtime maps and collection export/manifest naming. Repository guides and the root
-README alone do not require package releases. This assessment selects no versions and changes
-no manifests, exports or published archives.
+README alone do not require package releases. Prepared versions, changes and dependency requirements
+belong to package-owned draft notes, linked through the [package guides](packages/index.md).
+Publication and archive approval remain pending.
 
 The four obsolete public-package history pages are removed; current READMEs link each package's
 `releases/index.md`. Old published READMEs still contain branch-based URLs to the removed routes,
 which will break when deletion reaches `master`. That loss is accepted. New archives cannot
 repair earlier README contents, and no compatibility aliases will be retained.
 
-Further accepted changes may accumulate on `develop` before release selection. Manually reassess
-each package's complete diff since its last publication under [versioning](project/versioning.md);
+Further accepted changes may accumulate on `develop` before archive approval. If the reviewed
+source changes, manually reassess each package's complete diff since its last publication under
+[versioning](project/versioning.md);
 the documentation-only patch classification does not select the final version or classify later
 runtime work. Existing published caret ranges admit compatible patch updates without forcing an
 otherwise unchanged dependant to release. Verify the final selected combination and use the

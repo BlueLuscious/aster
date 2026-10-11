@@ -31,9 +31,9 @@ const camera = Amellus.icons.camera;
 const orderedIcons = Amellus.members;
 ```
 
-The example uses the source-tree export name. See the
+See the
 [Collections guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/collections/index.md)
-for the contract and published-version migration.
+for the contract and export-naming migration.
 
 Use an individual subpath when only one icon is needed; a collection import evaluates all its
 declared members. Installation acquires the complete package, independently of runtime imports.

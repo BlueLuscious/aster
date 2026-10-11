@@ -7,8 +7,8 @@ Membership is explicit authoring, not inferred from the package manifest or sour
 
 ## Consumer access
 
-The following example describes the source-tree API. See the
-[export-naming migration](#export-naming-migration) for published-version availability.
+See the [export-naming migration](#export-naming-migration) for version availability and
+upgrading earlier imports.
 
 ```ts
 import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
@@ -54,9 +54,10 @@ module conventions and synchronisation;
 
 ## Export-naming migration
 
-**Breaking change; not yet released.** The source-tree API removes the role suffix from
-collection value exports. Existing [published versions](../releases/index.md) retain their
-original exports; this guide does not announce a new package version.
+**Breaking change prepared for [0.2.0](../releases/0.2.0.md); not yet published.** Collection
+value exports no longer carry the role suffix. Published Icons `0.1.0` and its candidates
+retain their original exports; the [published history](../releases/index.md#published) owns
+publication evidence.
 
 Keep the public subpath and replace the named import and its references:
 

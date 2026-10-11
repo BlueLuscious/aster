@@ -61,7 +61,12 @@ boundary decision and full distribution evidence, not merely removing `private`.
 ## Release-note convention
 
 Each future public version page owns its title, changes, dependency requirements and migration.
-Keep the existing preparation fields:
+Unpublished notes are labelled `Draft; not yet published` and listed separately from published
+versions. Do not invent source commits, archive hashes, publication dates or registry/Release
+evidence. Until npm publication is verified and the required fields are complete, these notes
+are not eligible for GitHub-release preparation.
+
+For verified publications, keep the existing preparation fields:
 
 - One H1 title in the form `Aster <Package> <version>`.
 - A `Status: **Published ...**` line with the npm publication date, specifying UTC.
