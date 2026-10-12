@@ -23,9 +23,13 @@ The reason is owned by Aster and never copies an exception message from Core or 
 Consumers may use `instanceof SvgRenderError`, `code`, and `path` to identify programming errors;
 source-authoring workflows continue to use Import diagnostics.
 
-The renderer translates public Core `IconDefinitionError` instances because an invalid portable
-definition cannot enter the SVG target. It preserves the Core logical path but replaces the reason
-with stable SVG-owned language. Translation is identity-based rather than provenance-based: every
-`IconDefinitionError` instance is translated, including one deliberately thrown by caller-owned
-reflection. All other exceptions raised by caller-controlled reflection or execution propagate
-unchanged.
+During definition acceptance, the renderer translates public Core `IconDefinitionError` instances
+because an invalid portable definition cannot enter the target. It preserves the logical path and
+uses the fixed reason `expected a valid portable icon definition`, not the Core message.
+Classification uses identity rather than provenance: a caller's proxy throwing that class during
+Core construction is also translated.
+
+The translation catch surrounds only the `Icon.define()` call. Other exceptions from definition
+inspection propagate unchanged, as do caller-controlled execution failures during option
+inspection, regardless of their class. Ordinary option accessors are rejected without invocation;
+the [runtime boundary](../render/runtime/index.md#option-acceptance) does not sandbox proxies.

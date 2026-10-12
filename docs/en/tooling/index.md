@@ -2,184 +2,117 @@
 
 Status: **Accepted**
 
-`tooling/` contains private contributor infrastructure for verifying and maintaining the Aster
-workspace. It is not a publishable package, product API, or implementation dependency for
-`@luscious-garden/aster-*` packages.
+`tooling/` contains private contributor infrastructure for maintaining and verifying the Aster
+workspace. It is not a publishable package or product dependency.
 
 ## Features
 
-The canonical documentation mirrors the real tooling feature roots:
-
 | Feature | Responsibility |
 | --- | --- |
-| [Architecture](architecture/index.md) | Verifies compiler, workspace, package dependency, and authored collection boundaries. |
-| [Catalogue](catalogue/index.md) | Recursively validates canonical Icons sources and synchronises manifests, loaders and public facades. |
-| [Documentation](documentation/index.md) | Verifies the current canonical hierarchy, package mirroring, links, and local exclusions. |
-| [Performance](performance/index.md) | Provides development-only package comparison infrastructure and independent scenario runners. |
+| [Architecture](architecture/index.md) | Verifies compiler, workspace, package dependency and production-source boundaries. |
+| [Catalogue](catalogue/index.md) | Validates canonical Icons sources and synchronises manifests, loaders and public facades. |
+| [Documentation](documentation/index.md) | Verifies canonical hierarchy, package mirroring, local links and contributor-local exclusions. |
+| [Performance](performance/index.md) | Supplies development-only package comparison infrastructure and independent scenario runners. |
 | [Release](release/index.md) | Prepares and verifies package-specific GitHub drafts from approved npm archives. |
-| [Shared](shared/index.md) | Supplies narrow filesystem, path, directory, traversal, and strict JSON foundations used by multiple tooling features. |
-| [Workspace](workspace/index.md) | Owns guarded repository and package maintenance operations such as distribution cleanup. |
+| [Shared](shared/index.md) | Supplies narrow filesystem, path, JSON, directory and traversal capabilities used by multiple features. |
+| [Workspace](workspace/index.md) | Guards package distribution cleanup. |
 
-User-facing project operations do not belong here. Persistent target export is implemented by
-`aster export`; disposable static review composition and publication are implemented by
-`aster review`. The CLI may compose public package capabilities, but neither CLI nor any other
-published package imports repository tooling.
+User-facing export and review belong to [CLI](../packages/cli/index.md), not repository tooling.
+The [package guide](../packages/index.md) owns production composition and dependencies.
 
 ## Runtime and dependencies
 
-The repository uses Node.js `24.10.0` for local tooling and CI. `.node-version` is the exact runtime
-authority. `package.json#engines` accepts compatible Node `24.x` versions at or above that baseline
-for package-manager validation.
+[.node-version](../../../.node-version) owns the exact local and CI runtime.
+[package.json](../../../package.json) owns the compatible Node engine range, pinned pnpm executable
+and shared development versions. [pnpm-lock.yaml](../../../pnpm-lock.yaml) owns dependency resolution;
+[pnpm-workspace.yaml](../../../pnpm-workspace.yaml) owns membership, mirrored by
+`package.json#workspaces`.
 
-pnpm `10.28.1` is the only supported workspace package manager. `package.json#packageManager` pins
-the executable, `pnpm-lock.yaml` owns immutable dependency resolution, and
-`pnpm-workspace.yaml` owns membership. `package.json#workspaces` mirrors that pattern for ecosystem
-metadata and must remain equivalent.
+| Development dependency | Responsibility |
+| --- | --- |
+| TypeScript | Compiles packages and type tests; parses catalogue source during synchronisation. |
+| `tsx` | Adapts TypeScript tests to Node's built-in runner. |
+| `@types/node` | Types tests and tooling, not portable production compilation. |
+| ESLint and `typescript-eslint` | Enforce focused authored-source rules. |
+| Prettier | Formats owned workspace configuration. |
 
-The private root owns shared development versions:
-
-| Dependency | Responsibility | Production status |
-| --- | --- | --- |
-| TypeScript | Compiles production packages and type tests, and parses canonical catalogue modules during source synchronisation. | Development only. |
-| `tsx` | Adapts TypeScript tests to Node's built-in test runner. | Test only. |
-| `@types/node` | Types tests and repository tooling. | Excluded from portable production compilation. |
-| ESLint and `typescript-eslint` | Parse authored TypeScript and JavaScript and enforce focused source rules. | Development only. |
-| Prettier | Checks or explicitly formats owned workspace configuration. | Development only. |
-
-No third-party monorepo orchestrator, test framework, cleaner, or benchmark framework is selected.
-Development tools remain replaceable behind the root commands and cannot leak into product
-contracts or runtime dependencies.
+No third-party monorepo orchestrator, test framework, cleaner or benchmark framework is selected.
+Development dependencies must not enter product contracts or runtime dependencies.
 
 ## Shared compiler baseline
 
-`tsconfig.base.json` defines ES2022 ESM, strict typing, exact optional properties, unchecked-index
-protection, unused local and parameter rejection, native class-field semantics, declaration
-generation, and no ambient type packages by default. Production packages extend that baseline
+[tsconfig.base.json](../../../tsconfig.base.json) owns ES2022 ESM, strict typing, exact optional
+properties, unchecked-index protection, unused-local and parameter rejection, native class fields,
+declaration generation and the absence of ambient type packages. Production packages extend it
 with their own source and output boundaries.
-Tests and repository tooling opt into Node capabilities independently. `tsconfig.tooling.json`
-applies strict `checkJs` analysis to every authored tooling module without emitting distribution
-files. Built package modules loaded by performance probes remain outside that source boundary and
-are verified through package type, ABI and clean-consumer evidence instead.
+
+Tests opt into host capabilities independently.
+[tsconfig.tooling.json](../../../tsconfig.tooling.json) applies strict `checkJs` analysis to authored
+tooling without emitting files. Built modules used by performance probes remain outside that
+source boundary and receive package type, ABI and clean-consumer verification.
 
 ## Stable root commands
 
-The private root exposes stable orchestration contracts:
-
 | Command | Contract |
 | --- | --- |
-| `pnpm build` | Build every real package in dependency order when it defines `build`. |
-| `pnpm check` | Run catalogue drift, type, architecture, documentation, lint, and formatting checks. |
+| `pnpm build` | Build applicable packages in dependency order. |
+| `pnpm check` | Run catalogue drift, type, architecture, documentation, lint and formatting checks. |
 | `pnpm check:architecture` | Run the [architecture verifier](architecture/index.md). |
-| `pnpm check:catalogue` | Verify generated [catalogue sources](catalogue/index.md) without writing. |
+| `pnpm check:catalogue` | Check [catalogue output](catalogue/index.md) without writing. |
 | `pnpm check:docs` | Run the [documentation verifier](documentation/index.md). |
-| `pnpm check:types` | Build and type-check every applicable package. |
-| `pnpm check:tooling-types` | Strictly type-check every authored repository-tooling module. |
-| `pnpm benchmark:core` | Run the development-only [Core comparison](performance/index.md). |
-| `pnpm benchmark:cli` | Run the development-only [CLI comparison](performance/index.md). |
-| `pnpm benchmark:icons` | Run the development-only [Icons comparison](performance/index.md). |
-| `pnpm benchmark:import` | Run the development-only [Import comparison](performance/index.md). |
-| `pnpm benchmark:svg` | Run the development-only [SVG comparison](performance/index.md). |
-| `pnpm lint` | Check authored TypeScript and JavaScript in packages, tooling, tests, and the lint configuration. |
-| `pnpm release:prepare -- <package> <version>` | Produce a read-only package Release intent from canonical notes, npm bytes and source CI. |
-| `pnpm format` | Explicitly format owned workspace manifests and quality-tool configuration. |
+| `pnpm check:types` | Build and type-check applicable packages, then type-check tooling. |
+| `pnpm check:tooling-types` | Type-check authored tooling independently. |
+| `pnpm benchmark:core` | Run the [Core comparison](performance/index.md#package-comparisons). |
+| `pnpm benchmark:icons` | Run the [Icons comparison](performance/index.md#package-comparisons). |
+| `pnpm benchmark:svg` | Run the [SVG comparison](performance/index.md#package-comparisons). |
+| `pnpm benchmark:cli` | Run the [CLI comparison](performance/index.md#package-comparisons). |
+| `pnpm benchmark:import` | Run the [Import comparison](performance/index.md#package-comparisons). |
+| `pnpm lint` | Check authored package, tooling and test code plus the lint configuration. |
+| `pnpm format` | Format owned manifests and quality-tool configuration explicitly. |
 | `pnpm format:check` | Check those files without writing. |
-| `pnpm test` | Run tooling fixtures, package tests, and cross-package workflows. |
-| `pnpm test:tooling` | Run fixture-based conformance for repository tools. |
-| `pnpm test:workflow` | Run implemented cross-package workflows through public roots. |
-| `pnpm clean` | Delegate to each package's guarded cleanup contract. |
-| `pnpm verify` | Run checks and the complete test graph as the repository gate; owned subcommands build every inspected output. |
+| `pnpm release:prepare -- <package> <version>` | Produce a read-only [Release intent](release/index.md). |
+| `pnpm test` | Run tooling fixtures, package tests and cross-package workflows. |
+| `pnpm test:tooling` | Run tooling fixture conformance. |
+| `pnpm test:workflow` | Build packages and test workflows through public roots. |
+| `pnpm clean` | Delegate to each package's [guarded cleanup](workspace/index.md). |
+| `pnpm verify` | Run checks and the complete test graph. |
 
-Root commands remain stable while internal implementations can be replaced. `pnpm lint` and
-`pnpm format:check` are active parts of `pnpm check`; `pnpm format` is the only mutating quality
-command and is never called by verification.
+Internal implementations may change behind these root commands. Verification never invokes the
+mutating `format` command.
 
-ESLint uses the repository-owned `eslint.config.mjs`. It checks semicolons, double-quoted strings,
-braced control flow, strict equality, and a small set of unsafe constructs. TypeScript and the
-architecture and documentation verifiers retain their own responsibilities; lint does not repeat
-type analysis, dependency checks, or prose checks. Generated catalogue sources, distribution output,
-dependency installations, and parser fixtures are excluded.
+## Source quality boundaries
 
-Prettier checks the root and package manifests plus its own and ESLint's configuration. The Icons
-manifest is excluded because catalogue synchronisation owns its generated export entries and
-serialisation. Authored source is deliberately outside the format command: applying Prettier to
-the existing source tree would cause an unrelated mechanical rewrite. ESLint still enforces its
-accepted source conventions. Widening the format boundary requires a separate, reviewed migration;
-the current command must not imply that it checks every source file. Lockfiles, generated artefacts,
-fixtures, and documentation are outside this formatting boundary.
+[ESLint configuration](../../../eslint.config.mjs) checks semicolons, double-quoted strings,
+braced control flow, strict equality and selected unsafe constructs. It does not repeat type
+analysis, dependency inspection or prose review. Generated catalogue sources, distribution output,
+dependency installations and parser fixtures are excluded.
+
+Prettier checks root and package manifests plus its own and ESLint's configuration. The Icons
+manifest is excluded because catalogue synchronisation owns its export entries and serialisation.
+Authored source, documentation, lockfiles, generated artefacts and fixtures remain outside this
+formatting boundary. Widening it requires a separately reviewed migration, not a mechanical rewrite.
 
 ## Verification orchestration
 
-The transversal evidence roles, selection rules and isolation requirements are defined by the
-[Aster Testing Policy](../project/testing.md). Tooling owns command composition, while each package
-or workflow continues to own the freshness of the output it inspects.
+[Testing policy](../project/testing.md) owns evidence roles and isolation requirements. Commands
+that inspect emitted packages retain their own build prerequisites so they work independently.
+Architecture inspection evaluates source and manifests; ABI tests evaluate emitted declarations,
+modules, exports and loading.
 
-ABI, executable, clean-consumer and global workflow commands therefore retain their direct build
-prerequisites and remain valid when invoked independently. `pnpm verify` does not append a second
-workspace build after `pnpm test`: the final global workflow command has already rebuilt every
-package, and no later operation mutates package source or distribution output. Other repeated
-builds remain deliberate isolation costs until an explicit shared-output lifecycle can preserve
-standalone command correctness.
+`pnpm verify` does not append another workspace build after testing: its final workflow command
+already rebuilds all packages, and no later operation mutates their outputs. Other repeated builds
+remain deliberate isolation costs.
 
-## Retention audit
+[CI](../../../.github/workflows/ci.yaml) runs the complete gate independently on Ubuntu and Windows.
+A successful job on one platform does not substitute for the other.
 
-Every retained feature protects a current boundary:
+## Implementation boundary
 
-| Feature | Retained evidence |
-| --- | --- |
-| Architecture | Detects source, manifest, dependency, compiler, host-authority, and private-tooling boundary drift before publication. |
-| Catalogue | Detects source, relationship and generated distribution drift and reconstructs owned outputs deterministically. |
-| Documentation | Detects broken local links, stale package and feature mirroring, contributor-local references, and missing current entry points. |
-| Workspace | Deletes only a verified package's direct generated distribution through an explicit destructive policy. |
-| Performance | Produces reproducible package-specific comparison reports without CI thresholds or production dependencies. |
-| Shared | Serves multiple retained tooling features with filesystem, path, JSON, directory, and traversal capabilities. |
+Entrypoints adapt explicit capabilities and results to process state; runtime classes own concrete
+state or multi-step behaviour. Feature policies stay with their owners. Shared code requires
+multiple real consumers, and filesystem, process, clock and memory authority remains narrow.
 
-Package ABI tests remain separate from architecture inspection. Architecture evaluates authored
-sources and manifests before build; ABI tests evaluate emitted declarations, modules, exports, and
-observable package loading after build.
-
-The following checks are intentionally absent:
-
-- no mandatory repository collection source root;
-- no special Lilium or Protea dependency rejection in addition to exact package allowlists;
-- no successful lint or format signal when no implementation ran;
-- no prose scoring, external-link crawling, generic Markdown parsing, or performance thresholds;
-- no generic deletion, task-runner, plugin-framework, or automatic policy-discovery API.
-
-## Extraction boundary
-
-A headless repository-tooling project is technically possible, but extraction is conditional on a
-second real repository consumer. Generic candidates include explicit verifier orchestration,
-immutable issue collection, filesystem and path contracts, deterministic traversal, strict JSON
-acquisition, benchmark execution, and numeric aggregation.
-
-Aster package policies, documentation hierarchy, dependency allowlists, parser ownership, Core
-scenarios, and cleanup containment remain Aster-owned inputs or adapters. A separate project should
-provide host-neutral kernels and explicit extension contracts, while each repository supplies its
-own policies and process entrypoints. It must not be conflated with the future multi-ecosystem CLI:
-one executes contributor verification, while the other hosts user-facing product commands.
-
-## Structural rules
-
-New and hardened tooling uses package-like boundaries only where responsibilities justify them:
-
-- entrypoints compose capabilities, invoke one runtime authority, and adapt results to process
-  output or exit state;
-- runtime classes own stateful or multi-step behaviour;
-- constants own closed stable configuration rather than incidental literals;
-- internal contracts describe useful injected or replaceable capabilities;
-- shared code requires multiple real tooling consumers;
-- one primary concept remains in each file;
-- composition is preferred over inheritance;
-- filesystem, process, terminal, clock, and memory authority remains explicit and narrow.
-
-## Package isolation
-
-Tooling may inspect source structure and consume built public package roots for integration
-evidence. It cannot establish hidden package behaviour. Production packages compile and function
-without `tooling/`, Node ambient types, repository paths, or root scripts.
-
-The accepted production direction is one-way: tooling may inspect package sources, manifests and
-built public roots, while no production package may import tooling. Workspace versions and
-membership are owned directly by `.node-version`, `package.json`, `pnpm-lock.yaml`,
-`pnpm-workspace.yaml`, and the shared TypeScript configuration described above; historical
-toolchain alternatives do not form part of the current tooling contract.
+Tooling may inspect sources and consume built public roots for evidence. Production packages
+cannot import it or require repository paths, root scripts or Node ambient types.
+[Extraction](../future-capabilities.md#headless-repository-tooling-extraction) remains conditional
+on a second real repository consumer.

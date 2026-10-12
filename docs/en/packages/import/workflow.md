@@ -1,51 +1,38 @@
 # Import Workflow
 
-Import transforms explicitly acquired external source text into canonical editable Aster source
-without acquiring host authority or replacing TypeScript-first authorship.
+Import turns explicitly acquired source text into editable Aster source. It does not replace
+TypeScript-first authorship or acquire host authority.
 
-## Operation flow
+## Staged adoption
 
-1. A host acquires bytes, decodes text and assigns a logical `sourceId` and icon identity.
-2. `IconImport.inspect()` isolates the source and selects its exact built-in format adapter.
-3. The adapter returns either blocking diagnostics or a deeply frozen metadata-free draft.
-4. The host reviews evidence and supplies complete portable Core metadata.
-5. `IconImport.define()` delegates canonical construction to `Icon.define()`.
-6. `IconImport.emit()` returns deterministic editable `.icon.ts` content and a suggested path.
-7. `IconImport.adopt()` composes the preceding operations atomically for one icon.
-8. `IconImport.adoptMany()` composes a non-empty batch, rejects collisions and returns canonical
-   identity order without partial output.
+1. A host acquires and decodes input, assigns a logical source identifier and portable identity,
+   and supplies the [source contract](source/index.md).
+2. `IconImport.inspect()` isolates that input and selects the exact [format adapter](format/index.md).
+3. The [SVG adapter](formats/svg/index.md) parses, validates and normalises supported source into
+   a metadata-free draft, or returns blocking diagnostics.
+4. The host reviews the draft and supplies complete Core metadata to `IconImport.define()`.
+5. [Adoption](adoption/index.md) validates draft evidence and delegates construction to Core.
+6. `IconImport.emit()` returns editable content and a suggested relative path.
+7. The host handles diagnostics and decides whether and where to persist that content.
 
-For path geometry, the SVG adapter validates authored source syntax and translates relative,
-shorthand and repeated commands into Core's absolute structured command sequence. Raw `d` text
-does not cross the format-neutral draft boundary.
+[`adopt()` and `adoptMany()`](api/index.md) compose these stages for pre-reviewed input.
+Batch adoption adds all-or-nothing collision checks and canonical ordering; collection membership
+and independent batch transactions remain host-owned.
 
-The host decides whether and where to persist emitted content. Import never reads directories,
-writes files, replaces existing source, tracks stale output or controls process status.
+## Retained source
 
-## Composition scale
+A persisted module imports only Core. It compiles and renders through SVG without Import, the
+original input or an external metadata file. Nothing grants Import overwrite, cleanup or generated
+ownership over that source.
 
-A single icon uses `adopt()`. A host-prepared set of icons uses `adoptMany()`. One collection is a
-batch selected by the host, not a distinct Import value. Several collections remain independent
-batch calls so their membership, naming, review and commit boundaries do not leak into Import.
+Supported SVG commands normalise into Core's absolute structured commands. Equivalent adopted and
+TypeScript-authored definitions render equivalently with matching metadata/options; original SVG
+spelling is not preserved. Complete renderer output is not necessarily accepted Import input:
+the [adapter boundary](formats/svg/index.md) explicitly rejects unsupported output attributes.
 
-The emitted module imports only `@luscious-garden/aster-core`. Once retained as canonical authored source, it
-compiles, imports and renders through `@luscious-garden/aster-svg` without `@luscious-garden/aster-import`, the original SVG or
-external metadata files.
+## Failure hand-off
 
-Path nodes are emitted as structured command objects. Re-importing equivalent compact SVG and
-authoring those same canonical commands in TypeScript therefore produce byte-equivalent SVG when
-rendered with the same definition metadata and options; exact preservation of source spelling is
-not promised. This equivalence concerns supported authored SVG source, not re-importing a complete
-`Svg.render(...)` result. The [SVG adapter](formats/svg/index.md) defines that narrower input
-boundary.
-
-Repository conformance exercises both direct TypeScript-first authorship and adopted editable
-modules through the built Core, Import and SVG package roots. Independent host-owned batches are
-converted back through `Icon.define()` and rendered without introducing an Import dependency into
-the retained definitions or their collection grouping.
-
-## Failure flow
-
-Malformed public structure throws `IconImportError`. Validly shaped source or metadata that cannot
-be adopted returns stable diagnostics without a partial value. Caller-controlled execution
-failures, including explicit `Proxy` trap failures, are not relabelled as Import diagnostics.
+[Errors](error/index.md) distinguish malformed API structure from
+[diagnostic rejection](diagnostic/index.md). A blocking stage returns no partial value; explicit
+caller execution failures are not relabelled. Hosts must resolve failures before persistence.
+[Quality](quality.md) owns staged, batch and independent-consumer evidence.

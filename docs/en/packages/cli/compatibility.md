@@ -2,152 +2,56 @@
 
 Status: **Accepted**
 
-This document defines the compatibility-bearing surface and release evidence for `@luscious-garden/aster-cli`.
-Detailed command, catalogue, and executable semantics remain owned by their respective package
-feature documents.
+This page defines CLI's compatibility-bearing boundary. [API](api/index.md) owns the exact export
+families, feature pages own semantics, and [quality](quality.md) owns verification evidence.
 
 ## Runtime compatibility
 
-The package distributes native ESM targeting ES2022 and provides no CommonJS, legacy, or alternate
-build. The programmatic root has no Node or DOM ambient dependency. The package manifest declares
-`>=24.10.0 <25` as the supported Node range for the standalone `aster` executable.
+CLI distributes native ES2022 ESM with no CommonJS or alternate build. The manifest declares Node
+`>=24.10.0 <25` for the standalone executable. The programmatic root admits neither Node nor DOM
+ambient types. A referenced shell project consumes its declarations and emits only private
+binary modules, without shell declarations.
 
-The Node shell is a referenced TypeScript project. It consumes host-neutral declarations and emits
-only private shell modules, so Node ambient types cannot alter the host-neutral implementation or
-its public declarations.
+Only the root export and manifest binary mapping are supported. Emitted implementation modules
+are not public subpaths; there is no plugin-registration or automatic-discovery ABI.
 
 ## Supported ABI
 
-The first supported ABI consists of:
+Compatibility includes the six [runtime values](api/index.md#package-exports), all exported
+contracts and types, command-set identity, accepted invocations, payload discriminators,
+diagnostics, canonical ordering, source-selection semantics and expected failures.
 
-- the root package export and private `aster` binary mapping;
-- the frozen `AsterCommands`, `AsterCatalogue`, `catalogueResultKinds`, `exportTargets`,
-  `reviewSubjects`, and `reviewTargets` values;
-- every public command, catalogue, export, and review contract and type exported through the root;
-- the `aster` command-set identity;
-- the `export`, `review`, `list`, `search`, `show`, `help`, and `version` invocation variants;
-- optional named and `all` version scopes, direct-dependency and CLI-location requests,
-  source-tagged host evidence, and `package-versions` and `package-dependencies` results
-  alongside the unchanged plain `version` result;
-- current payload and catalogue-result discriminators;
-- current diagnostic codes and categories;
-- deterministic ordering, canonicalisation, and expected-failure semantics.
-
-Implementation modules and the executable module are not exportable package subpaths. The package
-declares no generic plugin registration ABI and performs no automatic plugin discovery.
-
-Removing, renaming, or reinterpreting an accepted command, discriminator, field, diagnostic, or
-observable semantic is a breaking CLI change. Adding an optional compatible command or capability
-is additive; correcting implementation without changing the accepted result is compatible.
-Deferred commands are not part of the current ABI. Cross-package release sequencing belongs to
-the project release posture rather than this package contract.
+Removing, renaming or reinterpreting accepted observable behaviour is breaking. A compatible
+optional capability is additive; a correction preserving the accepted result is compatible.
+[Project versioning](../../project/versioning.md) governs version selection and dependency coordination.
+Unimplemented proposals are not current ABI.
 
 ## Programmatic and standalone equivalence
 
-An independent host can mount `AsterCommands` under its stable identity and invoke it with an
-explicit `AsterCommandContext`. It does not import the shell or emulate argv. Given the same
-structured invocation, product metadata, and catalogue providers, it receives the same structured
-result that the standalone executable serialises in JSON mode.
+An independent host executes structured requests without emulating argv or importing shell
+services. Equivalent invocations and complete explicit contexts produce the same structured
+result presented by the standalone shell in JSON mode. Importing the root is silent and performs
+no catalogue discovery, filesystem access, network request or process mutation.
 
-Importing the root produces no terminal output, process mutation, catalogue load, filesystem
-access, network access, or package-manager action. `AsterCatalogue` is never ambient:
-`AsterCommands` observes it only when a host explicitly includes that provider in the context.
+JSON fields and discriminators are semantic; serialised property order is not a compatibility
+contract. [Shell](shell/index.md) owns exact framing, stream selection and statuses.
 
-## Machine and process guarantees
+## Capability boundaries
 
-The stable structured result is the machine boundary. JSON mode emits exactly one compact result
-document and one trailing newline without ANSI styling. Object property order is deterministic for
-the current implementation, but consumers must use named fields and discriminators rather than
-treating serialised property order as semantic.
+| Boundary | Compatibility owner |
+| --- | --- |
+| Explicit provider methods, metadata-only discovery, exact loaders and collection membership | [Catalogue](catalogue/index.md) |
+| Executed-CLI versus project roots, source-tagged host evidence and grouped dependencies | [Command](command/index.md) and [version acquisition](shell/version/index.md) |
+| Complete logical SVG artefacts without host effects | [Export](export/index.md) |
+| Complete technical models and separate pure HTML serialisation | [Review](review/index.md) |
+| Private filesystem staging, guarded replacement and recovery limitations | [Output](shell/output/index.md) |
 
-Only the private executable entrypoint reads argv, writes process streams, and assigns process
-exit status. Exact human and JSON stream selection and exit statuses are owned by the
-[CLI Shell](shell/index.md). Command result and diagnostic semantics are owned by the
-[CLI Command](command/index.md).
-
-## Catalogue isolation
-
-Catalogue providers are supplied explicitly and invoked once per command execution. Provider
-registration order cannot change accepted ordering or selected results. Provider capabilities and
-retained portable values are validated, copied where required, and frozen before query behaviour
-becomes observable. No result relies on source files, a mutable global registry, or catalogue
-object insertion order.
-
-The public provider ABI contains metadata discovery plus exact icon and collection loaders. It
-contains no complete-provider snapshot contract. Discovery commands invoke no definition loader;
-Export and Review load only the exact accepted target after metadata selection.
-
-Complete collection loaders return the current Core `CollectionDefinition` with a typed `icons`
-dictionary and its derived ordered `members` list. Revalidation rejects a submitted list that
-disagrees with the dictionary. The metadata-only discovery contract still exposes member
-identities in its `icons` array; collection aliases never change identity resolution. Provider
-migration from the published RC is recorded in the [CLI release notes](releases/index.md).
-
-Provider and membership guarantees are owned by the
-[CLI Catalogue](catalogue/index.md).
-
-## Export isolation
-
-Headless export consumes only accepted catalogue definitions and the public SVG renderer. It returns
-complete immutable logical artefacts and acquires no process or filesystem capability. The shell
-may present a raw single-icon SVG or serialise the same structured plan. Its private output host
-can stage and publish that plan without changing the programmatic result contract. Shell render
-options become the same portable option record before command execution. Detailed ownership is documented by
-[CLI Export](export/index.md).
-
-## Review isolation
-
-Headless review consumes the same catalogue-owned exact selection boundary as Export and renders
-only through public SVG. It returns a complete immutable technical model without retaining host
-paths or acquiring process, browser, or filesystem capabilities. A separate internal pure
-serialiser can convert that model into self-contained HTML without changing the public result.
-The private Node host may publish that document to an absent root or explicitly replace an
-unchanged Aster-owned review. Detailed ownership is documented by [CLI Review](review/index.md).
+Collection definitions use Core's alias dictionary and derived `members`; discovery retains only
+member identities. Collection-local aliases are not identity shortcuts. Historical migrations
+belong to the [version history](releases/index.md), not current usage.
 
 ## Conditional Flora seam
 
-The current `@luscious-garden/aster-cli` package is a complete standalone product. It owns both the host-neutral
-`AsterCommands` composition and the private Node shell; neither `@luscious-garden/aster-commands` nor
-`@luscious-garden/aster-flora` exists or forms part of the supported ABI.
-
-Extraction is not authorised merely to reorganise files, and no current package depends on a Flora
-contract. The independent-consumer trigger, prospective package roles, and required dependency
-direction belong to
+CLI is a complete standalone package; no Commands or Flora package is part of its ABI. Extraction
+requires the independent consumer and dependency evidence described by
 [Command-set Extraction and Flora Integration](../../future-capabilities.md#command-set-extraction-and-flora-integration).
-
-## Conformance evidence
-
-Package conformance builds the distribution and verifies:
-
-- exact runtime values, export map, binary mapping, declarations, and rejected subpaths;
-- host-neutral declaration imports and dependency direction;
-- exclusive Node process authority in the executable entrypoint;
-- package dry-run, local tarball installation, strict engine acceptance, binary linking, and root
-  import behaviour in a temporary consumer containing no workspace source files;
-- independently versioned direct project packages and executed-CLI dependencies, including
-  distinct nested dependency copies, aggregate root groups and opt-in CLI-location evidence;
-- sanitised post-startup metadata failures, native pre-startup dependency failures, and version
-  execution without Icons module or network acquisition;
-- standalone and independent programmatic-host discovery and complete export equivalence;
-- explicit catalogue registration and registration-order independence;
-- byte-equivalent publication of the complete built-in collection from a clean consumer;
-- byte-equivalent export plans across provider-record and membership order;
-- empty collections, variants, namespaced paths, malformed providers, path collisions, target
-  failures, and caller-controlled exceptions;
-- safe private output mapping, absent parents, existing targets, interrupted stages, filesystem
-  failures, current-stage cleanup, empty-plan non-mutation, and deterministic fresh-root output;
-- complete review equivalence through standalone and programmatic hosts installed from packed
-  package artefacts;
-- self-contained review publication from a clean consumer without scripts or remote resources;
-- executable human, JSON, stream, diagnostic, and exit-status behaviour;
-- raw SVG redirection, exact export-option parsing, committed output summaries, and reserved
-  output conflict and failure diagnostics.
-
-Run the package evidence with:
-
-```sh
-pnpm --dir packages/cli run test:conformance
-```
-
-The complete execution boundary is defined by [CLI Workflow](workflow.md); feature-specific
-observable semantics remain with Command, Catalogue, Export and Shell.

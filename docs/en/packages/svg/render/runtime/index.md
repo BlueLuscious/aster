@@ -2,48 +2,51 @@
 
 Status: **Accepted**
 
-The render runtime is an internal stateless composition behind `Svg.render()`. It has no public
-implementation subpath and retains no definition, catalogue, host, or render result between calls.
+The render runtime is the internal stateless composition behind `Svg.render()`. It has no public
+implementation subpath and retains no definition, context or result between calls.
 
 ## Composition
 
 | Symbol | Responsibility | Relations |
 | --- | --- | --- |
-| `SvgRenderer` | Coordinates definition isolation, option acceptance, and complete serialisation. | Owned by the public `Svg` object. |
-| `SvgRenderOptionsNormaliser` | Validates the closed option object and resolves viewport, presentation overrides, accessibility, and direction. | Produces `ISvgRenderContext`; raises `SvgRenderError`. |
-| `ISvgRenderContext` | Carries the accepted immutable values required for one render operation. | Contains the isolated Core definition and accepted option effects. |
-| `SvgMarkupSerialiser` | Traverses portable nodes and emits canonical complete markup. | Consumes only `ISvgRenderContext`. |
-| `SvgPathDataSerialiser` | Maps Core path commands to deterministic uppercase expanded SVG path data. | Consumes Core command discriminators and SVG-owned command letters. |
-| `SvgNumberSerialiser` | Produces locale-independent canonical numeric spelling. | Shared by geometry, presentation and path serialisation. |
-| `SvgXmlCharacterValidator` | Enforces the exact XML 1.0 character repertoire over JavaScript code points. | Used by option acceptance and markup serialisation; raises `SvgRenderError`. |
-| `svgRenderOptionsSchema` | Owns the closed option fields used by this target boundary. | Used only during SVG option acceptance. |
-| `svgXmlCharacterRanges` | Owns the immutable XML 1.0 code-point boundaries. | Prevents Core-valid text from producing malformed target markup. |
+| `SvgRenderer` | Coordinates definition acceptance, option normalisation and complete serialisation. | Owned by the frozen public `Svg` object. |
+| `SvgRenderOptionsNormaliser` | Captures closed option data and resolves its effects. | Produces `ISvgRenderContext`; uses Core policy and public vocabularies. |
+| `ISvgRenderContext` | Carries the isolated definition, viewport, colour context, presentation overrides, accessibility and direction for one call. | Immutable private contract consumed by `SvgMarkupSerialiser`. |
+| `SvgMarkupSerialiser` | Resolves node presentation and emits complete target markup. | Consumes only the accepted context; composes number, path and XML authorities. |
+| `SvgPathDataSerialiser` | Maps structured Core commands to expanded SVG path data. | Uses public Core discriminators and internal `svgPathCommandLetters`; performs no source parsing. |
+| `SvgNumberSerialiser` | Produces canonical locale-independent numeric spelling. | Shared by geometry, presentation and path serialisation. |
+| `SvgXmlCharacterValidator` | Enforces XML 1.0 over JavaScript code points. | Used for option text and serialised source values; raises `SvgRenderError`. |
+| `svgRenderOptionsSchema` | Defines this target's closed option fields. | Includes the public Core override vocabulary rather than copying it. |
+| `svgXmlCharacterRanges` | Defines immutable XML 1.0 boundaries. | Separates character acceptance from contextual escaping. |
 
-Core's public `iconNodeKinds`, `iconPathCommandKinds`, `iconDirections`, `iconRtlPolicies`, `iconPaintSchema`,
-`iconPresentationOverrideOrder`, and `iconTechnicalPresentation` values are the runtime
-authorities used by this composition. SVG does not copy those portable vocabularies or import
-private Core paths.
+The composition consumes Core's public geometry, direction, paint and presentation authorities.
+It neither copies their domain vocabularies nor imports private Core paths.
 
-## Flow
+## Definition acceptance
 
-1. `SvgRenderer` passes the supplied definition to public `Icon.define()`.
-2. Core validates, clones, canonicalises, and deeply freezes the portable value.
-3. A Core rejection becomes `SvgRenderError` at the same logical path without exposing the Core
-   message.
-4. `SvgRenderOptionsNormaliser` captures only own enumerable string-named data fields from a plain
-   record into a frozen local snapshot; symbols, hidden fields, accessors, inherited state, unknown
-   fields, and malformed values are rejected before accepted values are read.
-5. It enforces icon override authority, viewport minimums, accessibility conflicts, and
-   explicit direction.
-6. `SvgXmlCharacterValidator` rejects option or definition text outside XML 1.0 at its logical
-   source path.
-7. `SvgMarkupSerialiser` resolves technical defaults, icon defaults, node values, and
-   authorised caller overrides for each node.
-8. `SvgPathDataSerialiser` emits structured path commands as uppercase absolute operations without
-   importing or duplicating SVG source parsing.
-9. The markup serialiser emits geometry in paint order, places optional title content first, and wraps mirror-policy
-   RTL geometry exactly once.
-10. The complete string is returned only after successful serialisation.
+`SvgRenderer` first calls public `Icon.define()` to reconstruct and deeply freeze the complete
+portable graph. Static types and previously frozen input do not bypass that step.
+[SVG Error](../../error/index.md) owns translation of Core failures during this stage; no other
+stage is inside the definition-translation catch boundary.
 
-All intermediate values are local to the call. Equivalent accepted calls therefore produce the
-same bytes, and no failure can return partial markup.
+## Option acceptance
+
+The normaliser accepts an omitted value or an ordinary/null-prototype record. It inspects own
+keys and descriptors, rejects unknown, symbolic, hidden or accessor fields, and captures accepted
+data values into a frozen local snapshot. Ordinary getters are not invoked. Value normalisation
+then reads that snapshot, not the caller's record; proxy reflection can still execute caller code.
+
+It validates numeric, paint, text, boolean and direction values, checks icon override authority
+and minimum size, and resolves one context. [Core Render Options](../../../core/render/index.md)
+owns portable semantics; [SVG Render Result](../index.md) owns the target representation.
+
+## Serialisation
+
+The serialiser resolves presentation for each node, delegates structured paths and numeric
+conversion, checks XML characters as values enter target contexts, and builds the complete string.
+Output ordering, escaping and RTL arithmetic are specified once in
+[SVG Render Result](../index.md).
+
+Target validation can fail during serialisation, even after the context was accepted. Only local
+intermediate strings are discarded: there is no external stream or target to roll back. The
+[workflow](../../workflow.md) documents the complete transaction and consumer hand-off.

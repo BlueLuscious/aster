@@ -11,7 +11,7 @@ import {
 import {
   asterOriginalIconAuthorship,
 } from "../../src/authoring/constants/aster-original-icon-authorship.constant.js";
-import { AmellusCollection } from "../../src/collections/a/amellus/amellus.collection.js";
+import { Amellus } from "../../src/collections/a/amellus/amellus.collection.js";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
@@ -79,7 +79,7 @@ function numericGeometryValues(definition: IconDefinition): readonly number[] {
 }
 
 test("composes original authorship and visual policy for Amellus members", () => {
-  const definitions = AmellusCollection.members;
+  const definitions = Amellus.members;
 
   assert.ok(
     definitions.length > 0,

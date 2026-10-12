@@ -1,6 +1,13 @@
 # CLI Releases
 
-Published CLI versions, newest first. Each version page owns its publication evidence and migration notes.
+CLI versions, newest first within each section. Each version page owns its status, changes and
+publication evidence. Prepared notes are not npm publications or GitHub Releases.
+
+## In preparation
+
+- [0.1.1](0.1.1.md) (Not yet published)
+
+## Published
 
 - [0.1.0](0.1.0.md) ([GitHub Release](https://github.com/BlueLuscious/aster/releases/tag/cli/v0.1.0))
 - [0.1.0-rc.3](0.1.0-rc.3.md)

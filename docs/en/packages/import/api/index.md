@@ -1,31 +1,71 @@
 # Import API
 
-[`IconImport`](../index.md) is an immutable object implementing
-`IconImportApi`. It exposes `inspect`, `define`, `emit`, `adopt` and `adoptMany`; each operation is
-host-independent and deterministic.
+Status: **Private workspace API**
 
-## Operation rationale
+`IconImport` is a frozen object implementing `IconImportApi`. Every operation is synchronous,
+host-independent and deterministic; parsing or module emission does not perform host effects.
 
-| Operation | Independent responsibility |
-| --- | --- |
-| `inspect()` | Produces reviewable metadata-free geometry and source evidence before semantic metadata is accepted. |
-| `define()` | Applies reviewed metadata to an accepted draft through Core without repeating source parsing. |
-| `emit()` | Serialises an accepted or subsequently corrected definition without requiring its original source. |
-| `adopt()` | Provides the atomic convenience composition for one source. |
-| `adoptMany()` | Adds all-or-nothing collision detection and canonical ordering that repeated `adopt()` calls cannot provide. |
+## Operations
 
-Removing any operation would either collapse review boundaries or force a host to duplicate Import
-composition. The facade therefore remains the smallest coherent surface for both staged and
-convenience workflows.
+| Operation | Input and result | Independent responsibility |
+| --- | --- | --- |
+| `inspect()` | `IconImportSourceType` to `DiagnosticResultType<IconImportDraft>` | Exposes metadata-free geometry and source evidence for review. |
+| `define()` | `IconImportDefinitionRequest` to `DiagnosticResultType<IconDefinition>` | Applies reviewed metadata through Core without reparsing source. |
+| `emit()` | `IconModuleEmissionRequest` to `DiagnosticResultType<IconModuleOutput>` | Serialises a definition without requiring its original source. |
+| `adopt()` | `IconAdoptionRequest` to `DiagnosticResultType<IconAdoptionOutput>` | Composes all three stages for one source. |
+| `adoptMany()` | Readonly `IconAdoptionRequest[]` to `DiagnosticResultType<IconAdoptionBatchOutput>` | Adds atomic collision checks and canonical batch order. |
 
-Expected source or metadata rejection returns `DiagnosticResultType<Value>`. Structurally malformed
-API invocation throws `IconImportError`. Runtime classes remain private and no implementation
-subpath is exported.
+[Adoption](../adoption/index.md) owns these inputs/outputs and their Core relationships;
+[Source](../source/index.md) owns acquired input. Expected rejection returns
+[diagnostics](../diagnostic/index.md); malformed API structure throws
+[`IconImportError`](../error/index.md). Explicit caller-controlled execution failures preserve
+their original identity.
 
-Accepted operations snapshot their result from caller-owned data. Enumerable data fields are read
-without executing authored accessors, while failures deliberately raised by caller-controlled
-`Proxy` traps preserve their original identity rather than being misreported as Import failures.
+## Staged usage
 
-The facade owns one module-local `IconAdoptionService` and one immutable built-in adapter registry.
-They retain no caller data, mutable registration or operation-specific state. Reusing that
-composition avoids ceremonial construction while preserving deterministic independent results.
+```ts
+import { IconImport, iconImportFormats } from "@luscious-garden/aster-import";
+
+const inspected = IconImport.inspect({
+  format: iconImportFormats.svg,
+  sourceId: "external/disc.svg",
+  identity: { namespace: "example", name: "disc" },
+  content: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>',
+});
+
+if (inspected.successful) {
+  const defined = IconImport.define({
+    draft: inspected.value,
+    metadata: {
+      displayName: "Disc",
+      rtl: "preserve",
+      presentation: { defaults: {}, overrides: [] },
+      deprecated: false,
+    },
+  });
+
+  if (defined.successful) {
+    const emitted = IconImport.emit({
+      definition: defined.value,
+      sourceIds: [inspected.value.provenance.sourceId],
+    });
+    emitted.diagnostics;
+    if (emitted.successful) {
+      emitted.value.suggestedPath;
+      emitted.value.content;
+    }
+  }
+}
+```
+
+This private workspace example does not install Import from a public registry. A real host reviews
+the draft and metadata between calls and handles every diagnostic or failure before persistence.
+
+## Composition and exports
+
+One module-local `IconAdoptionService` and immutable built-in adapter registry retain no caller
+data or mutable registration. They are shared stateless composition, not operation caches.
+
+Only the root is exported. Runtime values are `IconImport`, `IconImportError` and
+`iconImportFormats`; declaration families belong to API, Adoption, Diagnostics, Format and Source.
+[Compatibility](../compatibility.md) defines the private distribution boundary.

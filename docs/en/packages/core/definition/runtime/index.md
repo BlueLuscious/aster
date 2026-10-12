@@ -23,6 +23,11 @@ private methods rather than loose module functions. The frozen public
 6. Every retained object and sequence is newly constructed and frozen before the definition is
    returned.
 
+The [shared validator](../../shared/index.md#data-acceptance) owns reflective record and array
+acceptance. Geometry rules belong to [Node](../../node/index.md), metadata relationships to
+[Metadata](../../metadata/index.md), and paint canonicalisation to
+[Presentation](../../presentation/index.md). This composition introduces no competing field rules.
+
 ## Runtime responsibilities
 
 | Class | Responsibility | Relations |
@@ -34,15 +39,12 @@ private methods rather than loose module functions. The frozen public
 Primitive assertions and deterministic contract failures are documented by the
 [Core shared runtime](../../shared/index.md).
 
-Presentation fields use fixed construction order. Hexadecimal sRGB colours are lowercased,
-three-digit colours expand to six digits, negative zero becomes zero, and override capabilities
-use canonical semantic order.
-
 ## Error boundary
 
-Invalid authored data raises the deterministic `IconDefinitionError` documented by the
-[Core shared runtime](../../shared/index.md). The complete construction transaction terminates
-without returning partial data.
+Invalid ordinary authored data raises the deterministic `IconDefinitionError` documented by the
+[Core shared runtime](../../shared/index.md#error). The complete construction transaction terminates
+without returning partial data. Caller-controlled execution is distinguished by the
+[trust boundary](../../workflow.md#security-and-trust-boundary).
 
 ## Identity scope
 

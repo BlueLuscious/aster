@@ -46,13 +46,12 @@ structured rejection without throwing an expected command error.
 
 ## Invocation semantics
 
-Command-specific normalisers validate the complete accepted invocation union. They reject unknown own
-fields, unknown commands, missing values, invalid subjects, non-canonical filters and identities,
-and duplicate tags. It copies and freezes every retained sequence.
+[Invocation normalisers](invocation/index.md) validate the complete command-specific shape,
+copy retained values and freeze accepted containers. Unknown fields or commands, missing values,
+invalid subjects, non-canonical identities/filters and duplicate tags are usage failures.
 
-Search queries are trimmed and lowercased. Provider identities and tags use canonical ASCII
-lowercase kebab-case. Collection identities use `[namespace/]name`; icon identities additionally
-permit `@variant`.
+Search queries are trimmed and lowercased. Textual identity and tag acceptance follow the
+[shared CLI grammar](../shared/index.md).
 
 Export accepts an exact icon or collection identity, an optional provider filter, and a closed
 portable option record. Icon export additionally accepts `label` and `title`. The complete export
@@ -65,7 +64,8 @@ documented by [CLI Review](../review/index.md).
 `{ command: "version" }` retains the product-only payload. The `cli` scope uses the same executed
 CLI version supplied by the host. Named library scopes and `all` require `project`-sourced
 `packageVersions`; `all` returns only directly installed known Aster packages in canonical order,
-and may be empty. Setting `dependencies: true` instead requires complete source-tagged
+and may be empty. The public family order is Core, Icons, SVG, CLI.
+Setting `dependencies: true` instead requires complete source-tagged
 `packageDependencies`: the executed CLI for absent or `cli` scope, or project roots for named
 libraries and `all`. Each `groups` entry has one `root` and its own direct `dependencies`.
 Setting `location: true` is accepted only for absent or `cli` scope and requires `cliLocation`.

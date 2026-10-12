@@ -5,12 +5,14 @@ discriminator, host-owned logical `sourceId`, independently assigned portable id
 decoded content. `IconImportSourceType` is the discriminated union consumed by the API.
 
 Import rejects absolute paths, parent segments, backslashes and control characters in logical
-source identifiers. It rejects byte-order marks and malformed Unicode without normalising source
-bytes. Canonical parser source and source-location contracts remain internal.
+source identifiers. Content must be decoded text without a leading byte-order mark or isolated
+UTF-16 surrogate.
+Import does not normalise accepted text. Invalid source envelopes throw
+[`IconImportError`](../error/index.md) before format inspection. Canonical parser source and
+source-location contracts remain internal.
 
-Source offsets are zero-based UTF-16 code-unit offsets. Diagnostic lines and columns are one-based,
-preserve the caller's exact text and treat LF or CRLF as one line break. The SVG parser owns the
-[accepted limits and source-evidence policy](../formats/svg/parser/index.md).
+[Diagnostic positions](../diagnostic/index.md) refer to exact unnormalised UTF-16 text.
+The SVG parser owns [resource limits and located evidence](../formats/svg/parser/index.md).
 
 `ICanonicalTextSource` carries isolated source text and logical provenance inside Import.
 `ICanonicalSvgSource` extends it with the SVG discriminator and independently acquired icon

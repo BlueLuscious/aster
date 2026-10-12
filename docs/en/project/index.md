@@ -1,105 +1,56 @@
 # Aster Project
 
-Status: **Public `0.1.0` released**
+Status: **Accepted**
 
-Aster is a framework-agnostic icon platform. It defines portable immutable icons and collections,
-provides deterministic SVG rendering, supports explicit catalogue workflows, and can adopt
-reviewed external artwork into editable TypeScript. No portable Aster value requires a browser,
-DOM, framework, command-line host, or repository tool.
+Aster is a framework-agnostic icon platform for defining immutable portable icons and collections,
+distributing curated artwork, rendering SVG and running explicit catalogue workflows. Its private
+Import compiler can adopt reviewed external artwork into editable TypeScript.
 
-An icon is portable data rather than an SVG file, framework component, or host object. Its
-canonical definition remains independent from the source used to author or adopt it and from every
-target used to present it.
+An icon is portable data, not an SVG file, framework component or host object. Its definition is
+independent from the source used to author it, any collection membership and the target used to
+present it.
 
 ## Product composition
 
-| Boundary | Maturity | Project role |
-| --- | --- | --- |
-| [`@luscious-garden/aster-core`](../packages/core/index.md) | Published `0.1.0` | Defines and constructs the portable icon and collection model. |
-| [`@luscious-garden/aster-icons`](../packages/icons/index.md) | Published `0.1.0` | Publishes canonical TypeScript-first icons and explicit collection aggregates. |
-| [`@luscious-garden/aster-svg`](../packages/svg/index.md) | Published `0.1.0` | Renders portable definitions as deterministic standalone SVG markup. |
-| [`@luscious-garden/aster-cli`](../packages/cli/index.md) | Published `0.1.0` | Provides host-neutral catalogue commands and a thin standalone Node executable. |
-| [`@luscious-garden/aster-import`](../packages/import/index.md) | Private | Adopts explicit external sources into portable definitions and editable TypeScript. |
-| [Repository tooling](../tooling/index.md) | Private | Verifies and maintains this repository without entering production package graphs. |
+The [package set](../packages/index.md) owns distribution responsibilities and the production
+dependency graph. Portable definitions, rendering and adoption remain separate capabilities; CLI
+adds command planning and a standalone Node host. [Repository tooling](../tooling/index.md)
+verifies this repository without entering production dependencies.
 
-Collection documentation is a curatorial authority, not another package boundary. The
-[collection index](../collections/index.md) records accepted collection identities, authorship,
-visual rules, provenance, and evidence; `@luscious-garden/aster-icons` owns their distributable TypeScript values.
+[Collections](../collections/index.md) own curatorial identity, visual rules, provenance and
+acceptance. Icons distributes their canonical values; a collection is not another package boundary.
 
-The `@luscious-garden` npm organisation groups package distribution; the `aster-` package-name
-prefix distinguishes this product within that shared scope. Neither the organisation name nor
-the package prefix changes an icon's canonical `aster` identity namespace or the `aster`
-executable name.
-
-## Dependency direction
-
-Each arrow points from a package in the table above to one of its direct production dependencies.
-The graph contains no dependency on repository tooling:
-
-```text
-CLI    -> Core, Icons, SVG
-Icons  -> Core
-SVG    -> Core
-Import -> Core, xmlsax-typescript
-Core   -> (none)
-```
-
-Core has no runtime dependency. Icons and SVG depend only on its public root. CLI consumes the
-public Core, Icons, and SVG packages for catalogue and export workflows. Private Import depends on
-Core and contains its replaceable XML parser behind an internal adapter. No production package
-imports repository tooling or another package's implementation paths. Exact package contracts and
-exports belong to the [package documentation](../packages/index.md).
+The `@luscious-garden` scope groups package distribution and the `aster-` prefix identifies this
+product. Neither changes an icon's canonical identity namespace or the `aster` executable name.
 
 ## Implemented workflows
 
-```text
-TypeScript authoring ----------------------> Core definition
-canonical Icons catalogue ----------------> CLI discovery or SVG export
-Core definition --------------------------> SVG markup
-external source + reviewed Core metadata --> Import --> editable .icon.ts
-```
+| Workflow | Execution owner |
+| --- | --- |
+| Authored values become portable definitions and collections. | [Core construction](../packages/core/workflow.md) |
+| Canonical TypeScript artwork becomes isolated imports and discovery data. | [Icons authoring](../packages/icons/workflow.md) |
+| A portable definition becomes standalone SVG markup. | [SVG rendering](../packages/svg/workflow.md) |
+| Explicit providers support discovery, export plans and static review. | [CLI execution](../packages/cli/workflow.md) |
+| Acquired source and reviewed metadata become editable TypeScript. | [Private Import adoption](../packages/import/workflow.md) |
 
-Import is optional and has no filesystem or command-line authority. CLI is optional for
-programmatic definition and rendering workflows. Source acquisition, persistence, and other host
-effects remain outside portable packages. Detailed execution and failure behaviour is documented
-by each owning package rather than repeated here.
+CLI is optional for programmatic construction and rendering. Import is private and optional for
+TypeScript-first authorship. Acquisition, persistence and other host effects belong to explicit
+hosts rather than portable values. Each workflow guide owns its execution and failure details.
 
-## Maturity and releases
+## Project policies
 
-Core, Icons, SVG and CLI have their first non-prerelease `0.1.0` versions on npm. Icons contains
-its first accepted collection, and Import remains deliberately private. A release below `1.0.0`
-does not by itself promise a final public API; the [versioning policy](versioning.md) defines
-compatibility and migration requirements.
+- [Testing](testing.md) defines evidence roles, isolation and verification requirements.
+- [Versioning](versioning.md) defines independent package versions and compatibility obligations.
+- [Publication](publication.md) defines the separately approved distribution procedure.
+- [Publication records](publications/index.md) retain dated verification of published combinations;
+  each package's history owns its changes and migrations.
 
-Independently installable packages own separate Semantic Versioning sequences and coordinate only
-where their dependency contracts require it. The complete
-cross-package posture is defined by [Versioning and Releases](versioning.md).
-The [Manual Publication](publication.md) record describes the separate human-controlled go/no-go,
-registry checks and post-publication verification; it is not a release trigger.
+## Ecosystem authority
 
-## External integration direction
-
-Lilium, Protea, Flora, and other consumers may integrate through optional adapters built against
-stable public Aster contracts. Portable Aster packages do not depend on those products or acquire
-their framework, component, DOM, or plugin semantics. Prospective integrations remain proposals
-until their activation conditions are met in [Future Capabilities](../future-capabilities.md).
 The [Garden Aster record](https://github.com/BlueLuscious/garden/blob/master/docs/en/products/aster/index.md)
-owns Aster's ecosystem identity and cross-product relationships; this project documentation
-remains authoritative for Aster's implemented boundaries and behaviour.
-Updates that affect both authorities use separate manually reviewed pull requests. Neither
-repository synchronises or mutates the other's documentation automatically.
+owns ecosystem identity and cross-product relationships. This repository owns implemented Aster
+behaviour. Updates to both authorities require separate manually reviewed changes; neither
+repository synchronises the other's prose automatically.
 
-## Documentation map
-
-- [Packages](../packages/index.md) own production responsibilities, APIs, workflows, quality, and
-  distribution evidence.
-- [Repository Tooling](../tooling/index.md) owns private verification and maintenance behaviour.
-- [Collections](../collections/index.md) own curatorial identity, design rules, provenance, and
-  review evidence.
-- [Future Capabilities](../future-capabilities.md) records proposals and activation triggers; it
-  does not define current product guarantees.
-- [Testing Policy](testing.md) defines transversal evidence roles, ownership, catalogue
-  independence, isolation, and repository verification.
-- [Versioning and Releases](versioning.md) owns cross-package maturity, compatibility, and release
-  coordination.
-- [Manual Publication](publication.md) owns the explicit release procedure and registry checks.
+Lilium, Protea, Flora and Studio integrations remain conditional
+[future capabilities](../future-capabilities.md), not dependencies or current product guarantees.

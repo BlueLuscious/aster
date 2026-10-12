@@ -27,11 +27,9 @@ launching a browser, or mutating process state.
 
 ## Planning flow
 
-`ReviewPlanQuery` delegates exact lookup to the shared catalogue subject selector also used by
-Export. This preserves provider filtering, unavailable-provider, not-found, ambiguity, collection
-membership, and canonical ordering semantics without a review-specific lookup implementation.
-Selection accepts metadata before invoking one exact icon or collection loader, and no plan is
-constructed until the complete definition agrees with that discovery evidence.
+`ReviewPlanQuery` consumes the same
+[catalogue subject selection](../catalogue/runtime/index.md#exact-definition-resolution) as Export.
+It constructs no plan until the complete selected definition agrees with accepted discovery.
 Each icon's markup comes directly from the public renderer, including its fixed root marker.
 Review does not infer or add an SVG marker; [SVG Render Result](../../svg/render/index.md) owns
 the output contract.
@@ -85,34 +83,16 @@ Expected lookup failures retain existing catalogue diagnostics. Public SVG failu
 existing `ASTER-CLI-007` render-failure family without leaking target details or a partial model.
 Unexpected exceptions remain contained by the command kernel.
 
-The standalone parser accepts `review icon` and `review collection`, with optional `--catalogue`,
-shell-owned `--output`, and shell-owned `--replace`. Output and replacement authority never enter
-the programmatic invocation or plan.
-
-Human execution publishes `index.html` beneath `aster-review` by default or beneath the explicit
-`--output` root. A new publication requires an absent target. `--replace` permits replacement only
-when the existing `index.html` carries the exact Aster review marker and remains byte-identical
-through the replacement preflight. JSON mode returns the host-neutral plan and cannot be combined
-with publication options.
-
-The publisher writes the complete new document to a private sibling stage. For replacement, it
-moves the unchanged owned target to a private backup, commits the complete stage, and then removes
-the backup. A commit failure restores the previous review before reporting a sanitised failure.
-Unrelated destinations, interrupted stages, existing backups, and changed ownership evidence are
-never removed implicitly.
+[Shell](../shell/index.md) owns review grammar and output modes. Human execution serialises and
+publishes the complete document; JSON returns only the plan. Destinations, `--replace`, staging,
+ownership checks and rollback belong to [Output](../shell/output/index.md#review-publication), not
+these contracts.
 
 ## Static lifecycle
 
 Review is intentionally a finite command. It acquires accepted provider state, plans one document,
 publishes it when requested, and terminates without retaining a watcher, network server, browser
 process, or source compiler. `--watch` is therefore not part of the accepted grammar.
-
-A persistent host could not safely refresh a catalogue by adding a query to its root ESM import:
-the package's statically imported child modules would remain in the process module cache. A future
-watch capability would need an isolated process or worker for each accepted rebuild, a stable
-signal that built catalogue artefacts are complete, and a loopback-only refresh host with explicit
-port, shutdown, cleanup, and failure-recovery policies. It must remain outside the headless command
-kernel and must not inspect or compile TypeScript sources.
 
 The supported authoring loop is consequently explicit: build the catalogue package, run
 `aster review ... --replace`, and refresh or reopen the resulting `index.html`. The static workflow

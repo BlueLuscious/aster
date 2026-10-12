@@ -2,93 +2,51 @@
 
 Status: **Accepted**
 
-The `glyphs` feature contains one canonical TypeScript module and one named immutable value per
-authored icon. The metadata manifest and exact loader map provide complete discovery without a
-package-wide definition aggregate. The current corpus contains all twenty-six definitions
-accepted for foundational Amellus membership. Seventeen definitions remain primitive-first. Nine
-use structured absolute path commands, combined with clearer primitives where appropriate, and
-contain no raw SVG path text.
+The `glyphs` feature owns one canonical editable TypeScript module and one named immutable value
+per independent icon. Each module constructs its definition through public Core and has no
+collection-owned state.
 
-Canonical source modules live under `src/glyphs/<initial>/<name>/` and use
-`<icon-slug>.icon.ts`. The physical directory and file role remain private: public imports use
-`@luscious-garden/aster-icons/<icon-slug>`. The [authoring workflow](../workflow.md) owns the exact
-base and rendition layouts.
+## Direct imports
 
-## Authored corpus
+```ts
+import { ArrowLeft } from "@luscious-garden/aster-icons/arrow-left";
+import { Search } from "@luscious-garden/aster-icons/search";
+```
 
-| Symbol | Identity | Primary contract coverage |
-| --- | --- | --- |
-| `ArrowDown` | `aster/arrow-down` | Vertical direction, diagonals, open terminals, and preserved RTL orientation. |
-| `ArrowLeft` | `aster/arrow-left` | Directionality, diagonals, open terminals, and RTL mirroring. |
-| `ArrowRight` | `aster/arrow-right` | Opposing logical direction, diagonals, open terminals, and RTL mirroring. |
-| `ArrowUp` | `aster/arrow-up` | Opposing vertical direction, diagonals, open terminals, and preserved RTL orientation. |
-| `Bell` | `aster/bell` | Curved enclosure, detached baseline, symmetry, and minimum-size spacing. |
-| `Camera` | `aster/camera` | Rounded structured enclosure, circular lens, and mixed geometry. |
-| `Check` | `aster/check` | Unequal diagonals and open-terminal rhythm. |
-| `Close` | `aster/close` | Diagonal symmetry and crossing strokes. |
-| `Cloud` | `aster/cloud` | Connected elliptical arcs, organic balance, and closed contour continuity. |
-| `Download` | `aster/download` | Vertical movement, open terminals, and receiving baseline. |
-| `Folder` | `aster/folder` | Asymmetric tab, rounded enclosure, and grouped-container metaphor. |
-| `Heart` | `aster/heart` | Symmetric cubic curves, organic tension, and pointed lower convergence. |
-| `Home` | `aster/home` | Primitive roof, structured enclosure, centred entrance, and negative space. |
-| `Info` | `aster/info` | Circular enclosure, minimum-size spacing, and detached detail. |
-| `Leaf` | `aster/leaf` | Organic cubic contour, internal vein, and deliberate asymmetry. |
-| `Lock` | `aster/lock` | Rounded rectangular body, curved shackle, and enclosed negative space. |
-| `Mail` | `aster/mail` | Rounded enclosure, diagonal rhythm, and message metaphor. |
-| `Menu` | `aster/menu` | Parallel rhythm, equal stroke extent, and open terminals. |
-| `Pause` | `aster/pause` | Parallel vertical symmetry and media distinction. |
-| `Play` | `aster/play` | Closed directional geometry and media distinction. |
-| `Plus` | `aster/plus` | Primary axes and equal stroke extent. |
-| `Search` | `aster/search` | Circle-line transition and diagonal handle. |
-| `Settings` | `aster/settings` | Highest primitive count and radial detail budget. |
-| `Star` | `aster/star` | Repeated points, polygon rhythm, and near-safe-area extents. |
-| `User` | `aster/user` | Circular head, curved shoulders, symmetry, and minimum-size recognition. |
-| `Warning` | `aster/warning` | Triangular enclosure, vertical detail, and minimum-size spacing. |
+A direct import evaluates its minimal generated facade, the selected definition and applicable
+shared authoring authorities, not sibling icons or a collection. The physical
+`src/glyphs/` layout remains private; [Catalogue Source Tooling](../../../tooling/catalogue/index.md#source-convention)
+owns filename, symbol and public-path validation.
 
-Every current icon:
+Renditions share a base name and add `identity.variant`. For example, an authored
+`camera@stippled` rendition under namespace `aster` would export `CameraStippled` through
+`@luscious-garden/aster-icons/camera/stippled`. A different concept such as `camera-retro`
+remains a separate name. These are naming examples, not currently distributed variants.
 
-- composes internal `asterOriginalIconAuthorship` and `amellusIconAuthoringProfile` authorities;
-- contains no node-specific paint or stroke exceptions;
-- uses geometry values on the provisional half-unit grid;
-- resolves [`LicenseRef-Aster-Artwork-1.0`](../../../../../packages/icons/ARTWORK-LICENCE.md)
-  artwork terms and BlueLuscious attribution;
-- is deeply frozen by Core;
-- remains below the provisional primitive and structured-command budgets;
-- exports through `@luscious-garden/aster-icons/<icon-slug>`.
+## Definition ownership
 
-Catalogue source synchronisation generates one manifest record, exact loader and public facade for
-each nested canonical `*.icon.ts` module. Complete-package consumers must deliberately iterate the
-loader map; metadata-only consumers use the manifest without evaluating definitions.
+An icon retains its identity, coordinate system, ordered geometry and resolved metadata as defined
+by [Core](../../core/index.md). Its module imports public Core and applicable
+[authoring inputs](../authoring/index.md), never a sibling definition, collection, renderer,
+manifest or Import.
 
-Only `ArrowLeft` and `ArrowRight` use the `mirror` RTL policy. The remaining identities preserve
-geometry in RTL because their metaphors do not represent logical horizontal movement.
+Intrinsic search tags belong to the icon. Collection aliases and categories, provenance records,
+review notes and computed metrics remain outside its portable definition. An icon can stand alone
+or join multiple collections without gaining reverse membership or being decorated by them.
 
-`AmellusCollection` explicitly retains all twenty-six definitions. Presence in the icon manifest
-provides package discovery only and never implies Amellus membership or membership in a future
-collection. Core and package tests prove that the same immutable definition may be retained by
-multiple independently constructed collections without acquiring mutable reverse links.
+The current definitions are curated in [Amellus](../../../collections/amellus/index.md).
+Its [inventory](../../../collections/amellus/inventory.md) owns the concept list, semantic order,
+search vocabulary and construction coverage; its
+[visual contract](../../../collections/amellus/design-contract.md) owns collection-specific
+acceptance. Package discovery does not itself grant membership.
 
-## Metadata Scope
+## Discovery and source maintenance
 
-The corpus retains display name, RTL policy, presentation policy, licence, attribution,
-deprecation state, replacement relationship semantics, and intrinsic search tags supported by
-Core.
+[Manifest](../manifest/index.md) exposes searchable records without evaluating artwork.
+[Dynamic Loaders](../dynamic/index.md) resolves selected canonical keys to the same objects as
+direct imports. Neither is a package-wide eager definition aggregate.
 
-Aliases, collection-specific categories, review notes, computed metrics, and provider search terms
-are not embedded. They require an opt-in catalogue consumer and must not become dependencies of an
-isolated icon module.
-
-## Isolation
-
-An icon module imports only public `@luscious-garden/aster-core` authority and its applicable internal authoring
-authorities. It does not import a collection, another icon, the root index, a manifest, a renderer,
-or Import. The [authoring boundary](../authoring/index.md) allows another visual family or artwork
-owner to supply different inputs without changing Amellus or original Aster authorship.
-
-Package ABI tests verify that direct imports and exact loaders preserve the same object identity,
-aggregate roots and internal subpaths are rejected, and emitted ESM and declarations remain host
-independent.
-
-Generated facades, manifests and loader maps are versioned, deterministically reconstructable
-outputs. Their ownership and drift checks are documented by
-[Catalogue Source Tooling](../../../tooling/catalogue/index.md).
+The [authoring workflow](../workflow.md) covers changes and review.
+[Catalogue Source Tooling](../../../tooling/catalogue/index.md) regenerates facades, manifests
+and loaders from canonical modules. [Quality](../quality.md) owns isolation and distribution
+evidence.

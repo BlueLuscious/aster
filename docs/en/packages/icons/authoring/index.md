@@ -2,58 +2,40 @@
 
 Status: **Accepted**
 
-The internal authoring feature owns two independent immutable inputs used by the current canonical
-icon corpus. Neither authority is a public package export or a universal requirement for every
-definition that may be distributed by `@luscious-garden/aster-icons`.
+The internal authoring feature supplies immutable inputs composed by canonical icon modules.
+Authorship and visual policy are independent; neither is a universal requirement for every
+definition distributed by Icons or a public package export.
 
-## Original Aster authorship
+## Original authorship
 
-`asterOriginalIconAuthorship` identifies artwork originally authored by Aster:
-
-| Field | Value |
+| Authority | Responsibility and composition |
 | --- | --- |
-| Technical namespace | `aster` |
-| Artwork licence | `LicenseRef-Aster-Artwork-1.0` ([terms](../../../../../packages/icons/ARTWORK-LICENCE.md)) |
-| Attribution | `BlueLuscious` |
+| `asterArtworkLicence` | Names `LicenseRef-Aster-Artwork-1.0`; reused by original icon and collection metadata. Complete terms belong to the [artwork licence](../../../../../packages/icons/ARTWORK-LICENCE.md). |
+| `asterOriginalIconAuthorship` | Carries namespace `aster`, that licence identifier and attribution `BlueLuscious`; composed into originally authored icon identities and metadata. |
 
-This authority contains no view box, presentation, geometry, tags, RTL policy or collection
-membership. A differently owned or licensed definition supplies its own namespace and effective
-legal metadata instead of using this object.
+Authorship contains no geometry, presentation, tags, RTL policy or membership. Other artwork
+supplies its own identity and effective legal metadata. Package inclusion or the namespace
+alone does not assign a licence.
 
-## Amellus visual profile
+## Amellus visual input
 
-`amellusIconAuthoringProfile` records the intrinsic visual input shared by icons currently curated
-for Amellus:
+`amellusIconAuthoringProfile` contains two deeply frozen values:
 
-| Field | Value |
-| --- | --- |
-| ViewBox | `0 0 24 24` |
-| Fill | `none` |
-| Stroke | `currentColor` |
-| Stroke width | `1.5` |
-| Line cap | `round` |
-| Line join | `round` |
-| Caller overrides | None |
-| Default size | `24` |
-| Minimum size | `16` |
+- `viewBox`, checked against Core `IconViewBox`;
+- `presentation`, checked against Core `IconPresentationPolicy`, including defaults,
+  authorised overrides and viewport guidance.
 
-The object is frozen and checked against public Core `IconViewBox` and
-`IconPresentationPolicy` contracts. It contains no namespace, licence, attribution, geometry,
-display name, tags, RTL policy, deprecation state or collection membership. Another visual family
-defines another narrow profile without modifying Amellus.
+Their accepted values implement the [Amellus visual contract](../../../collections/amellus/design-contract.md),
+which owns canvas, outline, size and direction rules. The profile contains no identity, legal
+metadata, nodes, display name, tags, RTL policy, deprecation or membership. Another family uses a
+different narrow profile without modifying Amellus or original authorship.
 
-## Composition boundary
+## Composition
 
-Applicable icon modules explicitly compose original Aster authorship with the Amellus profile when
-calling `Icon.define(...)`. Core validates, isolates and deeply freezes the resulting complete
-definition. A collection then retains that definition without applying, replacing or mutating
-either authority.
+An applicable `.icon.ts` module combines authorship and visual inputs when calling `Icon.define()`.
+Core validates, isolates and freezes the complete result. Collections then retain definitions
+without applying either profile at membership time.
 
-The Amellus collection records the same effective artwork licence and attribution for its own
-metadata. Both definitions reuse the licence identifier, while collection ownership and icon
-authorship remain independent legal responsibilities. The [ISC software notice](../../../../../packages/icons/LICENSE)
-and [artwork terms](../../../../../packages/icons/ARTWORK-LICENCE.md) have different scopes,
-including where an icon's geometry is embedded in a TypeScript module.
-
-No consumer may import either authoring object through a public subpath. Runtime consumers receive
-only the resolved values carried by an exported `IconDefinition`.
+A collection declares its own legal metadata for its curation; member artwork keeps its separate
+terms. The [rights boundary](../index.md#rights-boundary) links the software and artwork authorities.
+Runtime consumers receive resolved `IconDefinition` values, not these internal authoring objects.

@@ -14,7 +14,7 @@ tooling, collection, or [project documentation](project/index.md), not to this r
 | `P0 - Required` | Must be resolved before Aster expands the affected supported surface. |
 | `P1 - High` | Provides substantial user or maintenance value after its foundations are stable. |
 | `P2 - Conditional` | Proceeds only when measured evidence or a real consumer justifies it. |
-| `P4 - Deferred` | Explicitly postponed integration work with no current implementation commitment. |
+| `P4 - Deferred` | Explicitly postponed work with no current implementation commitment. |
 
 Priority expresses importance rather than implementation order. A capability still waits for its
 stated prerequisite and evidence even when it has a higher priority than unrelated work.
@@ -23,63 +23,65 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P0` | Consolidate canonical documentation before the next planned package publication. | The first stable GitHub Releases are closed and the documentation ownership review is accepted. |
-| 2 | `P2` | Automate reviewed version proposals. | The stable independently versioned package baseline exists and the automation boundary is accepted. |
-| 3 | `P2` | Consider published release history through the CLI. | The first stable release exists and published package versions can be mapped reliably to release notes. |
-| 4 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 5 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 6 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 7 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 8 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 9 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 11 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 12 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 13 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 14 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
-| 15 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
-| 16 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 17 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 18 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 1 | `P0` | Publish consolidated package READMEs and reviewed accumulated changes. | Integrate the verified work, manually assess each package and approve the selected archives separately. |
+| 2 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
+| 3 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 4 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 5 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 6 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 7 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 8 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 9 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 10 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 11 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 12 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 13 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
+| 14 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
+| 15 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 16 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 17 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 18 | `P4` | Consider a reusable versioning library. | Several independent projects demonstrate shared versioning needs and justify predefined or customisable policies. |
 
 ## Canonical documentation and follow-up publication
 
 Importance: **P0 - Required before the next planned package publication**
 
-After the first stable GitHub Releases, audit every authority under `docs/en/` for its purpose,
-ownership, audience and links. Give each fact one self-sufficient canonical home; replace
-repeated or stale explanations with concise links, including in package READMEs. Review the
-boundary between durable publication procedure and version-specific evidence instead of copying
-either into every package page.
+Documentation and README consolidation is integrated into `develop` with green CI; reviewed
+publication remains pending. [Project](project/index.md), [packages](packages/index.md),
+[collections](collections/index.md) and [tooling](tooling/index.md) own current explanations.
+[Private Import history](packages/import/releases/index.md) records source versions, not public
+publications. Approved public release notes and legal terms remain unchanged.
 
-Keep the existing public-package `releases.md` routes as short compatibility links because
-already-published README archives point to them. Future README archives should link directly to
-their package's canonical release index or version page. A live documentation correction does not
-change a previously published npm archive.
+The remaining distribution assessment compares accepted changes with the public `0.1.0` baseline:
 
-Give private `@luscious-garden/aster-import` the same navigable documentation structure:
-`packages/import/releases/index.md` and one page per source version, explicitly labelled as an
-internal version history. This does not make Import public or require an npm publication, GitHub
-Release or downloadable release asset.
+| Package | Distributed change | Compatibility and dependency consequence |
+| --- | --- | --- |
+| [Core](packages/core/index.md) | Focused construction example and canonical guide/history links. | Documentation-only patch classification; no runtime dependencies. |
+| [Icons](packages/icons/index.md) | Individual icon and collection examples, canonical guide/history links, the [loader-map absence correction](packages/icons/dynamic/index.md#arbitrary-key-access) and the [collection export migration](packages/icons/collections/index.md#export-naming-migration). | The public export and manifest symbol changes are breaking and require at least a minor increment; include the compatible loader fix and documentation in that review. The existing Core caret range needs no change for this work. |
+| [SVG](packages/svg/index.md) | Focused rendering example and canonical semantics/history links. | Documentation-only patch classification; the existing Core caret range needs no change for this work. |
+| [CLI](packages/cli/index.md) | Minimal commands, shell invocation guidance and programmatic/history links. | README changes are compatible, but the published `0.1.0` CLI's Icons range (`^0.1.0`) excludes the next incompatible Icons minor. Review that range and verify the selected combination; no new CLI runtime API is introduced by this work. |
+| [Import](packages/import/index.md) | Workspace-only inspection example and private history links. | Remains private; documentation alone requires no public version or dependency change. |
 
-Once the documentation is consistent, prepare a follow-up release for each public package whose
-distributed README changed, assigning its version under the [versioning policy](project/versioning.md).
-Publish only the affected packages after normal verification and explicit approval; do not advance
-all package versions merely because the repository documentation changed.
+The README work changes distributed contents in the four public packages; Icons additionally
+changes its runtime maps and collection export/manifest naming. Repository guides and the root
+README alone do not require package releases. Prepared versions, changes and dependency requirements
+belong to package-owned draft notes, linked through the [package guides](packages/index.md).
+Publication and archive approval remain pending.
 
-## Reviewed version proposals
+The four obsolete public-package history pages are removed; current READMEs link each package's
+`releases/index.md`. Old published READMEs still contain branch-based URLs to the removed routes,
+which will break when deletion reaches `master`. That loss is accepted. New archives cannot
+repair earlier README contents, and no compatibility aliases will be retained.
 
-Importance: **P2 - Conditional**
-
-The manually reviewed `0.1.0-rc.1` release establishes real package version, dependency and
-release-note evidence. This satisfies the evidence trigger but does not accept an automation
-boundary. Any future proposal must identify the affected packages, dependency-range consequences
-and compatibility rationale; commit scopes alone do not determine a version increment. Release
-notes and package versions remain independently reviewable, and npm publication always requires
-explicit human approval.
-
-This remains an optional follow-up to the proven manual candidate and stable release process,
-not a reason to introduce a release framework without an accepted automation boundary.
+Further accepted changes may accumulate on `develop` before archive approval. If the reviewed
+source changes, manually reassess each package's complete diff since its last publication under
+[versioning](project/versioning.md);
+the documentation-only patch classification does not select the final version or classify later
+runtime work. Existing published caret ranges admit compatible patch updates without forcing an
+otherwise unchanged dependant to release. Verify the final selected combination and use the
+[release-note convention](project/versioning.md#release-note-convention), preserving approved
+history. Publish only affected packages after separate approval of
+[promotion and archives](project/publication.md#branch-promotion).
 
 ## Coexisting API versions
 
@@ -104,7 +106,7 @@ or negotiation boundary and do not establish a need for coexisting package APIs.
 
 Importance: **P2 - Conditional**
 
-With the first stable npm release available, consider an explicit remote command such as
+After the reviewed follow-up publication, consider an explicit remote command such as
 `aster releases [core|icons|svg|cli]` for published package versions and their release details.
 It must not change the meaning or offline behaviour of local `aster version` requests.
 
@@ -436,3 +438,18 @@ missed ecosystem updates. Acceptable candidates are:
 Do not introduce submodules, direct cross-repository writes, shared mutable documentation, or
 credentials broader than one narrowly scoped GitHub App. Automation must preserve Garden's
 authority over ecosystem prose and Aster's authority over its implementation documentation.
+
+## Reusable versioning library
+
+Importance: **P4 - Deferred; last in the recommended sequence**
+
+Consider an independent development library only when several projects demonstrate shared
+versioning needs. Predefined or customisable policies could calculate independent package
+increments and dependency consequences from explicitly classified changes. Compatibility must
+not be inferred solely from commit titles; version proposals still require human review.
+
+Keep calculation separate from Git, registry and publication effects. Aster could consume the
+library as a `devDependency`, never a production dependency. Do not build a general framework or
+an Aster-only versioning assistant for this one repository. Manual assessment under the
+[versioning policy](project/versioning.md) remains sufficient; this proposal is not a release
+prerequisite and authorises no library implementation or automatic publication.

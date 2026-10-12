@@ -98,7 +98,6 @@ export class CatalogueSourceSynchroniser {
           kind: family.kind,
           sourceDirectory: family.sourceDirectory,
           sourceSuffix: family.sourceSuffix,
-          symbolSuffix: family.symbolSuffix,
           definitionFactory: family.definitionFactory,
           definitionModule: family.definitionModule,
           excludedDirectories: Object.freeze([...family.excludedDirectories]),

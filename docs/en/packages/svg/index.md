@@ -2,75 +2,35 @@
 
 Status: **Accepted**
 
-`@luscious-garden/aster-svg` owns framework-independent conversion of portable `@luscious-garden/aster-core` icon definitions into
-complete standalone SVG markup. It is a public target renderer with no DOM, browser, Node, Import,
-Lilium, or Protea authority.
+`@luscious-garden/aster-svg` converts portable Core definitions into deterministic standalone SVG
+markup. It is a target renderer, not an icon catalogue, source importer or DOM adapter.
 
-## Current boundary
+## Boundary
 
-The package implements deterministic definition-to-markup rendering through its public `Svg`
-object. Each call revalidates and isolates the supplied definition through Core, accepts the
-closed render options, resolves effective presentation, and returns complete markup atomically.
+The frozen `Svg` object renders one explicitly supplied definition and optional render options.
+Each synchronous call revalidates the definition through Core and returns one complete string or
+throws. No definition, render context or output survives as package-owned state between calls.
 
-The [release notes](releases/index.md) record this package's version history and migrations. The
-[project publication procedure](../../project/publication.md) owns registry
-checks and human approval.
+SVG depends only on the public Core root. It emits native ES2022 ESM with `sideEffects: false`;
+production declarations use no DOM, Node, browser or framework ambient types. Only the package
+root `"."` is public. The [API](api/index.md) owns its exact surface.
 
-## Features
+Target syntax, escaping, accessibility mapping and target failures belong here rather than in
+portable Core. Rendering grants no filesystem, parser, lifecycle or trusted DOM-insertion
+authority; hosts own any subsequent use of the string.
 
-| Feature | Responsibility |
+## Documentation
+
+| Page | Owns |
 | --- | --- |
-| [API](api/index.md) | Exposes the immutable `Svg` rendering authority. |
-| [Error](error/index.md) | Defines deterministic programming failures at the target boundary. |
-| [Render](render/index.md) | Defines and implements the atomic standalone SVG markup result. |
-| [Workflow](workflow.md) | Traces one definition and option value through the accepted runtime composition. |
-| [Quality](quality.md) | Records the accepted public boundary, distribution, consumers, and conformance evidence. |
-| [Quality Baseline](quality-baseline.md) | Defines reproducible rendering, performance, and distribution evidence. |
+| [API](api/index.md) | The public operation, capability contract and export boundary. |
+| [Render Result](render/index.md) | Complete SVG representation, attribute order, XML acceptance and geometry mapping. |
+| [Render Runtime](render/runtime/index.md) | Private composition, accepted context and local transaction stages. |
+| [Error](error/index.md) | Stable failure shape, definition-error translation and exception provenance. |
+| [Workflow](workflow.md) | Input-to-output hand-offs and consumer responsibilities. |
+| [Quality](quality.md) | Runtime, type, ABI and workflow conformance evidence. |
+| [Quality Baseline](quality-baseline.md) | Package scenarios, historical measurements and retained experiments. |
+| [Releases](releases/index.md) | Published versions and output migrations. |
 
-## Dependency boundary
-
-The package depends only on the public root of `@luscious-garden/aster-core`. It consumes `IconDefinition`,
-`IconRenderOptions`, and the frozen portable runtime authorities required to interpret them. It
-cannot import Core implementation paths, Import, a collection catalogue, a framework, or a
-platform host.
-
-The target remains native ES2022 ESM. Production compilation excludes DOM, browser, Node, and
-framework ambient types.
-
-## Package surface
-
-The approved package export is the root `"."`. It exposes:
-
-| Symbol | Kind | Responsibility |
-| --- | --- | --- |
-| `Svg` | Public immutable object | Renders one explicitly supplied definition and options. |
-| `SvgApi` | Public interface | Declares explicit definition-to-markup rendering. |
-| `SvgMarkupType` | Public type | Represents complete standalone SVG markup as a plain string. |
-| `SvgRenderError` | Public class | Reports deterministic definition, option, and representation failures. |
-
-No implementation subpath is public.
-
-## Package conformance
-
-The compiled-package ABI suite verifies:
-
-- the exact `Svg` and `SvgRenderError` root value surface;
-- import through the approved `@luscious-garden/aster-svg` root and rejection of implementation subpaths;
-- the exact root declaration and manifest export;
-- dependency on the public `@luscious-garden/aster-core` root only;
-- host-independent declarations without DOM, Node, framework, Import, or tooling references;
-- side-effect-free ESM without CommonJS compatibility output;
-- deterministic representative markup from an explicitly supplied definition;
-- import and rendering from an isolated consumer containing only publishable Core and SVG files.
-
-Runtime tests separately cover every supported primitive, the complete real Icons corpus,
-presentation, accessibility, direction, exact XML 1.0 acceptance, contextual escaping,
-invalid-target, and definition-immutability scenarios. Accepted decisions and bounded future
-change pressures are recorded in [Quality](quality.md). Detailed semantics remain canonical in
-[Render](render/index.md), [Workflow](workflow.md), [API](api/index.md), and
-[Error](error/index.md).
-
-SVG remains a dedicated package because target syntax, escaping, accessibility mapping and target
-failures do not belong in portable Core. The `Svg` name deliberately distinguishes rendering from
-Core's `Icon.define()` construction authority. A consumer needing SVG installs this second package;
-a browser consumer still owns its own safe parsing or insertion boundary.
+The [package dependency graph](../index.md) owns ecosystem relationships. The
+[project publication procedure](../../project/publication.md) owns registry checks and approval.

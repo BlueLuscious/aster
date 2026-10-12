@@ -93,8 +93,7 @@ imported by production code.
 Fixture tests create independent temporary workspaces and verify accepted and rejected compiler,
 dependency, package, parser, validation-layer, and tooling-isolation structures. The verifier does
 not need a built package or network access. Focused tests verify module extraction, graph ordering,
-and inspector orchestration through an explicit root. Integration fixtures preserve accepted and
-rejected compiler, package, module, and dependency outcomes.
+and inspector orchestration through an explicit root.
 
 Collection source placement is deliberately not architecture policy. Collections may be authored
 inside a package, acquired externally, or maintained outside the repository; only accepted product

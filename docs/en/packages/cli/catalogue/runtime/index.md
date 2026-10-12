@@ -54,16 +54,11 @@ explicit providers --> discover --> discovery normaliser --> accepted discoverie
                                                   immutable command payload
 ```
 
-The loader retains no cache or global registry. Provider order is normalised through
-locale-independent ASCII comparison. Discovery must be an exact plain data record containing
-dense ordinary icon and collection arrays. Nested identities and metadata follow the same
-own-data boundary, and all accepted values are reconstructed, ordered, and frozen under CLI
-ownership.
-
-Presentation, view boxes, nodes, and complete definitions are deliberately absent from discovery.
-The built-in factory derives memberships from manifest collection members; the generic discovery
-normaliser then verifies both directions independently. Search aliases and provider provenance
-remain CLI-owned catalogue data rather than Core metadata.
+The loader retains no cache or global registry. It applies
+[shared ASCII ordering and own-data inspection](../../shared/index.md), then coordinates the
+[provider lifecycle](../index.md#provider-lifecycle). Discovery contains no complete definitions;
+membership validation cross-checks its two directions without loading geometry. Provider search
+terms and provenance remain catalogue-owned data rather than Core metadata.
 
 One rejected provider prevents any partial payload from becoming observable. Rejected promises,
 accessors, proxies, malformed fields, duplicate identities, unknown members, and inconsistent
@@ -72,9 +67,8 @@ membership claims become sanitised diagnostics associated with the accepted prov
 ## Exact definition resolution
 
 Exact resolution begins only after metadata selection has resolved provider scope, identity, and
-ambiguity. An icon selection invokes `loadIcon()` once. A collection selection invokes
-`loadCollection()` once and uses the ordered `definition.members` carried by that collection; it
-does not invoke individual icon loaders.
+ambiguity. Loader counts and collection-member handling follow the
+[provider contract](../index.md#provider-lifecycle).
 
 Every loaded value crosses `Icon.define()` or `Collection.define()` before command state can retain
 it. A complete collection supplies its alias dictionary and derived member list; Core checks that

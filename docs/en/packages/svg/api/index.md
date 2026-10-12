@@ -2,19 +2,19 @@
 
 Status: **Accepted**
 
-The API feature exposes the immutable public target authority `Svg`.
+The API feature exposes the frozen `Svg` rendering object. It owns one stateless private renderer;
+all per-call data remains local.
 
 ## Contract
 
-| Contract | Responsibility | Relations |
+| Contract | Operation | Responsibility and relations |
 | --- | --- | --- |
-| `SvgApi` | Declares `render()` from one explicit definition and optional portable options to complete SVG markup. | Accepts Core `IconDefinition` and `IconRenderOptions`; returns `SvgMarkupType`. |
+| `SvgApi` | `render(definition: IconDefinition, options?: IconRenderOptions): SvgMarkupType` | Describes an explicit target capability; accepts Core values and returns the complete [render result](../render/index.md). |
 
-`SvgApi` introduces no target-extension object. Arbitrary attributes,
-events, DOM nodes, framework controllers, lifecycle values, and variant selection remain outside
-the accepted operation.
+`SvgApi` lets programmatic hosts describe that capability without depending on an implementation
+class. It admits no arbitrary attributes, events, DOM nodes, framework state or variant selection.
 
-The runtime value uses the object API:
+## Usage
 
 ```ts
 const markup = Svg.render(Camera, {
@@ -23,28 +23,20 @@ const markup = Svg.render(Camera, {
 });
 ```
 
-`Svg.render()` retains no definition, catalogue, mount, or lifecycle state.
+`Camera` is an explicitly supplied Core definition. [Core Render Options](../../core/render/index.md)
+owns portable option meanings; [SVG Render Result](../render/index.md) owns their target mapping.
 
-## Failure boundary
+## Package exports
 
-Invalid definitions, options, policy overrides, or target representations raise the public
-[`SvgRenderError`](../error/index.md) programming error. That document owns its complete stable
-observable shape and translation rules.
+Only the root `"."` export is supported. Runtime exports are `Svg` and `SvgRenderError`;
+type-only exports are `SvgApi` and `SvgMarkupType`. Renderer classes, normalisers, serialisers,
+schemas and the internal context are private, even when their emitted modules exist.
 
-The renderer either returns complete markup or throws before returning any output. Render-option
-programming errors do not use Import source diagnostics. A Core `IconDefinitionError` becomes an
-SVG-owned definition rejection with the same logical path and no copied Core message. Exceptions
-from caller-controlled reflection or execution propagate with their original identity unless they
-use the public `IconDefinitionError` identity, which is translated consistently regardless of
-where it was constructed.
+Repeated rendering, collection traversal, file output, streams and DOM insertion remain host
+compositions over the sole atomic `render()` operation.
 
-## Deliberate surface
+## Failure
 
-`SvgApi` remains public so programmatic hosts can describe the exact object capability without
-depending on its implementation class. `SvgMarkupType` names a complete target result across API,
-renderer, host, and documentation boundaries while remaining structurally a string; it does not
-brand safe HTML or authorise DOM insertion.
-
-No implemented consumer requires batch, fragment, stream, file, DOM, or extension operations.
-Repeated rendering and output commitment remain host compositions over the sole atomic
-`Svg.render()` operation.
+A call returns complete markup or throws without returning partial output.
+[`SvgRenderError`](../error/index.md) owns target programming failures and the precise translation
+boundary for Core errors. Import source diagnostics are a separate failure model.

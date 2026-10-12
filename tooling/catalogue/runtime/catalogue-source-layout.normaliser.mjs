@@ -41,7 +41,7 @@ export class CatalogueSourceLayoutNormaliser {
       variant,
       symbol: `${this.#pascalCase(name)}${
         variant === undefined ? "" : this.#pascalCase(variant)
-      }${family.symbolSuffix}`,
+      }`,
     });
   }
 

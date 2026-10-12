@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";
-import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";
+import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
 import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";
 
 const commandContext = Object.freeze({
@@ -12,6 +12,7 @@ const commandContext = Object.freeze({
 });
 
 test("exposes Amellus through every collection-neutral CLI workflow", async () => {
+  assert.equal(await AsterCatalogue.loadCollection(Amellus.identity), Amellus);
   const listed = await AsterCommands.execute(
     { command: "list", subject: "icons", collection: "amellus" },
     commandContext,
@@ -58,11 +59,16 @@ test("exposes Amellus through every collection-neutral CLI workflow", async () =
     ["camera"],
   );
   assert.equal(shown.payload.collection.identity.name, "amellus");
-  assert.equal(shown.payload.collection.icons.length, AmellusCollection.members.length);
+  assert.deepEqual(shown.payload.collection.metadata, Amellus.metadata);
+  assert.deepEqual(
+    shown.payload.collection.icons,
+    Amellus.members.map(({ identity }) => identity),
+  );
+  assert.equal(shown.payload.collection.icons.length, Amellus.members.length);
   assert.equal(JSON.stringify(shown.payload).includes("data-rendered-by"), false);
-  assert.equal(exported.payload.plan.artefacts.length, AmellusCollection.members.length);
+  assert.equal(exported.payload.plan.artefacts.length, Amellus.members.length);
   assert.equal(reviewed.payload.plan.document.kind, "collection");
-  assert.equal(reviewed.payload.plan.document.icons.length, AmellusCollection.members.length);
+  assert.equal(reviewed.payload.plan.document.icons.length, Amellus.members.length);
   assert.ok(exported.payload.plan.artefacts.every((artefact) =>
     artefact.content.match(/data-rendered-by="Aster"/gu)?.length === 1
   ));

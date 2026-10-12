@@ -158,12 +158,9 @@ The historical schema-version-four native ES2022 ESM measurement contained 294 f
 - exact Core, Icons, and SVG runtime dependencies;
 - the declared Node `>=24.10.0 <25` executable range.
 
-Package conformance admits only the emitted distribution, manifest, README, and licence. It packs
-Core, Icons, SVG, and CLI into local tarballs, installs them
-with strict engine checking and no network dependency, executes the linked `aster` binary, imports
-the root, and exercises equivalent standalone and programmatic workflows. Empty JavaScript modules
-for shell type-only sources are an observed TypeScript emission detail; removing them does not
-justify bundling or a second distribution format.
+[Package conformance](quality.md) checks packed installations and the linked executable.
+Empty JavaScript modules for shell type-only sources are an observed TypeScript emission detail;
+their removal alone does not justify bundling or another distribution format.
 
 ## Reproduction
 
@@ -183,24 +180,16 @@ Heap growth is a pressure indicator rather than an allocation counter. Processor
 load, storage, antivirus software, runtime revision, and operating system can affect measurements.
 Reports are comparable only under equivalent conditions.
 
-## Acceptance rules
+## Comparison rules
 
-Correctness takes precedence over performance. A claim requires three equivalent control and
-candidate reports, at least 10% improvement in its target scenario, and no unrelated regression
-above 5% without an accepted trade-off. Distribution growth requires one concrete responsibility.
-Runtime, type, ABI, architecture, documentation, workflow, packed-installation, and executable
-conformance remain authoritative.
+[Performance Tooling](../../tooling/performance/index.md#comparison-limits) owns shared sampling
+and environmental comparison limits. A CLI performance claim requires three equivalent control
+and candidate reports, at least 10% improvement in the target scenario and no unrelated regression
+above 5% without an accepted trade-off. Distribution growth requires a concrete responsibility.
+A CLI comparison must preserve structured results,
+diagnostics, ordering, SVG bytes, streams, statuses, paths, lazy loading and package ABI.
+Package-manager startup, installation, temporary-consumer copying and filesystem publication
+must not enter command-domain timing accidentally.
 
-Caches, ambient registries, mutable memoisation, hidden trust brands, weakened validation,
-pretrusted definitions, altered output, private public-package imports, and machine-specific CI
-thresholds are never benchmark shortcuts. Raw reports are disposable local evidence and are not
-committed.
-
-## Tooling boundary
-
-CLI owns its fixture factory, operation runner, cold-start policy, built-in command-evaluation
-probe and runner, composition factory, and command. The Node process adapter is shared private
-tooling because CLI and Icons evaluation evidence requires the same fresh-process capability. One
-generic runner measures synchronous or asynchronous scenario results sequentially while
-statistics, heap, clock, repository and distribution capabilities remain shared. Neither layer is
-shipped by CLI or imported by production packages.
+The tooling owner also documents runner composition; this page owns CLI workloads, historical
+findings and interpretation. Raw reports are disposable local evidence, not committed artefacts.

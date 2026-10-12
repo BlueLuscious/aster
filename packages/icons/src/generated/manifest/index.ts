@@ -385,7 +385,7 @@ export const AsterCollectionManifest: readonly CollectionManifestEntry[] = Objec
     identity: Object.freeze({
       name: "amellus",
     }),
-    symbol: "AmellusCollection",
+    symbol: "Amellus",
     metadata: Object.freeze({
       displayName: "Amellus",
       description: "Minimalist general-purpose outline icons for application interfaces.",

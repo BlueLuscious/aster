@@ -10,7 +10,9 @@ present results, or access the filesystem.
 
 `CommandLineParser` is the deterministic standalone dispatcher. It removes the shell-only
 `--json` flag, selects the command identity, and delegates to one explicit
-`ICommandLineCommandParser`. Duplicate parser identities fail during construction.
+`ICommandLineCommandParser`. That private contract pairs a command identity with
+`parse(tokens, json)`, returning `TParsedCommandLine`. Duplicate parser identities fail during
+construction.
 
 Dedicated parsers own the `export`, `review`, `list`, `search`, `show`, `help`, and `version` positional
 forms. `CommandLineOptionParser` owns common discovery filters, while
@@ -20,9 +22,10 @@ and ownership-gated replacement intent. `--replace` is a singleton flag and can 
 default or explicit review root. JSON cannot be combined with review publication options.
 `CommandLineError` carries stable parser evidence for shell diagnostic adaptation.
 
-`VersionCommandLineParser` accepts the plain CLI version, one of the public package selectors
-`core`, `icons`, `svg`, or `cli`, or the standalone `--all` option. `--json` may accompany any of
-these forms but is removed before invocation. `HelpCommandLineParser` accepts every registered
+`VersionCommandLineParser` adapts package selection, `--all`, `--deps` and `--location` into
+the existing structured `version` invocation; it adds no separate dependency command.
+Location is accepted only for absent or `cli` scope. The dispatcher removes `--json` before
+invocation. `HelpCommandLineParser` accepts every registered
 command name, including `review` and `version`, for command-specific help.
 
 No argument defaults to `help`. Unknown commands, duplicate singleton options, repeated `--json`,

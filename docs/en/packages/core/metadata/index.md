@@ -21,7 +21,7 @@ licensing when publishing artwork.
 
 | Type | Values | Responsibility |
 | --- | --- | --- |
-| `IconRtlPolicyType` | `mirror`, `preserve`, `manual` | Declares target-independent geometry behaviour for right-to-left output. |
+| `IconRtlPolicyType` | `mirror`, `preserve`, `manual` | Retained by `IconMetadata.rtl` and combined with render direction to determine target geometry behaviour. |
 
 The immutable `iconRtlPolicies` sequence is the feature-owned runtime authority for those values.
 `IconRtlPolicyType` derives its union from that sequence so compile-time narrowing and runtime
@@ -29,7 +29,8 @@ validation cannot drift independently. The frozen sequence is exported from the 
 target consumers that implement direction behaviour.
 
 Core stores direction policy but never observes ambient direction, transforms geometry, or infers
-semantics from an icon name.
+semantics from an icon name. [Core Render Options](../render/index.md#option-semantics) owns the
+combination of direction and policy; targets own its output representation.
 
 ## Runtime
 

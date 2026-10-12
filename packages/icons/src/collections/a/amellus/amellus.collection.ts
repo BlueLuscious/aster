@@ -30,7 +30,7 @@ import { Warning } from "../../../glyphs/w/warning/warning.icon.js";
 /**
  * @description Canonical Amellus collection containing the foundational general-purpose icon set.
  */
-export const AmellusCollection = Collection.define({
+export const Amellus = Collection.define({
   identity: {
     name: "amellus",
   },

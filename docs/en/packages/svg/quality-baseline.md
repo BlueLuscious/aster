@@ -4,7 +4,8 @@ Status: **Accepted**
 
 This document defines the evidence method used to compare `@luscious-garden/aster-svg` rendering and distribution
 changes. It is not a product benchmark, a hardware-independent promise, or a CI performance
-threshold. Current package findings remain in [SVG Quality](quality.md).
+threshold. [SVG Quality](quality.md) owns correctness and consumer conformance. Shared sampling
+and report aggregation are specified by [Performance Tooling](../../tooling/performance/index.md#structure).
 
 ## Representative evidence
 
@@ -101,6 +102,14 @@ medians across report medians:
 Heap growth is a pressure indicator, not an allocation counter. No memory claim or compatibility
 promise is inferred from these machine-specific values.
 
+## Distribution observation
+
+A separate recorded compiler inspection contained 22 JavaScript modules totalling 32,566 bytes
+and 22 declaration files totalling 9,388 bytes. This historical unminified observation is not a
+fixed package boundary or a claim about the current checkout. The command below reports current
+distribution counts and bytes; production format and dependencies belong to the
+[package boundary](index.md#boundary), not to benchmark measurements.
+
 ## Reproduction
 
 Run the development-only comparison from a clean workspace:
@@ -110,9 +119,10 @@ pnpm benchmark:svg
 ```
 
 The command builds Core and SVG, runs Node with explicit garbage-collection access, prints
-schema-version-two JSON, and writes no artefact. Reports include environment identity, methodology,
-timing, heap pressure, checksums, emitted modules and declarations, bytes, exports, and side-effect
-metadata.
+schema-version-two JSON, and writes no artefact. It reports the scenario matrix above and the
+distribution built from the current checkout. [Performance Tooling](../../tooling/performance/index.md)
+owns shared report fields, sampling, heap-pressure interpretation and environmental comparison
+limits.
 
 ## Acceptance rules
 
@@ -127,6 +137,6 @@ are machine-specific disposable evidence and are not committed.
 
 ## Tooling boundary
 
-SVG owns its fixture factory, scenario runner, composition factory, and command. Generic timing,
-heap, statistics, Node-host, repository, and distribution capabilities remain shared private
-tooling. Neither layer is shipped by SVG or imported by production packages.
+The [performance composition](../../tooling/performance/index.md#package-runtime-composition)
+owns private factories, runners and shared host capabilities. SVG's baseline selects only SVG
+fixtures and scenarios. None of that tooling ships in the package or enters production imports.
