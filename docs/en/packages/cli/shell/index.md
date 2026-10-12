@@ -9,21 +9,53 @@ catalogue queries, portable values, or provider normalisation.
 
 ## Installation and invocation
 
-An installed package exposes the `aster` binary. It may be installed as a project development
-dependency and invoked through the selected package manager:
+Both project and global installations expose the same `aster` binary and command grammar.
+Choose an installation according to how the terminal should find it; there is no separate
+`aster cli` command.
+
+### Project installation
+
+Install the CLI as a development dependency and invoke it from the project directory:
 
 ```sh
 pnpm add --save-dev @luscious-garden/aster-cli
 pnpm exec aster list catalogues
+pnpm exec aster version --location
 ```
 
 A project-only installation does not normally add `node_modules/.bin` to an ordinary PowerShell
 session's `PATH`. Use the package manager's execution command, a package script, or the explicit
-local binary path to run it without a global installation. Bare `aster` works only when the shell
-can already resolve that command. If the local binary is missing, `pnpm exec aster` may instead
-find another `aster` on `PATH`. `aster version --location` reports which CLI module ran; it does
-not select one. Package scripts can invoke a locally installed binary through the package
-manager's script `PATH` without making it globally available.
+local binary path to run it without a global installation. In PowerShell, an explicit path is
+`.\node_modules\.bin\aster.cmd version --location`. Package scripts can invoke `aster` through
+the package manager's script `PATH` without making it globally available.
+
+### Global installation
+
+Install the CLI globally to make bare commands available through the package manager's global
+executable directory:
+
+```sh
+pnpm add --global @luscious-garden/aster-cli
+aster list catalogues
+aster version --location
+```
+
+That directory must be on the terminal's `PATH`. If pnpm reports that its global executable
+directory is not configured, follow [pnpm setup](https://pnpm.io/10.x/cli/setup) and reopen the
+terminal before retrying. Installing or updating the global CLI does not install or update a
+project's CLI, and installing a project CLI does not replace the global one.
+
+### Executable selection
+
+[pnpm exec](https://pnpm.io/10.x/cli/exec) adds the project's `node_modules/.bin` to command lookup;
+bare `aster` uses the shell's existing search path and does not automatically prefer the project
+installation. If the local binary is missing, `pnpm exec aster` may instead find another `aster`
+on `PATH`. A configured search path can expose a non-global installation too; bare invocation
+alone is not proof that the CLI is global.
+
+`version --location` reports the CLI module that actually ran and its relationship to the
+project's direct CLI, without selecting or forwarding to another executable. See
+[Version queries](#version-queries) for project package inspection versus executed-CLI evidence.
 
 ## Command grammar
 
