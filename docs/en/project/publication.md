@@ -139,4 +139,4 @@ package's release index. Preserve partial state for inspection rather than repla
 ## Third candidate artefact
 
 CLI `0.1.0-rc.3` delegates its historical archive evidence to the
-[third candidate publication record](publications/0.1.0-rc.3.md).
+[third candidate publication record](publications/2026-10-07.md).

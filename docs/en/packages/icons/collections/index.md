@@ -54,7 +54,7 @@ module conventions and synchronisation;
 
 ## Export-naming migration
 
-**Breaking change prepared for [0.2.0](../releases/0.2.0.md); not yet published.** Collection
+**Breaking change published in [0.2.0](../releases/0.2.0.md).** Collection
 value exports no longer carry the role suffix. Published Icons `0.1.0` and its candidates
 retain their original exports; the [published history](../releases/index.md#published) owns
 publication evidence.
