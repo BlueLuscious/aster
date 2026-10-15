@@ -74,6 +74,28 @@ or allocation benefit follows from this contract alone; the
 [comparison baseline](../../quality-baseline.md) owns measurement evidence. Collection's additional
 [retention policy](../../collection/index.md#runtime) remains separate from recognition.
 
+### Preparing external definitions
+
+For a compatible definition received as `externalDefinition`, callers can retain the result of
+one explicit construction:
+
+```ts
+import { Icon } from "@luscious-garden/aster-core";
+
+const prepared = Icon.define(externalDefinition);
+const sameDefinition = Icon.define(prepared) === prepared; // true
+```
+
+The initial call still pays complete validation and construction when the input is unknown.
+Reusing `prepared` permits recognition by this Core copy; repeatedly passing the original does
+not. This is optional preparation, not a new operation or a requirement to accept compatible data.
+
+A downstream consumer benefits only if it uses the same loaded Core copy that constructed
+`prepared`. An application-level import is not proof that its renderer resolves that same copy;
+calling the producer's Core again does not establish recognition in another copy. Consumers still
+accept compatible unknown definitions through full validation. Later changes to mutable original
+input require another construction; preparation is an isolated snapshot, not a live input cache.
+
 ## Path-command scope
 
 Core validates structured absolute path commands and contour sequencing before construction. It

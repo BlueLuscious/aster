@@ -5,7 +5,7 @@ Status: **Accepted**
 This page owns conformance evidence for `@luscious-garden/aster-svg`.
 [API](api/index.md) specifies the public surface; [Render](render/index.md) specifies output;
 [Error](error/index.md) specifies failures. [Quality Baseline](quality-baseline.md) owns
-measurements, distribution snapshots and the retained escaping experiment.
+measurements, distribution snapshots and the escaping and Core-acceptance comparisons.
 
 ## Evidence coverage
 
@@ -42,7 +42,9 @@ to one call. The [escaping comparison](quality-baseline.md#retained-experiment) 
 single-pass algorithm, not weakened Core acceptance, an SVG-owned trust shortcut, result caching
 or output streaming. Definition reuse belongs solely to the linked
 [Core acceptance contract](../core/definition/runtime/index.md#recognised-outputs); correctness
-evidence does not establish a performance improvement.
+evidence alone does not establish a performance improvement. The
+[acceptance comparison](quality-baseline.md#canonical-output-acceptance-comparison) measures complete
+rendering while preserving unknown-input validation and the renderer's option/error boundaries.
 
 No implemented consumer requires a second public renderer operation. New batch, fragment, file,
 DOM or extension capabilities require their own ownership and failure contract under the

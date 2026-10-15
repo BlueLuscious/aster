@@ -26,7 +26,7 @@ outside the validation guarantee; a benchmark does not replace either class of c
 - SVG revalidates definitions and consumes portable vocabularies without importing Core internals.
 - Import constructs accepted portable values through the public root while keeping source
   diagnostics and host operations outside Core.
-- CLI isolates provider values through Core; its packed-consumer suite also compiles concrete
+- CLI accepts provider values through Core; its packed-consumer suite also compiles concrete
   collection aliases, rejects mutation and verifies retained icon references and ordered members.
 - Repository workflow tests exercise TypeScript-first authoring, Import equivalence, collection
   composition and SVG hand-off through built public package roots.
@@ -48,7 +48,9 @@ of exact constructed outputs. Unknown members still require complete reconstruct
 The [measured matcher investigation](quality-baseline.md#attributed-investigation-outcome) did not
 justify replacing that fallback. Frozen-only shortcuts, public branding, logical-identity registries
 and mutable memoisation do not establish equivalent evidence. Correctness coverage of recognition
-does not by itself establish a performance improvement.
+does not by itself establish a performance improvement; the
+[recognition comparison](quality-baseline.md#canonical-output-recognition-comparison) owns measured
+gains and the accepted unknown-input costs.
 
 No implemented workflow requires incremental membership mutation or definition instances with
 behaviour. Any API expansion must establish ownership, immutable return, ordering, duplicate and

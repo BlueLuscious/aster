@@ -31,6 +31,11 @@ Static types and freezing alone grant no bypass. SVG retains no definition or ma
 [SVG Error](../../error/index.md) owns translation of Core failures during this stage; no other
 stage is inside the definition-translation catch boundary.
 
+Callers may retain a [prepared external definition](../../../core/definition/runtime/index.md#preparing-external-definitions)
+for repeated use. Recognition then depends on sharing the renderer's loaded Core copy; merely
+importing Core in the application does not prove that relationship. No preparation is required
+for compatible unknown values to remain admissible, and render options are still checked each time.
+
 ## Option acceptance
 
 The normaliser accepts an omitted value or an ordinary/null-prototype record. It inspects own
