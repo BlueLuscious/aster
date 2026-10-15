@@ -3,7 +3,7 @@
 Status: **Accepted**
 
 The API feature exposes frozen construction objects, each owning one private factory instance.
-There is no instance registry or incremental mutation API.
+There is no logical-identity registry or incremental mutation API.
 
 ## Contracts and values
 
@@ -14,8 +14,10 @@ There is no instance registry or incremental mutation API.
 
 TypeScript guides authoring; each factory validates unknown runtime input rather than treating an
 annotation as evidence. Successful calls return deeply frozen plain data. Equal authored input
-does not create a shared registry entry: separate construction calls produce independent results,
-except for canonical icon references deliberately retained by collections.
+does not create a shared logical-identity entry: fresh authored inputs produce independent results.
+Passing an exact output recognised by the same Core copy returns that output unchanged. The
+[definition runtime](../definition/runtime/index.md#recognised-outputs) owns recognition and
+unknown-input handling; [Collection](../collection/index.md#runtime) owns additional leaf retention.
 
 ## Usage
 

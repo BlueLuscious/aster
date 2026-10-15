@@ -63,15 +63,20 @@ canonical dictionary during construction.
 | --- | --- | --- |
 | `CollectionDefinitionFactory` | Validates the collection root and composes membership, identity, and metadata into one frozen result. | Delegates keyed and ordered membership to `CollectionMembershipNormaliser`. |
 | `CollectionMembershipNormaliser` | Validates aliases, reconstructs or retains icons, rejects duplicate identities, derives frozen views, and verifies any submitted `members`. | Composes `IconValueValidator`, `IconDefinitionFactory`, and `CanonicalIconMatcher`. |
-| `CanonicalIconMatcher` | Compares a frozen authored graph with its isolated canonical reconstruction before identity retention. | Used only after successful icon reconstruction. |
+| `CanonicalIconMatcher` | Proves canonical graph equivalence when accepted leaf references differ. | Used after Core acceptance; never replaces unknown-input validation. |
 | `CollectionIdentityNormaliser` | Validates optional namespace and required canonical collection name. | Uses the shared canonical slug authority. |
 | `CollectionMetadataNormaliser` | Validates descriptive metadata, unique tags, and licensing relationships. | Produces frozen `CollectionMetadata`. |
 
-Canonical deeply frozen icons are retained by object identity only when their complete graph has
-canonical data-property semantics, canonical key order and values, matching prototypes, and no
-cycles or repeated aliases. Every other valid icon input uses the isolated canonical
+Outputs [recognised by Core](../definition/runtime/index.md#recognised-outputs) are retained directly.
+Unknown icons are fully reconstructed first. They retain their authored reference only when their
+complete graph has canonical data-property semantics, canonical key order and values, matching
+prototypes, and no cycles or repeated aliases. Every other valid icon input uses the isolated canonical
 reconstruction. This permits the same canonical icon to belong to multiple collections without
 cloning or shared mutable state.
+
+Retaining a compatible unknown frozen icon does not register its original reference as a locally
+constructed output. Complete-definition revalidation still checks the member sequence; identical
+accepted references need no graph comparison, while different references require equivalence.
 
 Duplicate logical icon identity within one collection is rejected. Core does not require
 collection identities to be globally unique because it owns no registry.

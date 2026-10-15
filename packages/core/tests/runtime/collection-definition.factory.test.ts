@@ -123,6 +123,22 @@ test("isolates mutable icon input across both membership views", () => {
   assert.ok(Object.isFrozen(retained.nodes));
 });
 
+test("shares recognition of collection-created leaves with the public Icon API", () => {
+  const authored = structuredClone(icon());
+  const accepted = collection("constructed-member", { selected: authored });
+  const retained = accepted.icons.selected;
+
+  assert.notEqual(retained, authored);
+  assert.equal(Icon.define(retained), retained);
+  assert.equal(accepted.members[0], retained);
+
+  const repeated = Collection.define(accepted);
+  assert.notEqual(repeated, accepted);
+  assert.notEqual(repeated.icons, accepted.icons);
+  assert.notEqual(repeated.members, accepted.members);
+  assert.equal(repeated.members[0], retained);
+});
+
 test("normalises literal metadata and freezes mutable authored member values", () => {
   const source = icon();
   const authored = {

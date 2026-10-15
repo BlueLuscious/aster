@@ -15,7 +15,7 @@ before timing begins, while every complete markup result enters a deterministic 
 
 | Workload | Pressure represented |
 | --- | --- |
-| Core revalidation reference | Public reconstruction necessarily performed at the start of every SVG render. |
+| Core revalidation reference | Public Core acceptance invoked at the start of every SVG render. |
 | Minimal icon | Fixed option, presentation, node, escaping, and complete-document cost. |
 | Every primitive | Node dispatch, complete presentation, geometry attributes, and document composition. |
 | Fixed corpus | Round-robin rendering across sixteen canonical synthetic definitions. |
@@ -23,10 +23,60 @@ before timing begins, while every complete markup result enters a deterministic 
 | Authorised overrides | Complete option normalisation and presentation override precedence. |
 | RTL mirroring | Direction policy, translation, title ordering, and generated group composition. |
 | Escaping pressure | XML validation and replacement-heavy attribute and text values. |
-| Dense point sequence | Core point reconstruction, coordinate conversion, flattening, and large markup composition. |
+| Dense point sequence | Definition acceptance, coordinate conversion, flattening and large markup composition. |
 
-The Core reference is attribution evidence rather than an SVG product operation. It never grants
-SVG permission to bypass revalidation or trust canonical object provenance.
+The Core reference is attribution evidence rather than an SVG product operation. It grants no
+SVG-owned bypass: [Core](../core/definition/runtime/index.md#recognised-outputs) decides whether
+to recognise an output or fully reconstruct unknown data. The canonical-output comparison below
+measures that distinction; earlier comparisons retain their original implementation scope.
+
+## Canonical-output acceptance comparison
+
+The five matched source-revision pairs used the
+[Core comparison conditions](../core/quality-baseline.md#canonical-output-recognition-comparison)
+and unchanged schema-version-two SVG workloads. Definitions/options were prepared outside timing;
+every complete markup result entered the checksum. Values are medians of five report medians,
+with their minimum/maximum, in ns per public operation. These measure source, not named npm releases.
+
+| Workload | Control median (range) | Recognition median (range) |
+| --- | ---: | ---: |
+| Core acceptance reference | 6,941 (6,786-7,071) | 24 (21-27) |
+| Minimal icon | 12,829 (12,217-12,989) | 6,413 (6,294-6,488) |
+| Every primitive | 60,780 (58,127-70,169) | 32,965 (31,919-35,322) |
+| Fixed corpus | 19,345 (18,426-22,698) | 10,006 (9,769-11,829) |
+| Semantic accessibility | 15,281 (14,718-17,120) | 9,907 (9,133-11,252) |
+| Authorised overrides | 15,869 (15,574-17,381) | 5,891 (5,687-6,159) |
+| RTL mirroring | 14,541 (14,184-14,996) | 5,898 (5,718-6,303) |
+| Escaping pressure | 16,478 (15,210-16,680) | 7,131 (6,947-7,427) |
+| Dense point sequence | 147,000 (142,190-158,338) | 50,642 (46,702-52,742) |
+
+Minimal and dense complete rendering improved by 50.01% and 65.55%, with the same direction in
+every pair. Both exceed 10% and twice their respective control spreads of 6.02% and 10.99%.
+The attribution-only Core reference is not an SVG result. Options, XML validation, geometry
+serialisation and complete document construction still execute on every render. SVG production
+code did not change; Core's recognition decision removes repeated reconstruction of its own output.
+
+Unknown input is not covered by those own-output gains. Supplemental matched loops over equal
+foreign/JSON geometry still performed full Core acceptance. Small foreign rendering rose from
+13,148 to 13,586 ns, within 7.89% control variation; dense foreign rendering changed from 149,940
+to 140,287 ns, within 15.98% variation. No foreign-input speed-up is established. Core owns its
+[construction trade-offs](../core/quality-baseline.md#unknown-input-costs); optional preparation
+belongs to its [runtime guide](../core/definition/runtime/index.md#preparing-external-definitions),
+not an SVG cache or a second renderer API.
+
+The emitted SVG distribution stayed at 22 JavaScript modules/32,892 bytes and 22 declarations/
+9,388 bytes, with unchanged exports, dependencies and side-effect metadata. Sampled heap growth
+fell from 844 to 219 bytes/op for minimal rendering but rose from 6,603 to 7,663 for the dense case.
+These mixed deltas establish neither exact allocations nor a general memory-reduction claim.
+
+Fresh-process controls under the linked comparison conditions gave first own-input rendering
+medians of 0.882 -> 0.828 ms and prepared-JSON rendering of 1.792 -> 1.822 ms. Complete JSON-process
+time rose 7.49%, within a 19.15% control spread and with mixed batch directions. Startup differences
+are not established as material changes; these are not filesystem cold-cache measurements.
+
+Use the [SVG command](#reproduction) for the main matrix on both source revisions. Supplemental
+foreign/JSON and first-use controls are separate comparisons, not additional standard report
+scenarios or CI timing assertions. Earlier escaping findings below remain historical evidence.
 
 ## Initial evidence and attribution
 
@@ -131,9 +181,10 @@ candidate reports, at least 10% improvement in its target scenario, and no unrel
 above 5% without an accepted trade-off. Distribution growth requires one concrete responsibility.
 Runtime, type, ABI, architecture, documentation, and workflow conformance remain authoritative.
 
-Caches, registries, mutable memoisation, pretrusted definitions, output streaming, weakened
-validation, and private package imports are never benchmark shortcuts. Raw reports and CPU profiles
-are machine-specific disposable evidence and are not committed.
+The measured package implementation must run unchanged: no benchmark-only caches, registries,
+pretrusted inputs, mutable memoisation, output streaming, weakened validation or private package
+imports. Core's production recognition policy is part of the measured public operation, not a
+fixture-owned bypass. Raw reports and CPU profiles are disposable evidence and are not committed.
 
 ## Tooling boundary
 

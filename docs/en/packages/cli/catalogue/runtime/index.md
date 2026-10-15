@@ -16,7 +16,7 @@ None of these classes is exported through a package subpath.
 | `CatalogueDiscoveryMetadataNormaliser` | Accepts lightweight icon metadata and descriptive collection metadata. |
 | `CatalogueDiscoveryMembershipValidator` | Validates bidirectional agreement between icon memberships and collection members. |
 | `CatalogueDiscoverySelector` | Resolves exact metadata records with provider filtering and ambiguity handling. |
-| `CatalogueDefinitionResolver` | Invokes one selected exact loader, reconstructs its result through Core, and returns complete immutable command evidence. |
+| `CatalogueDefinitionResolver` | Invokes one selected exact loader, accepts its result through Core, and returns complete immutable command evidence. |
 | `CatalogueDefinitionConsistencyValidator` | Verifies loaded identity, metadata, and collection membership against accepted discovery evidence. |
 | `CatalogueIdentityFormatter` | Formats portable identities for exact matching and ordering. |
 | `CatalogueQueryScope` | Applies shared provider, collection, membership, and tag filters. |
@@ -31,7 +31,7 @@ show, and later exact selection; it is not a public provider result.
 
 `TCatalogueDiscoverySelection` retains one exact provider, requested identity, selected record, and
 the discovery icon records required by that subject. It contains no complete definition.
-`TCatalogueSelection` is the downstream immutable result containing the isolated definition and
+`TCatalogueSelection` is the downstream immutable result containing the accepted definition and
 canonically ordered icon evidence required by Export or Review.
 Each `TCatalogueSelectedIcon` pairs one accepted Core `IconDefinition` with its independent,
 canonically ordered collection memberships inside that selection; it does not alter the definition.

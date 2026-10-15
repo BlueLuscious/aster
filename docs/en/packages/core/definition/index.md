@@ -6,7 +6,7 @@ The definition feature composes identity, coordinate space, ordered nodes, and r
 into one render-neutral icon value.
 
 Its implemented [immutable construction flow](runtime/index.md) validates authored objects without
-retaining a catalogue or identity registry.
+retaining a catalogue or logical-identity registry.
 
 ## Contracts
 

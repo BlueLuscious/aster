@@ -10,10 +10,12 @@ Individual feature pages own field rules and canonical representations.
 `Icon.define(authoredDefinition)` starts one synchronous transaction:
 
 ```text
-authored value
+authored or canonical value
     |
     v
 Icon API -> IconDefinitionFactory
+    |
+    +--> recognised output: return the same definition
     |
     +--> closed definition shape
     +--> identity and viewBox
@@ -24,10 +26,11 @@ Icon API -> IconDefinitionFactory
 isolated deeply frozen IconDefinition
 ```
 
-The [definition runtime](definition/runtime/index.md) composes those normalisers and reconstructs
-every retained object and sequence. [Shared data acceptance](shared/index.md#data-acceptance)
-applies before feature-specific normalisation. Invalid input returns no partially constructed
-value; numeric, textual, geometric and metadata constraints remain with their
+The [definition runtime](definition/runtime/index.md) owns output recognition and composes those
+normalisers. Unknown input reconstructs every retained object and sequence;
+[shared data acceptance](shared/index.md#data-acceptance) applies before feature-specific
+normalisation. Invalid input returns no partially constructed value; numeric, textual, geometric
+and metadata constraints remain with their
 [feature owners](index.md#documentation).
 
 The [API example](api/index.md#usage) demonstrates complete authoring. Construction is necessary
@@ -46,8 +49,8 @@ authored collection
 Collection API -> CollectionDefinitionFactory
     |
     +--> closed collection shape
-    +--> validate aliases and reconstruct every icon
-    +--> compare canonical graphs before reference retention
+    +--> validate aliases and accept each icon through Core
+    +--> retain recognised outputs or compare validated unknown graphs
     +--> reject duplicate identities
     +--> freeze icons and derive members once
     +--> check submitted members during complete-definition revalidation
@@ -81,5 +84,6 @@ caller-controlled traps. Such execution failures propagate without being relabel
 [`IconDefinitionError`](shared/index.md#error).
 
 Acquire and decode untrusted bytes in an explicit host or source pipeline before construction.
-Core owns no filesystem, network, DOM, process, parser or global identity state. Importing the
-package performs no registration or host initialisation.
+Core owns no filesystem, network, DOM, process, parser or global identity registry. Importing the
+package performs no global registration or host initialisation. Private weak reference recognition
+belongs to the [definition runtime](definition/runtime/index.md#recognised-outputs).

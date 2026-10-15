@@ -35,6 +35,9 @@ The collection exposes the same definition through `InterfaceIcons.icons.disc` a
 `members` view. [Construction](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/workflow.md)
 owns validation and immutability guarantees.
 
+For repeated use, construct once and share the returned definition; see
+[definition reuse](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/definition/runtime/index.md#reusing-definitions).
+
 ## Documentation
 
 - [Package guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/index.md): exports, contracts and feature guides.

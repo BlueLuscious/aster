@@ -5,9 +5,11 @@ import type { IconDefinition } from "../../definition/contracts/index.js";
  */
 export interface IconApi {
   /**
-   * @description Validates authored data and creates an isolated deeply frozen definition.
-   * @param definition - Authored render-neutral definition object.
-   * @returns Canonical deeply frozen icon definition.
+   * @description Reuses a recognised canonical output or validates and isolates authored data.
+   * @remarks Only exact outputs constructed by the same loaded Core copy are recognised.
+   * Unknown values, including compatible foreign outputs, still require complete validation.
+   * @param definition - Authored render-neutral data or an existing canonical definition.
+   * @returns Recognised input or newly constructed deeply frozen icon definition.
    */
   define(definition: IconDefinition): IconDefinition;
 }
