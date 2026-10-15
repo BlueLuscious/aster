@@ -130,9 +130,9 @@ export class SvgBaselineRunner {
   }
 
   /**
-   * @description Measures the public Core reconstruction necessarily performed by SVG rendering.
+   * @description Measures the public Core acceptance invoked by SVG rendering.
    * @param {number} iterations - Number of public API operations to execute.
-   * @returns {number} Deterministic checksum consuming reconstructed definitions.
+   * @returns {number} Deterministic checksum consuming accepted definitions.
    */
   #revalidate(iterations) {
     let checksum = 0;

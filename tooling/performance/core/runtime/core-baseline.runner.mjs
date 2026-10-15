@@ -147,7 +147,7 @@ export class CoreBaselineRunner {
   }
 
   /**
-   * @description Reconstructs canonical icons from the representative collection.
+   * @description Accepts prepared icon inputs repeatedly through the public Core API.
    * @param {readonly import("@luscious-garden/aster-core").IconDefinition[]} definitions - Prepared equivalent icon inputs.
    * @param {number} iterations - Number of public API operations to execute.
    * @returns {number} Deterministic checksum preventing discarded scenario results.

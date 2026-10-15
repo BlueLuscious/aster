@@ -8,7 +8,7 @@ markup. It is a target renderer, not an icon catalogue, source importer or DOM a
 ## Boundary
 
 The frozen `Svg` object renders one explicitly supplied definition and optional render options.
-Each synchronous call revalidates the definition through Core and returns one complete string or
+Each synchronous call accepts the definition through Core and returns one complete string or
 throws. No definition, render context or output survives as package-owned state between calls.
 
 SVG depends only on the public Core root. It emits native ES2022 ESM with `sideEffects: false`;

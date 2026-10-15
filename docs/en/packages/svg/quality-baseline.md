@@ -15,7 +15,7 @@ before timing begins, while every complete markup result enters a deterministic 
 
 | Workload | Pressure represented |
 | --- | --- |
-| Core revalidation reference | Public reconstruction necessarily performed at the start of every SVG render. |
+| Core revalidation reference | Public Core acceptance invoked at the start of every SVG render. |
 | Minimal icon | Fixed option, presentation, node, escaping, and complete-document cost. |
 | Every primitive | Node dispatch, complete presentation, geometry attributes, and document composition. |
 | Fixed corpus | Round-robin rendering across sixteen canonical synthetic definitions. |
@@ -23,10 +23,12 @@ before timing begins, while every complete markup result enters a deterministic 
 | Authorised overrides | Complete option normalisation and presentation override precedence. |
 | RTL mirroring | Direction policy, translation, title ordering, and generated group composition. |
 | Escaping pressure | XML validation and replacement-heavy attribute and text values. |
-| Dense point sequence | Core point reconstruction, coordinate conversion, flattening, and large markup composition. |
+| Dense point sequence | Definition acceptance, coordinate conversion, flattening and large markup composition. |
 
-The Core reference is attribution evidence rather than an SVG product operation. It never grants
-SVG permission to bypass revalidation or trust canonical object provenance.
+The Core reference is attribution evidence rather than an SVG product operation. It grants no
+SVG-owned bypass: [Core](../core/definition/runtime/index.md#recognised-outputs) decides whether
+to recognise an output or fully reconstruct unknown data. The dated comparisons below predate
+that recognition behaviour and establish no measurement of its benefit.
 
 ## Initial evidence and attribution
 

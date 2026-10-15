@@ -114,7 +114,7 @@ export class CollectionMembershipNormaliser {
 
       if (
         member === undefined
-        || !this.#canonicalIconMatcher.matches(candidate, member)
+        || (candidate !== member && !this.#canonicalIconMatcher.matches(candidate, member))
       ) {
         throw new IconDefinitionError(
           `${path}[${index}]`,
@@ -125,13 +125,18 @@ export class CollectionMembershipNormaliser {
   }
 
   /**
-   * @description Revalidates one icon and retains an already deeply frozen canonical value.
+   * @description Accepts an icon and retains recognised or validated equivalent canonical data.
    * @param value - Candidate portable icon.
    * @returns Canonical retained or isolated icon definition.
    */
   #normaliseIcon(value: unknown): IconDefinition {
-    const isolated = this.#iconFactory.create(value);
-    return this.#canonicalIconMatcher.matches(value, isolated) ? value : isolated;
+    const accepted = this.#iconFactory.create(value);
+
+    if (value === accepted) {
+      return accepted;
+    }
+
+    return this.#canonicalIconMatcher.matches(value, accepted) ? value : accepted;
   }
 
   /**

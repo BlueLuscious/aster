@@ -277,6 +277,42 @@ test("is deterministic and never mutates caller or accepted definitions", () => 
   assert.ok(Object.isFrozen(Svg));
 });
 
+test("renders recognised, decoded and frozen copied definitions equivalently", () => {
+  const definition = createDefinition();
+  const options = { size: 32, label: "Canonical shape" };
+  const expected = Svg.render(definition, options);
+  assert.equal(Icon.define(definition), definition);
+
+  for (const candidate of [
+    definition,
+    structuredClone(definition),
+    Object.freeze({ ...definition }),
+  ]) {
+    const before = JSON.stringify(candidate);
+    assert.equal(Svg.render(candidate, options), expected);
+    assert.equal(Svg.render(candidate, options), expected);
+    assert.equal(JSON.stringify(candidate), before);
+    expectRenderError(() => Svg.render(candidate, { size: 0 }), "options.size");
+  }
+});
+
+test("rejects unknown frozen invalid data and accessors without trusting canonical children", () => {
+  const definition = createDefinition();
+  const invalid = Object.freeze({ ...definition, nodes: Object.freeze([]) });
+  expectRenderError(() => Svg.render(invalid), "definition.nodes");
+
+  let getterCalls = 0;
+  const accessor = Object.freeze(Object.defineProperty({ ...definition }, "identity", {
+    enumerable: true,
+    get() {
+      getterCalls += 1;
+      return definition.identity;
+    },
+  }));
+  expectRenderError(() => Svg.render(accessor), "definition.identity");
+  assert.equal(getterCalls, 0);
+});
+
 test("rejects malformed definitions through one deterministic target error", () => {
   const invalidDefinition = {
     ...createDefinition(),

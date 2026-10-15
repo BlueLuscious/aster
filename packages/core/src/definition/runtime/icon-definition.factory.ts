@@ -6,9 +6,15 @@ import { IconIdentityNormaliser } from "./icon-identity.normaliser.js";
 import { IconViewBoxNormaliser } from "./icon-view-box.normaliser.js";
 
 /**
- * @description Internal construction authority for accepted immutable icon definitions.
+ * @description Constructs immutable icon definitions and recognises its canonical outputs.
  */
 export class IconDefinitionFactory {
+  /**
+   * @description Weak identity authority shared by factory instances in this loaded Core copy.
+   * @remarks Only fully constructed outputs enter this set; caller-owned inputs are never adopted.
+   */
+  static readonly #canonicalDefinitions = new WeakSet<object>();
+
   /**
    * @description Primitive authored-value validator.
    */
@@ -35,11 +41,15 @@ export class IconDefinitionFactory {
   readonly #metadataNormaliser = new IconMetadataNormaliser();
 
   /**
-   * @description Validates authored data and returns an isolated deeply frozen definition.
+   * @description Reuses a recognised output or validates and isolates an unknown definition.
    * @param value - Unknown authored definition value.
-   * @returns Deeply frozen canonical icon definition.
+   * @returns Recognised input or newly constructed deeply frozen canonical icon definition.
    */
   create(value: unknown): IconDefinition {
+    if (this.#recognises(value)) {
+      return value;
+    }
+
     const path = "definition";
     const record = this.#validator.record(value, path);
     this.#validator.exactFields(
@@ -50,11 +60,25 @@ export class IconDefinitionFactory {
 
     const identity = this.#identityNormaliser.normalise(record.identity);
 
-    return Object.freeze({
+    const definition: IconDefinition = Object.freeze({
       identity,
       viewBox: this.#viewBoxNormaliser.normalise(record.viewBox),
       nodes: this.#nodeNormaliser.normaliseSequence(record.nodes),
       metadata: this.#metadataNormaliser.normalise(record.metadata, identity),
     });
+
+    IconDefinitionFactory.#canonicalDefinitions.add(definition);
+    return definition;
+  }
+
+  /**
+   * @description Identifies an exact canonical output previously constructed by this Core copy.
+   * @param value - Candidate reference without assumed structure or immutability.
+   * @returns Whether private construction membership proves a canonical icon definition.
+   */
+  #recognises(value: unknown): value is IconDefinition {
+    return typeof value === "object"
+      && value !== null
+      && IconDefinitionFactory.#canonicalDefinitions.has(value);
   }
 }

@@ -14,7 +14,7 @@ definition + options
     v
 Svg.render()
     |
-    +--> public Core reconstruction of the definition
+    +--> public Core acceptance of the definition
     +--> closed option snapshot and normalisation
     +--> immutable per-call render context
     +--> target serialisation and XML character validation
@@ -23,8 +23,8 @@ Svg.render()
 complete SvgMarkupType
 ```
 
-1. Core validates and isolates the definition before SVG interprets any target options.
-   [Core Workflow](../core/workflow.md) owns that portable construction transaction.
+1. Core accepts the definition before SVG interprets any target options.
+   [Core Workflow](../core/workflow.md) owns recognition or complete validation and isolation.
 2. The target captures accepted option data, resolves viewport, authorised presentation,
    accessibility and direction, then passes one local context to the serialiser.
 3. Serialisation maps ordered portable geometry to SVG, applies effective presentation and

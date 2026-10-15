@@ -9,7 +9,7 @@ parser syntax, DOM objects, framework state or repository tooling.
 ## Boundary
 
 Core constructs plain deeply frozen data through `Icon.define()` and `Collection.define()`.
-It has no runtime dependencies, renderer, catalogue, registry or global identity authority.
+It has no runtime dependencies, renderer, catalogue or global logical-identity registry.
 Consumers depend on Core; Core never depends on a target or consumer.
 
 The package is native ES2022 ESM with `sideEffects: false`. Its production declarations use no

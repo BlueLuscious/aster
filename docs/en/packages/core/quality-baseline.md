@@ -19,21 +19,26 @@ values, mutable clones and collection variants are prepared before timing begins
 | Workload | Evidence | Pressure represented |
 | --- | --- | --- |
 | Mutable icon construction | Round-robin `Icon.define()` over mutable clones of the fixed corpus. | Structurally varied authored input, geometry validation, presentation normalisation, reconstruction, and deep freezing. |
-| Canonical icon construction | Round-robin `Icon.define()` over the canonical fixed corpus. | Complete revalidation and independent reconstruction of already canonical definitions. |
+| Canonical icon acceptance | Round-robin `Icon.define()` over the canonical fixed corpus. | Public acceptance of exact canonical outputs under the loaded Core implementation. |
 | Straight path construction | `Icon.define()` over one two-command open path. | Fixed structured-command and contour-start validation cost. |
 | Curved path construction | `Icon.define()` over cubic, quadratic and arc geometry. | Named control, radius, rotation and arc-flag validation cost. |
 | Compound path construction | `Icon.define()` over two independently closed contours. | Command ordering, repeated contour transitions and closure validation cost. |
 | Empty collection construction | `Collection.define()` over a valid collection with no members. | Fixed collection validation, identity, metadata, allocation, and freezing cost. |
-| Single canonical member | `Collection.define()` over one canonical frozen synthetic icon. | Per-member revalidation, duplicate identity, canonical comparison, and retention cost. |
+| Single canonical member | `Collection.define()` over one canonical frozen synthetic icon. | Member acceptance, duplicate identity and retention cost. |
 | Complete mutable collection | `Collection.define()` over mutable clones of all sixteen synthetic icons. | Complete member reconstruction and duplicate detection without canonical identity retention. |
-| Complete canonical collection | `Collection.define()` over the canonical sixteen-member synthetic collection. | Complete revalidation, canonical comparison, identity retention, ordering, and collection freezing. |
+| Complete canonical collection | `Collection.define()` over the canonical sixteen-member synthetic collection. | Container revalidation, member acceptance, identity retention, ordering and collection freezing. |
 | Representative mutable dictionary | `Collection.define()` over an authored dictionary containing 26 mutable synthetic icons, without a submitted `members` list. | Alias validation, complete icon reconstruction, duplicate detection, and one-time member derivation. |
 | Representative canonical dictionary | `Collection.define()` over the equivalent 26-member authored dictionary with canonical frozen icons. | Canonical retention, alias validation, ordering, and one-time member derivation. |
 | Large canonical dictionary | `Collection.define()` over an authored dictionary containing 256 distinct canonical synthetic icons. | Construction scaling with fixed geometry complexity and unique identities. |
 
 Mutable and canonical variants are structurally equivalent. Their comparison distinguishes input
-state and retention pressure; it does not grant provenance or permit a validation shortcut. The
-three path scenarios provide complexity-specific evidence and do not use product artwork.
+state and retention pressure; fixture freezing itself grants no trust. The
+[definition runtime](definition/runtime/index.md#recognised-outputs) owns exact-output recognition.
+The three path scenarios provide complexity-specific evidence and do not use product artwork.
+
+The dated measurements below predate recognised-output reuse and do not measure or justify it.
+The public workload calls, fixed corpus and report schema remain unchanged; a new implementation
+comparison must measure matched source revisions rather than reinterpret old timings as a gain.
 
 The complete sixteen-member scenarios revalidate a definition containing both `icons` and
 `members`. The authored dictionary scenarios derive `members` without validating a submitted

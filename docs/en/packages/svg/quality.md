@@ -17,7 +17,7 @@ measurements, distribution snapshots and the retained escaping experiment.
 | Icons corpus suite | Complete real artwork under default, semantic, colour-context, viewport and direction scenarios. | The public rendering contract applied to real consumers. |
 | Type suite | The structural API and string result; rejection of arbitrary attributes, events, explicit undefined option fields and DOM values. | [API](api/index.md) and [Core Render Options](../core/render/index.md). |
 | Built-package ABI suite | Exact root exports and declarations, unsupported implementation subpaths, Core-only runtime dependency, ESM and side-effect metadata, no undeclared host or tooling authority. | [Package Boundary](index.md#boundary). |
-| Isolated consumer suite | Import and deterministic rendering using only publishable Core and SVG files, without repository sources. | [Project Testing Policy](../../project/testing.md). |
+| Isolated consumer suite | Import/deterministic rendering using publishable files only, including an independent Core installation, unchanged unknown-input acceptance and error-class boundaries. | [Project Testing Policy](../../project/testing.md). |
 | Repository workflow suite | Byte-equivalent output from equivalent TypeScript-first and Import-adopted definitions through built public roots. | [Workflow](workflow.md). |
 
 Runtime evidence distinguishes ordinary accessor rejection from caller-controlled proxy execution.
@@ -39,8 +39,10 @@ fixtures, including SVG's test-only use of Icons.
 
 The [runtime composition](render/runtime/index.md) keeps contexts and intermediate values local
 to one call. The [escaping comparison](quality-baseline.md#retained-experiment) justifies the
-single-pass algorithm, not weakened Core revalidation, trusted-definition shortcuts, caches or
-output streaming.
+single-pass algorithm, not weakened Core acceptance, an SVG-owned trust shortcut, result caching
+or output streaming. Definition reuse belongs solely to the linked
+[Core acceptance contract](../core/definition/runtime/index.md#recognised-outputs); correctness
+evidence does not establish a performance improvement.
 
 No implemented consumer requires a second public renderer operation. New batch, fragment, file,
 DOM or extension capabilities require their own ownership and failure contract under the

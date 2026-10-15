@@ -12,9 +12,9 @@ const iconDefinitionFactory = new IconDefinitionFactory();
  */
 export const Icon: IconApi = Object.freeze({
   /**
-   * @description Validates authored data and creates an isolated deeply frozen definition.
-   * @param definition - Authored render-neutral definition object.
-   * @returns Canonical deeply frozen icon definition.
+   * @description Reuses a recognised canonical output or validates and isolates authored data.
+   * @param definition - Authored render-neutral data or an existing canonical definition.
+   * @returns Recognised input or newly constructed deeply frozen icon definition.
    */
   define(definition: IconDefinition): IconDefinition {
     return iconDefinitionFactory.create(definition);
