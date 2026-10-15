@@ -65,14 +65,28 @@ membership. This weak membership neither retains definitions nor interns equal l
 It adds no fields, symbols, public operation, global registry or lifecycle API.
 
 Original mutable input, copied/frozen objects, proxy wrappers, decoded JSON and outputs from another
-Core copy are unknown references. They still pass complete validation and reconstruction; freezing
-alone grants no trust. Compatible foreign outputs remain accepted, but their original references
-are not adopted into recognition. Repeatedly submitting that original may repeat the work.
+Core copy are unknown references, not necessarily invalid values. Accepting them still requires
+complete validation and reconstruction; freezing alone grants no trust. Compatible foreign outputs
+remain accepted, but their original references are not adopted into recognition. Repeatedly
+submitting that original may repeat the work.
 
 Recognition changes reference reuse, not structural input acceptance or output fields. No timing
 or allocation benefit follows from this contract alone; the
 [comparison baseline](../../quality-baseline.md) owns measurement evidence. Collection's additional
 [retention policy](../../collection/index.md#runtime) remains separate from recognition.
+
+### Reusing definitions
+
+Construct an authored icon once during module initialisation and retain the returned constant.
+Export that constant when several modules need the same definition, rather than constructing
+independent outputs in each module. The [API usage example](../../api/index.md#usage) supplies
+complete authored data; equal logical identities are not interned into a shared object.
+
+Pass the retained output to consumers for repeated use. Inlining
+`Svg.render(Icon.define(authoredDefinition))` still constructs an unknown `authoredDefinition`
+on every invocation: recognition avoids only the renderer's additional reconstruction. Reusing
+the returned definition avoids repeating that initial construction as well. The first construction
+is paid once, not eliminated. The consumer must still use the same loaded Core copy to recognise it.
 
 ### Preparing external definitions
 
@@ -108,3 +122,9 @@ construction.
 On the unknown-input path, normalisers retain no caller-owned object or array. Mutating authored
 input after construction cannot alter the accepted definition. The result contains plain data
 only and remains JSON serialisable.
+
+The accepted output itself is deeply frozen: direct writes to its fields or nested data fail in
+ESM strict mode. Assigning another variable to that output preserves its identity and recognition.
+A spread copy, clone, wrapper or deserialised value is a different reference, not the original
+output losing recognition. Submit changed data through `Icon.define()` to validate and construct
+a new recognised output; the unchanged original remains recognised by its constructing Core copy.

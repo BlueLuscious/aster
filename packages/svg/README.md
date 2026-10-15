@@ -22,6 +22,9 @@ Definitions authored with Core work through the same rendering API.
 [Rendering](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/workflow.md)
 owns options, accessibility, escaping and failure behaviour.
 
+Reuse a definition across renders rather than rebuilding it each time; see
+[Core definition reuse](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/definition/runtime/index.md#reusing-definitions).
+
 ## Documentation
 
 - [Package guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/index.md): exports, contracts and rendering features.
