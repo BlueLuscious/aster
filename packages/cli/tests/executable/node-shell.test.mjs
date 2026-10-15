@@ -65,11 +65,7 @@ const representativeIdentity = `${
   representativeIcon.identity.namespace === undefined
     ? ""
     : `${representativeIcon.identity.namespace}/`
-}${representativeName}${
-  representativeIcon.identity.variant === undefined
-    ? ""
-    : `@${representativeIcon.identity.variant}`
-}`;
+}${representativeName}@${representativeIcon.identity.variant}`;
 const representativeDisplayName = representativeIcon.metadata.displayName;
 const representativePath = `${representativeIdentity}.svg`;
 const representativeMemberships = asterCollectionDefinitions
@@ -545,11 +541,15 @@ test("emits one stable JSON success document without terminal styling", () => {
 
 test("maps human usage and lookup failures to stderr and documented status", () => {
   const usage = run(["list", "icons", "--catalogue"]);
-  const missing = run(["show", "icon", "aster/missing"]);
+  const untreated = run(["show", "icon", "aster/camera"]);
+  const missing = run(["show", "icon", "aster/missing@outline"]);
 
   assert.equal(usage.status, 2);
   assert.equal(usage.stdout, "");
   assert.match(usage.stderr, /^\[ASTER-CLI-001\]/u);
+  assert.equal(untreated.status, 2);
+  assert.equal(untreated.stdout, "");
+  assert.match(untreated.stderr, /^\[ASTER-CLI-001\]/u);
   assert.equal(missing.status, 1);
   assert.equal(missing.stdout, "");
   assert.match(missing.stderr, /^\[ASTER-CLI-004\]/u);

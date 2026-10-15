@@ -18,6 +18,7 @@ import {
 function createDefinition(): IconDefinition {
   return Icon.define({
     identity: {
+      variant: "outline",
       namespace: "testing",
       name: "precedence",
     },
@@ -109,6 +110,7 @@ test("identifies the renderer exactly once on decorative roots", () => {
 test("serialises every portable primitive in paint and attribute order", () => {
   const definition = Icon.define({
     identity: {
+      variant: "outline",
       namespace: "testing",
       name: "primitives",
     },
@@ -174,7 +176,7 @@ test("serialises every portable primitive in paint and attribute order", () => {
 
 test("serialises every structured path command in canonical expanded form", () => {
   const definition = Icon.define({
-    identity: { namespace: "testing", name: "structured-path" },
+    identity: { variant: "outline", namespace: "testing", name: "structured-path" },
     viewBox: { minX: 0, minY: 0, width: 32, height: 32 },
     nodes: [{
       kind: "path",
@@ -706,6 +708,7 @@ test("rejects every XML 1.0 character gap with its logical option path", () => {
 test("serialises canonical numeric boundaries without locale dependence", () => {
   const definition = Icon.define({
     identity: {
+      variant: "outline",
       namespace: "testing",
       name: "numbers",
     },

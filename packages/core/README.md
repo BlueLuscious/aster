@@ -13,7 +13,7 @@ pnpm add @luscious-garden/aster-core
 import { Collection, Icon } from "@luscious-garden/aster-core";
 
 const Disc = Icon.define({
-  identity: { namespace: "example", name: "disc" },
+  identity: { namespace: "example", name: "disc", variant: "outline" },
   viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
   nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],
   metadata: {

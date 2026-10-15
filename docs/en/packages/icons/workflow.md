@@ -40,7 +40,8 @@ Omitting membership leaves a valid standalone definition. Correct geometry in th
 module, never in a generated facade, manifest or rendered SVG.
 
 A rendition uses the same icon name with a distinct `identity.variant`; a different concept
-uses a separate name. The package currently has no renditions. The enforced naming/layout
+uses a separate name. Existing definitions explicitly declare `outline`; other treatments appear
+only when their canonical sources exist. The enforced naming/layout
 examples belong to [Catalogue Source Tooling](../../tooling/catalogue/index.md#source-convention).
 
 ## Add or change a collection
@@ -50,8 +51,8 @@ imports. Author membership as explicit assignments:
 
 ```text
 icons: {
-  camera: Camera,
-  search: Search,
+  camera: CameraOutline,
+  search: SearchOutline,
 }
 ```
 

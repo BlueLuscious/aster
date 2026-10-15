@@ -1,4 +1,4 @@
-﻿import assert from "node:assert/strict";
+import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
@@ -46,7 +46,7 @@ function createIcon(
   tags: readonly string[] = ["testing"],
 ): IconDefinition {
   return Icon.define({
-    identity: { namespace: "testing", name },
+    identity: { variant: "outline", namespace: "testing", name },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [{
       kind: "path",
@@ -207,7 +207,7 @@ test("executes every discovery workflow without invoking definition loaders", as
     { command: "list", subject: "collections" },
     { command: "list", subject: "icons" },
     { command: "search", query: "metadata" },
-    { command: "show", subject: "icon", identity: "testing/metadata-only" },
+    { command: "show", subject: "icon", identity: "testing/metadata-only@outline" },
     { command: "show", subject: "collection", identity: "testing/metadata-only" },
   ] as const;
 
@@ -224,7 +224,7 @@ test("executes every discovery workflow without invoking definition loaders", as
 test("isolates mutable discovery records before exposing command results", async () => {
   const source = {
     icons: [{
-      identity: { namespace: "testing", name: "mutable" },
+      identity: { variant: "outline", namespace: "testing", name: "mutable" },
       metadata: {
         displayName: "Mutable",
         tags: ["mutable"],
@@ -248,7 +248,7 @@ test("isolates mutable discovery records before exposing command results", async
     },
   };
   const result = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "testing/mutable" },
+    { command: "show", subject: "icon", identity: "testing/mutable@outline" },
     createContext([provider]),
   );
 
@@ -268,7 +268,7 @@ test("isolates mutable discovery records before exposing command results", async
 test("isolates nested collection discovery membership from provider mutation", async () => {
   const source = {
     icons: [{
-      identity: { namespace: "testing", name: "member" },
+      identity: { variant: "outline", namespace: "testing", name: "member" },
       metadata: {
         displayName: "Member",
         rtl: "preserve",
@@ -279,7 +279,7 @@ test("isolates nested collection discovery membership from provider mutation", a
     collections: [{
       identity: { namespace: "testing", name: "mutable" },
       metadata: { displayName: "Mutable", tags: ["original"] },
-      icons: [{ namespace: "testing", name: "member" }],
+      icons: [{ namespace: "testing", name: "member", variant: "outline" }],
     }],
   };
   const provider: CatalogueProvider = {
@@ -300,7 +300,7 @@ test("isolates nested collection discovery membership from provider mutation", a
     context,
   );
   const iconResult = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "testing/member" },
+    { command: "show", subject: "icon", identity: "testing/member@outline" },
     context,
   );
 
@@ -314,7 +314,7 @@ test("isolates nested collection discovery membership from provider mutation", a
   if (result.ok && result.payload.kind === "collection-show") {
     assert.deepEqual(result.payload.collection.metadata.tags, ["original"]);
     assert.deepEqual(result.payload.collection.icons, [
-      { namespace: "testing", name: "member" },
+      { namespace: "testing", name: "member", variant: "outline" },
     ]);
     assert.ok(Object.isFrozen(result.payload.collection.metadata.tags));
     assert.ok(Object.isFrozen(result.payload.collection.icons));
@@ -402,7 +402,7 @@ test("retains one icon identity across multiple collection memberships", async (
     context,
   );
   const shown = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "testing/shared" },
+    { command: "show", subject: "icon", identity: "testing/shared@outline" },
     context,
   );
 
@@ -479,14 +479,14 @@ test("reports cross-provider ambiguity and supports exact provider filtering", a
     createProvider("beta", fixture),
   ]);
   const ambiguous = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "testing/shared" },
+    { command: "show", subject: "icon", identity: "testing/shared@outline" },
     context,
   );
   const exact = await AsterCommands.execute(
     {
       command: "show",
       subject: "icon",
-      identity: "testing/shared",
+      identity: "testing/shared@outline",
       catalogue: "beta",
     },
     context,
@@ -526,7 +526,7 @@ test("rejects conflicting and inconsistent provider discoveries", async () => {
     async discover() {
       return {
         icons: [{
-          identity: { namespace: "testing", name: "presentation" },
+          identity: { variant: "outline", namespace: "testing", name: "presentation" },
           metadata: {
             displayName: "Presentation",
             rtl: "preserve",
@@ -555,7 +555,7 @@ test("rejects conflicting and inconsistent provider discoveries", async () => {
     createContext([missingCollectionProvider]),
   );
   const leakedPresentation = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "testing/presentation" },
+    { command: "show", subject: "icon", identity: "testing/presentation@outline" },
     createContext([presentationProvider]),
   );
 

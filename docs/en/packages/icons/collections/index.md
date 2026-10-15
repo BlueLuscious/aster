@@ -24,7 +24,7 @@ collection query API. [Core Collection](../../core/collection/index.md) owns ali
 generic output, ordering, duplicate rejection and canonical reference retention.
 
 The import evaluates the selected collection and every declared member. Accessing one alias does
-not make it lazy; use `@luscious-garden/aster-icons/camera` when the collection is unnecessary.
+not make it lazy; use `@luscious-garden/aster-icons/camera/outline` when the collection is unnecessary.
 There is no bare collection-family aggregate.
 
 ## Membership authority

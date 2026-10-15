@@ -1,19 +1,11 @@
+import type { IconGlyphIdentity } from "./icon-glyph-identity.contract.js";
+
 /**
- * @description Stable render-neutral identity of one icon and optional variant.
+ * @description Stable render-neutral identity of one explicitly treated glyph definition.
  */
-export interface IconIdentity {
+export interface IconIdentity extends IconGlyphIdentity {
   /**
-   * @description Optional canonical namespace owned independently of collection membership.
+   * @description Required canonical ASCII lowercase kebab-case treatment slug.
    */
-  readonly namespace?: string;
-
-  /**
-   * @description Canonical ASCII lowercase kebab-case icon slug.
-   */
-  readonly name: string;
-
-  /**
-   * @description Optional canonical ASCII lowercase kebab-case variant slug.
-   */
-  readonly variant?: string;
+  readonly variant: string;
 }

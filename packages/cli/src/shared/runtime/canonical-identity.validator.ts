@@ -19,9 +19,9 @@ export class CanonicalIdentityValidator {
   }
 
   /**
-   * @description Determines whether a candidate is a canonical icon identity with an optional variant.
+   * @description Determines whether a candidate is a canonical icon identity with a required treatment.
    * @param value - Candidate icon identity.
-   * @returns Whether the value follows `[namespace/]name[@variant]`.
+   * @returns Whether the value follows `[namespace/]name@variant`.
    */
   icon(value: unknown): value is string {
     return this.#identity(value, true);
@@ -39,17 +39,17 @@ export class CanonicalIdentityValidator {
   /**
    * @description Validates one portable textual identity family.
    * @param value - Candidate textual identity.
-   * @param allowVariant - Whether one variant component is accepted.
+   * @param requiresVariant - Whether exactly one treatment component is required rather than forbidden.
    * @returns Whether every identity component is canonical.
    */
-  #identity(value: unknown, allowVariant: boolean): value is string {
+  #identity(value: unknown, requiresVariant: boolean): value is string {
     if (typeof value !== "string") {
       return false;
     }
 
     const variantSections = value.split(cliIdentitySchema.variantSeparator);
 
-    if (variantSections.length > (allowVariant ? 2 : 1)) {
+    if (variantSections.length !== (requiresVariant ? 2 : 1)) {
       return false;
     }
 
@@ -67,4 +67,3 @@ export class CanonicalIdentityValidator {
     );
   }
 }
-

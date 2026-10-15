@@ -103,6 +103,7 @@ export class CoreBaselineFixtureFactory {
     return Icon.define({
       ...source,
       identity: {
+        variant: "fixture",
         namespace: "benchmark",
         name: `scale-${String(index + 1).padStart(3, "0")}`,
       },
@@ -138,7 +139,7 @@ export class CoreBaselineFixtureFactory {
    */
   #pathDefinition(name, commands) {
     return {
-      identity: { namespace: "benchmark", name: `path-${name}` },
+      identity: { variant: "fixture", namespace: "benchmark", name: `path-${name}` },
       viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
       nodes: [{ kind: "path", commands }],
       metadata: {

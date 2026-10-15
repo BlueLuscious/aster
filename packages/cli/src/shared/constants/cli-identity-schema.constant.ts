@@ -6,7 +6,7 @@ export const cliIdentitySchema = Object.freeze({
   slugPatternSource: String.raw`^[a-z0-9]+(?:-[a-z0-9]+)*$`,
   /** @description Separator between namespace and local identity sections. */
   namespaceSeparator: "/",
-  /** @description Separator introducing an optional identity variant. */
+  /** @description Separator introducing the required concrete icon treatment. */
   variantSeparator: "@",
   /** @description Maximum namespace and local-name sections accepted before a variant. */
   maximumIdentitySections: 2,

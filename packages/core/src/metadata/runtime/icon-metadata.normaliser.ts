@@ -135,7 +135,7 @@ export class IconMetadataNormaliser {
    * @description Compares complete logical icon identities.
    * @param left - First canonical identity.
    * @param right - Second canonical identity.
-   * @returns Whether namespace, name, and optional variant match.
+   * @returns Whether namespace, name and required treatment match.
    */
   #identitiesMatch(left: IconIdentity, right: IconIdentity): boolean {
     return (

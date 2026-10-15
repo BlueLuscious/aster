@@ -10,13 +10,13 @@ import {
 function icon(
   name = "search",
   namespace = "aster",
-  variant?: string,
+  variant = "outline",
 ) {
   return Icon.define({
     identity: {
       namespace,
       name,
-      ...(variant === undefined ? {} : { variant }),
+      variant,
     },
     viewBox: {
       minX: 0,

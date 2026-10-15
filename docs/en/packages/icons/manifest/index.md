@@ -32,7 +32,7 @@ the collection export-naming migration.
 
 An icon entry contains:
 
-- `key` in `[<namespace>/]<name>[@<variant>]` form;
+- `key` in `[<namespace>/]<name>@<variant>` form;
 - complete `identity` and the public named export `symbol`;
 - `displayName`, optional intrinsic `tags` and `rtl`;
 - optional effective `licence` and `attribution`;

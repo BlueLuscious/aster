@@ -24,8 +24,8 @@ import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-
 const generatedOutputPaths = Object.freeze({
   manifest: "src/generated/manifest/index.ts",
   dynamic: "src/generated/dynamic/index.ts",
-  alphaIconFacade: "src/generated/facades/icons/alpha-icon.ts",
-  zetaFacade: "src/generated/facades/icons/zeta.ts",
+  alphaIconFacade: "src/generated/facades/icons/alpha-icon/outline.ts",
+  zetaFacade: "src/generated/facades/icons/zeta/outline.ts",
   sampleCollectionFacade:
     "src/generated/facades/collections/sample.ts",
 });
@@ -85,17 +85,14 @@ function pascalCase(slug) {
     .join("");
 }
 
-function iconSource(name, variant) {
-  const symbol = `${pascalCase(name)}${
-    variant === undefined ? "" : pascalCase(variant)
-  }`;
-  const variantProperty = variant === undefined ? "" : `, variant: "${variant}"`;
+function iconSource(name, variant = "outline") {
+  const symbol = `${pascalCase(name)}${pascalCase(variant)}`;
 
   return [
     'import { Icon } from "@luscious-garden/aster-core";',
     "",
     `export const ${symbol} = Icon.define({`,
-    `  identity: { name: "${name}"${variantProperty} },`,
+    `  identity: { name: "${name}", variant: "${variant}" },`,
     `  metadata: { displayName: "${pascalCase(name)}", tags: ["${name}"], rtl: "preserve", deprecated: false },`,
     "});",
     "",
@@ -129,9 +126,9 @@ async function createPackageFixture() {
   const root = await mkdtemp(join(tmpdir(), "aster-catalogue-source-"));
   const alphaPath = resolve(
     root,
-    "src/glyphs/a/alpha-icon/alpha-icon.icon.ts",
+    "src/glyphs/a/alpha-icon/alpha-icon-outline.icon.ts",
   );
-  const zetaPath = resolve(root, "src/glyphs/z/zeta/zeta.icon.ts");
+  const zetaPath = resolve(root, "src/glyphs/z/zeta/zeta-outline.icon.ts");
   const samplePath = resolve(
     root,
     "src/collections/s/sample/sample.collection.ts",
@@ -156,9 +153,9 @@ async function createPackageFixture() {
       'import { Icon } from "@luscious-garden/aster-core";',
       'import { fixtureAuthorship } from "../../../authoring/constants/fixture-authorship.constant.js";',
       "",
-      "export const Zeta = Icon.define({",
-      '  identity: { namespace: fixtureAuthorship.namespace, name: "zeta" },',
-      '  metadata: { displayName: "Zeta", tags: ["zeta"], rtl: "preserve", licence: fixtureAuthorship.licence, deprecated: false },',
+      "export const ZetaOutline = Icon.define({",
+      '  identity: { namespace: fixtureAuthorship.namespace, name: "zeta", variant: "outline" },',
+      '  metadata: { displayName: "ZetaOutline", tags: ["zeta"], rtl: "preserve", licence: fixtureAuthorship.licence, deprecated: false },',
       "});",
       "",
     ].join("\n"),
@@ -174,9 +171,9 @@ async function createPackageFixture() {
     collectionSource(
       "sample",
       [
-        'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+        'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
       ],
-      [{ alias: "alphaIcon", symbol: "AlphaIcon" }],
+      [{ alias: "alphaIcon", symbol: "AlphaIconOutline" }],
     ),
     "utf8",
   );
@@ -202,7 +199,7 @@ test("derives suffix-free definition symbols from canonical source names", () =>
   const [icons, collections] = catalogueSourceGeneration.families;
 
   for (const { family, path, symbol } of [
-    { family: icons, path: "a/arrow-left/arrow-left.icon.ts", symbol: "ArrowLeft" },
+    { family: icons, path: "a/arrow-left/arrow-left-outline.icon.ts", symbol: "ArrowLeftOutline" },
     { family: icons, path: "c/camera-retro/camera-retro-filled.icon.ts", symbol: "CameraRetroFilled" },
     { family: collections, path: "s/sample/sample.collection.ts", symbol: "Sample" },
     { family: collections, path: "s/sample-collection/sample-collection.collection.ts", symbol: "SampleCollection" },
@@ -281,7 +278,7 @@ test("synchronises canonical modules deterministically and reports drift", async
     assert.match(alphaFacade, /Do not edit manually\.\n\nexport/u);
     assert.match(
       alphaFacade,
-      /export \{ AlphaIcon \} from "\.\.\/\.\.\/\.\.\/glyphs\/a\/alpha-icon\/alpha-icon\.icon\.js";/u,
+      /export \{ AlphaIconOutline \} from "\.\.\/\.\.\/\.\.\/\.\.\/glyphs\/a\/alpha-icon\/alpha-icon-outline\.icon\.js";/u,
     );
     assert.match(
       await readFile(
@@ -296,10 +293,10 @@ test("synchronises canonical modules deterministically and reports drift", async
     );
     assert.match(manifest, /export const AsterIconManifest/u);
     assert.match(manifest, /export const AsterCollectionManifest/u);
-    assert.match(manifest, /key: "alpha-icon"/u);
-    assert.match(manifest, /key: "fixture\/zeta"/u);
+    assert.match(manifest, /key: "alpha-icon@outline"/u);
+    assert.match(manifest, /key: "fixture\/zeta@outline"/u);
     assert.match(manifest, /licence: "ISC"/u);
-    assert.match(manifest, /members: Object\.freeze\(\["alpha-icon"\]\)/u);
+    assert.match(manifest, /members: Object\.freeze\(\["alpha-icon@outline"\]\)/u);
     assert.match(manifest, /symbol: "Sample"/u);
     assert.doesNotMatch(
       manifest,
@@ -311,13 +308,13 @@ test("synchronises canonical modules deterministically and reports drift", async
     );
     assert.match(dynamic, /export const AsterIconLoaders/u);
     assert.match(dynamic, /export const AsterCollectionLoaders/u);
-    assert.match(dynamic, /"alpha-icon": Object\.freeze/u);
-    assert.match(dynamic, /"fixture\/zeta": Object\.freeze/u);
+    assert.match(dynamic, /"alpha-icon@outline": Object\.freeze/u);
+    assert.match(dynamic, /"fixture\/zeta@outline": Object\.freeze/u);
     assert.match(dynamic, /"sample": Object\.freeze/u);
     assert.match(dynamic, /\.then\(\(\{ Sample \}\) => Sample\)/u);
     assert.match(
       dynamic,
-      /import\("\.\.\/facades\/icons\/alpha-icon\.js"\)/u,
+      /import\("\.\.\/facades\/icons\/alpha-icon\/outline\.js"\)/u,
     );
     assert.match(
       dynamic,
@@ -345,7 +342,7 @@ test("retains own constructor loaders without inherited fallback", async () => {
   const root = await createPackageFixture();
 
   try {
-    const iconPath = resolve(root, "src/glyphs/c/constructor/constructor.icon.ts");
+    const iconPath = resolve(root, "src/glyphs/c/constructor/constructor-outline.icon.ts");
     const collectionPath = resolve(
       root,
       "src/collections/c/constructor/constructor.collection.ts",
@@ -357,7 +354,7 @@ test("retains own constructor loaders without inherited fallback", async () => {
       collectionPath,
       collectionSource(
         "constructor",
-        ['import { Constructor as ConstructorIcon } from "../../../glyphs/c/constructor/constructor.icon.js";'],
+        ['import { ConstructorOutline as ConstructorIcon } from "../../../glyphs/c/constructor/constructor-outline.icon.js";'],
         [{ alias: "disc", symbol: "ConstructorIcon" }],
       ),
       "utf8",
@@ -387,34 +384,37 @@ test("retains own constructor loaders without inherited fallback", async () => {
     );
 
     const definitions = [
-      { family: "icon", directory: "icons", symbol: "Constructor" },
+      { family: "icon", directory: "icons", symbol: "ConstructorOutline" },
       { family: "collection", directory: "collections", symbol: "Constructor" },
     ];
 
     for (const { family, directory, symbol } of definitions) {
-      const facadePath = resolve(root, `runtime/generated/facades/${directory}/constructor.js`);
+      const subpath = family === "icon" ? "constructor/outline" : "constructor";
+      const facadePath = resolve(root, `runtime/generated/facades/${directory}/${subpath}.js`);
       await mkdir(dirname(facadePath), { recursive: true });
       await writeFile(
         facadePath,
-        `export const ${symbol} = Object.freeze({ family: "${family}", identity: Object.freeze({ name: "constructor" }) });\n`,
+        `export const ${symbol} = Object.freeze({ family: "${family}", identity: Object.freeze({ name: "constructor", ${family === "icon" ? 'variant: "outline"' : ""} }) });\n`,
         "utf8",
       );
     }
 
     const dynamic = await import(pathToFileURL(runtimePath).href);
     assert.deepEqual(Object.keys(dynamic).sort(), ["AsterCollectionLoaders", "AsterIconLoaders"]);
-    assert.deepEqual(Object.keys(dynamic.AsterIconLoaders), ["alpha-icon", "constructor", "fixture/zeta"]);
+    assert.deepEqual(Object.keys(dynamic.AsterIconLoaders), ["alpha-icon@outline", "constructor@outline", "fixture/zeta@outline"]);
     assert.deepEqual(Object.keys(dynamic.AsterCollectionLoaders), ["constructor", "sample"]);
 
     for (const { family, directory, symbol } of definitions) {
       const loaders = family === "icon" ? dynamic.AsterIconLoaders : dynamic.AsterCollectionLoaders;
+      const subpath = family === "icon" ? "constructor/outline" : "constructor";
+      const key = family === "icon" ? "constructor@outline" : "constructor";
       const direct = await import(
-        pathToFileURL(resolve(root, `runtime/generated/facades/${directory}/constructor.js`)).href,
+        pathToFileURL(resolve(root, `runtime/generated/facades/${directory}/${subpath}.js`)).href,
       );
       assert.equal(Object.getPrototypeOf(loaders), null);
       assert.ok(Object.isFrozen(loaders));
-      assert.ok(Object.hasOwn(loaders, "constructor"));
-      const loader = loaders.constructor;
+      assert.ok(Object.hasOwn(loaders, key));
+      const loader = loaders[key];
       assert.equal(typeof loader, "function");
       assert.ok(Object.isFrozen(loader));
       const pending = loader();
@@ -451,12 +451,12 @@ test("synchronises collection membership from the canonical source alone", async
       collectionSource(
         "sample",
         [
-          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
-          'import { Zeta } from "../../../glyphs/z/zeta/zeta.icon.js";',
+          'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
+          'import { ZetaOutline } from "../../../glyphs/z/zeta/zeta-outline.icon.js";',
         ],
         [
-          { alias: "alphaIcon", symbol: "AlphaIcon" },
-          { alias: "zeta", symbol: "Zeta" },
+          { alias: "alphaIcon", symbol: "AlphaIconOutline" },
+          { alias: "zeta", symbol: "ZetaOutline" },
         ],
       ),
       "utf8",
@@ -471,15 +471,15 @@ test("synchronises collection membership from the canonical source alone", async
     assert.deepEqual(added.changedPaths, [generatedOutputPaths.manifest]);
     assert.match(
       addedManifest,
-      /members: Object\.freeze\(\["alpha-icon", "fixture\/zeta"\]\)/u,
+      /members: Object\.freeze\(\["alpha-icon@outline", "fixture\/zeta@outline"\]\)/u,
     );
 
     await writeFile(
       collectionPath,
       collectionSource(
         "sample",
-        ['import { Zeta } from "../../../glyphs/z/zeta/zeta.icon.js";'],
-        [{ alias: "zeta", symbol: "Zeta" }],
+        ['import { ZetaOutline } from "../../../glyphs/z/zeta/zeta-outline.icon.js";'],
+        [{ alias: "zeta", symbol: "ZetaOutline" }],
       ),
       "utf8",
     );
@@ -493,7 +493,7 @@ test("synchronises collection membership from the canonical source alone", async
     assert.deepEqual(removed.changedPaths, [generatedOutputPaths.manifest]);
     assert.match(
       removedManifest,
-      /members: Object\.freeze\(\["fixture\/zeta"\]\)/u,
+      /members: Object\.freeze\(\["fixture\/zeta@outline"\]\)/u,
     );
     assert.deepEqual(
       (await synchroniseIconsCatalogue(root, true)).changedPaths,
@@ -509,7 +509,7 @@ test("adds and removes source modules across generated integrations", async () =
 
   try {
     await synchroniseIconsCatalogue(root);
-    const sourcePath = resolve(root, "src/glyphs/m/middle/middle.icon.ts");
+    const sourcePath = resolve(root, "src/glyphs/m/middle/middle-outline.icon.ts");
     await mkdir(dirname(sourcePath), { recursive: true });
     await writeFile(sourcePath, iconSource("middle"), "utf8");
 
@@ -517,11 +517,11 @@ test("adds and removes source modules across generated integrations", async () =
     assert.deepEqual(added.changedPaths, [
       generatedOutputPaths.manifest,
       generatedOutputPaths.dynamic,
-      "src/generated/facades/icons/middle.ts",
+      "src/generated/facades/icons/middle/outline.ts",
     ]);
     assert.match(
       await readFile(resolve(root, generatedOutputPaths.manifest), "utf8"),
-      /symbol: "Middle"/u,
+      /symbol: "MiddleOutline"/u,
     );
 
     await unlink(sourcePath);
@@ -529,7 +529,7 @@ test("adds and removes source modules across generated integrations", async () =
     assert.deepEqual(removed.changedPaths, [
       generatedOutputPaths.manifest,
       generatedOutputPaths.dynamic,
-      "src/generated/facades/icons/middle.ts",
+      "src/generated/facades/icons/middle/outline.ts",
     ]);
     assert.doesNotMatch(
       await readFile(resolve(root, generatedOutputPaths.manifest), "utf8"),
@@ -540,7 +540,7 @@ test("adds and removes source modules across generated integrations", async () =
       /middle/u,
     );
     await assert.rejects(
-      readFile(resolve(root, "src/generated/facades/icons/middle.ts"), "utf8"),
+      readFile(resolve(root, "src/generated/facades/icons/middle/outline.ts"), "utf8"),
     );
 
     const collectionPath = resolve(
@@ -615,15 +615,15 @@ test("refreshes imported manifest authorities between synchronisations", async (
       generatedOutputPaths.manifest,
       generatedOutputPaths.dynamic,
     ]);
-    assert.match(manifest, /key: "updated\/zeta"/u);
+    assert.match(manifest, /key: "updated\/zeta@outline"/u);
     assert.match(manifest, /licence: "CC0-1\.0"/u);
-    assert.doesNotMatch(manifest, /key: "fixture\/zeta"/u);
+    assert.doesNotMatch(manifest, /key: "fixture\/zeta@outline"/u);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
 });
 
-test("discovers nested base icons, variants and collections with portable specifiers", async () => {
+test("discovers nested explicit treatments and collections with portable specifiers", async () => {
   const root = await createPackageFixture();
 
   try {
@@ -634,7 +634,7 @@ test("discovers nested base icons, variants and collections with portable specif
     await mkdir(retroRoot, { recursive: true });
     await mkdir(archiveRoot, { recursive: true });
     await writeFile(
-      resolve(cameraRoot, "camera.icon.ts"),
+      resolve(cameraRoot, "camera-outline.icon.ts"),
       iconSource("camera"),
       "utf8",
     );
@@ -644,7 +644,7 @@ test("discovers nested base icons, variants and collections with portable specif
       "utf8",
     );
     await writeFile(
-      resolve(retroRoot, "camera-retro.icon.ts"),
+      resolve(retroRoot, "camera-retro-outline.icon.ts"),
       iconSource("camera-retro"),
       "utf8",
     );
@@ -670,10 +670,10 @@ test("discovers nested base icons, variants and collections with portable specif
 
     assert.match(
       await readFile(
-        resolve(root, "src/generated/facades/icons/camera.ts"),
+        resolve(root, "src/generated/facades/icons/camera/outline.ts"),
         "utf8",
       ),
-      /export \{ Camera \} from "\.\.\/\.\.\/\.\.\/glyphs\/c\/camera\/camera\.icon\.js";/u,
+      /export \{ CameraOutline \} from "\.\.\/\.\.\/\.\.\/\.\.\/glyphs\/c\/camera\/camera-outline\.icon\.js";/u,
     );
     assert.match(
       await readFile(
@@ -699,13 +699,13 @@ test("discovers nested base icons, variants and collections with portable specif
     );
     assert.match(dynamic, /"archive": Object\.freeze/u);
 
-    await unlink(resolve(retroRoot, "camera-retro.icon.ts"));
+    await unlink(resolve(retroRoot, "camera-retro-outline.icon.ts"));
     const removed = await synchroniseIconsCatalogue(root);
 
     assert.deepEqual(removed.changedPaths, [
       generatedOutputPaths.manifest,
       generatedOutputPaths.dynamic,
-      "src/generated/facades/icons/camera-retro.ts",
+      "src/generated/facades/icons/camera-retro/outline.ts",
     ]);
     assert.doesNotMatch(
       await readFile(resolve(root, generatedOutputPaths.manifest), "utf8"),
@@ -715,6 +715,51 @@ test("discovers nested base icons, variants and collections with portable specif
       await readFile(resolve(root, generatedOutputPaths.dynamic), "utf8"),
       /camera-retro/u,
     );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects absent icon treatments before replacing generated outputs", async () => {
+  const root = await createPackageFixture();
+  try {
+    await synchroniseIconsCatalogue(root);
+    const expected = await readGeneratedOutputs(root);
+    const iconRoot = resolve(root, "src/glyphs/c/camera");
+    await mkdir(iconRoot, { recursive: true });
+    const implicitPath = resolve(iconRoot, "camera.icon.ts");
+    await writeFile(implicitPath, iconSource("camera"), "utf8");
+    await assert.rejects(synchroniseIconsCatalogue(root), /requires an explicit variant filename/u);
+    assert.deepEqual(await readGeneratedOutputs(root), expected);
+    await unlink(implicitPath);
+
+    const explicitPath = resolve(iconRoot, "camera-outline.icon.ts");
+    await writeFile(explicitPath, iconSource("camera").replace(', variant: "outline"', ""), "utf8");
+    await assert.rejects(synchroniseIconsCatalogue(root), /identity must match camera@outline/u);
+    assert.deepEqual(await readGeneratedOutputs(root), expected);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("accepts open treatment slugs without generating a glyph aggregate", async () => {
+  const root = await createPackageFixture();
+  try {
+    const iconRoot = resolve(root, "src/glyphs/c/camera");
+    await mkdir(iconRoot, { recursive: true });
+    for (const variant of ["2-tone", "filled-dotted"]) {
+      await writeFile(resolve(iconRoot, `camera-${variant}.icon.ts`), iconSource("camera", variant), "utf8");
+    }
+    await synchroniseIconsCatalogue(root);
+    const outputs = await readGeneratedOutputs(root);
+    const manifest = outputs[generatedOutputPaths.manifest];
+    const dynamic = outputs[generatedOutputPaths.dynamic];
+    assert.match(manifest, /key: "camera@2-tone"/u);
+    assert.match(manifest, /symbol: "Camera2Tone"/u);
+    assert.match(manifest, /key: "camera@filled-dotted"/u);
+    assert.match(dynamic, /facades\/icons\/camera\/2-tone\.js/u);
+    await assert.rejects(readFile(resolve(root, "src/generated/facades/icons/camera.ts"), "utf8"));
+    assert.deepEqual((await synchroniseIconsCatalogue(root, true)).changedPaths, []);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -775,7 +820,7 @@ test("rejects removed icons retained by canonical collections before writing", a
     await synchroniseIconsCatalogue(root);
     const outputs = await readGeneratedOutputs(root);
     await unlink(
-      resolve(root, "src/glyphs/a/alpha-icon/alpha-icon.icon.ts"),
+      resolve(root, "src/glyphs/a/alpha-icon/alpha-icon-outline.icon.ts"),
     );
 
     await assert.rejects(
@@ -796,7 +841,7 @@ test("rejects reserved public subpaths before replacing existing outputs", async
     const outputs = await readGeneratedOutputs(root);
     const manifestPath = resolve(
       root,
-      "src/glyphs/m/manifest/manifest.icon.ts",
+      "src/glyphs/m/manifest/manifest-outline.icon.ts",
     );
     await mkdir(dirname(manifestPath), { recursive: true });
     await writeFile(
@@ -849,29 +894,29 @@ test("rejects invalid and malformed canonical modules before writing", async () 
     },
     {
       files: [[
-        "w/wrong/wrong.icon.ts",
+        "w/wrong/wrong-outline.icon.ts",
         'import { Icon } from "@luscious-garden/aster-core";\n\nexport const Other = Icon.define({});\n',
       ]],
-      pattern: /must export exactly one constant named Wrong/u,
+      pattern: /must export exactly one constant named WrongOutline/u,
     },
     {
-      files: [["p/plain/plain.icon.ts", "export const Plain = {};\n"]],
+      files: [["p/plain/plain-outline.icon.ts", "export const PlainOutline = {};\n"]],
       pattern: /must initialise Icon\.define/u,
     },
     {
-      files: [["b/broken/broken.icon.ts", "export const Broken = {;\n"]],
+      files: [["b/broken/broken-outline.icon.ts", "export const BrokenOutline = {;\n"]],
       pattern: /Invalid TypeScript catalogue source/u,
     },
     {
-      files: [["m/manifest/manifest.icon.ts", iconSource("manifest")]],
+      files: [["m/manifest/manifest-outline.icon.ts", iconSource("manifest")]],
       pattern: /collides with a reserved public subpath/u,
     },
     {
       files: [[
-        "c/camera/camera.icon.ts",
-        'import { Icon } from "@luscious-garden/aster-core";\n\nexport const Camera = Icon.define({ identity: { name: "photograph" } });\n',
+        "c/camera/camera-outline.icon.ts",
+        'import { Icon } from "@luscious-garden/aster-core";\n\nexport const CameraOutline = Icon.define({ identity: { name: "photograph", variant: "outline" } });\n',
       ]],
-      pattern: /identity must match camera/u,
+      pattern: /identity must match camera@outline/u,
     },
     {
       files: [[
@@ -882,34 +927,34 @@ test("rejects invalid and malformed canonical modules before writing", async () 
     },
     {
       files: [[
-        "c/computed/computed.icon.ts",
-        'import { Icon } from "@luscious-garden/aster-core";\n\nexport const Computed = Icon.define({ identity: { name: "computed" }, metadata: { displayName: createName(), rtl: "preserve", deprecated: false } });\n',
+        "c/computed/computed-outline.icon.ts",
+        'import { Icon } from "@luscious-garden/aster-core";\n\nexport const ComputedOutline = Icon.define({ identity: { name: "computed", variant: "outline" }, metadata: { displayName: createName(), rtl: "preserve", deprecated: false } });\n',
       ]],
       pattern: /unsupported static catalogue syntax CallExpression/u,
     },
     {
       files: [[
-        "c/cyclic/cyclic.icon.ts",
-        'import { Icon } from "@luscious-garden/aster-core";\n\nconst label = label;\nexport const Cyclic = Icon.define({ identity: { name: "cyclic" }, metadata: { displayName: label, rtl: "preserve", deprecated: false } });\n',
+        "c/cyclic/cyclic-outline.icon.ts",
+        'import { Icon } from "@luscious-garden/aster-core";\n\nconst label = label;\nexport const CyclicOutline = Icon.define({ identity: { name: "cyclic", variant: "outline" }, metadata: { displayName: label, rtl: "preserve", deprecated: false } });\n',
       ]],
       pattern: /cyclic static catalogue reference through label/u,
     },
     {
       files: [[
-        "f/foreign/foreign.icon.ts",
-        'import { Icon } from "@luscious-garden/aster-not-core";\n\nexport const Foreign = Icon.define({ identity: { name: "foreign" }, metadata: { displayName: "Foreign", rtl: "preserve", deprecated: false } });\n',
+        "f/foreign/foreign-outline.icon.ts",
+        'import { Icon } from "@luscious-garden/aster-not-core";\n\nexport const ForeignOutline = Icon.define({ identity: { name: "foreign", variant: "outline" }, metadata: { displayName: "Foreign", rtl: "preserve", deprecated: false } });\n',
       ]],
       pattern: /must import Icon from @luscious-garden\/aster-core as one runtime named import/u,
     },
     {
       files: [[
-        "t/type-only/type-only.icon.ts",
-        'import type { Icon } from "@luscious-garden/aster-core";\n\nexport const TypeOnly = Icon.define({ identity: { name: "type-only" }, metadata: { displayName: "Type Only", rtl: "preserve", deprecated: false } });\n',
+        "t/type-only/type-only-outline.icon.ts",
+        'import type { Icon } from "@luscious-garden/aster-core";\n\nexport const TypeOnlyOutline = Icon.define({ identity: { name: "type-only", variant: "outline" }, metadata: { displayName: "Type Only", rtl: "preserve", deprecated: false } });\n',
       ]],
       pattern: /must import Icon from @luscious-garden\/aster-core as one runtime named import/u,
     },
     {
-      files: [["x/camera/camera.icon.ts", iconSource("camera")]],
+      files: [["x/camera/camera-outline.icon.ts", iconSource("camera")]],
       pattern: /Invalid canonical catalogue source initial directory/u,
     },
   ];
@@ -953,16 +998,16 @@ test("rejects non-runtime collection members before replacing outputs", async ()
       collectionSource(
         "sample",
         [
-          'import type { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+          'import type { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
         ],
-        [{ alias: "alphaIcon", symbol: "AlphaIcon" }],
+        [{ alias: "alphaIcon", symbol: "AlphaIconOutline" }],
       ),
       "utf8",
     );
 
     await assert.rejects(
       synchroniseIconsCatalogue(root),
-      /collection member AlphaIcon must use a runtime named import/u,
+      /collection member AlphaIconOutline must use a runtime named import/u,
     );
     assert.deepEqual(await readGeneratedOutputs(root), outputs);
   } finally {
@@ -976,12 +1021,12 @@ test("rejects unsupported collection icon dictionary syntax before replacing out
       source: collectionSource(
         "sample",
         [
-          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+          'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
         ],
-        [{ alias: "alphaIcon", symbol: "AlphaIcon" }],
+        [{ alias: "alphaIcon", symbol: "AlphaIconOutline" }],
       ).replace(
-        "  icons: {\n    alphaIcon: AlphaIcon,\n  },",
-        "  icons: [AlphaIcon],",
+        "  icons: {\n    alphaIcon: AlphaIconOutline,\n  },",
+        "  icons: [AlphaIconOutline],",
       ),
       pattern: /must declare icons as an object literal/u,
     },
@@ -989,21 +1034,21 @@ test("rejects unsupported collection icon dictionary syntax before replacing out
       source: collectionSourceWithIcons(
         "sample",
         [
-          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+          'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
         ],
-        ["    AlphaIcon: AlphaIcon,"],
+        ["    AlphaIconOutline: AlphaIconOutline,"],
       ),
-      pattern: /collection icon alias AlphaIcon must use lower camel-case syntax/u,
+      pattern: /collection icon alias AlphaIconOutline must use lower camel-case syntax/u,
     },
     {
       source: collectionSourceWithIcons(
         "sample",
         [
-          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+          'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
         ],
         [
-          "    alphaIcon: AlphaIcon,",
-          "    alphaIcon: AlphaIcon,",
+          "    alphaIcon: AlphaIconOutline,",
+          "    alphaIcon: AlphaIconOutline,",
         ],
       ),
       pattern: /contains duplicate collection icon alias alphaIcon/u,
@@ -1012,32 +1057,22 @@ test("rejects unsupported collection icon dictionary syntax before replacing out
       source: collectionSourceWithIcons(
         "sample",
         [
-          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+          'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
         ],
         [
-          "    alphaIcon: AlphaIcon,",
-          "    repeatedAlpha: AlphaIcon,",
+          "    alphaIcon: AlphaIconOutline,",
+          "    repeatedAlpha: AlphaIconOutline,",
         ],
       ),
-      pattern: /contains duplicate collection member AlphaIcon/u,
+      pattern: /contains duplicate collection member AlphaIconOutline/u,
     },
     {
       source: collectionSourceWithIcons(
         "sample",
         [
-          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+          'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
         ],
-        ["    ...{ alphaIcon: AlphaIcon },"],
-      ),
-      pattern: /must use direct lower camel-case properties/u,
-    },
-    {
-      source: collectionSourceWithIcons(
-        "sample",
-        [
-          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
-        ],
-        ["    [\"alphaIcon\"]: AlphaIcon,"],
+        ["    ...{ alphaIcon: AlphaIconOutline },"],
       ),
       pattern: /must use direct lower camel-case properties/u,
     },
@@ -1045,9 +1080,19 @@ test("rejects unsupported collection icon dictionary syntax before replacing out
       source: collectionSourceWithIcons(
         "sample",
         [
-          'import { AlphaIcon } from "../../../glyphs/a/alpha-icon/alpha-icon.icon.js";',
+          'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
         ],
-        ["    get alphaIcon() { return AlphaIcon; },"],
+        ["    [\"alphaIcon\"]: AlphaIconOutline,"],
+      ),
+      pattern: /must use direct lower camel-case properties/u,
+    },
+    {
+      source: collectionSourceWithIcons(
+        "sample",
+        [
+          'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
+        ],
+        ["    get alphaIcon() { return AlphaIconOutline; },"],
       ),
       pattern: /must use direct lower camel-case properties/u,
     },
@@ -1145,7 +1190,7 @@ test("rejects invalid static authority bindings before replacing outputs", async
 
   for (const fixture of cases) {
     const root = await createPackageFixture();
-    const zetaPath = resolve(root, "src/glyphs/z/zeta/zeta.icon.ts");
+    const zetaPath = resolve(root, "src/glyphs/z/zeta/zeta-outline.icon.ts");
 
     try {
       await synchroniseIconsCatalogue(root);
@@ -1156,9 +1201,9 @@ test("rejects invalid static authority bindings before replacing outputs", async
           'import { Icon } from "@luscious-garden/aster-core";',
           ...fixture.imports,
           "",
-          "export const Zeta = Icon.define({",
-          '  identity: { namespace: fixtureAuthorship.namespace, name: "zeta" },',
-          '  metadata: { displayName: "Zeta", rtl: "preserve", deprecated: false },',
+          "export const ZetaOutline = Icon.define({",
+          '  identity: { namespace: fixtureAuthorship.namespace, name: "zeta", variant: "outline" },',
+          '  metadata: { displayName: "ZetaOutline", rtl: "preserve", deprecated: false },',
           "});",
           "",
         ].join("\n"),

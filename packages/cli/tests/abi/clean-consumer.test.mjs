@@ -80,9 +80,7 @@ const expectedCollectionPaths = Object.freeze(
         icon.identity.namespace === undefined
           ? ""
           : `${icon.identity.namespace}/`
-      }${icon.identity.name}${
-        icon.identity.variant === undefined ? "" : `@${icon.identity.variant}`
-      }.svg`,
+      }${icon.identity.name}@${icon.identity.variant}.svg`,
     )
     .sort((left, right) => left.localeCompare(right)),
 );
@@ -402,7 +400,7 @@ test("executes packaged README examples through packed package entrypoints", asy
     },
     {
       name: "icons",
-      result: 'definition === Camera && definition.identity.namespace === "aster" && definition.identity.name === "camera" && Object.isFrozen(definition)',
+      result: 'definition === CameraOutline && definition.identity.namespace === "aster" && definition.identity.name === "camera" && Object.isFrozen(definition)',
     },
     {
       name: "svg",
@@ -440,7 +438,7 @@ test("executes packaged README examples through packed package entrypoints", asy
 
 test("composes packed Core, Icons, and SVG through public consumer entrypoints", () => {
   const baseIcon = asterIconDefinitions.find(
-    (icon) => icon.identity.variant === undefined,
+    (icon) => icon.identity.variant === "outline",
   );
   const collection = asterCollectionDefinitions[0];
   assert.ok(baseIcon, "Expected one packed base icon.");
@@ -451,12 +449,12 @@ test("composes packed Core, Icons, and SVG through public consumer entrypoints",
     'import { AsterIconManifest, AsterCollectionManifest } from "@luscious-garden/aster-icons/manifest";',
     'import { AsterIconLoaders, AsterCollectionLoaders } from "@luscious-garden/aster-icons/dynamic";',
     'import { Svg } from "@luscious-garden/aster-svg";',
-    "const iconEntry = AsterIconManifest.find(({ identity }) => identity.variant === undefined);",
+    'const iconEntry = AsterIconManifest.find(({ identity }) => identity.variant === "outline");',
     "const collectionEntry = AsterCollectionManifest[0];",
     'if (!iconEntry || !collectionEntry) throw new Error("Missing packed catalogue entries");',
     "const icon = await AsterIconLoaders[iconEntry.key]();",
     "const collection = await AsterCollectionLoaders[collectionEntry.key]();",
-    "const directIcon = await import(`@luscious-garden/aster-icons/${iconEntry.identity.name}`);",
+    "const directIcon = await import(`@luscious-garden/aster-icons/${iconEntry.identity.name}/${iconEntry.identity.variant}`);",
     "const directCollection = await import(`@luscious-garden/aster-icons/collections/${collectionEntry.identity.name}`);",
     "const rebuilt = Icon.define(icon);",
     "const markup = Svg.render(rebuilt);",
@@ -475,7 +473,7 @@ test("composes packed Core, Icons, and SVG through public consumer entrypoints",
   assert.deepEqual(JSON.parse(executed.stdout), {
     icon: `${baseIcon.identity.namespace === undefined
       ? ""
-      : `${baseIcon.identity.namespace}/`}${baseIcon.identity.name}`,
+      : `${baseIcon.identity.namespace}/`}${baseIcon.identity.name}@${baseIcon.identity.variant}`,
     collection: `${collection.identity.namespace === undefined
       ? ""
       : `${collection.identity.namespace}/`}${collection.identity.name}`,

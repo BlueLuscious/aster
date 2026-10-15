@@ -14,7 +14,7 @@ import { IconImport, iconImportFormats } from "@luscious-garden/aster-import";
 const inspected = IconImport.inspect({
   format: iconImportFormats.svg,
   sourceId: "external/disc.svg",
-  identity: { namespace: "example", name: "disc" },
+  identity: { namespace: "example", name: "disc", variant: "outline" },
   content: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>',
 });
 ```

@@ -9,8 +9,8 @@ collection-owned state.
 ## Direct imports
 
 ```ts
-import { ArrowLeft } from "@luscious-garden/aster-icons/arrow-left";
-import { Search } from "@luscious-garden/aster-icons/search";
+import { ArrowLeftOutline } from "@luscious-garden/aster-icons/arrow-left/outline";
+import { SearchOutline } from "@luscious-garden/aster-icons/search/outline";
 ```
 
 A direct import evaluates its minimal generated facade, the selected definition and applicable
@@ -18,10 +18,20 @@ shared authoring authorities, not sibling icons or a collection. The physical
 `src/glyphs/` layout remains private; [Catalogue Source Tooling](../../../tooling/catalogue/index.md#source-convention)
 owns filename, symbol and public-path validation.
 
-Renditions share a base name and add `identity.variant`. For example, an authored
+Every definition declares `identity.variant`; the existing artwork explicitly uses `outline`.
+Renditions of one glyph share its namespace and name. For example, an authored
 `camera@stippled` rendition under namespace `aster` would export `CameraStippled` through
 `@luscious-garden/aster-icons/camera/stippled`. A different concept such as `camera-retro`
-remains a separate name. These are naming examples, not currently distributed variants.
+remains a separate name. Stippled is a naming example, not currently distributed artwork.
+
+## Explicit treatment migration
+
+The old `Camera` export and `/camera` definition route are removed. Import `CameraOutline` from
+`/camera/outline`; other existing icons follow the same rule. Loader and CLI identities now require
+`aster/camera@outline`, not `aster/camera`. There is no default treatment or compatibility alias.
+Collections remain explicit selections of concrete definitions; their aliases and ordered
+`members` still expose those definitions directly. Custom Core and Import inputs, including
+metadata replacement identities, must declare a treatment rather than relying on inference.
 
 ## Definition ownership
 

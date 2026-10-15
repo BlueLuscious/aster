@@ -146,6 +146,6 @@ export class CollectionMembershipNormaliser {
    */
   #identityKey(definition: IconDefinition): string {
     const { namespace, name, variant } = definition.identity;
-    return `${namespace ?? ""}/${name}/${variant ?? ""}`;
+    return `${namespace ?? ""}/${name}/${variant}`;
   }
 }

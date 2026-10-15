@@ -461,7 +461,7 @@ test("prepares immutable CLI benchmark fixtures", () => {
   assert.ok(Object.isFrozen(fixtures.context));
   assert.ok(Object.isFrozen(fixtures.invocations));
   assert.ok(Object.isFrozen(fixtures.arguments));
-  assert.equal(fixtures.invocations.exportIcon.identity, "benchmark/fixture-01");
+  assert.equal(fixtures.invocations.exportIcon.identity, "benchmark/fixture-01@fixture");
   assert.equal(fixtures.invocations.reviewCollection.identity, "benchmark");
   assert.equal(fixtures.context.catalogues[0]?.identity, "fixture");
 });

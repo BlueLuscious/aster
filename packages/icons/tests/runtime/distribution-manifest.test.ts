@@ -20,7 +20,7 @@ import {
  * @returns Canonical manifest key.
  */
 function iconKey(identity: IconIdentity): string {
-  return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}${identity.variant === undefined ? "" : `@${identity.variant}`}`;
+  return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}@${identity.variant}`;
 }
 
 /**
@@ -63,11 +63,7 @@ test("publishes exact metadata-only icon and collection records", async () => {
       return {
         key: iconKey(definition.identity),
         identity: definition.identity,
-        symbol: `${symbolSegment(definition.identity.name)}${
-          definition.identity.variant === undefined
-            ? ""
-            : symbolSegment(definition.identity.variant)
-        }`,
+        symbol: `${symbolSegment(definition.identity.name)}${symbolSegment(definition.identity.variant)}`,
         displayName: metadata.displayName,
         ...(metadata.tags === undefined ? {} : { tags: metadata.tags }),
         rtl: metadata.rtl,

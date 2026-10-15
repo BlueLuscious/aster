@@ -27,6 +27,7 @@ async function collectFiles(root, extension) {
 function createDefinitionInput() {
   return {
     identity: {
+      variant: "outline",
       namespace: "minimal",
       name: "camera",
     },

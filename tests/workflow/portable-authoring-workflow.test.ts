@@ -30,7 +30,7 @@ const arrowMetadata: IconMetadata = {
 
 function authorArrowLeft(): IconDefinition {
   return Icon.define({
-    identity: { namespace: "workflow", name: "arrow-left" },
+    identity: { variant: "outline", namespace: "workflow", name: "arrow-left" },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [
       { kind: "line", x1: 20, y1: 12, x2: 4, y2: 12 },
@@ -62,7 +62,7 @@ function adoptionRequest(
     source: {
       format: iconImportFormats.svg,
       sourceId: `workflow/${namespace}/${name}.svg`,
-      identity: { namespace, name },
+      identity: { variant: "outline", namespace, name },
       content: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${geometry}</svg>`,
     },
     metadata: {
@@ -110,7 +110,7 @@ test("adopts equivalent SVG into editable TypeScript and the same portable defin
     source: {
       format: iconImportFormats.svg,
       sourceId: "workflow/input/arrow-left.svg",
-      identity: { namespace: "workflow", name: "arrow-left" },
+      identity: { variant: "outline", namespace: "workflow", name: "arrow-left" },
       content:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="10 6 4 12 10 18"/></svg>',
     },
@@ -131,7 +131,7 @@ test("adopts equivalent SVG into editable TypeScript and the same portable defin
 
 test("round trips equivalent structured and compact SVG paths", () => {
   const authored = Icon.define({
-    identity: { namespace: "workflow", name: "compound-path" },
+    identity: { variant: "outline", namespace: "workflow", name: "compound-path" },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [{
       kind: "path",

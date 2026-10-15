@@ -30,7 +30,7 @@ import {
 const source = {
   format: iconImportFormats.svg,
   sourceId: "icons/check.svg",
-  identity: { namespace: "aster", name: "check" },
+  identity: { variant: "outline", namespace: "aster", name: "check" },
   content: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 12h16" /></svg>',
 } satisfies IconImportSourceType;
 

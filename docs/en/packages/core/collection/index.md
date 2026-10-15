@@ -20,7 +20,7 @@ An empty `icons` dictionary is valid and produces an empty `members` list. A rel
 policy may require a populated collection without weakening the portable domain contract.
 
 `TIconMap` preserves the concrete keys supplied to `Collection.define()`. A collection defined with
-`icons: { camera: Camera }` exposes `collection.icons.camera` with autocompletion and rejects an
+`icons: { camera: CameraOutline }` exposes `collection.icons.camera` with autocompletion and rejects an
 unknown alias at compile time. Annotating the result with the broad default `CollectionDefinition`
 deliberately discards that concrete key information. The generic introduces no runtime state.
 

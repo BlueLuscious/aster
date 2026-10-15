@@ -2,8 +2,10 @@ import type {
   CollectionDefinition,
   IconDefinition,
 } from "@luscious-garden/aster-core";
-import { ArrowLeft } from "../../src/generated/facades/icons/arrow-left.js";
-import { Search } from "../../src/generated/facades/icons/search.js";
+import { ArrowLeftOutline } from "../../src/generated/facades/icons/arrow-left/outline.js";
+import { SearchOutline } from "../../src/generated/facades/icons/search/outline.js";
+// @ts-expect-error Concrete treatment facades do not retain the obsolete unsuffixed export.
+import { Search } from "../../src/generated/facades/icons/search/outline.js";
 import { Amellus } from "../../src/generated/facades/collections/amellus.js";
 // @ts-expect-error Collection facades do not retain the obsolete named export.
 import { AmellusCollection } from "../../src/generated/facades/collections/amellus.js";
@@ -26,7 +28,7 @@ import {
   AsterIconManifest,
 } from "../../src/manifest/index.js";
 
-const directDefinition: IconDefinition = ArrowLeft;
+const directDefinition: IconDefinition = ArrowLeftOutline;
 const iconManifest: readonly IconManifestEntry[] = AsterIconManifest;
 const collectionManifest: readonly CollectionManifestEntry[] =
   AsterCollectionManifest;
@@ -34,7 +36,7 @@ const iconLoaders: IconDefinitionLoaderMap = AsterIconLoaders;
 const collectionLoaders: CollectionDefinitionLoaderMap =
   AsterCollectionLoaders;
 const iconLoader: IconDefinitionLoader | undefined =
-  AsterIconLoaders["aster/arrow-left"];
+  AsterIconLoaders["aster/arrow-left@outline"];
 const collectionLoader: CollectionDefinitionLoader | undefined =
   AsterCollectionLoaders.amellus;
 const runtimeKey: string = "__proto__";
@@ -54,10 +56,10 @@ const firstAmellusMember: IconDefinition | undefined =
 directDefinition.identity.name = "changed";
 
 // @ts-expect-error Collection modules do not expose framework components.
-const component = ArrowLeft.component;
+const component = ArrowLeftOutline.component;
 
 // @ts-expect-error Collection modules do not expose rendered SVG.
-const markup = Search.svg;
+const markup = SearchOutline.svg;
 
 // @ts-expect-error Canonical manifest ordering is immutable.
 AsterIconManifest.push(AsterIconManifest[0]);
@@ -72,7 +74,7 @@ AsterCollectionManifest[0].members.push("aster/changed");
 Amellus.icons.absent;
 
 // @ts-expect-error Concrete collection aliases are immutable.
-Amellus.icons.arrowLeft = ArrowLeft;
+Amellus.icons.arrowLeft = ArrowLeftOutline;
 
 // @ts-expect-error Canonical loader maps are immutable.
 AsterIconLoaders["aster/changed"] = iconLoader;
@@ -96,3 +98,4 @@ void firstAmellusMember;
 void AmellusCollection;
 void component;
 void markup;
+void Search;

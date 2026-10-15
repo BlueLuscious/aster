@@ -77,7 +77,7 @@ test("loads every exact icon and collection definition asynchronously", async ()
     assert.deepEqual(definition.identity, entry.identity);
     assert.deepEqual(
       definition.members.map(({ identity }) =>
-        `${identity.namespace}/${identity.name}${identity.variant === undefined ? "" : `@${identity.variant}`}`
+        `${identity.namespace}/${identity.name}@${identity.variant}`
       ),
       entry.members,
     );

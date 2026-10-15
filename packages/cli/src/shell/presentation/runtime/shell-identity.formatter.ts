@@ -13,7 +13,7 @@ export class ShellIdentityFormatter {
     const namespace = identity.namespace === undefined
       ? ""
       : `${identity.namespace}/`;
-    const variant = "variant" in identity && identity.variant !== undefined
+    const variant = "variant" in identity
       ? `@${identity.variant}`
       : "";
     return `${namespace}${identity.name}${variant}`;

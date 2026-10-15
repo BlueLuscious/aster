@@ -13,7 +13,7 @@ and SVG dependencies.
 ```sh
 pnpm add -D @luscious-garden/aster-cli
 pnpm exec aster list icons
-pnpm exec aster export icon aster/camera
+pnpm exec aster export icon aster/camera@outline
 pnpm exec aster version --all
 ```
 
@@ -22,7 +22,7 @@ pnpm exec aster version --all
 ```sh
 pnpm add -g @luscious-garden/aster-cli
 aster list icons
-aster export icon aster/camera
+aster export icon aster/camera@outline
 aster version --location
 ```
 

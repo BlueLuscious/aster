@@ -60,6 +60,7 @@ export class BenchmarkCatalogueFixtureFactory {
 
     return Icon.define({
       identity: {
+        variant: "fixture",
         namespace: "benchmark",
         name: `fixture-${String(ordinal).padStart(2, "0")}`,
       },

@@ -20,7 +20,7 @@ export const iconsBaseline = Object.freeze({
       /** @description Stable report scenario identity. */
       name: "icons.import.isolated-icon",
       /** @description Public package specifier under measurement. */
-      specifier: "@luscious-garden/aster-icons/camera",
+      specifier: "@luscious-garden/aster-icons/camera/outline",
     }),
     /** @description Representative isolated collection import. */
     isolatedCollection: Object.freeze({

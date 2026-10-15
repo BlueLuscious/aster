@@ -55,7 +55,7 @@ logical path preflight ----> public SVG rendering
 complete immutable export plan
 ```
 
-Icon identities produce `[namespace/]name[@variant].svg`. Collection membership order does not
+Icon identities produce `[namespace/]name@variant.svg`. Collection membership order does not
 control artefact order. Provider registration order does not resolve ambiguity implicitly. Empty
 collections produce an empty complete plan rather than a partial or invented artefact.
 

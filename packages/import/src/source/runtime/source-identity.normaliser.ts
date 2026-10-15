@@ -28,7 +28,7 @@ export class SourceIdentityNormaliser {
       record,
       ["namespace", "name", "variant"],
       path,
-      ["name"],
+      ["name", "variant"],
     );
     const namespace =
       "namespace" in record
@@ -38,15 +38,12 @@ export class SourceIdentityNormaliser {
           )
         : undefined;
     const name = this.#slugNormaliser.normalise(record.name, `${path}.name`);
-    const variant =
-      "variant" in record
-        ? this.#slugNormaliser.normalise(record.variant, `${path}.variant`)
-        : undefined;
+    const variant = this.#slugNormaliser.normalise(record.variant, `${path}.variant`);
 
     return Object.freeze({
       ...(namespace === undefined ? {} : { namespace }),
       name,
-      ...(variant === undefined ? {} : { variant }),
+      variant,
     });
   }
 }

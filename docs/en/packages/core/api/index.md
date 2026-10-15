@@ -24,8 +24,8 @@ unknown-input handling; [Collection](../collection/index.md#runtime) owns additi
 ```ts
 import { Collection, Icon } from "@luscious-garden/aster-core";
 
-const Camera = Icon.define({
-  identity: { namespace: "example", name: "camera" },
+const CameraOutline = Icon.define({
+  identity: { namespace: "example", name: "camera", variant: "outline" },
   viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
   nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],
   metadata: {
@@ -41,7 +41,7 @@ const Camera = Icon.define({
 
 const InterfaceIcons = Collection.define({
   identity: { name: "interface-icons" },
-  icons: { camera: Camera },
+  icons: { camera: CameraOutline },
   metadata: { displayName: "Interface Icons" },
 });
 
@@ -49,7 +49,7 @@ InterfaceIcons.icons.camera;
 InterfaceIcons.members;
 ```
 
-The two membership views contain the same canonical `Camera` object. Consumers inspect definition
+The two membership views contain the same canonical `CameraOutline` object. Consumers inspect definition
 fields directly; collection alias grammar, ordering, generic output and revalidation are owned by
 [Collection](../collection/index.md).
 

@@ -15,7 +15,7 @@ descriptors are immutable and ordered by command name. Reading them executes no 
 import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";
 
 const result = await AsterCommands.execute(
-  { command: "show", subject: "icon", identity: "aster/camera" },
+  { command: "show", subject: "icon", identity: "aster/camera@outline" },
   {
     productName: "Aster",
     productVersion: "0.1.0",

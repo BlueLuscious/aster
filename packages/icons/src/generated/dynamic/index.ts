@@ -11,83 +11,83 @@ import type {
  * @remarks The local object is exported only after prototype removal and freezing.
  */
 const iconLoaders: IconDefinitionLoaderMap = {
-  "aster/arrow-down": Object.freeze(
-    () => import("../facades/icons/arrow-down.js").then(({ ArrowDown }) => ArrowDown),
+  "aster/arrow-down@outline": Object.freeze(
+    () => import("../facades/icons/arrow-down/outline.js").then(({ ArrowDownOutline }) => ArrowDownOutline),
   ),
-  "aster/arrow-left": Object.freeze(
-    () => import("../facades/icons/arrow-left.js").then(({ ArrowLeft }) => ArrowLeft),
+  "aster/arrow-left@outline": Object.freeze(
+    () => import("../facades/icons/arrow-left/outline.js").then(({ ArrowLeftOutline }) => ArrowLeftOutline),
   ),
-  "aster/arrow-right": Object.freeze(
-    () => import("../facades/icons/arrow-right.js").then(({ ArrowRight }) => ArrowRight),
+  "aster/arrow-right@outline": Object.freeze(
+    () => import("../facades/icons/arrow-right/outline.js").then(({ ArrowRightOutline }) => ArrowRightOutline),
   ),
-  "aster/arrow-up": Object.freeze(
-    () => import("../facades/icons/arrow-up.js").then(({ ArrowUp }) => ArrowUp),
+  "aster/arrow-up@outline": Object.freeze(
+    () => import("../facades/icons/arrow-up/outline.js").then(({ ArrowUpOutline }) => ArrowUpOutline),
   ),
-  "aster/bell": Object.freeze(
-    () => import("../facades/icons/bell.js").then(({ Bell }) => Bell),
+  "aster/bell@outline": Object.freeze(
+    () => import("../facades/icons/bell/outline.js").then(({ BellOutline }) => BellOutline),
   ),
-  "aster/camera": Object.freeze(
-    () => import("../facades/icons/camera.js").then(({ Camera }) => Camera),
+  "aster/camera@outline": Object.freeze(
+    () => import("../facades/icons/camera/outline.js").then(({ CameraOutline }) => CameraOutline),
   ),
-  "aster/check": Object.freeze(
-    () => import("../facades/icons/check.js").then(({ Check }) => Check),
+  "aster/check@outline": Object.freeze(
+    () => import("../facades/icons/check/outline.js").then(({ CheckOutline }) => CheckOutline),
   ),
-  "aster/close": Object.freeze(
-    () => import("../facades/icons/close.js").then(({ Close }) => Close),
+  "aster/close@outline": Object.freeze(
+    () => import("../facades/icons/close/outline.js").then(({ CloseOutline }) => CloseOutline),
   ),
-  "aster/cloud": Object.freeze(
-    () => import("../facades/icons/cloud.js").then(({ Cloud }) => Cloud),
+  "aster/cloud@outline": Object.freeze(
+    () => import("../facades/icons/cloud/outline.js").then(({ CloudOutline }) => CloudOutline),
   ),
-  "aster/download": Object.freeze(
-    () => import("../facades/icons/download.js").then(({ Download }) => Download),
+  "aster/download@outline": Object.freeze(
+    () => import("../facades/icons/download/outline.js").then(({ DownloadOutline }) => DownloadOutline),
   ),
-  "aster/folder": Object.freeze(
-    () => import("../facades/icons/folder.js").then(({ Folder }) => Folder),
+  "aster/folder@outline": Object.freeze(
+    () => import("../facades/icons/folder/outline.js").then(({ FolderOutline }) => FolderOutline),
   ),
-  "aster/heart": Object.freeze(
-    () => import("../facades/icons/heart.js").then(({ Heart }) => Heart),
+  "aster/heart@outline": Object.freeze(
+    () => import("../facades/icons/heart/outline.js").then(({ HeartOutline }) => HeartOutline),
   ),
-  "aster/home": Object.freeze(
-    () => import("../facades/icons/home.js").then(({ Home }) => Home),
+  "aster/home@outline": Object.freeze(
+    () => import("../facades/icons/home/outline.js").then(({ HomeOutline }) => HomeOutline),
   ),
-  "aster/info": Object.freeze(
-    () => import("../facades/icons/info.js").then(({ Info }) => Info),
+  "aster/info@outline": Object.freeze(
+    () => import("../facades/icons/info/outline.js").then(({ InfoOutline }) => InfoOutline),
   ),
-  "aster/leaf": Object.freeze(
-    () => import("../facades/icons/leaf.js").then(({ Leaf }) => Leaf),
+  "aster/leaf@outline": Object.freeze(
+    () => import("../facades/icons/leaf/outline.js").then(({ LeafOutline }) => LeafOutline),
   ),
-  "aster/lock": Object.freeze(
-    () => import("../facades/icons/lock.js").then(({ Lock }) => Lock),
+  "aster/lock@outline": Object.freeze(
+    () => import("../facades/icons/lock/outline.js").then(({ LockOutline }) => LockOutline),
   ),
-  "aster/mail": Object.freeze(
-    () => import("../facades/icons/mail.js").then(({ Mail }) => Mail),
+  "aster/mail@outline": Object.freeze(
+    () => import("../facades/icons/mail/outline.js").then(({ MailOutline }) => MailOutline),
   ),
-  "aster/menu": Object.freeze(
-    () => import("../facades/icons/menu.js").then(({ Menu }) => Menu),
+  "aster/menu@outline": Object.freeze(
+    () => import("../facades/icons/menu/outline.js").then(({ MenuOutline }) => MenuOutline),
   ),
-  "aster/pause": Object.freeze(
-    () => import("../facades/icons/pause.js").then(({ Pause }) => Pause),
+  "aster/pause@outline": Object.freeze(
+    () => import("../facades/icons/pause/outline.js").then(({ PauseOutline }) => PauseOutline),
   ),
-  "aster/play": Object.freeze(
-    () => import("../facades/icons/play.js").then(({ Play }) => Play),
+  "aster/play@outline": Object.freeze(
+    () => import("../facades/icons/play/outline.js").then(({ PlayOutline }) => PlayOutline),
   ),
-  "aster/plus": Object.freeze(
-    () => import("../facades/icons/plus.js").then(({ Plus }) => Plus),
+  "aster/plus@outline": Object.freeze(
+    () => import("../facades/icons/plus/outline.js").then(({ PlusOutline }) => PlusOutline),
   ),
-  "aster/search": Object.freeze(
-    () => import("../facades/icons/search.js").then(({ Search }) => Search),
+  "aster/search@outline": Object.freeze(
+    () => import("../facades/icons/search/outline.js").then(({ SearchOutline }) => SearchOutline),
   ),
-  "aster/settings": Object.freeze(
-    () => import("../facades/icons/settings.js").then(({ Settings }) => Settings),
+  "aster/settings@outline": Object.freeze(
+    () => import("../facades/icons/settings/outline.js").then(({ SettingsOutline }) => SettingsOutline),
   ),
-  "aster/star": Object.freeze(
-    () => import("../facades/icons/star.js").then(({ Star }) => Star),
+  "aster/star@outline": Object.freeze(
+    () => import("../facades/icons/star/outline.js").then(({ StarOutline }) => StarOutline),
   ),
-  "aster/user": Object.freeze(
-    () => import("../facades/icons/user.js").then(({ User }) => User),
+  "aster/user@outline": Object.freeze(
+    () => import("../facades/icons/user/outline.js").then(({ UserOutline }) => UserOutline),
   ),
-  "aster/warning": Object.freeze(
-    () => import("../facades/icons/warning.js").then(({ Warning }) => Warning),
+  "aster/warning@outline": Object.freeze(
+    () => import("../facades/icons/warning/outline.js").then(({ WarningOutline }) => WarningOutline),
   ),
 };
 Object.setPrototypeOf(iconLoaders, null);

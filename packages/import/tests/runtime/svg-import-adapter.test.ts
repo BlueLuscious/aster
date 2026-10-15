@@ -14,7 +14,7 @@ function inspect(fixture: string) {
   const source: SvgIconImportSource = {
     format: iconImportFormats.svg,
     sourceId: `fixtures/${fixture}`,
-    identity: { namespace: "aster", name: "adapter-evidence" },
+    identity: { variant: "outline", namespace: "aster", name: "adapter-evidence" },
     content: readFileSync(new URL(fixture, fixtureRoot), "utf8"),
   };
 
@@ -25,7 +25,7 @@ test("rejects renderer and unrelated data attributes outside the import subset",
   const inspectSource = (content: string) => IconImport.inspect({
     format: iconImportFormats.svg,
     sourceId: "inline/renderer-marker.svg",
-    identity: { namespace: "aster", name: "marker-evidence" },
+    identity: { variant: "outline", namespace: "aster", name: "marker-evidence" },
     content,
   });
   const source = (extra = "") =>

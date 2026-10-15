@@ -1,4 +1,5 @@
 import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family-kinds.constant.mjs";
+import { catalogueSourceGeneration } from "../constants/catalogue-source-generation.constant.mjs";
 import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
 /**
@@ -8,8 +9,8 @@ export class CatalogueSourceLayoutNormaliser {
   /** @description Package-owned icon and collection name grammar. */
   static #namePattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
 
-  /** @description Portable Core slug grammar retained by optional icon variants. */
-  static #variantPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+  /** @description Portable Core slug grammar retained by required icon treatments. */
+  static #variantPattern = new RegExp(catalogueSourceGeneration.slugPatternSource, "u");
 
   /**
    * @description Resolves one source-family-relative path to canonical identity and symbol.
@@ -78,6 +79,12 @@ export class CatalogueSourceLayoutNormaliser {
     }
 
     if (stem === name) {
+      if (family.kind === catalogueSourceFamilyKinds.icon) {
+        throw new CatalogueSourceError(
+          `Canonical icon source requires an explicit variant filename: ${relativePath}`,
+        );
+      }
+
       return Object.freeze({ name, variant: undefined });
     }
 

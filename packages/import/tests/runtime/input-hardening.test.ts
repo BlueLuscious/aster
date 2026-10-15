@@ -25,7 +25,7 @@ function source(name = "hardening"): SvgIconImportSource {
   return {
     format: iconImportFormats.svg,
     sourceId: `hardening/${name}.svg`,
-    identity: { namespace: "hardening", name },
+    identity: { variant: "outline", namespace: "hardening", name },
     content:
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 12h16"/></svg>',
   };
@@ -356,7 +356,7 @@ test("rejects missing required fields across every public operation", () => {
       execute: () => IconImport.inspect({
         format: iconImportFormats.svg,
         sourceId: "missing/content.svg",
-        identity: { name: "missing-content" },
+        identity: { variant: "outline", name: "missing-content" },
       } as never),
       path: "source.content",
     },

@@ -12,10 +12,10 @@ pnpm add @luscious-garden/aster-svg @luscious-garden/aster-icons
 ```
 
 ```ts
-import { ArrowLeft } from "@luscious-garden/aster-icons/arrow-left";
+import { ArrowLeftOutline } from "@luscious-garden/aster-icons/arrow-left/outline";
 import { Svg } from "@luscious-garden/aster-svg";
 
-const markup = Svg.render(ArrowLeft, { size: 24, label: "Back" });
+const markup = Svg.render(ArrowLeftOutline, { size: 24, label: "Back" });
 ```
 
 Definitions authored with Core work through the same rendering API.

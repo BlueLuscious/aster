@@ -8,12 +8,12 @@ import type {
  */
 export class CatalogueIdentityFormatter {
   /**
-   * @description Formats one portable icon identity with optional namespace and variant.
+   * @description Formats one portable icon identity with optional namespace and required treatment.
    * @param identity - Accepted portable icon identity.
-   * @returns Canonical `[namespace/]name[@variant]` value.
+   * @returns Canonical `[namespace/]name@variant` value.
    */
   icon(identity: IconIdentity): string {
-    return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}${identity.variant === undefined ? "" : `@${identity.variant}`}`;
+    return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}@${identity.variant}`;
   }
 
   /**

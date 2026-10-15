@@ -25,12 +25,11 @@ inferred from directories.
 
 Discovery accepts exact role filenames recursively beneath configured roots, excluding unsupported
 files and non-file entries. Each source exports exactly one constant with the PascalCase form of its
-slug: `arrow-left.icon.ts` exports `ArrowLeft`.
+name and treatment: `arrow-left-outline.icon.ts` exports `ArrowLeftOutline`.
 
 Only the nested layout is accepted:
 
 ```text
-src/glyphs/<initial>/<name>/<name>.icon.ts
 src/glyphs/<initial>/<name>/<name>-<variant>.icon.ts
 src/collections/<initial>/<name>/<name>.collection.ts
 ```
@@ -38,7 +37,7 @@ src/collections/<initial>/<name>/<name>.collection.ts
 The initial directory equals the first letter of the complete name. Names begin with an ASCII
 lowercase letter and use lowercase alphanumeric segments separated by one hyphen; variants use
 Core's portable slug syntax.
-A base filename repeats the complete name, and a variant appends its declared variant. Thus
+Every icon filename repeats the complete name and appends its required treatment. Thus
 `c/camera-retro/camera-retro-filled.icon.ts` declares name `camera-retro`, variant `filled`
 and export `CameraRetroFilled`, not name `camera`.
 
@@ -49,7 +48,7 @@ must agree with the path. [Icons Collections](../../packages/icons/collections/i
 owns consumer access and the export-naming migration.
 
 A collection's explicit `icons` object assigns lower camel-case aliases directly to identifiers
-from named relative runtime imports, for example `icons: { camera: Camera }`. Each imported
+from named relative runtime imports, for example `icons: { camera: CameraOutline }`. Each imported
 specifier and symbol must resolve to one discovered canonical icon. The dictionary rejects arrays,
 shorthand, quoted/computed keys, spreads, accessors, calls, nested values, non-runtime imports,
 duplicate aliases and duplicate members. `catalogueCollectionIconAliasPatternSource` owns static
@@ -90,7 +89,7 @@ caches last one complete inspection and are cleared before the next.
 | Contract | Responsibility and relationship |
 | --- | --- |
 | `ICatalogueSourceFamily` | Configures a family's Core factory, physical root and generated facade root. |
-| `ICatalogueSourceIdentity` | Carries path-owned name, optional variant, symbol and public subpath from layout normalisation. |
+| `ICatalogueSourceIdentity` | Carries path-owned name, symbol and public subpath; treatment is required for icons and absent for collections. |
 | `ICatalogueCollectionMemberReference` | Retains an alias and its imported identifier, exported symbol and module specifier for relationship validation. |
 | `ICatalogueIconManifestData` | Carries statically extracted icon metadata without geometry. |
 | `ICatalogueCollectionManifestData` | Carries extracted collection metadata and ordered member keys. |

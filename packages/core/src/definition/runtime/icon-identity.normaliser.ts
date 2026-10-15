@@ -24,17 +24,14 @@ export class IconIdentityNormaliser {
    */
   normalise(value: unknown, path = "definition.identity"): IconIdentity {
     const record = this.#validator.record(value, path);
-    this.#validator.exactFields(record, ["namespace", "name", "variant"], path, ["name"]);
+    this.#validator.exactFields(record, ["namespace", "name", "variant"], path, ["name", "variant"]);
 
     const namespace =
       Object.hasOwn(record, "namespace")
         ? this.#validator.text(record.namespace, `${path}.namespace`)
         : undefined;
     const name = this.#validator.text(record.name, `${path}.name`);
-    const variant =
-      Object.hasOwn(record, "variant")
-        ? this.#validator.text(record.variant, `${path}.variant`)
-        : undefined;
+    const variant = this.#validator.text(record.variant, `${path}.variant`);
 
     if (namespace !== undefined) {
       this.#slugNormaliser.normalise(namespace, `${path}.namespace`);
@@ -42,14 +39,12 @@ export class IconIdentityNormaliser {
 
     this.#slugNormaliser.normalise(name, `${path}.name`);
 
-    if (variant !== undefined) {
-      this.#slugNormaliser.normalise(variant, `${path}.variant`);
-    }
+    this.#slugNormaliser.normalise(variant, `${path}.variant`);
 
     return Object.freeze({
       ...(namespace === undefined ? {} : { namespace }),
       name,
-      ...(variant === undefined ? {} : { variant }),
+      variant,
     });
   }
 }

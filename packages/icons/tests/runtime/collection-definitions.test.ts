@@ -45,7 +45,7 @@ test("derives ordered Amellus membership from its source-owned aliases", () => {
     Amellus.members.every((definition) =>
       Object.hasOwn(
         AsterIconLoaders,
-        `${definition.identity.namespace}/${definition.identity.name}`,
+        `${definition.identity.namespace}/${definition.identity.name}@${definition.identity.variant}`,
       )
     ),
   );
@@ -75,10 +75,10 @@ test("keeps icon identity independent from collection membership", async () => {
   assert.equal(retained.identity, retainedIdentity);
   assert.equal(reducedCollection.members.includes(retained), false);
   const retainedLoader = AsterIconLoaders[
-    `${retained.identity.namespace}/${retained.identity.name}`
+    `${retained.identity.namespace}/${retained.identity.name}@${retained.identity.variant}`
   ];
   const omittedLoader = AsterIconLoaders[
-    `${omitted.identity.namespace}/${omitted.identity.name}`
+    `${omitted.identity.namespace}/${omitted.identity.name}@${omitted.identity.variant}`
   ];
   assert.ok(retainedLoader);
   assert.ok(omittedLoader);

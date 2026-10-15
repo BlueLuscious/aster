@@ -16,7 +16,7 @@ package-manager, framework, or plugin capability.
 | `StructuredDataInspector` | Snapshots exact plain records and dense ordinary arrays without executing authored accessors. |
 
 Provider identities and tags are lowercase ASCII kebab-case slugs. Collection identities use
-`[namespace/]name`; icon identities also permit `@variant`. Every section follows the same slug
+`[namespace/]name`; icon identities require `[namespace/]name@variant`. Every section follows the same slug
 grammar. These exact textual identities are not collection-local aliases or inferred namespaces.
 
 `StructuredDataInspector` accepts records whose prototype is either `Object.prototype` or `null`.

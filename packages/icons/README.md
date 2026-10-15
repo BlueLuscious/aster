@@ -12,9 +12,9 @@ pnpm add @luscious-garden/aster-icons
 ### Individual icons
 
 ```ts
-import { Camera } from "@luscious-garden/aster-icons/camera";
+import { CameraOutline } from "@luscious-garden/aster-icons/camera/outline";
 
-const definition = Camera;
+const definition = CameraOutline;
 ```
 
 Pass the definition to a renderer such as

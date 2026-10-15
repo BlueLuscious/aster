@@ -43,7 +43,7 @@ function createIcon(
         ? {}
         : { namespace: options.namespace }),
       name,
-      ...(options.variant === undefined ? {} : { variant: options.variant }),
+      variant: options.variant ?? "outline",
     },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [{
@@ -132,7 +132,7 @@ const representativeCollection = createCollection(
   "representatives",
   [representativeIcon],
 );
-const representativeIdentity = "testing/representative";
+const representativeIdentity = "testing/representative@outline";
 const representativeLabel = representativeIcon.metadata.displayName;
 const context = createContext([
   createProvider(
@@ -226,9 +226,7 @@ test("loads only exact base, variant, and collection export definitions", async 
     {
       onDiscover: () => discoveries += 1,
       onLoadIcon: (identity) => iconLoads.push(
-        `${identity.namespace}/${identity.name}${
-          identity.variant === undefined ? "" : `@${identity.variant}`
-        }`,
+        `${identity.namespace}/${identity.name}@${identity.variant}`,
       ),
       onLoadCollection: (identity) => collectionLoads.push(
         `${identity.namespace}/${identity.name}`,
@@ -239,7 +237,7 @@ test("loads only exact base, variant, and collection export definitions", async 
   const baseResult = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "testing/camera",
+    identity: "testing/camera@outline",
   }, acceptedContext);
   const variantResult = await AsterCommands.execute({
     command: "export",
@@ -256,7 +254,7 @@ test("loads only exact base, variant, and collection export definitions", async 
   assert.equal(variantResult.ok, true);
   assert.equal(collectionResult.ok, true);
   assert.equal(discoveries, 3);
-  assert.deepEqual(iconLoads, ["testing/camera", "testing/camera@filled"]);
+  assert.deepEqual(iconLoads, ["testing/camera@outline", "testing/camera@filled"]);
   assert.deepEqual(collectionLoads, ["testing/cameras"]);
 
   if (variantResult.ok && variantResult.payload.kind === "export") {
@@ -269,7 +267,7 @@ test("loads only exact base, variant, and collection export definitions", async 
   if (collectionResult.ok && collectionResult.payload.kind === "export") {
     assert.deepEqual(
       collectionResult.payload.plan.artefacts.map((artefact) => artefact.path),
-      ["testing/camera.svg", "testing/camera@filled.svg"],
+      ["testing/camera@filled.svg", "testing/camera@outline.svg"],
     );
   }
 });
@@ -296,7 +294,7 @@ test("preserves existing exact lookup failures for export", async () => {
   const result = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "testing/missing",
+    identity: "testing/missing@outline",
   }, context);
 
   assert.equal(result.ok, false);
@@ -342,7 +340,7 @@ test("exports empty collections and canonical namespace and variant paths", asyn
   if (populatedResult.ok && populatedResult.payload.kind === "export") {
     assert.deepEqual(
       populatedResult.payload.plan.artefacts.map((artefact) => artefact.path),
-      ["standalone.svg", "testing/arrow@filled.svg"],
+      ["standalone@outline.svg", "testing/arrow@filled.svg"],
     );
   }
 });
@@ -387,7 +385,7 @@ test("keeps export ambiguity independent from provider registration order", asyn
   const invocation = {
     command: "export",
     subject: "icon",
-    identity: "testing/shared",
+    identity: "testing/shared@outline",
   } as const;
   const first = await AsterCommands.execute(invocation, createContext([beta, alpha]));
   const second = await AsterCommands.execute(invocation, createContext([alpha, beta]));
@@ -442,7 +440,7 @@ test("rejects unavailable collection members without exposing a partial plan", a
   const malformed = await AsterCommands.execute({
     command: "export",
     subject: "icon",
-    identity: "testing/missing",
+    identity: "testing/missing@outline",
   }, createContext([malformedProvider]));
 
   assert.equal(result.ok, false);
@@ -479,7 +477,7 @@ test("translates SVG failures without exposing target messages or partial artefa
   if (!result.accepted) {
     assert.equal(result.diagnostic.code, "ASTER-CLI-007");
     assert.equal(result.diagnostic.category, "render-failure");
-    assert.deepEqual(result.diagnostic.related, ["testing/zeta-invalid-definition.svg"]);
+    assert.deepEqual(result.diagnostic.related, ["testing/zeta-invalid-definition@outline.svg"]);
     assert.doesNotMatch(result.diagnostic.message, /XML 1\.0|definition\.nodes/u);
     assert.equal("value" in result, false);
   }
@@ -503,7 +501,7 @@ test("preflights path collisions before attempting SVG rendering", () => {
   if (!result.accepted) {
     assert.equal(result.diagnostic.code, "ASTER-CLI-008");
     assert.equal(result.diagnostic.category, "export-conflict");
-    assert.deepEqual(result.diagnostic.related, ["testing/collision.svg"]);
+    assert.deepEqual(result.diagnostic.related, ["testing/collision@outline.svg"]);
   }
 });
 

@@ -14,15 +14,13 @@ export class IconModuleNameFactory {
     const identity = definition.identity;
     const symbolParts = [
       ...identity.name.split("-"),
-      ...(identity.variant === undefined ? [] : identity.variant.split("-")),
+      ...identity.variant.split("-"),
     ];
     const baseSymbol = symbolParts
       .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
       .join("");
     const symbol = /^[0-9]/u.test(baseSymbol) ? `Icon${baseSymbol}` : baseSymbol;
-    const suggestedPath = identity.variant === undefined
-      ? `icons/${identity.name}.icon.ts`
-      : `icons/${identity.name}/${identity.variant}.icon.ts`;
+    const suggestedPath = `icons/${identity.name}/${identity.variant}.icon.ts`;
 
     return Object.freeze({ symbol, suggestedPath });
   }

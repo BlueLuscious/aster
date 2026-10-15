@@ -24,7 +24,7 @@ const presentation = Object.freeze({
 });
 
 const goldenIcon = Icon.define({
-  identity: { namespace: "testing", name: "golden" },
+  identity: { variant: "outline", namespace: "testing", name: "golden" },
   viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
   nodes: [
     { kind: "circle", cx: 12, cy: 12, radius: 8 },
@@ -70,7 +70,7 @@ async function plan(
 
 test("serialises byte-identical self-contained icon evidence", async () => {
   const serialiser = new ReviewDocumentSerialiser();
-  const review = await plan("icon", "testing/golden", [goldenProvider]);
+  const review = await plan("icon", "testing/golden@outline", [goldenProvider]);
   const first = serialiser.serialise(review);
   const second = serialiser.serialise(review);
 
@@ -88,18 +88,18 @@ test("serialises byte-identical self-contained icon evidence", async () => {
   assert.doesNotMatch(first, /<script|<link|<img|@import|url\(/u);
 
   const digest = createHash("sha256").update(first).digest("hex");
-  assert.equal(digest, "ec08e544a128b9f171396a0223f52f946a770747a4e804896a0a5f267417a171");
+  assert.equal(digest, "cd25a7cad77983b925dd008b796ff4f556e06abccc0c9eb3a1d900a3dc4d89e6");
 });
 
 test("serialises collections in canonical navigable order", async () => {
   const alpha = Icon.define({
     ...goldenIcon,
-    identity: { namespace: "testing", name: "alpha" },
+    identity: { variant: "outline", namespace: "testing", name: "alpha" },
     metadata: { ...goldenIcon.metadata, displayName: "Alpha" },
   });
   const zeta = Icon.define({
     ...goldenIcon,
-    identity: { namespace: "testing", name: "zeta" },
+    identity: { variant: "outline", namespace: "testing", name: "zeta" },
     metadata: { ...goldenIcon.metadata, displayName: "Zeta" },
   });
   const collection = Collection.define({
@@ -119,7 +119,7 @@ test("serialises collections in canonical navigable order", async () => {
   const html = serialiser.serialise(review);
   const positions = [alpha, zeta].map((definition) =>
     html.indexOf(
-      `href="#icon-${encodeURIComponent(`testing/${definition.identity.name}`)}"`,
+      `href="#icon-${encodeURIComponent(`testing/${definition.identity.name}@${definition.identity.variant}`)}"`,
     ),
   );
 
@@ -133,7 +133,7 @@ test("serialises collections in canonical navigable order", async () => {
 test("escapes hostile authored text and explicit attribute contexts", async () => {
   const dangerous = '</title><script>alert("review")</script> & danger';
   const icon = Icon.define({
-    identity: { namespace: "testing", name: "hostile" },
+    identity: { variant: "outline", namespace: "testing", name: "hostile" },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [{
       kind: "path",

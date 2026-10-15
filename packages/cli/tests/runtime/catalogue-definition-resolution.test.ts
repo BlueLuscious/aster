@@ -31,19 +31,19 @@ const presentation: IconPresentationPolicy = {
 
 function authoredIcon(
   name: string,
-  variant?: string,
+  variant = "outline",
 ): IconDefinition {
   return {
     identity: {
       namespace: "testing",
       name,
-      ...(variant === undefined ? {} : { variant }),
+      variant,
     },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 8 }],
     metadata: {
-      displayName: variant === undefined ? name : `${name} ${variant}`,
-      tags: [name, ...(variant === undefined ? [] : [variant])],
+      displayName: `${name} ${variant}`,
+      tags: [name, variant],
       rtl: "preserve",
       presentation,
       deprecated: false,
@@ -95,7 +95,7 @@ async function select(
 
 test("resolves canonical built-in icon and collection definitions", async () => {
   const resolver = new CatalogueDefinitionResolver();
-  const iconSelection = await select(AsterCatalogue, "icon", "aster/camera");
+  const iconSelection = await select(AsterCatalogue, "icon", "aster/camera@outline");
   const collectionSelection = await select(
     AsterCatalogue,
     "collection",
@@ -273,7 +273,7 @@ test("rejects missing, failed, invalid, and inconsistent exact icon definitions"
     {
       name: "identity mismatch",
       load: async () => Icon.define(authoredIcon("other")),
-      message: "icon testing/camera loader returned a mismatched identity",
+      message: "icon testing/camera@outline loader returned a mismatched identity",
     },
     {
       name: "metadata mismatch",
@@ -284,7 +284,7 @@ test("rejects missing, failed, invalid, and inconsistent exact icon definitions"
           displayName: "Different",
         },
       }),
-      message: "icon testing/camera loader returned metadata inconsistent with discovery",
+      message: "icon testing/camera@outline loader returned metadata inconsistent with discovery",
     },
   ] as const;
 
@@ -302,7 +302,7 @@ test("rejects missing, failed, invalid, and inconsistent exact icon definitions"
           throw new Error("unexpected collection load");
         },
       };
-      const selection = await select(provider, "icon", "testing/camera");
+      const selection = await select(provider, "icon", "testing/camera@outline");
       const resolved = await new CatalogueDefinitionResolver().resolve(
         selection,
         context(provider),
@@ -313,7 +313,7 @@ test("rejects missing, failed, invalid, and inconsistent exact icon definitions"
       if (!resolved.accepted) {
         assert.equal(resolved.diagnostic.code, "ASTER-CLI-006");
         assert.equal(resolved.diagnostic.message, testCase.message);
-        assert.deepEqual(resolved.diagnostic.related, ["testing", "testing/camera"]);
+        assert.deepEqual(resolved.diagnostic.related, ["testing", "testing/camera@outline"]);
         assert.doesNotMatch(resolved.diagnostic.message, /native loader secret/u);
       }
     });
@@ -501,7 +501,7 @@ test("rejects a selected provider that becomes unavailable before exact loading"
       return undefined;
     },
   };
-  const selection = await select(provider, "icon", "testing/camera");
+  const selection = await select(provider, "icon", "testing/camera@outline");
   const resolved = await new CatalogueDefinitionResolver().resolve(selection, {
     ...context(provider),
     catalogues: [],

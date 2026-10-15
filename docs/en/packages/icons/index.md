@@ -20,15 +20,14 @@ manifest records and loaders project those sources; they are not editable author
 
 | Route | Purpose and owner |
 | --- | --- |
-| `@luscious-garden/aster-icons/<name>` | One independent definition; [Glyphs](glyphs/index.md). |
-| `@luscious-garden/aster-icons/<name>/<variant>` | A rendition when a canonical variant exists; [Glyphs](glyphs/index.md). |
+| `@luscious-garden/aster-icons/<name>/<variant>` | One concrete treatment definition; [Glyphs](glyphs/index.md). |
 | `@luscious-garden/aster-icons/collections/<name>` | One collection and its declared members; [Collections](collections/index.md). |
 | `@luscious-garden/aster-icons/manifest` | Lightweight discovery records; [Manifest](manifest/index.md). |
 | `@luscious-garden/aster-icons/dynamic` | Deferred resolution by canonical key; [Dynamic Loaders](dynamic/index.md). |
 
 The package root and bare `/collections` aggregate are explicitly blocked. Generated and physical
-implementation subpaths are not public. The current corpus has no variant definitions; a
-reserved export pattern does not create artwork.
+implementation subpaths are not public. The current corpus declares every existing treatment as
+`outline`. A reserved export pattern does not create artwork or an importable bare glyph module.
 
 ## Rights boundary
 

@@ -16,7 +16,7 @@ private methods rather than loose module functions. The frozen public
 1. `IconDefinitionFactory` returns an exact [recognised output](#recognised-outputs) directly.
    Otherwise it accepts an unknown value and rejects fields outside the closed
    definition shape.
-2. `IconIdentityNormaliser` trims and validates optional namespace, icon, and variant slugs.
+2. `IconIdentityNormaliser` trims and validates the optional namespace and required name and treatment slugs.
 3. `IconViewBoxNormaliser` validates finite coordinates and positive dimensions.
 4. `IconNodeNormaliser` validates the discriminator, geometry, presentation, cardinality, and
    original paint order of every node.

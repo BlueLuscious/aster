@@ -14,10 +14,7 @@ export class ExportPathFormatter {
     const namespace = identity.namespace === undefined
       ? ""
       : `${identity.namespace}/`;
-    const variant = identity.variant === undefined
-      ? ""
-      : `@${identity.variant}`;
-    return `${namespace}${identity.name}${variant}${svgExportArtefactSchema.extension}`;
+    return `${namespace}${identity.name}@${identity.variant}${svgExportArtefactSchema.extension}`;
   }
 }
 

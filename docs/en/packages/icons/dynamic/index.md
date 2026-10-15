@@ -14,11 +14,11 @@ import {
   AsterIconLoaders,
 } from "@luscious-garden/aster-icons/dynamic";
 
-const camera = await AsterIconLoaders["aster/camera"]?.();
+const camera = await AsterIconLoaders["aster/camera@outline"]?.();
 const amellus = await AsterCollectionLoaders.amellus?.();
 ```
 
-Icon keys use `[<namespace>/]<name>[@<variant>]`; collection keys use
+Icon keys use `[<namespace>/]<name>@<variant>`; collection keys use
 `[<namespace>/]<name>`. Own keys match their manifest family exactly.
 
 ## Contracts
@@ -42,7 +42,7 @@ Both maps have a null prototype. Any string that is not an own canonical key res
 `__proto__`. Optional invocation is safe for a string supplied at runtime:
 
 ```ts
-const key: string = "aster/camera";
+const key: string = "aster/camera@outline";
 const definition = await AsterIconLoaders[key]?.();
 ```
 

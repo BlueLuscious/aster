@@ -18,6 +18,7 @@ import type {
 
 const camera = Icon.define({
   identity: {
+    variant: "outline",
     namespace: "minimal",
     name: "camera",
   },
@@ -61,6 +62,7 @@ const cameraStippled = Icon.define({
 const externalCamera = Icon.define({
   ...camera,
   identity: {
+    variant: "outline",
     namespace: "external",
     name: "camera",
   },

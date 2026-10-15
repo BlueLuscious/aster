@@ -10,6 +10,7 @@ import {
 function createInput() {
   return {
     identity: {
+      variant: "outline",
       namespace: "aster",
       name: "search",
     },
