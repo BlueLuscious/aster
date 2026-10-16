@@ -25,23 +25,24 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | --- | --- | --- | --- |
 | 1 | `P1` | [Organise generated Icons distribution.](#generated-icons-distribution-organisation) | The explicit glyph/variant foundation is complete and integrated; assess and resolve the bounded layout changes before the repository-wide responsibility review. |
 | 2 | `P0` | [Review responsibilities, composition and naming throughout the repository.](#responsibility-and-naming-review) | The glyph/variant foundation and bounded distribution review are complete; finish this maintenance review before further artwork expansion. |
-| 3 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
-| 4 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 5 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 6 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 7 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 8 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 9 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 11 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 12 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 13 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 14 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
-| 15 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
-| 16 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 17 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 18 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
-| 19 | `P4` | Consider a reusable versioning library. | Several independent projects demonstrate shared versioning needs and justify predefined or customisable policies. |
+| 3 | `P1` | [Normalise CLI responses and output.](#cli-response-and-output-consistency) | Complete the responsibility/naming review, then resolve presentation inconsistencies before further artwork expansion. |
+| 4 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
+| 5 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 6 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 7 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 8 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 9 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 10 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 11 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 12 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 13 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 14 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 15 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
+| 16 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
+| 17 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 18 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 19 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 20 | `P4` | Consider a reusable versioning library. | Several independent projects demonstrate shared versioning needs and justify predefined or customisable policies. |
 
 ## Generated Icons distribution organisation
 
@@ -96,6 +97,31 @@ Public changes require explicit [compatibility and migration review](project/ver
 Regenerate outputs through their producers and verify native, packed and workflow consumers.
 Do not rewrite approved release evidence or legal text. This maintenance gate does not authorise
 speculative classes, package extraction, new capabilities or publication.
+
+## CLI response and output consistency
+
+Importance: **P1 - High**
+
+After the [responsibility and naming review](#responsibility-and-naming-review), perform a bounded
+review of all CLI responses before further artwork expansion. Review help, catalogue discovery,
+glyph/icon/collection details, search, versions/dependencies/location, Export/Review and failures.
+
+- Define consistent human headings, labels, field order, indentation, sequences and empty states.
+  Show collection member identities one per line rather than as a wrapping comma-separated field;
+  choose compact formatting only where it remains readable.
+- Review diagnostic producers and presentation together. A not-found request currently repeats
+  its input under `Related`; remove redundant human evidence without losing useful provider/path
+  context. Related evidence is not a suggested match unless explicitly designed as one.
+- Audit human and JSON outcomes without silently changing structured contracts, diagnostic codes
+  or categories. Review any such changes explicitly; preserve raw SVG, stream ownership, exit
+  statuses and newline behaviour.
+- Reuse justified [shell presentation](packages/cli/shell/presentation/index.md) responsibilities
+  and existing formatters rather than introduce a general output framework or suggestion engine.
+  Verify representative success, empty and failure cases through executable and packed consumers
+  on Ubuntu and Windows, and update owning guidance before future release packing.
+
+This is presentation and response consistency work, not permission to add commands, infer missing
+namespaces, select treatments implicitly or rewrite approved release notes.
 
 ## Coexisting API versions
 
