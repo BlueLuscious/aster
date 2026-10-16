@@ -363,6 +363,19 @@ test("rejects the obsolete collection export in installed declarations and nativ
   );
 });
 
+test("rejects the obsolete concrete Camera export through native packed ESM", () => {
+  const executed = spawnSync(process.execPath, [
+    "--input-type=module",
+    "--eval",
+    'import { Camera } from "@luscious-garden/aster-icons/camera";',
+  ], { cwd: consumerRoot, encoding: "utf8" });
+
+  assert.equal(executed.error, undefined);
+  assert.equal(executed.status, 1, `${executed.stdout}${executed.stderr}`);
+  assert.equal(executed.stdout, "");
+  assert.match(executed.stderr, /SyntaxError:.*does not provide an export named 'Camera'/u);
+});
+
 test("preserves exact inherited-name absence in packed loader maps", () => {
   const executed = spawnSync(
     process.execPath,

@@ -31,7 +31,9 @@ drift and publication safety. Its tests exercise rejected syntax and cycles with
 authored modules or partially replacing existing outputs. A generated-output fixture also
 preserves valid own `constructor` keys for both loader families, without an inherited fallback.
 Compiled multi-treatment fixtures prove individual-versus-dictionary native evaluation and exact
-own-data keys; packed consumers verify dictionary/leaf/collection/loader reference equality.
+own-data keys; packed consumers verify every distributed dictionary/leaf/collection/loader
+reference and ordered member rendering. Native ESM rejects the obsolete `Camera` export rather
+than treating the dictionary as a concrete definition.
 
 Package validity/discovery evidence derives families from manifests and loaders rather than a
 second handwritten catalogue. Exact named assertions remain where routing or icon-owned semantics

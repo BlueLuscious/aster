@@ -541,10 +541,11 @@ test("preserves canonical ownership across packed authoring and command boundari
   });
 });
 
-test("type-checks cross-package usage against packed declarations", async () => {
+test("compiles and executes cross-package usage against packed declarations", async () => {
   await writeFile(resolve(consumerRoot, "consumer.ts"), [
     'import type { IconDefinition, IconGlyphIdentity } from "@luscious-garden/aster-core";',
-    'import { Collection } from "@luscious-garden/aster-core";',
+    'import { Collection, Icon } from "@luscious-garden/aster-core";',
+    'import { CameraVariants } from "@luscious-garden/aster-icons/camera";',
     'import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
     'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     'import { Svg } from "@luscious-garden/aster-svg";',
@@ -562,12 +563,19 @@ test("type-checks cross-package usage against packed declarations", async () => 
     "  const glyph: CatalogueGlyphResult = family.payload.glyph;",
     "  const identity: IconGlyphIdentity = glyph.identity;",
     "  const variant: CatalogueIconResult | undefined = glyph.variants[0];",
-    "  // @ts-expect-error Packed glyph identities have no concrete treatment.",
-    "  glyph.identity.variant;",
-    "  // @ts-expect-error Packed glyph result sequences are readonly.",
-    "  glyph.variants.push(variant);",
-    "  // @ts-expect-error Packed glyph results expose no definition geometry.",
-    "  glyph.variants[0].nodes;",
+    "  if (false) {",
+    "    // @ts-expect-error Packed glyph identities have no concrete treatment.",
+    "    glyph.identity.variant;",
+    "    // @ts-expect-error Packed glyph result sequences are readonly.",
+    "    glyph.variants.push(variant);",
+    "  }",
+    "  if (variant !== undefined) {",
+    "    const concrete: CatalogueIconResult = variant;",
+    "    if (false) {",
+    "      // @ts-expect-error Packed glyph results expose no definition geometry.",
+    "      concrete.nodes;",
+    "    }",
+    "  }",
     "  void identity; void variant;",
     "}",
     "void glyphRequests;",
@@ -576,6 +584,16 @@ test("type-checks cross-package usage against packed declarations", async () => 
     "const loader = AsterIconLoaders[entry.key];",
     'if (loader === undefined) throw new Error("Missing loader");',
     "const icon: IconDefinition = await loader();",
+    "if (false) {",
+    "  // @ts-expect-error Packed glyph dictionaries are not renderable definitions.",
+    "  Svg.render(CameraVariants);",
+    "  // @ts-expect-error Packed concrete identities require an explicit treatment.",
+    '  const missingVariant: IconDefinition = { ...icon, identity: { name: "missing" } };',
+    "  // @ts-expect-error Packed collections require grouped treatment maps.",
+    '  Collection.define({ identity: { name: "flat" }, icons: { camera: icon }, metadata: { displayName: "Flat" } });',
+    "  void missingVariant;",
+    "}",
+    "if (Icon.define(icon) !== icon) throw new Error(\"Packed Core must recognise loader leaves.\");",
     "const authored = {",
     "  ...icon,",
     '  nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],',
@@ -633,7 +651,7 @@ test("type-checks cross-package usage against packed declarations", async () => 
       module: "NodeNext",
       moduleResolution: "NodeNext",
       strict: true,
-      noEmit: true,
+      outDir: "consumer-dist",
       types: [],
     },
     include: ["consumer.ts"],
@@ -645,7 +663,89 @@ test("type-checks cross-package usage against packed declarations", async () => 
     resolve(consumerRoot, "tsconfig.json"),
   ], { cwd: consumerRoot, encoding: "utf8" });
 
-  assertSuccessfulProcess(checked, "type-check packed Aster packages");
+  assertSuccessfulProcess(checked, "compile packed Aster packages");
+  const executed = runModule([
+    'import assert from "node:assert/strict";',
+    'const consumer = await import("./consumer-dist/consumer.js");',
+    "assert.match(consumer.markup, /^<svg /u);",
+    "assert.equal(consumer.listed.ok, true);",
+    'assert.equal(consumer.listed.payload.kind, "catalogue-list");',
+  ].join("\n"));
+  assertSuccessfulProcess(executed, "execute compiled packed Aster consumer");
+  assert.equal(executed.stdout, "");
+  assert.equal(executed.stderr, "");
+});
+
+test("retains every packed glyph leaf across direct, loader, collection and renderer access", () => {
+  const executed = runModule([
+    'import assert from "node:assert/strict";',
+    'import { Icon } from "@luscious-garden/aster-core";',
+    'import { AsterIconManifest, AsterCollectionManifest } from "@luscious-garden/aster-icons/manifest";',
+    'import { AsterIconLoaders, AsterCollectionLoaders } from "@luscious-garden/aster-icons/dynamic";',
+    'import { Svg } from "@luscious-garden/aster-svg";',
+    "const definitions = new Map();",
+    "for (const entry of AsterIconManifest) {",
+    "  const root = `@luscious-garden/aster-icons/${entry.identity.name}`;",
+    "  const direct = await import(`${root}/${entry.identity.variant}`);",
+    "  const aggregate = await import(root);",
+    "  const [dictionary] = Object.values(aggregate);",
+    "  const leaf = direct[entry.symbol];",
+    "  assert.deepEqual(Object.keys(direct), [entry.symbol]);",
+    "  assert.equal(Object.keys(aggregate).length, 1);",
+    "  assert.equal(dictionary[Icon.variantPropertyName(entry.identity.variant)], leaf);",
+    "  assert.equal(await AsterIconLoaders[entry.key](), leaf);",
+    "  assert.equal(Icon.define(leaf), leaf);",
+    "  assert.ok(Object.isFrozen(dictionary));",
+    "  assert.equal(Object.getPrototypeOf(dictionary), null);",
+    "  definitions.set(entry.key, leaf);",
+    "}",
+    "for (const entry of AsterCollectionManifest) {",
+    "  const collection = await AsterCollectionLoaders[entry.key]();",
+    "  const members = Object.values(collection.icons).flatMap(Object.values);",
+    "  assert.equal(members.length, entry.members.length);",
+    "  for (const [index, key] of entry.members.entries()) {",
+    "    const definition = definitions.get(key);",
+    "    assert.equal(members[index], definition);",
+    "    assert.equal(collection.members[index], definition);",
+    "    assert.equal(Svg.render(collection.members[index]), Svg.render(definition));",
+    "  }",
+    "}",
+  ].join("\n"));
+
+  assertSuccessfulProcess(executed, "inspect every packed glyph and collection leaf");
+  assert.equal(executed.stdout, "");
+  assert.equal(executed.stderr, "");
+});
+
+test("rejects obsolete packed inputs while revalidating explicit JSON definitions", () => {
+  const executed = runModule([
+    'import assert from "node:assert/strict";',
+    'import { Collection, Icon, IconDefinitionError } from "@luscious-garden/aster-core";',
+    'import { CameraVariants } from "@luscious-garden/aster-icons/camera";',
+    'import { CameraOutline } from "@luscious-garden/aster-icons/camera/outline";',
+    'import { Svg, SvgRenderError } from "@luscious-garden/aster-svg";',
+    "const data = JSON.parse(JSON.stringify(CameraOutline));",
+    "const prepared = Icon.define(data);",
+    "assert.notEqual(prepared, data);",
+    "assert.notEqual(prepared, CameraOutline);",
+    "assert.equal(Icon.define(prepared), prepared);",
+    "assert.equal(Svg.render(prepared), Svg.render(CameraOutline));",
+    "assert.equal(Svg.render(data), Svg.render(prepared));",
+    "delete data.identity.variant;",
+    "assert.throws(() => Icon.define(data), IconDefinitionError);",
+    "assert.throws(() => Svg.render(data), SvgRenderError);",
+    "assert.throws(() => Svg.render(CameraVariants), SvgRenderError);",
+    "assert.throws(() => Collection.define({",
+    '  identity: { name: "obsolete-flat" }, metadata: { displayName: "Obsolete Flat" },',
+    "  icons: { camera: CameraOutline },",
+    "}), IconDefinitionError);",
+    'assert.equal(Object.hasOwn(CameraVariants, "default"), false);',
+    'assert.equal(Object.hasOwn(CameraVariants, "filled"), false);',
+  ].join("\n"));
+
+  assertSuccessfulProcess(executed, "reject obsolete packed contracts");
+  assert.equal(executed.stdout, "");
+  assert.equal(executed.stderr, "");
 });
 
 test("keeps private package internals outside the packed consumer", () => {

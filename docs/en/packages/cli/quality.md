@@ -24,6 +24,10 @@ subset is `pnpm --dir packages/cli run test:conformance`. Subprocess evidence re
 to start child Node processes; an unavailable process is not a CLI failure result.
 [Project testing](../../project/testing.md) owns cross-package verification policy.
 
+Installed TypeScript consumers are compiled and executed, with compile-only rejection cases
+guarded from execution. They reject missing treatments, flat membership and dictionary rendering;
+runtime probes separately reject those inputs and revalidate JSON definitions through public Core.
+
 ## Integration evidence
 
 Root import does not evaluate Icons. Fresh-process probes distinguish manifest-only discovery
