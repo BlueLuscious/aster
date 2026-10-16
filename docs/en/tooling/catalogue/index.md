@@ -112,7 +112,8 @@ caches last one complete inspection and are cleared before the next.
 | `ICatalogueSourceModule` | Combines path identity, source location, manifest data and relationships for a validated module. |
 | `ICatalogueSourceFamilyInspection` | Groups canonically ordered validated modules for one family. |
 | `ICatalogueSourceOutput` | Describes a generated relative path and complete deterministic content. |
-| `ICatalogueSourcePlan` | Separates fixed outputs from the atomically published facade set. |
+| `ICatalogueSourceDirectory` | Couples one exclusively owned absolute directory root to its complete expected outputs. |
+| `ICatalogueSourcePlan` | Separates independently written files from ordered owned-directory publications. |
 | `ICatalogueSourceFileSystem` | Isolates acquisition, persistence and owned-directory replacement from policy. |
 
 ## Workflow
@@ -148,16 +149,26 @@ semantics; [manifest](../../packages/icons/manifest/index.md) and
 
 Discovery, syntax, identities, relationships and the complete plan must succeed before any output
 changes. Check-only execution reports missing, stale or obsolete paths without creating or
-removing files.
+removing files. Both publication lifecycles share content comparison; expected paths retain plan
+order and obsolete directory entries follow deterministic traversal order. All groups are compared
+before the first write.
+
+The complete plan validates canonical absolute/package-relative output paths, strict package
+containment, disjoint publication boundaries and separation from canonical source roots. Duplicate,
+case-only and file/directory-conflicting output paths are rejected before comparison or writes.
+These are lexical path guarantees, not symlink resolution. Empty owned sets remove obsolete files
+without claiming adjacent directories; an absent empty directory does not create content drift.
 
 Fixed manifest and dynamic outputs are written independently when content changes. The entire
 facade root is published through an adjacent stage and backup: failed publication restores the
-previous root, while success removes obsolete facades as one owned set. This is not a transaction
-across all three outputs. After interruption, read-only checking diagnoses drift and deterministic
-regeneration restores the set.
+previous root, while success removes obsolete facades as one owned set. Each directory group has
+its own publication lifecycle; this is not a transaction across all generated files and directories.
+Earlier independent writes may remain after a later publication fails. Read-only checking diagnoses
+that drift and deterministic regeneration restores the set.
 
 Cleanup may replace only `src/generated/facades`, never canonical glyph or collection roots.
-The synchroniser owns no review document, source cache or temporary canonical artwork.
+The synchroniser owns no package-manifest fields, review document, source cache or temporary
+canonical artwork.
 
 ## Runtime boundary and verification
 
@@ -167,7 +178,10 @@ ordinary ESM data without filesystem or repository-tooling access.
 Conformance covers deterministic regeneration, idempotence, drift, nested addition/removal,
 variant mapping, reserved subpaths, stale-output cleanup, syntax/identity failures, static
 authorities, rejected executable/cyclic metadata, dangling members and manifest-loader key
-equivalence. A generated-output fixture retains valid own `constructor` loaders in both families
+equivalence. Publication boundary tests cover invalid/overlapping ownership before filesystem
+comparison, empty sets, unchanged-output no-ops, failures before writes, partial independent writes,
+directory rollback after a real rename failure and successful retry. A generated-output fixture
+retains valid own `constructor` loaders in both families
 and verifies inherited-name absence. Package and CLI tests verify isolated imports, discovery,
 identity and ordering.
 Emitted disposable-process tests also prove multi-treatment evaluation isolation, eager glyph
