@@ -5,6 +5,8 @@ strings. Rendering performs no DOM or filesystem effects.
 
 ## Usage
 
+Examples follow the [current source contract](https://github.com/BlueLuscious/aster/blob/master/docs/en/index.md#source-and-published-versions).
+
 Install the renderer and icons used by this example:
 
 ```sh

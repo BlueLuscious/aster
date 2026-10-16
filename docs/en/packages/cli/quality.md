@@ -27,6 +27,8 @@ to start child Node processes; an unavailable process is not a CLI failure resul
 Installed TypeScript consumers are compiled and executed, with compile-only rejection cases
 guarded from execution. They reject missing treatments, flat membership and dictionary rendering;
 runtime probes separately reject those inputs and revalidate JSON definitions through public Core.
+Complete Core/SVG/CLI API and Icons discovery examples are also compiled and executed against
+installed packages directly from their owning guides, not copied into independent sample sources.
 
 ## Integration evidence
 

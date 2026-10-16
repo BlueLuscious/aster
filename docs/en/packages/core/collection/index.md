@@ -68,6 +68,19 @@ proxy execution remains outside the [Core trust boundary](../workflow.md#securit
 Accepted aliases are written as own data properties, so inherited setters cannot alter the
 canonical dictionary during construction.
 
+## Grouped membership migration
+
+Replace each earlier flat selection such as `icons: { camera: CameraOutline }` with an explicit
+group such as `icons: { camera: { outline: CameraOutline } }`. Read the concrete leaf through
+`collection.icons.camera.outline`; `collection.icons.camera` is now a dictionary, not a renderable
+definition. Derive each property's spelling through the [shared mapping](../api/index.md#usage)
+and include only the treatments deliberately selected for that collection.
+
+`members` remains the flat ordered list of selected definitions. Do not wrap its elements in
+dictionaries or supply a second membership catalogue. Rebuild a stored collection from its reviewed
+grouped map after applying the [identity migration](../definition/index.md#explicit-treatment-migration);
+complete-definition revalidation also checks any submitted member sequence.
+
 ## Runtime
 
 | Class | Responsibility | Relations |
@@ -78,7 +91,7 @@ canonical dictionary during construction.
 | `CollectionIdentityNormaliser` | Validates optional namespace and required canonical collection name. | Uses the shared canonical slug authority. |
 | `CollectionMetadataNormaliser` | Validates descriptive metadata, unique tags, and licensing relationships. | Produces frozen `CollectionMetadata`. |
 
-Outputs [recognised by Core](../definition/runtime/index.md#recognised-outputs) are retained directly.
+Icon outputs [recognised by Core](../definition/runtime/index.md#recognised-outputs) are retained directly.
 Unknown icons are fully reconstructed first. They retain their authored reference only when their
 complete graph has canonical data-property semantics, canonical key order and values, matching
 prototypes, and no cycles or repeated aliases. Every other valid icon input uses the isolated canonical
@@ -102,6 +115,11 @@ A complete definition may also cross `Collection.define()` for revalidation. Cor
 submitted `members` as a dense data array and checks its canonical icon values and order against
 the dictionary-derived sequence. An inconsistent sequence fails with `IconDefinitionError`.
 The result always retains the newly derived list, never the submitted array.
+
+Construct and retain a collection once for repeated use. Passing a complete collection back to
+`Collection.define()` revalidates its containers; recognising canonical leaves is not a collection
+cache. [Construction measurements](../quality-baseline.md#grouped-collection-construction) distinguish
+that work from ordinary member access or rendering.
 
 ## Membership
 

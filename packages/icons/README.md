@@ -5,6 +5,8 @@ The package brings its compatible Core dependency; it does not render markup.
 
 ## Usage
 
+Examples follow the [current source contract](https://github.com/BlueLuscious/aster/blob/master/docs/en/index.md#source-and-published-versions).
+
 ```sh
 pnpm add @luscious-garden/aster-icons
 ```

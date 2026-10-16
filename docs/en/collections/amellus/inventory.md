@@ -14,9 +14,12 @@ This page owns semantic selection and review coverage. The
 [canonical collection module](../../../../packages/icons/src/collections/a/amellus/amellus.collection.ts)
 owns actual membership; [Glyphs](../../packages/icons/glyphs/index.md) owns independent imports.
 
+Every current selection is an explicit `outline` treatment in namespace `aster`. The table names
+glyphs, not complete loader or CLI identities; for example, `camera` selects `aster/camera@outline`.
+
 ## Concepts
 
-| Identity | Primary role | Canonical meaning | Search tags and aliases | Construction |
+| Glyph | Primary role | Canonical meaning | Search tags and aliases | Construction |
 | --- | --- | --- | --- | --- |
 | `arrow-left` | Navigation | Logical previous or backward movement, authored pointing left. | `arrow`, `back`, `left`, `navigation`, `previous` | Line and open polyline. |
 | `arrow-right` | Navigation | Logical next or forward movement, authored pointing right. | `arrow`, `forward`, `navigation`, `next`, `right` | Line and open polyline. |

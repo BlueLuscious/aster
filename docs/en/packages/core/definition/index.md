@@ -33,6 +33,17 @@ The type surface represents slugs as strings because TypeScript cannot express t
 grammar without a runtime boundary. Construction validates those strings before accepting a
 definition.
 
+## Explicit treatment migration
+
+This is a breaking [current-source contract](../../../index.md#source-and-published-versions),
+not an already published version claim. When upgrading earlier authored definitions or JSON,
+declare the reviewed treatment in `identity.variant` and every metadata `replacedBy` identity
+before construction. Do not silently assign `outline` to unknown artwork or infer it from geometry.
+Namespace remains optional and is never inherited from collection membership.
+
+Use the complete [API example](../api/index.md#usage) for construction and the
+[grouped membership migration](../collection/index.md#grouped-membership-migration) for collections.
+
 ## Definition rules
 
 Nodes are read-only and retain paint order. The contract documents that the sequence is non-empty,

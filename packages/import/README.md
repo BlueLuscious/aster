@@ -21,6 +21,8 @@ const inspected = IconImport.inspect({
 
 Handle the result's success or diagnostics before further adoption.
 The [API guide](../../docs/en/packages/import/api/index.md) owns staged usage and failure handling.
+For earlier source envelopes or stored drafts, follow the
+[explicit treatment migration](../../docs/en/packages/import/source/index.md#explicit-treatment-migration).
 
 ## Documentation
 

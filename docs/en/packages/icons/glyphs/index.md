@@ -52,14 +52,22 @@ from different namespaces cannot be merged behind one public name.
 
 ## Explicit treatment migration
 
+This is a breaking [current-source contract](../../../index.md#source-and-published-versions).
+Check the [published history](../releases/index.md) for version availability rather than assuming
+that a registry installation implements every repository example.
+
 The old `Camera` export is removed and `/camera` now returns only `CameraVariants`, not a
 definition. Import `CameraOutline` from `/camera/outline` for isolated concrete use; other existing
 icons follow the same rule. Loader and CLI identities now require
 `aster/camera@outline`, not `aster/camera`. There is no default treatment or compatibility alias.
 Collections remain explicit selections: `Amellus.icons.camera.outline` chooses a concrete
 definition and ordered `members` stays flat. A generated glyph dictionary does not automatically
-enrol all treatments into a collection. Custom Core and Import inputs, including
-metadata replacement identities, must declare a treatment rather than relying on inference.
+enrol all treatments into a collection. Follow the owning
+[Core identity](../../core/definition/index.md#explicit-treatment-migration),
+[Core membership](../../core/collection/index.md#grouped-membership-migration) and
+[Import source](../../import/source/index.md#explicit-treatment-migration) migrations for custom
+data, and the [CLI migration](../../cli/catalogue/index.md#explicit-treatment-migration) for requests
+and providers.
 
 ## Definition ownership
 

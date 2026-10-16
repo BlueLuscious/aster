@@ -5,6 +5,8 @@ and collections. Definitions are data, not renderers or mutable registries.
 
 ## Usage
 
+Examples follow the [current source contract](https://github.com/BlueLuscious/aster/blob/master/docs/en/index.md#source-and-published-versions).
+
 ```sh
 pnpm add @luscious-garden/aster-core
 ```
@@ -19,7 +21,7 @@ const Disc = Icon.define({
   metadata: {
     displayName: "Disc",
     rtl: "preserve",
-    presentation: { defaults: { fill: "currentColor" }, overrides: [] },
+    presentation: { defaults: { fill: "none", stroke: "currentColor" }, overrides: [] },
     deprecated: false,
   },
 });
@@ -34,6 +36,10 @@ const InterfaceIcons = Collection.define({
 The collection exposes the same definition through `InterfaceIcons.icons.disc.outline` and its ordered
 `members` view. [Construction](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/workflow.md)
 owns validation and immutability guarantees.
+
+See the [identity migration](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/definition/index.md#explicit-treatment-migration)
+and [grouped membership migration](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/collection/index.md#grouped-membership-migration)
+when updating earlier authored data.
 
 For repeated use, construct once and share the returned definition; see
 [definition reuse](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/definition/runtime/index.md#reusing-definitions).

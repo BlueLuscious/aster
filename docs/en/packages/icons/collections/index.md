@@ -7,8 +7,9 @@ Membership is explicit authoring, not inferred from the package manifest or sour
 
 ## Consumer access
 
-See the [export-naming migration](#export-naming-migration) for version availability and
-upgrading earlier imports.
+Current access follows the [explicit treatment migration](../glyphs/index.md#explicit-treatment-migration).
+The [export-naming migration](#export-naming-migration) separately records the earlier published
+rename of the collection value.
 
 ```ts
 import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
@@ -33,11 +34,6 @@ There is no bare collection-family aggregate.
 Each `.collection.ts` module calls public `Collection.define()` with its own identity, metadata,
 named icon imports and ordered alias dictionary. Adding a glyph does not silently add it to any
 collection; removing membership does not remove or rename the independent icon.
-
-Current source uses grouped membership: replace `Amellus.icons.camera` with
-`Amellus.icons.camera.outline` when a concrete definition is needed. There is no implicit default
-or flat compatibility mode. This source contract is distinct from the published export-only
-migration below; [Core](../../core/collection/index.md) owns its complete construction rules.
 
 The current authority is `Amellus`. Its
 [curatorial overview](../../../collections/amellus/index.md) owns identity and provenance;
@@ -79,8 +75,8 @@ The old export is absent, with no compatibility alias. The Amellus
 `CollectionManifestEntry.symbol` also changes from `"AmellusCollection"` to `"Amellus"`;
 manifest-driven consumers must use the record's symbol, not append a suffix to its key.
 
-The `amellus` identity and loader key, public route, readonly icon aliases, member order, metadata,
-immutability and direct/loader object identity are unchanged. Core's `Collection.define` and
-collection contracts keep their domain names. This is a breaking export and manifest change
+That published rename preserved the `amellus` identity and loader key, public route, readonly
+icon aliases, member order, metadata, immutability and direct/loader object identity. Core's
+`Collection.define` and collection contracts kept their domain names. It was a breaking export and manifest change
 under the [versioning policy](../../../project/versioning.md#compatibility-before-10), not a
 compatible patch or a change to collection membership.

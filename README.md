@@ -6,6 +6,8 @@ commands without assigning framework ownership to icon sources. The
 
 ## Usage
 
+Examples follow the [current source contract](docs/en/index.md#source-and-published-versions).
+
 Install icons and rendering:
 
 ```sh

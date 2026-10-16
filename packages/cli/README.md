@@ -5,6 +5,8 @@ standalone `aster` Node executable.
 
 ## Usage
 
+Examples follow the [current source contract](https://github.com/BlueLuscious/aster/blob/master/docs/en/index.md#source-and-published-versions).
+
 The executable supports Node `>=24.10.0 <25`; either installation brings compatible Core, Icons
 and SVG dependencies.
 
@@ -45,6 +47,9 @@ Glyph commands discover available treatments without loading artwork. Concrete i
 require `@variant`; the
 [Catalogue guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/catalogue/index.md#discovery-semantics)
 explains provider scope and exact family filtering.
+
+The [identity migration](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/catalogue/index.md#explicit-treatment-migration)
+explains how to update earlier icon requests and providers.
 
 ## Documentation
 

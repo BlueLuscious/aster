@@ -106,5 +106,25 @@ and exact cross-provider ambiguity is `005`. Discovery duplicates and provider f
 their existing conflict/unavailable diagnostics. All these metadata queries invoke no definition
 loader; [Shell](../shell/index.md#command-grammar) owns argv and presentation syntax.
 
+## Explicit treatment migration
+
+This is a breaking [current-source contract](../../../index.md#source-and-published-versions),
+not a claim about an already published CLI version. Replace an earlier glyph-only icon request
+according to its intent:
+
+```sh
+aster show glyph aster/camera
+aster show icon aster/camera@outline
+```
+
+The first discovers available treatments; the second selects one concrete definition. Export and
+Review also require complete icon identities. For module imports, follow the
+[Icons migration](../../icons/glyphs/index.md#explicit-treatment-migration), not the CLI `@` spelling.
+
+Provider authors must supply explicit treatments in icon records, exact loader identities,
+collection member identities and replacement metadata. Keep discovery metadata geometry-free;
+glyph results are derived from it and do not require another provider capability. Version,
+dependency and CLI-location queries keep their existing local source semantics.
+
 [Catalogue Runtime](runtime/index.md) documents internal acceptance and query composition.
 [CLI Workflow](../workflow.md) defines how hosts supply providers without an ambient registry.

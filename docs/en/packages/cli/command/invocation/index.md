@@ -18,6 +18,7 @@ there is no mutable registry, reflection, or automatic command discovery.
 | Class | Accepted family |
 | --- | --- |
 | `ExportInvocationNormaliser` | Exact icon or collection export requests and portable render options. |
+| `ReviewInvocationNormaliser` | Exact icon or collection requests for static technical review. |
 | `ListInvocationNormaliser` | Catalogue, collection, glyph and icon listing requests; glyph filtering applies only to icons. |
 | `SearchInvocationNormaliser` | Search queries and optional discovery filters. |
 | `ShowInvocationNormaliser` | Exact glyph, icon or collection lookup requests. |

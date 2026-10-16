@@ -436,6 +436,76 @@ test("executes packaged README examples through packed package entrypoints", asy
   assert.equal(executed.stderr, "");
 });
 
+test("compiles and executes current API and discovery guides against packed packages", async () => {
+  const examples = [
+    {
+      name: "core-api",
+      path: "docs/en/packages/core/api/index.md",
+      result: "InterfaceIcons.icons.camera.outline === CameraOutline && InterfaceIcons.members[0] === CameraOutline",
+    },
+    {
+      name: "svg-api",
+      path: "docs/en/packages/svg/api/index.md",
+      result: 'markup === Svg.render(CameraOutline, { size: 24, label: "Camera" })',
+    },
+    {
+      name: "cli-api",
+      path: "docs/en/packages/cli/api/index.md",
+      result: 'result.ok && result.payload.kind === "glyph-show" && result.payload.glyph.identity.namespace === "aster" && result.payload.glyph.variants.some(({ identity }) => identity.variant === "outline")',
+    },
+    {
+      name: "glyphs",
+      path: "docs/en/packages/icons/glyphs/index.md",
+      result: 'definition === CameraVariants.outline && ArrowLeftOutline.identity.name === "arrow-left" && SearchOutline.identity.name === "search"',
+    },
+    {
+      name: "dynamic",
+      path: "docs/en/packages/icons/dynamic/index.md",
+      result: "camera !== undefined && amellus !== undefined && definition === camera && amellus.members.includes(camera)",
+    },
+  ];
+
+  for (const { name, path, result } of examples) {
+    const document = await readFile(resolve(workspaceRoot, path), "utf8");
+    const sources = Array.from(
+      document.matchAll(/```ts\r?\n([\s\S]*?)\r?\n```/gu),
+      (match) => match[1],
+    );
+    assert.ok(sources.length > 0, `Missing executable example in ${path}.`);
+    await writeFile(resolve(consumerRoot, `guide-${name}.ts`), [
+      ...sources,
+      `if (!(${result})) throw new Error("Guide example failed: ${name}");`,
+      "",
+    ].join("\n\n"), "utf8");
+  }
+  await writeFile(resolve(consumerRoot, "guides.tsconfig.json"), `${JSON.stringify({
+    compilerOptions: {
+      target: "ES2022",
+      module: "NodeNext",
+      moduleResolution: "NodeNext",
+      strict: true,
+      exactOptionalPropertyTypes: true,
+      noUncheckedIndexedAccess: true,
+      noEmitOnError: true,
+      types: [],
+      outDir: "guide-dist",
+    },
+    files: examples.map(({ name }) => `guide-${name}.ts`),
+  })}\n`, "utf8");
+  const compiled = spawnSync(process.execPath, [
+    resolve(workspaceRoot, "node_modules/typescript/bin/tsc"),
+    "-p", resolve(consumerRoot, "guides.tsconfig.json"),
+  ], { cwd: consumerRoot, encoding: "utf8" });
+  assertSuccessfulProcess(compiled, "compile current guides against packed declarations");
+
+  for (const { name } of examples) {
+    const executed = runModule(`await import("./guide-dist/guide-${name}.js");`);
+    assertSuccessfulProcess(executed, `execute packed ${name} guide`);
+    assert.equal(executed.stdout, "");
+    assert.equal(executed.stderr, "");
+  }
+});
+
 test("composes packed Core, Icons, and SVG through public consumer entrypoints", () => {
   const baseIcon = asterIconDefinitions.find(
     (icon) => icon.identity.variant === "outline",
