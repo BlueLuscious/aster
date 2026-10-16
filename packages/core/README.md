@@ -26,12 +26,12 @@ const Disc = Icon.define({
 
 const InterfaceIcons = Collection.define({
   identity: { name: "interface-icons" },
-  icons: { disc: Disc },
+  icons: { disc: { outline: Disc } },
   metadata: { displayName: "Interface Icons" },
 });
 ```
 
-The collection exposes the same definition through `InterfaceIcons.icons.disc` and its ordered
+The collection exposes the same definition through `InterfaceIcons.icons.disc.outline` and its ordered
 `members` view. [Construction](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/core/workflow.md)
 owns validation and immutability guarantees.
 

@@ -13,13 +13,14 @@ upgrading earlier imports.
 ```ts
 import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
 
-const camera = Amellus.icons.camera;
-const arrowLeft = Amellus.icons.arrowLeft;
+const camera = Amellus.icons.camera.outline;
+const arrowLeft = Amellus.icons.arrowLeft.outline;
 const orderedIcons = Amellus.members;
 ```
 
-Known aliases retain exact readonly TypeScript keys. `members` is a frozen ordered list containing
-the same canonical objects as `icons`. Ordinary array operations produce consumer values, not a
+Known aliases and treatment selections retain exact readonly TypeScript keys. `members` is a
+flat frozen ordered list containing the same canonical leaf objects as `icons`.
+Ordinary array operations produce consumer values, not a
 collection query API. [Core Collection](../../core/collection/index.md) owns alias validation,
 generic output, ordering, duplicate rejection and canonical reference retention.
 
@@ -32,6 +33,11 @@ There is no bare collection-family aggregate.
 Each `.collection.ts` module calls public `Collection.define()` with its own identity, metadata,
 named icon imports and ordered alias dictionary. Adding a glyph does not silently add it to any
 collection; removing membership does not remove or rename the independent icon.
+
+Current source uses grouped membership: replace `Amellus.icons.camera` with
+`Amellus.icons.camera.outline` when a concrete definition is needed. There is no implicit default
+or flat compatibility mode. This source contract is distinct from the published export-only
+migration below; [Core](../../core/collection/index.md) owns its complete construction rules.
 
 The current authority is `Amellus`. Its
 [curatorial overview](../../../collections/amellus/index.md) owns identity and provenance;

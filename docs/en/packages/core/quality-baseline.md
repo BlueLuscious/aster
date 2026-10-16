@@ -11,7 +11,7 @@ aggregation are specified by [Performance Tooling](../../tooling/performance/ind
 
 ## Representative evidence
 
-The schema-version-five baseline uses public Core APIs and a fixed sixteen-definition synthetic
+The schema-version-six baseline uses public Core APIs and a fixed sixteen-definition synthetic
 geometry corpus rather than Core implementation classes or product artwork. Scale scenarios
 reuse that geometry under unique identities in dictionaries of 26 and 256 icons. All canonical
 values, mutable clones and collection variants are prepared before timing begins.
@@ -45,6 +45,9 @@ The complete sixteen-member scenarios revalidate a definition containing both `i
 sequence. Their different trust-boundary work makes them unsuitable for a direct per-member
 timing comparison. All dictionary views retain canonical icon references when validation permits;
 the benchmark never times repeated property access as collection construction.
+
+Schema six marks grouped collection construction. See the shared
+[workload comparison limits](../../tooling/performance/index.md#structure).
 
 ## Canonical-output recognition comparison
 
@@ -176,7 +179,7 @@ comparison values, not current distribution counts or compatibility promises.
 ## Investigation baseline
 
 The following schema-version-two findings used the former product pilot and remain historical
-investigation evidence; they are not directly comparable with schema-version-five reports.
+investigation evidence; they are not directly comparable with current schema-version-six reports.
 Three complete reports captured under the same Node, operating-system, architecture, hardware,
 scenario, and workspace conditions produced these medians across report medians:
 
@@ -235,7 +238,7 @@ pnpm benchmark:core
 ```
 
 The command builds only Core before running Node with explicit garbage-collection access. It
-prints schema-version-five JSON to standard output and writes no artefact. It reports the
+prints schema-version-six JSON to standard output and writes no artefact. It reports the
 scenario matrix above and the distribution built from the current checkout.
 [Performance Tooling](../../tooling/performance/index.md) owns shared report fields, sampling,
 heap-pressure interpretation and environmental comparison limits.

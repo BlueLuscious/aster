@@ -1,4 +1,5 @@
 import type { IconDefinition } from "../../definition/contracts/index.js";
+import { IconVariantPropertyNormaliser } from "../../definition/runtime/icon-variant-property.normaliser.js";
 import { IconDefinitionFactory } from "../../definition/runtime/icon-definition.factory.js";
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
@@ -31,6 +32,9 @@ export class CollectionMembershipNormaliser {
    */
   readonly #canonicalIconMatcher = new CanonicalIconMatcher();
 
+  /** @description Shared portable treatment-to-property transformation authority. */
+  readonly #variantProperties = new IconVariantPropertyNormaliser();
+
   /**
    * @description Produces frozen keyed and ordered views from one authored icon map.
    * @param value - Unknown authored icon alias map.
@@ -43,7 +47,7 @@ export class CollectionMembershipNormaliser {
     path = "collection.icons",
   ): TCollectionMembershipResult<TIconMap> {
     const authored = this.#validator.record(value, path);
-    const icons: Record<string, IconDefinition> = {};
+    const icons: Record<string, Readonly<Record<string, IconDefinition>>> = Object.create(null);
     const members: IconDefinition[] = [];
     const identities = new Set<string>();
 
@@ -55,25 +59,63 @@ export class CollectionMembershipNormaliser {
       const fieldPath = `${path}.${field}`;
       const alias = this.#normaliseAlias(field, fieldPath);
       const candidate = this.#validator.dataProperty(authored, field, fieldPath);
-      const icon = this.#normaliseIcon(candidate);
-      const identity = this.#identityKey(icon);
-
-      if (identities.has(identity)) {
-        throw new IconDefinitionError(fieldPath, "duplicates an icon identity");
-      }
-
-      identities.add(identity);
+      const group = this.#normaliseGroup(candidate, fieldPath, identities, members);
       Object.defineProperty(icons, alias, {
-        value: icon,
+        value: group,
         enumerable: true,
       });
-      members.push(icon);
     }
 
     return Object.freeze({
       icons: Object.freeze(icons) as TCollectionMembershipResult<TIconMap>["icons"],
       members: Object.freeze(members),
     });
+  }
+
+  /**
+   * @description Validates one non-empty treatment selection and appends canonical flat members.
+   * @param value - Unknown authored treatment dictionary.
+   * @param path - Collection-local group path.
+   * @param identities - Concrete identities already selected anywhere in the collection.
+   * @param members - Ordered canonical leaves derived from the accepted maps.
+   * @returns Frozen prototype-free group containing the selected canonical leaf references.
+   */
+  #normaliseGroup(
+    value: unknown,
+    path: string,
+    identities: Set<string>,
+    members: IconDefinition[],
+  ): Readonly<Record<string, IconDefinition>> {
+    const authored = this.#validator.record(value, path);
+    const keys = Reflect.ownKeys(authored);
+    if (keys.length === 0) {
+      throw new IconDefinitionError(path, "expected a non-empty variant group");
+    }
+    const group: Record<string, IconDefinition> = Object.create(null);
+    let firstGlyph: string | undefined;
+    for (const property of keys) {
+      if (typeof property !== "string") {
+        throw new IconDefinitionError(path, "expected string variant properties");
+      }
+      const propertyPath = `${path}.${property}`;
+      const icon = this.#normaliseIcon(this.#validator.dataProperty(authored, property, propertyPath));
+      if (this.#variantProperties.normalise(icon.identity.variant, propertyPath) !== property) {
+        throw new IconDefinitionError(propertyPath, "expected the canonical variant property");
+      }
+      const glyph = this.#glyphKey(icon);
+      if (firstGlyph !== undefined && firstGlyph !== glyph) {
+        throw new IconDefinitionError(propertyPath, "expected definitions of the same glyph");
+      }
+      const identity = this.#identityKey(icon);
+      if (identities.has(identity)) {
+        throw new IconDefinitionError(propertyPath, "duplicates an icon identity");
+      }
+      identities.add(identity);
+      Object.defineProperty(group, property, { value: icon, enumerable: true });
+      members.push(icon);
+      firstGlyph ??= glyph;
+    }
+    return Object.freeze(group);
   }
 
   /**
@@ -145,7 +187,17 @@ export class CollectionMembershipNormaliser {
    * @returns Namespace, name, and variant identity key.
    */
   #identityKey(definition: IconDefinition): string {
-    const { namespace, name, variant } = definition.identity;
-    return `${namespace ?? ""}/${name}/${variant}`;
+    return `${this.#glyphKey(definition)}/${definition.identity.variant}`;
+  }
+
+  /**
+   * @description Identifies a glyph without reading absent namespace properties through a prototype.
+   * @param definition - Accepted concrete definition.
+   * @returns Unambiguous optional namespace and glyph-name key.
+   */
+  #glyphKey(definition: IconDefinition): string {
+    const identity = definition.identity;
+    const namespace = Object.hasOwn(identity, "namespace") ? identity.namespace : "";
+    return `${namespace}/${identity.name}`;
   }
 }

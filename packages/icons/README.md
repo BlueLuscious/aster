@@ -22,12 +22,12 @@ Pass the definition to a renderer such as
 
 ### Collections
 
-Access a collection's icons by alias or in their declared order:
+Select a treatment by collection alias, or iterate concrete definitions in their declared order:
 
 ```ts
 import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
 
-const camera = Amellus.icons.camera;
+const camera = Amellus.icons.camera.outline;
 const orderedIcons = Amellus.members;
 ```
 

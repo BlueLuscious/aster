@@ -47,13 +47,19 @@ factory through an unaliased named runtime Core import. The direct object's lite
 must agree with the path. [Icons Collections](../../packages/icons/collections/index.md#export-naming-migration)
 owns consumer access and the export-naming migration.
 
-A collection's explicit `icons` object assigns lower camel-case aliases directly to identifiers
-from named relative runtime imports, for example `icons: { camera: CameraOutline }`. Each imported
-specifier and symbol must resolve to one discovered canonical icon. The dictionary rejects arrays,
-shorthand, quoted/computed keys, spreads, accessors, calls, nested values, non-runtime imports,
-duplicate aliases and duplicate members. `catalogueCollectionIconAliasPatternSource` owns static
-alias grammar; [Core](../../packages/core/collection/index.md) independently validates runtime
-construction. Valid aliases may shadow inherited names.
+A collection's explicit `icons` object assigns lower camel-case aliases to non-empty literal
+treatment dictionaries, for example `icons: { camera: { outline: CameraOutline } }`. Each leaf
+is an identifier from a named relative runtime import of one discovered canonical icon.
+Outer keys are identifiers; inner keys may be identifiers or string literals, including numeric
+strings. Numeric literals, computed keys, shorthand, spreads, accessors, calls, further nested
+values, non-runtime imports, duplicate properties and duplicate members are rejected.
+
+`catalogueCollectionIconAliasPatternSource` owns static alias grammar. Public Core
+[`Icon.variantProperty()`](../../packages/core/api/index.md#usage) owns treatment-to-property
+mapping; every group must select one `(namespace, name)` family. The inspector preserves native
+outer/inner enumeration, including integer-index ordering, before emitting flat member identities.
+Valid own shadowing names remain usable. [Core](../../packages/core/collection/index.md)
+independently enforces the same grouped semantics at runtime.
 
 Static metadata authorities must be exported top-level constants acquired through named runtime
 imports. `CatalogueSourceValueResolver` interprets a finite data-only TypeScript subset, never
@@ -90,7 +96,7 @@ caches last one complete inspection and are cleared before the next.
 | --- | --- |
 | `ICatalogueSourceFamily` | Configures a family's Core factory, physical root and generated facade root. |
 | `ICatalogueSourceIdentity` | Carries path-owned name, symbol and public subpath; treatment is required for icons and absent for collections. |
-| `ICatalogueCollectionMemberReference` | Retains an alias and its imported identifier, exported symbol and module specifier for relationship validation. |
+| `ICatalogueCollectionMemberReference` | Retains the outer alias, treatment property and imported identifier, exported symbol and module specifier for relationship validation. |
 | `ICatalogueIconManifestData` | Carries statically extracted icon metadata without geometry. |
 | `ICatalogueCollectionManifestData` | Carries extracted collection metadata and ordered member keys. |
 | `ICatalogueIconManifestRecord` | Adds the canonical key, public symbol and identity to icon data for manifest serialisation. |
@@ -106,10 +112,14 @@ caches last one complete inspection and are cleared before the next.
 
 1. Create, change or remove a canonical definition.
 2. Update affected collections' named imports and alias dictionaries.
-3. Run `pnpm --dir packages/icons run build`, which synchronises before compilation.
+3. Prepare Core with `pnpm --filter @luscious-garden/aster-core run build`, then run
+   `pnpm --dir packages/icons run build`, which synchronises before compilation.
 
 `generate:catalogue` performs synchronisation directly; `check:catalogue` compares without writing.
-Root `pnpm check` runs the read-only check before building, so a build cannot hide uncommitted drift.
+Standalone synchronisation/checking requires a built Core because it uses the public property
+authority. Root `pnpm check:catalogue` builds only Core, then compares Icons output without
+regenerating it. Root `pnpm check` runs that gate before other builds, so generation cannot hide
+uncommitted drift. Icons does not rebuild Core from a hook; recursive builds use dependency order.
 
 Planning emits base facades at `icons/<name>.ts`, variant facades at
 `icons/<name>/<variant>.ts` and collection facades at `collections/<name>.ts`.

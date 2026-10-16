@@ -48,7 +48,7 @@ const selectedIcon: Promise<IconDefinition> | undefined =
   AsterIconLoaders[runtimeKey]?.();
 const selectedCollection: Promise<CollectionDefinition> | undefined =
   AsterCollectionLoaders[runtimeKey]?.();
-const amellusArrowLeft: IconDefinition = Amellus.icons.arrowLeft;
+const amellusArrowLeft: IconDefinition = Amellus.icons.arrowLeft.outline;
 const firstAmellusMember: IconDefinition | undefined =
   Amellus.members[0];
 
@@ -71,10 +71,10 @@ AsterIconManifest[0].key = "changed";
 AsterCollectionManifest[0].members.push("aster/changed");
 
 // @ts-expect-error Concrete collection aliases reject unknown glyph access.
-Amellus.icons.absent;
+Amellus.icons.absent.outline;
 
 // @ts-expect-error Concrete collection aliases are immutable.
-Amellus.icons.arrowLeft = ArrowLeftOutline;
+Amellus.icons.arrowLeft.outline = ArrowLeftOutline;
 
 // @ts-expect-error Canonical loader maps are immutable.
 AsterIconLoaders["aster/changed"] = iconLoader;

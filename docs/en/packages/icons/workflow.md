@@ -51,8 +51,8 @@ imports. Author membership as explicit assignments:
 
 ```text
 icons: {
-  camera: CameraOutline,
-  search: SearchOutline,
+  camera: { outline: CameraOutline },
+  search: { outline: SearchOutline },
 }
 ```
 

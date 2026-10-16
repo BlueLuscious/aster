@@ -16,6 +16,7 @@ retaining a catalogue or logical-identity registry.
 | `IconIdentity` | Extends glyph identity with a required treatment slug. | Used by `IconDefinition`, optional metadata replacement relationships, and Import source descriptors. |
 | `IconViewBox` | Carries finite minimum coordinates and positive logical dimensions. | Owns the coordinate system used by every node and is reused by Import validation evidence. |
 | `IconDefinition` | Carries one complete serialisable icon value. | Composes `IconIdentity`, `IconViewBox`, `IconNodeType`, and `IconMetadata`. |
+| `IconVariantMap` | Maps explicit treatment properties to concrete definitions of a glyph. | Used by `CollectionIconMap`; family and property agreement are runtime invariants, not guarantees of the string index signature. |
 
 ## Identity rules
 

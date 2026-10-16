@@ -8,7 +8,7 @@ performance threshold. Current package findings remain in [CLI Quality](quality.
 
 ## Representative evidence
 
-The schema-version-four baseline prepares a fixed synthetic catalogue outside timed operations.
+The schema-version-five baseline prepares a fixed synthetic catalogue outside timed operations.
 Programmatic scenarios use the public package roots; shell parsing and presentation scenarios
 exercise the private built host directly without process or package-manager cost. Separate
 fresh-process scenarios instrument real built-in catalogue commands and attribute evaluated CLI
@@ -34,6 +34,9 @@ and Icons distribution modules.
 Filesystem publication and package-manager startup are excluded from timing because they measure
 host and storage conditions rather than command-domain execution. Their behaviour remains covered
 by deterministic conformance tests.
+
+Schema five marks grouped catalogue fixtures. See the shared
+[workload comparison limits](../../tooling/performance/index.md#structure).
 
 ## Representative findings
 
@@ -171,7 +174,7 @@ pnpm benchmark:cli
 ```
 
 The command builds Core, Icons, SVG, and CLI, then runs Node with explicit garbage-collection
-access. It prints schema-version-four JSON and writes no artefact. Reports include environment,
+access. It prints schema-version-five JSON and writes no artefact. Reports include environment,
 synchronous and asynchronous operation samples, heap-pressure indicators, deterministic
 checksums, cold-process samples, built-in command module sets, emitted files and bytes, exports,
 side effects, engine range, binary mapping, and dependencies.

@@ -197,21 +197,24 @@ test("resolves isolated runtime and declaration facades without source files", a
     'import { AsterCollectionLoaders, AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     "const icon: IconDefinition = CameraOutline;",
     "const collection: CollectionDefinition = Amellus;",
-    "const cameraFromCollection: IconDefinition = Amellus.icons.camera;",
+    "const cameraFromCollection: IconDefinition = Amellus.icons.camera.outline;",
     "const orderedMembers: readonly IconDefinition[] = Amellus.members;",
     'const cameraAlias: keyof typeof Amellus.icons = "camera";',
     "// @ts-expect-error Packed declarations reject unknown collection aliases.",
     "Amellus.icons.unknown;",
     "if (false) {",
     "  // @ts-expect-error Packed collection alias properties are readonly.",
-    "  Amellus.icons.camera = CameraOutline;",
+    "  Amellus.icons.camera.outline = CameraOutline;",
+    "  // @ts-expect-error Packed groups retain exact treatment keys.",
+    "  Amellus.icons.camera.filled;",
     "}",
-    "if (cameraFromCollection !== CameraOutline || cameraAlias !== \"camera\" || !Object.values(collection.icons).every((member, index) => member === orderedMembers[index])) throw new Error(\"Packed collection membership mismatch.\");",
+    "if (cameraFromCollection !== CameraOutline || cameraAlias !== \"camera\" || !Object.values(collection.icons).flatMap(Object.values).every((member, index) => member === orderedMembers[index])) throw new Error(\"Packed collection membership mismatch.\");",
     "const iconEntry: IconManifestEntry | undefined = AsterIconManifest.find(({ key }) => key === \"aster/camera@outline\");",
     "const collectionEntry: CollectionManifestEntry | undefined = AsterCollectionManifest.find(({ key }) => key === \"amellus\");",
     'if (collectionEntry?.symbol !== "Amellus" || Object.keys(collectionExports).join(",") !== collectionEntry.symbol) throw new Error("Packed collection must expose only its canonical manifest symbol.");',
     'if (collectionExports.Amellus !== Amellus || collectionEntry.identity.name !== Amellus.identity.name || JSON.stringify(collectionEntry.metadata) !== JSON.stringify(Amellus.metadata)) throw new Error("Packed collection metadata or identity mismatch.");',
-    'if (![Amellus, Amellus.identity, Amellus.metadata, Amellus.icons, Amellus.members].every(Object.isFrozen)) throw new Error("Packed collection values must remain frozen.");',
+    'if (![Amellus, Amellus.identity, Amellus.metadata, Amellus.icons, Amellus.icons.camera, Amellus.members].every(Object.isFrozen)) throw new Error("Packed collection values must remain frozen.");',
+    'if (Object.getPrototypeOf(Amellus.icons) !== null || Object.getPrototypeOf(Amellus.icons.camera) !== null) throw new Error("Packed collection dictionaries must be prototype-free.");',
     'const iconLoader: IconDefinitionLoader | undefined = AsterIconLoaders["aster/camera@outline"];',
     "const collectionLoader: CollectionDefinitionLoader | undefined = AsterCollectionLoaders.amellus;",
     "const iconMap: IconDefinitionLoaderMap = AsterIconLoaders;",
@@ -281,7 +284,7 @@ test("resolves isolated runtime and declaration facades without source files", a
     { cwd: consumerRoot, encoding: "utf8" },
   );
 
-  assert.equal(executed.status, 0);
+  assert.equal(executed.status, 0, `Packed consumer failed: ${executed.stdout}${executed.stderr}`);
   assert.equal(executed.stderr, "");
   assert.equal(
     executed.stdout,

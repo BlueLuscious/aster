@@ -12,4 +12,12 @@ export interface IconApi {
    * @returns Recognised input or newly constructed deeply frozen icon definition.
    */
   define(definition: IconDefinition): IconDefinition;
+
+  /**
+   * @description Validates a treatment slug and derives its portable dictionary property.
+   * @remarks The operation neither selects a definition nor reserves a property globally.
+   * @param variant - Explicit treatment slug, normalised consistently with definition identity.
+   * @returns Lower camel-case property, including valid digit-led values for bracket access.
+   */
+  variantProperty(variant: string): string;
 }

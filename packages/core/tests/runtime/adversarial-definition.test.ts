@@ -229,14 +229,14 @@ test("does not invoke an inherited setter while constructing collection aliases"
   const probe = probeInheritedSetter("camera", () =>
     Collection.define({
       identity: { name: "minimal" },
-      icons: { camera },
+      icons: { camera: { outline: camera } },
       metadata: { displayName: "Minimal" },
     }),
   );
 
   assert.equal(probe.writes, 0);
   assert.equal(probe.error, undefined);
-  assert.equal((probe.result as ReturnType<typeof Collection.define>).icons.camera, camera);
+  assert.equal((probe.result as ReturnType<typeof Collection.define>).icons.camera?.outline, camera);
 });
 
 test("does not invoke an inherited setter while copying node presentation", () => {
@@ -454,7 +454,7 @@ test("does not retain frozen authored graphs with hidden state", () => {
     () =>
       Collection.define({
         identity: { name: "adversarial" },
-        icons: { authored },
+        icons: { authored: { outline: authored } },
         metadata: { displayName: "Adversarial" },
       } as never),
     "definition",
@@ -474,9 +474,9 @@ test("reconstructs frozen graphs that contain repeated object aliases", () => {
 
   const retained = Collection.define({
     identity: { name: "aliases" },
-    icons: { authored },
+    icons: { authored: { outline: authored } },
     metadata: { displayName: "Aliases" },
-  } as never).icons.authored;
+  } as never).icons.authored?.outline;
 
   assert.notEqual(retained, authored);
   assert.equal(retained?.nodes[0]?.kind, "polyline");
@@ -495,9 +495,9 @@ test("reconstructs frozen valid input that is not already canonical", () => {
 
   const retained = Collection.define({
     identity: { name: "normalised" },
-    icons: { authored },
+    icons: { authored: { outline: authored } },
     metadata: { displayName: "Normalised" },
-  } as never).icons.authored;
+  } as never).icons.authored?.outline;
 
   assert.notEqual(retained, authored);
   assert.equal(retained?.metadata.displayName, "Search");
@@ -516,9 +516,9 @@ test("reconstructs frozen input with non-canonical field order", () => {
 
   const retained = Collection.define({
     identity: { name: "field-order" },
-    icons: { authored },
+    icons: { authored: { outline: authored } },
     metadata: { displayName: "Field Order" },
-  } as never).icons.authored;
+  } as never).icons.authored?.outline;
 
   assert.notEqual(retained, authored);
   assert.deepEqual(Object.keys(retained ?? {}), [

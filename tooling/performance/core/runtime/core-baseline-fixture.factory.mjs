@@ -35,7 +35,7 @@ export class CoreBaselineFixtureFactory {
       },
       singleCanonicalCollection: {
         identity: { namespace: "benchmark", name: "single-canonical" },
-        icons: { fixture1: firstIcon },
+        icons: { fixture1: { fixture: firstIcon } },
         metadata: { displayName: "Benchmark Single Canonical" },
       },
       representativeMutableCollection: this.#clone(representativeCollection),
@@ -125,7 +125,7 @@ export class CoreBaselineFixtureFactory {
       identity: Object.freeze({ namespace: "benchmark", name }),
       icons: Object.freeze(Object.fromEntries(icons.map((icon, index) => [
         `scale${index + 1}`,
-        icon,
+        Object.freeze({ [Icon.variantProperty(icon.identity.variant)]: icon }),
       ]))),
       metadata: Object.freeze({ displayName: `Benchmark ${name}` }),
     });

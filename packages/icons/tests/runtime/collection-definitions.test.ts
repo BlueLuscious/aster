@@ -23,7 +23,7 @@ test("exposes one canonical collection value through its facade and lazy loader"
 
 test("derives ordered Amellus membership from its source-owned aliases", () => {
   const aliases = Object.keys(Amellus.icons);
-  const definitions = Object.values(Amellus.icons);
+  const definitions = Object.values(Amellus.icons).flatMap(Object.values);
 
   assert.ok(aliases.length > 0, "Expected Amellus to contain at least one icon.");
   assert.deepEqual(definitions, Amellus.members);
@@ -56,21 +56,21 @@ test("derives ordered Amellus membership from its source-owned aliases", () => {
 });
 
 test("keeps icon identity independent from collection membership", async () => {
-  const retained = Amellus.icons.arrowLeft;
-  const omitted = Amellus.icons.arrowRight;
+  const retained = Amellus.icons.arrowLeft.outline;
+  const omitted = Amellus.icons.arrowRight.outline;
   const retainedIdentity = retained.identity;
   const additionalCollection = Collection.define({
     identity: { name: "additional" },
-    icons: { retained },
+    icons: { retained: { outline: retained } },
     metadata: { displayName: "Additional" },
   });
   const reducedCollection = Collection.define({
     identity: { name: "reduced" },
-    icons: { omitted },
+    icons: { omitted: { outline: omitted } },
     metadata: { displayName: "Reduced" },
   });
 
-  assert.equal(additionalCollection.icons.retained, retained);
+  assert.equal(additionalCollection.icons.retained.outline, retained);
   assert.equal(additionalCollection.members[0], retained);
   assert.equal(retained.identity, retainedIdentity);
   assert.equal(reducedCollection.members.includes(retained), false);

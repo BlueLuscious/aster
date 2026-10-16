@@ -38,6 +38,11 @@ scale or construction semantics requires an explicit report schema revision beca
 direct historical comparison. Product icons and collections never serve as benchmark fixtures;
 ordinary catalogue growth therefore cannot alter Core, SVG, or CLI operation inputs.
 
+Collection inputs now select explicit nested treatment maps while retaining the same concrete
+corpus and flat member order. Core schema six and CLI schema five mark this construction-boundary
+change; do not compare their collection-sensitive timings directly with older flat-map reports.
+SVG's measured concrete-definition inputs are unchanged. Historical reports retain their scope.
+
 ## Internal contracts
 
 | Contract | Responsibility |

@@ -181,7 +181,7 @@ test("resolves one collection loader and projects only its required members", as
   const alpha = authoredIcon("alpha");
   const source = structuredClone(Collection.define({
     identity: { namespace: "testing", name: "essentials" },
-    icons: { bravo, alpha },
+    icons: { bravo: { outline: bravo }, alpha: { outline: alpha } },
     metadata: {
       displayName: "Essentials",
       tags: ["testing"],
@@ -325,7 +325,7 @@ test("rejects collection identity, metadata, and membership drift without partia
   const bravo = Icon.define(authoredIcon("bravo"));
   const canonical = Collection.define({
     identity: { namespace: "testing", name: "essentials" },
-    icons: { alpha, bravo },
+    icons: { alpha: { outline: alpha }, bravo: { outline: bravo } },
     metadata: { displayName: "Essentials" },
   });
   const membership = [canonical.identity];
@@ -358,7 +358,7 @@ test("rejects collection identity, metadata, and membership drift without partia
       name: "membership mismatch",
       definition: Collection.define({
         identity: canonical.identity,
-        icons: { bravo, alpha },
+        icons: { bravo: { outline: bravo }, alpha: { outline: alpha } },
         metadata: canonical.metadata,
       }),
       message: "collection testing/essentials loader returned members inconsistent with discovery",
@@ -410,7 +410,7 @@ test("sanitises missing, failed, and invalid exact collection definitions", asyn
   const alpha = Icon.define(authoredIcon("alpha"));
   const canonical = Collection.define({
     identity: { namespace: "testing", name: "essentials" },
-    icons: { alpha },
+    icons: { alpha: { outline: alpha } },
     metadata: { displayName: "Essentials" },
   });
   const discovery: CatalogueDiscovery = {

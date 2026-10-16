@@ -104,7 +104,7 @@ test("serialises collections in canonical navigable order", async () => {
   });
   const collection = Collection.define({
     identity: { namespace: "testing", name: "ordered" },
-    icons: { zeta, alpha },
+    icons: { zeta: { outline: zeta }, alpha: { outline: alpha } },
     metadata: { displayName: "Ordered" },
   });
   const provider = createCatalogueProvider("testing", {
@@ -152,7 +152,7 @@ test("escapes hostile authored text and explicit attribute contexts", async () =
   });
   const collection = Collection.define({
     identity: { namespace: "testing", name: "hostile" },
-    icons: { hostile: icon },
+    icons: { hostile: { outline: icon } },
     metadata: {
       displayName: dangerous,
       description: "<strong>not markup</strong>",

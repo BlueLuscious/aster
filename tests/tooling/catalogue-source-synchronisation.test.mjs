@@ -13,6 +13,7 @@ import { dirname, join, resolve } from "node:path";
 import test from "node:test";
 import { pathToFileURL } from "node:url";
 import ts from "typescript";
+import { Collection, Icon } from "@luscious-garden/aster-core";
 
 import { NodeCatalogueSourceFileSystem } from "../../tooling/catalogue/runtime/node-catalogue-source-file-system.mjs";
 import { catalogueSourceGeneration } from "../../tooling/catalogue/constants/catalogue-source-generation.constant.mjs";
@@ -118,7 +119,7 @@ function collectionSource(name, imports = [], members = []) {
   return collectionSourceWithIcons(
     name,
     imports,
-    members.map(({ alias, symbol }) => `    ${alias}: ${symbol},`),
+    members.map(({ alias, symbol }) => `    ${alias}: { ${symbol.endsWith("Stippled") ? "stippled" : "outline"}: ${symbol} },`),
   );
 }
 
@@ -193,6 +194,108 @@ async function readGeneratedOutputs(root) {
     ),
   );
 }
+
+test("preserves runtime treatment enumeration in statically derived flat members", async () => {
+  const root = await createPackageFixture();
+  try {
+    const variants = ["10", "2", "01", "2tone", "4294967295", "4294967294", "constructor", "to-string", "filled-dotted"];
+    const imports = [];
+    const properties = [];
+    const leaves = [];
+    for (const variant of variants) {
+      const symbol = `AlphaIcon${pascalCase(variant)}`;
+      await writeFile(resolve(root, `src/glyphs/a/alpha-icon/alpha-icon-${variant}.icon.ts`), iconSource("alpha-icon", variant), "utf8");
+      imports.push(`import { ${symbol} } from "../../../glyphs/a/alpha-icon/alpha-icon-${variant}.icon.js";`);
+      const property = Icon.variantProperty(variant);
+      properties.push(`${JSON.stringify(property)}: ${symbol}`);
+      leaves.push([property, Icon.define({
+        identity: { name: "alpha-icon", variant },
+        viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
+        nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],
+        metadata: { displayName: "Fixture", rtl: "preserve", deprecated: false, presentation: { defaults: {}, overrides: [] } },
+      })]);
+    }
+    await writeFile(resolve(root, "src/collections/s/sample/sample.collection.ts"),
+      collectionSourceWithIcons("sample", imports, [`alphaIcon: { ${properties.join(", ")} },`]), "utf8");
+    const runtime = Collection.define({
+      identity: { name: "sample" }, icons: { alphaIcon: Object.fromEntries(leaves) }, metadata: { displayName: "Sample" },
+    });
+    await synchroniseIconsCatalogue(root);
+    const manifest = await readFile(resolve(root, generatedOutputPaths.manifest), "utf8");
+    const expected = runtime.members.map(leaf => `${leaf.identity.name}@${leaf.identity.variant}`);
+    const emitted = ts.transpileModule(manifest, {
+      compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.ES2022 },
+    }).outputText;
+    const generated = await import(`data:text/javascript;base64,${Buffer.from(emitted).toString("base64")}`);
+    assert.deepEqual(generated.AsterCollectionManifest[0].members, expected);
+    assert.deepEqual(runtime.members.map(leaf => leaf.identity.variant),
+      ["2", "10", "4294967294", "01", "2tone", "4294967295", "constructor", "to-string", "filled-dotted"]);
+    assert.deepEqual((await synchroniseIconsCatalogue(root, true)).changedPaths, []);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects invalid nested selections before changing any catalogue output", async () => {
+  const root = await createPackageFixture();
+  try {
+    const directory = resolve(root, "src/glyphs/a/alpha-icon");
+    for (const variant of ["filled", "tone-1", "tone1"]) {
+      await writeFile(resolve(directory, `alpha-icon-${variant}.icon.ts`), iconSource("alpha-icon", variant), "utf8");
+    }
+    await writeFile(resolve(root, "src/glyphs/z/zeta/zeta-filled.icon.ts"), iconSource("zeta", "filled"), "utf8");
+    await synchroniseIconsCatalogue(root);
+    const before = await readGeneratedOutputs(root);
+    const path = resolve(root, "src/collections/s/sample/sample.collection.ts");
+    const imports = [
+      'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
+      'import { AlphaIconFilled } from "../../../glyphs/a/alpha-icon/alpha-icon-filled.icon.js";',
+      'import { AlphaIconTone1 } from "../../../glyphs/a/alpha-icon/alpha-icon-tone-1.icon.js";',
+      'import { AlphaIconTone1 as OtherTone } from "../../../glyphs/a/alpha-icon/alpha-icon-tone1.icon.js";',
+      'import { ZetaOutline } from "../../../glyphs/z/zeta/zeta-outline.icon.js";',
+      'import { ZetaFilled } from "../../../glyphs/z/zeta/zeta-filled.icon.js";',
+    ];
+    for (const [selection, pattern] of [
+      ["alphaIcon: {}", /empty variant group/u],
+      ["alphaIcon: AlphaIconOutline", /variant object literals/u],
+      ["alphaIcon: { filled: AlphaIconOutline }", /canonical variant property/u],
+      ["alphaIcon: { outline: AlphaIconOutline, filled: ZetaOutline }", /canonical variant property|same glyph/u],
+      ["alphaIcon: { outline: AlphaIconOutline, filled: ZetaFilled }", /same glyph/u],
+      ["alphaIcon: { outline: AlphaIconOutline }, other: { outline: AlphaIconOutline }", /duplicate collection member/u],
+      ["alphaIcon: { tone1: AlphaIconTone1, tone1: OtherTone }", /duplicate variant property/u],
+      ["alphaIcon: { [\"outline\"]: AlphaIconOutline }", /direct named properties/u],
+      ["alphaIcon: { 2: AlphaIconOutline }", /direct named properties/u],
+      ["alphaIcon: { AlphaIconOutline }", /direct named properties/u],
+      ["alphaIcon: { ...AlphaIconOutline }", /direct named properties/u],
+      ["alphaIcon: { get outline() { return AlphaIconOutline; } }", /direct named properties/u],
+      ["alphaIcon: { set outline(value) {} }", /direct named properties/u],
+      ["alphaIcon: { outline: Icon.define({}) }", /direct named properties/u],
+      ["alphaIcon: { outline: { leaf: AlphaIconOutline } }", /direct named properties/u],
+    ]) {
+      await writeFile(path, collectionSourceWithIcons("sample", imports, [selection]), "utf8");
+      await assert.rejects(synchroniseIconsCatalogue(root), pattern);
+      assert.deepEqual(await readGeneratedOutputs(root), before);
+    }
+    await writeFile(path, collectionSourceWithIcons("sample", imports,
+      ["constructor: { outline: AlphaIconOutline }, toString: { filled: AlphaIconFilled }"]), "utf8");
+    await synchroniseIconsCatalogue(root);
+    await writeFile(path, collectionSourceWithIcons("sample"), "utf8");
+    await synchroniseIconsCatalogue(root);
+    assert.match(await readFile(resolve(root, generatedOutputPaths.manifest), "utf8"), /members: Object\.freeze\(\[\]\)/u);
+    await writeFile(path, collectionSource("sample", [imports[0]], [{ alias: "alphaIcon", symbol: "AlphaIconOutline" }]), "utf8");
+    await synchroniseIconsCatalogue(root);
+    assert.deepEqual(await readGeneratedOutputs(root), before);
+    // Equal property names do not hide a distinct glyph or namespace behind the group alias.
+    await writeFile(resolve(directory, "alpha-icon-filled.icon.ts"),
+      iconSource("alpha-icon", "filled").replace("identity: { name:", 'identity: { namespace: "other", name:'), "utf8");
+    await writeFile(path, collectionSourceWithIcons("sample", imports,
+      ["alphaIcon: { outline: AlphaIconOutline, filled: AlphaIconFilled }"]), "utf8");
+    await assert.rejects(synchroniseIconsCatalogue(root), /same glyph/u);
+    assert.deepEqual(await readGeneratedOutputs(root), before);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
 
 test("derives suffix-free definition symbols from canonical source names", () => {
   const layouts = new CatalogueSourceLayoutNormaliser();
@@ -1025,7 +1128,7 @@ test("rejects unsupported collection icon dictionary syntax before replacing out
         ],
         [{ alias: "alphaIcon", symbol: "AlphaIconOutline" }],
       ).replace(
-        "  icons: {\n    alphaIcon: AlphaIconOutline,\n  },",
+        "  icons: {\n    alphaIcon: { outline: AlphaIconOutline },\n  },",
         "  icons: [AlphaIconOutline],",
       ),
       pattern: /must declare icons as an object literal/u,
@@ -1036,7 +1139,7 @@ test("rejects unsupported collection icon dictionary syntax before replacing out
         [
           'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
         ],
-        ["    AlphaIconOutline: AlphaIconOutline,"],
+        ["    AlphaIconOutline: { outline: AlphaIconOutline },"],
       ),
       pattern: /collection icon alias AlphaIconOutline must use lower camel-case syntax/u,
     },
@@ -1047,8 +1150,8 @@ test("rejects unsupported collection icon dictionary syntax before replacing out
           'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
         ],
         [
-          "    alphaIcon: AlphaIconOutline,",
-          "    alphaIcon: AlphaIconOutline,",
+          "    alphaIcon: { outline: AlphaIconOutline },",
+          "    alphaIcon: { outline: AlphaIconOutline },",
         ],
       ),
       pattern: /contains duplicate collection icon alias alphaIcon/u,
@@ -1060,8 +1163,8 @@ test("rejects unsupported collection icon dictionary syntax before replacing out
           'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
         ],
         [
-          "    alphaIcon: AlphaIconOutline,",
-          "    repeatedAlpha: AlphaIconOutline,",
+          "    alphaIcon: { outline: AlphaIconOutline },",
+          "    repeatedAlpha: { outline: AlphaIconOutline },",
         ],
       ),
       pattern: /contains duplicate collection member AlphaIconOutline/u,
