@@ -10,12 +10,16 @@ export const asterCommandPayloadKinds = Object.freeze({
   collectionList: "collection-list",
   /** @description Payload containing canonical icon records. */
   iconList: "icon-list",
+  /** @description Payload containing provider-scoped glyph families. */
+  glyphList: "glyph-list",
   /** @description Payload containing one accepted review plan. */
   review: "review",
   /** @description Payload containing matched catalogue records. */
   search: "search",
   /** @description Payload containing one exact icon record. */
   iconShow: "icon-show",
+  /** @description Payload containing one exact provider-scoped glyph. */
+  glyphShow: "glyph-show",
   /** @description Payload containing one exact collection record. */
   collectionShow: "collection-show",
   /** @description Payload containing command help metadata. */

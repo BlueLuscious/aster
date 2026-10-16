@@ -28,6 +28,15 @@ export class CanonicalIdentityValidator {
   }
 
   /**
+   * @description Determines whether a candidate identifies a glyph without selecting a treatment.
+   * @param value - Candidate glyph identity.
+   * @returns Whether the value follows `[namespace/]name` without a variant.
+   */
+  glyph(value: unknown): value is string {
+    return this.#identity(value, false);
+  }
+
+  /**
    * @description Determines whether a candidate is a canonical collection identity without a variant.
    * @param value - Candidate collection identity.
    * @returns Whether the value follows `[namespace/]name`.

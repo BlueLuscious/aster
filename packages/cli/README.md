@@ -12,7 +12,9 @@ and SVG dependencies.
 
 ```sh
 pnpm add -D @luscious-garden/aster-cli
-pnpm exec aster list icons
+pnpm exec aster list glyphs
+pnpm exec aster show glyph aster/camera
+pnpm exec aster list icons --glyph aster/camera
 pnpm exec aster export icon aster/camera@outline
 pnpm exec aster version --all
 ```
@@ -21,7 +23,9 @@ pnpm exec aster version --all
 
 ```sh
 pnpm add -g @luscious-garden/aster-cli
-aster list icons
+aster list glyphs
+aster show glyph aster/camera
+aster list icons --glyph aster/camera
 aster export icon aster/camera@outline
 aster version --location
 ```
@@ -36,6 +40,11 @@ owns global executable setup, local alternatives, command grammar, version sourc
 For a custom host, the public `AsterCommands` composition returns command results and plans without
 filesystem effects. The [programmatic API](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/api/index.md)
 owns contexts and execution contracts.
+
+Glyph commands discover available treatments without loading artwork. Concrete icon operations
+require `@variant`; the
+[Catalogue guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/catalogue/index.md#discovery-semantics)
+explains provider scope and exact family filtering.
 
 ## Documentation
 

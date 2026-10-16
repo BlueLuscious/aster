@@ -11,13 +11,14 @@ package-manager, framework, or plugin capability.
 | Authority | Responsibility |
 | --- | --- |
 | `cliIdentitySchema` | Defines the closed lowercase ASCII slug and textual identity separators used by command and catalogue input. |
-| `CanonicalIdentityValidator` | Validates provider, collection, and icon identity strings against the shared grammar. |
+| `CanonicalIdentityValidator` | Validates provider, glyph, collection and concrete icon strings against shared grammar without conflating their subject roles. |
 | `AsciiStringComparator` | Applies deterministic lexical ordering without locale dependence. |
 | `StructuredDataInspector` | Snapshots exact plain records and dense ordinary arrays without executing authored accessors. |
 
 Provider identities and tags are lowercase ASCII kebab-case slugs. Collection identities use
-`[namespace/]name`; icon identities require `[namespace/]name@variant`. Every section follows the same slug
-grammar. These exact textual identities are not collection-local aliases or inferred namespaces.
+`[namespace/]name`, as do glyph identities; icon identities require `[namespace/]name@variant`.
+Every section follows the same slug grammar. These exact textual identities are not collection-local
+aliases or inferred namespaces.
 
 `StructuredDataInspector` accepts records whose prototype is either `Object.prototype` or `null`.
 Every accepted field must be an own enumerable data property from a caller-supplied closed set.

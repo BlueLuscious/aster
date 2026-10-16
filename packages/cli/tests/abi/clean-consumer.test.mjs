@@ -543,18 +543,34 @@ test("preserves canonical ownership across packed authoring and command boundari
 
 test("type-checks cross-package usage against packed declarations", async () => {
   await writeFile(resolve(consumerRoot, "consumer.ts"), [
-    'import type { IconDefinition } from "@luscious-garden/aster-core";',
+    'import type { IconDefinition, IconGlyphIdentity } from "@luscious-garden/aster-core";',
     'import { Collection } from "@luscious-garden/aster-core";',
     'import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
     'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     'import { Svg } from "@luscious-garden/aster-svg";',
     'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
-    'import type { AsterCliLocationEvidence, AsterCommandInvocationType, AsterCommandPayloadType, AsterPackageDependencyEvidence } from "@luscious-garden/aster-cli";',
+    'import type { AsterCliLocationEvidence, AsterCommandInvocationType, AsterCommandPayloadType, AsterPackageDependencyEvidence, CatalogueGlyphResult, CatalogueIconResult } from "@luscious-garden/aster-cli";',
     'const versionRequest: AsterCommandInvocationType = { command: "version", scope: "cli", dependencies: true, location: true };',
     'const location: AsterCliLocationEvidence = { entrypoint: "/aster/cli.js", projectCli: "same" };',
     'const dependencyEvidence: AsterPackageDependencyEvidence = { source: "cli", groups: [{ root: { name: "@luscious-garden/aster-cli", version: "1.0.0" }, dependencies: [] }] };',
     'const dependencyPayload: AsterCommandPayloadType = { kind: "package-dependencies", ...dependencyEvidence, location };',
     "void versionRequest; void dependencyPayload;",
+    'const glyphContext = {catalogues:[AsterCatalogue],productName:"Aster",productVersion:"0.0.0"};',
+    'const glyphRequests: readonly AsterCommandInvocationType[] = [{command:"list",subject:"glyphs"},{command:"list",subject:"icons",glyph:"aster/camera"}];',
+    'const family = await AsterCommands.execute({command:"show",subject:"glyph",identity:"aster/camera"}, glyphContext);',
+    'if (family.ok && family.payload.kind === "glyph-show") {',
+    "  const glyph: CatalogueGlyphResult = family.payload.glyph;",
+    "  const identity: IconGlyphIdentity = glyph.identity;",
+    "  const variant: CatalogueIconResult | undefined = glyph.variants[0];",
+    "  // @ts-expect-error Packed glyph identities have no concrete treatment.",
+    "  glyph.identity.variant;",
+    "  // @ts-expect-error Packed glyph result sequences are readonly.",
+    "  glyph.variants.push(variant);",
+    "  // @ts-expect-error Packed glyph results expose no definition geometry.",
+    "  glyph.variants[0].nodes;",
+    "  void identity; void variant;",
+    "}",
+    "void glyphRequests;",
     "const entry = AsterIconManifest[0];",
     'if (entry === undefined) throw new Error("Missing icon");',
     "const loader = AsterIconLoaders[entry.key];",
@@ -1114,6 +1130,58 @@ test("keeps packed version requests free of icon and network imports", async () 
     assertSuccessfulProcess(result, `execute guarded ${arguments_.join(" ")}`);
     assert.equal(result.stderr, "");
   }
+});
+
+test("discovers packed glyphs without importing artwork, facades or network hosts", async () => {
+  const guardPath = resolve(consumerRoot, "glyph-import-guard.mjs");
+  await writeFile(guardPath, [
+    'import { registerHooks } from "node:module";',
+    "registerHooks({",
+    "  resolve(specifier, context, nextResolve) {",
+    String.raw`    if (/^node:(?:http|https|net|tls|dns|dgram)(?:\/|$)/u.test(specifier)) throw new Error("Unexpected network host");`,
+    "    return nextResolve(specifier, context);",
+    "  },",
+    "  load(url, context, nextLoad) {",
+    String.raw`    if (/\/aster-icons\/dist\/(?:glyphs|collections|authoring|generated\/facades)\//u.test(url)) throw new Error("Unexpected artwork dependency " + url);`,
+    "    return nextLoad(url, context);",
+    "  },",
+    "});",
+    'globalThis.fetch = () => { throw new Error("Unexpected glyph fetch"); };',
+  ].join("\n"), "utf8");
+  const results = [];
+  for (const arguments_ of [
+    ["list", "glyphs", "--json"],
+    ["show", "glyph", "aster/camera", "--json"],
+    ["list", "icons", "--glyph", "aster/camera", "--json"],
+    ["list", "icons", "--glyph", "aster/camera", "--collection", "amellus", "--tag", "camera", "--json"],
+  ]) {
+    const result = spawnSync(process.execPath, [
+      "--import", pathToFileURL(guardPath).href,
+      resolve(consumerRoot, "node_modules/@luscious-garden/aster-cli/dist/shell/aster.js"),
+      ...arguments_,
+    ], { cwd: consumerRoot, encoding: "utf8" });
+    assertSuccessfulProcess(result, `execute guarded ${arguments_.join(" ")}`);
+    assert.equal(result.stderr, "");
+    results.push(JSON.parse(result.stdout));
+  }
+  assert.equal(results[0].payload.kind, "glyph-list");
+  assert.equal(results[1].payload.kind, "glyph-show");
+  assert.deepEqual(results[1].payload.glyph.variants, results[2].payload.icons);
+  const blocked = spawnSync(process.execPath, [
+    "--import", pathToFileURL(guardPath).href, "--input-type=module", "--eval",
+    'await import("@luscious-garden/aster-icons/camera/outline");',
+  ], { cwd: consumerRoot, encoding: "utf8" });
+  assert.equal(blocked.error, undefined);
+  assert.equal(blocked.status, 1);
+  assert.equal(blocked.stdout, "");
+  assert.match(blocked.stderr, /Unexpected artwork dependency/u);
+  const programmatic = runModule([
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
+    'const result = await AsterCommands.execute({command:"show", subject:"glyph", identity:"aster/camera"}, {catalogues:[AsterCatalogue],productName:"Aster",productVersion:"0.0.0"});',
+    "process.stdout.write(JSON.stringify(result));",
+  ].join("\n"));
+  assertSuccessfulProcess(programmatic, "compare packed glyph hosts");
+  assert.deepEqual(JSON.parse(programmatic.stdout), results[1]);
 });
 
 test("returns the same result through the executable and an independent plugin host", () => {

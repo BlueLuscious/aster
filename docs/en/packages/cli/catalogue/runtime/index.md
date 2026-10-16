@@ -15,13 +15,13 @@ None of these classes is exported through a package subpath.
 | `CatalogueDiscoveryIdentityNormaliser` | Accepts portable icon and collection identities from untrusted discovery values. |
 | `CatalogueDiscoveryMetadataNormaliser` | Accepts lightweight icon metadata and descriptive collection metadata. |
 | `CatalogueDiscoveryMembershipValidator` | Validates bidirectional agreement between icon memberships and collection members. |
-| `CatalogueDiscoverySelector` | Resolves exact metadata records with provider filtering and ambiguity handling. |
+| `CatalogueDiscoverySelector` | Resolves concrete metadata records or derived glyph results with shared provider filtering and ambiguity handling. |
 | `CatalogueDefinitionResolver` | Invokes one selected exact loader, accepts its result through Core, and returns complete immutable command evidence. |
 | `CatalogueDefinitionConsistencyValidator` | Verifies loaded identity, metadata, and collection membership against accepted discovery evidence. |
 | `CatalogueIdentityFormatter` | Formats portable identities for exact matching and ordering. |
-| `CatalogueQueryScope` | Applies shared provider, collection, membership, and tag filters. |
-| `CatalogueResultFactory` | Projects accepted discovery records into public immutable evidence. |
-| `CatalogueListQuery` | Produces provider, collection, and icon list payloads. |
+| `CatalogueQueryScope` | Applies provider, collection, exact glyph, membership and tag filters; checks requested-family existence before intersections. |
+| `CatalogueResultFactory` | Projects accepted records and derives provider-local glyph groups using shared identity formatting and ASCII ordering. |
+| `CatalogueListQuery` | Produces provider, collection, glyph and concrete icon list payloads. |
 | `CatalogueSearchQuery` | Matches mixed records against deterministic search terms. |
 | `CatalogueShowQuery` | Resolves one exact metadata record without loading a definition. |
 
@@ -29,10 +29,13 @@ None of these classes is exported through a package subpath.
 isolated discovery records. It is the immutable hand-off from provider acceptance to list, search,
 show, and later exact selection; it is not a public provider result.
 
-`TCatalogueDiscoverySelection` retains one exact provider, requested identity, selected record, and
-the discovery icon records required by that subject. It contains no complete definition.
+`TCatalogueDiscoverySelection` retains the supplying provider, requested identity and selected icon
+or collection record, together with the discovery icons required by that subject. It contains no
+complete definition.
 `TCatalogueSelection` is the downstream immutable result containing the accepted definition and
 canonically ordered icon evidence required by Export or Review.
+Both internal selection subjects remain concrete; derived glyph results never enter definition
+resolution. Glyph list/show share the result factory's metadata projection, not a glyph loader.
 Each `TCatalogueSelectedIcon` pairs one accepted Core `IconDefinition` with its independent,
 canonically ordered collection memberships inside that selection; it does not alter the definition.
 

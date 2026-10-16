@@ -35,6 +35,7 @@ const presentation = Object.freeze({
 
 test("exposes immutable catalogue result discriminators", () => {
   assert.deepEqual(catalogueResultKinds, {
+    glyph: "glyph",
     icon: "icon",
     collection: "collection",
   });

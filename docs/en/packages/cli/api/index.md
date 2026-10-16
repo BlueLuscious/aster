@@ -15,7 +15,7 @@ descriptors are immutable and ordered by command name. Reading them executes no 
 import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";
 
 const result = await AsterCommands.execute(
-  { command: "show", subject: "icon", identity: "aster/camera@outline" },
+  { command: "show", subject: "glyph", identity: "aster/camera" },
   {
     productName: "Aster",
     productVersion: "0.1.0",
@@ -27,6 +27,8 @@ const result = await AsterCommands.execute(
 The version is illustrative host metadata, not a registry query. Hosts may supply other explicit
 [`CatalogueProvider`](../catalogue/index.md) implementations or an empty provider sequence.
 They acquire requested version evidence themselves; the command API never reads installed manifests.
+The example discovers a family without loading geometry. Select a concrete `@variant` for icon
+operations; [Catalogue](../catalogue/index.md#discovery-semantics) owns family and filter semantics.
 
 `execute()` accepts and isolates the invocation and context, then returns one immutable
 structured result. Expected failures are data; unexpected faults cross the

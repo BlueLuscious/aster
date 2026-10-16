@@ -12,6 +12,9 @@ export type TParsedCommandOptions = {
    */
   collection?: string;
 
+  /** @description Optional exact glyph identity filter for icon listing. */
+  glyph?: string;
+
   /**
    * @description Repeated intrinsic-tag filters in received order.
    */

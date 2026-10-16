@@ -38,7 +38,7 @@ export class ShowInvocationNormaliser implements ICommandInvocationNormaliser {
   readonly #rejections = new InvocationRejectionFactory();
 
   /**
-   * @description Accepts one exact icon or collection lookup.
+   * @description Accepts one exact glyph, icon or collection metadata lookup.
    * @param value - Candidate show invocation.
    * @returns Accepted immutable show invocation or usage rejection.
    */
@@ -56,20 +56,21 @@ export class ShowInvocationNormaliser implements ICommandInvocationNormaliser {
     if (
       record.subject !== asterCommandSubjects.show.icon
       && record.subject !== asterCommandSubjects.show.collection
+      && record.subject !== asterCommandSubjects.show.glyph
     ) {
       return this.#rejections.invalid(
-        "expected show subject to be icon or collection",
+        "expected show subject to be glyph, icon, or collection",
       );
     }
 
     const validIdentity = record.subject === asterCommandSubjects.show.icon
       ? this.#identities.icon(record.identity)
-      : this.#identities.collection(record.identity);
+      : record.subject === asterCommandSubjects.show.glyph
+        ? this.#identities.glyph(record.identity)
+        : this.#identities.collection(record.identity);
 
     if (!validIdentity) {
-      return this.#rejections.invalid(
-        `expected a canonical ${record.subject} identity`,
-      );
+      return this.#rejections.invalidIdentity(record.subject);
     }
 
     if (

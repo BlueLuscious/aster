@@ -1,6 +1,7 @@
 import type {
   CollectionIdentity,
   IconIdentity,
+  IconGlyphIdentity,
 } from "@luscious-garden/aster-core";
 
 /**
@@ -13,7 +14,16 @@ export class CatalogueIdentityFormatter {
    * @returns Canonical `[namespace/]name@variant` value.
    */
   icon(identity: IconIdentity): string {
-    return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}@${identity.variant}`;
+    return `${this.glyph(identity)}@${identity.variant}`;
+  }
+
+  /**
+   * @description Formats a glyph family without choosing any of its concrete treatments.
+   * @param identity - Accepted portable namespace/name identity.
+   * @returns Canonical `[namespace/]name` glyph key.
+   */
+  glyph(identity: IconGlyphIdentity): string {
+    return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}`;
   }
 
   /**

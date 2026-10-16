@@ -32,14 +32,14 @@ export class ListInvocationNormaliser implements ICommandInvocationNormaliser {
   readonly #rejections = new InvocationRejectionFactory();
 
   /**
-   * @description Accepts provider, collection, or icon listing with exact filters.
+   * @description Accepts provider, collection, glyph or icon listing with subject-specific filters.
    * @param value - Candidate list invocation.
    * @returns Accepted immutable list invocation or usage rejection.
    */
   normalise(value: unknown): TAcceptanceResult<AsterCommandInvocationType> {
     const record = this.#data.record(
       value,
-      ["command", "subject", "catalogue", "collection", "tags"],
+      ["command", "subject", "catalogue", "collection", "tags", "glyph"],
       ["command", "subject"],
     );
 
@@ -51,9 +51,10 @@ export class ListInvocationNormaliser implements ICommandInvocationNormaliser {
       record.subject !== asterCommandSubjects.list.catalogues
       && record.subject !== asterCommandSubjects.list.collections
       && record.subject !== asterCommandSubjects.list.icons
+      && record.subject !== asterCommandSubjects.list.glyphs
     ) {
       return this.#rejections.invalid(
-        "expected list subject to be catalogues, collections, or icons",
+        "expected list subject to be catalogues, collections, glyphs, or icons",
       );
     }
 
@@ -65,11 +66,11 @@ export class ListInvocationNormaliser implements ICommandInvocationNormaliser {
     }
 
     if (
-      record.subject === asterCommandSubjects.list.collections
-      && (Object.hasOwn(record, "collection") || Object.hasOwn(record, "tags"))
+      (record.subject === asterCommandSubjects.list.collections || record.subject === asterCommandSubjects.list.glyphs)
+      && (Object.hasOwn(record, "collection") || Object.hasOwn(record, "tags") || Object.hasOwn(record, "glyph"))
     ) {
       return this.#rejections.invalid(
-        "collection listing accepts only a catalogue filter",
+        `${record.subject === asterCommandSubjects.list.glyphs ? "glyph" : "collection"} listing accepts only a catalogue filter`,
       );
     }
 
@@ -83,6 +84,10 @@ export class ListInvocationNormaliser implements ICommandInvocationNormaliser {
       return this.#rejections.invalid(
         "expected collection filter to be a canonical collection identity",
       );
+    }
+
+    if (!this.#filters.glyph(record, "glyph")) {
+      return this.#rejections.invalid("expected glyph filter to be a canonical glyph identity without a variant");
     }
 
     const tags = this.#filters.tags(record);
@@ -105,6 +110,7 @@ export class ListInvocationNormaliser implements ICommandInvocationNormaliser {
           ? { collection: record.collection as string }
           : {}),
         ...(tags === undefined ? {} : { tags }),
+        ...(Object.hasOwn(record, "glyph") ? { glyph: record.glyph as string } : {}),
       }),
     });
   }

@@ -125,6 +125,85 @@ test("exposes version and review help through the standalone parser", () => {
   }
 });
 
+test("discovers glyph families and explicit treatments through human and JSON executable output", () => {
+  const glyphIdentity = representativeIdentity.split("@")[0];
+  const listed = run(["list", "glyphs"]);
+  assert.equal(listed.status, 0);
+  assert.equal(listed.stderr, "");
+  assert.match(listed.stdout, /^Glyphs:\n/u);
+  assert.ok(listed.stdout.includes(`${glyphIdentity} [aster] (`));
+  const shown = run(["show", "glyph", glyphIdentity]);
+  assert.equal(shown.status, 0);
+  assert.equal(shown.stderr, "");
+  assert.ok(shown.stdout.startsWith(`Glyph: ${glyphIdentity}\nCatalogue: aster\nVariants:\n`));
+  assert.ok(shown.stdout.includes(`  ${representativeIdentity} [aster] - ${representativeDisplayName}`));
+  const family = run(["show", "glyph", glyphIdentity, "--catalogue", "aster", "--json"]);
+  const filtered = run(["list", "icons", "--glyph", glyphIdentity, "--json"]);
+  const listJson = run(["list", "glyphs", "--json"]);
+  for (const result of [family, filtered, listJson]) {
+    assert.equal(result.status, 0);
+    assert.equal(result.stderr, "");
+    assert.ok(result.stdout.endsWith("\n"));
+  }
+  const glyph = JSON.parse(family.stdout).payload.glyph;
+  assert.equal(JSON.parse(family.stdout).payload.kind, "glyph-show");
+  assert.deepEqual(JSON.parse(filtered.stdout).payload.icons, glyph.variants);
+  assert.deepEqual(JSON.parse(listJson.stdout).payload.glyphs.find((entry) =>
+    entry.identity.name === glyph.identity.name && entry.identity.namespace === glyph.identity.namespace), glyph);
+  const absent = run(["list", "icons", "--glyph", glyphIdentity, "--tag", "nonexistent-fixture-tag"]);
+  assert.equal(absent.status, 0);
+  assert.equal(absent.stderr, "");
+  assert.equal(absent.stdout, "Icons:\n  (none)\n");
+});
+
+test("rejects unsupported glyph argv forms without falling back to a concrete treatment", () => {
+  for (const argv of [
+    ["list", "glyphs", "--tag", "camera"],
+    ["list", "glyphs", "--collection", "amellus"],
+    ["list", "glyphs", "--glyph", "aster/camera"],
+    ["list", "collections", "--glyph", "aster/camera"],
+    ["list", "catalogues", "--glyph", "aster/camera"],
+    ["search", "camera", "--glyph", "aster/camera"],
+    ["list", "icons", "--glyph"],
+    ["list", "icons", "--glyph", "aster/camera", "--glyph", "aster/camera"],
+    ["list", "glyphs", "--catalogue", "aster", "--catalogue", "aster"],
+    ["show", "glyph"], ["show", "glyph", "aster/camera", "extra"],
+    ["show", "glyph", "aster/camera", "--collection", "amellus"],
+    ["show", "glyph", "aster/camera@outline"], ["show", "glyph", "aster/camera/outline"],
+    ["list", "icons", "--glyph", "aster/camera@outline"],
+    ["export", "glyph", "aster/camera"], ["review", "glyph", "aster/camera"],
+    ...["show", "export", "review"].map((command) => [command, "icon", "aster/camera"]),
+  ]) {
+    const result = run([...argv, "--json"]);
+    assert.equal(result.status, 2, argv.join(" "));
+    assert.equal(result.stderr, "");
+    const value = JSON.parse(result.stdout);
+    assert.equal(value.ok, false);
+    assert.equal(value.diagnostic.code, "ASTER-CLI-001");
+    if (argv[1] === "icon") {assert.match(value.diagnostic.message, /name@variant.*show glyph/u);}
+  }
+  for (const argv of [
+    ["show", "glyph", "aster/absent"], ["show", "glyph", "camera"],
+    ["list", "icons", "--glyph", "aster/absent", "--tag", "nothing"],
+    ["list", "glyphs", "--catalogue", "absent"], ["show", "icon", "aster/camera@absent"],
+  ]) {
+    const result = run([...argv, "--json"]);
+    assert.equal(result.status, 1, argv.join(" "));
+    assert.equal(result.stderr, "");
+    assert.equal(JSON.parse(result.stdout).diagnostic.code, "ASTER-CLI-004");
+  }
+});
+
+test("describes glyph grammar through command-specific help", () => {
+  const list = run(["help", "list"]);
+  const show = run(["help", "show"]);
+  assert.equal(list.status, 0);
+  assert.equal(show.status, 0);
+  assert.match(list.stdout, /aster list glyphs \[--catalogue <provider>\]/u);
+  assert.match(list.stdout, /aster list icons.*\[--glyph <identity>\]/u);
+  assert.match(show.stdout, /aster show glyph <identity>/u);
+});
+
 test("keeps the executable CLI version distinct from named package queries", () => {
   const plain = run(["version"]);
   const plainJson = run(["version", "--json"]);

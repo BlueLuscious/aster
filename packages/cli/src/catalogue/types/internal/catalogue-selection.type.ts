@@ -1,5 +1,5 @@
 import type { CollectionDefinition } from "@luscious-garden/aster-core";
-import type { AsterCommandShowSubjectType } from "../../../command/types/index.js";
+import type { TCatalogueDiscoverySelection } from "./catalogue-discovery-selection.type.js";
 import type { TCatalogueSelectedIcon } from "./catalogue-selected-icon.type.js";
 
 /**
@@ -14,7 +14,7 @@ export type TCatalogueSelection = Readonly<{
   /**
    * @description Selected portable value family.
    */
-  subject: AsterCommandShowSubjectType;
+  subject: TCatalogueDiscoverySelection["subject"];
 
   /**
    * @description Canonical textual identity requested by the caller.

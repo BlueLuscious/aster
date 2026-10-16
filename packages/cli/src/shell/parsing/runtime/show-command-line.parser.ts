@@ -19,7 +19,7 @@ export class ShowCommandLineParser implements ICommandLineCommandParser {
   readonly #options = new CommandLineOptionParser();
 
   /**
-   * @description Parses one exact icon or collection lookup.
+   * @description Parses one exact glyph, icon or collection lookup.
    * @param tokens - Command tokens beginning with `show`.
    * @param json - Whether machine-readable presentation was requested.
    * @returns Structured show invocation and presentation selection.
@@ -31,9 +31,10 @@ export class ShowCommandLineParser implements ICommandLineCommandParser {
     if (
       subject !== commandLineTokens.subjects.icon
       && subject !== commandLineTokens.subjects.collection
+      && subject !== commandLineTokens.subjects.glyph
     ) {
       throw new CommandLineError(
-        "expected show subject to be icon or collection",
+        "expected show subject to be glyph, icon, or collection",
         this.command,
       );
     }

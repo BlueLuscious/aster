@@ -12,7 +12,7 @@ execution, and the [baseline](quality-baseline.md) retains measured findings.
 | --- | --- |
 | Type tests | Public contracts and discriminated unions, exact optional properties and host-neutral declarations. |
 | Command runtime tests | Invocation and context rejection, immutable descriptors/results, explicit providers and sanitised exceptions. |
-| Catalogue runtime tests | Ordering, filters, search, ambiguity, empty values, membership consistency and exact-loader counts. |
+| Catalogue runtime tests | Provider-scoped glyph derivation, ordering, combined filters, search, ambiguity, empty intersections, membership consistency and zero-load metadata queries. |
 | Export and Review tests | Complete deterministic plans, path collisions, contained SVG failures, static offline HTML and authored-text escaping. |
 | Executable tests | Grammar, human/JSON/raw-SVG modes, streams, status, output options and ownership-gated review replacement. |
 | Installed-version tests | Nearest-project selection, direct roots, divergent dependency copies, optional absence, location comparison and atomic post-startup failures. |
@@ -29,6 +29,8 @@ to start child Node processes; an unavailable process is not a CLI failure resul
 Root import does not evaluate Icons. Fresh-process probes distinguish manifest-only discovery
 from exact Export/Review definition loading. Module sets and their historical counts belong to
 the [baseline](quality-baseline.md#lazy-integration-evidence), not a permanent file-count promise.
+Installed glyph queries also run under a native import guard that blocks artwork, generated
+facades and network hosts; a direct artwork import is the negative control proving the guard works.
 
 Packed consumers verify project versions separately from the executed CLI, including a project CLI
 different from the running one and independently resolved dependency groups. Version queries
