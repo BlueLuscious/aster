@@ -43,6 +43,12 @@ corpus and flat member order. Core schema six and CLI schema five mark this cons
 change; do not compare their collection-sensitive timings directly with older flat-map reports.
 SVG's measured concrete-definition inputs are unchanged. Historical reports retain their scope.
 
+Explicit treatments also lengthen emitted Import modules, CLI JSON and exported filenames. Their
+byte-weighted checksums can therefore change without a larger geometry corpus or more operations.
+Disclose that output-width boundary when comparing reports; identical checksum units do not imply
+identical output sizes. Icons schema two separately adds a named glyph-dictionary import scenario
+without redefining the isolated concrete-treatment scenario.
+
 ## Internal contracts
 
 | Contract | Responsibility |

@@ -771,8 +771,18 @@ test("runs the complete Icons distribution scenario matrix", async () => {
 
   assert.ok(Object.isFrozen(report));
   assert.ok(Object.isFrozen(report.imports));
-  assert.equal(report.schemaVersion, 1);
+  assert.equal(report.schemaVersion, 2);
   assert.equal(report.package, "@luscious-garden/aster-icons");
+  assert.deepEqual(
+    measured.map(({ name, specifier }) => [name, specifier]),
+    [
+      ["icons.import.isolated-icon", "@luscious-garden/aster-icons/camera/outline"],
+      ["icons.import.glyph-dictionary", "@luscious-garden/aster-icons/camera"],
+      ["icons.import.isolated-collection", "@luscious-garden/aster-icons/collections/amellus"],
+      ["icons.import.manifest", "@luscious-garden/aster-icons/manifest"],
+      ["icons.import.dynamic", "@luscious-garden/aster-icons/dynamic"],
+    ],
+  );
   assert.deepEqual(
     measured.map(({ name, specifier }) => ({ name, specifier })),
     Object.values(iconsBaseline.scenarios),

@@ -4,7 +4,7 @@
  */
 export const iconsBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
-  schemaVersion: 1,
+  schemaVersion: 2,
   /** @description Measured public package identity. */
   packageName: "@luscious-garden/aster-icons",
   /** @description Workspace-relative measured package root. */
@@ -13,7 +13,7 @@ export const iconsBaseline = Object.freeze({
   probePath: "tooling/performance/shared/module-import-probe.mjs",
   /** @description Number of independent processes retained for each import scenario. */
   sampleCount: 7,
-  /** @description Stable public import scenarios measured before distribution changes. */
+  /** @description Stable public import scenarios distinguishing leaves from glyph aggregates. */
   scenarios: Object.freeze({
     /** @description Representative isolated icon import. */
     isolatedIcon: Object.freeze({
@@ -21,6 +21,13 @@ export const iconsBaseline = Object.freeze({
       name: "icons.import.isolated-icon",
       /** @description Public package specifier under measurement. */
       specifier: "@luscious-garden/aster-icons/camera/outline",
+    }),
+    /** @description Complete generated treatment dictionary for one representative glyph. */
+    glyphDictionary: Object.freeze({
+      /** @description Stable report scenario identity distinct from the isolated leaf. */
+      name: "icons.import.glyph-dictionary",
+      /** @description Public package specifier under measurement. */
+      specifier: "@luscious-garden/aster-icons/camera",
     }),
     /** @description Representative isolated collection import. */
     isolatedCollection: Object.freeze({

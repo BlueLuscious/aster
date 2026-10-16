@@ -133,6 +133,28 @@ source revisions. Unknown-input and first-use controls supplement that command; 
 report fields, scenarios or CI thresholds. Preserve their preparation/timing separation when
 repeating them rather than treating the main command as a foreign-copy or startup measurement.
 
+## Grouped collection construction
+
+On 16 October 2026, three matched control/candidate report pairs alternated execution order on
+Windows x64 with Node `24.10.0`, TypeScript `5.9.3` and ES2022 ESM. The control was source
+`92dffff`; the candidate used required treatments and grouped membership. Both retained private
+canonical-output recognition and the same synthetic geometry and member counts.
+
+| Construction workload | Flat control, schema five | Grouped candidate, schema six |
+| --- | ---: | ---: |
+| One canonical member | 2,372 ns/op | 3,384 ns/op |
+| Complete canonical collection, 16 members | 12,644 ns/op | 29,957 ns/op |
+| Authored canonical dictionary, 26 members | 17,075 ns/op | 36,412 ns/op |
+| Authored canonical dictionary, 256 members | 169,532 ns/op | 359,420 ns/op |
+
+These are medians across report medians, not equivalent structural workloads or an isolated
+recognition comparison. Grouped construction validates and freezes treatment dictionaries,
+checks family consistency and canonical property names, and derives flat member order. Recognised
+leaves still avoid geometry reconstruction. Reuse constructed collections rather than rebuilding
+them for every render; these observations do not measure property access or rendering cost.
+Desktop background activity was not lab-controlled, and timings remain development evidence,
+not CI thresholds or hardware-independent guarantees.
+
 ## Typed collection scaling
 
 Three reports captured on 24 September 2026 with Node `24.10.0` on Windows x64 produced these
