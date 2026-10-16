@@ -392,12 +392,12 @@ export class CatalogueSourceSyntaxInspector {
           );
         }
 
-        const variantProperty = treatment.name.text;
+        const variantPropertyName = treatment.name.text;
         const member = treatment.initializer.text;
 
-        if (Object.hasOwn(group, variantProperty)) {
+        if (Object.hasOwn(group, variantPropertyName)) {
           throw new CatalogueSourceError(
-            `${sourcePath} contains duplicate variant property ${alias}.${variantProperty}.`,
+            `${sourcePath} contains duplicate variant property ${alias}.${variantPropertyName}.`,
           );
         }
 
@@ -414,7 +414,7 @@ export class CatalogueSourceSyntaxInspector {
         }
 
         members.add(member);
-        group[variantProperty] = Object.freeze({ alias, variantProperty, ...reference });
+        group[variantPropertyName] = Object.freeze({ alias, variantPropertyName, ...reference });
       }
 
       references.push(...Object.values(group));
@@ -427,7 +427,7 @@ export class CatalogueSourceSyntaxInspector {
    * @description Indexes static named imports by their local source identifier.
    * @param {string} sourcePath - Absolute source path used for failure context.
    * @param {import("typescript").SourceFile} sourceFile - Parsed TypeScript source.
-   * @returns {ReadonlyMap<string, Omit<import("../contracts/internal/catalogue-collection-member-reference.contract.mjs").ICatalogueCollectionMemberReference, "alias" | "variantProperty">>} Named import records before collection-local alias assignment.
+   * @returns {ReadonlyMap<string, Omit<import("../contracts/internal/catalogue-collection-member-reference.contract.mjs").ICatalogueCollectionMemberReference, "alias" | "variantPropertyName">>} Named import records before collection-local alias assignment.
    */
   #namedImports(sourcePath, sourceFile) {
     const imports = new Map();

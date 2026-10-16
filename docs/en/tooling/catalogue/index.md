@@ -55,7 +55,7 @@ strings. Numeric literals, computed keys, shorthand, spreads, accessors, calls, 
 values, non-runtime imports, duplicate properties and duplicate members are rejected.
 
 `catalogueCollectionIconAliasPatternSource` owns static alias grammar. Public Core
-[`Icon.variantProperty()`](../../packages/core/api/index.md#usage) owns treatment-to-property
+[`Icon.variantPropertyName()`](../../packages/core/api/index.md#usage) owns treatment-to-property
 mapping; every group must select one `(namespace, name)` family. The inspector preserves native
 outer/inner enumeration, including integer-index ordering, before emitting flat member identities.
 Valid own shadowing names remain usable. [Core](../../packages/core/collection/index.md)

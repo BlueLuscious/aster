@@ -35,9 +35,8 @@ acceptance. Geometry rules belong to [Node](../../node/index.md), metadata relat
 | Class | Responsibility | Relations |
 | --- | --- | --- |
 | `IconDefinitionFactory` | Recognises its own canonical outputs; otherwise owns the complete validation, normalisation, isolation and deep-freeze transaction. | Composes all definition, node and metadata normalisers. |
-| `IconIdentityNormaliser` | Trims and validates complete canonical icon identities. | Reused for owning and replacement identities. |
+| `IconIdentityNormaliser` | Trims and validates complete canonical icon identities; derives variant property names without changing canonical identity. | Reused for owning/replacement identities, public `Icon.variantPropertyName()` and collection property-name checks. |
 | `IconViewBoxNormaliser` | Validates finite minima and positive logical dimensions. | Produces the definition coordinate system. |
-| `IconVariantPropertyNormaliser` | Validates a treatment and derives its portable dictionary property. | Shared by the public `Icon.variantProperty()` operation and collection membership validation; owns no selection or catalogue. |
 
 Primitive assertions and deterministic contract failures are documented by the
 [Core shared runtime](../../shared/index.md).

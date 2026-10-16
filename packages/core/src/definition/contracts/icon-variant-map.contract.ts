@@ -7,5 +7,5 @@ import type { IconDefinition } from "./icon-definition.contract.js";
  */
 export interface IconVariantMap {
   /** @description Concrete definition selected under its canonical treatment property. */
-  readonly [variantProperty: string]: IconDefinition;
+  readonly [variantPropertyName: string]: IconDefinition;
 }

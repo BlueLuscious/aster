@@ -27,10 +27,10 @@ test("derives portable variant properties without narrowing treatment slugs", ()
     ["2-tone", "2Tone"], ["01", "01"], ["tone-1", "tone1"],
     ["constructor", "constructor"], ["to-string", "toString"],
   ]) {
-    assert.equal(Icon.variantProperty(slug!), property);
+    assert.equal(Icon.variantPropertyName(slug!), property);
   }
   for (const invalid of [undefined, null, 1, "", " ", "Outline", "filled--dotted"]) {
-    assert.throws(() => Icon.variantProperty(invalid as never), /variant/u);
+    assert.throws(() => Icon.variantPropertyName(invalid as never), /variant/u);
   }
 });
 

@@ -1,5 +1,5 @@
 import type { IconDefinition } from "../../definition/contracts/index.js";
-import { IconVariantPropertyNormaliser } from "../../definition/runtime/icon-variant-property.normaliser.js";
+import { IconIdentityNormaliser } from "../../definition/runtime/icon-identity.normaliser.js";
 import { IconDefinitionFactory } from "../../definition/runtime/icon-definition.factory.js";
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
@@ -32,8 +32,8 @@ export class CollectionMembershipNormaliser {
    */
   readonly #canonicalIconMatcher = new CanonicalIconMatcher();
 
-  /** @description Shared portable treatment-to-property transformation authority. */
-  readonly #variantProperties = new IconVariantPropertyNormaliser();
+  /** @description Icon identity authority shared with public variant-property name derivation. */
+  readonly #iconIdentityNormaliser = new IconIdentityNormaliser();
 
   /**
    * @description Produces frozen keyed and ordered views from one authored icon map.
@@ -99,7 +99,7 @@ export class CollectionMembershipNormaliser {
       }
       const propertyPath = `${path}.${property}`;
       const icon = this.#normaliseIcon(this.#validator.dataProperty(authored, property, propertyPath));
-      if (this.#variantProperties.normalise(icon.identity.variant, propertyPath) !== property) {
+      if (this.#iconIdentityNormaliser.variantPropertyName(icon.identity.variant, propertyPath) !== property) {
         throw new IconDefinitionError(propertyPath, "expected the canonical variant property");
       }
       const glyph = this.#glyphKey(icon);

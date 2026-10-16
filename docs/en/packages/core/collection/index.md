@@ -43,7 +43,7 @@ leaves in a group share exactly the same `(namespace, name)`, including namespac
 Different aliases may select disjoint treatments of the same glyph, but duplicate concrete
 identities anywhere in a collection are rejected. Aliases never change canonical identities.
 
-Each inner key must equal [`Icon.variantProperty()`](../api/index.md#usage) for its leaf's
+Each inner key must equal [`Icon.variantPropertyName()`](../api/index.md#usage) for its leaf's
 required treatment slug. The transformation is shared with static catalogue inspection.
 Selections are explicit subsets: adding another standalone treatment never changes a collection.
 
@@ -73,7 +73,7 @@ canonical dictionary during construction.
 | Class | Responsibility | Relations |
 | --- | --- | --- |
 | `CollectionDefinitionFactory` | Validates the collection root and composes membership, identity, and metadata into one frozen result. | Delegates keyed and ordered membership to `CollectionMembershipNormaliser`. |
-| `CollectionMembershipNormaliser` | Validates aliases, non-empty groups, family and property agreement, rejects duplicate identities, derives frozen views and verifies submitted `members`. | Composes `IconValueValidator`, `IconVariantPropertyNormaliser`, `IconDefinitionFactory`, and `CanonicalIconMatcher`. |
+| `CollectionMembershipNormaliser` | Validates aliases, non-empty groups, family and property agreement, rejects duplicate identities, derives frozen views and verifies submitted `members`. | Composes `IconValueValidator`, `IconIdentityNormaliser`, `IconDefinitionFactory`, and `CanonicalIconMatcher`. |
 | `CanonicalIconMatcher` | Proves canonical graph equivalence when accepted leaf references differ. | Used after Core acceptance; never replaces unknown-input validation. |
 | `CollectionIdentityNormaliser` | Validates optional namespace and required canonical collection name. | Uses the shared canonical slug authority. |
 | `CollectionMetadataNormaliser` | Validates descriptive metadata, unique tags, and licensing relationships. | Produces frozen `CollectionMetadata`. |
@@ -106,12 +106,12 @@ The result always retains the newly derived list, never the submitted array.
 ## Membership
 
 ```text
-IconDefinition <------ CollectionDefinition.icons.<alias>.<variantProperty>
+IconDefinition <------ CollectionDefinition.icons.<alias>.<variantPropertyName>
        ^
        |
        +--------------- CollectionDefinition.members[index]
        |
-       +--------------- another CollectionDefinition.icons.<alias>.<variantProperty>
+       +--------------- another CollectionDefinition.icons.<alias>.<variantPropertyName>
 ```
 
 Membership does not alter geometry, presentation, licence, attribution, tags, directionality, or

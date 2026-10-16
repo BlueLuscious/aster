@@ -1,6 +1,6 @@
 import type { IconDefinition } from "../definition/contracts/index.js";
 import { IconDefinitionFactory } from "../definition/runtime/icon-definition.factory.js";
-import { IconVariantPropertyNormaliser } from "../definition/runtime/icon-variant-property.normaliser.js";
+import { IconIdentityNormaliser } from "../definition/runtime/icon-identity.normaliser.js";
 import type { IconApi } from "./contracts/index.js";
 
 /**
@@ -9,7 +9,7 @@ import type { IconApi } from "./contracts/index.js";
 const iconDefinitionFactory = new IconDefinitionFactory();
 
 /** @description Treatment-property naming authority owned by the public Icon API. */
-const iconVariantPropertyNormaliser = new IconVariantPropertyNormaliser();
+const iconIdentityNormaliser = new IconIdentityNormaliser();
 
 /**
  * @description Immutable public object for defining portable icons.
@@ -24,11 +24,11 @@ export const Icon: IconApi = Object.freeze({
     return iconDefinitionFactory.create(definition);
   },
   /**
-   * @description Validates a treatment slug and derives its canonical dictionary property.
+   * @description Validates a treatment slug and derives its canonical dictionary property name.
    * @param variant - Candidate explicit treatment slug.
-   * @returns Portable property without loading or selecting a definition.
+   * @returns Portable property name without loading or selecting a definition.
    */
-  variantProperty(variant: string): string {
-    return iconVariantPropertyNormaliser.normalise(variant);
+  variantPropertyName(variant: string): string {
+    return iconIdentityNormaliser.variantPropertyName(variant);
   },
 });

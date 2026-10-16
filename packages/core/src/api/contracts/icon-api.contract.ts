@@ -14,10 +14,10 @@ export interface IconApi {
   define(definition: IconDefinition): IconDefinition;
 
   /**
-   * @description Validates a treatment slug and derives its portable dictionary property.
+   * @description Validates a treatment slug and derives its portable dictionary property name.
    * @remarks The operation neither selects a definition nor reserves a property globally.
    * @param variant - Explicit treatment slug, normalised consistently with definition identity.
-   * @returns Lower camel-case property, including valid digit-led values for bracket access.
+   * @returns Lower camel-case property name, including valid digit-led values for bracket access.
    */
-  variantProperty(variant: string): string;
+  variantPropertyName(variant: string): string;
 }

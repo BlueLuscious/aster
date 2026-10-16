@@ -125,7 +125,7 @@ export class CoreBaselineFixtureFactory {
       identity: Object.freeze({ namespace: "benchmark", name }),
       icons: Object.freeze(Object.fromEntries(icons.map((icon, index) => [
         `scale${index + 1}`,
-        Object.freeze({ [Icon.variantProperty(icon.identity.variant)]: icon }),
+        Object.freeze({ [Icon.variantPropertyName(icon.identity.variant)]: icon }),
       ]))),
       metadata: Object.freeze({ displayName: `Benchmark ${name}` }),
     });

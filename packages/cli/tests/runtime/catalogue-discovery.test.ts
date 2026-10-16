@@ -76,7 +76,7 @@ function createCollection(
     identity: { namespace: "testing", name },
     icons: Object.fromEntries(icons.map((icon, index) => [
       `icon${index + 1}`,
-      { [Icon.variantProperty(icon.identity.variant)]: icon },
+      { [Icon.variantPropertyName(icon.identity.variant)]: icon },
     ])),
     metadata: {
       displayName: name,

@@ -76,8 +76,9 @@ test("exposes the exact immutable root value surface", async () => {
     "iconTechnicalPresentation",
   ]);
   assert.deepEqual(Object.keys(packageModule.Collection), ["define"]);
-  assert.deepEqual(Object.keys(packageModule.Icon), ["define", "variantProperty"]);
-  assert.equal(packageModule.Icon.variantProperty("filled-dotted"), "filledDotted");
+  assert.deepEqual(Object.keys(packageModule.Icon), ["define", "variantPropertyName"]);
+  assert.equal(Object.hasOwn(packageModule.Icon, "variantProperty"), false);
+  assert.equal(packageModule.Icon.variantPropertyName("filled-dotted"), "filledDotted");
   assert.ok(Object.isFrozen(packageModule.Collection));
   assert.ok(Object.isFrozen(packageModule.Icon));
   assert.ok(Object.isFrozen(packageModule.iconDirections));

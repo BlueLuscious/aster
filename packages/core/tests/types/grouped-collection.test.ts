@@ -13,7 +13,7 @@ const collection = Collection.define({
 const group: IconVariantMap = collection.icons.camera;
 const selected: IconDefinition = collection.icons.camera.filledDotted;
 const member: IconDefinition | undefined = collection.members[0];
-const property: string = Icon.variantProperty("filled-dotted");
+const property: string = Icon.variantPropertyName("filled-dotted");
 const optionalCollection = Collection.define({
   identity: { name: "optional" }, icons: optional, metadata: { displayName: "Optional" },
 });

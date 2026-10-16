@@ -76,9 +76,9 @@ export class CatalogueSourceRelationshipInspector {
         }
 
         const identity = target.manifest.identity;
-        if (!("variant" in identity) || Icon.variantProperty(identity.variant) !== reference.variantProperty) {
+        if (!("variant" in identity) || Icon.variantPropertyName(identity.variant) !== reference.variantPropertyName) {
           throw new CatalogueSourceError(
-            `${collection.sourcePath} collection variant ${reference.alias}.${reference.variantProperty} must match the canonical variant property.`,
+            `${collection.sourcePath} collection variant ${reference.alias}.${reference.variantPropertyName} must match the canonical variant property.`,
           );
         }
         const glyph = JSON.stringify([identity.namespace, identity.name]);

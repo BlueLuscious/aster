@@ -10,7 +10,7 @@ There is no logical-identity registry or incremental mutation API.
 | Contract | Operation | Responsibility and relations |
 | --- | --- | --- |
 | `IconApi` | `define(definition: IconDefinition): IconDefinition` | Describes the public `Icon` object; constructs one [portable definition](../definition/index.md). |
-| `IconApi` | `variantProperty(variant: string): string` | Validates a treatment slug and derives its portable dictionary property; never selects a definition. |
+| `IconApi` | `variantPropertyName(variant: string): string` | Validates a treatment slug and derives its portable dictionary property; never selects a definition. |
 | `CollectionApi` | `define<TIconMap extends CollectionIconMap>(definition: CollectionDefinitionInput<TIconMap>): CollectionDefinition<TIconMap>` | Describes the public `Collection` object; preserves authored aliases while returning [canonical membership](../collection/index.md). |
 
 TypeScript guides authoring; each factory validates unknown runtime input rather than treating an
@@ -54,7 +54,7 @@ The two membership views contain the same canonical `CameraOutline` object. Cons
 fields directly; collection alias grammar, ordering, generic output and revalidation are owned by
 [Collection](../collection/index.md).
 
-`Icon.variantProperty("filled-dotted")` returns `"filledDotted"`. It trims and validates the
+`Icon.variantPropertyName("filled-dotted")` returns `"filledDotted"`. It trims and validates the
 open treatment slug before retaining its first segment and capitalising subsequent segments.
 Digit-led properties remain valid: `2-tone` becomes `2Tone`, while `01` stays `01`.
 The mapping is not injective: `tone-1` and `tone1` both produce `tone1`. Dictionary owners must

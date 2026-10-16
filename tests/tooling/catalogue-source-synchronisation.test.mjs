@@ -206,7 +206,7 @@ test("preserves runtime treatment enumeration in statically derived flat members
       const symbol = `AlphaIcon${pascalCase(variant)}`;
       await writeFile(resolve(root, `src/glyphs/a/alpha-icon/alpha-icon-${variant}.icon.ts`), iconSource("alpha-icon", variant), "utf8");
       imports.push(`import { ${symbol} } from "../../../glyphs/a/alpha-icon/alpha-icon-${variant}.icon.js";`);
-      const property = Icon.variantProperty(variant);
+      const property = Icon.variantPropertyName(variant);
       properties.push(`${JSON.stringify(property)}: ${symbol}`);
       leaves.push([property, Icon.define({
         identity: { name: "alpha-icon", variant },
