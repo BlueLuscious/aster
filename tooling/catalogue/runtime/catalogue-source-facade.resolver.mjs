@@ -42,4 +42,14 @@ export class CatalogueSourceFacadeResolver {
 
     return posix.join(family.facadeDirectory, suffix);
   }
+
+  /**
+   * @description Resolves a glyph's dictionary entry alongside its individual treatment directory.
+   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Icon source-family configuration.
+   * @param {string} name - Canonical glyph name used by its public subpath.
+   * @returns {string} Package-relative generated dictionary path.
+   */
+  glyphPath(family, name) {
+    return posix.join(family.facadeDirectory, `${name}.ts`);
+  }
 }

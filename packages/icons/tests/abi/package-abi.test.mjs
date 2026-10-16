@@ -160,6 +160,43 @@ test("exposes exact definition families without aggregate roots", async () => {
   }
 });
 
+test("exports exact dictionary-only glyph entries retaining canonical treatment references", async () => {
+  const { AsterIconManifest } = await import("@luscious-garden/aster-icons/manifest");
+  const { AsterIconLoaders } = await import("@luscious-garden/aster-icons/dynamic");
+  const names = [...new Set(AsterIconManifest.map(({ identity }) => identity.name))];
+  const { Icon } = await import("@luscious-garden/aster-core");
+
+  for (const name of names) {
+    const imported = await import(`@luscious-garden/aster-icons/${name}`);
+    const symbol = `${pascalCase(name)}Variants`;
+    assert.deepEqual(Object.keys(imported), [symbol]);
+    const dictionary = imported[symbol];
+    const records = AsterIconManifest.filter(({ identity }) => identity.name === name);
+    assert.equal(Object.getPrototypeOf(dictionary), null);
+    assert.ok(Object.isFrozen(dictionary));
+    assert.deepEqual(Object.keys(dictionary), records.map(({ identity }) => Icon.variantPropertyName(identity.variant)));
+
+    for (const record of records) {
+      const property = Icon.variantPropertyName(record.identity.variant);
+      const direct = await import(`@luscious-garden/aster-icons/${name}/${record.identity.variant}`);
+      assert.equal(dictionary[property], direct[record.symbol]);
+      assert.equal(dictionary[property], await AsterIconLoaders[record.key]());
+      const descriptor = Object.getOwnPropertyDescriptor(dictionary, property);
+      assert.equal(descriptor.value, direct[record.symbol]);
+      assert.equal(descriptor.enumerable, true);
+      assert.equal(descriptor.writable, false);
+      assert.equal(descriptor.configurable, false);
+      assert.equal(descriptor.get, undefined);
+    }
+    for (const key of [...Object.getOwnPropertyNames(Object.prototype), "default", "absent"]) {
+      if (Object.hasOwn(dictionary, key)) {continue;}
+      assert.equal(dictionary[key], undefined);
+      assert.equal(key in dictionary, false);
+    }
+    assert.equal(AsterIconLoaders[`aster/${name}`], undefined);
+  }
+});
+
 test("rejects implementation and undeclared internal subpaths", async () => {
   const [iconSubpath] = Object.keys(iconSubpaths);
   const [collectionSubpath] = Object.keys(collectionSubpaths);
@@ -310,6 +347,11 @@ test("retains exact public-import evaluation sets in fresh processes", async () 
       subpath: "camera/outline",
       exports: ["CameraOutline"],
       modules: [...authoringModules, "generated/facades/icons/camera/outline.js", iconDistributionPath("camera/outline")],
+    },
+    {
+      subpath: "camera",
+      exports: ["CameraVariants"],
+      modules: [...authoringModules, "generated/facades/icons/camera.js", iconDistributionPath("camera/outline")],
     },
     {
       subpath: "collections/amellus",

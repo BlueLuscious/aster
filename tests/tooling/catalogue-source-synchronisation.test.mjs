@@ -27,6 +27,8 @@ const generatedOutputPaths = Object.freeze({
   dynamic: "src/generated/dynamic/index.ts",
   alphaIconFacade: "src/generated/facades/icons/alpha-icon/outline.ts",
   zetaFacade: "src/generated/facades/icons/zeta/outline.ts",
+  alphaIconGlyph: "src/generated/facades/icons/alpha-icon.ts",
+  zetaGlyph: "src/generated/facades/icons/zeta.ts",
   sampleCollectionFacade:
     "src/generated/facades/collections/sample.ts",
 });
@@ -240,10 +242,11 @@ test("rejects invalid nested selections before changing any catalogue output", a
   const root = await createPackageFixture();
   try {
     const directory = resolve(root, "src/glyphs/a/alpha-icon");
-    for (const variant of ["filled", "tone-1", "tone1"]) {
+    for (const variant of ["filled", "tone-1"]) {
       await writeFile(resolve(directory, `alpha-icon-${variant}.icon.ts`), iconSource("alpha-icon", variant), "utf8");
     }
-    await writeFile(resolve(root, "src/glyphs/z/zeta/zeta-filled.icon.ts"), iconSource("zeta", "filled"), "utf8");
+    await writeFile(resolve(root, "src/glyphs/z/zeta/zeta-filled.icon.ts"),
+      iconSource("zeta", "filled").replace("identity: { name:", 'identity: { namespace: "fixture", name:'), "utf8");
     await synchroniseIconsCatalogue(root);
     const before = await readGeneratedOutputs(root);
     const path = resolve(root, "src/collections/s/sample/sample.collection.ts");
@@ -251,7 +254,7 @@ test("rejects invalid nested selections before changing any catalogue output", a
       'import { AlphaIconOutline } from "../../../glyphs/a/alpha-icon/alpha-icon-outline.icon.js";',
       'import { AlphaIconFilled } from "../../../glyphs/a/alpha-icon/alpha-icon-filled.icon.js";',
       'import { AlphaIconTone1 } from "../../../glyphs/a/alpha-icon/alpha-icon-tone-1.icon.js";',
-      'import { AlphaIconTone1 as OtherTone } from "../../../glyphs/a/alpha-icon/alpha-icon-tone1.icon.js";',
+      'import { AlphaIconTone1 as OtherTone } from "../../../glyphs/a/alpha-icon/alpha-icon-tone-1.icon.js";',
       'import { ZetaOutline } from "../../../glyphs/z/zeta/zeta-outline.icon.js";',
       'import { ZetaFilled } from "../../../glyphs/z/zeta/zeta-filled.icon.js";',
     ];
@@ -464,7 +467,7 @@ test("retains own constructor loaders without inherited fallback", async () => {
     );
 
     const generated = await synchroniseIconsCatalogue(root);
-    assert.equal(generated.outputCount, completeGeneratedOutputPaths.length + 2);
+    assert.equal(generated.outputCount, completeGeneratedOutputPaths.length + 3);
     const expected = await readGeneratedOutputs(root);
     const current = await synchroniseIconsCatalogue(root, true);
     assert.deepEqual(current.changedPaths, []);
@@ -621,6 +624,7 @@ test("adds and removes source modules across generated integrations", async () =
       generatedOutputPaths.manifest,
       generatedOutputPaths.dynamic,
       "src/generated/facades/icons/middle/outline.ts",
+      "src/generated/facades/icons/middle.ts",
     ]);
     assert.match(
       await readFile(resolve(root, generatedOutputPaths.manifest), "utf8"),
@@ -633,6 +637,7 @@ test("adds and removes source modules across generated integrations", async () =
       generatedOutputPaths.manifest,
       generatedOutputPaths.dynamic,
       "src/generated/facades/icons/middle/outline.ts",
+      "src/generated/facades/icons/middle.ts",
     ]);
     assert.doesNotMatch(
       await readFile(resolve(root, generatedOutputPaths.manifest), "utf8"),
@@ -809,6 +814,7 @@ test("discovers nested explicit treatments and collections with portable specifi
       generatedOutputPaths.manifest,
       generatedOutputPaths.dynamic,
       "src/generated/facades/icons/camera-retro/outline.ts",
+      "src/generated/facades/icons/camera-retro.ts",
     ]);
     assert.doesNotMatch(
       await readFile(resolve(root, generatedOutputPaths.manifest), "utf8"),
@@ -845,7 +851,7 @@ test("rejects absent icon treatments before replacing generated outputs", async 
   }
 });
 
-test("accepts open treatment slugs without generating a glyph aggregate", async () => {
+test("derives a dictionary-only glyph facade from open treatment slugs", async () => {
   const root = await createPackageFixture();
   try {
     const iconRoot = resolve(root, "src/glyphs/c/camera");
@@ -861,8 +867,86 @@ test("accepts open treatment slugs without generating a glyph aggregate", async 
     assert.match(manifest, /symbol: "Camera2Tone"/u);
     assert.match(manifest, /key: "camera@filled-dotted"/u);
     assert.match(dynamic, /facades\/icons\/camera\/2-tone\.js/u);
-    await assert.rejects(readFile(resolve(root, "src/generated/facades/icons/camera.ts"), "utf8"));
+    const glyph = await readFile(resolve(root, "src/generated/facades/icons/camera.ts"), "utf8");
+    assert.match(glyph, /export const CameraVariants = Object\.freeze\(variants\)/u);
+    assert.match(glyph, /"2Tone": Camera2Tone/u);
+    assert.match(glyph, /"filledDotted": CameraFilledDotted/u);
+    assert.match(glyph, /Object\.setPrototypeOf\(variants, null\)/u);
+    assert.doesNotMatch(glyph, /export \{|"default"|outline/u);
     assert.deepEqual((await synchroniseIconsCatalogue(root, true)).changedPaths, []);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects glyph property, binding and namespace collisions without any output write", async () => {
+  for (const { variants, namespaces, pattern } of [
+    { variants: ["tone-1", "tone1"], pattern: /glyph variant property collision/u },
+    { variants: ["variants"], pattern: /glyph symbol collision/u },
+    { variants: ["filled"], namespaces: ["different"], pattern: /Ambiguous generated glyph public subpath/u },
+  ]) {
+    const root = await createPackageFixture();
+    try {
+      await synchroniseIconsCatalogue(root);
+      const expected = await readGeneratedOutputs(root);
+      const generatedPaths = await readdir(resolve(root, "src/generated"), { recursive: true });
+      for (const [index, variant] of variants.entries()) {
+        const source = iconSource("alpha-icon", variant);
+        await writeFile(resolve(root, `src/glyphs/a/alpha-icon/alpha-icon-${variant}.icon.ts`),
+          namespaces === undefined ? source : source.replace("identity: { name:", `identity: { namespace: "${namespaces[index]}", name:`), "utf8");
+      }
+      await assert.rejects(synchroniseIconsCatalogue(root), pattern);
+      assert.deepEqual(await readGeneratedOutputs(root), expected);
+      await assert.rejects(synchroniseIconsCatalogue(root, true), pattern);
+      assert.deepEqual(await readGeneratedOutputs(root), expected);
+      assert.deepEqual(await readdir(resolve(root, "src/generated"), { recursive: true }), generatedPaths);
+    } finally {
+      await rm(root, { recursive: true, force: true });
+    }
+  }
+});
+
+test("allows repeated definition symbols in independent glyph module scopes", async () => {
+  const root = await createPackageFixture();
+  try {
+    const path = resolve(root, "src/glyphs/a/alpha/alpha-icon-outline.icon.ts");
+    await mkdir(dirname(path), { recursive: true });
+    await writeFile(path, iconSource("alpha", "icon-outline"), "utf8");
+    await synchroniseIconsCatalogue(root);
+    const glyph = await readFile(resolve(root, "src/generated/facades/icons/alpha.ts"), "utf8");
+    assert.match(glyph, /export const AlphaVariants/u);
+    assert.match(glyph, /"iconOutline": AlphaIconOutline/u);
+    assert.match(await readFile(resolve(root, generatedOutputPaths.alphaIconGlyph), "utf8"), /"outline": AlphaIconOutline/u);
+    assert.deepEqual((await synchroniseIconsCatalogue(root, true)).changedPaths, []);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("updates actual glyph treatments and removes stale aggregate drift deterministically", async () => {
+  const root = await createPackageFixture();
+  try {
+    await synchroniseIconsCatalogue(root);
+    const sourcePath = resolve(root, "src/glyphs/a/alpha-icon/alpha-icon-filled-dotted.icon.ts");
+    await writeFile(sourcePath, iconSource("alpha-icon", "filled-dotted"), "utf8");
+    const added = await synchroniseIconsCatalogue(root);
+    assert.deepEqual(added.changedPaths, [
+      generatedOutputPaths.manifest, generatedOutputPaths.dynamic,
+      "src/generated/facades/icons/alpha-icon/filled-dotted.ts", generatedOutputPaths.alphaIconGlyph,
+    ]);
+    const glyphPath = resolve(root, generatedOutputPaths.alphaIconGlyph);
+    const expected = await readFile(glyphPath, "utf8");
+    assert.match(expected, /"filledDotted": AlphaIconFilledDotted/u);
+    assert.match(expected, /"outline": AlphaIconOutline/u);
+    await writeFile(glyphPath, `${expected}// stale\n`, "utf8");
+    assert.deepEqual((await synchroniseIconsCatalogue(root, true)).changedPaths, [generatedOutputPaths.alphaIconGlyph]);
+    assert.deepEqual((await synchroniseIconsCatalogue(root)).changedPaths, [generatedOutputPaths.alphaIconGlyph]);
+    assert.equal(await readFile(glyphPath, "utf8"), expected);
+    await unlink(sourcePath);
+    const removed = await synchroniseIconsCatalogue(root);
+    assert.deepEqual(new Set(removed.changedPaths), new Set(added.changedPaths));
+    assert.doesNotMatch(await readFile(glyphPath, "utf8"), /filled|Filled/u);
+    assert.deepEqual((await synchroniseIconsCatalogue(root)).changedPaths, []);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

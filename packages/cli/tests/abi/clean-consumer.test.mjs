@@ -400,7 +400,7 @@ test("executes packaged README examples through packed package entrypoints", asy
     },
     {
       name: "icons",
-      result: 'definition === CameraOutline && definition.identity.namespace === "aster" && definition.identity.name === "camera" && Object.isFrozen(definition)',
+      result: 'definition === CameraOutline && cameraOutline === CameraOutline && camera === CameraOutline && CameraVariants.outline === definition && Object.isFrozen(CameraVariants) && Object.getPrototypeOf(CameraVariants) === null && definition.identity.namespace === "aster" && definition.identity.name === "camera" && Object.isFrozen(definition)',
     },
     {
       name: "svg",

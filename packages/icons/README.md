@@ -20,6 +20,20 @@ const definition = CameraOutline;
 Pass the definition to a renderer such as
 [SVG](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/index.md).
 
+### Glyph variants
+
+```ts
+import { CameraVariants } from "@luscious-garden/aster-icons/camera";
+
+const cameraOutline = CameraVariants.outline;
+```
+
+This frozen dictionary loads all distributed treatments of Camera, currently only Outline.
+It has no default and is not itself renderable. Use the individual subpath to load just one
+treatment. See the
+[Glyphs guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/glyphs/index.md)
+for exact keys and the explicit-treatment migration.
+
 ### Collections
 
 Select a treatment by collection alias, or iterate concrete definitions in their declared order:

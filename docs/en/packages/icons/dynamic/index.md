@@ -20,6 +20,9 @@ const amellus = await AsterCollectionLoaders.amellus?.();
 
 Icon keys use `[<namespace>/]<name>@<variant>`; collection keys use
 `[<namespace>/]<name>`. Own keys match their manifest family exactly.
+Icon loaders resolve concrete treatments, never glyph dictionaries: `aster/camera` has no icon
+loader and no implicit Outline selection. [Glyph dictionaries](../glyphs/index.md#glyph-dictionaries)
+are separate eager imports, not additional loader entries.
 
 ## Contracts
 

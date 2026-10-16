@@ -20,6 +20,7 @@ manifest records and loaders project those sources; they are not editable author
 
 | Route | Purpose and owner |
 | --- | --- |
+| `@luscious-garden/aster-icons/<name>` | One exact eager dictionary of the glyph's treatments; [Glyphs](glyphs/index.md#glyph-dictionaries). |
 | `@luscious-garden/aster-icons/<name>/<variant>` | One concrete treatment definition; [Glyphs](glyphs/index.md). |
 | `@luscious-garden/aster-icons/collections/<name>` | One collection and its declared members; [Collections](collections/index.md). |
 | `@luscious-garden/aster-icons/manifest` | Lightweight discovery records; [Manifest](manifest/index.md). |
@@ -27,7 +28,8 @@ manifest records and loaders project those sources; they are not editable author
 
 The package root and bare `/collections` aggregate are explicitly blocked. Generated and physical
 implementation subpaths are not public. The current corpus declares every existing treatment as
-`outline`. A reserved export pattern does not create artwork or an importable bare glyph module.
+`outline`. Routes and dictionary keys exist only for authored glyphs and treatments; export
+patterns do not create missing artwork.
 
 ## Rights boundary
 
@@ -46,7 +48,7 @@ Use the complete legal authorities above for permissions and redistribution obli
 | Concern | Boundary |
 | --- | --- |
 | npm acquisition | Installation acquires the complete published package, even when one icon is imported. |
-| Runtime evaluation | A direct icon evaluates its facade, definition and shared authorities. A collection evaluates every declared member. Manifest and loader-map imports evaluate no complete definitions. |
+| Runtime evaluation | A direct icon evaluates its facade, definition and shared authorities. A glyph dictionary evaluates all its distributed treatments; a collection evaluates every declared member. Manifest and loader-map imports evaluate no complete definitions. |
 | Bundle inclusion | Isolated subpaths and deferred imports support module/chunk separation; final inclusion depends on the bundler and application. |
 
 Prefer a direct subpath for known artwork. Use the manifest for discovery and loader maps for

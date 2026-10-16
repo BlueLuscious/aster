@@ -47,6 +47,17 @@ export class CatalogueSourceLayoutNormaliser {
   }
 
   /**
+   * @description Derives the sole public dictionary symbol for one validated glyph name.
+   * @param {string} name - Canonical package-owned glyph name.
+   * @returns {string} Expected dictionary export symbol.
+   */
+  glyphSymbol(name) {
+    this.#assertName(name, name);
+
+    return `${this.#pascalCase(name)}Variants`;
+  }
+
+  /**
    * @description Normalises one nested initial-and-name source path.
    * @param {readonly string[]} segments - Relative source path segments.
    * @param {string} stem - Source filename without its role suffix.

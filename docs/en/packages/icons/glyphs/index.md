@@ -24,13 +24,41 @@ Renditions of one glyph share its namespace and name. For example, an authored
 `@luscious-garden/aster-icons/camera/stippled`. A different concept such as `camera-retro`
 remains a separate name. Stippled is a naming example, not currently distributed artwork.
 
+## Glyph dictionaries
+
+```ts
+import { CameraVariants } from "@luscious-garden/aster-icons/camera";
+
+const definition = CameraVariants.outline;
+```
+
+The glyph subpath exports only its `<PascalName>Variants` dictionary, not individual definitions.
+It eagerly evaluates every distributed treatment of that glyph and references the same canonical
+objects as individual imports, collection selections and loaders. Prefer `/camera/outline` when
+only that treatment is required; tree shaking is not a native ESM evaluation guarantee.
+
+Dictionaries are frozen, prototype-free own-data maps with exact readonly treatment keys.
+The current `CameraVariants` contains only `outline`: no Filled, Dotted or other treatment is
+invented. A dictionary is not an `IconDefinition` and cannot be rendered directly. There is no
+`default`, fallback, compatibility export or implicit selection. An absent runtime key returns
+`undefined`, including inherited Object names unless an actual treatment owns that property.
+Use static operations such as `Object.keys(dictionary)` rather than inherited methods.
+
+Treatment slugs remain kebab-case in identities and paths; their dictionary properties use
+[`Icon.variantPropertyName()`](../../core/api/index.md#usage), so `filled-dotted` would become
+`filledDotted`. Native property enumeration applies, including numeric-index ordering. Tooling
+rejects ambiguous properties, module bindings or glyph paths before writing any output; glyphs
+from different namespaces cannot be merged behind one public name.
+
 ## Explicit treatment migration
 
-The old `Camera` export and `/camera` definition route are removed. Import `CameraOutline` from
-`/camera/outline`; other existing icons follow the same rule. Loader and CLI identities now require
+The old `Camera` export is removed and `/camera` now returns only `CameraVariants`, not a
+definition. Import `CameraOutline` from `/camera/outline` for isolated concrete use; other existing
+icons follow the same rule. Loader and CLI identities now require
 `aster/camera@outline`, not `aster/camera`. There is no default treatment or compatibility alias.
-Collections remain explicit selections of concrete definitions; their aliases and ordered
-`members` still expose those definitions directly. Custom Core and Import inputs, including
+Collections remain explicit selections: `Amellus.icons.camera.outline` chooses a concrete
+definition and ordered `members` stays flat. A generated glyph dictionary does not automatically
+enrol all treatments into a collection. Custom Core and Import inputs, including
 metadata replacement identities, must declare a treatment rather than relying on inference.
 
 ## Definition ownership

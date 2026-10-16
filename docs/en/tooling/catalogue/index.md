@@ -68,7 +68,14 @@ or layout, mismatched identities, missing/additional exports, duplicate properti
 dangling members and conflicting public subpaths before publication.
 
 The names `collections`, `dynamic` and `manifest` are reserved integration subpaths. Symbols may
-repeat across isolated module scopes; no aggregate definition barrel is generated.
+repeat across isolated module scopes; no package-wide definition barrel is generated.
+
+Glyph dictionaries derive from complete `(namespace, name)` identity. The public route contains
+only the glyph name, so different namespaces claiming that route are rejected, even with disjoint
+treatments. Each dictionary owns exact properties derived through `Icon.variantPropertyName()`;
+collisions such as `tone-1`/`tone1`, duplicate imported bindings or an imported leaf colliding with
+the dictionary's export are rejected before any output writes. Symbols in independent modules
+need not be globally unique.
 
 ## Composition
 
@@ -77,11 +84,11 @@ repeat across isolated module scopes; no aggregate definition barrel is generate
 | `CatalogueSourceSynchroniserFactory` | Composes filesystem, inspection, planning and serialisation capabilities. |
 | `NodeCatalogueSourceFileSystem`, `RepositoryFileWalker` | Acquire selected source modules deterministically. |
 | `CatalogueSourceModuleInspector` | Coordinates module acquisition and inspection. |
-| `CatalogueSourceLayoutNormaliser` | Maps physical paths to identities, symbols and public subpaths. |
+| `CatalogueSourceLayoutNormaliser` | Maps physical paths to identities and definition symbols; derives glyph dictionary export names using the same PascalCase authority. |
 | `CatalogueSourceSyntaxInspector` | Extracts factory calls, literal identity and membership references. |
 | `CatalogueSourceManifestInspector`, `CatalogueSourceValueResolver` | Validate and statically resolve descriptive metadata. |
 | `CatalogueSourceRelationshipInspector` | Validates references across complete source families. |
-| `CatalogueSourceFacadePlanner`, `CatalogueSourceFacadeResolver` | Plan minimal named re-exports and their logical paths. |
+| `CatalogueSourceFacadePlanner`, `CatalogueSourceFacadeResolver` | Plan minimal treatment/collection re-exports, collision-free glyph dictionaries and their logical paths. |
 | `CatalogueSourceManifestPlanner`, `CatalogueSourceDynamicPlanner` | Plan metadata records and exact deferred imports. |
 | `CatalogueSourceKeySerialiser` | Shares canonical key formation between generated integrations. |
 | `CatalogueSourceSynchroniser`, `CatalogueSourceSerialiser` | Complete immutable inspection and output planning, then publish changed outputs. |
@@ -95,7 +102,7 @@ caches last one complete inspection and are cleared before the next.
 | Contract | Responsibility and relationship |
 | --- | --- |
 | `ICatalogueSourceFamily` | Configures a family's Core factory, physical root and generated facade root. |
-| `ICatalogueSourceIdentity` | Carries path-owned name, symbol and public subpath; treatment is required for icons and absent for collections. |
+| `ICatalogueSourceIdentity` | Carries path-owned name and symbol; treatment is required for icons and absent for collections. |
 | `ICatalogueCollectionMemberReference` | Retains the outer alias, treatment property and imported identifier, exported symbol and module specifier for relationship validation. |
 | `ICatalogueIconManifestData` | Carries statically extracted icon metadata without geometry. |
 | `ICatalogueCollectionManifestData` | Carries extracted collection metadata and ordered member keys. |
@@ -121,8 +128,13 @@ authority. Root `pnpm check:catalogue` builds only Core, then compares Icons out
 regenerating it. Root `pnpm check` runs that gate before other builds, so generation cannot hide
 uncommitted drift. Icons does not rebuild Core from a hook; recursive builds use dependency order.
 
-Planning emits base facades at `icons/<name>.ts`, variant facades at
+Planning emits dictionary-only glyph facades at `icons/<name>.ts`, individual treatment facades at
 `icons/<name>/<variant>.ts` and collection facades at `collections/<name>.ts`.
+Each glyph module imports its actual canonical leaves, removes the map's prototype and freezes
+the exact inferred dictionary before exporting only `<PascalName>Variants`. It never re-exports
+the individual leaves or invents a default. Leaf modules have no reverse dependency on dictionaries.
+Adding/removing a treatment updates its dictionary; removing a glyph removes its stale dictionary
+inside the existing facade cleanup boundary. No separate manual registry or loader is added.
 Manifest records and dynamic loaders share canonical keys; loaders target facades, not source
 paths. One private serialiser method emits both typed loader-map literals, removes their
 prototypes and freezes them before export, preserving the
@@ -158,3 +170,5 @@ authorities, rejected executable/cyclic metadata, dangling members and manifest-
 equivalence. A generated-output fixture retains valid own `constructor` loaders in both families
 and verifies inherited-name absence. Package and CLI tests verify isolated imports, discovery,
 identity and ordering.
+Emitted disposable-process tests also prove multi-treatment evaluation isolation, eager glyph
+loading, metadata-only imports, exact numeric/own-shadowing keys and shared canonical leaf objects.

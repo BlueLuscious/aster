@@ -38,6 +38,9 @@ symbols, reserved names, static grammar and source-to-public-path mapping.
 
 Omitting membership leaves a valid standalone definition. Correct geometry in the canonical
 module, never in a generated facade, manifest or rendered SVG.
+The same sources derive the glyph's [variant dictionary](glyphs/index.md#glyph-dictionaries).
+Do not author a parallel list or import that generated dictionary into a canonical collection;
+keep selecting named canonical treatment definitions explicitly.
 
 A rendition uses the same icon name with a distinct `identity.variant`; a different concept
 uses a separate name. Existing definitions explicitly declare `outline`; other treatments appear

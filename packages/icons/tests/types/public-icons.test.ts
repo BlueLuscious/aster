@@ -1,7 +1,13 @@
 import type {
   CollectionDefinition,
   IconDefinition,
+  IconVariantMap,
 } from "@luscious-garden/aster-core";
+import { CameraVariants } from "../../src/generated/facades/icons/camera.js";
+// @ts-expect-error The dictionary entry exports no individual definition.
+import { CameraOutline } from "../../src/generated/facades/icons/camera.js";
+// @ts-expect-error The dictionary entry does not preserve the old definition export.
+import { Camera } from "../../src/generated/facades/icons/camera.js";
 import { ArrowLeftOutline } from "../../src/generated/facades/icons/arrow-left/outline.js";
 import { SearchOutline } from "../../src/generated/facades/icons/search/outline.js";
 // @ts-expect-error Concrete treatment facades do not retain the obsolete unsuffixed export.
@@ -29,6 +35,17 @@ import {
 } from "../../src/manifest/index.js";
 
 const directDefinition: IconDefinition = ArrowLeftOutline;
+const glyphVariants: IconVariantMap = CameraVariants;
+const glyphDefinition: IconDefinition = CameraVariants.outline;
+
+// @ts-expect-error A glyph dictionary is not a concrete definition.
+const invalidGlyph: IconDefinition = CameraVariants;
+// @ts-expect-error Generated glyphs preserve exact distributed treatment keys.
+CameraVariants.filled;
+// @ts-expect-error Glyph dictionaries have no implicit default.
+CameraVariants.default;
+// @ts-expect-error Generated glyph dictionaries are readonly.
+CameraVariants.outline = ArrowLeftOutline;
 const iconManifest: readonly IconManifestEntry[] = AsterIconManifest;
 const collectionManifest: readonly CollectionManifestEntry[] =
   AsterCollectionManifest;
@@ -83,6 +100,11 @@ AsterIconLoaders["aster/changed"] = iconLoader;
 AsterCollectionLoaders.changed = collectionLoader;
 
 void directDefinition;
+void glyphVariants;
+void glyphDefinition;
+void invalidGlyph;
+void Camera;
+void CameraOutline;
 void iconManifest;
 void collectionManifest;
 void iconLoaders;
