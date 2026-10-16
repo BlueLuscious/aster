@@ -42,6 +42,114 @@ function request(name = "hardening"): IconAdoptionRequest {
   };
 }
 
+for (const inheritedKind of ["data", "accessor"] as const) {
+  test(`ignores inherited ${inheritedKind} source namespaces`, () => {
+    for (const enumerable of [false, true]) {
+      const acquired = source("inherited-namespace");
+      Reflect.deleteProperty(acquired.identity, "namespace");
+      const previous = Object.getOwnPropertyDescriptor(Object.prototype, "namespace");
+      let reads = 0;
+      let result: ReturnType<typeof IconImport.inspect>;
+
+      try {
+        Object.defineProperty(Object.prototype, "namespace", {
+          configurable: true,
+          enumerable,
+          ...(inheritedKind === "data"
+            ? { value: "inherited" }
+            : {
+                get() {
+                  reads += 1;
+                  return "inherited";
+                },
+              }),
+        });
+        result = IconImport.inspect(acquired);
+      } finally {
+        if (previous === undefined) {
+          Reflect.deleteProperty(Object.prototype, "namespace");
+        } else {
+          Object.defineProperty(Object.prototype, "namespace", previous);
+        }
+      }
+
+      assert.equal(reads, 0);
+      assert.equal(result.successful, true);
+      if (!result.successful) {
+        throw new Error("Expected accepted source without an own namespace.");
+      }
+      assert.deepEqual(result.value.identity, {
+        name: "inherited-namespace",
+        variant: "outline",
+      });
+      assert.equal(Object.hasOwn(result.value.identity, "namespace"), false);
+      assert.ok(Object.isFrozen(result.value.identity));
+      assert.equal(Object.hasOwn(acquired.identity, "namespace"), false);
+    }
+  });
+}
+
+test("preserves own source namespaces and optional absence on plain and null-prototype records", () => {
+  const acquired = source("own-namespace");
+
+  for (const prototype of [Object.prototype, null]) {
+    for (const namespace of [undefined, "external"]) {
+      const identity = Object.assign(Object.create(prototype), {
+        name: acquired.identity.name,
+        variant: acquired.identity.variant,
+        ...(namespace === undefined ? {} : { namespace }),
+      });
+      const result = IconImport.inspect({ ...acquired, identity });
+
+      assert.equal(result.successful, true);
+      if (!result.successful) {
+        throw new Error("Expected accepted own source identity fields.");
+      }
+      assert.deepEqual(result.value.identity, {
+        name: acquired.identity.name,
+        variant: acquired.identity.variant,
+        ...(namespace === undefined ? {} : { namespace }),
+      });
+      assert.notEqual(result.value.identity, identity);
+      assert.ok(Object.isFrozen(result.value.identity));
+    }
+
+    for (const namespace of [undefined, "", "External"]) {
+      const identity = Object.assign(Object.create(prototype), {
+        ...acquired.identity,
+        namespace,
+      });
+      assert.throws(
+        () => IconImport.inspect({ ...acquired, identity }),
+        (error: unknown) =>
+          error instanceof IconImportError && error.path === "source.identity.namespace",
+      );
+    }
+  }
+});
+
+test("rejects own source identity accessors without executing them", () => {
+  let reads = 0;
+
+  for (const field of ["namespace", "name", "variant"] as const) {
+    const acquired = source("identity-accessor");
+    Object.defineProperty(acquired.identity, field, {
+      enumerable: true,
+      get() {
+        reads += 1;
+        return "unexpected";
+      },
+    });
+    assert.throws(
+      () => IconImport.inspect(acquired),
+      (error: unknown) =>
+        error instanceof IconImportError && error.path === `source.identity.${field}`,
+    );
+  }
+
+  assert.equal(reads, 0);
+});
+
 test("rejects accessor-owned fields across public operations without executing them", () => {
   let reads = 0;
   const accessor = (fields: Record<string, unknown>, field: string) => {
