@@ -27,6 +27,7 @@ async function collectFiles(root, extension) {
 function createDefinitionInput() {
   return {
     identity: {
+      variant: "outline",
       namespace: "minimal",
       name: "camera",
     },
@@ -75,7 +76,9 @@ test("exposes the exact immutable root value surface", async () => {
     "iconTechnicalPresentation",
   ]);
   assert.deepEqual(Object.keys(packageModule.Collection), ["define"]);
-  assert.deepEqual(Object.keys(packageModule.Icon), ["define"]);
+  assert.deepEqual(Object.keys(packageModule.Icon), ["define", "variantPropertyName"]);
+  assert.equal(Object.hasOwn(packageModule.Icon, "variantProperty"), false);
+  assert.equal(packageModule.Icon.variantPropertyName("filled-dotted"), "filledDotted");
   assert.ok(Object.isFrozen(packageModule.Collection));
   assert.ok(Object.isFrozen(packageModule.Icon));
   assert.ok(Object.isFrozen(packageModule.iconDirections));
@@ -148,10 +151,10 @@ test("keeps recognition local while accepting a genuinely independent Core copy"
 
     const retained = local.Collection.define({
       identity: { name: "foreign-member" },
-      icons: { selected: foreignDefinition },
+      icons: { selected: { outline: foreignDefinition } },
       metadata: { displayName: "Foreign Member" },
     });
-    assert.equal(retained.icons.selected, foreignDefinition);
+    assert.equal(retained.icons.selected.outline, foreignDefinition);
     assert.equal(retained.members[0], foreignDefinition);
     assert.notEqual(local.Icon.define(retained.members[0]), foreignDefinition);
     const revalidated = local.Collection.define(retained);
@@ -171,7 +174,7 @@ test("keeps recognition local while accepting a genuinely independent Core copy"
     assert.throws(() => local.Icon.define(invalid), local.IconDefinitionError);
     assert.throws(() => local.Collection.define({
       identity: { name: "invalid-foreign-member" },
-      icons: { selected: invalid },
+      icons: { selected: { outline: invalid } },
       metadata: { displayName: "Invalid Foreign Member" },
     }), local.IconDefinitionError);
   } finally {

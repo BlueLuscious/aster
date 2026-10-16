@@ -56,6 +56,14 @@ export class CommandLineOptionParser {
         continue;
       }
 
+      if (option === commandLineTokens.options.glyph) {
+        if (options.glyph !== undefined) {
+          throw new CommandLineError("option --glyph cannot be repeated", command);
+        }
+        options.glyph = value;
+        continue;
+      }
+
       if (options.collection !== undefined) {
         throw new CommandLineError(
           "option --collection cannot be repeated",

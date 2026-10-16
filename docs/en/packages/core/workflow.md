@@ -49,7 +49,8 @@ authored collection
 Collection API -> CollectionDefinitionFactory
     |
     +--> closed collection shape
-    +--> validate aliases and accept each icon through Core
+    +--> validate aliases and non-empty treatment groups
+    +--> accept each leaf through Core; check family and treatment properties
     +--> retain recognised outputs or compare validated unknown graphs
     +--> reject duplicate identities
     +--> freeze icons and derive members once

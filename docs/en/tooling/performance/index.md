@@ -38,6 +38,17 @@ scale or construction semantics requires an explicit report schema revision beca
 direct historical comparison. Product icons and collections never serve as benchmark fixtures;
 ordinary catalogue growth therefore cannot alter Core, SVG, or CLI operation inputs.
 
+Collection inputs now select explicit nested treatment maps while retaining the same concrete
+corpus and flat member order. Core schema six and CLI schema five mark this construction-boundary
+change; do not compare their collection-sensitive timings directly with older flat-map reports.
+SVG's measured concrete-definition inputs are unchanged. Historical reports retain their scope.
+
+Explicit treatments also lengthen emitted Import modules, CLI JSON and exported filenames. Their
+byte-weighted checksums can therefore change without a larger geometry corpus or more operations.
+Disclose that output-width boundary when comparing reports; identical checksum units do not imply
+identical output sizes. Icons schema two separately adds a named glyph-dictionary import scenario
+without redefining the isolated concrete-treatment scenario.
+
 ## Internal contracts
 
 | Contract | Responsibility |

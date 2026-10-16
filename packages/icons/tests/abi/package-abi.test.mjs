@@ -37,7 +37,10 @@ async function collectDefinitionSubpaths(
           const segments = entry.split("/");
           const name = segments.at(-2);
           const stem = segments.at(-1).slice(0, -suffix.length);
-          const variant = supportsVariants && stem !== name
+          if (supportsVariants) {
+            assert.ok(stem.startsWith(`${name}-`), `Expected an explicit treatment source: ${entry}.`);
+          }
+          const variant = supportsVariants
             ? stem.slice(`${name}-`.length)
             : undefined;
           const subpath = variant === undefined
@@ -58,9 +61,8 @@ async function collectDefinitionSubpaths(
 
 function iconDistributionPath(subpath) {
   const [name, variant] = subpath.split("/");
-  const filename = variant === undefined
-    ? `${name}.icon.js`
-    : `${name}-${variant}.icon.js`;
+  assert.ok(variant, "An icon subpath requires an explicit treatment.");
+  const filename = `${name}-${variant}.icon.js`;
 
   return `glyphs/${name[0]}/${name}/${filename}`;
 }
@@ -128,7 +130,7 @@ test("exposes exact definition families without aggregate roots", async () => {
   for (const [subpath, symbol] of Object.entries(iconSubpaths)) {
     const direct = await import(`@luscious-garden/aster-icons/${subpath}`);
     const [name, variant] = subpath.split("/");
-    const key = `aster/${name}${variant === undefined ? "" : `@${variant}`}`;
+    const key = `aster/${name}@${variant}`;
     const loader = dynamic.AsterIconLoaders[key];
 
     assert.ok(loader);
@@ -150,11 +152,48 @@ test("exposes exact definition families without aggregate roots", async () => {
       direct[symbol].members.every((definition) =>
         Object.hasOwn(
           dynamic.AsterIconLoaders,
-          `${definition.identity.namespace}/${definition.identity.name}`,
+          `${definition.identity.namespace}/${definition.identity.name}@${definition.identity.variant}`,
         ),
       ),
       `Expected every ${subpath} member to have one exact icon loader.`,
     );
+  }
+});
+
+test("exports exact dictionary-only glyph entries retaining canonical treatment references", async () => {
+  const { AsterIconManifest } = await import("@luscious-garden/aster-icons/manifest");
+  const { AsterIconLoaders } = await import("@luscious-garden/aster-icons/dynamic");
+  const names = [...new Set(AsterIconManifest.map(({ identity }) => identity.name))];
+  const { Icon } = await import("@luscious-garden/aster-core");
+
+  for (const name of names) {
+    const imported = await import(`@luscious-garden/aster-icons/${name}`);
+    const symbol = `${pascalCase(name)}Variants`;
+    assert.deepEqual(Object.keys(imported), [symbol]);
+    const dictionary = imported[symbol];
+    const records = AsterIconManifest.filter(({ identity }) => identity.name === name);
+    assert.equal(Object.getPrototypeOf(dictionary), null);
+    assert.ok(Object.isFrozen(dictionary));
+    assert.deepEqual(Object.keys(dictionary), records.map(({ identity }) => Icon.variantPropertyName(identity.variant)));
+
+    for (const record of records) {
+      const property = Icon.variantPropertyName(record.identity.variant);
+      const direct = await import(`@luscious-garden/aster-icons/${name}/${record.identity.variant}`);
+      assert.equal(dictionary[property], direct[record.symbol]);
+      assert.equal(dictionary[property], await AsterIconLoaders[record.key]());
+      const descriptor = Object.getOwnPropertyDescriptor(dictionary, property);
+      assert.equal(descriptor.value, direct[record.symbol]);
+      assert.equal(descriptor.enumerable, true);
+      assert.equal(descriptor.writable, false);
+      assert.equal(descriptor.configurable, false);
+      assert.equal(descriptor.get, undefined);
+    }
+    for (const key of [...Object.getOwnPropertyNames(Object.prototype), "default", "absent"]) {
+      if (Object.hasOwn(dictionary, key)) {continue;}
+      assert.equal(dictionary[key], undefined);
+      assert.equal(key in dictionary, false);
+    }
+    assert.equal(AsterIconLoaders[`aster/${name}`], undefined);
   }
 });
 
@@ -276,7 +315,7 @@ test("exposes exact asynchronous loaders without eager definitions", async () =>
   );
   assert.doesNotMatch(generatedSource, /(?:glyphs\/|collections\/[a-z]\/)/u);
 
-  const cameraLoader = dynamic.AsterIconLoaders["aster/camera"];
+  const cameraLoader = dynamic.AsterIconLoaders["aster/camera@outline"];
   const amellusLoader = dynamic.AsterCollectionLoaders.amellus;
   assert.ok(cameraLoader);
   assert.ok(amellusLoader);
@@ -295,7 +334,7 @@ test("retains exact public-import evaluation sets in fresh processes", async () 
     assert.ok(iconEntry, `Expected a canonical icon manifest record for ${key}.`);
     const { name, variant } = iconEntry.identity;
 
-    return iconDistributionPath(`${name}${variant === undefined ? "" : `/${variant}`}`);
+    return iconDistributionPath(`${name}/${variant}`);
   });
   const authoringModules = [
     "authoring/constants/amellus-icon-authoring-profile.constant.js",
@@ -305,9 +344,14 @@ test("retains exact public-import evaluation sets in fresh processes", async () 
 
   for (const { subpath, exports, modules } of [
     {
+      subpath: "camera/outline",
+      exports: ["CameraOutline"],
+      modules: [...authoringModules, "generated/facades/icons/camera/outline.js", iconDistributionPath("camera/outline")],
+    },
+    {
       subpath: "camera",
-      exports: ["Camera"],
-      modules: [...authoringModules, "generated/facades/icons/camera.js", iconDistributionPath("camera")],
+      exports: ["CameraVariants"],
+      modules: [...authoringModules, "generated/facades/icons/camera.js", iconDistributionPath("camera/outline")],
     },
     {
       subpath: "collections/amellus",
@@ -446,7 +490,7 @@ test("keeps every per-collection module isolated from catalogue indexes", async 
     assert.ok(
       specifiers.slice(1).every((specifier) =>
         specifier === "../../../authoring/constants/aster-artwork-licence.constant.js" ||
-        /^\.\.\/\.\.\/\.\.\/glyphs\/[a-z]\/([a-z0-9]+(?:-[a-z0-9]+)*)\/\1\.icon\.js$/u.test(specifier),
+        /^\.\.\/\.\.\/\.\.\/glyphs\/[a-z]\/([a-z0-9]+(?:-[a-z0-9]+)*)\/\1-[a-z0-9]+(?:-[a-z0-9]+)*\.icon\.js$/u.test(specifier),
       ),
       `Expected ${subpath} to import only its artwork licence and declared icon modules.`,
     );

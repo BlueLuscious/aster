@@ -1,4 +1,5 @@
 import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family-kinds.constant.mjs";
+import { catalogueSourceGeneration } from "../constants/catalogue-source-generation.constant.mjs";
 import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
 /**
@@ -8,8 +9,8 @@ export class CatalogueSourceLayoutNormaliser {
   /** @description Package-owned icon and collection name grammar. */
   static #namePattern = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/u;
 
-  /** @description Portable Core slug grammar retained by optional icon variants. */
-  static #variantPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+  /** @description Portable Core slug grammar retained by required icon treatments. */
+  static #variantPattern = new RegExp(catalogueSourceGeneration.slugPatternSource, "u");
 
   /**
    * @description Resolves one source-family-relative path to canonical identity and symbol.
@@ -46,6 +47,17 @@ export class CatalogueSourceLayoutNormaliser {
   }
 
   /**
+   * @description Derives the sole public dictionary symbol for one validated glyph name.
+   * @param {string} name - Canonical package-owned glyph name.
+   * @returns {string} Expected dictionary export symbol.
+   */
+  glyphSymbol(name) {
+    this.#assertName(name, name);
+
+    return `${this.#pascalCase(name)}Variants`;
+  }
+
+  /**
    * @description Normalises one nested initial-and-name source path.
    * @param {readonly string[]} segments - Relative source path segments.
    * @param {string} stem - Source filename without its role suffix.
@@ -78,6 +90,12 @@ export class CatalogueSourceLayoutNormaliser {
     }
 
     if (stem === name) {
+      if (family.kind === catalogueSourceFamilyKinds.icon) {
+        throw new CatalogueSourceError(
+          `Canonical icon source requires an explicit variant filename: ${relativePath}`,
+        );
+      }
+
       return Object.freeze({ name, variant: undefined });
     }
 

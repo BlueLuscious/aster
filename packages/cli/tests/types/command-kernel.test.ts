@@ -165,11 +165,11 @@ const iconExportOptions: AsterIconExportOptionsType = {
 const exportInvocation: AsterCommandInvocationType = {
   command: "export",
   subject: "icon",
-  identity: "aster/camera",
+  identity: "aster/camera@outline",
   options: iconExportOptions,
 };
 const exportArtefact: AsterExportArtefact = {
-  path: "aster/camera.svg",
+  path: "aster/camera@outline.svg",
   mediaType: "image/svg+xml",
   content: "<svg></svg>",
 };
@@ -177,12 +177,12 @@ const exportPlan: AsterExportPlan = {
   target: exportTargets.svg,
   subject: exportSubject,
   catalogue: "aster",
-  identity: "aster/camera",
+  identity: "aster/camera@outline",
   artefacts: [exportArtefact],
 };
 const reviewSubject: AsterReviewSubjectType = "icon";
 const reviewIcon: AsterReviewIconEvidence = {
-  identity: { namespace: "aster", name: "camera" },
+  identity: { variant: "outline", namespace: "aster", name: "camera" },
   metadata: {
     displayName: "Camera",
     rtl: "preserve",
@@ -203,13 +203,13 @@ const reviewPlan: AsterReviewPlan = {
   target: reviewTargets.html,
   subject: reviewSubject,
   catalogue: "aster",
-  identity: "aster/camera",
+  identity: "aster/camera@outline",
   document: reviewDocument,
 };
 const reviewInvocation: AsterCommandInvocationType = {
   command: "review",
   subject: "icon",
-  identity: "aster/camera",
+  identity: "aster/camera@outline",
 };
 const invocation: AsterCommandInvocationType = {
   command: "search",

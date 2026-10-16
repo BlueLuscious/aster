@@ -39,7 +39,7 @@ export const cliCommandEvaluation = Object.freeze({
       invocation: Object.freeze({
         command: "show",
         subject: "icon",
-        identity: "aster/camera",
+        identity: "aster/camera@outline",
       }),
     }),
     /** @description Exact icon SVG export-planning workflow. */
@@ -50,7 +50,7 @@ export const cliCommandEvaluation = Object.freeze({
       invocation: Object.freeze({
         command: "export",
         subject: "icon",
-        identity: "aster/camera",
+        identity: "aster/camera@outline",
         options: Object.freeze({}),
       }),
     }),
@@ -62,7 +62,7 @@ export const cliCommandEvaluation = Object.freeze({
       invocation: Object.freeze({
         command: "review",
         subject: "icon",
-        identity: "aster/camera",
+        identity: "aster/camera@outline",
       }),
     }),
   }),

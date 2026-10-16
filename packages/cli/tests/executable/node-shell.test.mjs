@@ -65,11 +65,7 @@ const representativeIdentity = `${
   representativeIcon.identity.namespace === undefined
     ? ""
     : `${representativeIcon.identity.namespace}/`
-}${representativeName}${
-  representativeIcon.identity.variant === undefined
-    ? ""
-    : `@${representativeIcon.identity.variant}`
-}`;
+}${representativeName}@${representativeIcon.identity.variant}`;
 const representativeDisplayName = representativeIcon.metadata.displayName;
 const representativePath = `${representativeIdentity}.svg`;
 const representativeMemberships = asterCollectionDefinitions
@@ -127,6 +123,85 @@ test("exposes version and review help through the standalone parser", () => {
       assert.match(result.stdout, /aster version cli \[--deps\] \[--location\]/u);
     }
   }
+});
+
+test("discovers glyph families and explicit treatments through human and JSON executable output", () => {
+  const glyphIdentity = representativeIdentity.split("@")[0];
+  const listed = run(["list", "glyphs"]);
+  assert.equal(listed.status, 0);
+  assert.equal(listed.stderr, "");
+  assert.match(listed.stdout, /^Glyphs:\n/u);
+  assert.ok(listed.stdout.includes(`${glyphIdentity} [aster] (`));
+  const shown = run(["show", "glyph", glyphIdentity]);
+  assert.equal(shown.status, 0);
+  assert.equal(shown.stderr, "");
+  assert.ok(shown.stdout.startsWith(`Glyph: ${glyphIdentity}\nCatalogue: aster\nVariants:\n`));
+  assert.ok(shown.stdout.includes(`  ${representativeIdentity} [aster] - ${representativeDisplayName}`));
+  const family = run(["show", "glyph", glyphIdentity, "--catalogue", "aster", "--json"]);
+  const filtered = run(["list", "icons", "--glyph", glyphIdentity, "--json"]);
+  const listJson = run(["list", "glyphs", "--json"]);
+  for (const result of [family, filtered, listJson]) {
+    assert.equal(result.status, 0);
+    assert.equal(result.stderr, "");
+    assert.ok(result.stdout.endsWith("\n"));
+  }
+  const glyph = JSON.parse(family.stdout).payload.glyph;
+  assert.equal(JSON.parse(family.stdout).payload.kind, "glyph-show");
+  assert.deepEqual(JSON.parse(filtered.stdout).payload.icons, glyph.variants);
+  assert.deepEqual(JSON.parse(listJson.stdout).payload.glyphs.find((entry) =>
+    entry.identity.name === glyph.identity.name && entry.identity.namespace === glyph.identity.namespace), glyph);
+  const absent = run(["list", "icons", "--glyph", glyphIdentity, "--tag", "nonexistent-fixture-tag"]);
+  assert.equal(absent.status, 0);
+  assert.equal(absent.stderr, "");
+  assert.equal(absent.stdout, "Icons:\n  (none)\n");
+});
+
+test("rejects unsupported glyph argv forms without falling back to a concrete treatment", () => {
+  for (const argv of [
+    ["list", "glyphs", "--tag", "camera"],
+    ["list", "glyphs", "--collection", "amellus"],
+    ["list", "glyphs", "--glyph", "aster/camera"],
+    ["list", "collections", "--glyph", "aster/camera"],
+    ["list", "catalogues", "--glyph", "aster/camera"],
+    ["search", "camera", "--glyph", "aster/camera"],
+    ["list", "icons", "--glyph"],
+    ["list", "icons", "--glyph", "aster/camera", "--glyph", "aster/camera"],
+    ["list", "glyphs", "--catalogue", "aster", "--catalogue", "aster"],
+    ["show", "glyph"], ["show", "glyph", "aster/camera", "extra"],
+    ["show", "glyph", "aster/camera", "--collection", "amellus"],
+    ["show", "glyph", "aster/camera@outline"], ["show", "glyph", "aster/camera/outline"],
+    ["list", "icons", "--glyph", "aster/camera@outline"],
+    ["export", "glyph", "aster/camera"], ["review", "glyph", "aster/camera"],
+    ...["show", "export", "review"].map((command) => [command, "icon", "aster/camera"]),
+  ]) {
+    const result = run([...argv, "--json"]);
+    assert.equal(result.status, 2, argv.join(" "));
+    assert.equal(result.stderr, "");
+    const value = JSON.parse(result.stdout);
+    assert.equal(value.ok, false);
+    assert.equal(value.diagnostic.code, "ASTER-CLI-001");
+    if (argv[1] === "icon") {assert.match(value.diagnostic.message, /name@variant.*show glyph/u);}
+  }
+  for (const argv of [
+    ["show", "glyph", "aster/absent"], ["show", "glyph", "camera"],
+    ["list", "icons", "--glyph", "aster/absent", "--tag", "nothing"],
+    ["list", "glyphs", "--catalogue", "absent"], ["show", "icon", "aster/camera@absent"],
+  ]) {
+    const result = run([...argv, "--json"]);
+    assert.equal(result.status, 1, argv.join(" "));
+    assert.equal(result.stderr, "");
+    assert.equal(JSON.parse(result.stdout).diagnostic.code, "ASTER-CLI-004");
+  }
+});
+
+test("describes glyph grammar through command-specific help", () => {
+  const list = run(["help", "list"]);
+  const show = run(["help", "show"]);
+  assert.equal(list.status, 0);
+  assert.equal(show.status, 0);
+  assert.match(list.stdout, /aster list glyphs \[--catalogue <provider>\]/u);
+  assert.match(list.stdout, /aster list icons.*\[--glyph <identity>\]/u);
+  assert.match(show.stdout, /aster show glyph <identity>/u);
 });
 
 test("keeps the executable CLI version distinct from named package queries", () => {
@@ -545,11 +620,15 @@ test("emits one stable JSON success document without terminal styling", () => {
 
 test("maps human usage and lookup failures to stderr and documented status", () => {
   const usage = run(["list", "icons", "--catalogue"]);
-  const missing = run(["show", "icon", "aster/missing"]);
+  const untreated = run(["show", "icon", "aster/camera"]);
+  const missing = run(["show", "icon", "aster/missing@outline"]);
 
   assert.equal(usage.status, 2);
   assert.equal(usage.stdout, "");
   assert.match(usage.stderr, /^\[ASTER-CLI-001\]/u);
+  assert.equal(untreated.status, 2);
+  assert.equal(untreated.stdout, "");
+  assert.match(untreated.stderr, /^\[ASTER-CLI-001\]/u);
   assert.equal(missing.status, 1);
   assert.equal(missing.stdout, "");
   assert.match(missing.stderr, /^\[ASTER-CLI-004\]/u);

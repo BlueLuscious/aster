@@ -58,7 +58,7 @@ source boundary and receive package type, ABI and clean-consumer verification.
 | `pnpm build` | Build applicable packages in dependency order. |
 | `pnpm check` | Run catalogue drift, type, architecture, documentation, lint and formatting checks. |
 | `pnpm check:architecture` | Run the [architecture verifier](architecture/index.md). |
-| `pnpm check:catalogue` | Check [catalogue output](catalogue/index.md) without writing. |
+| `pnpm check:catalogue` | Build Core, then check [catalogue output](catalogue/index.md) without regenerating Icons. |
 | `pnpm check:docs` | Run the [documentation verifier](documentation/index.md). |
 | `pnpm check:types` | Build and type-check applicable packages, then type-check tooling. |
 | `pnpm check:tooling-types` | Type-check authored tooling independently. |

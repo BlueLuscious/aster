@@ -42,6 +42,7 @@ test("keeps original authorship separate from Amellus visual policy", () => {
 test("allows original Aster artwork to use another visual profile", () => {
   const definition = Icon.define({
     identity: {
+      variant: "outline",
       namespace: asterOriginalIconAuthorship.namespace,
       name: "alternative-profile-fixture",
     },
@@ -77,7 +78,7 @@ test("allows original Aster artwork to use another visual profile", () => {
 
 test("allows independently owned artwork to provide its own authorship", () => {
   const definition = Icon.define({
-    identity: { namespace: "external", name: "authorship-fixture" },
+    identity: { variant: "outline", namespace: "external", name: "authorship-fixture" },
     viewBox: amellusIconAuthoringProfile.viewBox,
     nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],
     metadata: {

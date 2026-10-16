@@ -32,7 +32,7 @@ the collection export-naming migration.
 
 An icon entry contains:
 
-- `key` in `[<namespace>/]<name>[@<variant>]` form;
+- `key` in `[<namespace>/]<name>@<variant>` form;
 - complete `identity` and the public named export `symbol`;
 - `displayName`, optional intrinsic `tags` and `rtl`;
 - optional effective `licence` and `attribution`;
@@ -47,6 +47,8 @@ A collection entry contains:
 
 Neither entry contains `viewBox`, nodes or presentation policy. Textual collection member keys
 preserve authored order without evaluating members.
+Icon records remain concrete treatments, not glyph dictionaries. Grouping metadata by complete
+`(namespace, name)` identity needs no dictionary import or second handwritten glyph catalogue.
 [Core definitions](../../core/index.md) own the underlying identity/metadata contracts;
 the [rights boundary](../index.md#rights-boundary) owns legal-authority links.
 

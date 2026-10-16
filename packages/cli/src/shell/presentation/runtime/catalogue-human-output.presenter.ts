@@ -2,6 +2,7 @@ import { catalogueResultKinds } from "../../../catalogue/constants/catalogue-res
 import type {
   CatalogueCollectionResult,
   CatalogueIconResult,
+  CatalogueGlyphResult,
 } from "../../../catalogue/contracts/index.js";
 import { asterCommandPayloadKinds } from "../../../command/constants/aster-command-payload-kinds.constant.js";
 import type { TCataloguePayload } from "../types/internal/catalogue-payload.type.js";
@@ -57,6 +58,14 @@ export class CatalogueHumanOutputPresenter {
               : `collection: ${this.#identities.format(entry.identity)} [${entry.catalogue}] - ${entry.metadata.displayName}`,
           ),
         );
+      case asterCommandPayloadKinds.glyphList:
+        return this.#text.sequence("Glyphs", payload.glyphs.map((glyph) => this.#glyphSummary(glyph)));
+      case asterCommandPayloadKinds.glyphShow:
+        return [
+          `Glyph: ${this.#identities.format(payload.glyph.identity)}`,
+          `Catalogue: ${payload.glyph.catalogue}`,
+          this.#text.sequence("Variants", payload.glyph.variants.map((variant) => this.#iconSummary(variant))),
+        ].join("\n");
       case asterCommandPayloadKinds.iconShow:
         return this.#iconDetails(payload.icon);
       case asterCommandPayloadKinds.collectionShow:
@@ -98,6 +107,16 @@ export class CatalogueHumanOutputPresenter {
       `Collections: ${memberships}`,
       `Deprecated: ${icon.metadata.deprecated ? "yes" : "no"}`,
     ].join("\n");
+  }
+
+  /**
+   * @description Summarises one glyph without inventing family-level icon metadata.
+   * @param glyph - Exact provider-scoped glyph result.
+   * @returns One deterministic family identity and available-treatment summary.
+   */
+  #glyphSummary(glyph: CatalogueGlyphResult): string {
+    const variants = glyph.variants.map((variant) => variant.identity.variant).join(", ");
+    return `${this.#identities.format(glyph.identity)} [${glyph.catalogue}] (${this.#text.count(glyph.variants.length, "variant")}: ${variants})`;
   }
 
   /**

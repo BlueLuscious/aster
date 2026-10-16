@@ -16,6 +16,10 @@ export const commandLineTokens = Object.freeze({
     collections: asterCommandSubjects.list.collections,
     /** @description Token selecting icon records. */
     icons: asterCommandSubjects.list.icons,
+    /** @description Token selecting glyph families. */
+    glyphs: asterCommandSubjects.list.glyphs,
+    /** @description Token selecting one exact glyph family. */
+    glyph: asterCommandSubjects.show.glyph,
     /** @description Token selecting one exact icon. */
     icon: asterCommandSubjects.show.icon,
     /** @description Token selecting one exact collection. */
@@ -33,6 +37,8 @@ export const commandLineTokens = Object.freeze({
     catalogue: "--catalogue",
     /** @description Option filtering by collection membership. */
     collection: "--collection",
+    /** @description Option filtering concrete icon records by exact glyph identity. */
+    glyph: "--glyph",
     /** @description Repeatable option filtering by tag. */
     tag: "--tag",
     /** @description Option selecting machine-readable presentation. */

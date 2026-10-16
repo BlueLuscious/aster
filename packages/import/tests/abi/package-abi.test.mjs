@@ -51,7 +51,7 @@ function adoptionRequest() {
     source: {
       format: "svg",
       sourceId: "consumer/check.svg",
-      identity: { namespace: "consumer", name: "check" },
+      identity: { variant: "outline", namespace: "consumer", name: "check" },
       content:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 12h16"/></svg>',
     },
@@ -179,6 +179,29 @@ test("emits only ESM modules and declarations without auxiliary artefacts", asyn
   assert.ok(files.length > 0);
   assert.equal(files.length, modules.length + declarations.length);
   assert.ok(files.every((file) => file.endsWith(".js") || file.endsWith(".d.ts")));
+});
+
+test("executes private README and staged API examples through the public workspace entrypoint", async () => {
+  for (const { path, result } of [
+    { path: "packages/import/README.md", result: "inspected.successful" },
+    {
+      path: "docs/en/packages/import/api/index.md",
+      result: 'emitted.successful && defined.value.identity.variant === "outline" && suggestedPath === "icons/disc/outline.icon.ts" && content.includes("DiscOutline")',
+    },
+  ]) {
+    const document = await readFile(resolve(workspaceRoot, path), "utf8");
+    const sources = Array.from(
+      document.matchAll(/```ts\r?\n([\s\S]*?)\r?\n```/gu),
+      (match) => match[1],
+    );
+    assert.ok(sources.length > 0, `Missing executable private example in ${path}.`);
+    const executed = await executeFile(process.execPath, [
+      "--input-type=module", "--eval",
+      [...sources, `if (!(${result})) throw new Error("Private guide failed: ${path}");`].join("\n\n"),
+    ], { cwd: workspaceRoot });
+    assert.equal(executed.stdout, "");
+    assert.equal(executed.stderr, "");
+  }
 });
 
 test("compiles and renders an emitted editable module without Import", async (context) => {

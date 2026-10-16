@@ -1,6 +1,7 @@
 import { posix } from "node:path";
 
 import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family-kinds.constant.mjs";
+import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
 /**
  * @description Resolves stable public subpaths and generated facade paths for catalogue sources.
@@ -17,9 +18,11 @@ export class CatalogueSourceFacadeResolver {
       return `collections/${module.name}`;
     }
 
-    return module.variant === undefined
-      ? module.name
-      : `${module.name}/${module.variant}`;
+    if (module.variant === undefined) {
+      throw new CatalogueSourceError(`Canonical icon ${module.name} requires an explicit variant.`);
+    }
+
+    return `${module.name}/${module.variant}`;
   }
 
   /**
@@ -29,10 +32,24 @@ export class CatalogueSourceFacadeResolver {
    * @returns {string} Package-relative generated facade path.
    */
   path(family, module) {
-    const suffix = module.variant === undefined
+    if (family.kind === catalogueSourceFamilyKinds.icon && module.variant === undefined) {
+      throw new CatalogueSourceError(`Canonical icon ${module.name} requires an explicit variant.`);
+    }
+
+    const suffix = family.kind === catalogueSourceFamilyKinds.collection
       ? `${module.name}.ts`
       : `${module.name}/${module.variant}.ts`;
 
     return posix.join(family.facadeDirectory, suffix);
+  }
+
+  /**
+   * @description Resolves a glyph's dictionary entry alongside its individual treatment directory.
+   * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Icon source-family configuration.
+   * @param {string} name - Canonical glyph name used by its public subpath.
+   * @returns {string} Package-relative generated dictionary path.
+   */
+  glyphPath(family, name) {
+    return posix.join(family.facadeDirectory, `${name}.ts`);
   }
 }

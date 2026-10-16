@@ -4,7 +4,7 @@ import type { CollectionIconMap } from "./collection-icon-map.contract.js";
 
 /**
  * @description Complete immutable collection with keyed and ordered portable icon membership.
- * @remarks Alias keys are preserved, but member values use the canonical icon contract rather
+ * @remarks Alias and treatment keys are preserved, but leaves use the canonical icon contract rather
  * than authored mutable or literal subtypes that reconstruction may change.
  * @typeParam TIconMap - Concrete collection-local icon alias map.
  */
@@ -12,10 +12,12 @@ export interface CollectionDefinition<
   TIconMap extends CollectionIconMap = CollectionIconMap,
 > extends Omit<CollectionDefinitionInput<TIconMap>, "icons"> {
   /**
-   * @description Frozen canonical alias map retained by this collection.
+   * @description Frozen prototype-free alias and treatment maps retaining exact authored keys.
    */
   readonly icons: {
-    readonly [Alias in keyof TIconMap]: IconDefinition;
+    readonly [Alias in keyof TIconMap]: {
+      readonly [Variant in keyof NonNullable<TIconMap[Alias]>]: IconDefinition;
+    };
   };
 
   /**

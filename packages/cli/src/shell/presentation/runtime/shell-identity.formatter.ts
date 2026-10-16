@@ -1,4 +1,4 @@
-import type { CollectionIdentity, IconIdentity } from "@luscious-garden/aster-core";
+import type { CollectionIdentity, IconIdentity, IconGlyphIdentity } from "@luscious-garden/aster-core";
 
 /**
  * @description Formats portable identities for deterministic standalone-shell presentation.
@@ -9,11 +9,11 @@ export class ShellIdentityFormatter {
    * @param identity - Portable Core identity.
    * @returns Canonical `[namespace/]name[@variant]` text.
    */
-  format(identity: IconIdentity | CollectionIdentity): string {
+  format(identity: IconIdentity | IconGlyphIdentity | CollectionIdentity): string {
     const namespace = identity.namespace === undefined
       ? ""
       : `${identity.namespace}/`;
-    const variant = "variant" in identity && identity.variant !== undefined
+    const variant = "variant" in identity
       ? `@${identity.variant}`
       : "";
     return `${namespace}${identity.name}${variant}`;

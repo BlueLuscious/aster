@@ -6,6 +6,8 @@ commands without assigning framework ownership to icon sources. The
 
 ## Usage
 
+Examples follow the [current source contract](docs/en/index.md#source-and-published-versions).
+
 Install icons and rendering:
 
 ```sh
@@ -13,10 +15,10 @@ pnpm add @luscious-garden/aster-icons @luscious-garden/aster-svg
 ```
 
 ```ts
-import { ArrowLeft } from "@luscious-garden/aster-icons/arrow-left";
+import { ArrowLeftOutline } from "@luscious-garden/aster-icons/arrow-left/outline";
 import { Svg } from "@luscious-garden/aster-svg";
 
-const markup = Svg.render(ArrowLeft);
+const markup = Svg.render(ArrowLeftOutline);
 ```
 
 Use [Core](packages/core/README.md) to author definitions or [CLI](packages/cli/README.md) for

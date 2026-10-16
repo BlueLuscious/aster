@@ -51,6 +51,7 @@ test("exposes the exact documented immutable root value surface", async () => {
     "loadCollection",
   ]);
   assert.deepEqual(packageModule.catalogueResultKinds, {
+    glyph: "glyph",
     icon: "icon",
     collection: "collection",
   });

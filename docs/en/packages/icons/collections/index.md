@@ -7,24 +7,26 @@ Membership is explicit authoring, not inferred from the package manifest or sour
 
 ## Consumer access
 
-See the [export-naming migration](#export-naming-migration) for version availability and
-upgrading earlier imports.
+Current access follows the [explicit treatment migration](../glyphs/index.md#explicit-treatment-migration).
+The [export-naming migration](#export-naming-migration) separately records the earlier published
+rename of the collection value.
 
 ```ts
 import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
 
-const camera = Amellus.icons.camera;
-const arrowLeft = Amellus.icons.arrowLeft;
+const camera = Amellus.icons.camera.outline;
+const arrowLeft = Amellus.icons.arrowLeft.outline;
 const orderedIcons = Amellus.members;
 ```
 
-Known aliases retain exact readonly TypeScript keys. `members` is a frozen ordered list containing
-the same canonical objects as `icons`. Ordinary array operations produce consumer values, not a
+Known aliases and treatment selections retain exact readonly TypeScript keys. `members` is a
+flat frozen ordered list containing the same canonical leaf objects as `icons`.
+Ordinary array operations produce consumer values, not a
 collection query API. [Core Collection](../../core/collection/index.md) owns alias validation,
 generic output, ordering, duplicate rejection and canonical reference retention.
 
 The import evaluates the selected collection and every declared member. Accessing one alias does
-not make it lazy; use `@luscious-garden/aster-icons/camera` when the collection is unnecessary.
+not make it lazy; use `@luscious-garden/aster-icons/camera/outline` when the collection is unnecessary.
 There is no bare collection-family aggregate.
 
 ## Membership authority
@@ -73,8 +75,8 @@ The old export is absent, with no compatibility alias. The Amellus
 `CollectionManifestEntry.symbol` also changes from `"AmellusCollection"` to `"Amellus"`;
 manifest-driven consumers must use the record's symbol, not append a suffix to its key.
 
-The `amellus` identity and loader key, public route, readonly icon aliases, member order, metadata,
-immutability and direct/loader object identity are unchanged. Core's `Collection.define` and
-collection contracts keep their domain names. This is a breaking export and manifest change
+That published rename preserved the `amellus` identity and loader key, public route, readonly
+icon aliases, member order, metadata, immutability and direct/loader object identity. Core's
+`Collection.define` and collection contracts kept their domain names. It was a breaking export and manifest change
 under the [versioning policy](../../../project/versioning.md#compatibility-before-10), not a
 compatible patch or a change to collection membership.

@@ -12,6 +12,8 @@ export type TCataloguePayload = Extract<
       | typeof asterCommandPayloadKinds.catalogueList
       | typeof asterCommandPayloadKinds.collectionList
       | typeof asterCommandPayloadKinds.iconList
+      | typeof asterCommandPayloadKinds.glyphList
+      | typeof asterCommandPayloadKinds.glyphShow
       | typeof asterCommandPayloadKinds.search
       | typeof asterCommandPayloadKinds.iconShow
       | typeof asterCommandPayloadKinds.collectionShow;

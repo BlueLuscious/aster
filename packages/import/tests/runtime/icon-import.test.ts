@@ -43,7 +43,7 @@ function request(
   namespace = "aster",
 ): IconAdoptionRequest {
   return {
-    source: source({ namespace, name }),
+    source: source({ namespace, name, variant: "outline" }),
     metadata: {
       ...metadata,
       displayName: name,
@@ -58,13 +58,13 @@ function inspectPath(
   return IconImport.inspect({
     format: iconImportFormats.svg,
     sourceId: `paths/${name}.svg`,
-    identity: { namespace: "paths", name },
+    identity: { variant: "outline", namespace: "paths", name },
     content: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path d="${data}"/></svg>`,
   });
 }
 
 test("inspects SVG as a format-neutral immutable draft", () => {
-  const result = IconImport.inspect(source({ namespace: "aster", name: "check" }));
+  const result = IconImport.inspect(source({ namespace: "aster", name: "check", variant: "outline" }));
 
   assert.equal(result.successful, true);
 
@@ -72,7 +72,7 @@ test("inspects SVG as a format-neutral immutable draft", () => {
     throw new Error("Expected successful source inspection.");
   }
 
-  assert.deepEqual(result.value.identity, { namespace: "aster", name: "check" });
+  assert.deepEqual(result.value.identity, { namespace: "aster", name: "check", variant: "outline" });
   assert.deepEqual(result.value.viewBox, {
     minX: 0,
     minY: 0,
@@ -87,7 +87,7 @@ test("inspects SVG as a format-neutral immutable draft", () => {
 
 test("returns source diagnostics for rejected SVG instead of partial output", () => {
   const result = IconImport.inspect(source(
-    { namespace: "aster", name: "unsafe" },
+    { namespace: "aster", name: "unsafe", variant: "outline" },
     "unsafe/script.svg",
   ));
 
@@ -106,8 +106,8 @@ test("adopts reviewed metadata and emits editable TypeScript", () => {
   }
 
   assert.equal(result.value.definition.metadata.displayName, "external-adopted");
-  assert.equal(result.value.module.symbol, "ExternalAdopted");
-  assert.equal(result.value.module.suggestedPath, "icons/external-adopted.icon.ts");
+  assert.equal(result.value.module.symbol, "ExternalAdoptedOutline");
+  assert.equal(result.value.module.suggestedPath, "icons/external-adopted/outline.icon.ts");
   assert.match(result.value.module.content, /\$Icon\.define\(/u);
   assert.match(result.value.module.content, /"commands": \[/u);
   assert.doesNotMatch(result.value.module.content, /"data":/u);
@@ -278,7 +278,7 @@ test("rejects non-SVG Unicode whitespace in path and numeric sequences", () => {
   const viewBox = IconImport.inspect({
     format: iconImportFormats.svg,
     sourceId: "paths/non-breaking-view-box.svg",
-    identity: { namespace: "paths", name: "non-breaking-view-box" },
+    identity: { variant: "outline", namespace: "paths", name: "non-breaking-view-box" },
     content: [
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0\u00a00 24 24">',
       '<line x1="0" y1="0" x2="1" y2="1"/>',
@@ -316,7 +316,7 @@ test("rejects non-SVG Unicode whitespace around individual numeric attributes", 
     const result = IconImport.inspect({
       format: iconImportFormats.svg,
       sourceId: `paths/${name}.svg`,
-      identity: { namespace: "paths", name },
+      identity: { variant: "outline", namespace: "paths", name },
       content,
     });
 
@@ -333,7 +333,7 @@ test("rejects non-SVG Unicode whitespace around individual numeric attributes", 
   const accepted = IconImport.inspect({
     format: iconImportFormats.svg,
     sourceId: "paths/ordinary-numeric-space.svg",
-    identity: { namespace: "paths", name: "ordinary-numeric-space" },
+    identity: { variant: "outline", namespace: "paths", name: "ordinary-numeric-space" },
     content: [
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">',
       '<circle cx=" 12 " cy="12" r="2" stroke-width=" 1.5 "/></svg>',
@@ -379,7 +379,7 @@ test("rejects empty and structurally malformed path contours", () => {
 
 test("rejects invalid reviewed metadata through stable adoption diagnostics", () => {
   const result = IconImport.adopt({
-    source: source({ namespace: "aster", name: "invalid-metadata" }),
+    source: source({ namespace: "aster", name: "invalid-metadata", variant: "outline" }),
     metadata: { ...metadata, displayName: "" },
   });
 
@@ -423,7 +423,7 @@ test("adopts batches atomically in canonical identity order", () => {
 test("distinguishes namespace and variant positions in batch identities", () => {
   const result = IconImport.adoptMany([
     {
-      source: source({ namespace: "alpha", name: "beta" }),
+      source: source({ namespace: "alpha", name: "beta", variant: "outline" }),
       metadata: { ...metadata, displayName: "Namespaced beta" },
     },
     {
@@ -441,7 +441,7 @@ test("distinguishes namespace and variant positions in batch identities", () => 
   assert.deepEqual(
     result.value.entries.map((entry) => entry.definition.identity),
     [
-      { namespace: "alpha", name: "beta" },
+      { namespace: "alpha", name: "beta", variant: "outline" },
       { name: "alpha", variant: "beta" },
     ],
   );
@@ -480,7 +480,7 @@ test("throws only for malformed public API invocation", () => {
   );
   assert.throws(
     () => IconImport.inspect({
-      ...source({ namespace: "aster", name: "unsafe-source-id" }),
+      ...source({ namespace: "aster", name: "unsafe-source-id", variant: "outline" }),
       sourceId: "icons/injected.svg\nexport const injected = true;",
     }),
     (error: unknown) =>

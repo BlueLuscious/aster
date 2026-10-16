@@ -143,7 +143,7 @@ export class ImportBaselineFixtureFactory {
     return {
       format: iconImportFormats.svg,
       sourceId: `benchmark/${name}.svg`,
-      identity: { namespace: "benchmark", name },
+      identity: { variant: "fixture", namespace: "benchmark", name },
       content,
     };
   }

@@ -64,10 +64,12 @@ The implemented grammar is:
 ```text
 aster list catalogues
 aster list collections [--catalogue <provider>]
-aster list icons [--catalogue <provider>] [--collection <identity>] [--tag <tag>]...
+aster list glyphs [--catalogue <provider>]
+aster list icons [--catalogue <provider>] [--glyph <identity>] [--collection <identity>] [--tag <tag>]...
 aster search <query> [--catalogue <provider>] [--collection <identity>] [--tag <tag>]...
 aster show icon <identity> [--catalogue <provider>]
 aster show collection <identity> [--catalogue <provider>]
+aster show glyph <identity> [--catalogue <provider>]
 aster export icon <identity> [--catalogue <provider>] [render-options] [--output <root>]
 aster export collection <identity> [--catalogue <provider>] [render-options] --output <root>
 aster export icon <identity> [--catalogue <provider>] [render-options] --json
@@ -91,6 +93,12 @@ Invoking `aster` without arguments is equivalent to `aster help`. A query or acc
 containing spaces must be supplied as one quoted shell argument. `--tag` may be repeated; every
 export option and singleton filter may occur only once, and `--json` may not be repeated. Unknown,
 empty, incomplete, or extra arguments are usage failures.
+
+Glyph identities use `[namespace/]name`; concrete icon operations require
+`[namespace/]name@variant`. For example, `show glyph aster/camera` discovers treatments and
+`show icon aster/camera@outline` selects one concrete result. `--glyph` is a singleton accepted
+only by `list icons`; glyph listing/show accepts only `--catalogue` and presentation `--json`.
+[Catalogue semantics](../catalogue/index.md#discovery-semantics) owns matching and failure rules.
 
 Icon export without `--json` or `--output` writes one raw SVG document. JSON mode exposes the
 complete host-neutral plan for either subject. Collection export requires JSON or an output root.

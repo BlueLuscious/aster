@@ -87,6 +87,42 @@ export class CatalogueQueryScope {
   }
 
   /**
+   * @description Checks glyph existence before applying unrelated icon-list predicates.
+   * @param catalogues - Selected accepted provider scope.
+   * @param identity - Optional exact namespace/name filter.
+   * @returns Accepted filter or deterministic not-found evidence.
+   */
+  acceptGlyph(
+    catalogues: readonly TAcceptedCatalogueDiscovery[],
+    identity: string | undefined,
+  ): TAcceptanceResult<string | undefined> {
+    if (identity === undefined || catalogues.some((catalogue) =>
+      catalogue.icons.some((record) => this.matchesGlyph(record, identity)))) {
+      return Object.freeze({ accepted: true, value: identity });
+    }
+
+    return Object.freeze({
+      accepted: false,
+      diagnostic: this.#diagnostics.create(
+        commandDiagnosticSchema.categories.notFound,
+        commandDiagnosticSchema.codes.notFound,
+        `glyph ${identity} was not found`,
+        [identity],
+      ),
+    });
+  }
+
+  /**
+   * @description Matches a concrete record to an optional exact glyph without namespace fallback.
+   * @param record - Accepted icon discovery record.
+   * @param identity - Optional canonical glyph key.
+   * @returns Whether the concrete definition belongs to the selected family.
+   */
+  matchesGlyph(record: CatalogueDiscoveryIconRecord, identity: string | undefined): boolean {
+    return identity === undefined || this.#identities.glyph(record.identity) === identity;
+  }
+
+  /**
    * @description Determines whether one icon has an optional exact collection membership.
    * @param record - Accepted icon record.
    * @param identity - Optional exact collection filter.

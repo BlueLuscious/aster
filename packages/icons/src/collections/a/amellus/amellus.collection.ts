@@ -1,31 +1,31 @@
 import { Collection } from "@luscious-garden/aster-core";
 import { asterArtworkLicence } from "../../../authoring/constants/aster-artwork-licence.constant.js";
-import { ArrowDown } from "../../../glyphs/a/arrow-down/arrow-down.icon.js";
-import { ArrowLeft } from "../../../glyphs/a/arrow-left/arrow-left.icon.js";
-import { ArrowRight } from "../../../glyphs/a/arrow-right/arrow-right.icon.js";
-import { ArrowUp } from "../../../glyphs/a/arrow-up/arrow-up.icon.js";
-import { Bell } from "../../../glyphs/b/bell/bell.icon.js";
-import { Camera } from "../../../glyphs/c/camera/camera.icon.js";
-import { Check } from "../../../glyphs/c/check/check.icon.js";
-import { Close } from "../../../glyphs/c/close/close.icon.js";
-import { Cloud } from "../../../glyphs/c/cloud/cloud.icon.js";
-import { Download } from "../../../glyphs/d/download/download.icon.js";
-import { Folder } from "../../../glyphs/f/folder/folder.icon.js";
-import { Heart } from "../../../glyphs/h/heart/heart.icon.js";
-import { Home } from "../../../glyphs/h/home/home.icon.js";
-import { Info } from "../../../glyphs/i/info/info.icon.js";
-import { Leaf } from "../../../glyphs/l/leaf/leaf.icon.js";
-import { Lock } from "../../../glyphs/l/lock/lock.icon.js";
-import { Mail } from "../../../glyphs/m/mail/mail.icon.js";
-import { Menu } from "../../../glyphs/m/menu/menu.icon.js";
-import { Pause } from "../../../glyphs/p/pause/pause.icon.js";
-import { Play } from "../../../glyphs/p/play/play.icon.js";
-import { Plus } from "../../../glyphs/p/plus/plus.icon.js";
-import { Search } from "../../../glyphs/s/search/search.icon.js";
-import { Settings } from "../../../glyphs/s/settings/settings.icon.js";
-import { Star } from "../../../glyphs/s/star/star.icon.js";
-import { User } from "../../../glyphs/u/user/user.icon.js";
-import { Warning } from "../../../glyphs/w/warning/warning.icon.js";
+import { ArrowDownOutline } from "../../../glyphs/a/arrow-down/arrow-down-outline.icon.js";
+import { ArrowLeftOutline } from "../../../glyphs/a/arrow-left/arrow-left-outline.icon.js";
+import { ArrowRightOutline } from "../../../glyphs/a/arrow-right/arrow-right-outline.icon.js";
+import { ArrowUpOutline } from "../../../glyphs/a/arrow-up/arrow-up-outline.icon.js";
+import { BellOutline } from "../../../glyphs/b/bell/bell-outline.icon.js";
+import { CameraOutline } from "../../../glyphs/c/camera/camera-outline.icon.js";
+import { CheckOutline } from "../../../glyphs/c/check/check-outline.icon.js";
+import { CloseOutline } from "../../../glyphs/c/close/close-outline.icon.js";
+import { CloudOutline } from "../../../glyphs/c/cloud/cloud-outline.icon.js";
+import { DownloadOutline } from "../../../glyphs/d/download/download-outline.icon.js";
+import { FolderOutline } from "../../../glyphs/f/folder/folder-outline.icon.js";
+import { HeartOutline } from "../../../glyphs/h/heart/heart-outline.icon.js";
+import { HomeOutline } from "../../../glyphs/h/home/home-outline.icon.js";
+import { InfoOutline } from "../../../glyphs/i/info/info-outline.icon.js";
+import { LeafOutline } from "../../../glyphs/l/leaf/leaf-outline.icon.js";
+import { LockOutline } from "../../../glyphs/l/lock/lock-outline.icon.js";
+import { MailOutline } from "../../../glyphs/m/mail/mail-outline.icon.js";
+import { MenuOutline } from "../../../glyphs/m/menu/menu-outline.icon.js";
+import { PauseOutline } from "../../../glyphs/p/pause/pause-outline.icon.js";
+import { PlayOutline } from "../../../glyphs/p/play/play-outline.icon.js";
+import { PlusOutline } from "../../../glyphs/p/plus/plus-outline.icon.js";
+import { SearchOutline } from "../../../glyphs/s/search/search-outline.icon.js";
+import { SettingsOutline } from "../../../glyphs/s/settings/settings-outline.icon.js";
+import { StarOutline } from "../../../glyphs/s/star/star-outline.icon.js";
+import { UserOutline } from "../../../glyphs/u/user/user-outline.icon.js";
+import { WarningOutline } from "../../../glyphs/w/warning/warning-outline.icon.js";
 
 /**
  * @description Canonical Amellus collection containing the foundational general-purpose icon set.
@@ -35,32 +35,32 @@ export const Amellus = Collection.define({
     name: "amellus",
   },
   icons: {
-    arrowLeft: ArrowLeft,
-    arrowRight: ArrowRight,
-    arrowUp: ArrowUp,
-    arrowDown: ArrowDown,
-    home: Home,
-    menu: Menu,
-    check: Check,
-    close: Close,
-    download: Download,
-    plus: Plus,
-    search: Search,
-    settings: Settings,
-    heart: Heart,
-    info: Info,
-    lock: Lock,
-    star: Star,
-    warning: Warning,
-    camera: Camera,
-    pause: Pause,
-    play: Play,
-    bell: Bell,
-    mail: Mail,
-    cloud: Cloud,
-    folder: Folder,
-    leaf: Leaf,
-    user: User,
+    arrowLeft: { outline: ArrowLeftOutline },
+    arrowRight: { outline: ArrowRightOutline },
+    arrowUp: { outline: ArrowUpOutline },
+    arrowDown: { outline: ArrowDownOutline },
+    home: { outline: HomeOutline },
+    menu: { outline: MenuOutline },
+    check: { outline: CheckOutline },
+    close: { outline: CloseOutline },
+    download: { outline: DownloadOutline },
+    plus: { outline: PlusOutline },
+    search: { outline: SearchOutline },
+    settings: { outline: SettingsOutline },
+    heart: { outline: HeartOutline },
+    info: { outline: InfoOutline },
+    lock: { outline: LockOutline },
+    star: { outline: StarOutline },
+    warning: { outline: WarningOutline },
+    camera: { outline: CameraOutline },
+    pause: { outline: PauseOutline },
+    play: { outline: PlayOutline },
+    bell: { outline: BellOutline },
+    mail: { outline: MailOutline },
+    cloud: { outline: CloudOutline },
+    folder: { outline: FolderOutline },
+    leaf: { outline: LeafOutline },
+    user: { outline: UserOutline },
   },
   metadata: {
     displayName: "Amellus",

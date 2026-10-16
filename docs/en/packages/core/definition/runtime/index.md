@@ -16,7 +16,7 @@ private methods rather than loose module functions. The frozen public
 1. `IconDefinitionFactory` returns an exact [recognised output](#recognised-outputs) directly.
    Otherwise it accepts an unknown value and rejects fields outside the closed
    definition shape.
-2. `IconIdentityNormaliser` trims and validates optional namespace, icon, and variant slugs.
+2. `IconIdentityNormaliser` trims and validates the optional namespace and required name and treatment slugs.
 3. `IconViewBoxNormaliser` validates finite coordinates and positive dimensions.
 4. `IconNodeNormaliser` validates the discriminator, geometry, presentation, cardinality, and
    original paint order of every node.
@@ -35,7 +35,7 @@ acceptance. Geometry rules belong to [Node](../../node/index.md), metadata relat
 | Class | Responsibility | Relations |
 | --- | --- | --- |
 | `IconDefinitionFactory` | Recognises its own canonical outputs; otherwise owns the complete validation, normalisation, isolation and deep-freeze transaction. | Composes all definition, node and metadata normalisers. |
-| `IconIdentityNormaliser` | Trims and validates complete canonical icon identities. | Reused for owning and replacement identities. |
+| `IconIdentityNormaliser` | Trims and validates complete canonical icon identities; derives variant property names without changing canonical identity. | Reused for owning/replacement identities, public `Icon.variantPropertyName()` and collection property-name checks. |
 | `IconViewBoxNormaliser` | Validates finite minima and positive logical dimensions. | Produces the definition coordinate system. |
 
 Primitive assertions and deterministic contract failures are documented by the

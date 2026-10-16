@@ -29,37 +29,44 @@ import { IconImport, iconImportFormats } from "@luscious-garden/aster-import";
 const inspected = IconImport.inspect({
   format: iconImportFormats.svg,
   sourceId: "external/disc.svg",
-  identity: { namespace: "example", name: "disc" },
+  identity: { namespace: "example", name: "disc", variant: "outline" },
   content: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>',
 });
 
-if (inspected.successful) {
-  const defined = IconImport.define({
-    draft: inspected.value,
-    metadata: {
-      displayName: "Disc",
-      rtl: "preserve",
-      presentation: { defaults: {}, overrides: [] },
-      deprecated: false,
-    },
-  });
-
-  if (defined.successful) {
-    const emitted = IconImport.emit({
-      definition: defined.value,
-      sourceIds: [inspected.value.provenance.sourceId],
-    });
-    emitted.diagnostics;
-    if (emitted.successful) {
-      emitted.value.suggestedPath;
-      emitted.value.content;
-    }
-  }
+if (!inspected.successful) {
+  throw new Error(JSON.stringify(inspected.diagnostics));
 }
+
+const defined = IconImport.define({
+  draft: inspected.value,
+  metadata: {
+    displayName: "Disc",
+    rtl: "preserve",
+    presentation: { defaults: {}, overrides: [] },
+    deprecated: false,
+  },
+});
+
+if (!defined.successful) {
+  throw new Error(JSON.stringify(defined.diagnostics));
+}
+
+const emitted = IconImport.emit({
+  definition: defined.value,
+  sourceIds: [inspected.value.provenance.sourceId],
+});
+
+if (!emitted.successful) {
+  throw new Error(JSON.stringify(emitted.diagnostics));
+}
+
+const { suggestedPath, content } = emitted.value;
 ```
 
 This private workspace example does not install Import from a public registry. A real host reviews
 the draft and metadata between calls and handles every diagnostic or failure before persistence.
+This example stops on rejection by throwing its diagnostics; an interactive host may instead
+present them and request corrections without continuing to the next stage.
 
 ## Composition and exports
 

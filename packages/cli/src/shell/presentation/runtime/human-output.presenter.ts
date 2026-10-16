@@ -76,6 +76,8 @@ export class HumanOutputPresenter {
       case asterCommandPayloadKinds.catalogueList:
       case asterCommandPayloadKinds.collectionList:
       case asterCommandPayloadKinds.iconList:
+      case asterCommandPayloadKinds.glyphList:
+      case asterCommandPayloadKinds.glyphShow:
       case asterCommandPayloadKinds.search:
       case asterCommandPayloadKinds.iconShow:
       case asterCommandPayloadKinds.collectionShow:

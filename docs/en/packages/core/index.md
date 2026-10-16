@@ -21,7 +21,7 @@ without promising a particular bundler's tree-shaking result.
 | Page | Owns |
 | --- | --- |
 | [API](api/index.md) | Construction signatures, usage and exact public exports. |
-| [Collection](collection/index.md) | Collection identity, typed aliases, ordered membership and canonical retention. |
+| [Collection](collection/index.md) | Collection identity, typed grouped treatment selections, flat ordered membership and canonical retention. |
 | [Definition](definition/index.md) | Icon identity, viewBox and complete portable shape. |
 | [Definition Runtime](definition/runtime/index.md) | Icon construction and normaliser composition. |
 | [Node](node/index.md) | Geometry primitives, structured path commands and their validation. |

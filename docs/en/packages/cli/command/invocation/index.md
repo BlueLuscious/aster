@@ -18,15 +18,17 @@ there is no mutable registry, reflection, or automatic command discovery.
 | Class | Accepted family |
 | --- | --- |
 | `ExportInvocationNormaliser` | Exact icon or collection export requests and portable render options. |
-| `ListInvocationNormaliser` | Catalogue, collection, and icon listing requests. |
+| `ReviewInvocationNormaliser` | Exact icon or collection requests for static technical review. |
+| `ListInvocationNormaliser` | Catalogue, collection, glyph and icon listing requests; glyph filtering applies only to icons. |
 | `SearchInvocationNormaliser` | Search queries and optional discovery filters. |
-| `ShowInvocationNormaliser` | Exact icon or collection lookup requests. |
+| `ShowInvocationNormaliser` | Exact glyph, icon or collection lookup requests. |
 | `HelpInvocationNormaliser` | General or command-specific help requests. |
 | `VersionInvocationNormaliser` | Plain or scoped version requests, optional direct-dependency groups, and opt-in executed-CLI location. |
 
-`InvocationFilterNormaliser` owns the shared provider, collection, and tag filter grammar.
+`InvocationFilterNormaliser` owns shared provider, collection, glyph and tag filter acceptance.
 `InvocationRejectionFactory` constructs canonical usage failures without coupling the normalisers
-to command execution.
+to command execution. It shares actionable identity grammar diagnostics across Show, Export and
+Review; concrete icons require a treatment rather than silently selecting one.
 
 Version scope acceptance uses the same immutable public package-selector authority as the shell.
 The aggregate `all` discriminator is defined once for structured requests and adapted to the

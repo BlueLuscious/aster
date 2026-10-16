@@ -14,19 +14,25 @@ payloads to command-family collaborators:
 
 | Class | Responsibility |
 | --- | --- |
-| `CatalogueHumanOutputPresenter` | Presents catalogue, collection, icon, search, and show payloads. |
+| `CatalogueHumanOutputPresenter` | Presents catalogue, collection, glyph, icon, search and show payloads. |
 | `ExportHumanOutputPresenter` | Presents raw icon SVG, export plans, and truthful publication summaries. |
 | `ReviewHumanOutputPresenter` | Presents deterministic headless plan summaries and committed or replaced review destinations. |
 | `HelpHumanOutputPresenter` | Presents canonical command descriptors and usage forms. |
 | `HumanOutputPresenter` | Also formats product/package versions, separate dependency-root groups and optional CLI-location evidence. |
 | `HumanTextFormatter` | Formats shared counts and deterministic sequences. |
-| `ShellIdentityFormatter` | Formats portable provider, collection, and icon identities. |
+| `ShellIdentityFormatter` | Formats portable glyph, collection and concrete icon identities. |
 
 Expected human failures retain stable diagnostic codes and related values. JSON mode writes the
 same structured command result to stdout and writes nothing to stderr. Presentation returns
 complete strings before the entrypoint performs process writes, so it cannot alter command
 behaviour or partially emit a result. Exact framing, headings and statuses belong to
 [Shell](../index.md#presentation); presenters never acquire version evidence themselves.
+
+Glyph listing uses `Glyphs:` with ordinary indented entries or `  (none)`. A summary such as
+`aster/camera [aster] (1 variant: outline)` reports only family identity, provider and treatments.
+Exact show uses `Glyph:`, `Catalogue:` and a `Variants:` sequence of existing concrete icon
+summaries. JSON retains the structured `glyph-list`/`glyph-show` payload rather than introducing
+a separate display schema. [Catalogue](../../catalogue/index.md#discovery-semantics) owns semantics.
 
 ## Internal types
 

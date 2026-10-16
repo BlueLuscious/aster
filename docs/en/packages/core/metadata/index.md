@@ -38,6 +38,9 @@ combination of direction and policy; targets own its output representation.
 | --- | --- | --- |
 | `IconMetadataNormaliser` | Validates resolved display, unique canonical tags, direction, licensing, deprecation, and replacement data before cloning and freezing it. | Composes `IconIdentityNormaliser` and `IconPresentationPolicyNormaliser`. |
 
+Replacement identities follow the same required treatment rules as
+[definition identities](../definition/index.md#identity-rules).
+
 Attribution requires an effective licence. A replacement requires deprecated metadata and must
 not equal the complete identity of the definition being constructed. Core can compare the owning
 definition with its replacement, but collection-wide replacement availability and cycle checks

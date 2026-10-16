@@ -7,6 +7,40 @@ import { IconDefinitionError } from "../../src/shared/runtime/icon-definition.er
 
 const definitionFactory = new IconDefinitionFactory();
 
+test("requires an explicit treatment without inferring a default", () => {
+  const input = createInput();
+  const { variant, ...glyph } = input.identity;
+  void variant;
+  expectDefinitionError({ ...input, identity: glyph }, "definition.identity.variant");
+
+  for (const invalid of [undefined, "", " ", "Outline", "filled--dotted"]) {
+    expectDefinitionError(
+      { ...input, identity: { ...glyph, variant: invalid } },
+      "definition.identity.variant",
+    );
+  }
+
+  for (const treatment of ["outline", "filled-stippled", "2-tone", "01", "constructor"]) {
+    const accepted = definitionFactory.create({
+      ...input,
+      identity: { ...glyph, variant: treatment },
+    });
+    assert.equal(accepted.identity.variant, treatment);
+  }
+});
+
+test("requires an explicit treatment on replacement identities", () => {
+  const input = createInput();
+  expectDefinitionError({
+    ...input,
+    metadata: {
+      ...input.metadata,
+      deprecated: true,
+      replacedBy: { name: "replacement" },
+    },
+  }, "definition.metadata.replacedBy.variant");
+});
+
 function createInput() {
   return {
     identity: {

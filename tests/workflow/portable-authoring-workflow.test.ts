@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";
-import { Icon, type IconDefinition, type IconMetadata } from "@luscious-garden/aster-core";
+import { AsterCatalogue, AsterCommands, type CatalogueProvider } from "@luscious-garden/aster-cli";
+import { Collection, Icon, type IconDefinition, type IconMetadata } from "@luscious-garden/aster-core";
 import { AsterCollectionLoaders } from "@luscious-garden/aster-icons/dynamic";
 import { IconImport, iconImportFormats } from "@luscious-garden/aster-import";
 import { Svg } from "@luscious-garden/aster-svg";
@@ -30,7 +30,7 @@ const arrowMetadata: IconMetadata = {
 
 function authorArrowLeft(): IconDefinition {
   return Icon.define({
-    identity: { namespace: "workflow", name: "arrow-left" },
+    identity: { variant: "outline", namespace: "workflow", name: "arrow-left" },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [
       { kind: "line", x1: 20, y1: 12, x2: 4, y2: 12 },
@@ -62,7 +62,7 @@ function adoptionRequest(
     source: {
       format: iconImportFormats.svg,
       sourceId: `workflow/${namespace}/${name}.svg`,
-      identity: { namespace, name },
+      identity: { variant: "outline", namespace, name },
       content: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">${geometry}</svg>`,
     },
     metadata: {
@@ -110,7 +110,7 @@ test("adopts equivalent SVG into editable TypeScript and the same portable defin
     source: {
       format: iconImportFormats.svg,
       sourceId: "workflow/input/arrow-left.svg",
-      identity: { namespace: "workflow", name: "arrow-left" },
+      identity: { variant: "outline", namespace: "workflow", name: "arrow-left" },
       content:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><line x1="20" y1="12" x2="4" y2="12"/><polyline points="10 6 4 12 10 18"/></svg>',
     },
@@ -131,7 +131,7 @@ test("adopts equivalent SVG into editable TypeScript and the same portable defin
 
 test("round trips equivalent structured and compact SVG paths", () => {
   const authored = Icon.define({
-    identity: { namespace: "workflow", name: "compound-path" },
+    identity: { variant: "outline", namespace: "workflow", name: "compound-path" },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [{
       kind: "path",
@@ -211,6 +211,108 @@ test("adopts independent host-owned batches into renderable editable definitions
       Svg.render(definition).startsWith("<svg "),
     ),
   );
+});
+
+test("discovers and exports selected authored and adopted treatments without implicit selection", async () => {
+  const outline = authorArrowLeft();
+  const request = adoptionRequest("workflow", "arrow-left", '<circle cx="12" cy="12" r="4"/>');
+  const adopted = IconImport.adopt({
+    ...request,
+    source: { ...request.source, identity: { ...outline.identity, variant: "filled-dotted" } },
+    metadata: { ...request.metadata, deprecated: true, replacedBy: outline.identity },
+  });
+  assert.ok(adopted.successful, JSON.stringify(adopted.diagnostics));
+  const filledDotted = adopted.value.definition;
+  assert.equal(Icon.define(filledDotted), filledDotted);
+  assert.deepEqual(filledDotted.metadata.replacedBy, outline.identity);
+  assert.deepEqual(Icon.define(readAdoptedDefinition(adopted.value.module.content)), filledDotted);
+
+  const filled = Icon.define({ ...outline, identity: { ...outline.identity, variant: "filled" } });
+  const definitions = [outline, filled, filledDotted];
+  const collection = Collection.define({
+    identity: { namespace: "workflow", name: "selected" },
+    metadata: { displayName: "Selected Treatments" },
+    icons: { arrowLeft: { outline, filledDotted } },
+  });
+  assert.deepEqual(collection.members, [outline, filledDotted]);
+  assert.equal(collection.icons.arrowLeft.filledDotted, filledDotted);
+  for (const definition of collection.members) {
+    const data = JSON.parse(JSON.stringify(definition));
+    const revalidated = Icon.define(data);
+    assert.notEqual(revalidated, data);
+    assert.notEqual(revalidated, definition);
+    assert.equal(Icon.define(revalidated), revalidated);
+    assert.deepEqual(revalidated, definition);
+    assert.equal(Svg.render(revalidated), Svg.render(definition));
+  }
+
+  const loads = { icons: 0, collections: 0 };
+  const provider: CatalogueProvider = {
+    identity: "workflow",
+    async discover() {
+      return {
+        icons: definitions.map(({ identity, metadata: { presentation, ...metadata } }) => {
+          void presentation;
+          return {
+            identity,
+            metadata,
+            memberships: collection.members.some((member) => member.identity.variant === identity.variant)
+              ? [collection.identity]
+              : [],
+          };
+        }),
+        collections: [{
+          identity: collection.identity,
+          metadata: collection.metadata,
+          icons: collection.members.map(({ identity }) => identity),
+        }],
+      };
+    },
+    async loadIcon(identity) {
+      loads.icons += 1;
+      return definitions.find((definition) =>
+        definition.identity.namespace === identity.namespace &&
+        definition.identity.name === identity.name &&
+        definition.identity.variant === identity.variant
+      );
+    },
+    async loadCollection(identity) {
+      loads.collections += 1;
+      return identity.namespace === collection.identity.namespace && identity.name === collection.identity.name
+        ? collection
+        : undefined;
+    },
+  };
+  const context = { catalogues: [provider], productName: "Aster", productVersion: "0.0.0" };
+  const shown = await AsterCommands.execute(
+    { command: "show", subject: "glyph", identity: "workflow/arrow-left" }, context,
+  );
+  assert.ok(shown.ok && shown.payload.kind === "glyph-show");
+  assert.deepEqual(shown.payload.glyph.variants.map(({ identity }) => identity.variant), [
+    "filled", "filled-dotted", "outline",
+  ]);
+  const selected = await AsterCommands.execute(
+    { command: "list", subject: "icons", glyph: "workflow/arrow-left", collection: "workflow/selected" },
+    context,
+  );
+  assert.ok(selected.ok && selected.payload.kind === "icon-list");
+  assert.deepEqual(selected.payload.icons.map(({ identity }) => identity.variant), ["filled-dotted", "outline"]);
+  const missing = await AsterCommands.execute(
+    { command: "show", subject: "icon", identity: "workflow/arrow-left" }, context,
+  );
+  assert.ok(!missing.ok);
+  assert.equal(missing.diagnostic.code, "ASTER-CLI-001");
+  assert.deepEqual(loads, { icons: 0, collections: 0 });
+
+  const exported = await AsterCommands.execute(
+    { command: "export", subject: "collection", identity: "workflow/selected" }, context,
+  );
+  assert.ok(exported.ok && exported.payload.kind === "export");
+  assert.deepEqual(
+    exported.payload.plan.artefacts.map(({ content }) => content).sort(),
+    collection.members.map((definition) => Svg.render(definition)).sort(),
+  );
+  assert.ok(loads.collections > 0);
 });
 
 test("plans one discovered collection through CLI and SVG boundaries", async () => {

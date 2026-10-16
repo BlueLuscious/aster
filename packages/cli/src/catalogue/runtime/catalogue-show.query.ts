@@ -11,7 +11,7 @@ import { CatalogueDiscoverySelector } from "./catalogue-discovery.selector.js";
 import { CatalogueResultFactory } from "./catalogue-result.factory.js";
 
 /**
- * @description Executes exact icon and collection lookup with explicit ambiguity handling.
+ * @description Executes exact glyph, icon and collection metadata lookup with explicit ambiguity handling.
  */
 export class CatalogueShowQuery {
   /**
@@ -53,6 +53,16 @@ export class CatalogueShowQuery {
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
+    if (invocation.subject === asterCommandSubjects.show.glyph) {
+      const selected = await this.#selections.selectGlyph(invocation.identity, invocation.catalogue, context);
+      return selected.accepted
+        ? this.#commandResults.success(asterCommandNames.show, Object.freeze({
+            kind: asterCommandPayloadKinds.glyphShow,
+            glyph: selected.value,
+          }))
+        : this.#commandResults.failure(asterCommandNames.show, selected.diagnostic);
+    }
+
     const selected = await this.#selections.select(
       invocation.subject,
       invocation.identity,

@@ -187,32 +187,54 @@ test("includes both software and artwork terms in the installed package", async 
 
 test("resolves isolated runtime and declaration facades without source files", async () => {
   const source = [
-    'import type { CollectionDefinition, IconDefinition } from "@luscious-garden/aster-core";',
+    'import type { CollectionDefinition, IconDefinition, IconVariantMap } from "@luscious-garden/aster-core";',
     'import type { CollectionDefinitionLoader, CollectionDefinitionLoaderMap, IconDefinitionLoader, IconDefinitionLoaderMap } from "@luscious-garden/aster-icons/dynamic";',
     'import type { CollectionManifestEntry, IconManifestEntry } from "@luscious-garden/aster-icons/manifest";',
-    'import { Camera } from "@luscious-garden/aster-icons/camera";',
+    'import { CameraOutline } from "@luscious-garden/aster-icons/camera/outline";',
+    'import { CameraVariants } from "@luscious-garden/aster-icons/camera";',
+    'import * as glyphExports from "@luscious-garden/aster-icons/camera";',
+    "// @ts-expect-error Packed glyph entries export no individual definition.",
+    'import type { CameraOutline as InvalidAggregateLeaf } from "@luscious-garden/aster-icons/camera";',
+    "// @ts-expect-error Packed glyph entries retain no obsolete definition export.",
+    'import type { Camera } from "@luscious-garden/aster-icons/camera";',
     'import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";',
     'import * as collectionExports from "@luscious-garden/aster-icons/collections/amellus";',
     'import { AsterCollectionManifest, AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
     'import { AsterCollectionLoaders, AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
-    "const icon: IconDefinition = Camera;",
+    "const icon: IconDefinition = CameraOutline;",
+    "const variants: IconVariantMap = CameraVariants;",
+    "const selectedVariant: IconDefinition = CameraVariants.outline;",
+    "// @ts-expect-error A packed glyph dictionary is not an icon definition.",
+    "const invalidGroup: IconDefinition = CameraVariants;",
+    "// @ts-expect-error Packed glyphs retain exact treatment keys.",
+    "CameraVariants.filled;",
+    "// @ts-expect-error Packed glyphs have no default treatment.",
+    "CameraVariants.default;",
+    "if (false) {",
+    "  // @ts-expect-error Packed glyph dictionaries are readonly.",
+    "  CameraVariants.outline = CameraOutline;",
+    "}",
+    'if (Object.keys(glyphExports).join(",") !== "CameraVariants" || variants.outline !== selectedVariant || selectedVariant !== CameraOutline || !Object.isFrozen(CameraVariants) || Object.getPrototypeOf(CameraVariants) !== null) throw new Error("Packed glyph dictionary mismatch.");',
     "const collection: CollectionDefinition = Amellus;",
-    "const cameraFromCollection: IconDefinition = Amellus.icons.camera;",
+    "const cameraFromCollection: IconDefinition = Amellus.icons.camera.outline;",
     "const orderedMembers: readonly IconDefinition[] = Amellus.members;",
     'const cameraAlias: keyof typeof Amellus.icons = "camera";',
     "// @ts-expect-error Packed declarations reject unknown collection aliases.",
     "Amellus.icons.unknown;",
     "if (false) {",
     "  // @ts-expect-error Packed collection alias properties are readonly.",
-    "  Amellus.icons.camera = Camera;",
+    "  Amellus.icons.camera.outline = CameraOutline;",
+    "  // @ts-expect-error Packed groups retain exact treatment keys.",
+    "  Amellus.icons.camera.filled;",
     "}",
-    "if (cameraFromCollection !== Camera || cameraAlias !== \"camera\" || !Object.values(collection.icons).every((member, index) => member === orderedMembers[index])) throw new Error(\"Packed collection membership mismatch.\");",
-    "const iconEntry: IconManifestEntry | undefined = AsterIconManifest.find(({ key }) => key === \"aster/camera\");",
+    "if (cameraFromCollection !== CameraOutline || cameraAlias !== \"camera\" || !Object.values(collection.icons).flatMap(Object.values).every((member, index) => member === orderedMembers[index])) throw new Error(\"Packed collection membership mismatch.\");",
+    "const iconEntry: IconManifestEntry | undefined = AsterIconManifest.find(({ key }) => key === \"aster/camera@outline\");",
     "const collectionEntry: CollectionManifestEntry | undefined = AsterCollectionManifest.find(({ key }) => key === \"amellus\");",
     'if (collectionEntry?.symbol !== "Amellus" || Object.keys(collectionExports).join(",") !== collectionEntry.symbol) throw new Error("Packed collection must expose only its canonical manifest symbol.");',
     'if (collectionExports.Amellus !== Amellus || collectionEntry.identity.name !== Amellus.identity.name || JSON.stringify(collectionEntry.metadata) !== JSON.stringify(Amellus.metadata)) throw new Error("Packed collection metadata or identity mismatch.");',
-    'if (![Amellus, Amellus.identity, Amellus.metadata, Amellus.icons, Amellus.members].every(Object.isFrozen)) throw new Error("Packed collection values must remain frozen.");',
-    'const iconLoader: IconDefinitionLoader | undefined = AsterIconLoaders["aster/camera"];',
+    'if (![Amellus, Amellus.identity, Amellus.metadata, Amellus.icons, Amellus.icons.camera, Amellus.members].every(Object.isFrozen)) throw new Error("Packed collection values must remain frozen.");',
+    'if (Object.getPrototypeOf(Amellus.icons) !== null || Object.getPrototypeOf(Amellus.icons.camera) !== null) throw new Error("Packed collection dictionaries must be prototype-free.");',
+    'const iconLoader: IconDefinitionLoader | undefined = AsterIconLoaders["aster/camera@outline"];',
     "const collectionLoader: CollectionDefinitionLoader | undefined = AsterCollectionLoaders.amellus;",
     "const iconMap: IconDefinitionLoaderMap = AsterIconLoaders;",
     "const collectionMap: CollectionDefinitionLoaderMap = AsterCollectionLoaders;",
@@ -233,7 +255,8 @@ test("resolves isolated runtime and declaration facades without source files", a
     'if (iconLoader === undefined || collectionLoader === undefined) throw new Error("Expected loaders.");',
     "const loadedIcon = await iconLoader();",
     "const loadedCollection = await collectionLoader();",
-    'if (loadedIcon !== Camera || loadedCollection !== Amellus || await iconLoader() !== Camera || await collectionLoader() !== Amellus) throw new Error("Packed loaders must retain direct canonical objects.");',
+    'if (loadedIcon !== CameraOutline || loadedCollection !== Amellus || await iconLoader() !== CameraOutline || await collectionLoader() !== Amellus) throw new Error("Packed loaders must retain direct canonical objects.");',
+    'if (loadedIcon !== CameraVariants.outline || cameraFromCollection !== CameraVariants.outline) throw new Error("Packed glyph leaves must retain canonical references.");',
     "export const result = `${icon.identity.name}:${collection.identity.name}:${iconEntry?.symbol}:${collectionEntry?.symbol}:${loadedIcon.identity.name}:${loadedCollection.identity.name}:${orderedMembers === loadedCollection.members}`;",
     "",
   ].join("\n");
@@ -281,11 +304,11 @@ test("resolves isolated runtime and declaration facades without source files", a
     { cwd: consumerRoot, encoding: "utf8" },
   );
 
-  assert.equal(executed.status, 0);
+  assert.equal(executed.status, 0, `Packed consumer failed: ${executed.stdout}${executed.stderr}`);
   assert.equal(executed.stderr, "");
   assert.equal(
     executed.stdout,
-    "camera:amellus:Camera:Amellus:camera:amellus:true",
+    "camera:amellus:CameraOutline:Amellus:camera:amellus:true",
   );
 });
 
@@ -340,6 +363,19 @@ test("rejects the obsolete collection export in installed declarations and nativ
   );
 });
 
+test("rejects the obsolete concrete Camera export through native packed ESM", () => {
+  const executed = spawnSync(process.execPath, [
+    "--input-type=module",
+    "--eval",
+    'import { Camera } from "@luscious-garden/aster-icons/camera";',
+  ], { cwd: consumerRoot, encoding: "utf8" });
+
+  assert.equal(executed.error, undefined);
+  assert.equal(executed.status, 1, `${executed.stdout}${executed.stderr}`);
+  assert.equal(executed.stdout, "");
+  assert.match(executed.stderr, /SyntaxError:.*does not provide an export named 'Camera'/u);
+});
+
 test("preserves exact inherited-name absence in packed loader maps", () => {
   const executed = spawnSync(
     process.execPath,
@@ -373,7 +409,7 @@ test("preserves exact inherited-name absence in packed loader maps", () => {
 });
 
 for (const { family, exportName, key, subpath } of [
-  { family: "icon", exportName: "AsterIconLoaders", key: "aster/camera", subpath: "camera" },
+  { family: "icon", exportName: "AsterIconLoaders", key: "aster/camera@outline", subpath: "camera/outline" },
   { family: "collection", exportName: "AsterCollectionLoaders", key: "amellus", subpath: "collections/amellus" },
 ]) {
   test(`preserves native ${family} dynamic-import rejection details`, async () => {

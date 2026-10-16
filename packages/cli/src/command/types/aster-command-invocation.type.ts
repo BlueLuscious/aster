@@ -111,6 +111,9 @@ export type AsterCommandInvocationType =
        * @description Optional unique canonical tags required from listed icons.
        */
       tags?: readonly string[];
+
+      /** @description Optional exact namespace/name glyph filter for icon listing only. */
+      glyph?: string;
     }>
   | Readonly<{
       /**

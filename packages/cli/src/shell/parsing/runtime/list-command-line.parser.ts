@@ -19,7 +19,7 @@ export class ListCommandLineParser implements ICommandLineCommandParser {
   readonly #options = new CommandLineOptionParser();
 
   /**
-   * @description Parses provider, collection, or icon listing and its exact filters.
+   * @description Parses provider, collection, glyph or icon listing and its accepted filters.
    * @param tokens - Command tokens beginning with `list`.
    * @param json - Whether machine-readable presentation was requested.
    * @returns Structured list invocation and presentation selection.
@@ -31,21 +31,23 @@ export class ListCommandLineParser implements ICommandLineCommandParser {
       subject !== commandLineTokens.subjects.catalogues
       && subject !== commandLineTokens.subjects.collections
       && subject !== commandLineTokens.subjects.icons
+      && subject !== commandLineTokens.subjects.glyphs
     ) {
       throw new CommandLineError(
-        "expected list subject to be catalogues, collections, or icons",
+        "expected list subject to be catalogues, collections, glyphs, or icons",
         this.command,
       );
     }
 
     const acceptedOptions = subject === commandLineTokens.subjects.catalogues
       ? []
-      : subject === commandLineTokens.subjects.collections
+      : subject === commandLineTokens.subjects.collections || subject === commandLineTokens.subjects.glyphs
         ? [commandLineTokens.options.catalogue]
         : [
             commandLineTokens.options.catalogue,
             commandLineTokens.options.collection,
             commandLineTokens.options.tag,
+            commandLineTokens.options.glyph,
           ];
     const options = this.#options.parse(
       tokens.slice(2),
@@ -66,6 +68,7 @@ export class ListCommandLineParser implements ICommandLineCommandParser {
         ...(options.tags.length === 0
           ? {}
           : { tags: Object.freeze(options.tags) }),
+        ...(options.glyph === undefined ? {} : { glyph: options.glyph }),
       }),
       json,
     });

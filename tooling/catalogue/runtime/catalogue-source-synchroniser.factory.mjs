@@ -32,6 +32,7 @@ export class CatalogueSourceSynchroniserFactory {
       catalogueSourceGeneration.command,
     );
     const facadeResolver = new CatalogueSourceFacadeResolver();
+    const layouts = new CatalogueSourceLayoutNormaliser();
     const keys = new CatalogueSourceKeySerialiser();
 
     return new CatalogueSourceSynchroniser(
@@ -40,7 +41,7 @@ export class CatalogueSourceSynchroniserFactory {
         fileSystem,
         files,
         paths,
-        new CatalogueSourceLayoutNormaliser(),
+        layouts,
         new CatalogueSourceSyntaxInspector(
           new CatalogueSourceManifestInspector(
             new CatalogueSourceValueResolver(fileSystem, paths),
@@ -52,6 +53,7 @@ export class CatalogueSourceSynchroniserFactory {
         paths,
         facadeResolver,
         catalogueSourceGeneration.reservedIconNames,
+        layouts,
       ),
       new CatalogueSourceManifestPlanner(
         serialiser,

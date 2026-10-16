@@ -3,7 +3,7 @@
  */
 export const coreBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
-  schemaVersion: 5,
+  schemaVersion: 6,
   /** @description Measured public package identity. */
   packageName: "@luscious-garden/aster-core",
   /** @description Workspace-relative measured package root. */

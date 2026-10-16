@@ -12,7 +12,7 @@ import { CatalogueQueryScope } from "./catalogue-query.scope.js";
 import { CatalogueResultFactory } from "./catalogue-result.factory.js";
 
 /**
- * @description Executes deterministic provider, collection, and icon listing.
+ * @description Executes deterministic provider, collection, glyph and concrete icon listing.
  */
 export class CatalogueListQuery {
   /**
@@ -91,6 +91,18 @@ export class CatalogueListQuery {
       }));
     }
 
+    if (invocation.subject === asterCommandSubjects.list.glyphs) {
+      return this.#commandResults.success(asterCommandNames.list, Object.freeze({
+        kind: asterCommandPayloadKinds.glyphList,
+        glyphs: Object.freeze(selected.value.flatMap((catalogue) => this.#catalogueResults.glyphs(catalogue))),
+      }));
+    }
+
+    const glyph = this.#scope.acceptGlyph(selected.value, invocation.glyph);
+    if (!glyph.accepted) {
+      return this.#commandResults.failure(asterCommandNames.list, glyph.diagnostic);
+    }
+
     const collection = this.#scope.acceptCollection(selected.value, invocation.collection);
 
     if (!collection.accepted) {
@@ -101,6 +113,7 @@ export class CatalogueListQuery {
       kind: asterCommandPayloadKinds.iconList,
       icons: Object.freeze(selected.value.flatMap((catalogue) =>
         catalogue.icons
+          .filter((record) => this.#scope.matchesGlyph(record, invocation.glyph))
           .filter((record) => this.#scope.matchesCollection(record, invocation.collection))
           .filter((record) => this.#scope.matchesTags(record.metadata.tags, invocation.tags))
           .map((record) => this.#catalogueResults.icon(catalogue.identity, record)),

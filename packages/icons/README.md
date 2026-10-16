@@ -5,6 +5,8 @@ The package brings its compatible Core dependency; it does not render markup.
 
 ## Usage
 
+Examples follow the [current source contract](https://github.com/BlueLuscious/aster/blob/master/docs/en/index.md#source-and-published-versions).
+
 ```sh
 pnpm add @luscious-garden/aster-icons
 ```
@@ -12,22 +14,36 @@ pnpm add @luscious-garden/aster-icons
 ### Individual icons
 
 ```ts
-import { Camera } from "@luscious-garden/aster-icons/camera";
+import { CameraOutline } from "@luscious-garden/aster-icons/camera/outline";
 
-const definition = Camera;
+const definition = CameraOutline;
 ```
 
 Pass the definition to a renderer such as
 [SVG](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/svg/index.md).
 
+### Glyph variants
+
+```ts
+import { CameraVariants } from "@luscious-garden/aster-icons/camera";
+
+const cameraOutline = CameraVariants.outline;
+```
+
+This frozen dictionary loads all distributed treatments of Camera, currently only Outline.
+It has no default and is not itself renderable. Use the individual subpath to load just one
+treatment. See the
+[Glyphs guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/glyphs/index.md)
+for exact keys and the explicit-treatment migration.
+
 ### Collections
 
-Access a collection's icons by alias or in their declared order:
+Select a treatment by collection alias, or iterate concrete definitions in their declared order:
 
 ```ts
 import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
 
-const camera = Amellus.icons.camera;
+const camera = Amellus.icons.camera.outline;
 const orderedIcons = Amellus.members;
 ```
 

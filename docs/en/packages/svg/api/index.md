@@ -17,13 +17,16 @@ class. It admits no arbitrary attributes, events, DOM nodes, framework state or 
 ## Usage
 
 ```ts
-const markup = Svg.render(Camera, {
+import { CameraOutline } from "@luscious-garden/aster-icons/camera/outline";
+import { Svg } from "@luscious-garden/aster-svg";
+
+const markup = Svg.render(CameraOutline, {
   size: 24,
   label: "Camera",
 });
 ```
 
-`Camera` is an explicitly supplied Core definition. [Core Render Options](../../core/render/index.md)
+`CameraOutline` is an explicitly supplied Core definition. [Core Render Options](../../core/render/index.md)
 owns portable option meanings; [SVG Render Result](../render/index.md) owns their target mapping.
 
 ## Package exports

@@ -24,12 +24,13 @@ export const asterCommandDescriptors = Object.freeze({
     /** @description Canonical list command identity. */
     name: asterCommandNames.list,
     /** @description Concise purpose shown by general help presentation. */
-    summary: "List catalogue providers, collections, or icons.",
+    summary: "List catalogue providers, collections, glyphs, or icons.",
     /** @description Complete accepted list invocation forms. */
     usage: Object.freeze([
       "list catalogues",
       "list collections [--catalogue <provider>]",
-      "list icons [--catalogue <provider>] [--collection <identity>] [--tag <tag>]...",
+      "list glyphs [--catalogue <provider>]",
+      "list icons [--catalogue <provider>] [--glyph <identity>] [--collection <identity>] [--tag <tag>]...",
     ]),
   }),
   /** @description Help metadata for static technical review publication. */
@@ -60,10 +61,11 @@ export const asterCommandDescriptors = Object.freeze({
     /** @description Canonical show command identity. */
     name: asterCommandNames.show,
     /** @description Concise purpose shown by general help presentation. */
-    summary: "Show one exact icon or collection.",
+    summary: "Show one exact glyph, icon, or collection.",
     /** @description Complete accepted show invocation forms. */
     usage: Object.freeze([
       "show icon <identity> [--catalogue <provider>]",
+      "show glyph <identity> [--catalogue <provider>]",
       "show collection <identity> [--catalogue <provider>]",
     ]),
   }),

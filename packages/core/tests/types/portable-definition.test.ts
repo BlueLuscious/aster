@@ -116,6 +116,7 @@ const options: IconRenderOptions = {
 const replacement: IconDefinition = {
   ...definition,
   identity: {
+    variant: "outline",
     namespace: "minimal",
     name: "shape-sampler-new",
   },

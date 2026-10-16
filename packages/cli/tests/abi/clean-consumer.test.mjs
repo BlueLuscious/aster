@@ -80,9 +80,7 @@ const expectedCollectionPaths = Object.freeze(
         icon.identity.namespace === undefined
           ? ""
           : `${icon.identity.namespace}/`
-      }${icon.identity.name}${
-        icon.identity.variant === undefined ? "" : `@${icon.identity.variant}`
-      }.svg`,
+      }${icon.identity.name}@${icon.identity.variant}.svg`,
     )
     .sort((left, right) => left.localeCompare(right)),
 );
@@ -398,11 +396,11 @@ test("executes packaged README examples through packed package entrypoints", asy
   const examples = [
     {
       name: "core",
-      result: 'Disc.identity.name === "disc" && Object.isFrozen(Disc) && Object.isFrozen(InterfaceIcons) && InterfaceIcons.icons.disc === Disc && InterfaceIcons.members[0] === Disc',
+      result: 'Disc.identity.name === "disc" && Object.isFrozen(Disc) && Object.isFrozen(InterfaceIcons) && InterfaceIcons.icons.disc.outline === Disc && InterfaceIcons.members[0] === Disc',
     },
     {
       name: "icons",
-      result: 'definition === Camera && definition.identity.namespace === "aster" && definition.identity.name === "camera" && Object.isFrozen(definition)',
+      result: 'definition === CameraOutline && cameraOutline === CameraOutline && camera === CameraOutline && CameraVariants.outline === definition && Object.isFrozen(CameraVariants) && Object.getPrototypeOf(CameraVariants) === null && definition.identity.namespace === "aster" && definition.identity.name === "camera" && Object.isFrozen(definition)',
     },
     {
       name: "svg",
@@ -438,9 +436,79 @@ test("executes packaged README examples through packed package entrypoints", asy
   assert.equal(executed.stderr, "");
 });
 
+test("compiles and executes current API and discovery guides against packed packages", async () => {
+  const examples = [
+    {
+      name: "core-api",
+      path: "docs/en/packages/core/api/index.md",
+      result: "InterfaceIcons.icons.camera.outline === CameraOutline && InterfaceIcons.members[0] === CameraOutline",
+    },
+    {
+      name: "svg-api",
+      path: "docs/en/packages/svg/api/index.md",
+      result: 'markup === Svg.render(CameraOutline, { size: 24, label: "Camera" })',
+    },
+    {
+      name: "cli-api",
+      path: "docs/en/packages/cli/api/index.md",
+      result: 'result.ok && result.payload.kind === "glyph-show" && result.payload.glyph.identity.namespace === "aster" && result.payload.glyph.variants.some(({ identity }) => identity.variant === "outline")',
+    },
+    {
+      name: "glyphs",
+      path: "docs/en/packages/icons/glyphs/index.md",
+      result: 'definition === CameraVariants.outline && ArrowLeftOutline.identity.name === "arrow-left" && SearchOutline.identity.name === "search"',
+    },
+    {
+      name: "dynamic",
+      path: "docs/en/packages/icons/dynamic/index.md",
+      result: "camera !== undefined && amellus !== undefined && definition === camera && amellus.members.includes(camera)",
+    },
+  ];
+
+  for (const { name, path, result } of examples) {
+    const document = await readFile(resolve(workspaceRoot, path), "utf8");
+    const sources = Array.from(
+      document.matchAll(/```ts\r?\n([\s\S]*?)\r?\n```/gu),
+      (match) => match[1],
+    );
+    assert.ok(sources.length > 0, `Missing executable example in ${path}.`);
+    await writeFile(resolve(consumerRoot, `guide-${name}.ts`), [
+      ...sources,
+      `if (!(${result})) throw new Error("Guide example failed: ${name}");`,
+      "",
+    ].join("\n\n"), "utf8");
+  }
+  await writeFile(resolve(consumerRoot, "guides.tsconfig.json"), `${JSON.stringify({
+    compilerOptions: {
+      target: "ES2022",
+      module: "NodeNext",
+      moduleResolution: "NodeNext",
+      strict: true,
+      exactOptionalPropertyTypes: true,
+      noUncheckedIndexedAccess: true,
+      noEmitOnError: true,
+      types: [],
+      outDir: "guide-dist",
+    },
+    files: examples.map(({ name }) => `guide-${name}.ts`),
+  })}\n`, "utf8");
+  const compiled = spawnSync(process.execPath, [
+    resolve(workspaceRoot, "node_modules/typescript/bin/tsc"),
+    "-p", resolve(consumerRoot, "guides.tsconfig.json"),
+  ], { cwd: consumerRoot, encoding: "utf8" });
+  assertSuccessfulProcess(compiled, "compile current guides against packed declarations");
+
+  for (const { name } of examples) {
+    const executed = runModule(`await import("./guide-dist/guide-${name}.js");`);
+    assertSuccessfulProcess(executed, `execute packed ${name} guide`);
+    assert.equal(executed.stdout, "");
+    assert.equal(executed.stderr, "");
+  }
+});
+
 test("composes packed Core, Icons, and SVG through public consumer entrypoints", () => {
   const baseIcon = asterIconDefinitions.find(
-    (icon) => icon.identity.variant === undefined,
+    (icon) => icon.identity.variant === "outline",
   );
   const collection = asterCollectionDefinitions[0];
   assert.ok(baseIcon, "Expected one packed base icon.");
@@ -451,12 +519,12 @@ test("composes packed Core, Icons, and SVG through public consumer entrypoints",
     'import { AsterIconManifest, AsterCollectionManifest } from "@luscious-garden/aster-icons/manifest";',
     'import { AsterIconLoaders, AsterCollectionLoaders } from "@luscious-garden/aster-icons/dynamic";',
     'import { Svg } from "@luscious-garden/aster-svg";',
-    "const iconEntry = AsterIconManifest.find(({ identity }) => identity.variant === undefined);",
+    'const iconEntry = AsterIconManifest.find(({ identity }) => identity.variant === "outline");',
     "const collectionEntry = AsterCollectionManifest[0];",
     'if (!iconEntry || !collectionEntry) throw new Error("Missing packed catalogue entries");',
     "const icon = await AsterIconLoaders[iconEntry.key]();",
     "const collection = await AsterCollectionLoaders[collectionEntry.key]();",
-    "const directIcon = await import(`@luscious-garden/aster-icons/${iconEntry.identity.name}`);",
+    "const directIcon = await import(`@luscious-garden/aster-icons/${iconEntry.identity.name}/${iconEntry.identity.variant}`);",
     "const directCollection = await import(`@luscious-garden/aster-icons/collections/${collectionEntry.identity.name}`);",
     "const rebuilt = Icon.define(icon);",
     "const markup = Svg.render(rebuilt);",
@@ -475,7 +543,7 @@ test("composes packed Core, Icons, and SVG through public consumer entrypoints",
   assert.deepEqual(JSON.parse(executed.stdout), {
     icon: `${baseIcon.identity.namespace === undefined
       ? ""
-      : `${baseIcon.identity.namespace}/`}${baseIcon.identity.name}`,
+      : `${baseIcon.identity.namespace}/`}${baseIcon.identity.name}@${baseIcon.identity.variant}`,
     collection: `${collection.identity.namespace === undefined
       ? ""
       : `${collection.identity.namespace}/`}${collection.identity.name}`,
@@ -500,7 +568,7 @@ test("preserves canonical ownership across packed authoring and command boundari
     "const canonical = Icon.define(authored);",
     "const collection = Collection.define({",
     '  identity: { name: "packed-ownership" },',
-    "  icons: { probe: canonical },",
+    "  icons: { probe: { outline: canonical } },",
     '  metadata: { displayName: "Packed Ownership" },',
     "});",
     "const markup = Svg.render(canonical);",
@@ -520,7 +588,7 @@ test("preserves canonical ownership across packed authoring and command boundari
     "    && canonical.metadata.displayName === source.metadata.displayName,",
     "  frozen: Object.isFrozen(canonical) && Object.isFrozen(canonical.nodes)",
     "    && Object.isFrozen(canonical.nodes[0]) && Object.isFrozen(canonical.metadata),",
-    "  retained: collection.icons.probe === canonical && collection.members[0] === canonical,",
+    "  retained: collection.icons.probe.outline === canonical && collection.members[0] === canonical,",
     "  membershipFrozen: Object.isFrozen(collection.icons) && Object.isFrozen(collection.members),",
     "  manifestFrozen: Object.isFrozen(AsterIconManifest) && Object.isFrozen(entry),",
     "  rendered: Svg.render(canonical) === markup && markup.startsWith('<svg '),",
@@ -543,25 +611,59 @@ test("preserves canonical ownership across packed authoring and command boundari
   });
 });
 
-test("type-checks cross-package usage against packed declarations", async () => {
+test("compiles and executes cross-package usage against packed declarations", async () => {
   await writeFile(resolve(consumerRoot, "consumer.ts"), [
-    'import type { IconDefinition } from "@luscious-garden/aster-core";',
-    'import { Collection } from "@luscious-garden/aster-core";',
+    'import type { IconDefinition, IconGlyphIdentity } from "@luscious-garden/aster-core";',
+    'import { Collection, Icon } from "@luscious-garden/aster-core";',
+    'import { CameraVariants } from "@luscious-garden/aster-icons/camera";',
     'import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
     'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     'import { Svg } from "@luscious-garden/aster-svg";',
     'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
-    'import type { AsterCliLocationEvidence, AsterCommandInvocationType, AsterCommandPayloadType, AsterPackageDependencyEvidence } from "@luscious-garden/aster-cli";',
+    'import type { AsterCliLocationEvidence, AsterCommandInvocationType, AsterCommandPayloadType, AsterPackageDependencyEvidence, CatalogueGlyphResult, CatalogueIconResult } from "@luscious-garden/aster-cli";',
     'const versionRequest: AsterCommandInvocationType = { command: "version", scope: "cli", dependencies: true, location: true };',
     'const location: AsterCliLocationEvidence = { entrypoint: "/aster/cli.js", projectCli: "same" };',
     'const dependencyEvidence: AsterPackageDependencyEvidence = { source: "cli", groups: [{ root: { name: "@luscious-garden/aster-cli", version: "1.0.0" }, dependencies: [] }] };',
     'const dependencyPayload: AsterCommandPayloadType = { kind: "package-dependencies", ...dependencyEvidence, location };',
     "void versionRequest; void dependencyPayload;",
+    'const glyphContext = {catalogues:[AsterCatalogue],productName:"Aster",productVersion:"0.0.0"};',
+    'const glyphRequests: readonly AsterCommandInvocationType[] = [{command:"list",subject:"glyphs"},{command:"list",subject:"icons",glyph:"aster/camera"}];',
+    'const family = await AsterCommands.execute({command:"show",subject:"glyph",identity:"aster/camera"}, glyphContext);',
+    'if (family.ok && family.payload.kind === "glyph-show") {',
+    "  const glyph: CatalogueGlyphResult = family.payload.glyph;",
+    "  const identity: IconGlyphIdentity = glyph.identity;",
+    "  const variant: CatalogueIconResult | undefined = glyph.variants[0];",
+    "  if (false) {",
+    "    // @ts-expect-error Packed glyph identities have no concrete treatment.",
+    "    glyph.identity.variant;",
+    "    // @ts-expect-error Packed glyph result sequences are readonly.",
+    "    glyph.variants.push(variant);",
+    "  }",
+    "  if (variant !== undefined) {",
+    "    const concrete: CatalogueIconResult = variant;",
+    "    if (false) {",
+    "      // @ts-expect-error Packed glyph results expose no definition geometry.",
+    "      concrete.nodes;",
+    "    }",
+    "  }",
+    "  void identity; void variant;",
+    "}",
+    "void glyphRequests;",
     "const entry = AsterIconManifest[0];",
     'if (entry === undefined) throw new Error("Missing icon");',
     "const loader = AsterIconLoaders[entry.key];",
     'if (loader === undefined) throw new Error("Missing loader");',
     "const icon: IconDefinition = await loader();",
+    "if (false) {",
+    "  // @ts-expect-error Packed glyph dictionaries are not renderable definitions.",
+    "  Svg.render(CameraVariants);",
+    "  // @ts-expect-error Packed concrete identities require an explicit treatment.",
+    '  const missingVariant: IconDefinition = { ...icon, identity: { name: "missing" } };',
+    "  // @ts-expect-error Packed collections require grouped treatment maps.",
+    '  Collection.define({ identity: { name: "flat" }, icons: { camera: icon }, metadata: { displayName: "Flat" } });',
+    "  void missingVariant;",
+    "}",
+    "if (Icon.define(icon) !== icon) throw new Error(\"Packed Core must recognise loader leaves.\");",
     "const authored = {",
     "  ...icon,",
     '  nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 4 }],',
@@ -569,38 +671,38 @@ test("type-checks cross-package usage against packed declarations", async () => 
     "} satisfies IconDefinition;",
     "const collectionInput = {",
     '  identity: { name: "packed-authored" },',
-    "  icons: { probe: authored },",
+    "  icons: { probe: { outline: authored } },",
     '  metadata: { displayName: "Packed Authored" },',
     "};",
     "const collection = Collection.define(collectionInput);",
     "const literalCollection = Collection.define({",
     "  ...collectionInput,",
     "  icons: {",
-    "    probe: {",
+    "    probe: { outline: {",
     "      ...authored,",
     '      metadata: { ...authored.metadata, displayName: "  Packed Icon  " as const },',
-    "    },",
+    "    } },",
     "  },",
     "});",
-    "const canonicalMember: IconDefinition = collection.icons.probe;",
-    "const optionalAliases: { probe?: IconDefinition } = {};",
+    "const canonicalMember: IconDefinition = collection.icons.probe.outline;",
+    "const optionalAliases: { probe?: { outline: IconDefinition } } = {};",
     "const optionalCollection = Collection.define({",
     '  identity: { name: "packed-optional" },',
     "  icons: optionalAliases,",
     '  metadata: { displayName: "Packed Optional" },',
     "});",
-    "const optionalMember: IconDefinition | undefined = optionalCollection.icons.probe;",
+    "const optionalMember: IconDefinition | undefined = optionalCollection.icons.probe?.outline;",
     "if (false) {",
     "  // @ts-expect-error Optional aliases remain optional in packed declarations.",
-    "  const requiredMember: IconDefinition = optionalCollection.icons.probe;",
+    "  const requiredMember: IconDefinition = optionalCollection.icons.probe.outline;",
     "  // @ts-expect-error Packed canonical nodes are readonly despite mutable authoring.",
-    '  collection.icons.probe.nodes.push({ kind: "circle", cx: 6, cy: 6, radius: 2 });',
+    '  collection.icons.probe.outline.nodes.push({ kind: "circle", cx: 6, cy: 6, radius: 2 });',
     "  // @ts-expect-error Packed canonical metadata is readonly despite mutable authoring.",
-    '  collection.icons.probe.metadata.displayName = "Changed";',
+    '  collection.icons.probe.outline.metadata.displayName = "Changed";',
     "  // @ts-expect-error Normalised output cannot retain the authored metadata literal.",
-    '  const authoredLiteral: "  Packed Icon  " = literalCollection.icons.probe.metadata.displayName;',
+    '  const authoredLiteral: "  Packed Icon  " = literalCollection.icons.probe.outline.metadata.displayName;',
     "  // @ts-expect-error Packed canonical membership still rejects unknown aliases.",
-    "  collection.icons.unknown;",
+    "  collection.icons.unknown.outline;",
     "  void authoredLiteral;",
     "  void requiredMember;",
     "}",
@@ -619,7 +721,7 @@ test("type-checks cross-package usage against packed declarations", async () => 
       module: "NodeNext",
       moduleResolution: "NodeNext",
       strict: true,
-      noEmit: true,
+      outDir: "consumer-dist",
       types: [],
     },
     include: ["consumer.ts"],
@@ -631,7 +733,89 @@ test("type-checks cross-package usage against packed declarations", async () => 
     resolve(consumerRoot, "tsconfig.json"),
   ], { cwd: consumerRoot, encoding: "utf8" });
 
-  assertSuccessfulProcess(checked, "type-check packed Aster packages");
+  assertSuccessfulProcess(checked, "compile packed Aster packages");
+  const executed = runModule([
+    'import assert from "node:assert/strict";',
+    'const consumer = await import("./consumer-dist/consumer.js");',
+    "assert.match(consumer.markup, /^<svg /u);",
+    "assert.equal(consumer.listed.ok, true);",
+    'assert.equal(consumer.listed.payload.kind, "catalogue-list");',
+  ].join("\n"));
+  assertSuccessfulProcess(executed, "execute compiled packed Aster consumer");
+  assert.equal(executed.stdout, "");
+  assert.equal(executed.stderr, "");
+});
+
+test("retains every packed glyph leaf across direct, loader, collection and renderer access", () => {
+  const executed = runModule([
+    'import assert from "node:assert/strict";',
+    'import { Icon } from "@luscious-garden/aster-core";',
+    'import { AsterIconManifest, AsterCollectionManifest } from "@luscious-garden/aster-icons/manifest";',
+    'import { AsterIconLoaders, AsterCollectionLoaders } from "@luscious-garden/aster-icons/dynamic";',
+    'import { Svg } from "@luscious-garden/aster-svg";',
+    "const definitions = new Map();",
+    "for (const entry of AsterIconManifest) {",
+    "  const root = `@luscious-garden/aster-icons/${entry.identity.name}`;",
+    "  const direct = await import(`${root}/${entry.identity.variant}`);",
+    "  const aggregate = await import(root);",
+    "  const [dictionary] = Object.values(aggregate);",
+    "  const leaf = direct[entry.symbol];",
+    "  assert.deepEqual(Object.keys(direct), [entry.symbol]);",
+    "  assert.equal(Object.keys(aggregate).length, 1);",
+    "  assert.equal(dictionary[Icon.variantPropertyName(entry.identity.variant)], leaf);",
+    "  assert.equal(await AsterIconLoaders[entry.key](), leaf);",
+    "  assert.equal(Icon.define(leaf), leaf);",
+    "  assert.ok(Object.isFrozen(dictionary));",
+    "  assert.equal(Object.getPrototypeOf(dictionary), null);",
+    "  definitions.set(entry.key, leaf);",
+    "}",
+    "for (const entry of AsterCollectionManifest) {",
+    "  const collection = await AsterCollectionLoaders[entry.key]();",
+    "  const members = Object.values(collection.icons).flatMap(Object.values);",
+    "  assert.equal(members.length, entry.members.length);",
+    "  for (const [index, key] of entry.members.entries()) {",
+    "    const definition = definitions.get(key);",
+    "    assert.equal(members[index], definition);",
+    "    assert.equal(collection.members[index], definition);",
+    "    assert.equal(Svg.render(collection.members[index]), Svg.render(definition));",
+    "  }",
+    "}",
+  ].join("\n"));
+
+  assertSuccessfulProcess(executed, "inspect every packed glyph and collection leaf");
+  assert.equal(executed.stdout, "");
+  assert.equal(executed.stderr, "");
+});
+
+test("rejects obsolete packed inputs while revalidating explicit JSON definitions", () => {
+  const executed = runModule([
+    'import assert from "node:assert/strict";',
+    'import { Collection, Icon, IconDefinitionError } from "@luscious-garden/aster-core";',
+    'import { CameraVariants } from "@luscious-garden/aster-icons/camera";',
+    'import { CameraOutline } from "@luscious-garden/aster-icons/camera/outline";',
+    'import { Svg, SvgRenderError } from "@luscious-garden/aster-svg";',
+    "const data = JSON.parse(JSON.stringify(CameraOutline));",
+    "const prepared = Icon.define(data);",
+    "assert.notEqual(prepared, data);",
+    "assert.notEqual(prepared, CameraOutline);",
+    "assert.equal(Icon.define(prepared), prepared);",
+    "assert.equal(Svg.render(prepared), Svg.render(CameraOutline));",
+    "assert.equal(Svg.render(data), Svg.render(prepared));",
+    "delete data.identity.variant;",
+    "assert.throws(() => Icon.define(data), IconDefinitionError);",
+    "assert.throws(() => Svg.render(data), SvgRenderError);",
+    "assert.throws(() => Svg.render(CameraVariants), SvgRenderError);",
+    "assert.throws(() => Collection.define({",
+    '  identity: { name: "obsolete-flat" }, metadata: { displayName: "Obsolete Flat" },',
+    "  icons: { camera: CameraOutline },",
+    "}), IconDefinitionError);",
+    'assert.equal(Object.hasOwn(CameraVariants, "default"), false);',
+    'assert.equal(Object.hasOwn(CameraVariants, "filled"), false);',
+  ].join("\n"));
+
+  assertSuccessfulProcess(executed, "reject obsolete packed contracts");
+  assert.equal(executed.stdout, "");
+  assert.equal(executed.stderr, "");
 });
 
 test("keeps private package internals outside the packed consumer", () => {
@@ -1116,6 +1300,58 @@ test("keeps packed version requests free of icon and network imports", async () 
     assertSuccessfulProcess(result, `execute guarded ${arguments_.join(" ")}`);
     assert.equal(result.stderr, "");
   }
+});
+
+test("discovers packed glyphs without importing artwork, facades or network hosts", async () => {
+  const guardPath = resolve(consumerRoot, "glyph-import-guard.mjs");
+  await writeFile(guardPath, [
+    'import { registerHooks } from "node:module";',
+    "registerHooks({",
+    "  resolve(specifier, context, nextResolve) {",
+    String.raw`    if (/^node:(?:http|https|net|tls|dns|dgram)(?:\/|$)/u.test(specifier)) throw new Error("Unexpected network host");`,
+    "    return nextResolve(specifier, context);",
+    "  },",
+    "  load(url, context, nextLoad) {",
+    String.raw`    if (/\/aster-icons\/dist\/(?:glyphs|collections|authoring|generated\/facades)\//u.test(url)) throw new Error("Unexpected artwork dependency " + url);`,
+    "    return nextLoad(url, context);",
+    "  },",
+    "});",
+    'globalThis.fetch = () => { throw new Error("Unexpected glyph fetch"); };',
+  ].join("\n"), "utf8");
+  const results = [];
+  for (const arguments_ of [
+    ["list", "glyphs", "--json"],
+    ["show", "glyph", "aster/camera", "--json"],
+    ["list", "icons", "--glyph", "aster/camera", "--json"],
+    ["list", "icons", "--glyph", "aster/camera", "--collection", "amellus", "--tag", "camera", "--json"],
+  ]) {
+    const result = spawnSync(process.execPath, [
+      "--import", pathToFileURL(guardPath).href,
+      resolve(consumerRoot, "node_modules/@luscious-garden/aster-cli/dist/shell/aster.js"),
+      ...arguments_,
+    ], { cwd: consumerRoot, encoding: "utf8" });
+    assertSuccessfulProcess(result, `execute guarded ${arguments_.join(" ")}`);
+    assert.equal(result.stderr, "");
+    results.push(JSON.parse(result.stdout));
+  }
+  assert.equal(results[0].payload.kind, "glyph-list");
+  assert.equal(results[1].payload.kind, "glyph-show");
+  assert.deepEqual(results[1].payload.glyph.variants, results[2].payload.icons);
+  const blocked = spawnSync(process.execPath, [
+    "--import", pathToFileURL(guardPath).href, "--input-type=module", "--eval",
+    'await import("@luscious-garden/aster-icons/camera/outline");',
+  ], { cwd: consumerRoot, encoding: "utf8" });
+  assert.equal(blocked.error, undefined);
+  assert.equal(blocked.status, 1);
+  assert.equal(blocked.stdout, "");
+  assert.match(blocked.stderr, /Unexpected artwork dependency/u);
+  const programmatic = runModule([
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
+    'const result = await AsterCommands.execute({command:"show", subject:"glyph", identity:"aster/camera"}, {catalogues:[AsterCatalogue],productName:"Aster",productVersion:"0.0.0"});',
+    "process.stdout.write(JSON.stringify(result));",
+  ].join("\n"));
+  assertSuccessfulProcess(programmatic, "compare packed glyph hosts");
+  assert.deepEqual(JSON.parse(programmatic.stdout), results[1]);
 });
 
 test("returns the same result through the executable and an independent plugin host", () => {

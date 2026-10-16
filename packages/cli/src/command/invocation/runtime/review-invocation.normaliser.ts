@@ -67,9 +67,7 @@ export class ReviewInvocationNormaliser implements ICommandInvocationNormaliser 
       : this.#identities.collection(record.identity);
 
     if (!validIdentity) {
-      return this.#rejections.invalid(
-        `expected a canonical ${record.subject} identity`,
-      );
+      return this.#rejections.invalidIdentity(record.subject);
     }
 
     if (

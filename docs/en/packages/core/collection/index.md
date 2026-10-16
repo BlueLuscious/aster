@@ -12,20 +12,23 @@ nor retains a reverse membership list.
 | --- | --- | --- |
 | `CollectionIdentity` | Carries an optional canonical namespace and required collection name. | Identifies `CollectionDefinition` independently of its members. |
 | `CollectionMetadata` | Carries display name, optional description, intrinsic discovery tags, licence, and attribution. | Describes the collection itself and never overrides member icon metadata. |
-| `CollectionIconMap` | Constrains collection-local string aliases to portable icon definitions. | Supplies the generic constraint for authored and complete collections. |
+| `CollectionIconMap` | Maps collection-local string aliases to explicit treatment selections. | Uses the portable `IconVariantMap` contract and constrains authored and complete collections. |
 | `CollectionDefinitionInput<TIconMap>` | Carries identity, the authored alias dictionary, and metadata. | Composes `CollectionIdentity`, `CollectionMetadata`, and a concrete map extending `CollectionIconMap`. |
-| `CollectionDefinition<TIconMap>` | Carries the immutable alias dictionary and its derived ordered `members` list. | Inherits identity and metadata from `CollectionDefinitionInput<TIconMap>`, maps its aliases to canonical `IconDefinition` values, and adds `readonly IconDefinition[]`. |
+| `CollectionDefinition<TIconMap>` | Carries the immutable grouped dictionary and its derived flat `members` list. | Preserves outer and inner keys while mapping each leaf to canonical `IconDefinition`; adds `readonly IconDefinition[]`. |
 
 An empty `icons` dictionary is valid and produces an empty `members` list. A release or catalogue
 policy may require a populated collection without weakening the portable domain contract.
+An empty treatment group is invalid. There is one grouped mode, no flat compatibility mode,
+implicit default, group renderer or second list of definitions.
 
 `TIconMap` preserves the concrete keys supplied to `Collection.define()`. A collection defined with
-`icons: { camera: Camera }` exposes `collection.icons.camera` with autocompletion and rejects an
-unknown alias at compile time. Annotating the result with the broad default `CollectionDefinition`
+`icons: { camera: { outline: CameraOutline } }` exposes `collection.icons.camera.outline` with
+autocompletion and rejects unknown aliases and treatments at compile time.
+Annotating the result with the broad default `CollectionDefinition`
 deliberately discards that concrete key information. The generic introduces no runtime state.
 
 The output maps those keys to the readonly `IconDefinition` contract, preserving any optional
-aliases without retaining authored value subtypes. Mutable authoring does not make canonical
+aliases and treatments without retaining authored value subtypes. Mutable authoring does not make canonical
 members mutable in TypeScript. Narrow authored literals are not output guarantees: for example,
 Core may trim an authored display name while reconstructing its canonical metadata. The output
 inherits identity and metadata through `Omit<CollectionDefinitionInput<TIconMap>, "icons">`, then
@@ -35,39 +38,60 @@ declares its canonical map independently from the input's member types.
 
 `icons` is the sole authored membership authority. Each key is a collection-local lower camel-case
 alias matching `^[a-z][A-Za-z0-9]*$`; examples include `camera`, `arrowLeft`, and `cameraStippled`.
-An alias may refer to a separate glyph, a rendition, or a namespaced icon, but never changes that
-icon's canonical identity. Two collections may choose different aliases for the same icon.
+Each value is a non-empty dictionary selecting explicit treatments of one glyph. All selected
+leaves in a group share exactly the same `(namespace, name)`, including namespace absence.
+Different aliases may select disjoint treatments of the same glyph, but duplicate concrete
+identities anywhere in a collection are rejected. Aliases never change canonical identities.
 
-Core preserves the dictionary's own property order when deriving `members`. Aliases cannot be
-integer-index keys, so JavaScript's numeric-key enumeration cannot reorder them. Renaming or
+Each inner key must equal [`Icon.variantPropertyName()`](../api/index.md#usage) for its leaf's
+required treatment slug. The transformation is shared with static catalogue inspection.
+Selections are explicit subsets: adding another standalone treatment never changes a collection.
+
+Core derives `members` by visiting own outer keys, then each group's own treatment keys, in
+native JavaScript enumeration order. Outer aliases cannot be integer-index keys; treatment
+properties can. Thus authored `"10"` before `"2"` still enumerates as `"2"`, `"10"`, while
+`"01"` remains an ordinary string key. Static generation mirrors this order. Renaming or
 removing a published alias changes public property access; changing dictionary order changes
 ordered iteration. Both require compatibility review.
 
-The dictionary and list are frozen once at construction and contain the same accepted canonical
-icon references. Reading `members` performs no conversion or allocation. Consumers use
-`collection.icons.camera` for a known alias and `collection.members` for iteration, counting, or
+Both dictionary levels and the list are frozen once and contain the same accepted canonical
+leaf references. Reading `members` performs no conversion or allocation. Consumers use
+`collection.icons.camera.outline` for a selected definition and `collection.members` for iteration, counting, or
 ordinary array queries. Definitions remain plain data without lookup or mutation methods.
 
-Authored dictionaries may have an ordinary or null prototype. Core accepts only own enumerable
+Authored dictionaries at either level may have an ordinary or null prototype. Core accepts only own enumerable
 string-keyed data properties and rejects symbols, hidden fields, getters, setters, custom
-prototypes, and invalid aliases. Valid own aliases such as `constructor` and `toString` may shadow
-inherited properties; dynamic dictionary consumers must check `Object.hasOwn()` before treating a
-property as authored membership. Accessor descriptors are rejected without invoking their getters;
+prototypes, and invalid aliases. Canonical dictionaries at both levels have null prototypes:
+absent inherited names remain absent, and valid own `constructor` and `toString` keys remain usable.
+Accessor descriptors are rejected without invoking their getters;
 proxy execution remains outside the [Core trust boundary](../workflow.md#security-and-trust-boundary).
 Accepted aliases are written as own data properties, so inherited setters cannot alter the
 canonical dictionary during construction.
+
+## Grouped membership migration
+
+Replace each earlier flat selection such as `icons: { camera: CameraOutline }` with an explicit
+group such as `icons: { camera: { outline: CameraOutline } }`. Read the concrete leaf through
+`collection.icons.camera.outline`; `collection.icons.camera` is now a dictionary, not a renderable
+definition. Derive each property's spelling through the [shared mapping](../api/index.md#usage)
+and include only the treatments deliberately selected for that collection.
+
+`members` remains the flat ordered list of selected definitions. Do not wrap its elements in
+dictionaries or supply a second membership catalogue. Rebuild a stored collection from its reviewed
+grouped map after applying the [identity migration](../definition/index.md#explicit-treatment-migration);
+complete-definition revalidation also checks any submitted member sequence.
 
 ## Runtime
 
 | Class | Responsibility | Relations |
 | --- | --- | --- |
 | `CollectionDefinitionFactory` | Validates the collection root and composes membership, identity, and metadata into one frozen result. | Delegates keyed and ordered membership to `CollectionMembershipNormaliser`. |
-| `CollectionMembershipNormaliser` | Validates aliases, reconstructs or retains icons, rejects duplicate identities, derives frozen views, and verifies any submitted `members`. | Composes `IconValueValidator`, `IconDefinitionFactory`, and `CanonicalIconMatcher`. |
+| `CollectionMembershipNormaliser` | Validates aliases, non-empty groups, family and property agreement, rejects duplicate identities, derives frozen views and verifies submitted `members`. | Composes `IconValueValidator`, `IconIdentityNormaliser`, `IconDefinitionFactory`, and `CanonicalIconMatcher`. |
 | `CanonicalIconMatcher` | Proves canonical graph equivalence when accepted leaf references differ. | Used after Core acceptance; never replaces unknown-input validation. |
 | `CollectionIdentityNormaliser` | Validates optional namespace and required canonical collection name. | Uses the shared canonical slug authority. |
 | `CollectionMetadataNormaliser` | Validates descriptive metadata, unique tags, and licensing relationships. | Produces frozen `CollectionMetadata`. |
 
-Outputs [recognised by Core](../definition/runtime/index.md#recognised-outputs) are retained directly.
+Icon outputs [recognised by Core](../definition/runtime/index.md#recognised-outputs) are retained directly.
 Unknown icons are fully reconstructed first. They retain their authored reference only when their
 complete graph has canonical data-property semantics, canonical key order and values, matching
 prototypes, and no cycles or repeated aliases. Every other valid icon input uses the isolated canonical
@@ -92,15 +116,20 @@ submitted `members` as a dense data array and checks its canonical icon values a
 the dictionary-derived sequence. An inconsistent sequence fails with `IconDefinitionError`.
 The result always retains the newly derived list, never the submitted array.
 
+Construct and retain a collection once for repeated use. Passing a complete collection back to
+`Collection.define()` revalidates its containers; recognising canonical leaves is not a collection
+cache. [Construction measurements](../quality-baseline.md#grouped-collection-construction) distinguish
+that work from ordinary member access or rendering.
+
 ## Membership
 
 ```text
-IconDefinition <------ CollectionDefinition.icons.<alias>
+IconDefinition <------ CollectionDefinition.icons.<alias>.<variantPropertyName>
        ^
        |
        +--------------- CollectionDefinition.members[index]
        |
-       +--------------- another CollectionDefinition.icons.<alias>
+       +--------------- another CollectionDefinition.icons.<alias>.<variantPropertyName>
 ```
 
 Membership does not alter geometry, presentation, licence, attribution, tags, directionality, or

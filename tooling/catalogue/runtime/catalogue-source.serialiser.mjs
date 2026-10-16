@@ -66,6 +66,24 @@ export class CatalogueSourceSerialiser {
   }
 
   /**
+   * @description Serialises one exact immutable dictionary referencing its canonical treatments.
+   * @param {string} outputPath - Package-relative generated glyph facade path.
+   * @param {string} symbol - Sole exported dictionary symbol.
+   * @param {readonly { propertyName: string, module: import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule }[]} entries - Collision-free canonical treatment references.
+   * @returns {string} Complete deterministic TypeScript dictionary module.
+   */
+  glyph(outputPath, symbol, entries) {
+    const imports = entries.map(({ module }) =>
+      `import { ${module.symbol} } from "${this.#moduleSpecifier(outputPath, module.relativePath)}";`,
+    );
+    const properties = entries.map(({ propertyName, module }) =>
+      `  /** @description Canonical ${module.variant} treatment. */\n  ${JSON.stringify(propertyName)}: ${module.symbol},`,
+    );
+
+    return `${this.#header}${imports.join("\n")}\n\n/**\n * @description Exact canonical treatments before immutable dictionary publication.\n */\nconst variants = {\n${properties.join("\n")}\n};\nObject.setPrototypeOf(variants, null);\n\n/**\n * @description Immutable dictionary of the glyph's distributed treatments without a default.\n * @remarks Importing this module evaluates every listed treatment; individual subpaths stay isolated.\n */\nexport const ${symbol} = Object.freeze(variants);\n`;
+  }
+
+  /**
    * @description Serialises one typed prototype-free immutable definition-loader map.
    * @param {string} outputPath - Package-relative generated dynamic-loader path.
    * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily["kind"]} familyKind - Semantic loader family.

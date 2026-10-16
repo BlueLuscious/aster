@@ -21,6 +21,7 @@ import time and complete process time without modifying package source or emitte
 | Workload | Pressure represented |
 | --- | --- |
 | Isolated icon import | One definition plus its directly shared authorship and visual-profile authorities. |
+| Glyph dictionary import | One generated dictionary plus all of its available concrete treatments; distinct from requesting one isolated treatment. |
 | Isolated collection import | One complete collection plus every member it explicitly retains. |
 | Manifest import | Metadata-only discovery without complete icon or collection definitions. |
 | Dynamic import | Exact asynchronous loader maps without eager definition evaluation. |
@@ -29,6 +30,12 @@ import time and complete process time without modifying package source or emitte
 Core modules and Node internals are excluded from module counts because this baseline attributes
 only Icons-owned evaluation. Fresh-process time includes Node startup and is therefore reported
 separately from the instrumented dynamic import interval.
+
+Schema two adds `icons.import.glyph-dictionary` at `/camera`, while
+`icons.import.isolated-icon` continues to measure the concrete `/camera/outline` entry. Historical
+schema-one findings below retain their original scope. A glyph with one treatment does not prove
+multi-treatment isolation; compiled synthetic sources and packed consumers provide that separate
+[correctness evidence](quality.md#source-synchronisation-evidence).
 
 ## Representative findings
 
@@ -73,6 +80,30 @@ targets one public definition facade and resolves the exact canonical object.
 No timing optimisation follows from these observations alone. Module-set isolation is the primary
 correctness evidence; elapsed time remains informative supporting evidence affected by host state.
 
+## Explicit-treatment findings
+
+On 16 October 2026, fresh Windows x64 builds using Node `24.10.0`, TypeScript `5.9.3` and
+ES2022 ESM retained these schema-two evaluation sets across seven processes per import:
+
+| Import | Named export | Icons modules evaluated |
+| --- | --- | --- |
+| `/camera/outline` | `CameraOutline` | 5 |
+| `/camera` | `CameraVariants` | 5 |
+| `/collections/amellus` | `Amellus` | 31 |
+| `/manifest` | Icon and collection manifests | 2 |
+| `/dynamic` | Icon and collection loaders | 2 |
+
+Camera currently has one treatment. Its dictionary and individual entry use distinct facades but
+reach the same canonical leaf and shared authoring authorities; equal counts do not mean equal
+module sets or prove that a larger dictionary would evaluate only one treatment. Metadata and
+loader imports still evaluate no artwork. These are native ESM observations, not bundler
+tree-shaking or timing guarantees.
+
+The explicit-treatment build contains 95 JavaScript modules totalling 90,719 bytes and 95
+declarations totalling 28,326 bytes. The additional 26 dictionary facades and their declarations
+account for the file-count increase over the earlier 69-module distribution; explicit identities
+and grouped declarations also change bytes. These figures are snapshots, not size budgets.
+
 ## Distribution evidence
 
 The recorded typed-collection native ES2022 ESM output contained 138 files and 83,832 unminified bytes:
@@ -106,8 +137,8 @@ Run:
 pnpm benchmark:icons
 ```
 
-The command builds Core and Icons, starts fresh probe processes for isolated icon, isolated
-collection, manifest and dynamic imports, prints schema-version-one JSON
+The command builds Core and Icons, starts fresh probe processes for isolated treatment, glyph
+dictionary, isolated collection, manifest and dynamic imports, prints schema-version-two JSON
 and writes no artefact. It reports actual module sets and distribution from the current checkout.
 [Performance Tooling](../../tooling/performance/index.md) owns shared report fields and comparison
 limits. Catalogue growth can legitimately change selected collection graphs and emitted counts;

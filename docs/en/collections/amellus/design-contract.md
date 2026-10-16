@@ -96,8 +96,8 @@ is preferred, and repeated pressure against either threshold requires reconsider
 
 The canonical display size is `24px`; the accepted minimum is `16px`. The same scalable definition
 must remain recognisable at both sizes. Amellus does not initially support size-specific geometry,
-and a candidate that requires it is removed or deferred rather than silently introducing a
-variant system.
+and a candidate that requires it is removed or deferred rather than silently admitting
+size-specific artwork.
 
 Review at both sizes covers apparent bounds, stroke weight, negative space, detached detail and
 semantic recognition. Larger previews may expose curve defects but cannot compensate for failure

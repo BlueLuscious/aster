@@ -1,4 +1,5 @@
 import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family-kinds.constant.mjs";
+import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
 /**
  * @description Serialises canonical icon and collection identities to shared distribution keys.
@@ -14,10 +15,11 @@ export class CatalogueSourceKeySerialiser {
     const namespace = identity.namespace === undefined
       ? ""
       : `${identity.namespace}/`;
-    const variant = familyKind === catalogueSourceFamilyKinds.icon
-      && identity.variant !== undefined
-      ? `@${identity.variant}`
-      : "";
+    if (familyKind === catalogueSourceFamilyKinds.icon && identity.variant === undefined) {
+      throw new CatalogueSourceError(`Canonical icon ${identity.name} requires an explicit variant.`);
+    }
+
+    const variant = familyKind === catalogueSourceFamilyKinds.icon ? `@${identity.variant}` : "";
 
     return `${namespace}${identity.name}${variant}`;
   }

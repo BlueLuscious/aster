@@ -17,9 +17,13 @@ export const asterCommandSubjects = Object.freeze({
     collections: "collections",
     /** @description Available icon-record family. */
     icons: "icons",
+    /** @description Available provider-scoped glyph families. */
+    glyphs: "glyphs",
   } as const),
   /** @description Exact value families accepted by catalogue lookup. */
   show: Object.freeze({
+    /** @description Exact glyph family selected without loading definitions. */
+    glyph: "glyph",
     /** @description Exact icon selected for lookup. */
     icon: "icon",
     /** @description Exact collection selected for lookup. */

@@ -25,12 +25,11 @@ inferred from directories.
 
 Discovery accepts exact role filenames recursively beneath configured roots, excluding unsupported
 files and non-file entries. Each source exports exactly one constant with the PascalCase form of its
-slug: `arrow-left.icon.ts` exports `ArrowLeft`.
+name and treatment: `arrow-left-outline.icon.ts` exports `ArrowLeftOutline`.
 
 Only the nested layout is accepted:
 
 ```text
-src/glyphs/<initial>/<name>/<name>.icon.ts
 src/glyphs/<initial>/<name>/<name>-<variant>.icon.ts
 src/collections/<initial>/<name>/<name>.collection.ts
 ```
@@ -38,7 +37,7 @@ src/collections/<initial>/<name>/<name>.collection.ts
 The initial directory equals the first letter of the complete name. Names begin with an ASCII
 lowercase letter and use lowercase alphanumeric segments separated by one hyphen; variants use
 Core's portable slug syntax.
-A base filename repeats the complete name, and a variant appends its declared variant. Thus
+Every icon filename repeats the complete name and appends its required treatment. Thus
 `c/camera-retro/camera-retro-filled.icon.ts` declares name `camera-retro`, variant `filled`
 and export `CameraRetroFilled`, not name `camera`.
 
@@ -48,13 +47,19 @@ factory through an unaliased named runtime Core import. The direct object's lite
 must agree with the path. [Icons Collections](../../packages/icons/collections/index.md#export-naming-migration)
 owns consumer access and the export-naming migration.
 
-A collection's explicit `icons` object assigns lower camel-case aliases directly to identifiers
-from named relative runtime imports, for example `icons: { camera: Camera }`. Each imported
-specifier and symbol must resolve to one discovered canonical icon. The dictionary rejects arrays,
-shorthand, quoted/computed keys, spreads, accessors, calls, nested values, non-runtime imports,
-duplicate aliases and duplicate members. `catalogueCollectionIconAliasPatternSource` owns static
-alias grammar; [Core](../../packages/core/collection/index.md) independently validates runtime
-construction. Valid aliases may shadow inherited names.
+A collection's explicit `icons` object assigns lower camel-case aliases to non-empty literal
+treatment dictionaries, for example `icons: { camera: { outline: CameraOutline } }`. Each leaf
+is an identifier from a named relative runtime import of one discovered canonical icon.
+Outer keys are identifiers; inner keys may be identifiers or string literals, including numeric
+strings. Numeric literals, computed keys, shorthand, spreads, accessors, calls, further nested
+values, non-runtime imports, duplicate properties and duplicate members are rejected.
+
+`catalogueCollectionIconAliasPatternSource` owns static alias grammar. Public Core
+[`Icon.variantPropertyName()`](../../packages/core/api/index.md#usage) owns treatment-to-property
+mapping; every group must select one `(namespace, name)` family. The inspector preserves native
+outer/inner enumeration, including integer-index ordering, before emitting flat member identities.
+Valid own shadowing names remain usable. [Core](../../packages/core/collection/index.md)
+independently enforces the same grouped semantics at runtime.
 
 Static metadata authorities must be exported top-level constants acquired through named runtime
 imports. `CatalogueSourceValueResolver` interprets a finite data-only TypeScript subset, never
@@ -63,7 +68,14 @@ or layout, mismatched identities, missing/additional exports, duplicate properti
 dangling members and conflicting public subpaths before publication.
 
 The names `collections`, `dynamic` and `manifest` are reserved integration subpaths. Symbols may
-repeat across isolated module scopes; no aggregate definition barrel is generated.
+repeat across isolated module scopes; no package-wide definition barrel is generated.
+
+Glyph dictionaries derive from complete `(namespace, name)` identity. The public route contains
+only the glyph name, so different namespaces claiming that route are rejected, even with disjoint
+treatments. Each dictionary owns exact properties derived through `Icon.variantPropertyName()`;
+collisions such as `tone-1`/`tone1`, duplicate imported bindings or an imported leaf colliding with
+the dictionary's export are rejected before any output writes. Symbols in independent modules
+need not be globally unique.
 
 ## Composition
 
@@ -72,11 +84,11 @@ repeat across isolated module scopes; no aggregate definition barrel is generate
 | `CatalogueSourceSynchroniserFactory` | Composes filesystem, inspection, planning and serialisation capabilities. |
 | `NodeCatalogueSourceFileSystem`, `RepositoryFileWalker` | Acquire selected source modules deterministically. |
 | `CatalogueSourceModuleInspector` | Coordinates module acquisition and inspection. |
-| `CatalogueSourceLayoutNormaliser` | Maps physical paths to identities, symbols and public subpaths. |
+| `CatalogueSourceLayoutNormaliser` | Maps physical paths to identities and definition symbols; derives glyph dictionary export names using the same PascalCase authority. |
 | `CatalogueSourceSyntaxInspector` | Extracts factory calls, literal identity and membership references. |
 | `CatalogueSourceManifestInspector`, `CatalogueSourceValueResolver` | Validate and statically resolve descriptive metadata. |
 | `CatalogueSourceRelationshipInspector` | Validates references across complete source families. |
-| `CatalogueSourceFacadePlanner`, `CatalogueSourceFacadeResolver` | Plan minimal named re-exports and their logical paths. |
+| `CatalogueSourceFacadePlanner`, `CatalogueSourceFacadeResolver` | Plan minimal treatment/collection re-exports, collision-free glyph dictionaries and their logical paths. |
 | `CatalogueSourceManifestPlanner`, `CatalogueSourceDynamicPlanner` | Plan metadata records and exact deferred imports. |
 | `CatalogueSourceKeySerialiser` | Shares canonical key formation between generated integrations. |
 | `CatalogueSourceSynchroniser`, `CatalogueSourceSerialiser` | Complete immutable inspection and output planning, then publish changed outputs. |
@@ -90,8 +102,8 @@ caches last one complete inspection and are cleared before the next.
 | Contract | Responsibility and relationship |
 | --- | --- |
 | `ICatalogueSourceFamily` | Configures a family's Core factory, physical root and generated facade root. |
-| `ICatalogueSourceIdentity` | Carries path-owned name, optional variant, symbol and public subpath from layout normalisation. |
-| `ICatalogueCollectionMemberReference` | Retains an alias and its imported identifier, exported symbol and module specifier for relationship validation. |
+| `ICatalogueSourceIdentity` | Carries path-owned name and symbol; treatment is required for icons and absent for collections. |
+| `ICatalogueCollectionMemberReference` | Retains the outer alias, treatment property and imported identifier, exported symbol and module specifier for relationship validation. |
 | `ICatalogueIconManifestData` | Carries statically extracted icon metadata without geometry. |
 | `ICatalogueCollectionManifestData` | Carries extracted collection metadata and ordered member keys. |
 | `ICatalogueIconManifestRecord` | Adds the canonical key, public symbol and identity to icon data for manifest serialisation. |
@@ -107,13 +119,22 @@ caches last one complete inspection and are cleared before the next.
 
 1. Create, change or remove a canonical definition.
 2. Update affected collections' named imports and alias dictionaries.
-3. Run `pnpm --dir packages/icons run build`, which synchronises before compilation.
+3. Prepare Core with `pnpm --filter @luscious-garden/aster-core run build`, then run
+   `pnpm --dir packages/icons run build`, which synchronises before compilation.
 
 `generate:catalogue` performs synchronisation directly; `check:catalogue` compares without writing.
-Root `pnpm check` runs the read-only check before building, so a build cannot hide uncommitted drift.
+Standalone synchronisation/checking requires a built Core because it uses the public property
+authority. Root `pnpm check:catalogue` builds only Core, then compares Icons output without
+regenerating it. Root `pnpm check` runs that gate before other builds, so generation cannot hide
+uncommitted drift. Icons does not rebuild Core from a hook; recursive builds use dependency order.
 
-Planning emits base facades at `icons/<name>.ts`, variant facades at
+Planning emits dictionary-only glyph facades at `icons/<name>.ts`, individual treatment facades at
 `icons/<name>/<variant>.ts` and collection facades at `collections/<name>.ts`.
+Each glyph module imports its actual canonical leaves, removes the map's prototype and freezes
+the exact inferred dictionary before exporting only `<PascalName>Variants`. It never re-exports
+the individual leaves or invents a default. Leaf modules have no reverse dependency on dictionaries.
+Adding/removing a treatment updates its dictionary; removing a glyph removes its stale dictionary
+inside the existing facade cleanup boundary. No separate manual registry or loader is added.
 Manifest records and dynamic loaders share canonical keys; loaders target facades, not source
 paths. One private serialiser method emits both typed loader-map literals, removes their
 prototypes and freezes them before export, preserving the
@@ -149,3 +170,5 @@ authorities, rejected executable/cyclic metadata, dangling members and manifest-
 equivalence. A generated-output fixture retains valid own `constructor` loaders in both families
 and verifies inherited-name absence. Package and CLI tests verify isolated imports, discovery,
 identity and ordering.
+Emitted disposable-process tests also prove multi-treatment evaluation isolation, eager glyph
+loading, metadata-only imports, exact numeric/own-shadowing keys and shared canonical leaf objects.

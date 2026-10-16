@@ -11,7 +11,7 @@ aggregation are specified by [Performance Tooling](../../tooling/performance/ind
 
 ## Representative evidence
 
-The schema-version-five baseline uses public Core APIs and a fixed sixteen-definition synthetic
+The schema-version-six baseline uses public Core APIs and a fixed sixteen-definition synthetic
 geometry corpus rather than Core implementation classes or product artwork. Scale scenarios
 reuse that geometry under unique identities in dictionaries of 26 and 256 icons. All canonical
 values, mutable clones and collection variants are prepared before timing begins.
@@ -45,6 +45,9 @@ The complete sixteen-member scenarios revalidate a definition containing both `i
 sequence. Their different trust-boundary work makes them unsuitable for a direct per-member
 timing comparison. All dictionary views retain canonical icon references when validation permits;
 the benchmark never times repeated property access as collection construction.
+
+Schema six marks grouped collection construction. See the shared
+[workload comparison limits](../../tooling/performance/index.md#structure).
 
 ## Canonical-output recognition comparison
 
@@ -130,6 +133,28 @@ source revisions. Unknown-input and first-use controls supplement that command; 
 report fields, scenarios or CI thresholds. Preserve their preparation/timing separation when
 repeating them rather than treating the main command as a foreign-copy or startup measurement.
 
+## Grouped collection construction
+
+On 16 October 2026, three matched control/candidate report pairs alternated execution order on
+Windows x64 with Node `24.10.0`, TypeScript `5.9.3` and ES2022 ESM. The control was source
+`92dffff`; the candidate used required treatments and grouped membership. Both retained private
+canonical-output recognition and the same synthetic geometry and member counts.
+
+| Construction workload | Flat control, schema five | Grouped candidate, schema six |
+| --- | ---: | ---: |
+| One canonical member | 2,372 ns/op | 3,384 ns/op |
+| Complete canonical collection, 16 members | 12,644 ns/op | 29,957 ns/op |
+| Authored canonical dictionary, 26 members | 17,075 ns/op | 36,412 ns/op |
+| Authored canonical dictionary, 256 members | 169,532 ns/op | 359,420 ns/op |
+
+These are medians across report medians, not equivalent structural workloads or an isolated
+recognition comparison. Grouped construction validates and freezes treatment dictionaries,
+checks family consistency and canonical property names, and derives flat member order. Recognised
+leaves still avoid geometry reconstruction. Reuse constructed collections rather than rebuilding
+them for every render; these observations do not measure property access or rendering cost.
+Desktop background activity was not lab-controlled, and timings remain development evidence,
+not CI thresholds or hardware-independent guarantees.
+
 ## Typed collection scaling
 
 Three reports captured on 24 September 2026 with Node `24.10.0` on Windows x64 produced these
@@ -176,7 +201,7 @@ comparison values, not current distribution counts or compatibility promises.
 ## Investigation baseline
 
 The following schema-version-two findings used the former product pilot and remain historical
-investigation evidence; they are not directly comparable with schema-version-five reports.
+investigation evidence; they are not directly comparable with current schema-version-six reports.
 Three complete reports captured under the same Node, operating-system, architecture, hardware,
 scenario, and workspace conditions produced these medians across report medians:
 
@@ -235,7 +260,7 @@ pnpm benchmark:core
 ```
 
 The command builds only Core before running Node with explicit garbage-collection access. It
-prints schema-version-five JSON to standard output and writes no artefact. It reports the
+prints schema-version-six JSON to standard output and writes no artefact. It reports the
 scenario matrix above and the distribution built from the current checkout.
 [Performance Tooling](../../tooling/performance/index.md) owns shared report fields, sampling,
 heap-pressure interpretation and environmental comparison limits.

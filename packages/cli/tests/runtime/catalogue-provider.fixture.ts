@@ -102,7 +102,7 @@ function discoveryMetadata(
  * @returns Canonical textual identity.
  */
 function iconIdentity(identity: IconIdentity): string {
-  return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}${identity.variant === undefined ? "" : `@${identity.variant}`}`;
+  return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}@${identity.variant}`;
 }
 
 /**

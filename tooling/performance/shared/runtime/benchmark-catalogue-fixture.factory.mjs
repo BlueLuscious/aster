@@ -19,7 +19,7 @@ export class BenchmarkCatalogueFixtureFactory {
     );
     const iconMap = Object.fromEntries(icons.map((definition, index) => [
       `fixture${index + 1}`,
-      definition,
+      { [Icon.variantPropertyName(definition.identity.variant)]: definition },
     ]));
     const collection = Collection.define({
       identity: { name: "benchmark" },
@@ -60,6 +60,7 @@ export class BenchmarkCatalogueFixtureFactory {
 
     return Icon.define({
       identity: {
+        variant: "fixture",
         namespace: "benchmark",
         name: `fixture-${String(ordinal).padStart(2, "0")}`,
       },

@@ -18,7 +18,7 @@ function source(name = "public-contract"): SvgIconImportSource {
   return {
     format: iconImportFormats.svg,
     sourceId: `contracts/${name}.svg`,
-    identity: { namespace: "contracts", name },
+    identity: { variant: "outline", namespace: "contracts", name },
     content: acceptedContent,
   };
 }
@@ -42,6 +42,34 @@ function request(name = "public-contract"): IconAdoptionRequest {
     metadata: metadata(name),
   };
 }
+
+test("requires an explicit source treatment before inspecting content", () => {
+  const accepted = source();
+  const { variant: _variant, ...glyph } = accepted.identity;
+
+  for (const identity of [
+    glyph,
+    { ...glyph, variant: undefined },
+    { ...glyph, variant: "" },
+    { ...glyph, variant: "filled--dotted" },
+  ]) {
+    assert.throws(
+      () => IconImport.inspect({ ...accepted, identity } as SvgIconImportSource),
+      /source\.identity\.variant/u,
+    );
+  }
+
+  for (const variant of ["outline", "filled-dotted", "2-tone", "01"]) {
+    const result = IconImport.inspect({
+      ...accepted,
+      identity: { ...glyph, variant },
+    });
+    assert.equal(result.successful, true);
+    if (result.successful) {
+      assert.equal(result.value.identity.variant, variant);
+    }
+  }
+});
 
 function assertDeepFrozen(
   value: unknown,

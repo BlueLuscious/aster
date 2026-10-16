@@ -10,13 +10,13 @@ import {
 function icon(
   name = "search",
   namespace = "aster",
-  variant?: string,
+  variant = "outline",
 ) {
   return Icon.define({
     identity: {
       namespace,
       name,
-      ...(variant === undefined ? {} : { variant }),
+      variant,
     },
     viewBox: {
       minX: 0,
@@ -71,11 +71,12 @@ function collection<TIconMap extends CollectionIconMap>(
 test("constructs empty and populated deeply frozen collections", () => {
   const empty = collection("empty", {});
   const search = icon();
-  const populated = collection("interface", { search });
+  const populated = collection("interface", { search: { outline: search } });
 
-  assert.deepEqual(empty.icons, {});
+  assert.deepEqual(Object.keys(empty.icons), []);
+  assert.equal(Object.getPrototypeOf(empty.icons), null);
   assert.deepEqual(empty.members, []);
-  assert.equal(populated.icons.search, search);
+  assert.equal(populated.icons.search.outline, search);
   assert.equal(populated.members[0], search);
   assert.ok(Object.isFrozen(empty));
   assert.ok(Object.isFrozen(empty.icons));
@@ -85,12 +86,12 @@ test("constructs empty and populated deeply frozen collections", () => {
 
 test("retains one canonical icon in multiple independent collections", () => {
   const search = icon();
-  const interfaceIcons = collection("interface", { search });
-  const navigationIcons = collection("navigation", { search });
+  const interfaceIcons = collection("interface", { search: { outline: search } });
+  const navigationIcons = collection("navigation", { search: { outline: search } });
 
-  assert.equal(interfaceIcons.icons.search, search);
+  assert.equal(interfaceIcons.icons.search.outline, search);
   assert.equal(interfaceIcons.members[0], search);
-  assert.equal(navigationIcons.icons.search, search);
+  assert.equal(navigationIcons.icons.search.outline, search);
   assert.equal(navigationIcons.members[0], search);
   assert.notEqual(interfaceIcons, navigationIcons);
   assert.equal("collection" in search.identity, false);
@@ -99,23 +100,23 @@ test("retains one canonical icon in multiple independent collections", () => {
 test("derives ordered members from authored alias order", () => {
   const search = icon("search");
   const settings = icon("settings");
-  const accepted = collection("ordered", { settings, search });
+  const accepted = collection("ordered", { settings: { outline: settings }, search: { outline: search } });
 
   assert.deepEqual(Object.keys(accepted.icons), ["settings", "search"]);
   assert.deepEqual(
     accepted.members.map((definition) => definition.identity.name),
     ["settings", "search"],
   );
-  assert.equal(accepted.icons.settings, accepted.members[0]);
-  assert.equal(accepted.icons.search, accepted.members[1]);
+  assert.equal(accepted.icons.settings.outline, accepted.members[0]);
+  assert.equal(accepted.icons.search.outline, accepted.members[1]);
   assert.equal("collection" in settings.identity, false);
   assert.equal("collection" in search.identity, false);
 });
 
 test("isolates mutable icon input across both membership views", () => {
   const search = structuredClone(icon());
-  const accepted = collection("isolated", { search });
-  const retained = accepted.icons.search;
+  const accepted = collection("isolated", { search: { outline: search } });
+  const retained = accepted.icons.search.outline;
 
   assert.notEqual(retained, search);
   assert.equal(retained, accepted.members[0]);
@@ -125,8 +126,8 @@ test("isolates mutable icon input across both membership views", () => {
 
 test("shares recognition of collection-created leaves with the public Icon API", () => {
   const authored = structuredClone(icon());
-  const accepted = collection("constructed-member", { selected: authored });
-  const retained = accepted.icons.selected;
+  const accepted = collection("constructed-member", { selected: { outline: authored } });
+  const retained = accepted.icons.selected.outline;
 
   assert.notEqual(retained, authored);
   assert.equal(Icon.define(retained), retained);
@@ -147,8 +148,8 @@ test("normalises literal metadata and freezes mutable authored member values", (
     nodes: [{ kind: "circle" as const, cx: 12, cy: 12, radius: 4 }],
     metadata: { ...source.metadata, displayName: "  Search  " as const },
   };
-  const accepted = collection("normalised-members", { search: authored });
-  const retained = accepted.icons.search;
+  const accepted = collection("normalised-members", { search: { outline: authored } });
+  const retained = accepted.icons.search.outline;
 
   assert.equal(retained.metadata.displayName, "Search");
   assert.equal(retained, accepted.members[0]);
@@ -172,14 +173,14 @@ test("supports explicit aliases for variants and repeated local names", () => {
   const cameraStippled = icon("camera", "aster", "stippled");
   const externalCamera = icon("camera", "external");
   const accepted = collection("cameras", {
-    camera,
-    cameraStippled,
-    externalCamera,
+    camera: { outline: camera },
+    cameraStippled: { stippled: cameraStippled },
+    externalCamera: { outline: externalCamera },
   });
 
-  assert.equal(accepted.icons.camera, camera);
-  assert.equal(accepted.icons.cameraStippled, cameraStippled);
-  assert.equal(accepted.icons.externalCamera, externalCamera);
+  assert.equal(accepted.icons.camera.outline, camera);
+  assert.equal(accepted.icons.cameraStippled.stippled, cameraStippled);
+  assert.equal(accepted.icons.externalCamera.outline, externalCamera);
   assert.deepEqual(accepted.members, [camera, cameraStippled, externalCamera]);
 });
 
@@ -187,49 +188,49 @@ test("accepts lower camel-case aliases that shadow object prototype names", () =
   const constructor = icon("constructor");
   const toString = icon("stringify");
   const accepted = collection("prototype-aliases", {
-    constructor,
-    toString,
+    constructor: { outline: constructor },
+    toString: { outline: toString },
   });
 
-  assert.equal(accepted.icons.constructor, constructor);
-  assert.equal(accepted.icons.toString, toString);
+  assert.equal(accepted.icons.constructor.outline, constructor);
+  assert.equal(accepted.icons.toString.outline, toString);
   assert.deepEqual(accepted.members, [constructor, toString]);
 });
 
-test("accepts null-prototype maps and returns canonical plain data", () => {
+test("accepts null-prototype maps and returns prototype-free dictionaries", () => {
   const search = icon();
-  const authored = Object.assign(Object.create(null), { search }) as {
-    search: typeof search;
+  const authored = Object.assign(Object.create(null), { search: { outline: search } }) as {
+    search: { outline: typeof search };
   };
   const accepted = collection("null-prototype", authored);
 
-  assert.equal(Object.getPrototypeOf(accepted.icons), Object.prototype);
-  assert.equal(accepted.icons.search, search);
+  assert.equal(Object.getPrototypeOf(accepted.icons), null);
+  assert.equal(accepted.icons.search.outline, search);
   assert.equal(accepted.members[0], search);
 });
 
 test("revalidates complete definitions from keyed membership", () => {
   const search = icon("search");
   const settings = icon("settings");
-  const original = collection("complete", { settings, search });
+  const original = collection("complete", { settings: { outline: settings }, search: { outline: search } });
   const accepted = Collection.define(original);
   const cloned = Collection.define(structuredClone(original));
 
   assert.notEqual(accepted, original);
   assert.notEqual(accepted.icons, original.icons);
   assert.notEqual(accepted.members, original.members);
-  assert.equal(accepted.icons.settings, original.icons.settings);
-  assert.equal(accepted.icons.search, original.icons.search);
+  assert.equal(accepted.icons.settings.outline, original.icons.settings.outline);
+  assert.equal(accepted.icons.search.outline, original.icons.search.outline);
   assert.deepEqual(accepted.members, original.members);
-  assert.equal(cloned.icons.settings, cloned.members[0]);
-  assert.equal(cloned.icons.search, cloned.members[1]);
+  assert.equal(cloned.icons.settings.outline, cloned.members[0]);
+  assert.equal(cloned.icons.search.outline, cloned.members[1]);
   assert.deepEqual(cloned, original);
 });
 
 test("rejects complete definitions whose submitted members disagree", () => {
   const search = icon("search");
   const settings = icon("settings");
-  const original = collection("inconsistent", { settings, search });
+  const original = collection("inconsistent", { settings: { outline: settings }, search: { outline: search } });
 
   assert.throws(
     () =>
@@ -253,7 +254,7 @@ test("rejects inherited array behaviour in submitted collection members", () => 
   class AuthoredMembers<T> extends Array<T> {}
 
   const search = icon();
-  const original = collection("inherited-members", { search });
+  const original = collection("inherited-members", { search: { outline: search } });
   const members = new AuthoredMembers(search);
 
   assert.throws(
@@ -266,7 +267,7 @@ test("rejects duplicate identities and invalid collection metadata", () => {
   const search = icon();
 
   assert.throws(
-    () => collection("duplicate", { primary: search, secondary: search }),
+    () => collection("duplicate", { primary: { outline: search }, secondary: { outline: search } }),
     /collection\.icons\.secondary.*duplicates an icon identity/u,
   );
   assert.throws(
@@ -287,7 +288,7 @@ test("requires every authored collection field as an own data property", () => {
   const search = icon();
   const input = {
     identity: { name: "required" },
-    icons: { search },
+    icons: { search: { outline: search } },
     metadata: { displayName: "Required" },
   };
 
@@ -307,12 +308,12 @@ test("rejects invalid, symbolic, and reflective aliases", () => {
 
   for (const alias of ["arrow-left", "ArrowLeft", "123camera"]) {
     assert.throws(
-      () => collection("invalid-alias", { [alias]: search }),
+      () => collection("invalid-alias", { [alias]: { outline: search } }),
       /collection\.icons\..*expected a lower camel-case alias/u,
     );
   }
 
-  const symbolic = { search };
+  const symbolic = { search: { outline: search } };
   Object.defineProperty(symbolic, Symbol("hidden"), {
     enumerable: true,
     value: search,

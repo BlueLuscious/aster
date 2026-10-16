@@ -48,6 +48,12 @@ and hash; they do not become artefacts of the new commit.
 
 ## Prepare the archives
 
+Finalise current guides, packaged READMEs, migration instructions and executable examples before
+final source approval and packing. Verify them against the selected package combination; do not
+defer missing usage or migration guidance to a post-publication repair. Later routine updates
+record verified registry, archive and GitHub Release evidence rather than change the instructions
+that the approved archives should already contain.
+
 Use the [configured toolchain and root gate](../tooling/index.md), inspect the source revision and
 worktree, then perform the frozen installation and complete verification:
 

@@ -17,6 +17,7 @@ matching a public stable source version does not make Import public.
 | Parser tests | Every exact resource ceiling and immediately greater value, namespace/inert-section rules and LF/CRLF/Unicode spans. |
 | Diagnostic tests | Closed code/category/severity policy, canonical ordering, deduplication and immutable result unions. |
 | ABI tests | Exact root values and declarations, rejected subpaths, contained dependencies and an isolated compiled emitted-module consumer. |
+| Executable documentation | Actual private README inspection and staged API examples through the built public workspace entrypoint. |
 | Repository workflows | Equivalent TypeScript-first/adopted definitions and independent host-owned batches through Core, Import and SVG roots. |
 
 Run `pnpm --dir packages/import run test`. [Project testing](../../project/testing.md) defines

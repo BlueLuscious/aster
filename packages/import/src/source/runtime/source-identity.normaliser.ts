@@ -3,7 +3,7 @@ import { ImportValueValidator } from "../../shared/runtime/import-value.validato
 import { CanonicalSlugNormaliser } from "../../shared/runtime/canonical-slug.normaliser.js";
 
 /**
- * @description Validates and clones canonical source identity claims.
+ * @description Validates and clones canonical source identity claims from own data fields.
  */
 export class SourceIdentityNormaliser {
   /**
@@ -28,25 +28,22 @@ export class SourceIdentityNormaliser {
       record,
       ["namespace", "name", "variant"],
       path,
-      ["name"],
+      ["name", "variant"],
     );
     const namespace =
-      "namespace" in record
+      Object.hasOwn(record, "namespace")
         ? this.#slugNormaliser.normalise(
             record.namespace,
             `${path}.namespace`,
           )
         : undefined;
     const name = this.#slugNormaliser.normalise(record.name, `${path}.name`);
-    const variant =
-      "variant" in record
-        ? this.#slugNormaliser.normalise(record.variant, `${path}.variant`)
-        : undefined;
+    const variant = this.#slugNormaliser.normalise(record.variant, `${path}.variant`);
 
     return Object.freeze({
       ...(namespace === undefined ? {} : { namespace }),
       name,
-      ...(variant === undefined ? {} : { variant }),
+      variant,
     });
   }
 }

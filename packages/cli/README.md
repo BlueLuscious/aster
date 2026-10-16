@@ -5,6 +5,8 @@ standalone `aster` Node executable.
 
 ## Usage
 
+Examples follow the [current source contract](https://github.com/BlueLuscious/aster/blob/master/docs/en/index.md#source-and-published-versions).
+
 The executable supports Node `>=24.10.0 <25`; either installation brings compatible Core, Icons
 and SVG dependencies.
 
@@ -12,8 +14,10 @@ and SVG dependencies.
 
 ```sh
 pnpm add -D @luscious-garden/aster-cli
-pnpm exec aster list icons
-pnpm exec aster export icon aster/camera
+pnpm exec aster list glyphs
+pnpm exec aster show glyph aster/camera
+pnpm exec aster list icons --glyph aster/camera
+pnpm exec aster export icon aster/camera@outline
 pnpm exec aster version --all
 ```
 
@@ -21,8 +25,10 @@ pnpm exec aster version --all
 
 ```sh
 pnpm add -g @luscious-garden/aster-cli
-aster list icons
-aster export icon aster/camera
+aster list glyphs
+aster show glyph aster/camera
+aster list icons --glyph aster/camera
+aster export icon aster/camera@outline
 aster version --location
 ```
 
@@ -36,6 +42,14 @@ owns global executable setup, local alternatives, command grammar, version sourc
 For a custom host, the public `AsterCommands` composition returns command results and plans without
 filesystem effects. The [programmatic API](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/api/index.md)
 owns contexts and execution contracts.
+
+Glyph commands discover available treatments without loading artwork. Concrete icon operations
+require `@variant`; the
+[Catalogue guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/catalogue/index.md#discovery-semantics)
+explains provider scope and exact family filtering.
+
+The [identity migration](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/catalogue/index.md#explicit-treatment-migration)
+explains how to update earlier icon requests and providers.
 
 ## Documentation
 
