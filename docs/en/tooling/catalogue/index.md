@@ -14,6 +14,7 @@ Editable sources live under `src/glyphs/**/*.icon.ts` and
 - `src/generated/manifest/index.ts`;
 - `src/generated/dynamic/index.ts`;
 - `src/generated/facades/icons/**/*.ts`;
+- `src/generated/facades/glyphs/*.ts`;
 - `src/generated/facades/collections/*.ts`.
 
 Generated files are versioned for clean-checkout resolution. Their headers name the reconstruction
