@@ -25,6 +25,7 @@ const variants = [
   "filled",
   "filled-dotted",
   "constructor",
+  "index",
   "to-string",
   "2-tone",
   "01",
@@ -145,6 +146,11 @@ before(async () => {
       'import type { IconDefinition, IconVariantMap } from "@luscious-garden/aster-core";',
       'import { CameraVariants } from "@luscious-garden/aster-icons/camera";',
       'import { CameraOutline } from "@luscious-garden/aster-icons/camera/outline";',
+      'import { CameraIndex } from "@luscious-garden/aster-icons/camera/index";',
+      "// @ts-expect-error The glyph has no undistributed treatment entry.",
+      'import { BellFilled } from "@luscious-garden/aster-icons/bell/filled";',
+      "// @ts-expect-error Missing glyphs have no generated entry.",
+      'import { MissingVariants } from "@luscious-garden/aster-icons/missing";',
       "// @ts-expect-error The dictionary entry does not re-export individual definitions.",
       'import { CameraFilled } from "@luscious-garden/aster-icons/camera";',
       "// @ts-expect-error The obsolete unsuffixed definition is absent.",
@@ -163,7 +169,7 @@ before(async () => {
       "CameraVariants.stippled;",
       "// @ts-expect-error The dictionary is readonly.",
       "CameraVariants.outline = CameraOutline;",
-      "void [dictionary, definition, compound, digit, ownConstructor, ownToString, invalidDefinition, Camera, CameraFilled];",
+      "void [dictionary, definition, compound, digit, ownConstructor, ownToString, invalidDefinition, Camera, CameraFilled, CameraIndex, BellFilled, MissingVariants];",
     ].join("\n"),
   );
   const paths = await readdir(resolve(root, "src"), { recursive: true });
@@ -212,19 +218,19 @@ test("isolates native ESM treatment, glyph and metadata evaluation in a generate
       ],
     ],
     [
-      "generated/facades/icons/camera.js",
+      "generated/facades/glyphs/camera.js",
       ["CameraVariants"],
       [
-        "generated/facades/icons/camera.js",
+        "generated/facades/glyphs/camera.js",
         ...variants.map(
           (variant) => `glyphs/c/camera/camera-${variant}.icon.js`,
         ),
       ],
     ],
     [
-      "generated/facades/icons/bell.js",
+      "generated/facades/glyphs/bell.js",
       ["BellVariants"],
-      ["generated/facades/icons/bell.js", "glyphs/b/bell/bell-outline.icon.js"],
+      ["generated/facades/glyphs/bell.js", "glyphs/b/bell/bell-outline.icon.js"],
     ],
     [
       "manifest/index.js",
@@ -250,6 +256,32 @@ test("isolates native ESM treatment, glyph and metadata evaluation in a generate
     assert.deepEqual(evidence.exports, expectedExports);
     assert.deepEqual(evidence.evaluatedModules, expectedModules.sort());
   }
+});
+
+test("preserves fixed routes and rejects missing glyphs or treatments without index fallbacks", () => {
+  const output = execute([
+    "--input-type=module",
+    "--eval",
+    [
+      'import assert from "node:assert/strict";',
+      'import { CameraVariants } from "@luscious-garden/aster-icons/camera";',
+      'import { CameraIndex } from "@luscious-garden/aster-icons/camera/index";',
+      'import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";',
+      'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
+      'import { Selected } from "@luscious-garden/aster-icons/collections/selected";',
+      "assert.equal(CameraIndex, CameraVariants.index);",
+      "assert.equal(Selected.members[0], CameraVariants.outline);",
+      'assert.ok(AsterIconManifest.some(({key}) => key === "fixture/camera@index"));',
+      'assert.equal(await AsterIconLoaders["fixture/camera@index"](), CameraIndex);',
+      'for (const subpath of ["missing", "camera/missing", "bell/filled", "camera/outline/extra", "camera/index/index"]) {',
+      '  await assert.rejects(import(`@luscious-garden/aster-icons/${subpath}`), {code: "ERR_MODULE_NOT_FOUND"});',
+      "}",
+      'for (const subpath of ["", "/collections"]) {',
+      '  await assert.rejects(import(`@luscious-garden/aster-icons${subpath}`), {code: "ERR_PACKAGE_PATH_NOT_EXPORTED"});',
+      "}",
+    ].join("\n"),
+  ]);
+  assert.equal(output, "");
 });
 
 test("retains exact frozen own-data glyph keys and canonical leaf identity through generated public routes", () => {

@@ -88,7 +88,9 @@ analysis, dependency inspection or prose review. Generated catalogue sources, di
 dependency installations and parser fixtures are excluded.
 
 Prettier checks root and package manifests plus its own and ESLint's configuration. The Icons
-manifest is excluded because catalogue synchronisation owns its export entries and serialisation.
+manifest is excluded from formatting because its mixed-manual export entries are maintained through
+[catalogue tooling's narrow ownership](catalogue/index.md#mixed-package-manifest-ownership), with
+architecture and distribution checks retaining their independent conformance roles.
 Authored source, documentation, lockfiles, generated artefacts and fixtures remain outside this
 formatting boundary. Widening it requires a separately reviewed migration, not a mechanical rewrite.
 

@@ -61,8 +61,8 @@ export const packageBoundaries = Object.freeze({
     }),
     /** @description Generated per-icon facade family. */
     "./*": Object.freeze({
-      types: "./dist/generated/facades/icons/*.d.ts",
-      import: "./dist/generated/facades/icons/*.js",
+      types: "./dist/generated/facades/glyphs/*.d.ts",
+      import: "./dist/generated/facades/glyphs/*.js",
     }),
   }),
   /** @description Accepted SVG production dependencies. */
