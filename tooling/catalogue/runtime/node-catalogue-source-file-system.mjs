@@ -1,6 +1,8 @@
 import { randomUUID } from "node:crypto";
 import {
   mkdir,
+  link,
+  open,
   readdir,
   readFile,
   rename,
@@ -11,6 +13,7 @@ import {
 import { dirname, isAbsolute, relative, resolve, sep } from "node:path";
 
 import { repositoryEntryKinds } from "../../shared/constants/repository-entry-kinds.constant.mjs";
+import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
 /**
  * @description Adapts Node filesystem authority to catalogue source synchronisation.
@@ -61,6 +64,24 @@ export class NodeCatalogueSourceFileSystem {
    */
   async readText(path) {
     return readFile(path, "utf8");
+  }
+
+  /**
+   * @description Reads generated UTF-8 text without a separate existence check.
+   * @remarks Only ENOENT denotes absence; permission, directory and other acquisition failures propagate. Required source reads remain strict.
+   * @param {string} path - Generated file path to compare.
+   * @returns {Promise<string | undefined>} Exact content, including an empty string, or undefined when absent.
+   */
+  async readTextIfPresent(path) {
+    try {
+      return await this.readText(path);
+    } catch (error) {
+      if (error instanceof Error && "code" in error && error.code === "ENOENT") {
+        return undefined;
+      }
+
+      throw error;
+    }
   }
 
   /**
@@ -140,6 +161,70 @@ export class NodeCatalogueSourceFileSystem {
 
       if (displaced && !(await this.exists(path))) {
         await rename(backupPath, path);
+      }
+    }
+  }
+
+  /**
+   * @description Publishes a manual-file edit after verifying its displaced preimage, refusing to overwrite concurrent replacement.
+   * @remarks Publication requires same-filesystem hard links. Earlier generated writes are not rolled back. A reappeared destination and its displaced backup are preserved for inspection.
+   * @param {string} path - Existing manual file to update.
+   * @param {string} expectedContent - Exact text reviewed during planning.
+   * @param {string} content - Complete next text with only owned properties changed.
+   * @returns {Promise<void>} Completion after publication and private temporary-file cleanup.
+   */
+  async replaceText(path, expectedContent, content) {
+    const token = randomUUID();
+    const stagePath = `${path}.stage-${token}`;
+    const probePath = `${stagePath}.probe`;
+    const backupPath = `${path}.backup-${token}`;
+    let staged = false;
+    let probed = false;
+    let displaced = false;
+    let published = false;
+    try {
+      if (await this.readText(path) !== expectedContent) {
+        throw new CatalogueSourceError("The package manifest changed before publication; retry without overwriting it.");
+      }
+      const stage = await open(stagePath, "wx", (await stat(path)).mode);
+      staged = true;
+      try {
+        await stage.writeFile(content, "utf8");
+      } finally {
+        await stage.close();
+      }
+      await link(stagePath, probePath);
+      probed = true;
+      await rm(probePath);
+      probed = false;
+      await rename(path, backupPath);
+      displaced = true;
+      if (await this.readText(backupPath) !== expectedContent) {
+        throw new CatalogueSourceError("The displaced package manifest changed; restoring it without overwriting new edits.");
+      }
+      await link(stagePath, path);
+      published = true;
+      await rm(backupPath);
+      displaced = false;
+    } catch (error) {
+      if (displaced && !published) {
+        try {
+          await link(backupPath, path);
+          await rm(backupPath);
+        } catch (recoveryError) {
+          if (recoveryError instanceof Error && "code" in recoveryError && recoveryError.code === "EEXIST") {
+            throw new CatalogueSourceError(`Concurrent package manifest preserved; displaced text retained at ${backupPath}.`);
+          }
+          throw recoveryError;
+        }
+      }
+      throw error;
+    } finally {
+      if (probed) {
+        await rm(probePath, { force: true });
+      }
+      if (staged) {
+        await rm(stagePath, { force: true });
       }
     }
   }

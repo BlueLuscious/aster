@@ -34,6 +34,9 @@ export class CatalogueSourceSynchroniser {
    */
   #dynamic;
 
+  /** @description Derived package export planning authority. @type {import("./catalogue-source-exports.planner.mjs").CatalogueSourceExportsPlanner} */
+  #exports;
+
   /**
    * @description Repository path composition capability.
    * @type {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver}
@@ -73,6 +76,7 @@ export class CatalogueSourceSynchroniser {
    * @param {import("../../shared/runtime/repository-file.walker.mjs").RepositoryFileWalker} files - Deterministic recursive file traversal capability.
    * @param {readonly import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily[]} families - Ordered catalogue source-family configurations.
    * @param {string} facadeRoot - Package-relative exclusively owned generated facade root.
+   * @param {import("./catalogue-source-exports.planner.mjs").CatalogueSourceExportsPlanner} exports - Derived package export planner.
    */
   constructor(
     fileSystem,
@@ -85,6 +89,7 @@ export class CatalogueSourceSynchroniser {
     files,
     families,
     facadeRoot,
+    exports,
   ) {
     this.#fileSystem = fileSystem;
     this.#modules = modules;
@@ -108,6 +113,7 @@ export class CatalogueSourceSynchroniser {
       ),
     );
     this.#facadeRoot = facadeRoot;
+    this.#exports = exports;
   }
 
   /**
@@ -127,7 +133,12 @@ export class CatalogueSourceSynchroniser {
       directoryChanges.push(await this.#changedDirectory(packageRoot, directory));
     }
 
-    const changedPaths = [...outputChanges, ...directoryChanges.flat()];
+    const edit = plan.packageEdit;
+    const changedPaths = [...outputChanges, ...directoryChanges.flat(), ...(edit ? [edit.output.relativePath] : [])];
+
+    if (edit && await this.#fileSystem.readText(edit.output.path) !== edit.expectedContent) {
+      throw new CatalogueSourceError("The package manifest changed during generation; retry without overwriting it.");
+    }
 
     if (!checkOnly) {
       const outputChangeSet = new Set(outputChanges);
@@ -150,6 +161,9 @@ export class CatalogueSourceSynchroniser {
             ),
           );
         }
+      }
+      if (edit) {
+        await this.#fileSystem.replaceText(edit.output.path, edit.expectedContent, edit.output.content);
       }
     }
 
@@ -191,6 +205,7 @@ export class CatalogueSourceSynchroniser {
           outputs: this.#facades.plan(packageRoot, inspections),
         }),
       ]),
+      packageEdit: await this.#exports.plan(packageRoot, inspections),
     });
   }
 
@@ -205,6 +220,7 @@ export class CatalogueSourceSynchroniser {
     const boundaries = [
       ...plan.outputs.map((output) => output.path),
       ...plan.directories.map((directory) => directory.root),
+      ...(plan.packageEdit ? [plan.packageEdit.output.path] : []),
     ];
     const sourceRoots = this.#families.map((family) =>
       this.#paths.resolve(packageRoot, family.sourceDirectory),
@@ -228,6 +244,9 @@ export class CatalogueSourceSynchroniser {
     }
 
     this.#validateOutputs(packageRoot, packageRoot, plan.outputs);
+    if (plan.packageEdit) {
+      this.#validateOutputs(packageRoot, packageRoot, [plan.packageEdit.output]);
+    }
 
     for (const directory of plan.directories) {
       this.#validateOutputs(packageRoot, directory.root, directory.outputs);
@@ -292,9 +311,7 @@ export class CatalogueSourceSynchroniser {
     const changedPaths = [];
 
     for (const output of outputs) {
-      const current = (await this.#fileSystem.exists(output.path))
-        ? await this.#fileSystem.readText(output.path)
-        : undefined;
+      const current = await this.#fileSystem.readTextIfPresent(output.path);
 
       if (current !== output.content) {
         changedPaths.push(output.relativePath);

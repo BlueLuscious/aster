@@ -416,7 +416,7 @@ for (const { family, exportName, key, subpath } of [
     const facadePath = resolve(
       consumerRoot,
       "node_modules/@luscious-garden/aster-icons/dist/generated/facades",
-      family === "icon" ? `icons/${subpath}.js` : `${subpath}.js`,
+      family === "icon" ? `icons/${subpath.split("/")[0]}/${subpath.split("/")[1]}.js` : `${subpath}.js`,
     );
     const original = await readFile(facadePath);
     const missingUrl = pathToFileURL(await realpath(facadePath)).href;

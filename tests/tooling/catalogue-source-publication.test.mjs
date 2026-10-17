@@ -33,6 +33,7 @@ function synchroniser(root, options = {}) {
     new RepositoryFileWalker(fileSystem, paths),
     catalogueSourceGeneration.families,
     options.ownedRoot ?? ownedRoot,
+    { async plan() { return undefined; } },
   );
 }
 
@@ -47,6 +48,68 @@ async function write(root, relativePath, content) {
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, content, "utf8");
 }
+
+test("optional generated reads distinguish absence and empty content while required reads stay strict", async (t) => {
+  const root = await fixture(t);
+  const fileSystem = new NodeCatalogueSourceFileSystem();
+  const path = resolve(root, "missing/file.ts");
+  assert.equal(await fileSystem.readTextIfPresent(path), undefined);
+  await assert.rejects(fileSystem.readText(path), { code: "ENOENT" });
+  await write(root, "empty.ts", "");
+  await write(root, "unicode.ts", "\u00e9\r\n");
+  assert.equal(await fileSystem.readTextIfPresent(resolve(root, "empty.ts")), "");
+  assert.equal(await fileSystem.readTextIfPresent(resolve(root, "unicode.ts")), "\u00e9\r\n");
+  await assert.rejects(fileSystem.readTextIfPresent(root));
+});
+
+test("optional reads tolerate only ENOENT and preserve every other failure", async (t) => {
+  const failures = [
+    Object.assign(new Error("Absent during acquisition"), { code: "ENOENT" }),
+    ...["EACCES", "EPERM", "ENOTDIR", "EISDIR", "EIO"].map((code) => Object.assign(new Error(code), { code })),
+    new Error("Read failure"),
+    { code: "ENOENT" },
+  ];
+  for (const failure of failures) {
+    await t.test(failure.message ?? "non-Error rejection", async () => {
+      class FailingFileSystem extends NodeCatalogueSourceFileSystem {
+        async exists() { assert.fail("Optional reads must not precheck existence"); }
+        async readText() { throw failure; }
+      }
+      const subject = new FailingFileSystem();
+      if (failure instanceof Error && failure.code === "ENOENT") {
+        assert.equal(await subject.readTextIfPresent("generated.ts"), undefined);
+      } else {
+        await assert.rejects(subject.readTextIfPresent("generated.ts"), (error) => error === failure);
+      }
+    });
+  }
+});
+
+test("compares generated contents directly without per-file existence checks or unchanged writes", async (t) => {
+  const root = await fixture(t);
+  const outputs = [output(root, manifestPath, ""), output(root, dynamicPath), output(root, leafPath)];
+  for (const entry of outputs) {
+    await write(root, entry.relativePath, entry.content);
+  }
+  const readPaths = [];
+  class DirectReadFileSystem extends NodeCatalogueSourceFileSystem {
+    async exists(path) {
+      assert.ok(!outputs.some((entry) => entry.path === path), "Only directory traversal may precheck existence");
+      return super.exists(path);
+    }
+    async readTextIfPresent(path) {
+      readPaths.push(path);
+      return super.readTextIfPresent(path);
+    }
+    async writeText() { assert.fail("Matching contents must not be rewritten"); }
+    async replaceDirectory() { assert.fail("Matching directories must not be republished"); }
+  }
+  const result = await synchroniser(root, {
+    manifest: outputs[0], facades: [outputs[2]], fileSystem: new DirectReadFileSystem(),
+  }).synchronise(root, false);
+  assert.deepEqual(result.changedPaths, []);
+  assert.deepEqual(readPaths, outputs.map((entry) => entry.path));
+});
 
 test("validates complete publication ownership before any filesystem comparison or write", async (t) => {
   const root = resolve("fixture");
@@ -74,7 +137,7 @@ test("validates complete publication ownership before any filesystem comparison 
     await t.test(candidate.name, async () => {
       const touched = [];
       const fileSystem = Object.fromEntries(
-        ["exists", "entries", "readText", "writeText", "replaceDirectory"].map((method) => [
+        ["exists", "entries", "readText", "readTextIfPresent", "writeText", "replaceDirectory"].map((method) => [
           method,
           async () => { touched.push(method); throw new Error("Unexpected filesystem access"); },
         ]),

@@ -90,6 +90,7 @@ need not be globally unique.
 | `CatalogueSourceRelationshipInspector` | Validates references across complete source families. |
 | `CatalogueSourceFacadePlanner`, `CatalogueSourceFacadeResolver` | Plan minimal treatment/collection re-exports, collision-free glyph dictionaries and their logical paths. |
 | `CatalogueSourceManifestPlanner`, `CatalogueSourceDynamicPlanner` | Plan metadata records and exact deferred imports. |
+| `CatalogueSourceExportsPlanner` | Derives treatment export patterns from validated inspections and plans a text-preserving edit of the reserved package-manifest entries. |
 | `CatalogueSourceKeySerialiser` | Shares canonical key formation between generated integrations. |
 | `CatalogueSourceSynchroniser`, `CatalogueSourceSerialiser` | Complete immutable inspection and output planning, then publish changed outputs. |
 
@@ -114,6 +115,7 @@ caches last one complete inspection and are cleared before the next.
 | `ICatalogueSourceOutput` | Describes a generated relative path and complete deterministic content. |
 | `ICatalogueSourceDirectory` | Couples one exclusively owned absolute directory root to its complete expected outputs. |
 | `ICatalogueSourcePlan` | Separates independently written files from ordered owned-directory publications. |
+| `ICatalogueSourcePackageEdit` | Couples the exact reviewed preimage to a mixed-manual package edit, separate from generated output ownership. |
 | `ICatalogueSourceFileSystem` | Isolates acquisition, persistence and owned-directory replacement from policy. |
 
 ## Workflow
@@ -124,13 +126,16 @@ caches last one complete inspection and are cleared before the next.
    `pnpm --dir packages/icons run build`, which synchronises before compilation.
 
 `generate:catalogue` performs synchronisation directly; `check:catalogue` compares without writing.
+Generated content comparison reads each expected file directly, treating only `ENOENT` as absence;
+empty content remains distinct and all other read failures propagate before publication. Canonical
+source acquisition remains strict.
 Standalone synchronisation/checking requires a built Core because it uses the public property
 authority. Root `pnpm check:catalogue` builds only Core, then compares Icons output without
 regenerating it. Root `pnpm check` runs that gate before other builds, so generation cannot hide
 uncommitted drift. Icons does not rebuild Core from a hook; recursive builds use dependency order.
 
-Planning emits dictionary-only glyph facades at `icons/<name>.ts`, individual treatment facades at
-`icons/<name>/<variant>.ts` and collection facades at `collections/<name>.ts`.
+Planning emits dictionary-only glyph facades at `glyphs/<name>.ts`, individual treatment
+facades at `icons/<name>/<variant>.ts` and collection facades at `collections/<name>.ts`.
 Each glyph module imports its actual canonical leaves, removes the map's prototype and freezes
 the exact inferred dictionary before exporting only `<PascalName>Variants`. It never re-exports
 the individual leaves or invents a default. Leaf modules have no reverse dependency on dictionaries.
@@ -167,8 +172,39 @@ Earlier independent writes may remain after a later publication fails. Read-only
 that drift and deterministic regeneration restores the set.
 
 Cleanup may replace only `src/generated/facades`, never canonical glyph or collection roots.
-The synchroniser owns no package-manifest fields, review document, source cache or temporary
-canonical artwork.
+The synchroniser owns no review document, source cache or temporary canonical artwork.
+
+### Mixed package-manifest ownership
+
+`package.json` is not a generated file. Only `exports["./*"]` and canonical `exports["./*/<variant>"]`
+properties are generated: the first targets the sibling glyph dictionaries, and the sorted suffix patterns
+target individual treatment files. Both targets derive from the facade resolver, not another
+treatment catalogue. A pattern does not promise every glyph has that treatment; missing files
+still fail natively. Fixed metadata/collection entries retain precedence and their manual text.
+
+Planning requires an existing strict JSON manifest with an exports object. It rejects duplicate
+properties, malformed treatment patterns, conflicting targets/conditions and manual routes that
+shadow generated glyphs or treatments. Existing canonical patterns identify owned entries;
+unrecognised targets fail rather than being silently claimed. The previous flat icon wildcard is
+accepted only as a migration input. Missing entries are added and obsolete canonical patterns are
+removed. Unowned property text, line endings and text outside the exports object remain intact.
+
+Check-only mode reports package drift without writing; the manifest does not increase the generated
+file count. Complete planning and a preimage recheck precede the first generated write. Package
+publication follows generated files and directories. A later package failure can leave those
+earlier writes in place; another check and generation repair remaining drift, not a global rollback.
+
+Publication stages the complete next text, displaces and verifies the old text, and uses an
+exclusive hard-link destination instead of overwriting a reappeared path. It verifies same-volume
+hard-link support using private staging before displacing the original file. Detected
+edits before publication or in displaced bytes stop the operation. If another writer recreates the
+destination, both its text and the displaced backup are retained for manual inspection; private
+staging is cleaned. This is not an operating-system lock against arbitrary non-cooperating writers
+or writes through previously opened file descriptors. Architecture validates permitted pattern
+shapes/targets; catalogue checking validates the exact set against current source treatments.
+Pre-existing package stage/backup entries stop both checking and generation before writes, even
+if the manifest is absent. Inspect the retained files and restore the intended manifest before
+removing that evidence explicitly; generation never guesses which interrupted text to discard.
 
 ## Runtime boundary and verification
 

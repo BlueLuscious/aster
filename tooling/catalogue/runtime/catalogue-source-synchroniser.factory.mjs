@@ -4,6 +4,7 @@ import { catalogueSourceGeneration } from "../constants/catalogue-source-generat
 import { CatalogueSourceFacadePlanner } from "./catalogue-source-facade.planner.mjs";
 import { CatalogueSourceFacadeResolver } from "./catalogue-source-facade.resolver.mjs";
 import { CatalogueSourceDynamicPlanner } from "./catalogue-source-dynamic.planner.mjs";
+import { CatalogueSourceExportsPlanner } from "./catalogue-source-exports.planner.mjs";
 import { CatalogueSourceKeySerialiser } from "./catalogue-source-key.serialiser.mjs";
 import { CatalogueSourceLayoutNormaliser } from "./catalogue-source-layout.normaliser.mjs";
 import { CatalogueSourceManifestInspector } from "./catalogue-source-manifest.inspector.mjs";
@@ -73,6 +74,7 @@ export class CatalogueSourceSynchroniserFactory {
       files,
       catalogueSourceGeneration.families,
       catalogueSourceGeneration.facadeRoot,
+      new CatalogueSourceExportsPlanner(fileSystem, paths, facadeResolver),
     );
   }
 }

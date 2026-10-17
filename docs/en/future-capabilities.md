@@ -23,7 +23,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P1` | [Organise generated Icons distribution.](#generated-icons-distribution-organisation) | The explicit glyph/variant foundation is complete and integrated; assess and resolve the bounded layout changes before the repository-wide responsibility review. |
+| 1 | `P1` | [Organise generated Icons distribution.](#generated-icons-distribution-organisation) | Resolve the remaining manifest/loader family split before the repository-wide responsibility review. |
 | 2 | `P0` | [Review responsibilities, composition and naming throughout the repository.](#responsibility-and-naming-review) | The glyph/variant foundation and bounded distribution review are complete; finish this maintenance review before further artwork expansion. |
 | 3 | `P1` | [Normalise CLI responses and output.](#cli-response-and-output-consistency) | Complete the responsibility/naming review, then resolve presentation inconsistencies before further artwork expansion. |
 | 4 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
@@ -48,22 +48,18 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 Importance: **P1 - High**
 
-After the explicit glyph/variant foundation is complete and integrated, perform a bounded
-distribution-maintenance review before the repository-wide responsibility and naming review.
+Assess the remaining metadata/loader family split before the repository-wide responsibility and
+naming review. The [catalogue producer](tooling/catalogue/index.md) owns current facade organisation.
 
-- Separate generated icon and collection manifests/loaders by family, retaining the existing
+- Evaluate separating generated icon and collection manifests/loaders by family, retaining the existing
   public entrypoints as re-exports without extra generated barrels or duplicated declarations.
-- Evaluate colocating each glyph dictionary with its individual treatment facades. Accept a
-  layout only after checking export-map complexity, filename collisions and package consumers;
-  preserve existing public imports and derive any additional mappings from canonical sources.
-- Keep the work within the existing [catalogue producer](tooling/catalogue/index.md), with
+- Keep the work within the existing producer, with
   explicit output ownership, deterministic regeneration and cleanup of obsolete generated paths.
 - Verify native ESM evaluation, exact exports, shared leaf references, declarations and packed
   consumers. Update owning guides and README examples without rewriting approved release history.
 
 This is an organisational change, not a demonstrated performance optimisation. It does not justify
 new public family-specific entrypoints, a second manual catalogue or general class restructuring.
-The final facade layout remains a design decision, not an already accepted implementation.
 
 ## Responsibility and naming review
 

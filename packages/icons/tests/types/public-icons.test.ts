@@ -3,11 +3,11 @@ import type {
   IconDefinition,
   IconVariantMap,
 } from "@luscious-garden/aster-core";
-import { CameraVariants } from "../../src/generated/facades/icons/camera.js";
+import { CameraVariants } from "../../src/generated/facades/glyphs/camera.js";
 // @ts-expect-error The dictionary entry exports no individual definition.
-import { CameraOutline } from "../../src/generated/facades/icons/camera.js";
+import { CameraOutline } from "../../src/generated/facades/glyphs/camera.js";
 // @ts-expect-error The dictionary entry does not preserve the old definition export.
-import { Camera } from "../../src/generated/facades/icons/camera.js";
+import { Camera } from "../../src/generated/facades/glyphs/camera.js";
 import { ArrowLeftOutline } from "../../src/generated/facades/icons/arrow-left/outline.js";
 import { SearchOutline } from "../../src/generated/facades/icons/search/outline.js";
 // @ts-expect-error Concrete treatment facades do not retain the obsolete unsuffixed export.

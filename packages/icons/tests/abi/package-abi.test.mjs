@@ -226,6 +226,7 @@ test("publishes only accepted scalable export families", async () => {
     "./manifest",
     "./dynamic",
     "./collections/*",
+    ...[...new Set(Object.keys(iconSubpaths).map((subpath) => subpath.split("/")[1]))].sort().map((variant) => `./*/${variant}`),
     "./*",
   ];
 
@@ -247,9 +248,15 @@ test("publishes only accepted scalable export families", async () => {
     import: "./dist/generated/facades/collections/*.js",
   });
   assert.deepEqual(manifest.exports["./*"], {
-    types: "./dist/generated/facades/icons/*.d.ts",
-    import: "./dist/generated/facades/icons/*.js",
+    types: "./dist/generated/facades/glyphs/*.d.ts",
+    import: "./dist/generated/facades/glyphs/*.js",
   });
+  for (const variant of [...new Set(Object.keys(iconSubpaths).map((subpath) => subpath.split("/")[1]))]) {
+    assert.deepEqual(manifest.exports[`./*/${variant}`], {
+      types: `./dist/generated/facades/icons/*/${variant}.d.ts`,
+      import: `./dist/generated/facades/icons/*/${variant}.js`,
+    });
+  }
   assert.deepEqual(manifest.dependencies, {
     "@luscious-garden/aster-core": "workspace:^",
   });
@@ -351,7 +358,7 @@ test("retains exact public-import evaluation sets in fresh processes", async () 
     {
       subpath: "camera",
       exports: ["CameraVariants"],
-      modules: [...authoringModules, "generated/facades/icons/camera.js", iconDistributionPath("camera/outline")],
+      modules: [...authoringModules, "generated/facades/glyphs/camera.js", iconDistributionPath("camera/outline")],
     },
     {
       subpath: "collections/amellus",
@@ -432,14 +439,14 @@ test("keeps every per-icon module isolated from sibling definitions", async () =
 
 test("routes public definition subpaths through minimal generated facades", async () => {
   for (const [subpath, symbol] of Object.entries(iconSubpaths)) {
-    const facadePath = `generated/facades/icons/${subpath}.js`;
+    const facadePath = `generated/facades/icons/${subpath.split("/")[0]}/${subpath.split("/")[1]}.js`;
     const targetPath = iconDistributionPath(subpath);
     const source = await readFile(
       resolve(distributionRoot, facadePath),
       "utf8",
     );
     const declaration = await readFile(
-      resolve(distributionRoot, `generated/facades/icons/${subpath}.d.ts`),
+      resolve(distributionRoot, `generated/facades/icons/${subpath.split("/")[0]}/${subpath.split("/")[1]}.d.ts`),
       "utf8",
     );
     const expectedRuntime =
