@@ -7,7 +7,6 @@ import {
   type IconPaintType,
   type IconPresentation,
   type IconPresentationOverrideType,
-  type IconRenderOptions,
 } from "@luscious-garden/aster-core";
 import { SvgRenderError } from "../../error/index.js";
 import { svgRenderOptionsSchema } from "../constants/svg-render-options-schema.constant.js";
@@ -41,43 +40,43 @@ export class SvgRenderOptionsNormaliser {
    */
   normalise(
     definition: IconDefinition,
-    value: IconRenderOptions | undefined,
+    value: unknown,
   ): ISvgRenderContext {
-    const options =
+    const options: Readonly<Record<string, unknown>> =
       value === undefined
         ? Object.freeze({})
         : this.#exactFields(this.#record(value, "options"));
 
     const size =
-      "size" in options
+      Object.hasOwn(options, "size")
         ? this.#number(options.size, "options.size", true)
         : undefined;
     const colour =
-      "colour" in options
+      Object.hasOwn(options, "colour")
         ? this.#paint(options.colour, "options.colour", false)
         : undefined;
     const fill =
-      "fill" in options
+      Object.hasOwn(options, "fill")
         ? this.#paint(options.fill, "options.fill", true)
         : undefined;
     const stroke =
-      "stroke" in options
+      Object.hasOwn(options, "stroke")
         ? this.#paint(options.stroke, "options.stroke", true)
         : undefined;
     const strokeWidth =
-      "strokeWidth" in options
+      Object.hasOwn(options, "strokeWidth")
         ? this.#number(options.strokeWidth, "options.strokeWidth", false)
         : undefined;
     const label =
-      "label" in options ? this.#text(options.label, "options.label") : undefined;
+      Object.hasOwn(options, "label") ? this.#text(options.label, "options.label") : undefined;
     const title =
-      "title" in options ? this.#text(options.title, "options.title") : undefined;
+      Object.hasOwn(options, "title") ? this.#text(options.title, "options.title") : undefined;
     const decorative =
-      "decorative" in options
+      Object.hasOwn(options, "decorative")
         ? this.#boolean(options.decorative, "options.decorative")
         : label === undefined && title === undefined;
     const direction =
-      "direction" in options
+      Object.hasOwn(options, "direction")
         ? this.#direction(options.direction, "options.direction")
         : iconDirections[0];
     const accessibleName = label ?? title;
@@ -97,14 +96,16 @@ export class SvgRenderOptionsNormaliser {
     }
 
     const policy = definition.metadata.presentation;
+    const defaultSize = Object.hasOwn(policy, "defaultSize") ? policy.defaultSize : undefined;
+    const minimumSize = Object.hasOwn(policy, "minimumSize") ? policy.minimumSize : undefined;
     if (
       size !== undefined &&
-      policy.minimumSize !== undefined &&
-      size < policy.minimumSize
+      minimumSize !== undefined &&
+      size < minimumSize
     ) {
       throw new SvgRenderError(
         "options.size",
-        `cannot be smaller than icon minimum ${String(policy.minimumSize)}`,
+        `cannot be smaller than icon minimum ${String(minimumSize)}`,
       );
     }
 
@@ -127,24 +128,24 @@ export class SvgRenderOptionsNormaliser {
       ...(stroke === undefined ? {} : { stroke }),
       ...(strokeWidth === undefined ? {} : { strokeWidth }),
     });
-    const width = size ?? policy.defaultSize ?? definition.viewBox.width;
-    const height = size ?? policy.defaultSize ?? definition.viewBox.height;
+    const width = size ?? defaultSize ?? definition.viewBox.width;
+    const height = size ?? defaultSize ?? definition.viewBox.height;
 
     return Object.freeze({
       definition,
       width,
       height,
-      ...(colour === undefined ? {} : { colour }),
+      colour,
       presentationOverrides,
       decorative,
-      ...(accessibleName === undefined ? {} : { accessibleName }),
-      ...(title === undefined ? {} : { title }),
+      accessibleName,
+      title,
       direction,
     });
   }
 
   /**
-   * @description Accepts one plain closed options object.
+   * @description Accepts an ordinary or null-prototype options record before field inspection.
    * @param value - Unknown candidate value.
    * @param path - Logical value path.
    * @returns Candidate record.
@@ -164,13 +165,14 @@ export class SvgRenderOptionsNormaliser {
 
   /**
    * @description Captures own enumerable data fields from the exact portable option schema.
+   * @remarks The private snapshot has no prototype, so inherited setters cannot intercept capture.
    * @param value - Candidate option record.
    * @returns Frozen isolated option values safe for subsequent normalisation.
    */
   #exactFields(
     value: Record<string, unknown>,
   ): Readonly<Record<string, unknown>> {
-    const accepted: Record<string, unknown> = {};
+    const accepted = Object.create(null) as Record<string, unknown>;
 
     for (const field of Reflect.ownKeys(value)) {
       if (typeof field !== "string") {
