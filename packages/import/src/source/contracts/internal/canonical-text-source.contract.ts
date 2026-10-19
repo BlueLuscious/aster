@@ -1,6 +1,6 @@
 /**
  * @description Exact decoded textual source accepted by a private Import adapter.
- * @remarks Content is strict UTF-8 text without a byte-order mark. Newline sequences remain
+ * @remarks Content is decoded Unicode text without a byte-order mark. Newline sequences remain
  * unchanged so offsets continue to identify the canonical input.
  */
 export interface ICanonicalTextSource {
