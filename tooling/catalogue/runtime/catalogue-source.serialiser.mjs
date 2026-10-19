@@ -177,11 +177,11 @@ export class CatalogueSourceSerialiser {
   #identity(identity, indentation) {
     const prefix = "  ".repeat(indentation);
     const fields = [
-      ...(identity.namespace === undefined
+      ...(!Object.hasOwn(identity, "namespace") || identity.namespace === undefined
         ? []
         : [`namespace: ${JSON.stringify(identity.namespace)},`]),
       `name: ${JSON.stringify(identity.name)},`,
-      ...(identity.variant === undefined
+      ...(!Object.hasOwn(identity, "variant") || identity.variant === undefined
         ? []
         : [`variant: ${JSON.stringify(identity.variant)},`]),
     ];

@@ -195,6 +195,12 @@ export class CatalogueSourceManifestInspector {
    * @returns {{ namespace?: string, name: string, variant?: string }} Frozen portable identity.
    */
   #identity(identity, namespace, familyKind) {
+    if (namespace !== undefined && !this.#slugPattern.test(namespace)) {
+      throw new CatalogueSourceError(
+        `Canonical ${familyKind} ${identity.name} requires a canonical namespace slug.`,
+      );
+    }
+
     return Object.freeze({
       ...(namespace === undefined ? {} : { namespace }),
       name: identity.name,

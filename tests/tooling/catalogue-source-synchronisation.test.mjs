@@ -89,6 +89,31 @@ function pascalCase(slug) {
     .join("");
 }
 
+test("rejects non-canonical authored namespaces before replacing any generated output", async () => {
+  const root = await createPackageFixture();
+  try {
+    await synchroniseIconsCatalogue(root);
+    const expected = await readGeneratedOutputs(root);
+    for (const relativePath of [
+      "src/glyphs/a/alpha-icon/alpha-icon-outline.icon.ts",
+      "src/collections/s/sample/sample.collection.ts",
+    ]) {
+      const sourcePath = resolve(root, relativePath);
+      const original = await readFile(sourcePath, "utf8");
+      for (const namespace of ["", " aster ", "UpperCase", "two/parts"]) {
+        await writeFile(sourcePath, original.replace(
+          "identity: {", `identity: { namespace: ${JSON.stringify(namespace)},`,
+        ), "utf8");
+        await assert.rejects(synchroniseIconsCatalogue(root), /canonical namespace slug/u);
+        assert.deepEqual(await readGeneratedOutputs(root), expected);
+      }
+      await writeFile(sourcePath, original, "utf8");
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 function iconSource(name, variant = "outline") {
   const symbol = `${pascalCase(name)}${pascalCase(variant)}`;
 

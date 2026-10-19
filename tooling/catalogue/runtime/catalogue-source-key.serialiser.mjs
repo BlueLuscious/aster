@@ -12,10 +12,13 @@ export class CatalogueSourceKeySerialiser {
    * @returns {string} Canonical textual distribution key.
    */
   serialise(familyKind, identity) {
-    const namespace = identity.namespace === undefined
+    const namespace = !Object.hasOwn(identity, "namespace") || identity.namespace === undefined
       ? ""
       : `${identity.namespace}/`;
-    if (familyKind === catalogueSourceFamilyKinds.icon && identity.variant === undefined) {
+    if (
+      familyKind === catalogueSourceFamilyKinds.icon
+      && (!Object.hasOwn(identity, "variant") || identity.variant === undefined)
+    ) {
       throw new CatalogueSourceError(`Canonical icon ${identity.name} requires an explicit variant.`);
     }
 

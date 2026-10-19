@@ -34,7 +34,7 @@ This frozen dictionary loads all distributed treatments of Camera, currently onl
 It has no default and is not itself renderable. Use the individual subpath to load just one
 treatment. See the
 [Glyphs guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/glyphs/index.md)
-for exact keys and the explicit-treatment migration.
+for exact keys and treatment identities.
 
 ### Collections
 
@@ -49,7 +49,7 @@ const orderedIcons = Amellus.members;
 
 See the
 [Collections guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/icons/collections/index.md)
-for the contract and export-naming migration.
+for the collection contract and named exports.
 
 Use an individual subpath when only one icon is needed; a collection import evaluates all its
 declared members. Installation acquires the complete package, independently of runtime imports.

@@ -81,7 +81,8 @@ export class CatalogueSourceRelationshipInspector {
             `${collection.sourcePath} collection variant ${reference.alias}.${reference.variantPropertyName} must match the canonical variant property.`,
           );
         }
-        const glyph = JSON.stringify([identity.namespace, identity.name]);
+        const namespace = Object.hasOwn(identity, "namespace") ? identity.namespace : undefined;
+        const glyph = JSON.stringify([namespace, identity.name]);
         const existing = groups.get(reference.alias);
         if (existing !== undefined && existing !== glyph) {
           throw new CatalogueSourceError(

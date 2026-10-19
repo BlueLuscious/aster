@@ -100,7 +100,7 @@ export class CatalogueSourceFacadePlanner {
    * @returns {readonly import("../contracts/internal/catalogue-source-output.contract.mjs").ICatalogueSourceOutput[]} Derived dictionary outputs.
    */
   #glyphs(packageRoot, family, modules, publicSubpaths) {
-    /** @description Canonical treatments indexed by their unique public glyph path. @type {Map<string, import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule[]>} */
+    /** @type {Map<string, import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule[]>} */
     const groups = new Map();
 
     for (const module of modules) {
@@ -108,9 +108,14 @@ export class CatalogueSourceFacadePlanner {
       if (group === undefined) {
         groups.set(module.name, [module]);
       } else {
+        const firstIdentity = group[0]?.manifest.identity;
+        const identity = module.manifest.identity;
+        const firstNamespace = firstIdentity !== undefined && Object.hasOwn(firstIdentity, "namespace")
+          ? firstIdentity.namespace
+          : undefined;
+        const namespace = Object.hasOwn(identity, "namespace") ? identity.namespace : undefined;
         if (
-          group[0]?.manifest.identity.namespace !==
-          module.manifest.identity.namespace
+          firstNamespace !== namespace
         ) {
           throw new CatalogueSourceError(
             `Ambiguous generated glyph public subpath across namespaces: ${module.name}`,
