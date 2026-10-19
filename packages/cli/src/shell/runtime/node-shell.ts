@@ -123,10 +123,12 @@ export class NodeShell {
     try {
       const parsed = this.#parser.parse(argv);
       const invocation = parsed.invocation;
+      const output = Object.hasOwn(parsed, "output") ? parsed.output : undefined;
+      const replace = Object.hasOwn(parsed, "replace") ? parsed.replace : undefined;
       const context = invocation.command === asterCommandNames.version
-        && (invocation.dependencies === true
-          || invocation.location === true
-          || (invocation.scope !== undefined && invocation.scope !== "cli"))
+          && ((Object.hasOwn(invocation, "dependencies") && invocation.dependencies === true)
+            || (Object.hasOwn(invocation, "location") && invocation.location === true)
+            || (Object.hasOwn(invocation, "scope") && invocation.scope !== undefined && invocation.scope !== "cli"))
         ? await this.#versionContext(invocation)
         : this.#context;
       const result = await AsterCommands.execute(
@@ -143,14 +145,14 @@ export class NodeShell {
         const publication = await this.#reviewPublisher.publish(
           result.payload.plan,
           this.#currentDirectory,
-          parsed.output ?? reviewOutputSchema.defaultRoot,
-          parsed.replace ?? false,
+          output ?? reviewOutputSchema.defaultRoot,
+          replace ?? false,
         );
         return this.#output.presentReviewPublication(publication);
       }
 
       if (
-        parsed.output !== undefined
+        output !== undefined
         && result.ok
         && result.payload.kind === asterCommandPayloadKinds.export
       ) {
@@ -158,7 +160,7 @@ export class NodeShell {
         const publication = await this.#exportPublisher.publish(
           result.payload.plan,
           this.#currentDirectory,
-          parsed.output,
+          output,
         );
         return this.#output.presentPublication(publication);
       }
@@ -203,15 +205,18 @@ export class NodeShell {
   async #versionContext(
     invocation: Extract<AsterCommandInvocationType, { command: typeof asterCommandNames.version }>,
   ): Promise<AsterCommandContext> {
-    const cliLocation = invocation.location === true
+    const scopeValue = Object.hasOwn(invocation, "scope") ? invocation.scope : undefined;
+    const dependenciesValue = Object.hasOwn(invocation, "dependencies") ? invocation.dependencies : undefined;
+    const locationValue = Object.hasOwn(invocation, "location") ? invocation.location : undefined;
+    const cliLocation = locationValue === true
       ? await this.#readCliLocation()
       : undefined;
 
-    if (invocation.dependencies === true) {
-      const cli = invocation.scope === undefined || invocation.scope === "cli";
+    if (dependenciesValue === true) {
+      const cli = scopeValue === undefined || scopeValue === "cli";
       const groups = cli
         ? await this.#readCliDependencies()
-        : await this.#readProjectDependencies(invocation.scope);
+        : await this.#readProjectDependencies(scopeValue);
       return Object.freeze({
         ...this.#context,
         packageDependencies: Object.freeze({
@@ -222,7 +227,7 @@ export class NodeShell {
       });
     }
 
-    if (invocation.scope === undefined || invocation.scope === "cli") {
+    if (scopeValue === undefined || scopeValue === "cli") {
       return Object.freeze({
         ...this.#context,
         ...(cliLocation === undefined ? {} : { cliLocation }),
@@ -232,7 +237,7 @@ export class NodeShell {
     const { ProjectPackageVersionReader } = await import(
       "../version/runtime/project-package-version.reader.js"
     );
-    const packages = await new ProjectPackageVersionReader(this.#currentDirectory).read(invocation.scope);
+    const packages = await new ProjectPackageVersionReader(this.#currentDirectory).read(scopeValue);
     const packageVersions = Object.freeze({ source: asterPackageVersionSources.project, packages });
     return Object.freeze({ ...this.#context, packageVersions });
   }

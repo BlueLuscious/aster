@@ -10,10 +10,11 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
 import process from "node:process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { NodeShell } from "../../dist/shell/runtime/node-shell.js";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
@@ -94,6 +95,49 @@ function run(arguments_, options = {}) {
     ...options,
   });
 }
+
+test("does not acquire publication or version intent from inherited host fields", async () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-inherited-"));
+  try {
+    const shell = new NodeShell("Aster", packageVersion, root, new URL("../../dist/shell/aster.js", import.meta.url));
+    const cases = [
+      ["version", "--json"],
+      ["export", "icon", representativeIdentity, "--json"],
+      ["review", "collection", representativeCollectionIdentity, "--json"],
+    ];
+    const expected = [];
+    for (const arguments_ of cases) {
+      const result = await shell.execute(arguments_);
+      assert.equal(result.exitCode, 0);
+      expected.push(result);
+    }
+    for (const field of ["output", "replace", "scope", "dependencies", "location"]) {
+      const previous = Object.getOwnPropertyDescriptor(Object.prototype, field);
+      let reads = 0;
+      const actual = [];
+      try {
+        Object.defineProperty(Object.prototype, field, {
+          configurable: true,
+          get() { reads += 1; throw new Error(`Unexpected inherited ${field}`); },
+        });
+        for (const arguments_ of cases) {
+          actual.push(await shell.execute(arguments_));
+        }
+      } finally {
+        if (previous === undefined) {
+          Reflect.deleteProperty(Object.prototype, field);
+        } else {
+          Object.defineProperty(Object.prototype, field, previous);
+        }
+      }
+      assert.equal(reads, 0, field);
+      assert.deepEqual(actual, expected, field);
+    }
+  } finally {
+    assert.match(relative(resolve(tmpdir()), resolve(root)), /^aster-cli-shell-inherited-[^\\/]+$/u);
+    rmSync(root, { recursive: true, force: true });
+  }
+});
 
 test("renders default and selected human help without loading shell state", () => {
   const complete = run([]);

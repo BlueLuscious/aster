@@ -62,7 +62,7 @@ export class CatalogueDefinitionConsistencyValidator {
       return `collection ${identity} loader returned metadata inconsistent with discovery`;
     }
 
-    const discoveredMembers = record.icons.map((member) =>
+    const discoveredMembers = record.memberIdentities.map((member) =>
       this.#identities.icon(member),
     );
     const loadedMembers = definition.members.map((member) =>
@@ -117,12 +117,12 @@ export class CatalogueDefinitionConsistencyValidator {
     loaded: IconMetadata,
   ): boolean {
     return discovery.displayName === loaded.displayName
-      && this.#sequenceMatches(discovery.tags, loaded.tags)
+      && this.#sequenceMatches((Object.hasOwn(discovery, "tags") ? discovery.tags : undefined), (Object.hasOwn(loaded, "tags") ? loaded.tags : undefined))
       && discovery.rtl === loaded.rtl
-      && discovery.licence === loaded.licence
-      && discovery.attribution === loaded.attribution
+      && (Object.hasOwn(discovery, "licence") ? discovery.licence : undefined) === (Object.hasOwn(loaded, "licence") ? loaded.licence : undefined)
+      && (Object.hasOwn(discovery, "attribution") ? discovery.attribution : undefined) === (Object.hasOwn(loaded, "attribution") ? loaded.attribution : undefined)
       && discovery.deprecated === loaded.deprecated
-      && this.#iconIdentityMatches(discovery.replacedBy, loaded.replacedBy);
+      && this.#iconIdentityMatches((Object.hasOwn(discovery, "replacedBy") ? discovery.replacedBy : undefined), (Object.hasOwn(loaded, "replacedBy") ? loaded.replacedBy : undefined));
   }
 
   /**
@@ -136,10 +136,10 @@ export class CatalogueDefinitionConsistencyValidator {
     loaded: CollectionMetadata,
   ): boolean {
     return discovery.displayName === loaded.displayName
-      && discovery.description === loaded.description
-      && this.#sequenceMatches(discovery.tags, loaded.tags)
-      && discovery.licence === loaded.licence
-      && discovery.attribution === loaded.attribution;
+      && (Object.hasOwn(discovery, "description") ? discovery.description : undefined) === (Object.hasOwn(loaded, "description") ? loaded.description : undefined)
+      && this.#sequenceMatches((Object.hasOwn(discovery, "tags") ? discovery.tags : undefined), (Object.hasOwn(loaded, "tags") ? loaded.tags : undefined))
+      && (Object.hasOwn(discovery, "licence") ? discovery.licence : undefined) === (Object.hasOwn(loaded, "licence") ? loaded.licence : undefined)
+      && (Object.hasOwn(discovery, "attribution") ? discovery.attribution : undefined) === (Object.hasOwn(loaded, "attribution") ? loaded.attribution : undefined);
   }
 
   /**

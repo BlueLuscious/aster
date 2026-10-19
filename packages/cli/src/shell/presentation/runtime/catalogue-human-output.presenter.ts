@@ -41,7 +41,7 @@ export class CatalogueHumanOutputPresenter {
         return this.#text.sequence(
           "Collections",
           payload.collections.map((collection) =>
-            `${this.#identities.format(collection.identity)} [${collection.catalogue}] - ${collection.metadata.displayName} (${this.#text.count(collection.icons.length, "icon")})`,
+            `${this.#identities.format(collection.identity)} [${collection.catalogue}] - ${collection.metadata.displayName} (${this.#text.count(collection.memberIdentities.length, "icon")})`,
           ),
         );
       case asterCommandPayloadKinds.iconList:
@@ -93,7 +93,7 @@ export class CatalogueHumanOutputPresenter {
    * @returns Deterministic multi-line icon details.
    */
   #iconDetails(icon: CatalogueIconResult): string {
-    const tags = icon.metadata.tags?.join(", ") ?? "none";
+    const tags = (Object.hasOwn(icon.metadata, "tags") ? icon.metadata.tags?.join(", ") : undefined) ?? "none";
     const memberships = icon.memberships.length === 0
       ? "none"
       : icon.memberships
@@ -125,10 +125,10 @@ export class CatalogueHumanOutputPresenter {
    * @returns Deterministic multi-line collection details.
    */
   #collectionDetails(collection: CatalogueCollectionResult): string {
-    const tags = collection.metadata.tags?.join(", ") ?? "none";
-    const icons = collection.icons.length === 0
+    const tags = (Object.hasOwn(collection.metadata, "tags") ? collection.metadata.tags?.join(", ") : undefined) ?? "none";
+    const icons = collection.memberIdentities.length === 0
       ? "none"
-      : collection.icons
+      : collection.memberIdentities
           .map((identity) => this.#identities.format(identity))
           .join(", ");
     return [

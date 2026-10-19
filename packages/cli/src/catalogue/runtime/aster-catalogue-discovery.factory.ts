@@ -58,7 +58,7 @@ export class AsterCatalogueDiscoveryFactory {
         return Object.freeze({
           identity: collection.identity,
           metadata: collection.metadata,
-          icons: Object.freeze(members),
+          memberIdentities: Object.freeze(members),
         });
       },
     );
@@ -67,14 +67,14 @@ export class AsterCatalogueDiscoveryFactory {
         identity: icon.identity,
         metadata: Object.freeze({
           displayName: icon.displayName,
-          ...(icon.tags === undefined ? {} : { tags: icon.tags }),
+          ...(!Object.hasOwn(icon, "tags") || icon.tags === undefined ? {} : { tags: icon.tags }),
           rtl: icon.rtl,
-          ...(icon.licence === undefined ? {} : { licence: icon.licence }),
-          ...(icon.attribution === undefined
+          ...(!Object.hasOwn(icon, "licence") || icon.licence === undefined ? {} : { licence: icon.licence }),
+          ...(!Object.hasOwn(icon, "attribution") || icon.attribution === undefined
             ? {}
             : { attribution: icon.attribution }),
           deprecated: icon.deprecated,
-          ...(icon.replacedBy === undefined
+          ...(!Object.hasOwn(icon, "replacedBy") || icon.replacedBy === undefined
             ? {}
             : { replacedBy: icon.replacedBy }),
         }),

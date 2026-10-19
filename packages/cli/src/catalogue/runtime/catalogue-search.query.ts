@@ -75,19 +75,23 @@ export class CatalogueSearchQuery {
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
+    const tagsValue = Object.hasOwn(invocation, "tags") ? invocation.tags : undefined;
+    const collectionValue = Object.hasOwn(invocation, "collection") ? invocation.collection : undefined;
+    const catalogueValue = Object.hasOwn(invocation, "catalogue") ? invocation.catalogue : undefined;
+
     const loaded = await this.#loader.discover(context.catalogues);
 
     if (!loaded.accepted) {
       return this.#commandResults.failure(asterCommandNames.search, loaded.diagnostic);
     }
 
-    const selected = this.#scope.selectCatalogues(loaded.value, invocation.catalogue);
+    const selected = this.#scope.selectCatalogues(loaded.value, catalogueValue);
 
     if (!selected.accepted) {
       return this.#commandResults.failure(asterCommandNames.search, selected.diagnostic);
     }
 
-    const collection = this.#scope.acceptCollection(selected.value, invocation.collection);
+    const collection = this.#scope.acceptCollection(selected.value, collectionValue);
 
     if (!collection.accepted) {
       return this.#commandResults.failure(asterCommandNames.search, collection.diagnostic);
@@ -99,13 +103,13 @@ export class CatalogueSearchQuery {
     for (const catalogue of selected.value) {
       for (const record of catalogue.icons) {
         if (
-          this.#scope.matchesCollection(record, invocation.collection) &&
-          this.#scope.matchesTags(record.metadata.tags, invocation.tags) &&
+          this.#scope.matchesCollection(record, collectionValue) &&
+          this.#scope.matchesTags(Object.hasOwn(record.metadata, "tags") ? record.metadata.tags : undefined, tagsValue) &&
           this.#matchesTerms([
             this.#identities.icon(record.identity),
             record.metadata.displayName.toLowerCase(),
-            ...(record.metadata.tags ?? []),
-            ...(record.searchTerms ?? []),
+            ...(Object.hasOwn(record.metadata, "tags") ? record.metadata.tags ?? [] : []),
+            ...(Object.hasOwn(record, "searchTerms") ? record.searchTerms ?? [] : []),
           ], terms)
         ) {
           results.push(this.#catalogueResults.icon(catalogue.identity, record));
@@ -116,13 +120,13 @@ export class CatalogueSearchQuery {
         const identity = this.#identities.collection(record.identity);
 
         if (
-          (invocation.collection === undefined || invocation.collection === identity) &&
-          this.#scope.matchesTags(record.metadata.tags, invocation.tags) &&
+          (collectionValue === undefined || collectionValue === identity) &&
+          this.#scope.matchesTags(Object.hasOwn(record.metadata, "tags") ? record.metadata.tags : undefined, tagsValue) &&
           this.#matchesTerms([
             identity,
             record.metadata.displayName.toLowerCase(),
-            ...(record.metadata.tags ?? []),
-            ...(record.searchTerms ?? []),
+            ...(Object.hasOwn(record.metadata, "tags") ? record.metadata.tags ?? [] : []),
+            ...(Object.hasOwn(record, "searchTerms") ? record.searchTerms ?? [] : []),
           ], terms)
         ) {
           results.push(this.#catalogueResults.collection(catalogue.identity, record));

@@ -212,7 +212,7 @@ export class CommandKernel implements AsterCommandSet {
       return undefined;
     }
 
-    if (descriptor === undefined || !("value" in descriptor)) {
+    if (descriptor === undefined || !Object.hasOwn(descriptor, "value")) {
       return undefined;
     }
 

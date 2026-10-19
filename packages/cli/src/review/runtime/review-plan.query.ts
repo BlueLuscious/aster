@@ -54,10 +54,12 @@ export class ReviewPlanQuery {
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
+    const catalogueValue = Object.hasOwn(invocation, "catalogue") ? invocation.catalogue : undefined;
+
     const selection = await this.#selections.select(
       invocation.subject,
       invocation.identity,
-      invocation.catalogue,
+      catalogueValue,
       context,
     );
 

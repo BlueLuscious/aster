@@ -146,7 +146,12 @@ export class ExportCommandLineOptionParser {
       );
     }
 
-    parsed[field] = value;
+    Object.defineProperty(parsed, field, {
+      value,
+      enumerable: true,
+      configurable: true,
+      writable: true,
+    });
   }
 
   /**

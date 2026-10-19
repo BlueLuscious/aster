@@ -50,7 +50,9 @@ export class CatalogueResultFactory {
           kind: catalogueResultKinds.glyph,
           catalogue: catalogue.identity,
           identity: Object.freeze({
-            ...(first.identity.namespace === undefined ? {} : { namespace: first.identity.namespace }),
+            ...(!Object.hasOwn(first.identity, "namespace") || first.identity.namespace === undefined
+              ? {}
+              : { namespace: first.identity.namespace }),
             name: first.identity.name,
           }),
           variants: Object.freeze(records.map((record) => this.icon(catalogue.identity, record))),
@@ -105,7 +107,7 @@ export class CatalogueResultFactory {
       catalogue,
       identity: record.identity,
       metadata: record.metadata,
-      icons: Object.freeze([...record.icons]),
+      memberIdentities: Object.freeze([...record.memberIdentities]),
     });
   }
 }

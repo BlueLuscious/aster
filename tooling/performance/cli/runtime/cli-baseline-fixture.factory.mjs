@@ -45,7 +45,7 @@ export class CliBaselineFixtureFactory {
       collections: Object.freeze(snapshot.collections.map((record) => Object.freeze({
         identity: record.definition.identity,
         metadata: record.definition.metadata,
-        icons: Object.freeze(
+        memberIdentities: Object.freeze(
           record.definition.members.map((member) => member.identity),
         ),
       }))),

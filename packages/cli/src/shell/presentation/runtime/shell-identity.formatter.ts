@@ -10,10 +10,10 @@ export class ShellIdentityFormatter {
    * @returns Canonical `[namespace/]name[@variant]` text.
    */
   format(identity: IconIdentity | IconGlyphIdentity | CollectionIdentity): string {
-    const namespace = identity.namespace === undefined
+    const namespace = !Object.hasOwn(identity, "namespace") || identity.namespace === undefined
       ? ""
       : `${identity.namespace}/`;
-    const variant = "variant" in identity
+    const variant = Object.hasOwn(identity, "variant") && "variant" in identity
       ? `@${identity.variant}`
       : "";
     return `${namespace}${identity.name}${variant}`;

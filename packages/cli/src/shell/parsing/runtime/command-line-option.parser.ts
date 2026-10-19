@@ -19,7 +19,12 @@ export class CommandLineOptionParser {
     accepted: readonly string[],
     command: AsterCommandNameType,
   ): TParsedCommandOptions {
-    const options: TParsedCommandOptions = { tags: [] };
+    const options: TParsedCommandOptions = {
+      catalogue: undefined,
+      collection: undefined,
+      glyph: undefined,
+      tags: [],
+    };
 
     for (let index = 0; index < tokens.length; index += 1) {
       const option = tokens[index];

@@ -71,10 +71,6 @@ distributed artefacts through their canonical producers.
   notes own changes and migrations. Prepare documentation and approved notes before packaging,
   rather than planning routine corrections after publication. Do not invent release versions.
 
-Remaining naming candidates include collection-discovery/result `icons` holding member identities
-and `PackageManifestReader.version()` and `installed()`. Recheck whether earlier work has already
-resolved them; these are not pre-approved renames.
-
 Public changes require explicit [compatibility and migration review](project/versioning.md).
 Regenerate outputs through their producers and verify native, packed and workflow consumers.
 Do not rewrite approved release evidence or legal text. This maintenance gate does not authorise

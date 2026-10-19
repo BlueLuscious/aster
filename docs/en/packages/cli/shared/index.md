@@ -23,9 +23,14 @@ aliases or inferred namespaces.
 `StructuredDataInspector` accepts records whose prototype is either `Object.prototype` or `null`.
 Every accepted field must be an own enumerable data property from a caller-supplied closed set.
 Symbols, hidden fields, accessors, custom prototypes, unknown fields, sparse arrays, array
-subclasses, and authored array properties are rejected. Returned containers are shallow frozen
-snapshots; each owning normaliser remains responsible for validating and isolating nested domain
-values.
+subclasses, and authored array properties are rejected. Record snapshots have a null prototype;
+arrays retain the ordinary array prototype. Both are shallow frozen. Each owning normaliser remains
+responsible for validating nested values and constructing the ordinary public domain records.
+
+Descriptor admission requires an own `value` field, not an inherited claim on the descriptor.
+Record snapshots copy accepted own fields without assigning through a prototype setter.
+Downstream queries, identity projections and presenters preserve optional-field absence rather
+than acquiring values from the host prototype; taking a shallow snapshot alone is not that guarantee.
 
 A Proxy receives no special trust. It can only cross a data boundary when every observed
 prototype, key, and descriptor satisfies the same closed invariants; thrown reflective traps are

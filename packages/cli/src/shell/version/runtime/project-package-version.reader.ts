@@ -100,7 +100,7 @@ export class ProjectPackageVersionReader {
         return Object.freeze({ kind: "absent" });
       }
 
-      await this.#manifests.version(manifestPath, name);
+      await this.#manifests.readVersionRecord(manifestPath, name);
       return Object.freeze({ kind: "found", manifestPath });
     } catch {
       return Object.freeze({ kind: "unavailable" });
@@ -217,7 +217,7 @@ export class ProjectPackageVersionReader {
     const declarations = new Map<string, boolean>();
 
     for (const field of ["dependencies", "devDependencies", "optionalDependencies"] as const) {
-      const section = manifest[field];
+      const section = Object.hasOwn(manifest, field) ? manifest[field] : undefined;
 
       if (section === undefined) {
         continue;
@@ -264,7 +264,7 @@ export class ProjectPackageVersionReader {
     }
 
     try {
-      const record = await this.#manifests.version(path, expectedName);
+      const record = await this.#manifests.readVersionRecord(path, expectedName);
       return Object.freeze({ record, manifestPath: path });
     } catch {
       throw new ProjectPackageVersionError(`Invalid installed manifest for ${expectedName}`);

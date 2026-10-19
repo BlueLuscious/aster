@@ -17,7 +17,7 @@ export class InstalledPackageDependencyReader {
    * @returns Frozen root group with independently resolved dependency versions.
    */
   async read(manifestPath: string, expectedName: string): Promise<AsterPackageDependencyGroup> {
-    const { root, dependencyNames } = await this.#manifests.installed(manifestPath, expectedName);
+    const { root, dependencyNames } = await this.#manifests.readInstalledRoot(manifestPath, expectedName);
     const base = pathToFileURL(manifestPath).href;
     const dependencies = [];
 
@@ -28,7 +28,7 @@ export class InstalledPackageDependencyReader {
         throw new TypeError(`Missing installed Aster dependency ${name}`);
       }
 
-      dependencies.push(await this.#manifests.version(path, name));
+      dependencies.push(await this.#manifests.readVersionRecord(path, name));
     }
 
     return Object.freeze({ root, dependencies: Object.freeze(dependencies) });

@@ -280,7 +280,7 @@ test("isolates nested collection discovery membership from provider mutation", a
     collections: [{
       identity: { namespace: "testing", name: "mutable" },
       metadata: { displayName: "Mutable", tags: ["original"] },
-      icons: [{ namespace: "testing", name: "member", variant: "outline" }],
+      memberIdentities: [{ namespace: "testing", name: "member", variant: "outline" }],
     }],
   };
   const provider: CatalogueProvider = {
@@ -306,7 +306,7 @@ test("isolates nested collection discovery membership from provider mutation", a
   );
 
   source.collections[0]!.metadata.tags.push("changed");
-  source.collections[0]!.icons[0]!.name = "changed";
+  source.collections[0]!.memberIdentities[0]!.name = "changed";
   source.icons[0]!.memberships[0]!.name = "changed";
 
   assert.equal(result.ok, true);
@@ -314,12 +314,12 @@ test("isolates nested collection discovery membership from provider mutation", a
 
   if (result.ok && result.payload.kind === "collection-show") {
     assert.deepEqual(result.payload.collection.metadata.tags, ["original"]);
-    assert.deepEqual(result.payload.collection.icons, [
+    assert.deepEqual(result.payload.collection.memberIdentities, [
       { namespace: "testing", name: "member", variant: "outline" },
     ]);
     assert.ok(Object.isFrozen(result.payload.collection.metadata.tags));
-    assert.ok(Object.isFrozen(result.payload.collection.icons));
-    assert.ok(Object.isFrozen(result.payload.collection.icons[0]));
+    assert.ok(Object.isFrozen(result.payload.collection.memberIdentities));
+    assert.ok(Object.isFrozen(result.payload.collection.memberIdentities[0]));
   }
 
   if (iconResult.ok && iconResult.payload.kind === "icon-show") {
@@ -379,7 +379,7 @@ test("discovers an explicitly provided empty collection", async () => {
 
   if (result.ok && result.payload.kind === "collection-list") {
     assert.equal(result.payload.collections.length, 1);
-    assert.deepEqual(result.payload.collections[0]?.icons, []);
+    assert.deepEqual(result.payload.collections[0]?.memberIdentities, []);
   }
 });
 

@@ -31,6 +31,11 @@ Provider provenance, computed search terms, and many-to-many catalogue membershi
 portable Core metadata. Equal portable identities from different providers remain distinct
 catalogue results until exact lookup rules resolve or reject them.
 
+Collection discovery records and collection results expose `memberIdentities: readonly IconIdentity[]`.
+This ordered metadata-only sequence contains no definitions or collection-local aliases. The
+provider's top-level `icons` array contains complete discovery records; Core's `members` list
+contains concrete definitions. These separate representations have different owners and purposes.
+
 ## Provider lifecycle
 
 `CatalogueProvider.discover()` returns metadata only. `loadIcon()` and `loadCollection()` resolve
@@ -106,11 +111,11 @@ and exact cross-provider ambiguity is `005`. Discovery duplicates and provider f
 their existing conflict/unavailable diagnostics. All these metadata queries invoke no definition
 loader; [Shell](../shell/index.md#command-grammar) owns argv and presentation syntax.
 
-## Explicit treatment migration
+<a id="explicit-treatment-migration"></a>
 
-This is a breaking [current-source contract](../../../index.md#source-and-published-versions),
-not a claim about an already published CLI version. Replace an earlier glyph-only icon request
-according to its intent:
+## Explicit identity selection
+
+Choose the subject according to the operation's intent:
 
 ```sh
 aster show glyph aster/camera
@@ -118,13 +123,15 @@ aster show icon aster/camera@outline
 ```
 
 The first discovers available treatments; the second selects one concrete definition. Export and
-Review also require complete icon identities. For module imports, follow the
-[Icons migration](../../icons/glyphs/index.md#explicit-treatment-migration), not the CLI `@` spelling.
+Review also require complete icon identities. [Icons](../../icons/glyphs/index.md) owns module
+paths, which use `/` rather than the CLI identity's `@` treatment separator.
 
 Provider authors must supply explicit treatments in icon records, exact loader identities,
 collection member identities and replacement metadata. Keep discovery metadata geometry-free;
 glyph results are derived from it and do not require another provider capability. Version,
 dependency and CLI-location queries keep their existing local source semantics.
+The [source and registry boundary](../../../index.md#source-and-published-versions) explains
+availability; [versioned release notes](../releases/index.md) own changes and migrations.
 
 [Catalogue Runtime](runtime/index.md) documents internal acceptance and query composition.
 [CLI Workflow](../workflow.md) defines how hosts supply providers without an ambient registry.

@@ -82,7 +82,7 @@ also compares the ordered member identities and validates every loaded member ag
 icon discovery record. Results are isolated and deeply immutable even when a provider returns
 mutable authored data.
 
-Discovery collection records continue using their metadata-only `icons` identity array. They
+Discovery collection records expose their metadata-only `memberIdentities` array. They
 contain neither aliases nor complete definitions. Renaming a collection-local alias does not
 change CLI matching, member identities, export paths, or review output. The resolver indexes
 validated `definition.members` by canonical identity and produces canonically ordered selected
