@@ -69,9 +69,9 @@ export class CatalogueSourceRelationshipInspector {
           );
         }
 
-        if (reference.importedSymbol !== target.symbol) {
+        if (reference.importedSymbol !== target.exportName) {
           throw new CatalogueSourceError(
-            `${collection.sourcePath} must import ${target.symbol} from ${reference.moduleSpecifier}.`,
+            `${collection.sourcePath} must import ${target.exportName} from ${reference.moduleSpecifier}.`,
           );
         }
 

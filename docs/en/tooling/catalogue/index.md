@@ -104,12 +104,12 @@ caches last one complete inspection and are cleared before the next.
 | Contract | Responsibility and relationship |
 | --- | --- |
 | `ICatalogueSourceFamily` | Configures a family's Core factory, physical root and generated facade root. |
-| `ICatalogueSourceIdentity` | Carries path-owned name and symbol; treatment is required for icons and absent for collections. |
+| `ICatalogueSourceIdentity` | Carries path-owned name and `exportName`; treatment is required for icons and absent for collections. |
 | `ICatalogueCollectionMemberReference` | Retains the outer alias, treatment property and imported identifier, exported symbol and module specifier for relationship validation. |
 | `ICatalogueIconManifestData` | Carries statically extracted icon metadata without geometry. |
 | `ICatalogueCollectionManifestData` | Carries extracted collection metadata and ordered member keys. |
-| `ICatalogueIconManifestRecord` | Adds the canonical key, public symbol and identity to icon data for manifest serialisation. |
-| `ICatalogueCollectionManifestRecord` | Couples a canonical key, public symbol and identity with collection metadata and ordered member keys. |
+| `ICatalogueIconManifestRecord` | Adds the canonical key, `exportName` and identity to icon data for manifest serialisation. |
+| `ICatalogueCollectionManifestRecord` | Couples a canonical key, `exportName` and identity with collection metadata and ordered member keys. |
 | `ICatalogueSourceSyntaxInspection` | Couples extracted manifest data with syntax-owned member references. |
 | `ICatalogueSourceModule` | Combines path identity, source location, manifest data and relationships for a validated module. |
 | `ICatalogueSourceFamilyInspection` | Groups canonically ordered validated modules for one family. |

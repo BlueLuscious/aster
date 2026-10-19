@@ -319,7 +319,7 @@ test("derives suffix-free definition symbols from canonical source names", () =>
     { family: collections, path: "s/sample/sample.collection.ts", symbol: "Sample" },
     { family: collections, path: "s/sample-collection/sample-collection.collection.ts", symbol: "SampleCollection" },
   ]) {
-    assert.equal(layouts.normalise(path, family).symbol, symbol);
+    assert.equal(layouts.normalise(path, family).exportName, symbol);
     assert.equal(Object.hasOwn(family, "symbolSuffix"), false);
   }
 });
@@ -530,7 +530,7 @@ test("synchronises canonical modules deterministically and reports drift", async
     assert.match(manifest, /key: "fixture\/zeta@outline"/u);
     assert.match(manifest, /licence: "ISC"/u);
     assert.match(manifest, /members: Object\.freeze\(\["alpha-icon@outline"\]\)/u);
-    assert.match(manifest, /symbol: "Sample"/u);
+    assert.match(manifest, /exportName: "Sample"/u);
     assert.doesNotMatch(
       manifest,
       /\b(?:nodes|viewBox|presentation|Icon\.define|Collection\.define)\b/u,
@@ -755,7 +755,7 @@ test("adds and removes source modules across generated integrations", async () =
     ]);
     assert.match(
       await readFile(resolve(root, generatedOutputPaths.manifest), "utf8"),
-      /symbol: "MiddleOutline"/u,
+      /exportName: "MiddleOutline"/u,
     );
 
     await unlink(sourcePath);
@@ -991,7 +991,7 @@ test("derives a dictionary-only glyph facade from open treatment slugs", async (
     const manifest = outputs[generatedOutputPaths.manifest];
     const dynamic = outputs[generatedOutputPaths.dynamic];
     assert.match(manifest, /key: "camera@2-tone"/u);
-    assert.match(manifest, /symbol: "Camera2Tone"/u);
+    assert.match(manifest, /exportName: "Camera2Tone"/u);
     assert.match(manifest, /key: "camera@filled-dotted"/u);
     assert.match(dynamic, /facades\/icons\/camera\/2-tone\.js/u);
     const glyph = await readFile(resolve(root, "src/generated/facades/glyphs/camera.ts"), "utf8");

@@ -230,7 +230,7 @@ test("resolves isolated runtime and declaration facades without source files", a
     "if (cameraFromCollection !== CameraOutline || cameraAlias !== \"camera\" || !Object.values(collection.icons).flatMap(Object.values).every((member, index) => member === orderedMembers[index])) throw new Error(\"Packed collection membership mismatch.\");",
     "const iconEntry: IconManifestEntry | undefined = AsterIconManifest.find(({ key }) => key === \"aster/camera@outline\");",
     "const collectionEntry: CollectionManifestEntry | undefined = AsterCollectionManifest.find(({ key }) => key === \"amellus\");",
-    'if (collectionEntry?.symbol !== "Amellus" || Object.keys(collectionExports).join(",") !== collectionEntry.symbol) throw new Error("Packed collection must expose only its canonical manifest symbol.");',
+    'if (collectionEntry?.exportName !== "Amellus" || Object.keys(collectionExports).join(",") !== collectionEntry.exportName) throw new Error("Packed collection must expose only its canonical manifest symbol.");',
     'if (collectionExports.Amellus !== Amellus || collectionEntry.identity.name !== Amellus.identity.name || JSON.stringify(collectionEntry.metadata) !== JSON.stringify(Amellus.metadata)) throw new Error("Packed collection metadata or identity mismatch.");',
     'if (![Amellus, Amellus.identity, Amellus.metadata, Amellus.icons, Amellus.icons.camera, Amellus.members].every(Object.isFrozen)) throw new Error("Packed collection values must remain frozen.");',
     'if (Object.getPrototypeOf(Amellus.icons) !== null || Object.getPrototypeOf(Amellus.icons.camera) !== null) throw new Error("Packed collection dictionaries must be prototype-free.");',
@@ -257,7 +257,7 @@ test("resolves isolated runtime and declaration facades without source files", a
     "const loadedCollection = await collectionLoader();",
     'if (loadedIcon !== CameraOutline || loadedCollection !== Amellus || await iconLoader() !== CameraOutline || await collectionLoader() !== Amellus) throw new Error("Packed loaders must retain direct canonical objects.");',
     'if (loadedIcon !== CameraVariants.outline || cameraFromCollection !== CameraVariants.outline) throw new Error("Packed glyph leaves must retain canonical references.");',
-    "export const result = `${icon.identity.name}:${collection.identity.name}:${iconEntry?.symbol}:${collectionEntry?.symbol}:${loadedIcon.identity.name}:${loadedCollection.identity.name}:${orderedMembers === loadedCollection.members}`;",
+    "export const result = `${icon.identity.name}:${collection.identity.name}:${iconEntry?.exportName}:${collectionEntry?.exportName}:${loadedIcon.identity.name}:${loadedCollection.identity.name}:${orderedMembers === loadedCollection.members}`;",
     "",
   ].join("\n");
   await writeFile(resolve(consumerRoot, "consumer.ts"), source, "utf8");

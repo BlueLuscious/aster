@@ -4,6 +4,8 @@
 discriminator, host-owned logical `sourceId`, independently assigned portable identity and exact
 decoded content. `IconImportSourceType` is the discriminated union consumed by the API.
 
+<a id="explicit-treatment-migration"></a>
+
 The identity requires an explicit treatment slug, following
 [Core identity rules](../../core/definition/index.md#identity-rules). Import does not classify
 geometry as Outline or supply a treatment when it is missing.
@@ -22,11 +24,7 @@ The SVG parser owns [resource limits and located evidence](../formats/svg/parser
 `ICanonicalSvgSource` extends it with the SVG discriminator and independently acquired icon
 identity used by the private SVG adapter.
 
-## Explicit treatment migration
-
-Apply the [Core identity rules](../../core/definition/index.md#identity-rules)
-to acquired source identities and stored drafts, including reviewed replacement metadata.
-Omitting the treatment is rejected rather than classified from SVG. After reviewing earlier
-editable modules, update their construction data and references deliberately; Import does not
-rewrite persisted source. [Editable emission](../adoption/index.md#editable-emission) owns the
-treatment-bearing symbol and suggested path for newly emitted modules.
+`SourceIdValidator` and the shared `CanonicalSlugValidator` accept canonical identifiers unchanged;
+they reject rather than trim or repair invalid claims. `SourceIdentityNormaliser` combines those
+checks with isolation and freezing of the identity. Neither the source's path nor a collection
+supplies an omitted namespace or treatment.

@@ -15,7 +15,7 @@ export interface CollectionManifestEntry {
   readonly identity: CollectionIdentity;
 
   /** @description Named export exposed by the collection's public definition subpath. */
-  readonly symbol: string;
+  readonly exportName: string;
 
   /** @description Complete descriptive collection metadata. */
   readonly metadata: CollectionMetadata;

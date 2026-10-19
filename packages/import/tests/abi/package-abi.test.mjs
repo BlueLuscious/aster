@@ -206,11 +206,23 @@ test("executes private README and staged API examples through the public workspa
 
 test("compiles and renders an emitted editable module without Import", async (context) => {
   const { IconImport } = await import("@luscious-garden/aster-import");
-  const adopted = IconImport.adopt(adoptionRequest());
+  const request = adoptionRequest();
+  request.source.sourceId = "external/*/camera-<tag>&{@deprecated}`.svg";
+  const adopted = IconImport.adopt(request);
   assert.equal(adopted.successful, true);
   if (!adopted.successful) {
     throw new Error("Expected successful isolated-consumer adoption.");
   }
+
+  assert.equal(Object.hasOwn(adopted.value.module, "exportName"), true);
+  assert.equal(Object.hasOwn(adopted.value.module, "symbol"), false);
+  assert.match(adopted.value.module.content, /@remarks Initially adopted from: external\/\*&#47;camera-&lt;tag&gt;&amp;&#123;&#64;deprecated&#125;&#96;\.svg\./u);
+  assert.doesNotMatch(adopted.value.module.content, /^\/\//mu);
+  const ts = await import("typescript");
+  const syntax = ts.createSourceFile("adopted.icon.ts", adopted.value.module.content, ts.ScriptTarget.ES2022, true, ts.ScriptKind.TS);
+  assert.deepEqual(syntax.parseDiagnostics, []);
+  assert.equal(syntax.statements.length, 2);
+  assert.deepEqual(ts.getJSDocTags(syntax.statements[1]).map((tag) => tag.tagName.text), ["description", "remarks"]);
 
   const consumerRoot = await mkdtemp(resolve(workspaceRoot, ".aster-import-consumer-"));
   context.after(async () => rm(consumerRoot, { force: true, recursive: true }));
@@ -224,10 +236,10 @@ test("compiles and renders an emitted editable module without Import", async (co
     resolve(consumerRoot, "consumer.ts"),
     [
       'import { Svg } from "@luscious-garden/aster-svg";',
-      `import { ${adopted.value.module.symbol} } from "./adopted.icon.js";`,
+      `import { ${adopted.value.module.exportName} } from "./adopted.icon.js";`,
       "",
-      `export const definition = ${adopted.value.module.symbol};`,
-      `export const markup = Svg.render(${adopted.value.module.symbol});`,
+      `export const definition = ${adopted.value.module.exportName};`,
+      `export const markup = Svg.render(${adopted.value.module.exportName});`,
       "",
     ].join("\n"),
     "utf8",

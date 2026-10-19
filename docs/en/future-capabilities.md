@@ -71,10 +71,9 @@ distributed artefacts through their canonical producers.
   notes own changes and migrations. Prepare documentation and approved notes before packaging,
   rather than planning routine corrections after publication. Do not invent release versions.
 
-Initial naming candidates are collection-discovery/result `icons` holding member identities,
-manifest/Import `symbol` fields holding export names, `PackageManifestReader.version()` and
-`installed()`, and validation-only Import `CanonicalSlugNormaliser` or `SourceIdNormaliser` roles.
-Recheck whether earlier work has already resolved them; these are not pre-approved renames.
+Remaining naming candidates include collection-discovery/result `icons` holding member identities
+and `PackageManifestReader.version()` and `installed()`. Recheck whether earlier work has already
+resolved them; these are not pre-approved renames.
 
 Public changes require explicit [compatibility and migration review](project/versioning.md).
 Regenerate outputs through their producers and verify native, packed and workflow consumers.

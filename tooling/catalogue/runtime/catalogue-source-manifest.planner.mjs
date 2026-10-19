@@ -60,7 +60,7 @@ export class CatalogueSourceManifestPlanner {
             catalogueSourceFamilyKinds.icon,
             module.manifest.identity,
           ),
-          symbol: module.symbol,
+          exportName: module.exportName,
           ...module.manifest,
         });
       })
@@ -78,7 +78,7 @@ export class CatalogueSourceManifestPlanner {
             catalogueSourceFamilyKinds.collection,
             module.manifest.identity,
           ),
-          symbol: module.symbol,
+          exportName: module.exportName,
           ...module.manifest,
           members: Object.freeze(
             module.memberReferences.map((reference) => {

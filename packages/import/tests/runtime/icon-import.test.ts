@@ -106,12 +106,13 @@ test("adopts reviewed metadata and emits editable TypeScript", () => {
   }
 
   assert.equal(result.value.definition.metadata.displayName, "external-adopted");
-  assert.equal(result.value.module.symbol, "ExternalAdoptedOutline");
+  assert.equal(result.value.module.exportName, "ExternalAdoptedOutline");
+  assert.equal(Object.hasOwn(result.value.module, "symbol"), false);
   assert.equal(result.value.module.suggestedPath, "icons/external-adopted/outline.icon.ts");
   assert.match(result.value.module.content, /\$Icon\.define\(/u);
   assert.match(result.value.module.content, /"commands": \[/u);
   assert.doesNotMatch(result.value.module.content, /"data":/u);
-  assert.match(result.value.module.content, /Adopted from:/u);
+  assert.match(result.value.module.content, /@remarks Initially adopted from:/u);
   assert.doesNotMatch(result.value.module.content, /generated|Do not edit/iu);
 });
 

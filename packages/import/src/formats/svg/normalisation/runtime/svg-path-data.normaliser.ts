@@ -44,6 +44,10 @@ export class SvgPathDataNormaliser {
       currentY: 0,
       contourStartX: 0,
       contourStartY: 0,
+      cubicControlX: undefined,
+      cubicControlY: undefined,
+      quadraticControlX: undefined,
+      quadraticControlY: undefined,
     };
     const commands: IconPathCommandType[] = [];
 
@@ -460,8 +464,8 @@ export class SvgPathDataNormaliser {
    * @returns Nothing.
    */
   #resetCubicControl(state: TSvgPathNormalisationState): void {
-    delete state.cubicControlX;
-    delete state.cubicControlY;
+    state.cubicControlX = undefined;
+    state.cubicControlY = undefined;
   }
 
   /**
@@ -470,7 +474,7 @@ export class SvgPathDataNormaliser {
    * @returns Nothing.
    */
   #resetQuadraticControl(state: TSvgPathNormalisationState): void {
-    delete state.quadraticControlX;
-    delete state.quadraticControlY;
+    state.quadraticControlX = undefined;
+    state.quadraticControlY = undefined;
   }
 }

@@ -6,22 +6,22 @@ import type { IconModuleOutput } from "../contracts/index.js";
  */
 export class IconModuleNameFactory {
   /**
-   * @description Resolves the exported symbol and suggested authored path.
+   * @description Resolves the named export identifier and suggested authored path.
    * @param definition - Complete accepted portable definition.
    * @returns Naming fields for an editable icon module.
    */
-  create(definition: IconDefinition): Pick<IconModuleOutput, "symbol" | "suggestedPath"> {
+  create(definition: IconDefinition): Pick<IconModuleOutput, "exportName" | "suggestedPath"> {
     const identity = definition.identity;
-    const symbolParts = [
+    const exportNameParts = [
       ...identity.name.split("-"),
       ...identity.variant.split("-"),
     ];
-    const baseSymbol = symbolParts
+    const baseExportName = exportNameParts
       .map((part) => `${part[0]?.toUpperCase() ?? ""}${part.slice(1)}`)
       .join("");
-    const symbol = /^[0-9]/u.test(baseSymbol) ? `Icon${baseSymbol}` : baseSymbol;
+    const exportName = /^[0-9]/u.test(baseExportName) ? `Icon${baseExportName}` : baseExportName;
     const suggestedPath = `icons/${identity.name}/${identity.variant}.icon.ts`;
 
-    return Object.freeze({ symbol, suggestedPath });
+    return Object.freeze({ exportName, suggestedPath });
   }
 }

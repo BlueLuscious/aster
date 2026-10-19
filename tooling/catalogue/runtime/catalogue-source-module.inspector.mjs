@@ -105,7 +105,7 @@ export class CatalogueSourceModuleInspector {
         Object.freeze({
           name: identity.name,
           variant: identity.variant,
-          symbol: identity.symbol,
+          exportName: identity.exportName,
           sourcePath,
           relativePath: this.#paths.display(packageRoot, sourcePath),
           memberReferences: syntax.memberReferences,

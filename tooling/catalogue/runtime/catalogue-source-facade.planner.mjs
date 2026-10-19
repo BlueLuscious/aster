@@ -144,13 +144,13 @@ export class CatalogueSourceFacadePlanner {
               `Generated glyph variant property collision: ${name}.${propertyName}`,
             );
           }
-          if (bindings.has(module.symbol)) {
+          if (bindings.has(module.exportName)) {
             throw new CatalogueSourceError(
-              `Generated glyph symbol collision: ${name} imports ${module.symbol}`,
+              `Generated glyph symbol collision: ${name} imports ${module.exportName}`,
             );
           }
           properties.add(propertyName);
-          bindings.add(module.symbol);
+          bindings.add(module.exportName);
 
           return Object.freeze({ propertyName, module });
         });

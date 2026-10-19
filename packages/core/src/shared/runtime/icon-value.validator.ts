@@ -86,7 +86,7 @@ export class IconValueValidator {
     if (
       descriptor === undefined ||
       !descriptor.enumerable ||
-      !("value" in descriptor)
+      !Object.hasOwn(descriptor, "value")
     ) {
       throw new IconDefinitionError(path, "expected an enumerable data field");
     }

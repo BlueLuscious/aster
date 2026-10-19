@@ -1,6 +1,6 @@
 import type { DiagnosticRelatedContext } from "../contracts/index.js";
 import { ImportValueValidator } from "../../shared/runtime/import-value.validator.js";
-import { SourceIdNormaliser } from "../../source/runtime/source-id.normaliser.js";
+import { SourceIdValidator } from "../../source/runtime/source-id.validator.js";
 import { DiagnosticMessageNormaliser } from "./diagnostic-message.normaliser.js";
 import { SourceSpanFactory } from "./source-span.factory.js";
 
@@ -14,9 +14,9 @@ export class DiagnosticRelatedContextFactory {
   readonly #validator = new ImportValueValidator();
 
   /**
-   * @description Logical source identifier normaliser.
+   * @description Strict logical source identifier validator.
    */
-  readonly #sourceIdNormaliser = new SourceIdNormaliser();
+  readonly #sourceIdValidator = new SourceIdValidator();
 
   /**
    * @description Source span construction authority.
@@ -38,15 +38,15 @@ export class DiagnosticRelatedContextFactory {
     const record = this.#validator.record(value, path);
     this.#validator.exactFields(record, ["message", "sourceId", "span"], path);
     const message = this.#messageNormaliser.normalise(
-      record.message,
+      Object.hasOwn(record, "message") ? record.message : undefined,
       `${path}.message`,
     );
-    const sourceId = this.#sourceIdNormaliser.normalise(
-      record.sourceId,
+    const sourceId = this.#sourceIdValidator.validate(
+      Object.hasOwn(record, "sourceId") ? record.sourceId : undefined,
       `${path}.sourceId`,
     );
     const span =
-      "span" in record
+      Object.hasOwn(record, "span")
         ? this.#spanFactory.create(record.span, `${path}.span`)
         : undefined;
 
@@ -104,7 +104,7 @@ export class DiagnosticRelatedContextFactory {
    * @returns Start offset, or negative one for whole-source context.
    */
   #spanStart(context: DiagnosticRelatedContext): number {
-    return context.span?.start.offset ?? -1;
+    return Object.hasOwn(context, "span") ? context.span?.start.offset ?? -1 : -1;
   }
 
   /**
@@ -113,7 +113,7 @@ export class DiagnosticRelatedContextFactory {
    * @returns End offset, or negative one for whole-source context.
    */
   #spanEnd(context: DiagnosticRelatedContext): number {
-    return context.span?.end.offset ?? -1;
+    return Object.hasOwn(context, "span") ? context.span?.end.offset ?? -1 : -1;
   }
 
   /**

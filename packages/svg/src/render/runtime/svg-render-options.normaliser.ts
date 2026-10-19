@@ -187,7 +187,7 @@ export class SvgRenderOptionsNormaliser {
       if (
         descriptor === undefined ||
         !descriptor.enumerable ||
-        !("value" in descriptor)
+        !Object.hasOwn(descriptor, "value")
       ) {
         throw new SvgRenderError(
           `options.${field}`,

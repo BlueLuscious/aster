@@ -179,10 +179,10 @@ test("exports exact dictionary-only glyph entries retaining canonical treatment 
     for (const record of records) {
       const property = Icon.variantPropertyName(record.identity.variant);
       const direct = await import(`@luscious-garden/aster-icons/${name}/${record.identity.variant}`);
-      assert.equal(dictionary[property], direct[record.symbol]);
+      assert.equal(dictionary[property], direct[record.exportName]);
       assert.equal(dictionary[property], await AsterIconLoaders[record.key]());
       const descriptor = Object.getOwnPropertyDescriptor(dictionary, property);
-      assert.equal(descriptor.value, direct[record.symbol]);
+      assert.equal(descriptor.value, direct[record.exportName]);
       assert.equal(descriptor.enumerable, true);
       assert.equal(descriptor.writable, false);
       assert.equal(descriptor.configurable, false);

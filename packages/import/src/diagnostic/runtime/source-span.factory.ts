@@ -23,8 +23,14 @@ export class SourceSpanFactory {
   create(value: unknown, path: string): SourceSpan {
     const record = this.#validator.record(value, path);
     this.#validator.exactFields(record, ["start", "end"], path);
-    const start = this.#createPosition(record.start, `${path}.start`);
-    const end = this.#createPosition(record.end, `${path}.end`);
+    const start = this.#createPosition(
+      Object.hasOwn(record, "start") ? record.start : undefined,
+      `${path}.start`,
+    );
+    const end = this.#createPosition(
+      Object.hasOwn(record, "end") ? record.end : undefined,
+      `${path}.end`,
+    );
 
     if (
       end.offset < start.offset ||
@@ -48,9 +54,21 @@ export class SourceSpanFactory {
     this.#validator.exactFields(record, ["offset", "line", "column"], path);
 
     return Object.freeze({
-      offset: this.#validator.integer(record.offset, 0, `${path}.offset`),
-      line: this.#validator.integer(record.line, 1, `${path}.line`),
-      column: this.#validator.integer(record.column, 1, `${path}.column`),
+      offset: this.#validator.integer(
+        Object.hasOwn(record, "offset") ? record.offset : undefined,
+        0,
+        `${path}.offset`,
+      ),
+      line: this.#validator.integer(
+        Object.hasOwn(record, "line") ? record.line : undefined,
+        1,
+        `${path}.line`,
+      ),
+      column: this.#validator.integer(
+        Object.hasOwn(record, "column") ? record.column : undefined,
+        1,
+        `${path}.column`,
+      ),
     });
   }
 }

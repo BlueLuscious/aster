@@ -7,9 +7,7 @@ Membership is explicit authoring, not inferred from the package manifest or sour
 
 ## Consumer access
 
-Current access follows the [explicit treatment migration](../glyphs/index.md#explicit-treatment-migration).
-The [export-naming migration](#export-naming-migration) separately records the earlier published
-rename of the collection value.
+Collection exports expose explicitly selected treatment definitions:
 
 ```ts
 import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
@@ -54,29 +52,11 @@ complete member graph. These are distribution projections, not alternative membe
 module conventions and synchronisation;
 [Quality](../quality.md) owns conformance.
 
-## Export-naming migration
+<a id="export-naming-migration"></a>
 
-**Breaking change published in [0.2.0](../releases/0.2.0.md).** Collection
-value exports no longer carry the role suffix. Published Icons `0.1.0` and its candidates
-retain their original exports; the [published history](../releases/index.md#published) owns
-publication evidence.
+## Export names
 
-Keep the public subpath and replace the named import and its references:
-
-```ts
-// Before
-import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";
-
-// After
-import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
-```
-
-The old export is absent, with no compatibility alias. The Amellus
-`CollectionManifestEntry.symbol` also changes from `"AmellusCollection"` to `"Amellus"`;
-manifest-driven consumers must use the record's symbol, not append a suffix to its key.
-
-That published rename preserved the `amellus` identity and loader key, public route, readonly
-icon aliases, member order, metadata, immutability and direct/loader object identity. Core's
-`Collection.define` and collection contracts kept their domain names. It was a breaking export and manifest change
-under the [versioning policy](../../../project/versioning.md#compatibility-before-10), not a
-compatible patch or a change to collection membership.
+Collection subpaths expose their canonical named export, such as `Amellus`. The
+[manifest](../manifest/index.md) records that identifier in `CollectionManifestEntry.exportName`;
+consumers use it directly rather than appending a suffix to the collection key.
+[Versioned release notes](../releases/index.md#published) own published changes and migrations.

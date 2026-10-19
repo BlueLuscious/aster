@@ -16,7 +16,7 @@ export interface IconManifestEntry {
   readonly identity: IconIdentity;
 
   /** @description Named export exposed by the icon's public definition subpath. */
-  readonly symbol: string;
+  readonly exportName: string;
 
   /** @description Human-readable icon name. */
   readonly displayName: string;

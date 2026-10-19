@@ -3,14 +3,14 @@ import { IconImportError } from "../../error/index.js";
 /**
  * @description Validates host-supplied slash-separated logical source identifiers.
  */
-export class SourceIdNormaliser {
+export class SourceIdValidator {
   /**
-   * @description Produces one canonical slash-separated source identifier.
+   * @description Accepts one canonical slash-separated source identifier without modification.
    * @param value - Unknown logical source identifier.
    * @param path - Logical value path.
    * @returns Accepted source identifier without modification.
    */
-  normalise(value: unknown, path: string): string {
+  validate(value: unknown, path: string): string {
     if (
       typeof value !== "string" ||
       value.length === 0 ||

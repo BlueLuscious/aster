@@ -3,7 +3,7 @@ import type { IconImportSourceType } from "../types/icon-import-source.type.js";
 import { IconImportError } from "../../error/index.js";
 import { iconImportFormats } from "../../format/constants/icon-import-formats.constant.js";
 import { ImportValueValidator } from "../../shared/runtime/import-value.validator.js";
-import { SourceIdNormaliser } from "./source-id.normaliser.js";
+import { SourceIdValidator } from "./source-id.validator.js";
 import { SourceIdentityNormaliser } from "./source-identity.normaliser.js";
 
 /**
@@ -16,9 +16,9 @@ export class IconImportSourceNormaliser {
   readonly #validator = new ImportValueValidator();
 
   /**
-   * @description Logical source identifier normalisation authority.
+   * @description Strict logical source identifier validation authority.
    */
-  readonly #sourceIdNormaliser = new SourceIdNormaliser();
+  readonly #sourceIdValidator = new SourceIdValidator();
 
   /**
    * @description Portable source identity normalisation authority.
@@ -46,7 +46,7 @@ export class IconImportSourceNormaliser {
 
     return Object.freeze({
       format: iconImportFormats.svg,
-      sourceId: this.#sourceIdNormaliser.normalise(
+      sourceId: this.#sourceIdValidator.validate(
         record.sourceId,
         `${path}.sourceId`,
       ),

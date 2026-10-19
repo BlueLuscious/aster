@@ -10,9 +10,10 @@ export class IconIdentityFormatter {
    * @returns Canonical unambiguous `[namespace/]name@variant` value.
    */
   format(identity: IconIdentity): string {
-    const namespace = identity.namespace === undefined
-      ? ""
-      : `${identity.namespace}/`;
+    const namespace =
+      !Object.hasOwn(identity, "namespace") || identity.namespace === undefined
+        ? ""
+        : `${identity.namespace}/`;
     return `${namespace}${identity.name}@${identity.variant}`;
   }
 }

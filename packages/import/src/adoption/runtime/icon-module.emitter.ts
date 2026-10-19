@@ -9,7 +9,7 @@ import type {
 } from "../contracts/index.js";
 import type { DiagnosticResultType } from "../../diagnostic/types/index.js";
 import { DiagnosticResultFactory } from "../../diagnostic/runtime/diagnostic-result.factory.js";
-import { SourceIdNormaliser } from "../../source/runtime/source-id.normaliser.js";
+import { SourceIdValidator } from "../../source/runtime/source-id.validator.js";
 import { IconIdentityFormatter } from "../../shared/runtime/icon-identity.formatter.js";
 import { IconImportError } from "../../error/index.js";
 import { IconAdoptionDiagnosticFactory } from "./icon-adoption-diagnostic.factory.js";
@@ -33,7 +33,7 @@ export class IconModuleEmitter {
   /**
    * @description Logical provenance identifier authority.
    */
-  readonly #sourceIdNormaliser = new SourceIdNormaliser();
+  readonly #sourceIdValidator = new SourceIdValidator();
 
   /**
    * @description Diagnostic-bearing result construction authority.
@@ -62,7 +62,7 @@ export class IconModuleEmitter {
 
     const sourceIds = Object.freeze(
       [...new Set(request.sourceIds.map((sourceId, index) =>
-        this.#sourceIdNormaliser.normalise(sourceId, `sourceIds[${index}]`),
+        this.#sourceIdValidator.validate(sourceId, `sourceIds[${index}]`),
       ))].sort(),
     );
     let definition: IconDefinition;
@@ -81,14 +81,13 @@ export class IconModuleEmitter {
 
     const name = this.#nameFactory.create(definition);
     const content = [
-      `// Adopted from: ${sourceIds.join(", ")}`,
-      "",
       'import { Icon as $Icon } from "@luscious-garden/aster-core";',
       "",
       "/**",
       ` * @description Portable definition for \`${this.#identityKey(definition)}\`.`,
+      ` * @remarks Initially adopted from: ${this.#provenanceText(sourceIds)}.`,
       " */",
-      `export const ${name.symbol} = $Icon.define(${this.#serialiser.serialise(definition)});`,
+      `export const ${name.exportName} = $Icon.define(${this.#serialiser.serialise(definition)});`,
       "",
     ].join("\n");
 
@@ -99,9 +98,28 @@ export class IconModuleEmitter {
   }
 
   /**
+   * @description Escapes logical provenance for plain text within an editable definition's JSDoc.
+   * @remarks Source identifiers reject line separators. Escaping comment terminators, markup and
+   * tag delimiters prevents accepted identifiers from changing the emitted code or documentation.
+   * @param sourceIds - Validated, sorted and duplicate-free logical source identifiers.
+   * @returns Safe JSDoc text preserving the readable provenance.
+   */
+  #provenanceText(sourceIds: readonly string[]): string {
+    return sourceIds.join(", ")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll("*/", "*&#47;")
+      .replaceAll("@", "&#64;")
+      .replaceAll("{", "&#123;")
+      .replaceAll("}", "&#125;")
+      .replaceAll("`", "&#96;");
+  }
+
+  /**
    * @description Produces one stable fully qualified identity for module documentation.
    * @param definition - Complete accepted portable definition.
-   * @returns Slash-separated identity.
+   * @returns Complete `[namespace/]name@variant` identity.
    */
   #identityKey(definition: IconDefinition): string {
     return this.#identityFormatter.format(definition.identity);

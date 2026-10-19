@@ -40,7 +40,7 @@ export class CatalogueSourceLayoutNormaliser {
     return Object.freeze({
       name,
       variant,
-      symbol: `${this.#pascalCase(name)}${
+      exportName: `${this.#pascalCase(name)}${
         variant === undefined ? "" : this.#pascalCase(variant)
       }`,
     });
