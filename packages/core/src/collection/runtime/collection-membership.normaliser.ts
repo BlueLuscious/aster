@@ -57,7 +57,7 @@ export class CollectionMembershipNormaliser {
       }
 
       const fieldPath = `${path}.${field}`;
-      const alias = this.#normaliseAlias(field, fieldPath);
+      const alias = this.#validateAlias(field, fieldPath);
       const candidate = this.#validator.dataProperty(authored, field, fieldPath);
       const group = this.#normaliseGroup(candidate, fieldPath, identities, members);
       Object.defineProperty(icons, alias, {
@@ -124,7 +124,7 @@ export class CollectionMembershipNormaliser {
    * @param path - Logical alias path used by deterministic failures.
    * @returns Accepted alias unchanged.
    */
-  #normaliseAlias(value: string, path: string): string {
+  #validateAlias(value: string, path: string): string {
     if (!this.#aliasPattern.test(value)) {
       throw new IconDefinitionError(path, "expected a lower camel-case alias");
     }

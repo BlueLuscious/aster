@@ -43,7 +43,7 @@ export interface IconMetadata {
   readonly deprecated: boolean;
 
   /**
-   * @description Fully qualified replacement identity when one has been accepted.
+   * @description Complete replacement identity when one has been accepted.
    */
   readonly replacedBy?: IconIdentity;
 }

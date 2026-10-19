@@ -180,6 +180,43 @@ test("does not read inherited optional icon fields", () => {
   );
 });
 
+test("keeps replacement namespaces distinct without invoking inherited namespace getters", () => {
+  const base = Icon.define(createInput() as never);
+  const local = { name: base.identity.name, variant: base.identity.variant };
+
+  for (const [identity, replacedBy] of [
+    [base.identity, local],
+    [local, base.identity],
+  ] as const) {
+    const probe = probeInheritedGetter("namespace", "aster", () => Icon.define({
+      ...base,
+      identity,
+      metadata: { ...base.metadata, deprecated: true, replacedBy },
+    }));
+
+    assert.equal(probe.reads, 0);
+    assert.equal(probe.error, undefined);
+    const accepted = probe.result as ReturnType<typeof Icon.define>;
+    assert.deepEqual(accepted.identity, identity);
+    assert.deepEqual(accepted.metadata.replacedBy, replacedBy);
+  }
+});
+
+test("rejects local self replacement without consulting an inherited namespace", () => {
+  const base = Icon.define(createInput() as never);
+  const identity = { name: base.identity.name, variant: base.identity.variant };
+  const probe = probeInheritedGetter("namespace", "external", () => Icon.define({
+    ...base,
+    identity,
+    metadata: { ...base.metadata, deprecated: true, replacedBy: identity },
+  }));
+
+  assert.equal(probe.reads, 0);
+  assert.ok(probe.error instanceof IconDefinitionError);
+  assert.equal(probe.error.code, IconDefinitionError.code);
+  assert.equal(probe.error.path, "definition.metadata.replacedBy");
+});
+
 test("does not accept inherited collection identity or metadata fields", () => {
   const identity = probeInheritedGetter("namespace", "external", () =>
     Collection.define({

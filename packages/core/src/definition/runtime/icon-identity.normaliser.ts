@@ -1,5 +1,5 @@
 import type { IconIdentity } from "../contracts/index.js";
-import { CanonicalSlugNormaliser } from "../../shared/runtime/canonical-slug.normaliser.js";
+import { CanonicalSlugValidator } from "../../shared/runtime/canonical-slug.validator.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
 
 /**
@@ -14,7 +14,7 @@ export class IconIdentityNormaliser {
   /**
    * @description Canonical namespace, icon, and variant slug authority.
    */
-  readonly #slugNormaliser = new CanonicalSlugNormaliser();
+  readonly #slugValidator = new CanonicalSlugValidator();
 
   /**
    * @description Produces one frozen canonical identity.
@@ -34,12 +34,12 @@ export class IconIdentityNormaliser {
     const variant = this.#validator.text(record.variant, `${path}.variant`);
 
     if (namespace !== undefined) {
-      this.#slugNormaliser.normalise(namespace, `${path}.namespace`);
+      this.#slugValidator.validate(namespace, `${path}.namespace`);
     }
 
-    this.#slugNormaliser.normalise(name, `${path}.name`);
+    this.#slugValidator.validate(name, `${path}.name`);
 
-    this.#slugNormaliser.normalise(variant, `${path}.variant`);
+    this.#slugValidator.validate(variant, `${path}.variant`);
 
     return Object.freeze({
       ...(namespace === undefined ? {} : { namespace }),
@@ -55,7 +55,7 @@ export class IconIdentityNormaliser {
    * @returns Canonical property name, retaining valid digit-led segments.
    */
   variantPropertyName(value: unknown, path = "variant"): string {
-    const slug = this.#slugNormaliser.normalise(this.#validator.text(value, path), path);
+    const slug = this.#slugValidator.validate(this.#validator.text(value, path), path);
     return slug.split("-").map((part, index) =>
       index === 0 ? part : `${part.charAt(0).toUpperCase()}${part.slice(1)}`
     ).join("");

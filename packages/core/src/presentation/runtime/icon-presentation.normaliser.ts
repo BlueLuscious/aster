@@ -45,7 +45,7 @@ export class IconPresentationNormaliser {
       Object.hasOwn(record, "fill") ? this.#normalisePaint(record.fill, `${path}.fill`) : undefined;
     const fillRule =
       Object.hasOwn(record, "fillRule")
-        ? this.#normaliseEnumeration(
+        ? this.#validateEnumeration(
             record.fillRule,
             iconPresentationEnumerations.fillRule,
             `${path}.fillRule`,
@@ -61,7 +61,7 @@ export class IconPresentationNormaliser {
         : undefined;
     const strokeLineCap =
       Object.hasOwn(record, "strokeLineCap")
-        ? this.#normaliseEnumeration(
+        ? this.#validateEnumeration(
             record.strokeLineCap,
             iconPresentationEnumerations.strokeLineCap,
             `${path}.strokeLineCap`,
@@ -69,7 +69,7 @@ export class IconPresentationNormaliser {
         : undefined;
     const strokeLineJoin =
       Object.hasOwn(record, "strokeLineJoin")
-        ? this.#normaliseEnumeration(
+        ? this.#validateEnumeration(
             record.strokeLineJoin,
             iconPresentationEnumerations.strokeLineJoin,
             `${path}.strokeLineJoin`,
@@ -143,7 +143,7 @@ export class IconPresentationNormaliser {
    * @param path - Logical value path.
    * @returns Accepted union member.
    */
-  #normaliseEnumeration<Value extends string>(
+  #validateEnumeration<Value extends string>(
     value: unknown,
     accepted: readonly Value[],
     path: string,

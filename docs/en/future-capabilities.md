@@ -73,7 +73,7 @@ distributed artefacts through their canonical producers.
 
 Initial naming candidates are collection-discovery/result `icons` holding member identities,
 manifest/Import `symbol` fields holding export names, `PackageManifestReader.version()` and
-`installed()`, and validation-only `CanonicalSlugNormaliser` or `SourceIdNormaliser` roles.
+`installed()`, and validation-only Import `CanonicalSlugNormaliser` or `SourceIdNormaliser` roles.
 Recheck whether earlier work has already resolved them; these are not pre-approved renames.
 
 Public changes require explicit [compatibility and migration review](project/versioning.md).

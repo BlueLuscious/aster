@@ -62,12 +62,12 @@ icons follow the same rule. Loader and CLI identities now require
 `aster/camera@outline`, not `aster/camera`. There is no default treatment or compatibility alias.
 Collections remain explicit selections: `Amellus.icons.camera.outline` chooses a concrete
 definition and ordered `members` stays flat. A generated glyph dictionary does not automatically
-enrol all treatments into a collection. Follow the owning
-[Core identity](../../core/definition/index.md#explicit-treatment-migration),
-[Core membership](../../core/collection/index.md#grouped-membership-migration) and
-[Import source](../../import/source/index.md#explicit-treatment-migration) migrations for custom
-data, and the [CLI migration](../../cli/catalogue/index.md#explicit-treatment-migration) for requests
-and providers.
+enrol all treatments into a collection. Use the
+[Core identity rules](../../core/definition/index.md#identity-rules) and
+[Core membership rules](../../core/collection/index.md#aliases-and-ordered-members) for custom data;
+the [Import source migration](../../import/source/index.md#explicit-treatment-migration) and
+[CLI migration](../../cli/catalogue/index.md#explicit-treatment-migration) cover their respective
+source, request and provider boundaries.
 
 ## Definition ownership
 

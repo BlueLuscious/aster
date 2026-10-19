@@ -24,7 +24,7 @@ identity used by the private SVG adapter.
 
 ## Explicit treatment migration
 
-Apply the [Core identity migration](../../core/definition/index.md#explicit-treatment-migration)
+Apply the [Core identity rules](../../core/definition/index.md#identity-rules)
 to acquired source identities and stored drafts, including reviewed replacement metadata.
 Omitting the treatment is rejected rather than classified from SVG. After reviewing earlier
 editable modules, update their construction data and references deliberately; Import does not
