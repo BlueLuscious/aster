@@ -83,6 +83,20 @@ test("extracts static module specifiers in source order", () => {
   ]);
 });
 
+test("ignores documentation-only references while preserving nested and import-equals syntax", () => {
+  const source = [
+    '/** @import { Fake } from "documentation-only";',
+    ' * @example const sample = import("example-only");',
+    " */",
+    'export class Loader { load() { return import((("./nested.js") satisfies string)!); } }',
+    'type Shape = typeof import("./shape.js");',
+    'import Alias = require("./alias.js");',
+  ].join("\n");
+  assert.deepEqual(new ModuleSpecifierExtractor().extract(source), [
+    "./nested.js", "./shape.js", "./alias.js",
+  ]);
+});
+
 test("reports dependency cycles in deterministic graph order", () => {
   const graph = new WorkspaceDependencyGraph();
   const issues = new ArchitectureIssueCollector();

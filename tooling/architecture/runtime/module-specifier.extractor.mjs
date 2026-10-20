@@ -12,7 +12,10 @@ export class ModuleSpecifierExtractor {
    * @returns {readonly string[]} Recognised module specifiers.
    */
   extract(source, fileName = "module.ts") {
-    const document = ts.createSourceFile(fileName, source, ts.ScriptTarget.Latest);
+    const document = ts.createSourceFile(fileName, source, {
+      languageVersion: ts.ScriptTarget.Latest,
+      jsDocParsingMode: ts.JSDocParsingMode.ParseNone,
+    });
     /** @type {string[]} */
     const specifiers = [];
     this.#visit(document, specifiers);

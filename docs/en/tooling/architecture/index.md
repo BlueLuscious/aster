@@ -78,6 +78,8 @@ identifies literal imports, re-exports, import types and import-equals reference
 Comments between tokens and escaped strings do not hide references; comments, ordinary strings,
 regular expressions and JSX text do not create them. Computed specifiers are not resolved, and
 compiler checks retain ownership of source validity. No source module is executed.
+JSDoc parsing is disabled because documentation-only text is outside this module-reference
+grammar; the ordinary source syntax is still parsed in full.
 
 The inspector verifies relative package escapes, imports into repository tooling,
 Import private-feature exposure, Import and CLI Node authority, Import layer direction, parser adapter
