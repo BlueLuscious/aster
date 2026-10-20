@@ -30,6 +30,82 @@ SVG-owned bypass: [Core](../core/definition/runtime/index.md#recognised-outputs)
 to recognise an output or fully reconstruct unknown data. The canonical-output comparison below
 measures that distinction; earlier comparisons retain their original implementation scope.
 
+## Scaled Rendering and Private Intermediates
+
+A supplemental comparison uses source baseline `828f2fd`, Node `24.10.0`, TypeScript `5.9.3`
+and pnpm `10.28.1` on Windows x64. Three matched rounds rotate baseline, byte-identical control
+and candidate, and rotate workload order. Each fresh process retains seven raw samples with
+baseline-calibrated operation counts and equal complete-output fingerprints and checksums.
+The [shared protocol](../../tooling/performance/index.md#supplemental-measurements) owns sampling
+and resource limits. These are source comparisons, not comparisons of named npm releases.
+
+The finite matrix separates batches of 0/1/10/100/1,000/10,000 definitions, 16/64/256 nodes,
+8/128/1,024 points or cubic segments, and absent/empty/null-prototype/semantic/override/RTL/
+escaping options. Wide text varies output pressure separately. Canonical, shallow-copied,
+JSON and independently constructed foreign-Core inputs retain their different admission costs;
+dense and large-batch foreign cases are measured explicitly. An empty batch contains no calls,
+not an accepted empty definition. Its capped loop timings support no performance claim.
+
+Two one-variable comparisons precede their combined implementation:
+
+- A fresh option snapshot has its prototype removed before capture, then retains the same
+  own-key/descriptor checks, value validation and final freezing. The observed V8 representation
+  changes from dictionary to fast properties, with equal closed descriptors and null prototype.
+  Isolated override normalisation falls from 2.351 to 1.741 us. This engine observation is not a
+  portable API guarantee; no-options renders execute zero snapshot captures.
+- Point serialisation maps each coordinate pair directly to its ASCII-separated text, instead
+  of creating a two-element array per point and flattening it. Coordinate conversion order/count,
+  target validation and output remain equal. There are still intermediate strings and one mapped
+  array; this is not allocation-free rendering. Isolated 128-point serialisation falls from
+  55.667 to 41.709 us.
+
+Private-stage probes, call counters, CPU/GC/JIT profiles and sampled allocation stacks are
+separate attribution evidence, not substitutes for public `Svg.render()` measurements. Stage
+medians are not added as an exact decomposition. No historical slowdown is assigned a GC/JIT
+cause without matching evidence.
+
+The combined 29-workload comparison gives the following medians of three process medians:
+
+| Complete operation | Baseline | Identical control | Retained |
+| --- | ---: | ---: | ---: |
+| Authorised overrides, us/render | 7.133 | 7.053 | 6.366 |
+| Polyline, 8 points, us/render | 8.327 | 8.197 | 7.084 |
+| Polyline, 128 points, us/render | 57.871 | 57.850 | 44.990 |
+| Polyline, 1,024 points, us/render | 453.886 | 433.645 | 309.624 |
+| Polygon, 128 points, us/render | 56.397 | 55.968 | 41.521 |
+| Foreign-Core polyline, 128 points, us/render | 154.201 | 152.105 | 141.880 |
+| 10,000 simple canonical definitions, ms/batch | 50.948 | 51.110 | 51.055 |
+
+Overrides and the 8/128/1,024-point polylines improve by approximately 10.8% and 14.9%/22.3%/31.8%.
+No unrelated final median increase exceeds 5%; individual rounds still vary. Earlier isolated
+increases for empty options and 64-circle geometry do not persist in the combined comparison.
+Wide-text rendering changes by +4.3%, against +3.4% for unchanged control; small/mixed differences
+do not establish a universal gain. The 10,000-definition batch is effectively unchanged (+0.2%).
+Unknown values still undergo full Core acceptance, and their smaller relative gains must not be
+labelled recognition gains.
+
+Six programmatic consumer comparisons retain equal complete outputs. Export planning for sixteen
+128-point definitions falls from 982 to 739 us (-24.8%); Review planning plus HTML serialisation
+falls from 2.585 to 2.380 ms (-7.9%). Simple 16/100-definition export and sixteen-definition Review
+change by +0.7-0.8%, against +1.6-3.7% for unchanged controls. Import adoption followed by rendering
+changes by -3.1% with mixed paired directions, not a conclusive gain. These include full-result
+checksums, but not fresh CLI process startup, filesystem publication or browser/bundler execution.
+
+A separate three-round 128-point resource check observes median sampled RSS of 76.3 -> 79.0 MB,
+with overlapping ranges of 73.6-79.2 and 74.2-80.2 MB. Paired increases are 0.6-2.7 MB; their exact
+resident-memory mechanism is not isolated. Post-GC heap remains approximately 6.59 MB in both,
+while median observed GC events fall from 121 to 89 per 10,000 renders. Sampled allocation stacks
+also lose the point-flattening arrays, but a general memory reduction does not follow. Heap/GC
+observations and allocation samples are not exact allocation counts, peak-memory guarantees or
+evidence of leak freedom.
+
+The compiled SVG boundary remains 22 JavaScript modules and 22 declarations, growing by 84 bytes
+in total (43,059 -> 43,143 bytes). Declaration signatures, exports and dependency metadata remain
+unchanged; the growth belongs to private snapshot construction and its ownership documentation.
+
+The standard command below keeps its nine schema-version-two meanings; the extended matrix is
+supplemental. No cache, public API, dependency, acceptance rule or markup contract changes.
+
 ## Canonical-output acceptance comparison
 
 The five matched source-revision pairs used the
