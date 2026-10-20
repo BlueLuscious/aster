@@ -15,9 +15,9 @@ public Icons surface. [Feature guides](index.md) own behaviour;
 | Collection suite | Sole canonical export, facade/loader object identity, source-derived alias/member agreement, metadata and independent additional/reduced collections. | [Collections](collections/index.md) and [Core Collection](../core/collection/index.md). |
 | Manifest suite | Exact metadata projection, canonical ordering, deep freezing, no embedded geometry, non-empty source families and effective artwork rights. | [Manifest](manifest/index.md). |
 | Loader suite | Own key sets matching manifests, frozen functions, concurrent resolution retaining canonical leaves, and inherited-name absence. | [Dynamic Loaders](dynamic/index.md#arbitrary-key-access). |
-| Type suite | Isolated imports, exact readonly glyph keys, rejected dictionary-as-definition use and obsolete exports, concrete readonly aliases, manifest/loader contracts and rejected mutation. | Feature contracts and public definition subpaths. |
+| Type suite | Isolated imports, exact readonly glyph keys, rejected dictionary-as-definition use and undeclared exports, concrete readonly aliases, manifest/loader contracts and rejected mutation. | Feature contracts and public definition subpaths. |
 | Built-package ABI suite | Exact generated routes, blocked aggregates/private paths, minimal facades, direct/loader object identity, inherited-name absence, portable declarations, ESM, Core-only runtime imports and exact fresh-process evaluation sets. | [Package Boundary](index.md#boundary), [Public Routes](index.md#public-routes) and [Dynamic Loaders](dynamic/index.md#arbitrary-key-access). |
-| Packed-consumer suite | Complete emitted payload with legal notices but no source/test/tooling trees, installed declaration/runtime access, sole canonical collection export, obsolete-export rejection in declarations and native ESM, inherited-name absence and native `ERR_MODULE_NOT_FOUND` details on missing facades. | [Rights Boundary](index.md#rights-boundary), [Distribution Costs](index.md#distribution-costs) and [Dynamic Loaders](dynamic/index.md). |
+| Packed-consumer suite | Complete emitted payload with legal notices but no source/test/tooling trees, installed declaration/runtime access, sole canonical collection export, undeclared-export rejection in declarations and native ESM, inherited-name absence and native `ERR_MODULE_NOT_FOUND` details on missing facades. | [Rights Boundary](index.md#rights-boundary), [Distribution Costs](index.md#distribution-costs) and [Dynamic Loaders](dynamic/index.md). |
 
 Distribution checks require effective licence and attribution for every icon and collection.
 Entries declaring the original Aster artwork identifier must attribute BlueLuscious. Tests do
@@ -32,8 +32,8 @@ authored modules or partially replacing existing outputs. A generated-output fix
 preserves valid own `constructor` keys for both loader families, without an inherited fallback.
 Compiled multi-treatment fixtures prove individual-versus-dictionary native evaluation and exact
 own-data keys; packed consumers verify every distributed dictionary/leaf/collection/loader
-reference and ordered member rendering. Native ESM rejects the obsolete `Camera` export rather
-than treating the dictionary as a concrete definition.
+reference and ordered member rendering. Native ESM enforces each facade's declared exports rather
+than treating a glyph dictionary as a concrete definition.
 
 Identity projections ignore inherited namespace and treatment values. Source inspection rejects
 non-canonical declared namespaces before replacing any output; namespace absence stays distinct
