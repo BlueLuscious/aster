@@ -18,7 +18,7 @@ version matches a public stable package.
 | [SVG adapter](formats/svg/index.md) | Strict source subset and parser/validation/normalisation hand-offs. |
 | [Shared](shared/index.md) | Private cross-feature value and identity validation. |
 | [Workflow](workflow.md) | Review and persistence hand-off to the host. |
-| [Compatibility](compatibility.md), [quality](quality.md) and [baseline](quality-baseline.md) | Private distribution, conformance and historical measurements. |
+| [Compatibility](compatibility.md), [quality](quality.md) and [baseline](quality-baseline.md) | Private distribution, conformance and current performance measurements. |
 | [Private version history](releases/index.md) | Reviewed source boundaries, not npm or GitHub Releases. |
 
 ## Boundary

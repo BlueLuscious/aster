@@ -1,6 +1,11 @@
 import { xmlInertSections } from "../constants/xml-inert-sections.constant.js";
 
 /**
+ * @description Ordered inert delimiters derived from the shared XML lexical policy.
+ */
+const inertSections = Object.freeze(Object.values(xmlInertSections));
+
+/**
  * @description Finds entity-reference markers that would be expanded while ignoring inert comments and CDATA.
  */
 export class SvgEntityReferenceDetector {
@@ -37,8 +42,10 @@ export class SvgEntityReferenceDetector {
    * @returns Exclusive inert-section end, or `undefined` when ordinary XML begins at the offset.
    */
   #inertEnd(content: string, offset: number): number | undefined {
-    for (const section of Object.values(xmlInertSections)) {
-      if (content.startsWith(section.opening, offset)) {
+    for (let index = 0; index < inertSections.length; index += 1) {
+      const section = inertSections[index];
+
+      if (section !== undefined && content.startsWith(section.opening, offset)) {
         const closingOffset = content.indexOf(
           section.closing,
           offset + section.opening.length,
