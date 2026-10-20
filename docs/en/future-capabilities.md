@@ -23,9 +23,9 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P0` | [Review responsibilities, composition and naming throughout the repository.](#responsibility-and-naming-review) | Complete and integrate the glyph/variant foundation and bounded distribution maintenance; finish this review before further artwork expansion. |
-| 2 | `P1` | [Normalise CLI responses and output.](#cli-response-and-output-consistency) | Complete the responsibility/naming review, then resolve presentation inconsistencies before further artwork expansion. |
-| 3 | `P1` | [Consolidate shared project rules in Garden.](#garden-project-rules-review) | Complete responsibility/naming and CLI output maintenance, then review reusable policies before further artwork expansion. |
+| 1 | `P1` | [Review whole-repository performance and scalability.](#whole-repository-performance-review) | Start from integrated, verified source and investigate representative costs before CLI output maintenance and further artwork expansion. |
+| 2 | `P1` | [Normalise CLI responses and output.](#cli-response-and-output-consistency) | Complete the performance review, then resolve presentation inconsistencies before further artwork expansion. |
+| 3 | `P1` | [Consolidate shared project rules in Garden.](#garden-project-rules-review) | Complete performance and CLI output maintenance, then review reusable policies before further artwork expansion. |
 | 4 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
 | 5 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
 | 6 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
@@ -44,44 +44,33 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | 19 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
 | 20 | `P4` | Consider a reusable versioning library. | Several independent projects demonstrate shared versioning needs and justify predefined or customisable policies. |
 
-## Responsibility and naming review
+## Whole-repository performance review
 
-Importance: **P0 - Required**
+Importance: **P1 - High**
 
-After the glyph/variant foundation and bounded distribution maintenance are verified and
-integrated, review and correct
-responsibility ownership, composition and naming before further artwork expansion. The scope is
-the whole repository, not only packages or tooling: source, contracts, schemas and shared data,
-tests and fixtures, scripts, configuration, workflows, documentation, READMEs, and generated or
-distributed artefacts through their canonical producers.
+Use an integrated, verified source revision to investigate performance across packages, tooling
+and repository workflows. Investigation is required for this review; finding an optimisation is
+not. Reuse the
+[performance tooling](tooling/performance/index.md) rather than introduce a parallel framework.
 
-- Inventory real responsibilities, method consumers, data authorities, dependencies, state,
-  lifecycle and effects before proposing structural changes.
-- Retain, merge, split or compose classes according to cohesion and actual reuse. Keep classes
-  that own meaningful behaviour or boundaries; remove unjustified wrappers and duplicated
-  authorities. Neither fewer classes nor one class per field is an acceptance goal.
-- Compare focused collaborators such as `IconIdentityNormaliser`, a whole-definition normaliser,
-  and composition between them without preselecting the result. Existing factories and validation
-  boundaries must participate in that assessment rather than merely acquire new names.
-- Apply accepted corrections with aligned contracts, consumers, tests, producers, automation and
-  documentation. Preserve dependency direction, trust boundaries, deterministic diagnostics and
-  generated-output ownership; measure any claimed performance benefit rather than assume it.
-- Keep documentation aligned with the implemented checkout throughout the work, in the present
-  tense. README files introduce current usage; guides own current contracts; versioned release
-  notes own changes and migrations. Prepare documentation and approved notes before packaging,
-  rather than planning routine corrections after publication. Do not invent release versions.
-
-Public changes require explicit [compatibility and migration review](project/versioning.md).
-Regenerate outputs through their producers and verify native, packed and workflow consumers.
-Do not rewrite approved release evidence or legal text. This maintenance gate does not authorise
-speculative classes, package extraction, new capabilities or publication.
+- Cover isolated operations and complete consumers: Core construction/reuse, SVG rendering,
+  Import batches, Icons imports, CLI discovery/queries/export/review and private build/generation.
+- Vary definition, glyph, variant and collection counts with bounded synthetic fixtures, including
+  empty, small and large valid inputs. Separate geometry complexity from catalogue size.
+- Distinguish cold processes, module evaluation and cached imports, steady execution, output/I/O,
+  memory and garbage-collection activity. Keep profiling separate from uninstrumented timing comparisons.
+- Use matched inputs, identical controls and retained samples to reproduce and attribute material
+  differences before selecting changes. Preserve validation, isolation, output and effect contracts;
+  require explicit review of public changes rather than introduce speculative caches or trust shortcuts.
+- Keep correctness tests separate from performance comparisons and avoid wall-clock CI thresholds.
+  Update owning methods, limits and useful consumer guidance without duplicating result tables.
 
 ## CLI response and output consistency
 
 Importance: **P1 - High**
 
-After the [responsibility and naming review](#responsibility-and-naming-review), perform a bounded
-review of all CLI responses before further artwork expansion. Review help, catalogue discovery,
+After the [performance review](#whole-repository-performance-review), perform a bounded review of
+all CLI responses before further artwork expansion. Review help, catalogue discovery,
 glyph/icon/collection details, search, versions/dependencies/location, Export/Review and failures.
 
 - Define consistent human headings, labels, field order, indentation, sequences and empty states.
@@ -105,8 +94,7 @@ namespaces, select treatments implicitly or rewrite approved release notes.
 
 Importance: **P1 - High**
 
-After the [responsibility and naming review](#responsibility-and-naming-review) and
-[CLI response/output maintenance](#cli-response-and-output-consistency), consolidate accepted
+After [CLI response/output maintenance](#cli-response-and-output-consistency), consolidate accepted
 project rules into one canonical Garden-owned rules document before further artwork expansion.
 Use repository instructions, maintained policies and confirmed decisions from Aster as evidence,
 not as an automatic ecosystem-wide mandate. Confirm ambiguous or undocumented decisions instead
