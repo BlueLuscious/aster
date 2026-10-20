@@ -36,6 +36,7 @@ export class StructuredDataInspector {
 
   /**
    * @description Accepts one plain data record against closed field authorities.
+   * @remarks The empty snapshot loses its prototype before any captured field is assigned.
    * @param value - Candidate record.
    * @param acceptedFields - Complete field names allowed on the record.
    * @param requiredFields - Field names that must be present.
@@ -65,7 +66,7 @@ export class StructuredDataInspector {
       return undefined;
     }
 
-    const snapshot: Record<string, unknown> = { __proto__: null };
+    const snapshot: Record<string, unknown> = Object.setPrototypeOf({}, null);
 
     for (const key of keys) {
       if (typeof key !== "string") {

@@ -165,6 +165,28 @@ test("preserves explicit own data even when inherited accessors cannot be assign
   assert.equal(reads, 0);
 });
 
+test("isolates frozen private snapshots while preserving special own keys and absence", () => {
+  const inspector = new StructuredDataInspector();
+  const source = JSON.parse('{"__proto__":"own-prototype-key","constructor":"own-constructor","toString":"own-text"}');
+  const fields = ["__proto__", "constructor", "toString", "optional"];
+  const record = inspector.record(source, fields, fields.slice(0, 3));
+  assert.ok(record);
+  assert.notEqual(record, source);
+  assert.equal(Object.getPrototypeOf(record), null);
+  assert.ok(Object.isFrozen(record));
+  assert.deepEqual(Object.keys(record), ["__proto__", "constructor", "toString"]);
+  assert.equal(record.__proto__, "own-prototype-key");
+  assert.equal(record.constructor, "own-constructor");
+  assert.equal(record.toString, "own-text");
+  assert.equal(Object.hasOwn(record, "optional"), false);
+  source.constructor = "changed";
+  source.optional = "later";
+  assert.equal(record.constructor, "own-constructor");
+  assert.equal(Object.hasOwn(record, "optional"), false);
+  assert.equal(Reflect.set(record, "optional", "forbidden"), false);
+  assert.equal(Object.hasOwn(record, "optional"), false);
+});
+
 test("keeps absent optional fields inert throughout complete command and presentation workflows", async () => {
   const icon = Icon.define({
     identity: { name: "camera", variant: "outline" },

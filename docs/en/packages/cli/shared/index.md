@@ -28,7 +28,8 @@ arrays retain the ordinary array prototype. Both are shallow frozen. Each owning
 responsible for validating nested values and constructing the ordinary public domain records.
 
 Descriptor admission requires an own `value` field, not an inherited claim on the descriptor.
-Record snapshots copy accepted own fields without assigning through a prototype setter.
+Record snapshots remove the fresh container's prototype before assigning accepted own fields,
+then freeze the snapshot. Capture never assigns through an inherited setter.
 Downstream queries, identity projections and presenters preserve optional-field absence rather
 than acquiring values from the host prototype; taking a shallow snapshot alone is not that guarantee.
 
