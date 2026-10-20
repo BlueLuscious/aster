@@ -22,6 +22,10 @@ Repository filesystem, path, strict JSON, and deterministic traversal capabiliti
 | `NodeProcessHost` | Executes one fresh Node process from an explicit repository root and captures complete timing, status and streams. |
 | `ModuleImportProbe` | Instruments one emitted package boundary inside a disposable process and records modules whose markers execute. |
 | `ModuleImportRunner` | Repeats one public import in fresh processes, validates stable exports and evaluated modules, and summarises process and import timings. |
+| `BenchmarkEvidence` | Fingerprints complete own-data JSON projections and explicit physical files, detects byte drift and records runtime/machine plus declared environment conditions. |
+| `BenchmarkComparisonRunner` | Applies finite rotated baseline/control/candidate orders and checks equivalent work, output, sampling and source identity; retains interrupted comparisons without retries. |
+| `BenchmarkWorkspace` | Acquires ownership-marked temporary fixture roots, bounds writes, copies physical distributions and refuses traversal or cleanup through symbolic links. |
+| `BenchmarkResourceObserver` | Collects explicitly instrumented CPU, sampled RSS, lifetime RSS high-water marks, post-GC heap and GC-event evidence, separately from latency samples. |
 
 Closed methodology defaults and emitted-file vocabulary live in shared immutable constants. Narrow
 internal contracts describe the host, scenario, and distribution-inspection capabilities. The
@@ -68,6 +72,10 @@ without redefining the isolated concrete-treatment scenario.
 | `IImportBaselineFixtures` | Carries prepared accepted, rejected, editor, scale, operation and batch Import values plus explicit sizes. |
 | `ICliBaselineFixtures` | Carries the prepared icon, contexts, invocations, argv sequences and command authority used by CLI scenarios. |
 | `IProcessHost` | Runs one fresh Node process and returns elapsed time, status and complete streams for package comparison evidence. |
+| `IBenchmarkScaleOptions` | Declares independent definition, glyph/treatment, selection, geometry, metadata-width and provider axes for supplemental fixtures. |
+| `IBenchmarkScaledCatalogueFixture` | Carries canonical/authored inputs, exact selections, coherent providers and actual distinct/reference/geometry counts. |
+| `IBenchmarkObservation` | Carries every supplemental operation sample, its frozen operation count, warm-up and units, together with an exact timing summary. |
+| `IBenchmarkComparisonEntry` | Associates a supplemental observation with explicit source/artefact, workload and preflight full-output signatures. |
 
 Fixture contracts prevent source acquisition, parsing, catalogue loading and value construction
 from entering timed loops accidentally. Package contracts remain baseline-specific, while the
@@ -84,6 +92,7 @@ deliberate measurement evidence.
 | `CliColdStartRunner` | Repeats cold root-import and executable scenarios, validates their exact process contract and summarises timings. |
 | `CliCommandEvaluationProbe` | Instruments emitted CLI and Icons modules while executing one real built-in catalogue workflow in a disposable process. |
 | `CliCommandEvaluationRunner` | Repeats built-in workflows in fresh processes and rejects unstable command results or evaluated-module sets. |
+| `BenchmarkModuleFixtureFactory` | Produces bounded synthetic concrete-leaf and glyph-dictionary modules through an owned workspace. These are measurement fixtures, not the product Icons generator or distribution. |
 
 Each package owns an independent runner, factory, command and scenario matrix. Baselines reuse
 shared capabilities without a global scenario registry or another package baseline's configuration.
@@ -118,6 +127,131 @@ in fresh processes.
 
 Each linked baseline owns exact scenarios, fixture sizes, distribution evidence, interpretation
 and package-specific acceptance rules. Shared tooling owns methodology and execution only.
+
+## Supplemental Measurements
+
+Historical `measure()` results and package schema meanings remain separate from supplemental
+schema-one observations. The fixed sixteen-definition authority is unchanged. Supplemental
+capabilities are private APIs for workload owners, not published packages or a global scenario
+registry. They do not automatically run an extended timing matrix in CI.
+
+`BenchmarkRunner.calibrate()` tests an untouched baseline at 1, 10, 100, 1,000 and 10,000 operations,
+selecting the first trial lasting at least 25 ms or the operation cap. It retains every trial and
+reports whether the target was reached. Over-five-second trials fail with partial evidence.
+A synchronous operation cannot interrupt itself: run calibration in a bounded worker with a
+five-second deadline. Freeze the selected count before comparing implementations. Warm-up for
+the supplemental runner is `min(count, 20)` complete operations, followed by seven retained samples.
+A capped short measurement is not evidence for precise tiny differences.
+
+`observe()` retains elapsed nanoseconds, nanoseconds per operation, non-negative net heap growth
+and checksum for every sample. It checks finite observations and stable checksums, retaining
+completed samples on handled failures. Hard worker termination can retain only parent-captured
+status/streams; unflushed in-memory data is not recoverable. Existing fixed baselines retain their original counts, warm-up,
+summary shape and interpretation. Heap growth still does not measure allocation or retained memory.
+
+Prepare values and full output projections outside timed work. Record source/compiled artefacts,
+toolchain/dependencies, workload dimensions, geometry, output bytes, flags, lifecycle, cache and
+power conditions. `BenchmarkEvidence` hashes explicit data/file sets; its file manifest is not
+a hermetic archive of all dependencies. A callable export-shape signature describes names, not
+function implementations: record source bytes and verify real outputs independently.
+
+`BenchmarkComparisonRunner.run()` accepts explicit async `baseline`, `control` and `candidate`
+capabilities. It runs three rounds in these orders:
+
+1. Baseline, byte-identical control, candidate.
+2. Candidate, baseline, control.
+3. Control, candidate, baseline.
+
+Each capability returns `IBenchmarkComparisonEntry`. Workload/output signatures, count, warm-up,
+sample contract and checksum must agree; source identity must stay stable within each variant,
+and control source must equal baseline. Summaries must reproduce the raw samples. A mismatch or
+failure stops the comparison and retains preceding results, the offending result where available
+and partial observations. No timing threshold, outlier removal or favourable retry is applied.
+The caller owns fresh-process execution, scenario-order rotation and equivalent absolute paths.
+
+## Scalable Fixtures
+
+`BenchmarkCatalogueFixtureFactory.createScaled()` prepares independent scale axes through public
+Core APIs. `definitions` must divide evenly by `variantsPerGlyph`; no treatment is implicit.
+`collections`, `membersPerCollection` and `sharedMembers` select shared initial leaves followed by
+disjoint leaves. Insufficient distinct definitions fail rather than silently cycle membership.
+Empty collections/catalogues are valid; empty treatment groups and duplicate concrete identities
+are not introduced. `nodesPerDefinition`, `pointsPerNode` and `labelWidth` vary geometry and
+metadata/output volume independently.
+
+Providers partition definitions; `overlappingDefinitions` exposes the initial definitions in
+every provider. A provider also includes all members of its own collections. This closure can add
+discovery records: use reported `discoveryRecords`, not an assumed `definitions * providers` count.
+`discoveryRecords` counts icon discovery records, including overlaps/member closure; collections
+are counted separately. Discovery contains metadata only; exact loaders return the prepared concrete references.
+`counts` reports actual distinct definitions/glyphs, treatment shape, collection count, total
+membership references, selected distinct definitions, geometry, provider records and label width.
+
+`inputs()` explicitly selects canonical, mutable, shallow-copy, structured-clone, JSON-round-trip
+or foreign-Core provenance. Unknown originals are never certified merely for being frozen.
+Foreign inputs require a genuinely separate Core copy; `BenchmarkWorkspace.copyPackage()` can
+copy a built Core manifest/distribution without sharing its module graph. Dependencies of other
+copied packages must be supplied explicitly. Preparation is outside timing unless it is the
+named operation.
+
+Fixture limits are development allocation guards, not product acceptance limits: up to 10,000
+definitions/collections, ten treatments per glyph, 1,000 nodes per definition, 1,024 points per
+node, 1,024 label characters, eight providers and one million total geometry units. Do not run
+the Cartesian product. Gate large tiers using a separate smaller resource preflight and the
+declared per-workload resource budget; the factory does not authorise an unbounded large run.
+
+## Processes and Resources
+
+`NodeProcessHost.executeBounded()` launches a file-based trusted worker with a 2,048 MiB V8
+old-space ceiling, default 120-second deadline and eight-MiB combined raw-output budget. Requests
+can reduce time/output/RSS limits; the heap setting stays explicit. It retains nonzero status,
+partial streams and abort/cleanup reasons.
+Resource-observed workers can send `benchmark.rss` byte observations; values above the configured
+ceiling stop the worker. This is an observed-RSS guard, not an OS-enforced RSS quota. Uninstrumented
+timings must not install the resource observer to obtain those observations.
+
+Workers must await their non-detached children before normal exit. Deadline/limit cleanup uses
+[Windows taskkill tree termination](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/taskkill)
+or a POSIX process group. This is not a sandbox for malicious or escaping processes. A termination
+error invalidates the run; do not discard it or clean files while owned processes may remain.
+`BenchmarkWorkspace` independently checks root ownership and containment before writes/removal,
+refuses links and limits files/content written through its capability. These are not OS disk
+quotas for arbitrary external programs. Keep ownership with the caller so it can clean fixtures
+after worker failure; keep probes/reports outside plans and the source tree.
+
+For uninstrumented import observations, run
+`tooling/performance/shared/native-module-import-probe.mjs` in a fresh bounded process, passing
+one JSON argument such as `{"specifiers":["@luscious-garden/aster-icons/camera/outline"]}`.
+It times initial imports through the original specifiers, including their resolution, then times
+cached reimports separately. After both windows it validates distinct source URLs and retained
+namespace references. Query/hash cache-busting cannot make one source count as several distinct
+modules. Duplicate inputs invalidate the run. No preliminary resolution
+warms the measured import path. It installs
+no module-evaluation hooks. Export shapes/signatures are computed after import timing; whole-worker
+elapsed time also includes setup and evidence work. Use the existing instrumented probe separately
+for evaluated-module sets. Synthetic leaf/dictionary fixture URLs support distinct multi-module
+inputs without adding artwork or public exports.
+
+For large lists, pass `--request <owned-json-file>` instead of inline JSON. The request file is
+bounded to eight MiB and acquired before import timing; UTF-8 BOM is accepted. This avoids OS
+command-line size limits without measuring cached repetitions as distinct imports. Record the
+request file's bytes with other fixture identities. Worker setup/acquisition remains part of the
+whole-process measurement, not import-only time.
+
+The multi-input probe performs sequential dynamic imports; it is not a static consumer-module
+linking benchmark. Resource mode observes the complete probe, including cached reuse and export
+evidence, not just its first-import window. Benchmark static consumers and narrower resource
+stages explicitly when those are the workload of interest.
+
+Passing `"resources":true` with `--expose-gc` explicitly selects a separate instrumented resource
+run. `BenchmarkResourceObserver` reports CPU microseconds, sampled RSS bytes, OS lifetime max-RSS
+before/after, a conservative peak-growth upper bound, post-GC heap and GC events in its window.
+The bound can include preparation peaks; samples can miss transients. Returned values remain
+strongly referenced when post-GC heap is read. Filesystem counters are OS-reported operations,
+not bytes, with platform support limitations. None of these fields is an allocation count or a
+leak-freedom claim. Units follow the
+[Node process resource API](https://nodejs.org/download/release/v24.10.0/docs/api/process.html#processresourceusage).
+Profile/resource instrumentation must remain separate from uninstrumented latency comparisons.
 
 ## Comparison limits
 
