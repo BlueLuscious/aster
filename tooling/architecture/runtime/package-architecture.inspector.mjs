@@ -87,7 +87,7 @@ export class PackageArchitectureInspector {
   /**
    * @description Inspects manifests, dependencies, package policies, modules, and graph cycles.
    * @param {string} workspaceRoot - Absolute repository root.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after every workspace package is inspected.
    */
   async inspect(workspaceRoot, issues) {
@@ -142,7 +142,7 @@ export class PackageArchitectureInspector {
   /**
    * @description Acquires valid uniquely named workspace package records.
    * @param {string} packagesRoot - Absolute workspace packages root.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<readonly import("../types/internal/workspace-package-record.type.mjs").TWorkspacePackageRecord[]>} Acquired package records.
    */
   async #records(packagesRoot, issues) {

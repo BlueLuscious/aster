@@ -43,13 +43,17 @@ to the caller's map cannot alter its scope. Policy instances remain borrowed col
 The internal `IArchitectureInspector` contract supplies one explicit workspace root and ordered
 issue collector to each independent inspection responsibility. It permits deterministic
 composition without giving an inspector terminal, process or ambient current-directory authority.
+Inspectors and package policies receive the write-only `IArchitectureIssueCollector` contract,
+not its runtime implementation. `ArchitectureIssueCollector` implements that capability and keeps
+snapshot/state ownership with the verifier; contracts remain independent from runtime classes.
 
 ## Package inspection
 
 Package discovery produces an internal `TWorkspacePackageRecord` containing directory, canonical
 name, parsed manifest, and absolute package root. `RuntimeDependencyReader` combines only the
 accepted production dependency fields, while `WorkspaceDependencyGraph` owns dependency edges and
-cycle traversal.
+cycle traversal. Dependency sections must be own manifest fields; combining them preserves each
+name as own data, including `__proto__`, with later accepted sections retaining precedence.
 
 Recognised packages implement the internal `IPackageArchitecturePolicy` contract:
 
@@ -68,8 +72,14 @@ policy.
 
 ## Module inspection
 
-`PackageModuleInspector` walks source modules and delegates lexical extraction to
-`ModuleSpecifierExtractor`. It verifies relative package escapes, imports into repository tooling,
+`PackageModuleInspector` walks source modules and delegates syntax analysis to
+`ModuleSpecifierExtractor`, passing the filename to select the source grammar. TypeScript's parser
+identifies literal imports, re-exports, import types and import-equals references in source order.
+Comments between tokens and escaped strings do not hide references; comments, ordinary strings,
+regular expressions and JSX text do not create them. Computed specifiers are not resolved, and
+compiler checks retain ownership of source validity. No source module is executed.
+
+The inspector verifies relative package escapes, imports into repository tooling,
 Import private-feature exposure, Import and CLI Node authority, Import layer direction, parser adapter
 ownership, and undeclared workspace imports. It does not resolve modules through Node or execute
 source code.
@@ -83,7 +93,7 @@ Closed architecture vocabulary is owned by immutable feature constants:
 | `compilerBaseline` | Exact host-independent root compiler options. |
 | `packageBoundaries` | Package identities, dependency allowlists, root exports, parser ownership, and private Import feature roots. |
 | `repositoryArchitecturePaths` | Repository roots and package-relative paths interpreted by architecture policy. |
-| `sourceModule` | Source extensions, ecosystem package grammar, and static module-specifier grammar. |
+| `sourceModule` | Accepted source filename extensions and the Node module-specifier prefix. |
 
 These authorities are private repository policy. They are not package contracts and cannot be
 imported by production code.

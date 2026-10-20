@@ -7,6 +7,63 @@ import { ModuleSpecifierExtractor } from "../../tooling/architecture/runtime/mod
 import { PackageArchitectureInspector } from "../../tooling/architecture/runtime/package-architecture.inspector.mjs";
 import { WorkspaceDependencyGraph } from "../../tooling/architecture/runtime/workspace-dependency.graph.mjs";
 import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
+import { RuntimeDependencyReader } from "../../tooling/architecture/runtime/runtime-dependency.reader.mjs";
+
+test("selects JSX syntax from the source filename without inspecting JSX text as imports", () => {
+  assert.deepEqual(new ModuleSpecifierExtractor().extract([
+    'const View = () => <span>import "not-a-module"</span>;',
+    'const actual = import(("./actual.js"));',
+  ].join("\n"), "component.tsx"), ["./actual.js"]);
+});
+
+test("extracts only literal module references from parsed source", () => {
+  const source = [
+    '// import "comment-only";',
+    'const text = `import "text-only";`;',
+    'const pattern = /import "pattern-only"/;',
+    'import /* separated */ "side-effect";',
+    'export { value } from /* separated */ "./value.js";',
+    'const dynamic = import /* separated */ ("node:\\u0066s");',
+    'type Definition = import /* separated */ ("@luscious-garden/aster-core").IconDefinition;',
+    'const computed = import("not-a-complete-specifier" + suffix);',
+    "const template = import(`./literal.js`);",
+  ].join("\n");
+  assert.deepEqual(new ModuleSpecifierExtractor().extract(source), [
+    "side-effect", "./value.js", "node:fs", "@luscious-garden/aster-core", "./literal.js",
+  ]);
+});
+
+test("retains dependency keys as own data and preserves section precedence", () => {
+  const dependencies = new RuntimeDependencyReader().read({
+    dependencies: JSON.parse('{"__proto__":"*","constructor":"*","shared":"first"}'),
+    peerDependencies: { shared: "second" },
+    optionalDependencies: { shared: "third" },
+  });
+  assert.equal(Object.getPrototypeOf(dependencies), Object.prototype);
+  assert.equal(Object.hasOwn(dependencies, "__proto__"), true);
+  assert.equal(dependencies.__proto__, "*");
+  assert.equal(dependencies.constructor, "*");
+  assert.equal(dependencies.shared, "third");
+});
+
+test("does not acquire runtime dependency sections from inherited accessors", () => {
+  const previous = Object.getOwnPropertyDescriptor(Object.prototype, "dependencies");
+  let reads = 0;
+  try {
+    Object.defineProperty(Object.prototype, "dependencies", {
+      configurable: true,
+      get() { reads += 1; return { inherited: "*" }; },
+    });
+    assert.deepEqual(new RuntimeDependencyReader().read({}), {});
+    assert.equal(reads, 0);
+  } finally {
+    if (previous === undefined) {
+      Reflect.deleteProperty(Object.prototype, "dependencies");
+    } else {
+      Object.defineProperty(Object.prototype, "dependencies", previous);
+    }
+  }
+});
 
 test("extracts static module specifiers in source order", () => {
   const extractor = new ModuleSpecifierExtractor();

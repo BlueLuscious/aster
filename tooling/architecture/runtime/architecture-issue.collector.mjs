@@ -1,5 +1,10 @@
 /**
+ * @import { IArchitectureIssueCollector } from "../contracts/internal/architecture-issue-collector.contract.mjs"
+ */
+
+/**
  * @description Collects architecture findings in deterministic inspection order.
+ * @implements {IArchitectureIssueCollector}
  */
 export class ArchitectureIssueCollector {
   /**

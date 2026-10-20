@@ -19,7 +19,7 @@ export class CanonicalDocumentInspector {
   /**
    * @description Applies every policy to each document before advancing to the next document.
    * @param {import("../types/internal/documentation-context.type.mjs").TDocumentationContext} context - Documentation verification context.
-   * @param {import("./documentation-issue.collector.mjs").DocumentationIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/documentation-issue-collector.contract.mjs").IDocumentationIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after all documents and policies are inspected.
    */
   async inspect(context, issues) {

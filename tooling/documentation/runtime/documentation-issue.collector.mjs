@@ -1,5 +1,10 @@
 /**
+ * @import { IDocumentationIssueCollector } from "../contracts/internal/documentation-issue-collector.contract.mjs"
+ */
+
+/**
  * @description Collects documentation findings in deterministic inspection order.
+ * @implements {IDocumentationIssueCollector}
  */
 export class DocumentationIssueCollector {
   /**

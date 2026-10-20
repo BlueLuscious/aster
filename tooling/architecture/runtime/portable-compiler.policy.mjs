@@ -39,7 +39,7 @@ export class PortableCompilerPolicy {
    * @description Inspects optional package compiler overrides.
    * @param {string} packageRoot - Absolute package root.
    * @param {string} packageName - Package identity used in findings.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after package compiler settings are inspected.
    */
   async inspect(packageRoot, packageName, issues) {
@@ -54,7 +54,7 @@ export class PortableCompilerPolicy {
 
     const configuration = await this.#json.read(configurationPath);
     const options = /** @type {Record<string, unknown>} */ (
-      configuration.compilerOptions ?? {}
+      configuration.compilerOptions ?? Object.create(null)
     );
 
     if (

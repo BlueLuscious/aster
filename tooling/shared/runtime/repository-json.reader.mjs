@@ -17,12 +17,18 @@ export class RepositoryJsonReader {
   }
 
   /**
-   * @description Reads and parses one JSON object without accepting non-standard syntax.
+   * @description Parses strict JSON and removes object prototypes before exposing repository data.
+   * @remarks All parsed objects, including nested records, retain only JSON-owned fields; arrays retain their ordinary prototype. This does not freeze or validate domain-specific values.
    * @param {string} path - JSON file path.
    * @returns {Promise<Record<string, unknown>>} Parsed JSON object.
    */
   async read(path) {
-    const value = JSON.parse(await this.#fileSystem.readText(path));
+    const value = JSON.parse(await this.#fileSystem.readText(path), (_key, candidate) => {
+      if (typeof candidate === "object" && candidate !== null && !Array.isArray(candidate)) {
+        Object.setPrototypeOf(candidate, null);
+      }
+      return candidate;
+    });
 
     if (typeof value !== "object" || value === null || Array.isArray(value)) {
       throw new TypeError(`Repository JSON must contain an object: ${path}`);
