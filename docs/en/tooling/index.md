@@ -30,7 +30,7 @@ and shared development versions. [pnpm-lock.yaml](../../../pnpm-lock.yaml) owns 
 
 | Development dependency | Responsibility |
 | --- | --- |
-| TypeScript | Compiles packages and type tests; parses catalogue source during synchronisation. |
+| TypeScript | Compiles packages and type tests; parses catalogue sources and architecture module references. |
 | `tsx` | Adapts TypeScript tests to Node's built-in runner. |
 | `@types/node` | Types tests and tooling, not portable production compilation. |
 | ESLint and `typescript-eslint` | Enforce focused authored-source rules. |
@@ -107,6 +107,10 @@ remain deliberate isolation costs.
 
 [CI](../../../.github/workflows/ci.yaml) runs the complete gate independently on Ubuntu and Windows.
 A successful job on one platform does not substitute for the other.
+
+Root automation tests protect gate ordering, independently buildable distribution suites and
+workflow authority boundaries. These source-level checks complement the executable tooling and
+package suites; they do not execute GitHub Actions or replace either CI platform.
 
 ## Implementation boundary
 

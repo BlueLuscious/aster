@@ -1,5 +1,8 @@
 import tseslint from "typescript-eslint";
 
+/**
+ * @description Shared authored-source rules for package, tooling and test modules.
+ */
 const sourceRules = {
   curly: ["error", "all"],
   eqeqeq: ["error", "always"],
