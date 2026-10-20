@@ -24,6 +24,35 @@ const intent = Object.freeze({
   approvalSha256: releaseApprovalDigest(approvedFields),
 });
 
+test("rejects inherited preflight approval before any GitHub request", async () => {
+  const { releasePreflight, ...missingPreflight } = intent;
+  const { creator, requests } = fixture();
+  const previous = Object.getOwnPropertyDescriptor(Object.prototype, "releasePreflight");
+  try {
+    Object.defineProperty(Object.prototype, "releasePreflight", { configurable: true, value: releasePreflight });
+    await assert.rejects(creator.createDraft(missingPreflight, archive), /not approved/u);
+    assert.equal(requests.length, 0);
+  } finally {
+    if (previous === undefined) {
+      Reflect.deleteProperty(Object.prototype, "releasePreflight");
+    } else {
+      Object.defineProperty(Object.prototype, "releasePreflight", previous);
+    }
+  }
+});
+
+test("rejects an accessor intent without executing the accessor", async () => {
+  let reads = 0;
+  const candidate = Object.defineProperty({ ...intent }, "tag", {
+    enumerable: true,
+    get() { reads += 1; return intent.tag; },
+  });
+  const { creator, requests } = fixture();
+  await assert.rejects(creator.createDraft(candidate, archive), /data propert/u);
+  assert.equal(reads, 0);
+  assert.equal(requests.length, 0);
+});
+
 function fixture(overrides = {}) {
   const requests = [];
   const fetchResponse = async (input, init) => {

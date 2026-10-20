@@ -27,6 +27,31 @@ const intent = Object.freeze({
   approvalSha256: releaseApprovalDigest(approvedFields),
 });
 
+test("rejects inherited preflight approval before acquiring or writing an archive", async () => {
+  const root = await mkdtemp(join(tmpdir(), "aster-draft-own-data-"));
+  const { releasePreflight, ...missingPreflight } = intent;
+  const previous = Object.getOwnPropertyDescriptor(Object.prototype, "releasePreflight");
+  let requests = 0;
+  const materialiser = new ReleaseDraftMaterialiser(async () => {
+    requests += 1;
+    return new Response(archive);
+  });
+  try {
+    Object.defineProperty(Object.prototype, "releasePreflight", { configurable: true, value: releasePreflight });
+    await assert.rejects(materialiser.materialise(
+      missingPreflight, sourceCommit, sha256, intent.approvalSha256, join(root, "output"),
+    ), /authenticated release listing/u);
+    assert.equal(requests, 0);
+  } finally {
+    if (previous === undefined) {
+      Reflect.deleteProperty(Object.prototype, "releasePreflight");
+    } else {
+      Object.defineProperty(Object.prototype, "releasePreflight", previous);
+    }
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
 test("writes only the npm-identical archive after approval", async () => {
   const root = await mkdtemp(join(tmpdir(), "aster-draft-"));
   try {

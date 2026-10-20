@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { posix, resolve } from "node:path";
 
 import { releaseApprovalDigest } from "./release-approval.digest.mjs";
+import { releaseRecordSnapshot } from "./release-record.snapshot.mjs";
 
 /**
  * @description Verifies one published package and prepares its GitHub Release without public writes.
@@ -69,11 +70,11 @@ export class PackageReleasePreparer {
     }
     await this.#git("merge-base", "--is-ancestor", sourceCommit, "master");
 
-    const rootManifest = this.#object(
+    const rootManifest = releaseRecordSnapshot(
       JSON.parse(await this.#git("show", `${sourceCommit}:package.json`)),
       "source root manifest",
     );
-    const repository = this.#object(
+    const repository = releaseRecordSnapshot(
       rootManifest.repository,
       "source repository",
     );
@@ -95,7 +96,7 @@ export class PackageReleasePreparer {
       );
     }
 
-    const manifest = this.#object(
+    const manifest = releaseRecordSnapshot(
       JSON.parse(
         await this.#git(
           "show",
@@ -113,7 +114,7 @@ export class PackageReleasePreparer {
     }
 
     const registryUrl = `https://registry.npmjs.org/${encodeURIComponent(packageName)}/${encodeURIComponent(version)}`;
-    const registry = this.#object(
+    const registry = releaseRecordSnapshot(
       await this.#json(registryUrl, false),
       "npm version metadata",
     );
@@ -122,7 +123,7 @@ export class PackageReleasePreparer {
         "npm metadata does not match the selected package version.",
       );
     }
-    const dist = this.#object(registry.dist, "npm distribution metadata");
+    const dist = releaseRecordSnapshot(registry.dist, "npm distribution metadata");
     const archiveUrl = this.#string(dist.tarball, "npm tarball URL");
     const archiveLocation = new URL(archiveUrl);
     if (
@@ -218,7 +219,7 @@ export class PackageReleasePreparer {
         releases.some(
           (release) =>
             this.#string(
-              this.#object(release, "GitHub Release").tag_name,
+              releaseRecordSnapshot(release, "GitHub Release").tag_name,
               "GitHub Release tag",
             ) === tag,
         )
@@ -300,7 +301,7 @@ export class PackageReleasePreparer {
    * @returns {Promise<string>} Successful workflow run URL.
    */
   async #verifyCi(githubApi, sourceCommit) {
-    const runs = this.#object(
+    const runs = releaseRecordSnapshot(
       await this.#json(
         `${githubApi}/actions/workflows/ci.yaml/runs?head_sha=${sourceCommit}&event=push&branch=master&per_page=100`,
         true,
@@ -308,7 +309,7 @@ export class PackageReleasePreparer {
       "CI workflow runs",
     );
     const matching = this.#array(runs.workflow_runs, "CI workflow runs")
-      .map((value) => this.#object(value, "CI workflow run"))
+      .map((value) => releaseRecordSnapshot(value, "CI workflow run"))
       .filter(
         (run) =>
           run.head_sha === sourceCommit &&
@@ -330,12 +331,12 @@ export class PackageReleasePreparer {
         "CI job URL does not belong to the selected GitHub repository.",
       );
     }
-    const jobs = this.#object(
+    const jobs = releaseRecordSnapshot(
       await this.#json(`${jobsUrl}?per_page=100`, true),
       "CI jobs",
     );
     const entries = this.#array(jobs.jobs, "CI jobs").map((value) =>
-      this.#object(value, "CI job"),
+      releaseRecordSnapshot(value, "CI job"),
     );
     if (
       typeof jobs.total_count !== "number" ||
@@ -421,19 +422,6 @@ export class PackageReleasePreparer {
   }
 
   /**
-   * @description Requires an ordinary JSON object.
-   * @param {unknown} value - Untrusted JSON value.
-   * @param {string} label - Diagnostic label.
-   * @returns {Record<string, unknown>} Object value.
-   */
-  #object(value, label) {
-    if (typeof value !== "object" || value === null || Array.isArray(value)) {
-      throw new Error(`Expected ${label} to be an object.`);
-    }
-    return Object.fromEntries(Object.entries(value));
-  }
-
-  /**
    * @description Requires a non-empty string value.
    * @param {unknown} value - Untrusted value.
    * @param {string} label - Diagnostic label.
@@ -468,12 +456,9 @@ export class PackageReleasePreparer {
     if (value === undefined) {
       return {};
     }
-    const record = this.#object(value, "runtime dependencies");
-    /** @type {Record<string, string>} */
-    const dependencies = {};
-    for (const [name, range] of Object.entries(record)) {
-      dependencies[name] = this.#string(range, `runtime dependency ${name}`);
-    }
-    return dependencies;
+    const record = releaseRecordSnapshot(value, "runtime dependencies");
+    return Object.fromEntries(Object.entries(record).map(([name, range]) =>
+      [name, this.#string(range, `runtime dependency ${name}`)],
+    ));
   }
 }

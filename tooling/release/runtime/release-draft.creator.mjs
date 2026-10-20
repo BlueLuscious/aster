@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 
 import { releaseApprovalDigest } from "./release-approval.digest.mjs";
+import { releaseRecordSnapshot } from "./release-record.snapshot.mjs";
 
 /**
  * @description Creates one approved draft and uploads its npm-identical archive through GitHub's release API.
@@ -51,8 +52,8 @@ export class ReleaseDraftCreator {
         `Approved Git tag inspection failed: HTTP ${tagResponse.status}.`,
       );
     }
-    const reference = this.#object(await tagResponse.json(), "Git tag");
-    const target = this.#object(reference.object, "Git tag target");
+    const reference = releaseRecordSnapshot(await tagResponse.json(), "Git tag");
+    const target = releaseRecordSnapshot(reference.object, "Git tag target");
     if (
       reference.ref !== `refs/tags/${intent.tag}` ||
       target.type !== "commit" ||
@@ -80,7 +81,7 @@ export class ReleaseDraftCreator {
         `GitHub draft creation failed: HTTP ${response.status}; inspect the tag and Releases before retrying.`,
       );
     }
-    const release = this.#object(await response.json(), "created draft");
+    const release = releaseRecordSnapshot(await response.json(), "created draft");
     const id = release.id;
     if (typeof id !== "number" || !Number.isSafeInteger(id) || id <= 0) {
       throw new Error("GitHub did not return a valid draft ID.");
@@ -136,7 +137,7 @@ export class ReleaseDraftCreator {
         `GitHub archive upload failed: HTTP ${response.status}; inspect the partial draft.`,
       );
     }
-    const asset = this.#object(await response.json(), "uploaded draft asset");
+    const asset = releaseRecordSnapshot(await response.json(), "uploaded draft asset");
     if (
       asset.name !== intent.archiveName ||
       asset.state !== "uploaded" ||
@@ -156,7 +157,7 @@ export class ReleaseDraftCreator {
    * @returns {{ tag: string, title: string, body: string, sourceCommit: string, archiveName: string, archiveUrl: string, sha256: string }} Validated approval fields.
    */
   #intent(value, archive) {
-    const record = this.#object(value, "release intent");
+    const record = releaseRecordSnapshot(value, "release intent");
     if (
       !(archive instanceof Uint8Array) ||
       archive.byteLength === 0 ||
@@ -225,19 +226,6 @@ export class ReleaseDraftCreator {
       redirect: "error",
       signal: AbortSignal.timeout(20_000),
     });
-  }
-
-  /**
-   * @description Requires a JSON object rather than another JSON value.
-   * @param {unknown} value - Untrusted value.
-   * @param {string} label - Diagnostic label.
-   * @returns {Record<string, unknown>} Object value.
-   */
-  #object(value, label) {
-    if (typeof value !== "object" || value === null || Array.isArray(value)) {
-      throw new Error(`Expected ${label} to be an object.`);
-    }
-    return Object.fromEntries(Object.entries(value));
   }
 
   /**
