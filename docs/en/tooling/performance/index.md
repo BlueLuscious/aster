@@ -28,6 +28,12 @@ internal contracts describe the host, scenario, and distribution-inspection capa
 distribution inspector receives filesystem, JSON, path, and traversal capabilities explicitly; it
 does not construct Node adapters internally.
 
+Operation and fresh-process runners reuse `BenchmarkConfigurationValidator` for positive safe
+sample counts. Validation occurs during construction, outside measured work; defaults, diagnostics,
+report schemas and sampling meanings remain owned by their existing configurations.
+CLI command probes accept only own keys from their closed scenario authority before installing
+instrumentation; inherited object names are not measurement scenarios.
+
 `benchmarkMethodology` is the shared immutable authority for seven retained samples, 500 warm-up
 operations, median high-resolution elapsed nanoseconds per operation, and median non-negative heap
 growth after explicit pre-sample collection. Package baselines may define scenario operation counts

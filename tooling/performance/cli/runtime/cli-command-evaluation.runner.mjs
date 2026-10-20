@@ -1,3 +1,5 @@
+import { BenchmarkConfigurationValidator } from "../../shared/runtime/benchmark-configuration.validator.mjs";
+
 /**
  * @description Measures stable fresh-process module evaluation for real built-in CLI workflows.
  */
@@ -22,9 +24,7 @@ export class CliCommandEvaluationRunner {
    * @param {number} sampleCount - Number of retained process samples.
    */
   constructor(processHost, statistics, probePath, sampleCount) {
-    if (!Number.isSafeInteger(sampleCount) || sampleCount <= 0) {
-      throw new TypeError("sampleCount must be a positive safe integer.");
-    }
+    new BenchmarkConfigurationValidator().positiveInteger(sampleCount, "sampleCount");
 
     this.#processHost = processHost;
     this.#statistics = statistics;

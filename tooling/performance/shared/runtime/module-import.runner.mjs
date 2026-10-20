@@ -1,3 +1,5 @@
+import { BenchmarkConfigurationValidator } from "./benchmark-configuration.validator.mjs";
+
 /**
  * @description Measures one public import through fresh processes and verifies stable evaluation
  * evidence.
@@ -23,9 +25,7 @@ export class ModuleImportRunner {
    * @param {number} [sampleCount] - Number of retained process samples.
    */
   constructor(processHost, statistics, probePath, sampleCount = 7) {
-    if (!Number.isSafeInteger(sampleCount) || sampleCount <= 0) {
-      throw new TypeError("sampleCount must be a positive safe integer.");
-    }
+    new BenchmarkConfigurationValidator().positiveInteger(sampleCount, "sampleCount");
 
     this.#processHost = processHost;
     this.#statistics = statistics;

@@ -12,6 +12,7 @@ import { CliBaselineFixtureFactory } from "../../tooling/performance/cli/runtime
 import { CliBaselineRunner } from "../../tooling/performance/cli/runtime/cli-baseline.runner.mjs";
 import { CliColdStartRunner } from "../../tooling/performance/cli/runtime/cli-cold-start.runner.mjs";
 import { CliCommandEvaluationRunner } from "../../tooling/performance/cli/runtime/cli-command-evaluation.runner.mjs";
+import { CliCommandEvaluationProbe } from "../../tooling/performance/cli/runtime/cli-command-evaluation.probe.mjs";
 import { coreBaseline } from "../../tooling/performance/core/constants/core-baseline.constant.mjs";
 import { CoreBaselineFixtureFactory } from "../../tooling/performance/core/runtime/core-baseline-fixture.factory.mjs";
 import { CoreBaselineRunner } from "../../tooling/performance/core/runtime/core-baseline.runner.mjs";
@@ -35,6 +36,26 @@ import { NodeRepositoryFileSystem } from "../../tooling/shared/runtime/node-repo
 import { RepositoryFileWalker } from "../../tooling/shared/runtime/repository-file.walker.mjs";
 import { RepositoryJsonReader } from "../../tooling/shared/runtime/repository-json.reader.mjs";
 import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
+
+test("uses the same sample-count guard for fresh-process runner families", () => {
+  const processHost = { execute() { throw new Error("No process should start during configuration validation."); } };
+  const statistics = new NumericSampleStatistics();
+  for (const count of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    for (const construct of [
+      () => new CliColdStartRunner(processHost, statistics, count),
+      () => new CliCommandEvaluationRunner(processHost, statistics, "unused", count),
+      () => new ModuleImportRunner(processHost, statistics, "unused", count),
+    ]) {
+      assert.throws(construct, { name: "TypeError", message: "sampleCount must be a positive safe integer." });
+    }
+  }
+});
+
+test("rejects inherited names before acquiring command-evaluation probe effects", async () => {
+  for (const name of ["constructor", "toString", "unknown"]) {
+    await assert.rejects(new CliCommandEvaluationProbe().inspect(name), /Unknown CLI command evaluation scenario/u);
+  }
+});
 
 test("keeps structural performance contracts free of runtime exports", async () => {
   const contractRoot = resolve("tooling/performance");

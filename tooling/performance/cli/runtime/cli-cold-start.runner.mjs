@@ -1,4 +1,5 @@
 import { Buffer } from "node:buffer";
+import { BenchmarkConfigurationValidator } from "../../shared/runtime/benchmark-configuration.validator.mjs";
 
 /**
  * @description Measures fresh-process CLI startup without package-manager bootstrap cost.
@@ -20,9 +21,7 @@ export class CliColdStartRunner {
    * @param {number} [sampleCount] - Number of retained process samples.
    */
   constructor(processHost, statistics, sampleCount = 7) {
-    if (!Number.isSafeInteger(sampleCount) || sampleCount <= 0) {
-      throw new TypeError("sampleCount must be a positive safe integer.");
-    }
+    new BenchmarkConfigurationValidator().positiveInteger(sampleCount, "sampleCount");
 
     this.#processHost = processHost;
     this.#statistics = statistics;
