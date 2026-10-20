@@ -17,7 +17,7 @@ public Icons surface. [Feature guides](index.md) own behaviour;
 | Loader suite | Own key sets matching manifests, frozen functions, concurrent resolution retaining canonical leaves, and inherited-name absence. | [Dynamic Loaders](dynamic/index.md#arbitrary-key-access). |
 | Type suite | Isolated imports, exact readonly glyph keys, rejected dictionary-as-definition use and undeclared exports, concrete readonly aliases, manifest/loader contracts and rejected mutation. | Feature contracts and public definition subpaths. |
 | Built-package ABI suite | Exact generated routes, blocked aggregates/private paths, minimal facades, direct/loader object identity, inherited-name absence, portable declarations, ESM, Core-only runtime imports and exact fresh-process evaluation sets. | [Package Boundary](index.md#boundary), [Public Routes](index.md#public-routes) and [Dynamic Loaders](dynamic/index.md#arbitrary-key-access). |
-| Packed-consumer suite | Complete emitted payload with legal notices but no source/test/tooling trees, installed declaration/runtime access, sole canonical collection export, undeclared-export rejection in declarations and native ESM, inherited-name absence and native `ERR_MODULE_NOT_FOUND` details on missing facades. | [Rights Boundary](index.md#rights-boundary), [Distribution Costs](index.md#distribution-costs) and [Dynamic Loaders](dynamic/index.md). |
+| Packed-consumer suite | Complete emitted payload with legal notices but no source/test/tooling trees, installed declaration/runtime access, sole canonical collection export, undeclared-export rejection in declarations and native ESM, inherited-name absence, direct canonical loader targets sharing public facade objects and native `ERR_MODULE_NOT_FOUND` details on missing definition modules. | [Rights Boundary](index.md#rights-boundary), [Distribution Costs](index.md#distribution-costs) and [Dynamic Loaders](dynamic/index.md). |
 
 Distribution checks require effective licence and attribution for every icon and collection.
 Entries declaring the original Aster artwork identifier must attribute BlueLuscious. Tests do
@@ -34,6 +34,10 @@ Compiled multi-treatment fixtures prove individual-versus-dictionary native eval
 own-data keys; packed consumers verify every distributed dictionary/leaf/collection/loader
 reference and ordered member rendering. Native ESM enforces each facade's declared exports rather
 than treating a glyph dictionary as a concrete definition.
+
+A compiler regression fixture checks generated metadata for 10,000 definitions against the actual
+public manifest and Core declaration contracts. It prevents literal-union inference failure; it
+is not a timing test or evidence that an entire 10,000-definition package builds within a budget.
 
 Identity projections ignore inherited namespace and treatment values. Source inspection rejects
 non-canonical declared namespaces before replacing any output; namespace absence stays distinct

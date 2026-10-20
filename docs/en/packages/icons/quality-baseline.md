@@ -30,7 +30,7 @@ necessary dependencies. Neither value is a renderer or search benchmark.
 
 ## Source snapshot
 
-A 19 October 2026 Windows x64 observation using Node `24.10.0`, TypeScript `5.9.3` and native
+A 20 October 2026 Windows x64 observation using Node `24.10.0`, TypeScript `5.9.3` and native
 ES2022 ESM gives these evaluation sets:
 
 | Public subpath | Named exports | Evaluated Icons modules |
@@ -53,9 +53,9 @@ evaluates artwork until a definition is requested.
 
 The same source snapshot emits:
 
-- 95 JavaScript modules, totalling 90,827 unminified bytes;
+- 95 JavaScript modules, totalling 91,096 unminified bytes;
 - 95 declarations, totalling 28,334 bytes;
-- 190 emitted files, totalling 119,161 bytes;
+- 190 emitted files, totalling 119,430 bytes;
 - ESM, `sideEffects: false` and Core as the only runtime dependency.
 
 The package root and bare collection aggregate remain blocked. Snapshot counts and bytes are not
@@ -63,6 +63,110 @@ budgets; source, compiler or membership changes require fresh evidence rather th
 [Packed conformance](quality.md#evidence-coverage) verifies the acquired payload, legal notices,
 declarations and native execution. [Distribution costs](index.md#distribution-costs) owns the
 separate acquisition, evaluation and bundle boundaries.
+
+## Native scaling reference
+
+Supplemental observations use canonical TypeScript sources, the actual synchroniser and compiler,
+and public imports in consumer modules. Synthetic circles are measurement fixtures, not accepted
+artwork. The matrix covers 1/10/100/1,000 definitions, 100 glyphs with three or ten treatments,
+empty selections, shared/disjoint membership and 1,000 collections. The producer rejects an empty
+icon source family; an empty collection remains valid.
+This supplemental matrix is separate from the five-scenario command above.
+
+Forty-five scenarios each retain seven fresh uninstrumented Node-process observations. The
+first-import interval includes linking/evaluation of the consumer's imports; cached reimport of
+that same consumer namespace is measured separately. Startup, request acquisition and export
+verification also contribute to whole-worker time, not import-only time. There is no OS-cache
+eviction or scheduler, antivirus or thermal isolation. Resource and evaluation probes run separately.
+
+Representative initial-baseline medians on the same Windows host are:
+
+| Consumer | Required definitions/selections | First import |
+| --- | --- | ---: |
+| One individual subpath | One definition | 39.7 ms |
+| Ten distinct individual subpaths | Ten definitions | 62.2 ms |
+| 100 distinct individual subpaths | 100 definitions | 325.7 ms |
+| 1,000 distinct individual subpaths | 1,000 definitions | 2,315 ms |
+| 1,000 glyph dictionaries | One treatment each | 2,640 ms |
+| 1,000 collections | 10,000 references to ten shared definitions | 5,241 ms |
+
+These static entrypoints retain identical compiled bytes and graph semantics after the loader
+change below. Cached consumer reimport medians across the matrix are approximately 0.02 to 0.06 ms;
+this reuses one namespace, not thousands of newly evaluated definitions. Separate calibrated
+workloads invoke already-loaded loader functions rather than count cached imports as fresh work.
+
+A three-treatment dictionary evaluates its three canonical leaves; a ten-treatment dictionary
+evaluates ten. Mixed direct/dictionary/collection imports share definition references, but still
+evaluate the entry modules they actually request. Metadata and loader discovery each evaluate two
+Icons modules and no Core modules or artwork. Their parsing and initialisation costs still grow
+with catalogue size.
+
+## Retained loader comparison
+
+Generated loaders import canonical modules directly, avoiding a public re-export facade on each
+requested path. Fourteen fresh-import comparisons, including separate map-only and mixed-path
+diagnostics, use three rotated baseline/identical-control/candidate rounds, with seven observations
+per label in each round. Inputs, paths, outputs and compiled dependencies are fixed; only the map's
+import destinations differ. All other product JavaScript and declarations are byte-identical.
+
+The median of the three round medians for requesting all 1,000 concrete definitions is:
+
+| Catalogue shape | Facade targets | Canonical targets | Evaluated Icons modules |
+| --- | ---: | ---: | ---: |
+| 1,000 glyphs, one treatment each | 3,004 ms | 2,265 ms | 2,004 -> 1,004 |
+| 100 glyphs, ten treatments each | 2,785 ms | 2,240 ms | 2,004 -> 1,004 |
+
+The paired reductions are about 22% to 25% and 19% to 23%, respectively. Identical-control shifts in
+these comparisons reach about 4%; unchanged static-import controls also vary. CPU profiles place
+the main reduction in Node module/package resolution and filesystem metadata/open paths, not a
+new Core construction or rendering algorithm. Sampled profiles explain the avoided work, not the
+cause of every remaining timing fluctuation.
+
+For the actual product, invoking Camera's loader evaluates six rather than seven Icons modules;
+Amellus's loader evaluates 32 rather than 33. A consumer that subsequently requests the public
+leaf, dictionary and collection evaluates the same final 35-module set with either design. No
+general improvement is established for cached loader calls, map-only imports, single-definition
+startup or small CLI API list/export/review workflows. Their controls vary too; complete outputs
+and canonical references remain identical.
+
+Three separate matched resource observations per label for the 1,000-loader case give median
+sampled peak RSS of 99.0 -> 92.0 MiB and post-GC heap of 20.65 -> 16.45 MiB. The unchanged
+1,000-collection control retains approximately 26.54 MiB post-GC heap with either design.
+These observations retain module exports and do not prove leak freedom or application-wide
+memory savings. [Resource methodology](../../tooling/performance/index.md#processes-and-resources)
+owns their definitions and limits.
+
+The retained map adds 269 unminified bytes to the real distribution without changing its file
+count. Public facades/routes, validation, metadata, freezing and native rejection propagation
+remain intact. This is not a zero-cost or universal speed-up claim.
+
+## Acquisition reference
+
+Acquisition is separate from evaluation. Local packed consumers contain the complete Icons
+distribution and legal notices, but no authoring, test or tooling trees. Declaration checks and
+native execution use only installed packages, including 1,000 distinct individual imports.
+
+Seven fresh pnpm `10.28.1` processes per operation measure packing and offline frozen-lockfile
+installation after an untimed seed primes an owned store. Installations recreate `node_modules`
+at the same path using hoisted copy mode and include Core; the Core archive is prepared separately.
+These are warm-store observations, not network download, default hard-link installation or
+consumer startup timings. Archive byte counts refer to Icons alone. Repeated packs must have
+identical archive hashes, and acquired distribution bytes must match the compiled payload.
+
+| Catalogue | Icons archive | Installed Icons files | Pack median | Offline install median |
+| --- | ---: | ---: | ---: | ---: |
+| Product: 26 definitions, one collection | 18,983 bytes | 194 | 622 ms | 902 ms |
+| 1,000 definitions, 100 collections | 193,179 bytes | 6,432 | 4,599 ms | 7,731 ms |
+| 1,000 definitions, 1,000 collections sharing ten definitions | 258,045 bytes | 8,232 | 4,070 ms | 7,515 ms |
+
+Synthetic geometry and repeated metadata compress unusually well; these are not archive-size
+predictions for future artwork. No acquisition speed-up follows from the loader change: installed
+consumers still receive all files, regardless of how few they evaluate.
+
+The optional full 10,000-definition package does not provide native-import or acquisition figures:
+preparation exceeds its 120-second worker deadline. A separate 10,000-record metadata regression
+verifies bounded compiler inference; it is not a complete-package performance result. Large
+compiler probes also require the external memory safeguards described in the shared methodology.
 
 ## Interpretation
 

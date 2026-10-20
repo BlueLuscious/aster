@@ -9,7 +9,7 @@ import {
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import test from "node:test";
 import { pathToFileURL } from "node:url";
 import ts from "typescript";
@@ -572,13 +572,13 @@ test("synchronises canonical modules deterministically and reports drift", async
     assert.match(dynamic, /\.then\(\(\{ Sample \}\) => Sample\)/u);
     assert.match(
       dynamic,
-      /import\("\.\.\/facades\/icons\/alpha-icon\/outline\.js"\)/u,
+      /import\("\.\.\/\.\.\/glyphs\/a\/alpha-icon\/alpha-icon-outline\.icon\.js"\)/u,
     );
     assert.match(
       dynamic,
-      /import\("\.\.\/facades\/collections\/sample\.js"\)/u,
+      /import\("\.\.\/\.\.\/collections\/s\/sample\/sample\.collection\.js"\)/u,
     );
-    assert.doesNotMatch(dynamic, /(?:glyphs|collections\/s\/sample)/u);
+    assert.doesNotMatch(dynamic, /facades\//u);
 
     const current = await synchroniseIconsCatalogue(root, true);
     assert.deepEqual(current.changedPaths, []);
@@ -646,13 +646,23 @@ test("retains own constructor loaders without inherited fallback", async () => {
       { family: "collection", directory: "collections", symbol: "Constructor" },
     ];
 
-    for (const { family, directory, symbol } of definitions) {
-      const subpath = family === "icon" ? "constructor/outline" : "constructor";
-      const facadePath = resolve(root, `runtime/generated/facades/${directory}/${subpath}.js`);
+    for (const { family, symbol } of definitions) {
+      const definitionPath = resolve(root, family === "icon"
+        ? "runtime/glyphs/c/constructor/constructor-outline.icon.js"
+        : "runtime/collections/c/constructor/constructor.collection.js");
+      const facadePath = resolve(root, family === "icon"
+        ? "runtime/generated/facades/icons/constructor/outline.js"
+        : "runtime/generated/facades/collections/constructor.js");
+      await mkdir(dirname(definitionPath), { recursive: true });
+      await writeFile(
+        definitionPath,
+        `export const ${symbol} = Object.freeze({ family: "${family}", identity: Object.freeze({ name: "constructor", ${family === "icon" ? 'variant: "outline"' : ""} }) });\n`,
+        "utf8",
+      );
       await mkdir(dirname(facadePath), { recursive: true });
       await writeFile(
         facadePath,
-        `export const ${symbol} = Object.freeze({ family: "${family}", identity: Object.freeze({ name: "constructor", ${family === "icon" ? 'variant: "outline"' : ""} }) });\n`,
+        `export { ${symbol} } from "${relative(dirname(facadePath), definitionPath).replaceAll("\\", "/")}";\n`,
         "utf8",
       );
     }
@@ -955,7 +965,7 @@ test("discovers nested explicit treatments and collections with portable specifi
     );
     assert.match(
       dynamic,
-      /import\("\.\.\/facades\/icons\/camera\/stippled\.js"\)/u,
+      /import\("\.\.\/\.\.\/glyphs\/c\/camera\/camera-stippled\.icon\.js"\)/u,
     );
     assert.match(dynamic, /"archive": Object\.freeze/u);
 
@@ -1018,7 +1028,7 @@ test("derives a dictionary-only glyph facade from open treatment slugs", async (
     assert.match(manifest, /key: "camera@2-tone"/u);
     assert.match(manifest, /exportName: "Camera2Tone"/u);
     assert.match(manifest, /key: "camera@filled-dotted"/u);
-    assert.match(dynamic, /facades\/icons\/camera\/2-tone\.js/u);
+    assert.match(dynamic, /glyphs\/c\/camera\/camera-2-tone\.icon\.js/u);
     const glyph = await readFile(resolve(root, "src/generated/facades/glyphs/camera.ts"), "utf8");
     assert.match(glyph, /export const CameraVariants = Object\.freeze\(variants\)/u);
     assert.match(glyph, /"2Tone": Camera2Tone/u);

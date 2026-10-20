@@ -28,7 +28,7 @@ are separate eager imports, not additional loader entries.
 
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
-| `IconDefinitionLoader` | Zero-argument function returning `Promise<IconDefinition>`. | Resolves the canonical object from one direct icon subpath. |
+| `IconDefinitionLoader` | Zero-argument function returning `Promise<IconDefinition>`. | Resolves the same canonical object exposed by its individual icon subpath. |
 | `CollectionDefinitionLoader` | Zero-argument function returning `Promise<CollectionDefinition>`. | Resolves one collection and its declared member graph. |
 | `IconDefinitionLoaderMap` | Readonly string-indexed icon entry model with explicit `undefined` absence. | Describes `AsterIconLoaders` using `IconDefinitionLoader`. |
 | `CollectionDefinitionLoaderMap` | Readonly string-indexed collection entry model with explicit `undefined` absence. | Describes `AsterCollectionLoaders` using `CollectionDefinitionLoader`. |
@@ -61,10 +61,12 @@ automatically retain the null prototype.
 ## Deferred evaluation
 
 Importing the dynamic subpath evaluates its entrypoint and generated map, not complete
-definitions. Invoking one icon loader evaluates its facade, definition and shared authorities;
-invoking a collection loader evaluates that collection's complete declared member graph.
+definitions. Invoking one icon loader evaluates its canonical definition and shared authorities,
+without loading its public re-export facade. Invoking a collection loader evaluates its canonical
+collection and complete declared member graph. Importing a public facade afterwards still returns
+the same object through the ordinary module cache.
 
-[Catalogue Source Tooling](../../../tooling/catalogue/index.md) generates facade targets and
+[Catalogue Source Tooling](../../../tooling/catalogue/index.md) generates canonical module targets and
 canonical keys together with the manifest. It owns additions, removals and consistency checks;
 physical source paths remain private.
 

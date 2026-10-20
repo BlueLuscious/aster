@@ -316,11 +316,20 @@ test("exposes exact asynchronous loaders without eager definitions", async () =>
   assert.deepEqual(extractModuleSpecifiers(publicSource), [
     "../generated/dynamic/index.js",
   ]);
-  assert.ok(specifiers.length > 0);
-  assert.ok(
-    specifiers.every((specifier) => specifier.startsWith("../facades/")),
+  assert.deepEqual(
+    [...specifiers].sort(),
+    [
+      ...Object.keys(iconSubpaths).map((subpath) => moduleSpecifier(
+        "generated/dynamic/index.js",
+        iconDistributionPath(subpath),
+      )),
+      ...Object.keys(collectionSubpaths).map((subpath) => moduleSpecifier(
+        "generated/dynamic/index.js",
+        collectionDistributionPath(subpath),
+      )),
+    ].sort(),
   );
-  assert.doesNotMatch(generatedSource, /(?:glyphs\/|collections\/[a-z]\/)/u);
+  assert.doesNotMatch(generatedSource, /facades\//u);
 
   const cameraLoader = dynamic.AsterIconLoaders["aster/camera@outline"];
   const amellusLoader = dynamic.AsterCollectionLoaders.amellus;

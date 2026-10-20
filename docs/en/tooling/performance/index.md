@@ -210,6 +210,11 @@ Resource-observed workers can send `benchmark.rss` byte observations; values abo
 ceiling stop the worker. This is an observed-RSS guard, not an OS-enforced RSS quota. Uninstrumented
 timings must not install the resource observer to obtain those observations.
 
+The old-space ceiling does not cap total resident memory. A synchronous compiler can block its
+own sampling callbacks, so cooperative RSS reporting cannot protect that interval. Large compiler
+stress without established resource bounds requires external resident-memory supervision or an
+OS-enforced limit; the parent deadline alone is not a memory quota.
+
 Workers must await their non-detached children before normal exit. Deadline/limit cleanup uses
 [Windows taskkill tree termination](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/taskkill)
 or a POSIX process group. This is not a sandbox for malicious or escaping processes. A termination
