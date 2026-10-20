@@ -50,6 +50,32 @@ async function install(root, selector, version, extras = {}) {
   return path;
 }
 
+test("does not acquire project dependency sections from the host prototype", async (context) => {
+  const fixture = await createFixture(context);
+  await writeProject(fixture.project, {});
+  await install(fixture.project, "core", "0.1.0");
+  for (const field of ["dependencies", "devDependencies", "optionalDependencies"]) {
+    const previous = Object.getOwnPropertyDescriptor(Object.prototype, field);
+    let result;
+    let reads = 0;
+    try {
+      Object.defineProperty(Object.prototype, field, {
+        configurable: true,
+        get() { reads += 1; return { [names.core]: "*" }; },
+      });
+      result = await new ProjectPackageVersionReader(fixture.project).read("all");
+    } finally {
+      if (previous === undefined) {
+        Reflect.deleteProperty(Object.prototype, field);
+      } else {
+        Object.defineProperty(Object.prototype, field, previous);
+      }
+    }
+    assert.deepEqual(result, [], field);
+    assert.equal(reads, 0, field);
+  }
+});
+
 test("keeps project versions distinct from the executed CLI dependencies", async (context) => {
   const fixture = await createFixture(context);
   await writeProject(fixture.project, { dependencies: { [names.icons]: "0.1.0-rc.1" } });

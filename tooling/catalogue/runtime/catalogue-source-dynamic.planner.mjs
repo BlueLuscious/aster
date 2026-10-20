@@ -42,9 +42,9 @@ export class CatalogueSourceDynamicPlanner {
    * @returns {import("../contracts/internal/catalogue-source-output.contract.mjs").ICatalogueSourceOutput} Generated dynamic-loader output.
    */
   plan(packageRoot, inspections) {
-    /** @type {{ key: string, symbol: string, facadePath: string }[]} */
+    /** @type {{ key: string, exportName: string, facadePath: string }[]} */
     const icons = [];
-    /** @type {{ key: string, symbol: string, facadePath: string }[]} */
+    /** @type {{ key: string, exportName: string, facadePath: string }[]} */
     const collections = [];
 
     for (const { family, modules } of inspections) {
@@ -55,7 +55,7 @@ export class CatalogueSourceDynamicPlanner {
       for (const module of modules) {
         records.push(Object.freeze({
           key: this.#keys.serialise(family.kind, module.manifest.identity),
-          symbol: module.symbol,
+          exportName: module.exportName,
           facadePath: this.#facades.path(family, module),
         }));
       }

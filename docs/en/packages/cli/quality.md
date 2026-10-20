@@ -19,6 +19,12 @@ execution, and the [baseline](quality-baseline.md) retains measured findings.
 | ABI and packed-consumer tests | Exact root/binary mapping, inaccessible implementation subpaths, strict engines, declaration/dependency direction and independent host equivalence. |
 | Output-host tests | Portable confinement, exclusive staging, existing/interrupted targets, cleanup, guarded replacement and rollback. |
 
+Own-data regressions exercise descriptor admission, explicit shadowing fields and absent options
+through complete queries, plans, human presentation and Review HTML. Host tests ensure inherited
+flags cannot request publication or version I/O, and inherited manifest sections cannot supply
+dependencies. Packed type and executable/programmatic consumers verify the exact
+`memberIdentities` contract. These checks preserve output layout and diagnostic conventions.
+
 Run the package gate with `pnpm --dir packages/cli run test`; the distribution and executable
 subset is `pnpm --dir packages/cli run test:conformance`. Subprocess evidence requires permission
 to start child Node processes; an unavailable process is not a CLI failure result.

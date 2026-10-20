@@ -50,24 +50,17 @@ Treatment slugs remain kebab-case in identities and paths; their dictionary prop
 rejects ambiguous properties, module bindings or glyph paths before writing any output; glyphs
 from different namespaces cannot be merged behind one public name.
 
-## Explicit treatment migration
+<a id="explicit-treatment-migration"></a>
 
-This is a breaking [current-source contract](../../../index.md#source-and-published-versions).
-Check the [published history](../releases/index.md) for version availability rather than assuming
-that a registry installation implements every repository example.
+## Identity and selection
 
-The old `Camera` export is removed and `/camera` now returns only `CameraVariants`, not a
-definition. Import `CameraOutline` from `/camera/outline` for isolated concrete use; other existing
-icons follow the same rule. Loader and CLI identities now require
-`aster/camera@outline`, not `aster/camera`. There is no default treatment or compatibility alias.
-Collections remain explicit selections: `Amellus.icons.camera.outline` chooses a concrete
-definition and ordered `members` stays flat. A generated glyph dictionary does not automatically
-enrol all treatments into a collection. Follow the owning
-[Core identity](../../core/definition/index.md#explicit-treatment-migration),
-[Core membership](../../core/collection/index.md#grouped-membership-migration) and
-[Import source](../../import/source/index.md#explicit-treatment-migration) migrations for custom
-data, and the [CLI migration](../../cli/catalogue/index.md#explicit-treatment-migration) for requests
-and providers.
+Identities and loader keys name concrete treatments, such as `aster/camera@outline`.
+Collections select those definitions explicitly; [Core identity](../../core/definition/index.md#identity-rules)
+and [membership](../../core/collection/index.md#aliases-and-ordered-members) own the portable rules.
+[Import source](../../import/source/index.md) owns acquired identities, while
+[CLI catalogue](../../cli/catalogue/index.md) owns glyph and concrete-icon requests.
+The [source and registry boundary](../../../index.md#source-and-published-versions) explains version
+availability; [versioned release notes](../releases/index.md) own changes and migrations.
 
 ## Definition ownership
 

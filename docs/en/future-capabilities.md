@@ -23,65 +23,54 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P0` | [Review responsibilities, composition and naming throughout the repository.](#responsibility-and-naming-review) | Complete and integrate the glyph/variant foundation and bounded distribution maintenance; finish this review before further artwork expansion. |
-| 2 | `P1` | [Normalise CLI responses and output.](#cli-response-and-output-consistency) | Complete the responsibility/naming review, then resolve presentation inconsistencies before further artwork expansion. |
-| 3 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
-| 4 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 5 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 6 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 7 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 8 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 9 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 11 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 12 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 13 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 14 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
-| 15 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
-| 16 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 17 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 18 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
-| 19 | `P4` | Consider a reusable versioning library. | Several independent projects demonstrate shared versioning needs and justify predefined or customisable policies. |
+| 1 | `P1` | [Review whole-repository performance and scalability.](#whole-repository-performance-review) | Start from integrated, verified source and investigate representative costs before CLI output maintenance and further artwork expansion. |
+| 2 | `P1` | [Normalise CLI responses and output.](#cli-response-and-output-consistency) | Complete the performance review, then resolve presentation inconsistencies before further artwork expansion. |
+| 3 | `P1` | [Consolidate shared project rules in Garden.](#garden-project-rules-review) | Complete performance and CLI output maintenance, then review reusable policies before further artwork expansion. |
+| 4 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
+| 5 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 6 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 7 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 8 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 9 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 10 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 11 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 12 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 13 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 14 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 15 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
+| 16 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
+| 17 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 18 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 19 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 20 | `P4` | Consider a reusable versioning library. | Several independent projects demonstrate shared versioning needs and justify predefined or customisable policies. |
 
-## Responsibility and naming review
+## Whole-repository performance review
 
-Importance: **P0 - Required**
+Importance: **P1 - High**
 
-After the glyph/variant foundation and bounded distribution maintenance are verified and
-integrated, review and correct
-responsibility ownership, composition and naming before further artwork expansion. The scope is
-the whole repository, not only packages or tooling: source, contracts, schemas and shared data,
-tests and fixtures, scripts, configuration, workflows, documentation, READMEs, and generated or
-distributed artefacts through their canonical producers.
+Use an integrated, verified source revision to investigate performance across packages, tooling
+and repository workflows. Investigation is required for this review; finding an optimisation is
+not. Reuse the
+[performance tooling](tooling/performance/index.md) rather than introduce a parallel framework.
 
-- Inventory real responsibilities, method consumers, data authorities, dependencies, state,
-  lifecycle and effects before proposing structural changes.
-- Retain, merge, split or compose classes according to cohesion and actual reuse. Keep classes
-  that own meaningful behaviour or boundaries; remove unjustified wrappers and duplicated
-  authorities. Neither fewer classes nor one class per field is an acceptance goal.
-- Compare focused collaborators such as `IconIdentityNormaliser`, a whole-definition normaliser,
-  and composition between them without preselecting the result. Existing factories and validation
-  boundaries must participate in that assessment rather than merely acquire new names.
-- Apply accepted corrections with aligned contracts, consumers, tests, producers, automation and
-  documentation. Preserve dependency direction, trust boundaries, deterministic diagnostics and
-  generated-output ownership; measure any claimed performance benefit rather than assume it.
-
-Initial naming candidates are collection-discovery/result `icons` holding member identities,
-manifest/Import `symbol` fields holding export names, `PackageManifestReader.version()` and
-`installed()`, and validation-only `CanonicalSlugNormaliser` or `SourceIdNormaliser` roles.
-Recheck whether earlier work has already resolved them; these are not pre-approved renames.
-
-Public changes require explicit [compatibility and migration review](project/versioning.md).
-Regenerate outputs through their producers and verify native, packed and workflow consumers.
-Do not rewrite approved release evidence or legal text. This maintenance gate does not authorise
-speculative classes, package extraction, new capabilities or publication.
+- Cover isolated operations and complete consumers: Core construction/reuse, SVG rendering,
+  Import batches, Icons imports, CLI discovery/queries/export/review and private build/generation.
+- Vary definition, glyph, variant and collection counts with bounded synthetic fixtures, including
+  empty, small and large valid inputs. Separate geometry complexity from catalogue size.
+- Distinguish cold processes, module evaluation and cached imports, steady execution, output/I/O,
+  memory and garbage-collection activity. Keep profiling separate from uninstrumented timing comparisons.
+- Use matched inputs, identical controls and retained samples to reproduce and attribute material
+  differences before selecting changes. Preserve validation, isolation, output and effect contracts;
+  require explicit review of public changes rather than introduce speculative caches or trust shortcuts.
+- Keep correctness tests separate from performance comparisons and avoid wall-clock CI thresholds.
+  Update owning methods, limits and useful consumer guidance without duplicating result tables.
 
 ## CLI response and output consistency
 
 Importance: **P1 - High**
 
-After the [responsibility and naming review](#responsibility-and-naming-review), perform a bounded
-review of all CLI responses before further artwork expansion. Review help, catalogue discovery,
+After the [performance review](#whole-repository-performance-review), perform a bounded review of
+all CLI responses before further artwork expansion. Review help, catalogue discovery,
 glyph/icon/collection details, search, versions/dependencies/location, Export/Review and failures.
 
 - Define consistent human headings, labels, field order, indentation, sequences and empty states.
@@ -100,6 +89,31 @@ glyph/icon/collection details, search, versions/dependencies/location, Export/Re
 
 This is presentation and response consistency work, not permission to add commands, infer missing
 namespaces, select treatments implicitly or rewrite approved release notes.
+
+## Garden project rules review
+
+Importance: **P1 - High**
+
+After [CLI response/output maintenance](#cli-response-and-output-consistency), consolidate accepted
+project rules into one canonical Garden-owned rules document before further artwork expansion.
+Use repository instructions, maintained policies and confirmed decisions from Aster as evidence,
+not as an automatic ecosystem-wide mandate. Confirm ambiguous or undocumented decisions instead
+of inventing rules from memory or one implementation.
+
+- Review structure, naming, contracts/types, responsibility/composition, inheritance, private state,
+  shared authorities, validation, safety, dependencies, generated ownership and lifecycle rules.
+- Review current-documentation ownership, README guidance, versioned changes/migrations,
+  pre-packaging readiness, British English, JSDoc, testing/fixtures, performance evidence, commits,
+  workflow permissions, human approval boundaries and verified plan closure.
+- Distinguish genuinely reusable ecosystem policies from Aster-specific artwork, identity, package,
+  legal and delivery decisions. Preserve justified project-local additions or overrides explicitly.
+- Inspect Garden's existing authorities before choosing the document location. Keep one general
+  owner with project links/additions rather than copying a complete rulebook into every repository.
+
+This is a bounded documentation/governance review, not another whole-project refactor, new verifier
+framework or automatic cross-repository synchronisation. Garden and each project retain their
+[independent authorities](project/index.md#ecosystem-authority); changes require separately reviewed
+work in the owning repository. Recording this opportunity neither writes to Garden nor starts it.
 
 ## Coexisting API versions
 

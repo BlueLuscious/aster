@@ -53,8 +53,10 @@ export class CatalogueShowQuery {
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
+    const catalogueValue = Object.hasOwn(invocation, "catalogue") ? invocation.catalogue : undefined;
+
     if (invocation.subject === asterCommandSubjects.show.glyph) {
-      const selected = await this.#selections.selectGlyph(invocation.identity, invocation.catalogue, context);
+      const selected = await this.#selections.selectGlyph(invocation.identity, catalogueValue, context);
       return selected.accepted
         ? this.#commandResults.success(asterCommandNames.show, Object.freeze({
             kind: asterCommandPayloadKinds.glyphShow,
@@ -66,7 +68,7 @@ export class CatalogueShowQuery {
     const selected = await this.#selections.select(
       invocation.subject,
       invocation.identity,
-      invocation.catalogue,
+      catalogueValue,
       context,
     );
 

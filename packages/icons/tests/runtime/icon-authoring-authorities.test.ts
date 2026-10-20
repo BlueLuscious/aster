@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { Icon } from "@luscious-garden/aster-core";
+import { Collection, Icon } from "@luscious-garden/aster-core";
 import { asterArtworkLicence } from "../../src/authoring/constants/aster-artwork-licence.constant.js";
 import {
   amellusIconAuthoringProfile,
@@ -94,4 +94,20 @@ test("allows independently owned artwork to provide its own authorship", () => {
   assert.equal(definition.identity.namespace, "external");
   assert.equal(definition.metadata.licence, "CC0-1.0");
   assert.equal(definition.metadata.attribution, "External Author");
+
+  const collection = Collection.define({
+    identity: { name: "independent-curation" },
+    icons: { external: { outline: definition } },
+    metadata: {
+      displayName: "Independent curation",
+      licence: asterArtworkLicence,
+      attribution: asterOriginalIconAuthorship.attribution,
+    },
+  });
+
+  assert.equal(collection.icons.external.outline, definition);
+  assert.equal(collection.members[0], definition);
+  assert.equal(collection.metadata.licence, asterArtworkLicence);
+  assert.equal(collection.icons.external.outline.metadata.licence, "CC0-1.0");
+  assert.equal(collection.icons.external.outline.metadata.attribution, "External Author");
 });

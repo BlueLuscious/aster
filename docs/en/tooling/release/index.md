@@ -14,12 +14,19 @@ Each version page owns its title, body, source commit and approved archive hash.
 | --- | --- |
 | `PackageReleasePreparer` | Reads canonical notes, Git source, npm bytes and GitHub state to produce a verified intent. |
 | `releaseApprovalDigest` | Binds tag, title, body, source, archive name, URL and hash into one approval digest. |
+| `releaseRecordSnapshot` | Accepts own enumerable data into a private shallow snapshot without inherited fields or accessor execution. |
 | `ReleaseDraftMaterialiser` | Validates explicit approval against the intent, reacquires the archive and writes verified runner-local bytes. |
 | `ReleaseDraftCreator` | Confirms the existing exact tag, creates a new draft and uploads one archive through its returned upload URL. |
 | `ReleaseDraftVerifier` | Reads the draft by numeric ID and verifies classification, tag target, title, body and asset digest. |
 
 Read-only Git, text and remote acquisition are explicit preparer capabilities. Draft creation
 receives authenticated write authority separately; verification cannot publish or delete a Release.
+
+Preparation, materialisation, creation and readback share the release-record snapshot rule. Its
+null prototype prevents missing approvals, identities or classification fields from being supplied
+by the host prototype. Each owner still validates required fields and nested evidence. Public
+intent/output objects and the approval digest projection keep their existing shapes; the private
+snapshot is neither a new release format nor permission to write.
 
 ## Read-only preparation
 

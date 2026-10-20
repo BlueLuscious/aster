@@ -68,19 +68,6 @@ proxy execution remains outside the [Core trust boundary](../workflow.md#securit
 Accepted aliases are written as own data properties, so inherited setters cannot alter the
 canonical dictionary during construction.
 
-## Grouped membership migration
-
-Replace each earlier flat selection such as `icons: { camera: CameraOutline }` with an explicit
-group such as `icons: { camera: { outline: CameraOutline } }`. Read the concrete leaf through
-`collection.icons.camera.outline`; `collection.icons.camera` is now a dictionary, not a renderable
-definition. Derive each property's spelling through the [shared mapping](../api/index.md#usage)
-and include only the treatments deliberately selected for that collection.
-
-`members` remains the flat ordered list of selected definitions. Do not wrap its elements in
-dictionaries or supply a second membership catalogue. Rebuild a stored collection from its reviewed
-grouped map after applying the [identity migration](../definition/index.md#explicit-treatment-migration);
-complete-definition revalidation also checks any submitted member sequence.
-
 ## Runtime
 
 | Class | Responsibility | Relations |
@@ -89,7 +76,7 @@ complete-definition revalidation also checks any submitted member sequence.
 | `CollectionMembershipNormaliser` | Validates aliases, non-empty groups, family and property agreement, rejects duplicate identities, derives frozen views and verifies submitted `members`. | Composes `IconValueValidator`, `IconIdentityNormaliser`, `IconDefinitionFactory`, and `CanonicalIconMatcher`. |
 | `CanonicalIconMatcher` | Proves canonical graph equivalence when accepted leaf references differ. | Used after Core acceptance; never replaces unknown-input validation. |
 | `CollectionIdentityNormaliser` | Validates optional namespace and required canonical collection name. | Uses the shared canonical slug authority. |
-| `CollectionMetadataNormaliser` | Validates descriptive metadata, unique tags, and licensing relationships. | Produces frozen `CollectionMetadata`. |
+| `CollectionMetadataNormaliser` | Validates descriptive metadata, unique tags, and licensing relationships. | Produces frozen `CollectionMetadata`, delegating the shared tag rule to [metadata](../metadata/index.md#runtime). |
 
 Icon outputs [recognised by Core](../definition/runtime/index.md#recognised-outputs) are retained directly.
 Unknown icons are fully reconstructed first. They retain their authored reference only when their

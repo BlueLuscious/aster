@@ -22,7 +22,7 @@ export class LocalReferencePolicy {
    * @description Inspects one document for forbidden local-only references.
    * @param {import("../types/internal/documentation-context.type.mjs").TDocumentationContext} context - Documentation verification context.
    * @param {import("../types/internal/canonical-document.type.mjs").TCanonicalDocument} document - Acquired canonical document.
-   * @param {import("./documentation-issue.collector.mjs").DocumentationIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/documentation-issue-collector.contract.mjs").IDocumentationIssueCollector} issues - Ordered issue collector.
    * @returns {void} Completion after all local-reference rules are applied.
    */
   inspect(context, document, issues) {

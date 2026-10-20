@@ -54,10 +54,13 @@ export class ExportPlanQuery {
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
+    const optionsValue = Object.hasOwn(invocation, "options") ? invocation.options : undefined;
+    const catalogueValue = Object.hasOwn(invocation, "catalogue") ? invocation.catalogue : undefined;
+
     const selection = await this.#selections.select(
       invocation.subject,
       invocation.identity,
-      invocation.catalogue,
+      catalogueValue,
       context,
     );
 
@@ -65,7 +68,7 @@ export class ExportPlanQuery {
       return this.#results.failure(asterCommandNames.export, selection.diagnostic);
     }
 
-    const artefacts = this.#artefacts.create(selection.value, invocation.options);
+    const artefacts = this.#artefacts.create(selection.value, optionsValue);
 
     if (!artefacts.accepted) {
       return this.#results.failure(asterCommandNames.export, artefacts.diagnostic);

@@ -52,7 +52,7 @@ export class CatalogueDiscoveryRecordNormaliser {
     );
     const iconValues = record === undefined
       ? undefined
-      : this.#data.array(record.icons);
+      : this.#data.array(record.memberIdentities);
     const identity = record === undefined
       ? undefined
       : this.#identityNormaliser.collection(record.identity);
@@ -102,7 +102,7 @@ export class CatalogueDiscoveryRecordNormaliser {
       value: Object.freeze({
         identity,
         metadata,
-        icons: Object.freeze(acceptedIcons),
+        memberIdentities: Object.freeze(acceptedIcons),
         ...(searchTerms === undefined ? {} : { searchTerms }),
       }),
     });

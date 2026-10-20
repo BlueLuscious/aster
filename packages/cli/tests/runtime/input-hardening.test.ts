@@ -54,7 +54,10 @@ test("accepts null-prototype data and rejects authored record behaviour", () => 
     [Symbol("hidden")]: true,
   });
 
-  assert.deepEqual(inspector.record(plain, ["identity"], ["identity"]), {
+  const snapshot = inspector.record(plain, ["identity"], ["identity"]);
+  assert.ok(snapshot);
+  assert.equal(Object.getPrototypeOf(snapshot), null);
+  assert.deepEqual({ ...snapshot }, {
     identity: "aster",
   });
   assert.equal(inspector.record(inherited, ["identity"]), undefined);

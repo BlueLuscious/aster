@@ -197,7 +197,7 @@ test("resolves one collection loader and projects only its required members", as
     collections: [{
       identity: source.identity,
       metadata: source.metadata,
-      icons: source.members.map((icon) => icon.identity),
+      memberIdentities: source.members.map((icon) => icon.identity),
     }],
   };
   let iconLoads = 0;
@@ -334,7 +334,7 @@ test("rejects collection identity, metadata, and membership drift without partia
     collections: [{
       identity: canonical.identity,
       metadata: canonical.metadata,
-      icons: canonical.members.map((icon) => icon.identity),
+      memberIdentities: canonical.members.map((icon) => icon.identity),
     }],
   };
   const cases = [
@@ -418,7 +418,7 @@ test("sanitises missing, failed, and invalid exact collection definitions", asyn
     collections: [{
       identity: canonical.identity,
       metadata: canonical.metadata,
-      icons: canonical.members.map((icon) => icon.identity),
+      memberIdentities: canonical.members.map((icon) => icon.identity),
     }],
   };
   const cases = [

@@ -73,6 +73,12 @@ const knownDiagnosticCode: DiagnosticCodeType = "ASTER-SAFETY-001";
 const unknownDiagnosticCode: DiagnosticCodeType = "ASTER-SAFETY-999";
 const error: typeof IconImportError = IconImportError;
 
+declare const moduleOutput: IconModuleOutput;
+const exportName: string = moduleOutput.exportName;
+// @ts-expect-error Editable module output exposes only the precise export-name field.
+void moduleOutput.symbol;
+void exportName;
+
 void inspected;
 void outputs;
 void publicContracts;

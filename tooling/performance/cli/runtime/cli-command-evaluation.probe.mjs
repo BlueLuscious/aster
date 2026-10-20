@@ -23,7 +23,7 @@ export class CliCommandEvaluationProbe {
     const scenarios = /** @type {Readonly<Record<string, { name: string, invocation: import("@luscious-garden/aster-cli").AsterCommandInvocationType }>>} */ (
       cliCommandEvaluation.scenarios
     );
-    const scenario = scenarios[scenarioKey];
+    const scenario = Object.hasOwn(scenarios, scenarioKey) ? scenarios[scenarioKey] : undefined;
 
     if (scenario === undefined) {
       throw new TypeError(`Unknown CLI command evaluation scenario ${scenarioKey}.`);

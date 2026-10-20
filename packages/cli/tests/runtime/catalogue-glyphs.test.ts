@@ -188,7 +188,7 @@ test("combines glyph, collection and tag predicates without hiding unknown glyph
       {
         identity: { name: "selected" },
         metadata: { displayName: "Selected" },
-        icons: [outline.identity],
+        memberIdentities: [outline.identity],
       },
     ],
   });

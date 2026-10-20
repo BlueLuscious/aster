@@ -20,7 +20,7 @@ export class WorkspaceDependencyGraph {
 
   /**
    * @description Reports dependency cycles into the supplied issue collector.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {void} Completion after every package has been traversed.
    */
   inspectCycles(issues) {

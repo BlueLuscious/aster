@@ -10,6 +10,8 @@ Concrete runtime responsibilities are implemented as classes. `IconDefinitionFac
 normaliser instances through native `#` private fields; normalisers keep supporting behaviour in
 private methods rather than loose module functions. The frozen public
 [`Icon` API object](../../api/index.md) owns the shared factory instance.
+Identity normalisation also serves metadata replacement identities, collection treatment-property
+checks and the public property-name operation without depending on definition construction.
 
 ## Construction flow
 

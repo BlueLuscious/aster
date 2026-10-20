@@ -25,9 +25,9 @@ export interface ISvgRenderContext {
   readonly height: number;
 
   /**
-   * @description Optional canonical colour context emitted on the SVG root.
+   * @description Canonical root colour context, explicitly undefined when absent.
    */
-  readonly colour?: IconPaintType;
+  readonly colour: IconPaintType | undefined;
 
   /**
    * @description Canonical caller presentation values authorised by the icon policy.
@@ -40,14 +40,14 @@ export interface ISvgRenderContext {
   readonly decorative: boolean;
 
   /**
-   * @description Sole effective accessible name for semantic output.
+   * @description Sole effective accessible name, explicitly undefined for decorative output.
    */
-  readonly accessibleName?: string;
+  readonly accessibleName: string | undefined;
 
   /**
-   * @description Optional target-native title content.
+   * @description Target-native title content, explicitly undefined when absent.
    */
-  readonly title?: string;
+  readonly title: string | undefined;
 
   /**
    * @description Explicit logical direction used to apply portable RTL policy.

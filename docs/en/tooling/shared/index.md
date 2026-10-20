@@ -20,6 +20,12 @@ vocabulary.
 | `RepositoryDirectoryReader` | Reads sorted immediate directory membership from optional roots. | Architecture, Documentation. |
 | `RepositoryFileWalker` | Traverses optional directory trees deterministically with caller-owned file selection. | Architecture, Documentation, Performance. |
 
+`RepositoryJsonReader` gives every parsed object a null prototype, including nested records.
+Arrays retain their ordinary prototype, and JSON-owned keys such as `__proto__` remain data.
+The reader does not freeze values or validate feature-specific schemas; each consumer owns that
+validation. Its object representation prevents absent manifest/configuration fields from resolving
+through the host prototype.
+
 Filesystem-facing classes depend on the internal `IRepositoryFileSystem` capability rather than
 reading process state. It exposes existence, immediate entries, UTF-8 text acquisition, and file
 size without deletion or writing. Entry records use the internal `IRepositoryDirectoryEntry`

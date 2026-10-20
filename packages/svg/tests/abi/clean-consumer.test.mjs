@@ -135,3 +135,62 @@ test("renders definitions from an independent Core installation without weakenin
   assert.equal(rendered.stderr, "");
   assert.equal(rendered.stdout, "");
 });
+
+test("isolates inherited optional fields through source-free native package roots", () => {
+  const rendered = runModule(`
+    import assert from "node:assert/strict";
+    import { Icon } from "@luscious-garden/aster-core";
+    import { Svg } from "@luscious-garden/aster-svg";
+    const definition = Icon.define({
+      identity: { namespace: "consumer", name: "isolated", variant: "outline" },
+      viewBox: { minX: 0, minY: 0, width: 24, height: 16 },
+      nodes: [{ kind: "rect", x: 2, y: 3, width: 12, height: 8 }],
+      metadata: {
+        displayName: "Isolated", rtl: "mirror", deprecated: false,
+        presentation: { defaults: {}, overrides: ["fill", "stroke", "strokeWidth"] },
+      },
+    });
+    const expected = Svg.render(definition);
+    for (const [field, value] of [
+      ["size", 32], ["colour", "#abc"], ["fill", "#123"], ["stroke", "#456"],
+      ["strokeWidth", 3], ["label", "Inherited"], ["title", "Inherited"],
+      ["decorative", true], ["direction", "rtl"], ["defaultSize", 64],
+      ["minimumSize", 64], ["radiusX", 2], ["radiusY", 2],
+    ]) {
+      for (const candidate of [definition, structuredClone(definition)]) {
+        let reads = 0;
+        let actual;
+        Object.defineProperty(Object.prototype, field, {
+          configurable: true,
+          get() { reads += 1; return value; },
+        });
+        try {
+          actual = Svg.render(candidate);
+        } finally {
+          Reflect.deleteProperty(Object.prototype, field);
+        }
+        assert.equal(reads, 0, field);
+        assert.equal(actual, expected, field);
+      }
+    }
+    const options = { size: 32 };
+    let writes = 0;
+    let actual;
+    Object.defineProperty(Object.prototype, "size", {
+      configurable: true,
+      set() { writes += 1; },
+    });
+    try {
+      actual = Svg.render(definition, options);
+    } finally {
+      Reflect.deleteProperty(Object.prototype, "size");
+    }
+    assert.equal(writes, 0);
+    assert.match(actual, / width="32" height="32"/u);
+  `);
+
+  assert.equal(rendered.error, undefined);
+  assert.equal(rendered.status, 0, rendered.stderr);
+  assert.equal(rendered.stdout, "");
+  assert.equal(rendered.stderr, "");
+});

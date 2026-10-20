@@ -29,17 +29,18 @@ export class StructuredDataInspector {
 
     return descriptor !== undefined
       && descriptor.enumerable
-      && "value" in descriptor
+      && Object.hasOwn(descriptor, "value")
       ? Object.freeze({ value: descriptor.value })
       : undefined;
   }
 
   /**
    * @description Accepts one plain data record against closed field authorities.
+   * @remarks The empty snapshot loses its prototype before any captured field is assigned.
    * @param value - Candidate record.
    * @param acceptedFields - Complete field names allowed on the record.
    * @param requiredFields - Field names that must be present.
-   * @returns Frozen plain snapshot or no value after structural rejection.
+   * @returns Frozen null-prototype snapshot or no value after structural rejection.
    */
   record(
     value: unknown,
@@ -65,7 +66,7 @@ export class StructuredDataInspector {
       return undefined;
     }
 
-    const snapshot: Record<string, unknown> = {};
+    const snapshot: Record<string, unknown> = Object.setPrototypeOf({}, null);
 
     for (const key of keys) {
       if (typeof key !== "string") {
@@ -77,7 +78,7 @@ export class StructuredDataInspector {
       if (
         descriptor === undefined
         || !descriptor.enumerable
-        || !("value" in descriptor)
+        || !Object.hasOwn(descriptor, "value")
       ) {
         return undefined;
       }
@@ -102,7 +103,7 @@ export class StructuredDataInspector {
 
     if (
       lengthDescriptor === undefined
-      || !("value" in lengthDescriptor)
+      || !Object.hasOwn(lengthDescriptor, "value")
       || typeof lengthDescriptor.value !== "number"
     ) {
       return undefined;
@@ -123,7 +124,7 @@ export class StructuredDataInspector {
       if (
         descriptor === undefined
         || !descriptor.enumerable
-        || !("value" in descriptor)
+        || !Object.hasOwn(descriptor, "value")
       ) {
         return undefined;
       }

@@ -47,6 +47,16 @@ CameraVariants.default;
 // @ts-expect-error Generated glyph dictionaries are readonly.
 CameraVariants.outline = ArrowLeftOutline;
 const iconManifest: readonly IconManifestEntry[] = AsterIconManifest;
+declare const iconEntry: IconManifestEntry;
+declare const collectionEntry: CollectionManifestEntry;
+const iconExportName: string = iconEntry.exportName;
+const collectionExportName: string = collectionEntry.exportName;
+// @ts-expect-error Manifests expose the export-name field without a legacy alias.
+void iconEntry.symbol;
+// @ts-expect-error Collection manifests use the same export-name contract.
+void collectionEntry.symbol;
+void iconExportName;
+void collectionExportName;
 const collectionManifest: readonly CollectionManifestEntry[] =
   AsterCollectionManifest;
 const iconLoaders: IconDefinitionLoaderMap = AsterIconLoaders;

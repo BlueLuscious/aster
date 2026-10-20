@@ -42,10 +42,16 @@ The normaliser accepts an omitted value or an ordinary/null-prototype record. It
 keys and descriptors, rejects unknown, symbolic, hidden or accessor fields, and captures accepted
 data values into a frozen local snapshot. Ordinary getters are not invoked. Value normalisation
 then reads that snapshot, not the caller's record; proxy reflection can still execute caller code.
+The snapshot has no prototype, so inherited setters cannot intercept capture. Only own option
+fields are present: inherited values do not supply omitted options.
 
 It validates numeric, paint, text, boolean and direction values, checks icon override authority
 and minimum size, and resolves one context. [Core Render Options](../../../core/render/index.md)
 owns portable semantics; [SVG Render Result](../index.md) owns the target representation.
+
+The private context represents absent colour, accessible name and title with explicit own
+`undefined` slots. Optional viewport hints and rectangle radii are read only when present as own
+definition fields. Freezing a definition does not turn inherited properties into accepted data.
 
 ## Serialisation
 

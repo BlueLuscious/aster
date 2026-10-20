@@ -15,7 +15,7 @@ export interface CatalogueDiscoveryCollectionRecord {
   readonly metadata: CollectionMetadata;
 
   /** @description Ordered identities of icons directly retained by the collection. */
-  readonly icons: readonly IconIdentity[];
+  readonly memberIdentities: readonly IconIdentity[];
 
   /** @description Optional provider-owned canonical terms outside portable metadata. */
   readonly searchTerms?: readonly string[];

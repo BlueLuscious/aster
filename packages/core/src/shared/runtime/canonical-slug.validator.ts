@@ -3,7 +3,7 @@ import { IconDefinitionError } from "./icon-definition.error.js";
 /**
  * @description Validates canonical ASCII lowercase kebab-case domain slugs.
  */
-export class CanonicalSlugNormaliser {
+export class CanonicalSlugValidator {
   /**
    * @description Canonical portable slug grammar.
    */
@@ -15,7 +15,7 @@ export class CanonicalSlugNormaliser {
    * @param path - Logical value path.
    * @returns Accepted canonical slug.
    */
-  normalise(value: string, path: string): string {
+  validate(value: string, path: string): string {
     if (!this.#pattern.test(value)) {
       throw new IconDefinitionError(
         path,

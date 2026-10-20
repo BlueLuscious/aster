@@ -23,7 +23,10 @@ export class CatalogueIdentityFormatter {
    * @returns Canonical `[namespace/]name` glyph key.
    */
   glyph(identity: IconGlyphIdentity): string {
-    return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}`;
+    const namespace = !Object.hasOwn(identity, "namespace") || identity.namespace === undefined
+      ? ""
+      : `${identity.namespace}/`;
+    return `${namespace}${identity.name}`;
   }
 
   /**
@@ -32,6 +35,6 @@ export class CatalogueIdentityFormatter {
    * @returns Canonical `[namespace/]name` value.
    */
   collection(identity: CollectionIdentity): string {
-    return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}`;
+    return this.glyph(identity);
   }
 }

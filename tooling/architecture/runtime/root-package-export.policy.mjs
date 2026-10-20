@@ -8,7 +8,7 @@ export class RootPackageExportPolicy {
    * @description Inspects one package manifest root surface.
    * @param {string} packageName - Package identity used in findings.
    * @param {Record<string, unknown>} manifest - Parsed package manifest.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {void} Completion after package-root policy is inspected.
    */
   inspect(packageName, manifest, issues) {

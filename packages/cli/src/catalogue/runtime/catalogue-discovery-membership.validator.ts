@@ -24,7 +24,7 @@ export class CatalogueDiscoveryMembershipValidator {
     for (const collection of collections) {
       const collectionKey = this.#identities.collection(collection.identity);
       const memberKeys = new Set(
-        collection.icons.map((icon) => this.#identities.icon(icon)),
+        collection.memberIdentities.map((icon) => this.#identities.icon(icon)),
       );
 
       for (const memberKey of memberKeys) {

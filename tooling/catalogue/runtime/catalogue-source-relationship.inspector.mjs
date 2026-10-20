@@ -69,9 +69,9 @@ export class CatalogueSourceRelationshipInspector {
           );
         }
 
-        if (reference.importedSymbol !== target.symbol) {
+        if (reference.importedSymbol !== target.exportName) {
           throw new CatalogueSourceError(
-            `${collection.sourcePath} must import ${target.symbol} from ${reference.moduleSpecifier}.`,
+            `${collection.sourcePath} must import ${target.exportName} from ${reference.moduleSpecifier}.`,
           );
         }
 
@@ -81,7 +81,8 @@ export class CatalogueSourceRelationshipInspector {
             `${collection.sourcePath} collection variant ${reference.alias}.${reference.variantPropertyName} must match the canonical variant property.`,
           );
         }
-        const glyph = JSON.stringify([identity.namespace, identity.name]);
+        const namespace = Object.hasOwn(identity, "namespace") ? identity.namespace : undefined;
+        const glyph = JSON.stringify([namespace, identity.name]);
         const existing = groups.get(reference.alias);
         if (existing !== undefined && existing !== glyph) {
           throw new CatalogueSourceError(

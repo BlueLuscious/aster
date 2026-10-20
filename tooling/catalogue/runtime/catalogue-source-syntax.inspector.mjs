@@ -59,7 +59,7 @@ export class CatalogueSourceSyntaxInspector {
     const declaration = this.#exportedConstant(
       sourcePath,
       sourceFile,
-      identity.symbol,
+      identity.exportName,
     );
     const definition = this.#definitionObject(
       sourcePath,

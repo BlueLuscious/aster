@@ -3,7 +3,7 @@ import { IconImportError } from "../../error/index.js";
 /**
  * @description Validates canonical ASCII lowercase kebab-case Import slugs.
  */
-export class CanonicalSlugNormaliser {
+export class CanonicalSlugValidator {
   /**
    * @description Canonical portable slug grammar.
    */
@@ -15,7 +15,7 @@ export class CanonicalSlugNormaliser {
    * @param path - Logical slug path.
    * @returns Accepted canonical slug.
    */
-  normalise(value: unknown, path: string): string {
+  validate(value: unknown, path: string): string {
     if (typeof value !== "string" || !this.#pattern.test(value)) {
       throw new IconImportError(
         path,

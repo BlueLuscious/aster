@@ -1,5 +1,5 @@
 import type { CollectionMetadata } from "../contracts/index.js";
-import { CanonicalSlugNormaliser } from "../../shared/runtime/canonical-slug.normaliser.js";
+import { MetadataTagSequenceNormaliser } from "../../metadata/runtime/metadata-tag-sequence.normaliser.js";
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
 
@@ -13,9 +13,9 @@ export class CollectionMetadataNormaliser {
   readonly #validator = new IconValueValidator();
 
   /**
-   * @description Canonical intrinsic tag authority.
+   * @description Intrinsic metadata-tag sequence authority shared with icons.
    */
-  readonly #slugNormaliser = new CanonicalSlugNormaliser();
+  readonly #tagNormaliser = new MetadataTagSequenceNormaliser();
 
   /**
    * @description Produces one deeply frozen canonical collection metadata value.
@@ -44,7 +44,7 @@ export class CollectionMetadataNormaliser {
         : undefined;
     const tags =
       Object.hasOwn(record, "tags")
-        ? this.#normaliseTags(record.tags, `${path}.tags`)
+        ? this.#tagNormaliser.normalise(record.tags, `${path}.tags`)
         : undefined;
     const licence =
       Object.hasOwn(record, "licence")
@@ -69,27 +69,5 @@ export class CollectionMetadataNormaliser {
       ...(licence === undefined ? {} : { licence }),
       ...(attribution === undefined ? {} : { attribution }),
     });
-  }
-
-  /**
-   * @description Validates, deduplicates, and freezes intrinsic collection tags.
-   * @param value - Unknown authored tag collection.
-   * @param path - Logical tag collection path.
-   * @returns Frozen tags preserving authored order.
-   */
-  #normaliseTags(value: unknown, path: string): readonly string[] {
-    const tags = this.#validator.array(value, path).map((tag, index) => {
-      const tagPath = `${path}[${index}]`;
-      return this.#slugNormaliser.normalise(
-        this.#validator.text(tag, tagPath),
-        tagPath,
-      );
-    });
-
-    if (new Set(tags).size !== tags.length) {
-      throw new IconDefinitionError(path, "expected unique tags");
-    }
-
-    return Object.freeze(tags);
   }
 }

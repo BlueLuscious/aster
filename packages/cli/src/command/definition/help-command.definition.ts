@@ -63,7 +63,7 @@ export class HelpCommandDefinition implements ICommandDefinition {
       throw new TypeError("Invalid help command invocation");
     }
 
-    const commandName = invocation.commandName;
+    const commandName = Object.hasOwn(invocation, "commandName") ? invocation.commandName : undefined;
     const descriptors = commandName === undefined
       ? this.#descriptors
       : this.#descriptors.filter((descriptor) => descriptor.name === commandName);

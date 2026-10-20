@@ -2,7 +2,7 @@
  * @description One complete generated icon manifest record.
  * @typedef {object} ICatalogueIconManifestRecord
  * @property {string} key - Canonical distribution key.
- * @property {string} symbol - Public definition symbol.
+ * @property {string} exportName - Public definition symbol.
  * @property {{ namespace?: string, name: string, variant: string }} identity - Portable icon identity.
  * @property {string} displayName - Human-readable icon name.
  * @property {readonly string[] | undefined} tags - Optional intrinsic discovery terms.

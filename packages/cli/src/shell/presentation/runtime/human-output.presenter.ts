@@ -67,6 +67,9 @@ export class HumanOutputPresenter {
     >,
   ): string {
     const payload = result.payload;
+    const location = Object.hasOwn(payload, "location") && "location" in payload
+      ? payload.location
+      : undefined;
 
     switch (payload.kind) {
       case asterCommandPayloadKinds.export:
@@ -87,13 +90,13 @@ export class HumanOutputPresenter {
       case asterCommandPayloadKinds.version:
         return [
           `${payload.productName} ${payload.productVersion}`,
-          ...this.#locationLines(payload.location),
+          ...this.#locationLines(location),
         ].join("\n");
       case asterCommandPayloadKinds.packageVersions:
-        if (payload.aggregate !== true) {
+        if (!Object.hasOwn(payload, "aggregate") || payload.aggregate !== true) {
           return [
             `${payload.packages[0]?.name} ${payload.packages[0]?.version}`,
-            ...this.#locationLines(payload.location),
+            ...this.#locationLines(location),
           ].join("\n");
         }
 
@@ -117,7 +120,7 @@ export class HumanOutputPresenter {
                 ? ["  (no Aster dependencies)"]
                 : dependencies.map(({ name, version }) => `  ${name} ${version}`)),
             ])),
-          ...(payload.location === undefined ? [] : ["", ...this.#locationLines(payload.location)]),
+          ...(location === undefined ? [] : ["", ...this.#locationLines(location)]),
         ].join("\n");
     }
   }
@@ -157,7 +160,7 @@ export class HumanOutputPresenter {
       }
     >,
   ): string {
-    const related = result.diagnostic.related;
+    const related = Object.hasOwn(result.diagnostic, "related") ? result.diagnostic.related : undefined;
     return [
       `[${result.diagnostic.code}] ${result.diagnostic.message}`,
       ...(related === undefined || related.length === 0

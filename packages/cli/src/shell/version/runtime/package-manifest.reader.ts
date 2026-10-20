@@ -35,7 +35,7 @@ export class PackageManifestReader {
    * @param expectedName - Exact published package name requested by the caller.
    * @returns Frozen installed package identity and version.
    */
-  async version(path: string, expectedName: string): Promise<AsterInstalledPackageVersion> {
+  async readVersionRecord(path: string, expectedName: string): Promise<AsterInstalledPackageVersion> {
     const manifest = await this.read(path);
     return this.#version(manifest, expectedName);
   }
@@ -46,7 +46,7 @@ export class PackageManifestReader {
    * @param expectedName - Exact published identity of that root.
    * @returns Canonical root record and ordered direct dependency names.
    */
-  async installed(path: string, expectedName: string): Promise<Readonly<{
+  async readInstalledRoot(path: string, expectedName: string): Promise<Readonly<{
     /** @description Validated installed package identity and version. */
     root: AsterInstalledPackageVersion;
     /** @description Known direct Aster runtime dependency names. */
@@ -54,7 +54,7 @@ export class PackageManifestReader {
   }>> {
     const manifest = await this.read(path);
     const root = this.#version(manifest, expectedName);
-    const declared = manifest.dependencies;
+    const declared = Object.hasOwn(manifest, "dependencies") ? manifest.dependencies : undefined;
 
     if (declared !== undefined && !this.#isRecord(declared)) {
       throw new TypeError("Invalid installed Aster dependency declarations");
@@ -89,7 +89,7 @@ export class PackageManifestReader {
     manifest: Readonly<Record<string, unknown>>,
     expectedName: string,
   ): AsterInstalledPackageVersion {
-    const version = manifest.version;
+    const version = Object.hasOwn(manifest, "version") ? manifest.version : undefined;
 
     if (
       !Object.hasOwn(manifest, "name")

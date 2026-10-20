@@ -3,10 +3,10 @@ import type { IconMetadata } from "../contracts/index.js";
 import type { IconRtlPolicyType } from "../types/index.js";
 import { IconIdentityNormaliser } from "../../definition/runtime/icon-identity.normaliser.js";
 import { IconPresentationPolicyNormaliser } from "../../presentation/runtime/icon-presentation-policy.normaliser.js";
-import { CanonicalSlugNormaliser } from "../../shared/runtime/canonical-slug.normaliser.js";
 import { IconDefinitionError } from "../../shared/runtime/icon-definition.error.js";
 import { IconValueValidator } from "../../shared/runtime/icon-value.validator.js";
 import { iconRtlPolicies } from "../constants/icon-rtl-policies.constant.js";
+import { MetadataTagSequenceNormaliser } from "./metadata-tag-sequence.normaliser.js";
 
 /**
  * @description Validates, clones, and freezes resolved portable icon metadata.
@@ -23,9 +23,9 @@ export class IconMetadataNormaliser {
   readonly #identityNormaliser = new IconIdentityNormaliser();
 
   /**
-   * @description Canonical intrinsic tag authority.
+   * @description Intrinsic metadata-tag sequence authority shared with collections.
    */
-  readonly #slugNormaliser = new CanonicalSlugNormaliser();
+  readonly #tagNormaliser = new MetadataTagSequenceNormaliser();
 
   /**
    * @description Resolved icon presentation policy normaliser.
@@ -61,9 +61,9 @@ export class IconMetadataNormaliser {
     const displayName = this.#validator.text(record.displayName, `${path}.displayName`);
     const tags =
       Object.hasOwn(record, "tags")
-        ? this.#normaliseTags(record.tags, `${path}.tags`)
+        ? this.#tagNormaliser.normalise(record.tags, `${path}.tags`)
         : undefined;
-    const rtl = this.#normaliseRtl(record.rtl, `${path}.rtl`);
+    const rtl = this.#validateRtl(record.rtl, `${path}.rtl`);
     const presentation = this.#presentationPolicyNormaliser.normalise(
       record.presentation,
     );
@@ -117,7 +117,7 @@ export class IconMetadataNormaliser {
    * @param path - Logical value path.
    * @returns Accepted policy.
    */
-  #normaliseRtl(value: unknown, path: string): IconRtlPolicyType {
+  #validateRtl(value: unknown, path: string): IconRtlPolicyType {
     if (
       typeof value !== "string" ||
       !iconRtlPolicies.includes(value as IconRtlPolicyType)
@@ -132,38 +132,19 @@ export class IconMetadataNormaliser {
   }
 
   /**
-   * @description Compares complete logical icon identities.
+   * @description Compares complete logical icon identities using only their own namespace fields.
    * @param left - First canonical identity.
    * @param right - Second canonical identity.
    * @returns Whether namespace, name and required treatment match.
    */
   #identitiesMatch(left: IconIdentity, right: IconIdentity): boolean {
+    const leftNamespace = Object.hasOwn(left, "namespace") ? left.namespace : undefined;
+    const rightNamespace = Object.hasOwn(right, "namespace") ? right.namespace : undefined;
+
     return (
-      left.namespace === right.namespace &&
+      leftNamespace === rightNamespace &&
       left.name === right.name &&
       left.variant === right.variant
     );
-  }
-
-  /**
-   * @description Validates, deduplicates, and freezes intrinsic icon tags.
-   * @param value - Unknown authored tag collection.
-   * @param path - Logical tag collection path.
-   * @returns Frozen tags preserving authored order.
-   */
-  #normaliseTags(value: unknown, path: string): readonly string[] {
-    const tags = this.#validator.array(value, path).map((tag, index) => {
-      const tagPath = `${path}[${index}]`;
-      return this.#slugNormaliser.normalise(
-        this.#validator.text(tag, tagPath),
-        tagPath,
-      );
-    });
-
-    if (new Set(tags).size !== tags.length) {
-      throw new IconDefinitionError(path, "expected unique tags");
-    }
-
-    return Object.freeze(tags);
   }
 }

@@ -37,7 +37,8 @@ src/collections/<initial>/<name>/<name>.collection.ts
 
 The initial directory equals the first letter of the complete name. Names begin with an ASCII
 lowercase letter and use lowercase alphanumeric segments separated by one hyphen; variants use
-Core's portable slug syntax.
+Core's portable slug syntax. An optional declared namespace must also be a canonical ASCII
+lowercase kebab-case slug; inspection rejects rather than trims invalid namespace claims.
 Every icon filename repeats the complete name and appends its required treatment. Thus
 `c/camera-retro/camera-retro-filled.icon.ts` declares name `camera-retro`, variant `filled`
 and export `CameraRetroFilled`, not name `camera`.
@@ -45,8 +46,8 @@ and export `CameraRetroFilled`, not name `camera`.
 Collections have no variants or appended role suffix: `amellus.collection.ts` exports `Amellus`.
 Every definition calls its configured public `Icon.define(...)` or `Collection.define(...)`
 factory through an unaliased named runtime Core import. The direct object's literal identity
-must agree with the path. [Icons Collections](../../packages/icons/collections/index.md#export-naming-migration)
-owns consumer access and the export-naming migration.
+must agree with the path. [Icons Collections](../../packages/icons/collections/index.md)
+owns consumer access and named exports.
 
 A collection's explicit `icons` object assigns lower camel-case aliases to non-empty literal
 treatment dictionaries, for example `icons: { camera: { outline: CameraOutline } }`. Each leaf
@@ -61,6 +62,10 @@ mapping; every group must select one `(namespace, name)` family. The inspector p
 outer/inner enumeration, including integer-index ordering, before emitting flat member identities.
 Valid own shadowing names remain usable. [Core](../../packages/core/collection/index.md)
 independently enforces the same grouped semantics at runtime.
+
+Key, manifest, glyph and membership projections use only own identity fields. Namespace absence
+is distinct from an explicitly declared namespace; inherited namespace or treatment values cannot
+supply a key, appear in emitted metadata or merge otherwise different glyphs.
 
 Static metadata authorities must be exported top-level constants acquired through named runtime
 imports. `CatalogueSourceValueResolver` interprets a finite data-only TypeScript subset, never
@@ -104,12 +109,12 @@ caches last one complete inspection and are cleared before the next.
 | Contract | Responsibility and relationship |
 | --- | --- |
 | `ICatalogueSourceFamily` | Configures a family's Core factory, physical root and generated facade root. |
-| `ICatalogueSourceIdentity` | Carries path-owned name and symbol; treatment is required for icons and absent for collections. |
+| `ICatalogueSourceIdentity` | Carries path-owned name and `exportName`; treatment is required for icons and absent for collections. |
 | `ICatalogueCollectionMemberReference` | Retains the outer alias, treatment property and imported identifier, exported symbol and module specifier for relationship validation. |
 | `ICatalogueIconManifestData` | Carries statically extracted icon metadata without geometry. |
 | `ICatalogueCollectionManifestData` | Carries extracted collection metadata and ordered member keys. |
-| `ICatalogueIconManifestRecord` | Adds the canonical key, public symbol and identity to icon data for manifest serialisation. |
-| `ICatalogueCollectionManifestRecord` | Couples a canonical key, public symbol and identity with collection metadata and ordered member keys. |
+| `ICatalogueIconManifestRecord` | Adds the canonical key, `exportName` and identity to icon data for manifest serialisation. |
+| `ICatalogueCollectionManifestRecord` | Couples a canonical key, `exportName` and identity with collection metadata and ordered member keys. |
 | `ICatalogueSourceSyntaxInspection` | Couples extracted manifest data with syntax-owned member references. |
 | `ICatalogueSourceModule` | Combines path identity, source location, manifest data and relationships for a validated module. |
 | `ICatalogueSourceFamilyInspection` | Groups canonically ordered validated modules for one family. |

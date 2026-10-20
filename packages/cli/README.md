@@ -48,9 +48,6 @@ require `@variant`; the
 [Catalogue guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/catalogue/index.md#discovery-semantics)
 explains provider scope and exact family filtering.
 
-The [identity migration](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/catalogue/index.md#explicit-treatment-migration)
-explains how to update earlier icon requests and providers.
-
 ## Documentation
 
 - [Package guide](https://github.com/BlueLuscious/aster/blob/master/docs/en/packages/cli/index.md): features, providers and host boundaries.

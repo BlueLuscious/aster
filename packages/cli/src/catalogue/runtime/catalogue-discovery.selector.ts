@@ -174,7 +174,7 @@ export class CatalogueDiscoverySelector {
     return Object.freeze(catalogues.flatMap((catalogue) => catalogue.collections
       .filter((record) => this.#identities.collection(record.identity) === identity)
       .map((record) => {
-        const memberIdentities = new Set(record.icons.map((icon) =>
+        const memberIdentities = new Set(record.memberIdentities.map((icon) =>
           this.#identities.icon(icon),
         ));
 

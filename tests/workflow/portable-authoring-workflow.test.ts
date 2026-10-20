@@ -264,7 +264,7 @@ test("discovers and exports selected authored and adopted treatments without imp
         collections: [{
           identity: collection.identity,
           metadata: collection.metadata,
-          icons: collection.members.map(({ identity }) => identity),
+          memberIdentities: collection.members.map(({ identity }) => identity),
         }],
       };
     },

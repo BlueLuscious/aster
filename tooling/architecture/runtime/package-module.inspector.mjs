@@ -51,7 +51,7 @@ export class PackageModuleInspector {
    * @param {import("../types/internal/workspace-package-record.type.mjs").TWorkspacePackageRecord} record - Acquired package record.
    * @param {ReadonlySet<string>} packageNames - All recognised workspace package identities.
    * @param {ReadonlySet<string>} workspaceDependencies - Declared direct workspace dependencies.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after all package modules are inspected.
    */
   async inspect(
@@ -70,7 +70,7 @@ export class PackageModuleInspector {
     for (const modulePath of modules) {
       const source = await this.#fileSystem.readText(modulePath);
 
-      for (const specifier of this.#moduleSpecifiers.extract(source)) {
+      for (const specifier of this.#moduleSpecifiers.extract(source, modulePath)) {
         if (specifier.startsWith(".")) {
           this.#inspectRelativeSpecifier(
             workspaceRoot,
@@ -103,7 +103,7 @@ export class PackageModuleInspector {
    * @param {import("../types/internal/workspace-package-record.type.mjs").TWorkspacePackageRecord} record - Acquired package record.
    * @param {string} modulePath - Importing module path.
    * @param {string} specifier - Relative module specifier.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {void} Completion after all relative boundaries are inspected.
    */
   #inspectRelativeSpecifier(
@@ -180,7 +180,7 @@ export class PackageModuleInspector {
    * @param {string} packageRoot - Absolute CLI package root.
    * @param {string} modulePath - Importing source module.
    * @param {string} target - Resolved package-local import target.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {void} Completion after private shell boundaries are inspected.
    */
   #inspectCliShellBoundary(
@@ -247,7 +247,7 @@ export class PackageModuleInspector {
    * @param {string} specifier - Package module specifier.
    * @param {ReadonlySet<string>} packageNames - All workspace package identities.
    * @param {ReadonlySet<string>} workspaceDependencies - Declared direct workspace dependencies.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {void} Completion after package module boundaries are inspected.
    */
   #inspectPackageSpecifier(
@@ -316,7 +316,7 @@ export class PackageModuleInspector {
    * @description Inspects private Import features exposed from its package root.
    * @param {string} packageRoot - Absolute Import package root.
    * @param {string} target - Resolved relative export target.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {void} Completion after all private feature roots are inspected.
    */
   #inspectImportRootExport(packageRoot, target, issues) {

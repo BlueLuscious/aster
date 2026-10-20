@@ -36,7 +36,7 @@ export class LocalLinkPolicy {
    * @description Inspects every local link target in one canonical document.
    * @param {import("../types/internal/documentation-context.type.mjs").TDocumentationContext} context - Documentation verification context.
    * @param {import("../types/internal/canonical-document.type.mjs").TCanonicalDocument} document - Acquired canonical document.
-   * @param {import("./documentation-issue.collector.mjs").DocumentationIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/documentation-issue-collector.contract.mjs").IDocumentationIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after all local links are resolved.
    */
   async inspect(context, document, issues) {

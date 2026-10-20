@@ -1,6 +1,6 @@
 import type { IconIdentity } from "@luscious-garden/aster-core";
 import { ImportValueValidator } from "../../shared/runtime/import-value.validator.js";
-import { CanonicalSlugNormaliser } from "../../shared/runtime/canonical-slug.normaliser.js";
+import { CanonicalSlugValidator } from "../../shared/runtime/canonical-slug.validator.js";
 
 /**
  * @description Validates and clones canonical source identity claims from own data fields.
@@ -14,7 +14,7 @@ export class SourceIdentityNormaliser {
   /**
    * @description Canonical namespace, icon, and variant slug authority.
    */
-  readonly #slugNormaliser = new CanonicalSlugNormaliser();
+  readonly #slugValidator = new CanonicalSlugValidator();
 
   /**
    * @description Produces one frozen complete icon identity.
@@ -32,13 +32,13 @@ export class SourceIdentityNormaliser {
     );
     const namespace =
       Object.hasOwn(record, "namespace")
-        ? this.#slugNormaliser.normalise(
+        ? this.#slugValidator.validate(
             record.namespace,
             `${path}.namespace`,
           )
         : undefined;
-    const name = this.#slugNormaliser.normalise(record.name, `${path}.name`);
-    const variant = this.#slugNormaliser.normalise(record.variant, `${path}.variant`);
+    const name = this.#slugValidator.validate(record.name, `${path}.name`);
+    const variant = this.#slugValidator.validate(record.variant, `${path}.variant`);
 
     return Object.freeze({
       ...(namespace === undefined ? {} : { namespace }),

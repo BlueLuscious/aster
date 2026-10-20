@@ -76,7 +76,7 @@ export class CommandContextNormaliser {
       return this.#invalid("expected context.productVersion to be a non-empty string");
     }
 
-    const packageVersions = record.packageVersions === undefined
+    const packageVersions = !Object.hasOwn(record, "packageVersions")
       ? undefined
       : this.#acceptPackageVersions(record.packageVersions);
 
@@ -84,7 +84,7 @@ export class CommandContextNormaliser {
       return this.#invalid("expected context.packageVersions to contain a source and unique public package versions");
     }
 
-    const packageDependencies = record.packageDependencies === undefined
+    const packageDependencies = !Object.hasOwn(record, "packageDependencies")
       ? undefined
       : this.#acceptPackageDependencies(record.packageDependencies);
 
@@ -92,7 +92,7 @@ export class CommandContextNormaliser {
       return this.#invalid("expected context.packageDependencies to contain valid root groups");
     }
 
-    const cliLocation = record.cliLocation === undefined
+    const cliLocation = !Object.hasOwn(record, "cliLocation")
       ? undefined
       : this.#acceptCliLocation(record.cliLocation);
 
@@ -408,7 +408,7 @@ export class CommandContextNormaliser {
       const descriptor = Object.getOwnPropertyDescriptor(owner, key);
 
       if (descriptor !== undefined) {
-        return "value" in descriptor
+        return Object.hasOwn(descriptor, "value")
           ? Object.freeze({ value: descriptor.value })
           : undefined;
       }

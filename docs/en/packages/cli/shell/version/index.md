@@ -41,3 +41,8 @@ Location comparison can return `unavailable` without failing the request. If req
 acquisition fails when combined with location, the entire request fails without either partial
 view. If a dependency prevents the executable from starting, Node reports its own error before this
 feature runs. No SemVer-compatibility check or release-history lookup is performed.
+
+`PackageManifestReader.readVersionRecord()` reads and validates one installed identity/version;
+`readInstalledRoot()` reads that root and its direct runtime dependency names. Both reuse the same
+JSON reader and exact installed-version validation. Project dependency sections and installed
+runtime dependencies must be own manifest fields; an inherited declaration is not installation evidence.

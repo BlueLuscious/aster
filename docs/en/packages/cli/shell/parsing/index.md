@@ -2,6 +2,10 @@
 
 Status: **Accepted**
 
+Mutable shared filter state represents absent singleton options explicitly as own `undefined`
+values. Export option accumulation defines each supplied field as own data. Parsers and the shell
+do not acquire undeclared options, output roots or version flags from inherited host properties.
+
 The parsing subfeature adapts an explicit argv sequence into one immutable structured command
 invocation and shell-only presentation options. It does not read process state, execute commands,
 present results, or access the filesystem.

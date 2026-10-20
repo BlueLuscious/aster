@@ -32,5 +32,5 @@ export interface CatalogueCollectionResult {
   /**
    * @description Stable identities of icons directly retained by the collection.
    */
-  readonly icons: readonly IconIdentity[];
+  readonly memberIdentities: readonly IconIdentity[];
 }

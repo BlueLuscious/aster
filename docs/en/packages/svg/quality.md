@@ -12,12 +12,12 @@ measurements, distribution snapshots and the escaping and Core-acceptance compar
 | Evidence | Guarantees exercised | Behaviour authority |
 | --- | --- | --- |
 | Renderer runtime suite | Exact markup and renderer marker, every primitive and structured path command, stable paint and attribute order, authorised overrides, viewport bounds, accessibility and RTL including numeric extremes. | [Render Result](render/index.md). |
-| Adversarial renderer cases | Exact own option data, null prototypes, symbols, hidden fields, accessors, inherited state, malformed definitions, caller non-mutation and propagated proxy failures. | [Render Runtime](render/runtime/index.md#option-acceptance) and [Error](error/index.md). |
+| Adversarial renderer cases | Exact own option data, null prototypes, symbols, hidden fields and accessors; inherited getters, setters and non-writable fields; absent viewport hints and rectangle radii; malformed definitions, per-call caller isolation and propagated proxy failures. | [Render Runtime](render/runtime/index.md#option-acceptance) and [Error](error/index.md). |
 | XML cases | Exact XML 1.0 ranges, valid supplementary characters, isolated surrogate rejection, contextual escaping and logical source paths. | [Numeric and Text Form](render/index.md#numeric-and-text-form). |
 | Icons corpus suite | Complete real artwork under default, semantic, colour-context, viewport and direction scenarios. | The public rendering contract applied to real consumers. |
 | Type suite | The structural API and string result; rejection of arbitrary attributes, events, explicit undefined option fields and DOM values. | [API](api/index.md) and [Core Render Options](../core/render/index.md). |
 | Built-package ABI suite | Exact root exports and declarations, unsupported implementation subpaths, Core-only runtime dependency, ESM and side-effect metadata, no undeclared host or tooling authority. | [Package Boundary](index.md#boundary). |
-| Isolated consumer suite | Import/deterministic rendering using publishable files only, including an independent Core installation, unchanged unknown-input acceptance and error-class boundaries. | [Project Testing Policy](../../project/testing.md). |
+| Isolated consumer suite | Import/deterministic rendering using publishable files only, including inherited-field isolation, an independent Core installation, unchanged unknown-input acceptance and error-class boundaries. | [Project Testing Policy](../../project/testing.md). |
 | Repository workflow suite | Byte-equivalent output from equivalent TypeScript-first and Import-adopted definitions through built public roots. | [Workflow](workflow.md). |
 
 Runtime evidence distinguishes ordinary accessor rejection from caller-controlled proxy execution.

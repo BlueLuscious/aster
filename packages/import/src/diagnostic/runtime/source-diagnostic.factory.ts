@@ -3,7 +3,7 @@ import type { DiagnosticCodeType } from "../types/index.js";
 import type { TSourceDiagnosticInput } from "../types/internal/source-diagnostic-input.type.js";
 import { IconImportError } from "../../error/index.js";
 import { ImportValueValidator } from "../../shared/runtime/import-value.validator.js";
-import { SourceIdNormaliser } from "../../source/runtime/source-id.normaliser.js";
+import { SourceIdValidator } from "../../source/runtime/source-id.validator.js";
 import { diagnosticCodePolicy } from "../constants/diagnostic-code-policy.constant.js";
 import { DiagnosticMessageNormaliser } from "./diagnostic-message.normaliser.js";
 import { DiagnosticRelatedContextFactory } from "./diagnostic-related-context.factory.js";
@@ -19,9 +19,9 @@ export class SourceDiagnosticFactory {
   readonly #validator = new ImportValueValidator();
 
   /**
-   * @description Logical source identifier normaliser.
+   * @description Strict logical source identifier validator.
    */
-  readonly #sourceIdNormaliser = new SourceIdNormaliser();
+  readonly #sourceIdValidator = new SourceIdValidator();
 
   /**
    * @description Source span construction authority.
@@ -40,6 +40,8 @@ export class SourceDiagnosticFactory {
 
   /**
    * @description Creates one canonical immutable diagnostic.
+   * @remarks Required evidence must be own data. Inherited optional context is absent rather than
+   * trusted source evidence; aggregation observes the same own-field rule without rebuilding values.
    * @param value - Internal occurrence-specific diagnostic input.
    * @returns Deeply frozen canonical diagnostic.
    */
@@ -51,22 +53,25 @@ export class SourceDiagnosticFactory {
       ["code", "message", "sourceId", "span", "related"],
       path,
     );
-    const code = this.#normaliseCode(record.code, `${path}.code`);
+    const code = this.#validateCode(
+      Object.hasOwn(record, "code") ? record.code : undefined,
+      `${path}.code`,
+    );
     const policy = diagnosticCodePolicy[code];
     const message = this.#messageNormaliser.normalise(
-      record.message,
+      Object.hasOwn(record, "message") ? record.message : undefined,
       `${path}.message`,
     );
-    const sourceId = this.#sourceIdNormaliser.normalise(
-      record.sourceId,
+    const sourceId = this.#sourceIdValidator.validate(
+      Object.hasOwn(record, "sourceId") ? record.sourceId : undefined,
       `${path}.sourceId`,
     );
     const span =
-      "span" in record
+      Object.hasOwn(record, "span")
         ? this.#spanFactory.create(record.span, `${path}.span`)
         : undefined;
     const related =
-      "related" in record
+      Object.hasOwn(record, "related")
         ? this.#relatedFactory.createSequence(
             record.related,
             `${path}.related`,
@@ -90,7 +95,7 @@ export class SourceDiagnosticFactory {
    * @param path - Logical code path.
    * @returns Accepted diagnostic code.
    */
-  #normaliseCode(
+  #validateCode(
     value: unknown,
     path: string,
   ): DiagnosticCodeType {

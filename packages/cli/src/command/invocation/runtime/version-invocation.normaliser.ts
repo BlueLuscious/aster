@@ -68,8 +68,8 @@ export class VersionInvocationNormaliser implements ICommandInvocationNormaliser
       value: Object.freeze({
         command: this.command,
         ...(scope === undefined ? {} : { scope }),
-        ...(record.dependencies === true ? { dependencies: true } : {}),
-        ...(record.location === true ? { location: true } : {}),
+        ...(Object.hasOwn(record, "dependencies") ? { dependencies: true } : {}),
+        ...(Object.hasOwn(record, "location") ? { location: true } : {}),
       }),
     });
   }

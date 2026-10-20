@@ -531,8 +531,8 @@ test("composes packed Core, Icons, and SVG through public consumer entrypoints",
     "process.stdout.write(JSON.stringify({",
     "  icon: iconEntry.key,",
     "  collection: collectionEntry.key,",
-    "  exactIcon: directIcon[iconEntry.symbol] === icon,",
-    "  exactCollection: directCollection[collectionEntry.symbol] === collection,",
+    "  exactIcon: directIcon[iconEntry.exportName] === icon,",
+    "  exactCollection: directCollection[collectionEntry.exportName] === collection,",
     "  rebuilt: JSON.stringify(rebuilt) === JSON.stringify(icon),",
     '  svg: markup.startsWith("<svg ") && markup.endsWith("</svg>"),',
     "}));",
@@ -620,7 +620,11 @@ test("compiles and executes cross-package usage against packed declarations", as
     'import { AsterIconLoaders } from "@luscious-garden/aster-icons/dynamic";',
     'import { Svg } from "@luscious-garden/aster-svg";',
     'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
-    'import type { AsterCliLocationEvidence, AsterCommandInvocationType, AsterCommandPayloadType, AsterPackageDependencyEvidence, CatalogueGlyphResult, CatalogueIconResult } from "@luscious-garden/aster-cli";',
+    'import type { AsterCliLocationEvidence, AsterCommandInvocationType, AsterCommandPayloadType, AsterPackageDependencyEvidence, CatalogueCollectionResult, CatalogueDiscoveryCollectionRecord, CatalogueGlyphResult, CatalogueIconResult } from "@luscious-garden/aster-cli";',
+    "// @ts-expect-error Packed collection results have no legacy identity-array alias.",
+    'type LegacyCollectionResult = CatalogueCollectionResult["icons"];',
+    "// @ts-expect-error Packed providers declare memberIdentities, not complete icons.",
+    'type LegacyCollectionRecord = CatalogueDiscoveryCollectionRecord["icons"];',
     'const versionRequest: AsterCommandInvocationType = { command: "version", scope: "cli", dependencies: true, location: true };',
     'const location: AsterCliLocationEvidence = { entrypoint: "/aster/cli.js", projectCli: "same" };',
     'const dependencyEvidence: AsterPackageDependencyEvidence = { source: "cli", groups: [{ root: { name: "@luscious-garden/aster-cli", version: "1.0.0" }, dependencies: [] }] };',
@@ -759,8 +763,8 @@ test("retains every packed glyph leaf across direct, loader, collection and rend
     "  const direct = await import(`${root}/${entry.identity.variant}`);",
     "  const aggregate = await import(root);",
     "  const [dictionary] = Object.values(aggregate);",
-    "  const leaf = direct[entry.symbol];",
-    "  assert.deepEqual(Object.keys(direct), [entry.symbol]);",
+    "  const leaf = direct[entry.exportName];",
+    "  assert.deepEqual(Object.keys(direct), [entry.exportName]);",
     "  assert.equal(Object.keys(aggregate).length, 1);",
     "  assert.equal(dictionary[Icon.variantPropertyName(entry.identity.variant)], leaf);",
     "  assert.equal(await AsterIconLoaders[entry.key](), leaf);",
@@ -1593,4 +1597,23 @@ test("requires explicit catalogues and canonicalises provider registration order
     first.payload.catalogues.map((catalogue) => catalogue.identity),
     ["alpha", "beta"],
   );
+});
+
+test("exposes collection member identities consistently through packed programmatic and JSON hosts", () => {
+  const executable = runExecutable(["show", "collection", representativeCollectionIdentity, "--json"]);
+  assertSuccessfulProcess(executable, "execute packed collection identity query");
+  const programmatic = runModule([
+    'import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";',
+    `const result = await AsterCommands.execute({ command: "show", subject: "collection", identity: ${JSON.stringify(representativeCollectionIdentity)} }, { catalogues: [AsterCatalogue], productName: "Aster", productVersion: ${JSON.stringify(packageVersions.cli)} });`,
+    'if (!result.ok || result.payload.kind !== "collection-show") throw new Error("Missing collection");',
+    'if (Object.hasOwn(result.payload.collection, "icons")) throw new Error("Legacy field alias");',
+    'if (!Object.isFrozen(result.payload.collection.memberIdentities)) throw new Error("Mutable member identities");',
+    "process.stdout.write(JSON.stringify(result));",
+  ].join("\n"));
+  assertSuccessfulProcess(programmatic, "execute packed programmatic collection identity query");
+  const result = JSON.parse(programmatic.stdout);
+  assert.deepEqual(JSON.parse(executable.stdout), result);
+  assert.equal(Object.hasOwn(result.payload.collection, "icons"), false);
+  assert.ok(Array.isArray(result.payload.collection.memberIdentities));
+  assert.equal(result.payload.collection.memberIdentities.length, expectedCollectionPaths.length);
 });

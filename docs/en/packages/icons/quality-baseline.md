@@ -2,163 +2,74 @@
 
 Status: **Accepted**
 
-This document defines the evidence method used to compare `@luscious-garden/aster-icons` public import evaluation
-and emitted distribution changes. It is not a bundle-size promise, hardware-independent speed
-guarantee or CI performance threshold. Current correctness evidence remains in
-[Icons Quality](quality.md).
-
-Shared fresh-process probing, sampling, aggregation and distribution inspection are owned by
-[Performance Tooling](../../tooling/performance/index.md). This page owns Icons scenarios and
-their interpretation, not a second implementation inventory.
-
-## Representative evidence
-
-Each import scenario runs in seven fresh direct Node processes. A disposable synchronous module
-hook instruments only emitted JavaScript beneath `packages/icons/dist`; its marker executes when
-each package module evaluates. The probe reports the stable relative module set, public exports,
-import time and complete process time without modifying package source or emitted artefacts.
-
-| Workload | Pressure represented |
-| --- | --- |
-| Isolated icon import | One definition plus its directly shared authorship and visual-profile authorities. |
-| Glyph dictionary import | One generated dictionary plus all of its available concrete treatments; distinct from requesting one isolated treatment. |
-| Isolated collection import | One complete collection plus every member it explicitly retains. |
-| Manifest import | Metadata-only discovery without complete icon or collection definitions. |
-| Dynamic import | Exact asynchronous loader maps without eager definition evaluation. |
-| Emitted distribution | JavaScript, declarations, bytes, export keys, side effects and dependencies. |
-
-Core modules and Node internals are excluded from module counts because this baseline attributes
-only Icons-owned evaluation. Fresh-process time includes Node startup and is therefore reported
-separately from the instrumented dynamic import interval.
-
-Schema two adds `icons.import.glyph-dictionary` at `/camera`, while
-`icons.import.isolated-icon` continues to measure the concrete `/camera/outline` entry. Historical
-schema-one findings below retain their original scope. A glyph with one treatment does not prove
-multi-treatment isolation; compiled synthetic sources and packed consumers provide that separate
-[correctness evidence](quality.md#source-synchronisation-evidence).
-
-## Representative findings
-
-Three pre-migration reports under Node `24.10.0` on Windows x64 produced these historical medians
-across report medians:
-
-| Scenario | Evaluated Icons modules | Median import time | Median process time |
-| --- | ---: | ---: | ---: |
-| Retired aggregate-root baseline | 31 | 58.44 ms | 110.13 ms |
-| `icons.import.isolated-icon` | 3 | 26.79 ms | 77.80 ms |
-| `icons.import.isolated-collection` | 29 | 57.74 ms | 108.70 ms |
-
-The former package root evaluated every current icon, both
-authoring authorities, its generated barrel and aggregate constant even though no collection was
-requested. That historical baseline justified removing the aggregate root; it is no longer an
-executable public scenario.
-
-After facade generation and eager-surface retirement, the recorded module sets were:
-
-| Scenario | Evaluated Icons modules |
-| --- | ---: |
-| `icons.import.isolated-icon` | 5 |
-| `icons.import.isolated-collection` | 31 |
-| `icons.import.manifest` | 2 |
-| `icons.import.dynamic` | 2 |
-
-The isolated Camera import evaluates its facade, definition, two shared authoring authorities and
-their artwork-licence authority. The Amellus import necessarily evaluates its facade, collection,
-the same three authorities and all twenty-six explicitly retained members. Neither import
-evaluates an unrelated definition.
-
-After introducing the accepted metadata-only integration, a fresh manifest probe evaluates exactly
-`manifest/index.js` and `generated/manifest/index.js`. It evaluates no canonical icon, collection or
-authoring-authority module. Timing remains non-contractual; this exact two-module boundary is the
-relevant correctness evidence.
-
-The accepted dynamic integration likewise evaluates exactly `dynamic/index.js` and
-`generated/dynamic/index.js` when imported. No definition or authoring authority executes until a
-specific loader is invoked. Runtime and ABI evidence separately prove that each generated loader
-targets one public definition facade and resolves the exact canonical object.
-
-No timing optimisation follows from these observations alone. Module-set isolation is the primary
-correctness evidence; elapsed time remains informative supporting evidence affected by host state.
-
-## Explicit-treatment findings
-
-On 16 October 2026, fresh Windows x64 builds using Node `24.10.0`, TypeScript `5.9.3` and
-ES2022 ESM retained these schema-two evaluation sets across seven processes per import:
-
-| Import | Named export | Icons modules evaluated |
-| --- | --- | --- |
-| `/camera/outline` | `CameraOutline` | 5 |
-| `/camera` | `CameraVariants` | 5 |
-| `/collections/amellus` | `Amellus` | 31 |
-| `/manifest` | Icon and collection manifests | 2 |
-| `/dynamic` | Icon and collection loaders | 2 |
-
-Camera currently has one treatment. Its dictionary and individual entry use distinct facades but
-reach the same canonical leaf and shared authoring authorities; equal counts do not mean equal
-module sets or prove that a larger dictionary would evaluate only one treatment. Metadata and
-loader imports still evaluate no artwork. These are native ESM observations, not bundler
-tree-shaking or timing guarantees.
-
-The explicit-treatment build contains 95 JavaScript modules totalling 90,719 bytes and 95
-declarations totalling 28,326 bytes. The additional 26 dictionary facades and their declarations
-account for the file-count increase over the earlier 69-module distribution; explicit identities
-and grouped declarations also change bytes. These figures are snapshots, not size budgets.
-
-## Distribution evidence
-
-The recorded typed-collection native ES2022 ESM output contained 138 files and 83,832 unminified bytes:
-
-- 69 JavaScript modules totalling 66,769 bytes;
-- 69 declaration files totalling 17,063 bytes;
-- isolated-icon, isolated-collection, manifest and dynamic export patterns;
-- explicit blocked aggregate-root and bare collection-family entries;
-- `sideEffects: false`;
-- public `@luscious-garden/aster-core` as the only runtime dependency.
-
-The corresponding tarball contained those emitted files plus package metadata, README and both
-legal authorities linked by the [rights boundary](index.md#rights-boundary).
-[Packed-consumer conformance](quality.md#evidence-coverage) owns complete-payload verification,
-including rejection of source, tests and repository tooling.
-
-The pre-migration control contained 68 files and 55,087 bytes. The accepted facade, manifest and
-loader responsibilities increase emitted file count while removing default package-wide runtime
-evaluation. Neither figure is a size budget.
-
-Typed collection membership preserves the same import-module sets while adding concrete alias
-declarations and the authored dictionary. `members` is derived by Core and introduces no extra
-Icons module or registry dependency. The counts describe this measured source revision; the
-command reports fresh values after catalogue or compiler changes.
+This page owns the evidence method and a dated source snapshot for public Icons import evaluation
+and emitted distribution. It is not a bundle-size promise, hardware-independent speed guarantee
+or CI timing threshold. [Icons Quality](quality.md) owns correctness coverage.
 
 ## Reproduction
 
-Run:
-
 ```sh
-pnpm benchmark:icons
+pnpm run benchmark:icons
 ```
 
-The command builds Core and Icons, starts fresh probe processes for isolated treatment, glyph
-dictionary, isolated collection, manifest and dynamic imports, prints schema-version-two JSON
-and writes no artefact. It reports actual module sets and distribution from the current checkout.
-[Performance Tooling](../../tooling/performance/index.md) owns shared report fields and comparison
-limits. Catalogue growth can legitimately change selected collection graphs and emitted counts;
-neither these snapshots nor timings establish a fixed size or count guarantee.
+The command builds Core and Icons, then reports five public import scenarios and the emitted
+package shape. Shared probing, sampling, aggregation and distribution inspection belong to
+[Performance Tooling](../../tooling/performance/index.md); this page does not define another
+implementation or catalogue.
 
-## Acceptance rules
+## Evidence model
 
-Correctness takes precedence over speed. A timing claim requires three equivalent control and
-candidate reports, at least 10% improvement in its target scenario, and no unrelated regression
-above 5% without an accepted trade-off. Distribution growth requires one concrete responsibility.
+Each import scenario runs in seven fresh direct Node processes. A disposable synchronous module
+hook instruments emitted JavaScript beneath `packages/icons/dist`; its marker executes when each
+package module evaluates. The probe records relative module sets, named exports, dynamic-import
+time and complete process time without editing source or distribution files.
 
-An isolated icon must never evaluate an unrelated definition. A metadata-only integration import
-must evaluate no complete icon or collection definition. An exact collection import may evaluate
-only its collection, its declared members and unavoidable shared authorities. Package ABI,
-declarations, generated-output ownership, packed installation and complete verification remain
-authoritative.
+Core and Node internals are excluded from Icons module counts. Complete process time includes
+Node startup, whereas the instrumented import interval measures the requested import and its
+necessary dependencies. Neither value is a renderer or search benchmark.
 
-## Tooling boundary
+## Source snapshot
 
-Icons selects its public specifiers and scenario configuration through the private
-[performance composition](../../tooling/performance/index.md#package-runtime-composition).
-Shared probing and measurement capabilities remain tooling-owned. None ships in Icons or enters
-production imports.
+A 19 October 2026 Windows x64 observation using Node `24.10.0`, TypeScript `5.9.3` and native
+ES2022 ESM gives these evaluation sets:
+
+| Public subpath | Named exports | Evaluated Icons modules |
+| --- | --- | ---: |
+| `/camera/outline` | `CameraOutline` | 5 |
+| `/camera` | `CameraVariants` | 5 |
+| `/collections/amellus` | `Amellus` | 31 |
+| `/manifest` | `AsterCollectionManifest`, `AsterIconManifest` | 2 |
+| `/dynamic` | `AsterCollectionLoaders`, `AsterIconLoaders` | 2 |
+
+The Camera entries evaluate distinct facades but the same single Outline definition and three
+shared authoring authorities. Equal counts do not mean equal module sets or prove that a larger
+dictionary evaluates only one treatment. Compiled multi-treatment fixtures provide that separate
+[isolation evidence](quality.md#source-synchronisation-evidence).
+
+Amellus evaluates its facade, collection, three authoring authorities and 26 explicitly retained
+members. Metadata discovery evaluates only `manifest/index.js` and `generated/manifest/index.js`;
+loader-map discovery evaluates only `dynamic/index.js` and `generated/dynamic/index.js`. Neither
+evaluates artwork until a definition is requested.
+
+The same source snapshot emits:
+
+- 95 JavaScript modules, totalling 90,827 unminified bytes;
+- 95 declarations, totalling 28,334 bytes;
+- 190 emitted files, totalling 119,161 bytes;
+- ESM, `sideEffects: false` and Core as the only runtime dependency.
+
+The package root and bare collection aggregate remain blocked. Snapshot counts and bytes are not
+budgets; source, compiler or membership changes require fresh evidence rather than extrapolation.
+[Packed conformance](quality.md#evidence-coverage) verifies the acquired payload, legal notices,
+declarations and native execution. [Distribution costs](index.md#distribution-costs) owns the
+separate acquisition, evaluation and bundle boundaries.
+
+## Interpretation
+
+Exact evaluated module sets establish isolation; elapsed time is supporting evidence influenced
+by startup, host state and instrumentation. No timing optimisation follows from module counts
+alone, and native ESM observations do not guarantee bundler tree shaking.
+
+[Catalogue Source Tooling](../../tooling/catalogue/index.md) owns build-time checking and repair.
+Those operations do not run when an installed consumer imports or renders an icon. Changes to
+private generation and changes to consumer evaluation must be measured separately.

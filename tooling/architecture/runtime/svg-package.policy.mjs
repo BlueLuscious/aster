@@ -31,7 +31,7 @@ export class SvgPackagePolicy {
    * @param {import("../types/internal/workspace-package-record.type.mjs").TWorkspacePackageRecord} record - Acquired SVG package record.
    * @param {Record<string, unknown>} dependencies - Combined production dependencies.
    * @param {ReadonlySet<string>} workspaceDependencies - Direct workspace dependencies.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after SVG policy is inspected.
    */
   async inspect(record, dependencies, workspaceDependencies, issues) {
