@@ -25,6 +25,11 @@ flags cannot request publication or version I/O, and inherited manifest sections
 dependencies. Packed type and executable/programmatic consumers verify the exact
 `memberIdentities` contract. These checks preserve output layout and diagnostic conventions.
 
+Membership regressions compare all 3,185 ordered two-icon/two-collection graphs against an
+independent collection-first traversal, including missing members and conflicting reverse claims.
+Repeated commands also change mutable provider evidence between calls and verify fresh validation,
+unchanged earlier results and zero definition loads. No elapsed-time assertion enters these tests.
+
 Run the package gate with `pnpm --dir packages/cli run test`; the distribution and executable
 subset is `pnpm --dir packages/cli run test:conformance`. Subprocess evidence requires permission
 to start child Node processes; an unavailable process is not a CLI failure result.
@@ -39,7 +44,7 @@ installed packages directly from their owning guides, not copied into independen
 ## Integration evidence
 
 Root import does not evaluate Icons. Fresh-process probes distinguish manifest-only discovery
-from exact Export/Review definition loading. Module sets and their historical counts belong to
+from exact Export/Review definition loading. Measured module sets and counts belong to
 the [baseline](quality-baseline.md#lazy-integration-evidence), not a permanent file-count promise.
 Installed glyph queries also run under a native import guard that blocks artwork, generated
 facades and network hosts; a direct artwork import is the negative control proving the guard works.

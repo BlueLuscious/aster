@@ -63,6 +63,13 @@ The loader retains no cache or global registry. It applies
 membership validation cross-checks its two directions without loading geometry. Provider search
 terms and provenance remain catalogue-owned data rather than Core metadata.
 
+Membership inspection builds a temporary collection-to-icon claim index from accepted records.
+It checks declared members against available icons and reciprocal claims, then checks the claims
+against the collection's members. Collection order, declared member order and icon insertion order
+determine the first diagnostic. Work follows records and membership references rather than scanning
+the complete icon catalogue for every collection. The index is private to one inspection and is
+discarded afterwards; it does not cache discovery or exempt a repeated provider result from validation.
+
 One rejected provider prevents any partial payload from becoming observable. Rejected promises,
 accessors, proxies, malformed fields, duplicate identities, unknown members, and inconsistent
 membership claims become sanitised diagnostics associated with the accepted provider identity.
