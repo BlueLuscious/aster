@@ -49,6 +49,81 @@ the benchmark never times repeated property access as collection construction.
 Schema six marks grouped collection construction. See the shared
 [workload comparison limits](../../tooling/performance/index.md#structure).
 
+## Scaled construction and membership publication
+
+On 20 October 2026, a Windows x64 comparison with Node `24.10.0` and TypeScript `5.9.3`
+compared source `feefb79` with ordinary writes into private prototype-free membership maps,
+followed by the existing final freezing. No validation, identity rule, recognition state or
+public contract changed.
+
+The exploratory matrix covered 1/10/100/1,000/10,000 definitions; canonical, mutable,
+shallow/structured/JSON copies and genuinely separate compatible Core outputs; empty and populated
+collections; 1/3/10 treatments per glyph; collection count and shared/disjoint membership; geometry
+at 16/64/256 nodes or 8/128/1,024 points; 1/1,024 label characters and 0/1/100/1,000 tags;
+submitted members and deliberate rejection. These are
+finite development strata, not public size limits or a Cartesian product. A 1,000-member mutable
+construction preflight completed in 13.0 ms with a conservative RSS-growth bound of 6.0 MiB,
+permitting the 10,000 tier. Resource probes remained separate from latency measurements.
+
+The retained comparison used 21 Core workloads and five cross-package consumers, three matched
+rounds, seven raw samples per observation, baseline-calibrated fixed counts and rotated variant
+and scenario order. Preparation and full output fingerprints stayed outside timing. A batch
+includes result-array creation and checksum consumption; it is not an isolated method-body cost.
+The following are medians of three report medians, not pooled percentiles or confidence intervals:
+
+| Complete construction workload | Baseline | Retained implementation | Difference |
+| --- | ---: | ---: | ---: |
+| One collection, 100 canonical definitions | 0.194 ms | 0.157 ms | 18.9% faster |
+| One collection, 1,000 canonical definitions | 2.086 ms | 1.657 ms | 20.6% faster |
+| One collection, 10,000 canonical definitions | 26.560 ms | 22.517 ms | 15.2% faster |
+| 1,000 collections, ten shared canonical definitions each | 23.534 ms | 19.245 ms | 18.2% faster |
+
+The last row constructs 10,000 membership references to ten selected definitions, not 10,000
+distinct definitions. Collection roots, metadata, groups and flat member arrays are rebuilt in
+every operation. Repeated reads or renders do not perform this construction.
+
+Separate CPU profiles located canonical construction pressure in membership-map construction and
+variant-property conversion; unknown geometry instead concentrated work in exact-field,
+descriptor and dense-array validation. A deterministic counter for 1,000 one-treatment groups
+confirmed `Object.defineProperty()` calls falling from 2,000 to zero. Validation and freezing
+counts stayed identical: 1,007 freezes for canonical leaves and 12,007 for mutable leaves.
+The output maps remain private until frozen, with the same null prototypes, enumerable closed
+data fields, ordering, references and duplicate diagnostics. The one-variable change and these
+counters identify the removed mechanism; profile percentages are not additive stage durations.
+Variant conversion and strict unknown-input validation remain unchanged.
+
+An initial matched observation showed a 7.9% increase for a single mutable definition. A separately
+declared 2,000-operation warm-up diagnostic reversed paired directions and gave a 1.4% lower
+median; the fixed mixed corpus did not establish a consistent general regression either.
+The definition-construction implementation is
+byte-identical, and these observations do not establish either a general mutable-input regression
+or an improvement. The precise cause of each timing fluctuation was not traced. Unchanged controls
+also varied materially, so do not turn small differences into claims about GC, JIT or scheduling.
+Six capped canonical microcases were retained as exploratory evidence and repeated as explicit
+1,000-batch workloads reaching the calibration target before interpretation.
+
+Nine fresh historical Core reports preserve schema six, all twelve scenario meanings and checksums.
+SVG rendering, Import adoption, CLI collection export and construction-to-render hand-off preserve
+their full outputs; no material whole-consumer gain is established. In 63 fresh real Amellus imports,
+median initial import time was 92.79 ms versus 92.78 ms, including Core; cached imports were separate.
+Filesystem caches were not evicted, and background scheduling, thermals and antivirus were not
+controlled. This evidence neither predicts other hosts nor replaces the Icons acquisition matrix.
+
+CPU/GC/RSS observations and sampled allocation stacks were collected separately. Sampling with ten
+retained collection outputs is not an exhaustive allocation count and may omit collected temporaries;
+no general memory reduction is claimed. Release diagnostics at 0/1,000/10,000 definitions observed
+only the deliberately retained definition after collection, still recognised by Core. This is not a
+GC deadline, a leak-freedom proof or a timing-sensitive test requirement.
+
+Core retains 91 JavaScript modules and 91 declarations. Total emitted bytes rise from 121,257 to
+121,508, including the ownership JSDoc explaining safe private map publication. Exports, dependencies,
+acceptance and declaration signatures remain unchanged. The
+[shared supplemental protocol](../../tooling/performance/index.md#supplemental-measurements)
+owns calibration, raw observations, controls and resource interpretation. Reproduce the scale axes
+with `BenchmarkCatalogueFixtureFactory.createScaled()` and explicit ownership inputs, then freeze
+baseline calibration before `BenchmarkRunner.observe()` and matched comparisons. The fixed command
+below remains the historical twelve-scenario runner, not an automatic execution of this scale matrix.
+
 ## Canonical-output recognition comparison
 
 On 15 October 2026, fresh isolated builds of source revisions

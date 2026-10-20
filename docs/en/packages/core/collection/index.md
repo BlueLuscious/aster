@@ -105,8 +105,11 @@ The result always retains the newly derived list, never the submitted array.
 
 Construct and retain a collection once for repeated use. Passing a complete collection back to
 `Collection.define()` revalidates its containers; recognising canonical leaves is not a collection
-cache. [Construction measurements](../quality-baseline.md#grouped-collection-construction) distinguish
+cache. [Construction measurements](../quality-baseline.md#scaled-construction-and-membership-publication) distinguish
 that work from ordinary member access or rendering.
+
+A pre-authored collection still constructs its definitions and membership when its module first
+evaluates. Reusing that exported value avoids repeated construction, not the initial import cost.
 
 ## Membership
 

@@ -10,6 +10,8 @@ import { CanonicalIconMatcher } from "./canonical-icon.matcher.js";
 
 /**
  * @description Validates one authored icon map and derives its canonical ordered membership.
+ * @remarks Result maps have no prototype and remain private until validation and freezing finish;
+ * ordinary assignments cannot invoke inherited setters, and freezing closes every published field.
  */
 export class CollectionMembershipNormaliser {
   /**
@@ -60,10 +62,7 @@ export class CollectionMembershipNormaliser {
       const alias = this.#validateAlias(field, fieldPath);
       const candidate = this.#validator.dataProperty(authored, field, fieldPath);
       const group = this.#normaliseGroup(candidate, fieldPath, identities, members);
-      Object.defineProperty(icons, alias, {
-        value: group,
-        enumerable: true,
-      });
+      icons[alias] = group;
     }
 
     return Object.freeze({
@@ -111,7 +110,7 @@ export class CollectionMembershipNormaliser {
         throw new IconDefinitionError(propertyPath, "duplicates an icon identity");
       }
       identities.add(identity);
-      Object.defineProperty(group, property, { value: icon, enumerable: true });
+      group[property] = icon;
       members.push(icon);
       firstGlyph ??= glyph;
     }
