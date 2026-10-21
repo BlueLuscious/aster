@@ -695,6 +695,81 @@ test("maps expected JSON failures to stdout only", () => {
   assert.equal(JSON.parse(missing.stdout).diagnostic.category, "not-found");
 });
 
+test("labels exact lookup details in human stderr and retains the typed compact JSON evidence", () => {
+  const cases = [
+    [
+      ["show", "icon", "missing@outline"],
+      "identity",
+      "missing@outline",
+      "icon",
+      "Icon",
+    ],
+    [
+      ["show", "icon", "aster/missing@outline"],
+      "identity",
+      "aster/missing@outline",
+      "icon",
+      "Icon",
+    ],
+    [
+      ["show", "glyph", "aster/missing"],
+      "identity",
+      "aster/missing",
+      "glyph",
+      "Glyph",
+    ],
+    [
+      ["show", "collection", "missing"],
+      "identity",
+      "missing",
+      "collection",
+      "Collection",
+    ],
+    [
+      ["list", "icons", "--catalogue", "missing"],
+      "catalogue",
+      "missing",
+      "catalogue",
+      "Catalogue",
+    ],
+    [
+      ["list", "icons", "--collection", "missing"],
+      "collection",
+      "missing",
+      "collection",
+      "Collection",
+    ],
+    [
+      ["list", "icons", "--glyph", "aster/missing"],
+      "glyph",
+      "aster/missing",
+      "glyph",
+      "Glyph",
+    ],
+  ];
+  for (const [args, family, value, subject, label] of cases) {
+    const message = `${family} ${value} was not found`;
+    const human = run(args);
+    const json = run([...args, "--json"]);
+    assert.equal(human.status, 1);
+    assert.equal(human.stdout, "");
+    assert.equal(
+      human.stderr,
+      `[ASTER-CLI-004] ${message}\nDetails:\n  ${label}: ${value}\n`,
+    );
+    assert.equal(json.status, 1);
+    assert.equal(json.stderr, "");
+    const result = JSON.parse(json.stdout);
+    assert.deepEqual(result.diagnostic, {
+      category: "not-found",
+      code: "ASTER-CLI-004",
+      message,
+      details: { kind: "lookup", subject, identity: value },
+    });
+    assert.equal(json.stdout, `${JSON.stringify(result)}\n`);
+  }
+});
+
 test("rejects repeated, unknown, and extra shell arguments", () => {
   const repeatedJson = run(["version", "--json", "--json"]);
   const repeatedFilter = run([
@@ -794,7 +869,10 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
   assert.equal(invalidPaint.status, 2);
   assert.equal(invalidDirection.status, 2);
   assert.equal(JSON.parse(invalidPaint.stdout).diagnostic.category, "usage");
-  assert.equal(JSON.parse(invalidDirection.stdout).diagnostic.category, "usage");
+  assert.equal(
+    JSON.parse(invalidDirection.stdout).diagnostic.category,
+    "usage",
+  );
   assert.equal(repeatedReplace.status, 2);
   assert.equal(replaceJson.status, 2);
 });

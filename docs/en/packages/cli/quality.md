@@ -15,6 +15,7 @@ execution, and the [baseline](quality-baseline.md) retains measured findings.
 | Catalogue runtime tests | Provider-scoped glyph derivation, ordering, combined filters, search, ambiguity, empty intersections, membership consistency and zero-load metadata queries. |
 | Export and Review tests | Complete deterministic plans, path collisions, contained SVG failures, static offline HTML and authored-text escaping. |
 | Executable tests | Grammar, human/JSON/raw-SVG modes, streams, status, output options and ownership-gated review replacement. |
+| Diagnostic presentation tests | Explicit lookup/provider/selection/member/path roles, labelled Details indentation, retained evidence order, control representation and immutable structured/JSON equivalence. |
 | Installed-version tests | Nearest-project selection, direct roots, divergent dependency copies, optional absence, location comparison and atomic post-startup failures. |
 | ABI and packed-consumer tests | Exact root/binary mapping, inaccessible implementation subpaths, strict engines, declaration/dependency direction and independent host equivalence. |
 | Output-host tests | Portable confinement, exclusive staging, existing/interrupted targets, cleanup, guarded replacement and rollback. |
@@ -23,7 +24,12 @@ Own-data regressions exercise descriptor admission, explicit shadowing fields an
 through complete queries, plans, human presentation and Review HTML. Host tests ensure inherited
 flags cannot request publication or version I/O, and inherited manifest sections cannot supply
 dependencies. Packed type and executable/programmatic consumers verify the exact
-`memberIdentities` contract. These checks preserve output layout and diagnostic conventions.
+`memberIdentities` contract. Diagnostic regressions pair human text with complete compact JSON,
+stream/status/newline assertions and immutable results across every code family. They retain
+the same detail roles independently of headline wording and prevent inherited optional evidence
+from entering presentation. Type regressions reject mismatched codes/categories, missing required
+facts, glyph definition selections, icon/member combinations and singleton ambiguity. Actual
+collection-member drift retains its concrete failing identity. [Presentation](shell/presentation/index.md#diagnostic-evidence) owns the policy.
 
 Membership regressions compare all 3,185 ordered two-icon/two-collection graphs against an
 independent collection-first traversal, including missing members and conflicting reverse claims.

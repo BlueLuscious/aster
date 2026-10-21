@@ -1,6 +1,7 @@
 import { asterCommandSubjects } from "../../command/constants/aster-command-subjects.constant.js";
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import type { AsterCommandContext } from "../../command/contracts/index.js";
+import type { AsterCommandShowSubjectType } from "../../command/types/aster-command-show-subject.type.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { CatalogueGlyphResult } from "../contracts/index.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
@@ -58,11 +59,12 @@ export class CatalogueDiscoverySelector {
       return scoped;
     }
 
-    const candidates = subject === asterCommandSubjects.show.icon
-      ? this.#icons(scoped.value, identity)
-      : this.#collections(scoped.value, identity);
+    const candidates =
+      subject === asterCommandSubjects.show.icon
+        ? this.#icons(scoped.value, identity)
+        : this.#collections(scoped.value, identity);
 
-    return this.#one(candidates, identity);
+    return this.#one(candidates, subject, identity);
   }
 
   /**
@@ -82,9 +84,12 @@ export class CatalogueDiscoverySelector {
       return scoped;
     }
 
-    const candidates = scoped.value.flatMap((provider) => this.#results.glyphs(provider)
-      .filter((glyph) => this.#identities.glyph(glyph.identity) === identity));
-    return this.#one(candidates, identity);
+    const candidates = scoped.value.flatMap((provider) =>
+      this.#results
+        .glyphs(provider)
+        .filter((glyph) => this.#identities.glyph(glyph.identity) === identity),
+    );
+    return this.#one(candidates, asterCommandSubjects.show.glyph, identity);
   }
 
   /**
@@ -107,37 +112,62 @@ export class CatalogueDiscoverySelector {
    * @description Accepts exactly one provider-owned candidate without silently merging duplicates.
    * @typeParam Value - Metadata selection or glyph carrying provider provenance.
    * @param candidates - Canonically ordered matching provider results.
+   * @param subject - Explicit requested family retained independently of failure wording.
    * @param identity - Exact requested identity used in failure evidence.
    * @returns One result or the existing not-found/ambiguity diagnostic.
    */
-  #one<Value extends Readonly<{ /** @description Provider owning the candidate. */ catalogue: string }>>(
+  #one<
+    Value extends Readonly<{
+      /** @description Provider owning the candidate. */
+      catalogue: string;
+    }>,
+  >(
     candidates: readonly Value[],
+    subject: AsterCommandShowSubjectType,
     identity: string,
   ): TAcceptanceResult<Value> {
     const candidate = candidates[0];
 
     if (candidate === undefined) {
-      return this.#failure(
-        commandDiagnosticSchema.categories.notFound,
-        commandDiagnosticSchema.codes.notFound,
-        `identity ${identity} was not found`,
-        [identity],
-      );
+      return Object.freeze({
+        accepted: false,
+        diagnostic: this.#diagnostics.create({
+          category: commandDiagnosticSchema.categories.notFound,
+          code: commandDiagnosticSchema.codes.notFound,
+          message: `identity ${identity} was not found`,
+          details: {
+            kind: commandDiagnosticSchema.details.lookup,
+            subject,
+            identity,
+          },
+        }),
+      });
     }
 
-    if (candidates.length > 1) {
-      return this.#failure(
-        commandDiagnosticSchema.categories.ambiguous,
-        commandDiagnosticSchema.codes.ambiguous,
-        `identity ${identity} is available from multiple catalogues`,
-        candidates.map((candidate) => candidate.catalogue),
-      );
+    const second = candidates[1];
+
+    if (second !== undefined) {
+      return Object.freeze({
+        accepted: false,
+        diagnostic: this.#diagnostics.create({
+          category: commandDiagnosticSchema.categories.ambiguous,
+          code: commandDiagnosticSchema.codes.ambiguous,
+          message: `identity ${identity} is available from multiple catalogues`,
+          details: {
+            kind: commandDiagnosticSchema.details.ambiguity,
+            subject,
+            identity,
+            catalogues: [
+              candidate.catalogue,
+              second.catalogue,
+              ...candidates.slice(2).map((entry) => entry.catalogue),
+            ],
+          },
+        }),
+      });
     }
 
-    return Object.freeze({
-      accepted: true,
-      value: candidate,
-    });
+    return Object.freeze({ accepted: true, value: candidate });
   }
 
   /**
@@ -188,26 +218,5 @@ export class CatalogueDiscoverySelector {
           )),
         });
       })));
-  }
-
-  /**
-   * @description Creates one deterministic rejected discovery selection.
-   * @param category - Stable command diagnostic category.
-   * @param code - Stable command diagnostic code.
-   * @param message - Deterministic failure explanation.
-   * @param related - Canonically ordered related values.
-   * @returns Immutable rejected acceptance result.
-   * @typeParam Value - Accepted result family prevented by the lookup failure.
-   */
-  #failure<Value>(
-    category: "not-found" | "ambiguous",
-    code: "ASTER-CLI-004" | "ASTER-CLI-005",
-    message: string,
-    related: readonly string[],
-  ): TAcceptanceResult<Value> {
-    return Object.freeze({
-      accepted: false,
-      diagnostic: this.#diagnostics.create(category, code, message, related),
-    });
   }
 }

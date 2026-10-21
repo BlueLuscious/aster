@@ -294,22 +294,23 @@ test("retains exact missing, ambiguous, and explicit-provider selection semantic
     createProvider("alpha", fixture),
     createProvider("beta", fixture),
   ]);
-  const missing = await AsterCommands.execute({
-    command: "review",
-    subject: "icon",
-    identity: "testing/missing@outline",
-  }, context);
-  const ambiguous = await AsterCommands.execute({
-    command: "review",
-    subject: "icon",
-    identity: "testing/shared@outline",
-  }, context);
-  const exact = await AsterCommands.execute({
-    command: "review",
-    subject: "icon",
-    identity: "testing/shared@outline",
-    catalogue: "beta",
-  }, context);
+  const missing = await AsterCommands.execute(
+    { command: "review", subject: "icon", identity: "testing/missing@outline" },
+    context,
+  );
+  const ambiguous = await AsterCommands.execute(
+    { command: "review", subject: "icon", identity: "testing/shared@outline" },
+    context,
+  );
+  const exact = await AsterCommands.execute(
+    {
+      command: "review",
+      subject: "icon",
+      identity: "testing/shared@outline",
+      catalogue: "beta",
+    },
+    context,
+  );
 
   assert.equal(missing.ok, false);
   assert.equal(ambiguous.ok, false);
@@ -318,7 +319,12 @@ test("retains exact missing, ambiguous, and explicit-provider selection semantic
   if (!missing.ok && !ambiguous.ok) {
     assert.equal(missing.diagnostic.code, "ASTER-CLI-004");
     assert.equal(ambiguous.diagnostic.code, "ASTER-CLI-005");
-    assert.deepEqual(ambiguous.diagnostic.related, ["alpha", "beta"]);
+    assert.deepEqual(ambiguous.diagnostic.details, {
+      kind: "ambiguity",
+      subject: "icon",
+      identity: "testing/shared@outline",
+      catalogues: ["alpha", "beta"],
+    });
   }
 
   if (exact.ok && exact.payload.kind === "review") {
@@ -337,19 +343,28 @@ test("contains SVG failures and malformed review invocations", async () => {
     ]),
   });
   const failed = new ReviewDocumentFactory().create(selection);
-  const malformed = await AsterCommands.execute({
-    command: "review",
-    subject: "icons",
-    identity: "testing/invalid@outline",
-  } as never, representativeContext);
+  const malformed = await AsterCommands.execute(
+    {
+      command: "review",
+      subject: "icons",
+      identity: "testing/invalid@outline",
+    } as never,
+    representativeContext,
+  );
 
   assert.equal(failed.accepted, false);
   assert.equal(malformed.ok, false);
 
   if (!failed.accepted && !malformed.ok) {
     assert.equal(failed.diagnostic.code, "ASTER-CLI-007");
-    assert.deepEqual(failed.diagnostic.related, ["testing/invalid@outline"]);
-    assert.doesNotMatch(failed.diagnostic.message, /XML 1\.0|definition\.nodes/u);
+    assert.deepEqual(failed.diagnostic.details, {
+      kind: "review-render",
+      icon: "testing/invalid@outline",
+    });
+    assert.doesNotMatch(
+      failed.diagnostic.message,
+      /XML 1\.0|definition\.nodes/u,
+    );
     assert.equal(malformed.diagnostic.code, "ASTER-CLI-001");
   }
 });

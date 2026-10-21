@@ -273,18 +273,21 @@ test("rejects missing, failed, invalid, and inconsistent exact icon definitions"
     {
       name: "identity mismatch",
       load: async () => Icon.define(authoredIcon("other")),
-      message: "icon testing/camera@outline loader returned a mismatched identity",
+      message:
+        "icon testing/camera@outline loader returned a mismatched identity",
     },
     {
       name: "metadata mismatch",
-      load: async () => Icon.define({
-        ...authoredIcon("camera"),
-        metadata: {
-          ...authoredIcon("camera").metadata,
-          displayName: "Different",
-        },
-      }),
-      message: "icon testing/camera@outline loader returned metadata inconsistent with discovery",
+      load: async () =>
+        Icon.define({
+          ...authoredIcon("camera"),
+          metadata: {
+            ...authoredIcon("camera").metadata,
+            displayName: "Different",
+          },
+        }),
+      message:
+        "icon testing/camera@outline loader returned metadata inconsistent with discovery",
     },
   ] as const;
 
@@ -302,7 +305,11 @@ test("rejects missing, failed, invalid, and inconsistent exact icon definitions"
           throw new Error("unexpected collection load");
         },
       };
-      const selection = await select(provider, "icon", "testing/camera@outline");
+      const selection = await select(
+        provider,
+        "icon",
+        "testing/camera@outline",
+      );
       const resolved = await new CatalogueDefinitionResolver().resolve(
         selection,
         context(provider),
@@ -313,8 +320,15 @@ test("rejects missing, failed, invalid, and inconsistent exact icon definitions"
       if (!resolved.accepted) {
         assert.equal(resolved.diagnostic.code, "ASTER-CLI-006");
         assert.equal(resolved.diagnostic.message, testCase.message);
-        assert.deepEqual(resolved.diagnostic.related, ["testing", "testing/camera@outline"]);
-        assert.doesNotMatch(resolved.diagnostic.message, /native loader secret/u);
+        assert.deepEqual(resolved.diagnostic.details, {
+          kind: "definition",
+          catalogue: "testing",
+          selection: { kind: "icon", identity: "testing/camera@outline" },
+        });
+        assert.doesNotMatch(
+          resolved.diagnostic.message,
+          /native loader secret/u,
+        );
       }
     });
   }
@@ -331,11 +345,13 @@ test("rejects collection identity, metadata, and membership drift without partia
   const membership = [canonical.identity];
   const discovery: CatalogueDiscovery = {
     icons: [discoveryIcon(alpha, membership), discoveryIcon(bravo, membership)],
-    collections: [{
-      identity: canonical.identity,
-      metadata: canonical.metadata,
-      memberIdentities: canonical.members.map((icon) => icon.identity),
-    }],
+    collections: [
+      {
+        identity: canonical.identity,
+        metadata: canonical.metadata,
+        memberIdentities: canonical.members.map((icon) => icon.identity),
+      },
+    ],
   };
   const cases = [
     {
@@ -344,7 +360,8 @@ test("rejects collection identity, metadata, and membership drift without partia
         ...canonical,
         identity: { namespace: "testing", name: "other" },
       }),
-      message: "collection testing/essentials loader returned a mismatched identity",
+      message:
+        "collection testing/essentials loader returned a mismatched identity",
     },
     {
       name: "metadata mismatch",
@@ -352,7 +369,8 @@ test("rejects collection identity, metadata, and membership drift without partia
         ...canonical,
         metadata: { displayName: "Different" },
       }),
-      message: "collection testing/essentials loader returned metadata inconsistent with discovery",
+      message:
+        "collection testing/essentials loader returned metadata inconsistent with discovery",
     },
     {
       name: "membership mismatch",
@@ -361,7 +379,27 @@ test("rejects collection identity, metadata, and membership drift without partia
         icons: { bravo: { outline: bravo }, alpha: { outline: alpha } },
         metadata: canonical.metadata,
       }),
-      message: "collection testing/essentials loader returned members inconsistent with discovery",
+      message:
+        "collection testing/essentials loader returned members inconsistent with discovery",
+    },
+    {
+      name: "member metadata mismatch retains its concrete identity",
+      definition: Collection.define({
+        identity: canonical.identity,
+        icons: {
+          alpha: {
+            outline: Icon.define({
+              ...alpha,
+              metadata: { ...alpha.metadata, displayName: "Different" },
+            }),
+          },
+          bravo: { outline: bravo },
+        },
+        metadata: canonical.metadata,
+      }),
+      message:
+        "icon testing/alpha@outline loader returned metadata inconsistent with discovery",
+      member: "testing/alpha@outline",
     },
   ] as const;
 
@@ -397,10 +435,12 @@ test("rejects collection identity, metadata, and membership drift without partia
       if (!resolved.accepted) {
         assert.equal(resolved.diagnostic.code, "ASTER-CLI-006");
         assert.equal(resolved.diagnostic.message, testCase.message);
-        assert.deepEqual(
-          resolved.diagnostic.related,
-          ["testing", "testing/essentials"],
-        );
+        assert.deepEqual(resolved.diagnostic.details, {
+          kind: "definition",
+          catalogue: "testing",
+          selection: { kind: "collection", identity: "testing/essentials" },
+          ...("member" in testCase ? { member: testCase.member } : {}),
+        });
       }
     });
   }

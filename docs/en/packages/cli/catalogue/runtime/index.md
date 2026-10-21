@@ -39,6 +39,11 @@ resolution. Glyph list/show share the result factory's metadata projection, not 
 Each `TCatalogueSelectedIcon` pairs one accepted Core `IconDefinition` with its independent,
 canonically ordered collection memberships inside that selection; it does not alter the definition.
 
+`TCatalogueDefinitionFailure` carries the consistency validator's deterministic collection failure
+message and, only when known, its concrete failing member identity. The resolver transfers those
+facts into the [command diagnostic](../../command/index.md#diagnostic-details) together with the
+selected provider and collection; it does not recover member identities from message wording.
+
 `TAsterIconManifestEntry` and `TAsterCollectionManifestEntry` are private structural views of the
 built-in Icons manifest records. The discovery factory reads their metadata and ordered member
 keys to construct provider-neutral discovery records; these types neither load definitions nor
@@ -97,8 +102,8 @@ icon evidence independently of dictionary lookup names.
 
 An absent provider, missing value, rejected loader, malformed definition, identity mismatch,
 metadata mismatch, or membership mismatch becomes one sanitised `catalogue-unavailable`
-diagnostic containing only accepted provider and identity evidence. The resolver retains no cache;
-each invocation represents one explicit provider operation.
+diagnostic containing only accepted provider, selection and known member evidence. The resolver
+retains no cache; each invocation represents one explicit provider operation.
 
 `CatalogueSubjectSelector` composes metadata selection with this exact resolver for Export and
 Review. No complete-provider snapshot, eager definition index, or aggregate loader exists in the

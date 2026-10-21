@@ -3,6 +3,33 @@
  */
 export class HumanTextFormatter {
   /**
+   * @description Control characters that require a quoted visible representation in human data.
+   */
+  readonly #controlPattern = /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/u;
+
+  /**
+   * @description Controls left literal by JSON string encoding that must remain visible in human text.
+   */
+  readonly #additionalControlPattern = /[\u007f-\u009f\u2028\u2029]/gu;
+
+  /**
+   * @description Preserves printable data or quotes and escapes a value containing controls.
+   * @remarks Structural headings and line breaks belong to the presenter, not the data value.
+   * @param value - Original data value without presentation decoration.
+   * @returns Printable value with embedded controls represented visibly and without data loss.
+   */
+  value(value: string): string {
+    if (!this.#controlPattern.test(value)) {
+      return value;
+    }
+
+    return JSON.stringify(value).replace(
+      this.#additionalControlPattern,
+      this.#unicodeEscape,
+    );
+  }
+
+  /**
    * @description Adds a stable heading and explicit empty-state text to result lines.
    * @param heading - Human-readable result-family heading.
    * @param entries - Canonically ordered result lines.
@@ -25,5 +52,14 @@ export class HumanTextFormatter {
    */
   count(value: number, noun: string): string {
     return `${value} ${noun}${value === 1 ? "" : "s"}`;
+  }
+
+  /**
+   * @description Encodes one remaining control as a fixed-width Unicode escape.
+   * @param value - Single control character selected by the formatter.
+   * @returns Visible JSON-compatible escape for that character.
+   */
+  #unicodeEscape(value: string): string {
+    return `\\u${value.charCodeAt(0).toString(16).padStart(4, "0")}`;
   }
 }

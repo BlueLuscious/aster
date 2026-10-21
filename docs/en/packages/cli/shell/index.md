@@ -183,7 +183,9 @@ presentation and publication never inspect or enumerate definition modules.
 
 Human output is plain deterministic text with no terminal-width or mandatory ANSI behaviour.
 Successful human output is written to stdout. Expected human failures are written to stderr with
-their stable diagnostic code and any related values.
+their stable diagnostic code and explanation. [Diagnostic evidence](presentation/index.md#diagnostic-evidence)
+defines labelled `Details:` and safe human representation of the
+[structured diagnostic facts](../command/index.md#diagnostic-details), without mutating those data.
 
 Successful export publication writes only a committed destination and artefact-count summary. An
 empty exported collection writes an explicit non-publication summary because no output root is

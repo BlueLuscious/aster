@@ -292,19 +292,19 @@ test("rejects reflective provider discovery without leaking or partially accepti
   const provider: CatalogueProvider = {
     identity: "reflective",
     async discover() {
-      return Object.defineProperties({}, {
-        icons: {
-          enumerable: true,
-          get() {
-            getterCalls += 1;
-            return [];
+      return Object.defineProperties(
+        {},
+        {
+          icons: {
+            enumerable: true,
+            get() {
+              getterCalls += 1;
+              return [];
+            },
           },
+          collections: { enumerable: true, value: [] },
         },
-        collections: {
-          enumerable: true,
-          value: [],
-        },
-      }) as CatalogueDiscovery;
+      ) as CatalogueDiscovery;
     },
     ...unavailableDefinitionLoaders,
   };
@@ -319,7 +319,10 @@ test("rejects reflective provider discovery without leaking or partially accepti
   if (!result.ok) {
     assert.equal(result.diagnostic.category, "catalogue-unavailable");
     assert.equal(result.diagnostic.code, "ASTER-CLI-006");
-    assert.deepEqual(result.diagnostic.related, ["reflective"]);
+    assert.deepEqual(result.diagnostic.details, {
+      kind: "catalogue",
+      catalogue: "reflective",
+    });
   }
 });
 
@@ -327,11 +330,14 @@ test("sanitises provider discovery Proxy failures as catalogue unavailability", 
   const provider: CatalogueProvider = {
     identity: "trapped",
     async discover() {
-      return new Proxy({}, {
-        getPrototypeOf() {
-          throw new Error("native provider Proxy secret");
+      return new Proxy(
+        {},
+        {
+          getPrototypeOf() {
+            throw new Error("native provider Proxy secret");
+          },
         },
-      }) as CatalogueDiscovery;
+      ) as CatalogueDiscovery;
     },
     ...unavailableDefinitionLoaders,
   };
@@ -345,7 +351,13 @@ test("sanitises provider discovery Proxy failures as catalogue unavailability", 
   if (!result.ok) {
     assert.equal(result.diagnostic.category, "catalogue-unavailable");
     assert.equal(result.diagnostic.code, "ASTER-CLI-006");
-    assert.doesNotMatch(result.diagnostic.message, /native provider Proxy secret/u);
-    assert.deepEqual(result.diagnostic.related, ["trapped"]);
+    assert.doesNotMatch(
+      result.diagnostic.message,
+      /native provider Proxy secret/u,
+    );
+    assert.deepEqual(result.diagnostic.details, {
+      kind: "catalogue",
+      catalogue: "trapped",
+    });
   }
 });

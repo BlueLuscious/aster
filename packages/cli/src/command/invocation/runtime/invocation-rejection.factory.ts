@@ -34,11 +34,11 @@ export class InvocationRejectionFactory {
   invalid<Value>(message: string): TAcceptanceResult<Value> {
     return Object.freeze({
       accepted: false,
-      diagnostic: this.#diagnostics.create(
-        commandDiagnosticSchema.categories.usage,
-        commandDiagnosticSchema.codes.usage,
+      diagnostic: this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.usage,
+        code: commandDiagnosticSchema.codes.usage,
         message,
-      ),
+      }),
     });
   }
 }

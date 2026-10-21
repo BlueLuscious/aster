@@ -135,7 +135,13 @@ export class VersionCommandDefinition implements ICommandDefinition {
    * @returns Whether the supplied roots can satisfy this request without substitution.
    */
   #matchesGroups(
-    invocation: Extract<AsterCommandInvocationType, { command: typeof asterCommandNames.version }>,
+    invocation: Extract<
+      AsterCommandInvocationType,
+      {
+        /** @description Version invocation discriminator used for request narrowing. */
+        command: typeof asterCommandNames.version;
+      }
+    >,
     groups: readonly AsterPackageDependencyGroup[],
     context: AsterCommandContext,
   ): boolean {
@@ -192,11 +198,11 @@ export class VersionCommandDefinition implements ICommandDefinition {
   #invalid(message: string): AsterCommandResultType {
     return this.#results.failure(
       asterCommandNames.version,
-      this.#diagnostics.create(
-        commandDiagnosticSchema.categories.usage,
-        commandDiagnosticSchema.codes.invalidContext,
+      this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.usage,
+        code: commandDiagnosticSchema.codes.invalidContext,
         message,
-      ),
+      }),
     );
   }
 }

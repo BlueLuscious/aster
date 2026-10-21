@@ -54,9 +54,6 @@ Export/Review and failures.
 - Define consistent human headings, labels, field order, indentation, sequences and empty states.
   Show collection member identities one per line rather than as a wrapping comma-separated field;
   choose compact formatting only where it remains readable.
-- Review diagnostic producers and presentation together. A not-found request currently repeats
-  its input under `Related`; remove redundant human evidence without losing useful provider/path
-  context. Related evidence is not a suggested match unless explicitly designed as one.
 - Audit human and JSON outcomes without silently changing structured contracts, diagnostic codes
   or categories. Review any such changes explicitly; preserve raw SVG, stream ownership, exit
   statuses and newline behaviour.
@@ -83,6 +80,9 @@ of inventing rules from memory or one implementation.
 - Review current-documentation ownership, README guidance, versioned changes/migrations,
   pre-packaging readiness, British English, JSDoc, testing/fixtures, performance evidence, commits,
   workflow permissions, human approval boundaries and verified plan closure.
+- Review source-formatting rules and their enforcement coverage. Record extending Aster's format
+  check to handwritten TypeScript, including indentation, as a follow-up; agree generated-file
+  boundaries and review the existing formatting baseline before enabling that broader gate.
 - Distinguish genuinely reusable ecosystem policies from Aster-specific artwork, identity, package,
   legal and delivery decisions. Preserve justified project-local additions or overrides explicitly.
 - Inspect Garden's existing authorities before choosing the document location. Keep one general

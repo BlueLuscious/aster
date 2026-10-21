@@ -143,7 +143,12 @@ test("resolves exact glyphs with provider disambiguation and no namespace fallba
   );
   assert.ok(!ambiguous.ok);
   assert.equal(ambiguous.diagnostic.code, "ASTER-CLI-005");
-  assert.deepEqual(ambiguous.diagnostic.related, ["alpha", "beta"]);
+  assert.deepEqual(ambiguous.diagnostic.details, {
+    kind: "ambiguity",
+    subject: "glyph",
+    identity: "aster/camera",
+    catalogues: ["alpha", "beta"],
+  });
   const selected = await AsterCommands.execute(
     {
       command: "show",

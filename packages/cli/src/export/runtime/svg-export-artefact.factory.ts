@@ -45,12 +45,15 @@ export class SvgExportArtefactFactory {
       if (uniquePaths.has(path)) {
         return Object.freeze({
           accepted: false,
-          diagnostic: this.#diagnostics.create(
-            commandDiagnosticSchema.categories.exportConflict,
-            commandDiagnosticSchema.codes.exportConflict,
-            `multiple selected icons resolve to artefact path ${path}`,
-            [path],
-          ),
+          diagnostic: this.#diagnostics.create({
+            category: commandDiagnosticSchema.categories.exportConflict,
+            code: commandDiagnosticSchema.codes.exportConflict,
+            message: `multiple selected icons resolve to artefact path ${path}`,
+            details: {
+              kind: commandDiagnosticSchema.details.pathConflict,
+              path,
+            },
+          }),
         });
       }
 
@@ -65,11 +68,13 @@ export class SvgExportArtefactFactory {
       }
 
       try {
-        artefacts.push(Object.freeze({
-          path,
-          mediaType: svgExportArtefactSchema.mediaType,
-          content: Svg.render(definition, options),
-        }));
+        artefacts.push(
+          Object.freeze({
+            path,
+            mediaType: svgExportArtefactSchema.mediaType,
+            content: Svg.render(definition, options),
+          }),
+        );
       } catch (error) {
         if (!(error instanceof SvgRenderError)) {
           throw error;
@@ -77,12 +82,15 @@ export class SvgExportArtefactFactory {
 
         return Object.freeze({
           accepted: false,
-          diagnostic: this.#diagnostics.create(
-            commandDiagnosticSchema.categories.renderFailure,
-            commandDiagnosticSchema.codes.renderFailure,
-            `icon ${path} could not be rendered as SVG`,
-            [path],
-          ),
+          diagnostic: this.#diagnostics.create({
+            category: commandDiagnosticSchema.categories.renderFailure,
+            code: commandDiagnosticSchema.codes.renderFailure,
+            message: `icon ${path} could not be rendered as SVG`,
+            details: {
+              kind: commandDiagnosticSchema.details.exportRender,
+              path,
+            },
+          }),
         });
       }
     }

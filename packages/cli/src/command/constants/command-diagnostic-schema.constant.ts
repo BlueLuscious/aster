@@ -1,7 +1,28 @@
 /**
- * @description Immutable categories and codes for structured command diagnostics.
+ * @description Immutable categories, codes and supporting-detail roles for command diagnostics.
  */
 export const commandDiagnosticSchema = Object.freeze({
+  /** @description Closed semantic roles carried by supporting diagnostic details. */
+  details: Object.freeze({
+    /** @description Complete received provider claims, including repeated identities. */
+    catalogues: "catalogues",
+    /** @description One provider whose metadata could not be accepted. */
+    catalogue: "catalogue",
+    /** @description Explicit subject and identity requested by an unsuccessful lookup. */
+    lookup: "lookup",
+    /** @description Requested subject and its distinct candidate providers. */
+    ambiguity: "ambiguity",
+    /** @description Selected definition and its provider, with an optional failing collection member. */
+    definition: "definition",
+    /** @description Logical artefact path whose SVG rendering failed. */
+    exportRender: "export-render",
+    /** @description Concrete icon whose review rendering failed. */
+    reviewRender: "review-render",
+    /** @description Logical artefact path claimed by multiple selected definitions. */
+    pathConflict: "path-conflict",
+  } as const),
+  /** @description Diagnostic lookup subject not addressed by an exact show invocation. */
+  catalogueSubject: "catalogue",
   /** @description Closed semantic categories assigned to command diagnostics. */
   categories: Object.freeze({
     /** @description Invalid command invocation or option usage. */

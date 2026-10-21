@@ -10,7 +10,7 @@ subpath.
 | `CommandInvocationNormaliser` | Dispatches acceptance to explicit command-owned normalisers documented by [Command Invocation](../invocation/index.md). |
 | `CommandContextNormaliser` | Validates explicit providers, product metadata, and optional version, dependency and CLI-location evidence; snapshots discovery and exact-loader capabilities, rejects duplicate identities, and freezes the context container. |
 | `CommandKernel` | Isolates descriptors, orders definitions, coordinates both normalisers, dispatches explicitly, and sanitises thrown definition failures. |
-| `CommandDiagnosticFactory` | Constructs isolated deeply frozen command diagnostics. |
+| `CommandDiagnosticFactory` | Copies and deeply freezes typed diagnostics with correlated code/category and role-specific supporting facts; contains no shell formatting or unknown-JSON parser. |
 | `CommandResultFactory` | Constructs immutable closed success payloads and structured failures. |
 | Command definitions | Bind immutable descriptors to export, review, list, search, show, help, and version behaviours. |
 
