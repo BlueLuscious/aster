@@ -213,10 +213,10 @@ export class SvgMarkupSerialiser {
    */
   #points(points: readonly IconPoint[]): string {
     return points
-      .flatMap((point) => [
-        this.#numberSerialiser.serialise(point.x),
-        this.#numberSerialiser.serialise(point.y),
-      ])
+      .map(
+        (point) =>
+          `${this.#numberSerialiser.serialise(point.x)} ${this.#numberSerialiser.serialise(point.y)}`,
+      )
       .join(" ");
   }
 

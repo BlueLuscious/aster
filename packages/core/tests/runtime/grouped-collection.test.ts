@@ -52,6 +52,70 @@ test("derives flat members from frozen prototype-free variant groups", () => {
   assert.deepEqual(Collection.define(collection).members, collection.members);
 });
 
+test("publishes closed own data fields without invoking inherited map setters", () => {
+  const selected = icon("tone-one");
+  const group = Object.assign(Object.create(null), { toneOne: selected });
+  const input = Object.assign(Object.create(null), { selectedGlyph: group });
+  let calls = 0;
+  const fields = ["selectedGlyph", "toneOne"];
+  const originals = fields.map(field => Object.getOwnPropertyDescriptor(Object.prototype, field));
+  let collection: ReturnType<typeof define>;
+  try {
+    for (const field of fields) {
+      Object.defineProperty(Object.prototype, field, {
+        configurable: true,
+        get() { calls += 1; throw new Error("inherited getter"); },
+        set() { calls += 1; throw new Error("inherited setter"); },
+      });
+    }
+    collection = define(input);
+  } finally {
+    fields.forEach((field, index) => {
+      const original = originals[index];
+      if (original === undefined) {
+        Reflect.deleteProperty(Object.prototype, field);
+      } else {
+        Object.defineProperty(Object.prototype, field, original);
+      }
+    });
+  }
+  assert.equal(calls, 0);
+  const acceptedGroup = collection.icons.selectedGlyph!;
+  for (const [owner, field, value] of [
+    [collection.icons, "selectedGlyph", acceptedGroup],
+    [acceptedGroup, "toneOne", selected],
+  ] as const) {
+    assert.equal(Object.getPrototypeOf(owner), null);
+    assert.ok(Object.isFrozen(owner));
+    assert.deepEqual(Object.getOwnPropertyDescriptor(owner, field), {
+      value, enumerable: true, writable: false, configurable: false,
+    });
+    assert.equal(Reflect.set(owner, field, selected), false);
+    assert.equal(Reflect.deleteProperty(owner, field), false);
+  }
+  assert.deepEqual(collection.members, [selected]);
+});
+
+test("retains explicit member order and duplicate rejection across many repeated treatments", () => {
+  const treatments = ["outline", "filled-dotted", "2-tone"];
+  const selected = Array.from({ length: 100 }, (_, index) => {
+    const leaves = treatments.map(treatment => icon(treatment, `glyph-${index}`, "scale"));
+    const group = Object.fromEntries(leaves.map(leaf => [Icon.variantPropertyName(leaf.identity.variant), leaf]));
+    return { alias: `glyph${index}`, leaves, group };
+  });
+  const input = Object.fromEntries(selected.map(({ alias, group }) => [alias, group]));
+  const collection = define(input);
+  assert.equal(collection.members.length, 300);
+  assert.deepEqual(collection.members, selected.flatMap(({ leaves }) => leaves));
+  for (const { alias, leaves, group } of selected) {
+    assert.deepEqual(Object.keys(collection.icons[alias]!), Object.keys(group));
+    assert.deepEqual(Object.values(collection.icons[alias]!), leaves);
+  }
+  assert.throws(() => define({ ...input, duplicate: selected.at(-1)!.group }),
+    /collection\.icons\.duplicate\.outline.*duplicates an icon identity/u);
+  assert.deepEqual(Collection.define(collection).members, collection.members);
+});
+
 test("rejects flat maps, empty groups, family drift and mismatched properties", () => {
   const outline = icon("outline", "camera", "aster");
   for (const [icons, pattern] of [

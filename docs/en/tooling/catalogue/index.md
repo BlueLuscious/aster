@@ -147,8 +147,9 @@ the exact inferred dictionary before exporting only `<PascalName>Variants`. It n
 the individual leaves or invents a default. Leaf modules have no reverse dependency on dictionaries.
 Adding/removing a treatment updates its dictionary; removing a glyph removes its stale dictionary
 inside the existing facade cleanup boundary. No separate manual registry or loader is added.
-Manifest records and dynamic loaders share canonical keys; loaders target facades, not source
-paths. One private serialiser method emits both typed loader-map literals, removes their
+Manifest records and dynamic loaders share canonical keys. Loaders target the inspected canonical
+modules directly; public facades independently re-export those same bindings. No second physical-path
+registry or public entrypoint is required. One private serialiser method emits both typed loader-map literals, removes their
 prototypes and freezes them before export, preserving the
 [exact absence guarantee](../../packages/icons/dynamic/index.md#arbitrary-key-access).
 Generated specifiers use portable relative paths and LF text. The
@@ -214,8 +215,11 @@ removing that evidence explicitly; generation never guesses which interrupted te
 
 ## Runtime boundary and verification
 
-Generated manifest imports are type-only; dynamic imports defer facade evaluation. Consumers use
-ordinary ESM data without filesystem or repository-tooling access.
+Generated manifest imports are type-only. Each frozen record is checked against its public manifest
+entry contract, bounding array element inference instead of accumulating a distinct literal type
+for every record. These type arguments do not change emitted JavaScript or public declarations.
+Dynamic imports defer canonical definition evaluation. Consumers use ordinary ESM data without
+filesystem or repository-tooling access.
 
 Conformance covers deterministic regeneration, idempotence, drift, nested addition/removal,
 variant mapping, reserved subpaths, stale-output cleanup, syntax/identity failures, static

@@ -23,55 +23,33 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P1` | [Review whole-repository performance and scalability.](#whole-repository-performance-review) | Start from integrated, verified source and investigate representative costs before CLI output maintenance and further artwork expansion. |
-| 2 | `P1` | [Normalise CLI responses and output.](#cli-response-and-output-consistency) | Complete the performance review, then resolve presentation inconsistencies before further artwork expansion. |
-| 3 | `P1` | [Consolidate shared project rules in Garden.](#garden-project-rules-review) | Complete performance and CLI output maintenance, then review reusable policies before further artwork expansion. |
-| 4 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
-| 5 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
-| 6 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
-| 7 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
-| 8 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
-| 9 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
-| 10 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
-| 11 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
-| 12 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
-| 13 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
-| 14 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
-| 15 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
-| 16 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
-| 17 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
-| 18 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
-| 19 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
-| 20 | `P4` | Consider a reusable versioning library. | Several independent projects demonstrate shared versioning needs and justify predefined or customisable policies. |
-
-## Whole-repository performance review
-
-Importance: **P1 - High**
-
-Use an integrated, verified source revision to investigate performance across packages, tooling
-and repository workflows. Investigation is required for this review; finding an optimisation is
-not. Reuse the
-[performance tooling](tooling/performance/index.md) rather than introduce a parallel framework.
-
-- Cover isolated operations and complete consumers: Core construction/reuse, SVG rendering,
-  Import batches, Icons imports, CLI discovery/queries/export/review and private build/generation.
-- Vary definition, glyph, variant and collection counts with bounded synthetic fixtures, including
-  empty, small and large valid inputs. Separate geometry complexity from catalogue size.
-- Distinguish cold processes, module evaluation and cached imports, steady execution, output/I/O,
-  memory and garbage-collection activity. Keep profiling separate from uninstrumented timing comparisons.
-- Use matched inputs, identical controls and retained samples to reproduce and attribute material
-  differences before selecting changes. Preserve validation, isolation, output and effect contracts;
-  require explicit review of public changes rather than introduce speculative caches or trust shortcuts.
-- Keep correctness tests separate from performance comparisons and avoid wall-clock CI thresholds.
-  Update owning methods, limits and useful consumer guidance without duplicating result tables.
+| 1 | `P1` | [Normalise CLI responses and output.](#cli-response-and-output-consistency) | Resolve presentation inconsistencies before further artwork expansion. |
+| 2 | `P1` | [Consolidate shared project rules in Garden.](#garden-project-rules-review) | Complete CLI output maintenance, then review reusable policies before further artwork expansion. |
+| 3 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
+| 4 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
+| 5 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
+| 6 | `P1` | Expand catalogue and command workflows. | One explicit consumer policy exists for each accepted command. |
+| 7 | `P2` | Reconsider a persistent Review watch host. | Repeated catalogue authoring proves that the supported static loop creates material delay. |
+| 8 | `P2` | Evaluate command-set extraction and Flora integration. | An independent Flora host exposes a stable plugin ABI and consumes Aster commands. |
+| 9 | `P2` | Consider an Aster-owned XML tokeniser. | Retained Import usage exposes concrete parser maintenance or conformance pressure. |
+| 10 | `P2` | Evaluate headless repository-tooling extraction. | A second repository needs the same host-neutral kernels with independent policies. |
+| 11 | `P2` | Reconsider SVG-first Managed Mode. | Repeated external-source synchronisation proves one-shot adoption insufficient. |
+| 12 | `P2` | Reconsider multi-target Export orchestration. | A second real export target proves shared orchestration necessary. |
+| 13 | `P2` | Consider generated target integrations. | Repeated consumer wrappers prove a separate collection-target package useful. |
+| 14 | `P2` | Consider coexisting API versions within one package. | A real consumer needs incompatible APIs together and package pinning or ordinary migration cannot satisfy that requirement. |
+| 15 | `P2` | Consider an additional package registry. | A real consumer needs GitHub-hosted package installation and the extra ownership, authentication and release-maintenance costs are justified. |
+| 16 | `P4` | Begin the Lilium adapter. | Stable Aster and Lilium contracts support one proven integration boundary. |
+| 17 | `P4` | Consider `@luscious-garden/aster-studio` with Lilium. | A stable Lilium browser target and sustained visual-authoring needs justify an interactive application. |
+| 18 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
+| 19 | `P4` | Consider a reusable versioning library. | Several independent projects demonstrate shared versioning needs and justify predefined or customisable policies. |
 
 ## CLI response and output consistency
 
 Importance: **P1 - High**
 
-After the [performance review](#whole-repository-performance-review), perform a bounded review of
-all CLI responses before further artwork expansion. Review help, catalogue discovery,
-glyph/icon/collection details, search, versions/dependencies/location, Export/Review and failures.
+Perform a bounded review of all CLI responses before further artwork expansion. Review help,
+catalogue discovery, glyph/icon/collection details, search, versions/dependencies/location,
+Export/Review and failures.
 
 - Define consistent human headings, labels, field order, indentation, sequences and empty states.
   Show collection member identities one per line rather than as a wrapping comma-separated field;
@@ -121,7 +99,7 @@ Importance: **P2 - Conditional**
 
 The package's own Semantic Versioning identity already versions its exported APIs under the
 [project versioning policy](project/versioning.md). Separate API versions such as `v1` and `v2`
-inside one package are not required for the published `0.1.0` baseline.
+inside one package are not required by the supported single-version API.
 
 Consider versioned entrypoints or explicitly selected compatibility implementations only when a
 real consumer needs incompatible API contracts simultaneously within one installed package and
@@ -138,7 +116,7 @@ or negotiation boundary and do not establish a need for coexisting package APIs.
 
 Importance: **P2 - Conditional**
 
-After the reviewed follow-up publication, consider an explicit remote command such as
+Consider an explicit remote command such as
 `aster releases [core|icons|svg|cli]` for published package versions and their release details.
 It must not change the meaning or offline behaviour of local `aster version` requests.
 
@@ -391,8 +369,8 @@ registries, or combining contributor tooling with the user-facing multi-ecosyste
 Importance: **P2 - Conditional**
 
 The [publication procedure](project/publication.md#distribution-channels) owns the accepted
-distribution channels. Published `0.1.0` uses npm alone; an additional GitHub Packages registry
-is optional and does not justify a speculative repository transfer or package rename.
+distribution channels. An additional GitHub Packages registry is optional and does not justify
+a speculative repository transfer or package rename.
 
 Reconsider it only when a concrete consumer needs GitHub-hosted dependency installation rather
 than a release page or downloadable archive. Before acceptance, verify the GitHub account or

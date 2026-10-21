@@ -93,6 +93,33 @@ test("imports and renders through published roots without source files", () => {
   );
 });
 
+test("preserves dense point ordering through source-free native package roots", () => {
+  const rendered = runModule([
+    'import assert from "node:assert/strict";',
+    'import { Icon } from "@luscious-garden/aster-core";',
+    'import { Svg } from "@luscious-garden/aster-svg";',
+    "const points = Array.from({ length: 1024 }, (_, index) => ({ x: index / 8, y: -(index % 16) / 2 }));",
+    'const expected = points.flatMap(({ x, y }) => [String(x), String(y)]).join(" ");',
+    'for (const kind of ["polyline", "polygon"]) {',
+    "  const definition = Icon.define({",
+    '    identity: { namespace: "consumer", name: "points", variant: "outline" },',
+    "    viewBox: { minX: 0, minY: 0, width: 24, height: 24 },",
+    "    nodes: [{ kind, points }],",
+    '    metadata: { displayName: "Points", rtl: "preserve", presentation: { defaults: {}, overrides: [] }, deprecated: false },',
+    "  });",
+    "  for (const input of [definition, structuredClone(definition)]) {",
+    "    const markup = Svg.render(input, Object.create(null));",
+    '    assert.ok(markup.includes(`<${kind} points="${expected}"`));',
+    "    assert.equal(Svg.render(input), markup);",
+    "  }",
+    "}",
+  ].join("\n"));
+
+  assert.equal(rendered.status, 0, rendered.stderr);
+  assert.equal(rendered.stderr, "");
+  assert.equal(rendered.stdout, "");
+});
+
 test("renders definitions from an independent Core installation without weakening errors", async () => {
   const otherInstallation = resolve(consumerRoot, "foreign");
   await copyPublishedPackage("core", otherInstallation);

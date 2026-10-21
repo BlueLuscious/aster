@@ -5,7 +5,7 @@ Status: **Accepted**
 This page owns conformance evidence for `@luscious-garden/aster-svg`.
 [API](api/index.md) specifies the public surface; [Render](render/index.md) specifies output;
 [Error](error/index.md) specifies failures. [Quality Baseline](quality-baseline.md) owns
-measurements, distribution snapshots and the escaping and Core-acceptance comparisons.
+measurements and distribution comparisons.
 
 ## Evidence coverage
 
@@ -14,10 +14,11 @@ measurements, distribution snapshots and the escaping and Core-acceptance compar
 | Renderer runtime suite | Exact markup and renderer marker, every primitive and structured path command, stable paint and attribute order, authorised overrides, viewport bounds, accessibility and RTL including numeric extremes. | [Render Result](render/index.md). |
 | Adversarial renderer cases | Exact own option data, null prototypes, symbols, hidden fields and accessors; inherited getters, setters and non-writable fields; absent viewport hints and rectangle radii; malformed definitions, per-call caller isolation and propagated proxy failures. | [Render Runtime](render/runtime/index.md#option-acceptance) and [Error](error/index.md). |
 | XML cases | Exact XML 1.0 ranges, valid supplementary characters, isolated surrogate rejection, contextual escaping and logical source paths. | [Numeric and Text Form](render/index.md#numeric-and-text-form). |
+| Point-sequence cases | Numeric extremes and negative zero, every ordered coordinate in 1,024-point polylines/polygons, caller isolation and inherited array-index accessor exclusion. | [Render Result](render/index.md) and [Render Runtime](render/runtime/index.md). |
 | Icons corpus suite | Complete real artwork under default, semantic, colour-context, viewport and direction scenarios. | The public rendering contract applied to real consumers. |
 | Type suite | The structural API and string result; rejection of arbitrary attributes, events, explicit undefined option fields and DOM values. | [API](api/index.md) and [Core Render Options](../core/render/index.md). |
 | Built-package ABI suite | Exact root exports and declarations, unsupported implementation subpaths, Core-only runtime dependency, ESM and side-effect metadata, no undeclared host or tooling authority. | [Package Boundary](index.md#boundary). |
-| Isolated consumer suite | Import/deterministic rendering using publishable files only, including inherited-field isolation, an independent Core installation, unchanged unknown-input acceptance and error-class boundaries. | [Project Testing Policy](../../project/testing.md). |
+| Isolated consumer suite | Import/deterministic rendering using publishable files only, including dense point sequences, inherited-field isolation, an independent Core installation, unchanged unknown-input acceptance and error-class boundaries. | [Project Testing Policy](../../project/testing.md). |
 | Repository workflow suite | Byte-equivalent output from equivalent TypeScript-first and Import-adopted definitions through built public roots. | [Workflow](workflow.md). |
 
 Runtime evidence distinguishes ordinary accessor rejection from caller-controlled proxy execution.
@@ -38,13 +39,12 @@ fixtures, including SVG's test-only use of Icons.
 ## Retained design
 
 The [runtime composition](render/runtime/index.md) keeps contexts and intermediate values local
-to one call. The [escaping comparison](quality-baseline.md#retained-experiment) justifies the
-single-pass algorithm, not weakened Core acceptance, an SVG-owned trust shortcut, result caching
-or output streaming. Definition reuse belongs solely to the linked
-[Core acceptance contract](../core/definition/runtime/index.md#recognised-outputs); correctness
-evidence alone does not establish a performance improvement. The
-[acceptance comparison](quality-baseline.md#canonical-output-acceptance-comparison) measures complete
-rendering while preserving unknown-input validation and the renderer's option/error boundaries.
+to one call. Escaping, private option capture and point composition preserve exact validation,
+ordering and output. Definition reuse belongs solely to the linked
+[Core acceptance contract](../core/definition/runtime/index.md#recognised-outputs); there is no
+SVG-owned trust shortcut or result cache. The
+[rendering reference](quality-baseline.md#current-rendering-reference) measures complete rendering,
+separately from correctness and conformance evidence.
 
 No implemented consumer requires a second public renderer operation. New batch, fragment, file,
 DOM or extension capabilities require their own ownership and failure contract under the

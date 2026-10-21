@@ -165,14 +165,15 @@ export class SvgRenderOptionsNormaliser {
 
   /**
    * @description Captures own enumerable data fields from the exact portable option schema.
-   * @remarks The private snapshot has no prototype, so inherited setters cannot intercept capture.
+   * @remarks The fresh private snapshot loses its prototype before fields are captured, so inherited
+   * setters cannot intercept writes. The completed snapshot is frozen before normalisation reads it.
    * @param value - Candidate option record.
    * @returns Frozen isolated option values safe for subsequent normalisation.
    */
   #exactFields(
     value: Record<string, unknown>,
   ): Readonly<Record<string, unknown>> {
-    const accepted = Object.create(null) as Record<string, unknown>;
+    const accepted = Object.setPrototypeOf({}, null) as Record<string, unknown>;
 
     for (const field of Reflect.ownKeys(value)) {
       if (typeof field !== "string") {

@@ -12,82 +12,82 @@ import type {
  */
 const iconLoaders: IconDefinitionLoaderMap = {
   "aster/arrow-down@outline": Object.freeze(
-    () => import("../facades/icons/arrow-down/outline.js").then(({ ArrowDownOutline }) => ArrowDownOutline),
+    () => import("../../glyphs/a/arrow-down/arrow-down-outline.icon.js").then(({ ArrowDownOutline }) => ArrowDownOutline),
   ),
   "aster/arrow-left@outline": Object.freeze(
-    () => import("../facades/icons/arrow-left/outline.js").then(({ ArrowLeftOutline }) => ArrowLeftOutline),
+    () => import("../../glyphs/a/arrow-left/arrow-left-outline.icon.js").then(({ ArrowLeftOutline }) => ArrowLeftOutline),
   ),
   "aster/arrow-right@outline": Object.freeze(
-    () => import("../facades/icons/arrow-right/outline.js").then(({ ArrowRightOutline }) => ArrowRightOutline),
+    () => import("../../glyphs/a/arrow-right/arrow-right-outline.icon.js").then(({ ArrowRightOutline }) => ArrowRightOutline),
   ),
   "aster/arrow-up@outline": Object.freeze(
-    () => import("../facades/icons/arrow-up/outline.js").then(({ ArrowUpOutline }) => ArrowUpOutline),
+    () => import("../../glyphs/a/arrow-up/arrow-up-outline.icon.js").then(({ ArrowUpOutline }) => ArrowUpOutline),
   ),
   "aster/bell@outline": Object.freeze(
-    () => import("../facades/icons/bell/outline.js").then(({ BellOutline }) => BellOutline),
+    () => import("../../glyphs/b/bell/bell-outline.icon.js").then(({ BellOutline }) => BellOutline),
   ),
   "aster/camera@outline": Object.freeze(
-    () => import("../facades/icons/camera/outline.js").then(({ CameraOutline }) => CameraOutline),
+    () => import("../../glyphs/c/camera/camera-outline.icon.js").then(({ CameraOutline }) => CameraOutline),
   ),
   "aster/check@outline": Object.freeze(
-    () => import("../facades/icons/check/outline.js").then(({ CheckOutline }) => CheckOutline),
+    () => import("../../glyphs/c/check/check-outline.icon.js").then(({ CheckOutline }) => CheckOutline),
   ),
   "aster/close@outline": Object.freeze(
-    () => import("../facades/icons/close/outline.js").then(({ CloseOutline }) => CloseOutline),
+    () => import("../../glyphs/c/close/close-outline.icon.js").then(({ CloseOutline }) => CloseOutline),
   ),
   "aster/cloud@outline": Object.freeze(
-    () => import("../facades/icons/cloud/outline.js").then(({ CloudOutline }) => CloudOutline),
+    () => import("../../glyphs/c/cloud/cloud-outline.icon.js").then(({ CloudOutline }) => CloudOutline),
   ),
   "aster/download@outline": Object.freeze(
-    () => import("../facades/icons/download/outline.js").then(({ DownloadOutline }) => DownloadOutline),
+    () => import("../../glyphs/d/download/download-outline.icon.js").then(({ DownloadOutline }) => DownloadOutline),
   ),
   "aster/folder@outline": Object.freeze(
-    () => import("../facades/icons/folder/outline.js").then(({ FolderOutline }) => FolderOutline),
+    () => import("../../glyphs/f/folder/folder-outline.icon.js").then(({ FolderOutline }) => FolderOutline),
   ),
   "aster/heart@outline": Object.freeze(
-    () => import("../facades/icons/heart/outline.js").then(({ HeartOutline }) => HeartOutline),
+    () => import("../../glyphs/h/heart/heart-outline.icon.js").then(({ HeartOutline }) => HeartOutline),
   ),
   "aster/home@outline": Object.freeze(
-    () => import("../facades/icons/home/outline.js").then(({ HomeOutline }) => HomeOutline),
+    () => import("../../glyphs/h/home/home-outline.icon.js").then(({ HomeOutline }) => HomeOutline),
   ),
   "aster/info@outline": Object.freeze(
-    () => import("../facades/icons/info/outline.js").then(({ InfoOutline }) => InfoOutline),
+    () => import("../../glyphs/i/info/info-outline.icon.js").then(({ InfoOutline }) => InfoOutline),
   ),
   "aster/leaf@outline": Object.freeze(
-    () => import("../facades/icons/leaf/outline.js").then(({ LeafOutline }) => LeafOutline),
+    () => import("../../glyphs/l/leaf/leaf-outline.icon.js").then(({ LeafOutline }) => LeafOutline),
   ),
   "aster/lock@outline": Object.freeze(
-    () => import("../facades/icons/lock/outline.js").then(({ LockOutline }) => LockOutline),
+    () => import("../../glyphs/l/lock/lock-outline.icon.js").then(({ LockOutline }) => LockOutline),
   ),
   "aster/mail@outline": Object.freeze(
-    () => import("../facades/icons/mail/outline.js").then(({ MailOutline }) => MailOutline),
+    () => import("../../glyphs/m/mail/mail-outline.icon.js").then(({ MailOutline }) => MailOutline),
   ),
   "aster/menu@outline": Object.freeze(
-    () => import("../facades/icons/menu/outline.js").then(({ MenuOutline }) => MenuOutline),
+    () => import("../../glyphs/m/menu/menu-outline.icon.js").then(({ MenuOutline }) => MenuOutline),
   ),
   "aster/pause@outline": Object.freeze(
-    () => import("../facades/icons/pause/outline.js").then(({ PauseOutline }) => PauseOutline),
+    () => import("../../glyphs/p/pause/pause-outline.icon.js").then(({ PauseOutline }) => PauseOutline),
   ),
   "aster/play@outline": Object.freeze(
-    () => import("../facades/icons/play/outline.js").then(({ PlayOutline }) => PlayOutline),
+    () => import("../../glyphs/p/play/play-outline.icon.js").then(({ PlayOutline }) => PlayOutline),
   ),
   "aster/plus@outline": Object.freeze(
-    () => import("../facades/icons/plus/outline.js").then(({ PlusOutline }) => PlusOutline),
+    () => import("../../glyphs/p/plus/plus-outline.icon.js").then(({ PlusOutline }) => PlusOutline),
   ),
   "aster/search@outline": Object.freeze(
-    () => import("../facades/icons/search/outline.js").then(({ SearchOutline }) => SearchOutline),
+    () => import("../../glyphs/s/search/search-outline.icon.js").then(({ SearchOutline }) => SearchOutline),
   ),
   "aster/settings@outline": Object.freeze(
-    () => import("../facades/icons/settings/outline.js").then(({ SettingsOutline }) => SettingsOutline),
+    () => import("../../glyphs/s/settings/settings-outline.icon.js").then(({ SettingsOutline }) => SettingsOutline),
   ),
   "aster/star@outline": Object.freeze(
-    () => import("../facades/icons/star/outline.js").then(({ StarOutline }) => StarOutline),
+    () => import("../../glyphs/s/star/star-outline.icon.js").then(({ StarOutline }) => StarOutline),
   ),
   "aster/user@outline": Object.freeze(
-    () => import("../facades/icons/user/outline.js").then(({ UserOutline }) => UserOutline),
+    () => import("../../glyphs/u/user/user-outline.icon.js").then(({ UserOutline }) => UserOutline),
   ),
   "aster/warning@outline": Object.freeze(
-    () => import("../facades/icons/warning/outline.js").then(({ WarningOutline }) => WarningOutline),
+    () => import("../../glyphs/w/warning/warning-outline.icon.js").then(({ WarningOutline }) => WarningOutline),
   ),
 };
 Object.setPrototypeOf(iconLoaders, null);
@@ -104,7 +104,7 @@ export const AsterIconLoaders: IconDefinitionLoaderMap = Object.freeze(iconLoade
  */
 const collectionLoaders: CollectionDefinitionLoaderMap = {
   "amellus": Object.freeze(
-    () => import("../facades/collections/amellus.js").then(({ Amellus }) => Amellus),
+    () => import("../../collections/a/amellus/amellus.collection.js").then(({ Amellus }) => Amellus),
   ),
 };
 Object.setPrototypeOf(collectionLoaders, null);

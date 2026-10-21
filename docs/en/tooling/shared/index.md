@@ -34,6 +34,12 @@ depend on Node directory-entry objects.
 
 ## Boundaries
 
+`RepositoryPathResolver.contains()` delegates lexical normalisation to Node's relative-path
+operation, then rejects parent escapes and absolute cross-volume relations. It does not use raw
+string prefixes, retain resolved paths between calls, test existence or resolve symbolic links.
+Filesystem ownership and link checks remain the responsibility of the capability performing an
+effect; lexical containment alone is not a filesystem sandbox.
+
 Shared tooling does not expose deletion, writing, terminal output, process exit state, package
 policy, Markdown policy, or benchmark scenarios. Destructive cleanup remains owned by
 [Workspace Tooling](../workspace/index.md), while every verifier and baseline retains its own
@@ -44,6 +50,8 @@ contracts do not form part of an Aster package ABI.
 
 ## Tests
 
-Tests verify path containment, sibling/parent rejection, Windows cross-volume rejection,
-deterministic traversal, absent optional roots, strict JSON acquisition and malformed input.
+Tests verify lexical path containment against the native resolved-path expression, sibling/parent
+rejection, relative and empty inputs, current-directory changes, Windows volumes/UNC/device paths,
+POSIX distinctions and native invalid-argument errors. They also cover deterministic traversal,
+absent optional roots, strict JSON acquisition and malformed input.
 Feature fixtures verify the command behaviour built on these capabilities.

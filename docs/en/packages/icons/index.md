@@ -52,7 +52,7 @@ Use the complete legal authorities above for permissions and redistribution obli
 | Bundle inclusion | Isolated subpaths and deferred imports support module/chunk separation; final inclusion depends on the bundler and application. |
 
 Prefer a direct subpath for known artwork. Use the manifest for discovery and loader maps for
-runtime-selected definitions. Neither changes acquisition. Measured module sets and historical
+runtime-selected definitions. Neither changes acquisition. Measured module sets and current
 distribution sizes belong to [Quality Baseline](quality-baseline.md), not a bundle-size promise.
 
 ## Documentation

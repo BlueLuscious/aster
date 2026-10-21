@@ -15,6 +15,7 @@ matching a public stable source version does not make Import public.
 | Input-hardening tests | Accessors, symbols, hidden fields, custom prototypes, sparse/cyclic data and original caller-controlled Proxy failures. |
 | SVG adapter tests | Supported geometry, editor-noise warnings, blocked semantics/resources, XML safety and structured path expansion. |
 | Parser tests | Every exact resource ceiling and immediately greater value, namespace/inert-section rules and LF/CRLF/Unicode spans. |
+| Entity-reference tests | Exact lexical offsets, exhaustive delimiter-fragment comparisons, incomplete inert sections, immutable results and public diagnostic spans/order. |
 | Diagnostic tests | Closed code/category/severity policy, canonical ordering, deduplication and immutable result unions. |
 | ABI tests | Exact root values and declarations, rejected subpaths, contained dependencies and an isolated compiled emitted-module consumer. |
 | Executable documentation | Actual private README inspection and staged API examples through the built public workspace entrypoint. |
@@ -26,9 +27,9 @@ cross-package verification. Output markers and accessibility attributes remain r
 
 ## Measured evidence
 
-The [baseline](quality-baseline.md) retains workloads, environments, growth observations and cost
-attribution. Inspection owns the material cost; measured definition construction and editable
-emission do not justify shortcuts. Timing is advisory, never a replacement for source safety,
+The [baseline](quality-baseline.md) owns current workloads, environments, growth observations and
+cost attribution. Inspection owns the material cost; definition construction and editable emission
+retain their independent validation. Timing is advisory, never a replacement for source safety,
 precise diagnostics, isolation or deterministic output.
 
 ## Host limits

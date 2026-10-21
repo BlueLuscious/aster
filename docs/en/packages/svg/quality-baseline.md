@@ -27,138 +27,59 @@ before timing begins, while every complete markup result enters a deterministic 
 
 The Core reference is attribution evidence rather than an SVG product operation. It grants no
 SVG-owned bypass: [Core](../core/definition/runtime/index.md#recognised-outputs) decides whether
-to recognise an output or fully reconstruct unknown data. The canonical-output comparison below
-measures that distinction; earlier comparisons retain their original implementation scope.
+to recognise an output or fully reconstruct unknown data. Recognised and unknown inputs must be
+measured separately.
 
-## Canonical-output acceptance comparison
+## Current Rendering Reference
 
-The five matched source-revision pairs used the
-[Core comparison conditions](../core/quality-baseline.md#canonical-output-recognition-comparison)
-and unchanged schema-version-two SVG workloads. Definitions/options were prepared outside timing;
-every complete markup result entered the checksum. Values are medians of five report medians,
-with their minimum/maximum, in ns per public operation. These measure source, not named npm releases.
+A Windows x64 reference uses Node `24.10.0`, V8 `13.6`, TypeScript `5.9.3` and pnpm `10.28.1`.
+Each value is the median of three worker medians with seven samples, baseline-calibrated fixed
+counts and equal complete-output fingerprints. Definitions/options are prepared outside timing;
+the complete SVG enters checksum consumption. Filesystem caches, scheduling, thermals and
+antivirus are uncontrolled. The
+[supplemental protocol](../../tooling/performance/index.md#supplemental-measurements)
+owns sampling; these are local costs, not CI thresholds or universal latency guarantees.
 
-| Workload | Control median (range) | Recognition median (range) |
-| --- | ---: | ---: |
-| Core acceptance reference | 6,941 (6,786-7,071) | 24 (21-27) |
-| Minimal icon | 12,829 (12,217-12,989) | 6,413 (6,294-6,488) |
-| Every primitive | 60,780 (58,127-70,169) | 32,965 (31,919-35,322) |
-| Fixed corpus | 19,345 (18,426-22,698) | 10,006 (9,769-11,829) |
-| Semantic accessibility | 15,281 (14,718-17,120) | 9,907 (9,133-11,252) |
-| Authorised overrides | 15,869 (15,574-17,381) | 5,891 (5,687-6,159) |
-| RTL mirroring | 14,541 (14,184-14,996) | 5,898 (5,718-6,303) |
-| Escaping pressure | 16,478 (15,210-16,680) | 7,131 (6,947-7,427) |
-| Dense point sequence | 147,000 (142,190-158,338) | 50,642 (46,702-52,742) |
-
-Minimal and dense complete rendering improved by 50.01% and 65.55%, with the same direction in
-every pair. Both exceed 10% and twice their respective control spreads of 6.02% and 10.99%.
-The attribution-only Core reference is not an SVG result. Options, XML validation, geometry
-serialisation and complete document construction still execute on every render. SVG production
-code did not change; Core's recognition decision removes repeated reconstruction of its own output.
-
-Unknown input is not covered by those own-output gains. Supplemental matched loops over equal
-foreign/JSON geometry still performed full Core acceptance. Small foreign rendering rose from
-13,148 to 13,586 ns, within 7.89% control variation; dense foreign rendering changed from 149,940
-to 140,287 ns, within 15.98% variation. No foreign-input speed-up is established. Core owns its
-[construction trade-offs](../core/quality-baseline.md#unknown-input-costs); optional preparation
-belongs to its [runtime guide](../core/definition/runtime/index.md#preparing-external-definitions),
-not an SVG cache or a second renderer API.
-
-The emitted SVG distribution stayed at 22 JavaScript modules/32,892 bytes and 22 declarations/
-9,388 bytes, with unchanged exports, dependencies and side-effect metadata. Sampled heap growth
-fell from 844 to 219 bytes/op for minimal rendering but rose from 6,603 to 7,663 for the dense case.
-These mixed deltas establish neither exact allocations nor a general memory-reduction claim.
-
-Fresh-process controls under the linked comparison conditions gave first own-input rendering
-medians of 0.882 -> 0.828 ms and prepared-JSON rendering of 1.792 -> 1.822 ms. Complete JSON-process
-time rose 7.49%, within a 19.15% control spread and with mixed batch directions. Startup differences
-are not established as material changes; these are not filesystem cold-cache measurements.
-
-Use the [SVG command](#reproduction) for the main matrix on both source revisions. Supplemental
-foreign/JSON and first-use controls are separate comparisons, not additional standard report
-scenarios or CI timing assertions. Earlier escaping findings below remain historical evidence.
-
-## Initial evidence and attribution
-
-The following schema-version-one findings used the former product corpus and remain historical
-investigation evidence; they are not directly comparable with schema-version-two reports. Three
-complete reports under Node `24.10.0` on Windows x64 produced these medians across report medians:
-
-| Scenario | Initial median |
+| Complete operation | Median |
 | --- | ---: |
-| `svg.reference.core-revalidation` | 7,055 ns |
-| `svg.render.minimal` | 21,728 ns |
-| `svg.render.primitives` | 98,342 ns |
-| `svg.render.corpus` | 38,653 ns |
-| `svg.render.semantic` | 23,722 ns |
-| `svg.render.overrides` | 24,064 ns |
-| `svg.render.rtl-mirror` | 21,675 ns |
-| `svg.render.escaping` | 24,611 ns |
-| `svg.render.point-sequence` | 136,798 ns |
+| Authorised overrides | 6.366 us/render |
+| Polyline, 8 points | 7.084 us/render |
+| Polyline, 128 points | 44.990 us/render |
+| Polyline, 1,024 points | 309.624 us/render |
+| Polygon, 128 points | 41.521 us/render |
+| Foreign-Core polyline, 128 points | 141.880 us/render |
+| 10,000 simple canonical definitions | 51.055 ms/batch |
 
-Three CPU profiles attributed 33.71% of repository self-time to repeated attribute escaping.
-`SvgMarkupSerialiser.#attributeText` traversed every value through six sequential `replaceAll()`
-operations even when no character required replacement. Core exact-field inspection was the next
-largest family; option normalisation, presentation resolution, node dispatch, point flattening,
-XML validation, freezing, and individual composition methods did not expose another isolated SVG
-hotspot of comparable magnitude.
+The supplemental matrix varies 0/1/10/100/1,000/10,000-definition batches, 16/64/256 nodes,
+8/128/1,024 points or cubic segments, text width and option shape independently. An empty batch
+contains no render calls, not an accepted empty definition. Canonical, copied, JSON and
+foreign-Core inputs retain their different admission work. The standard command below runs the
+fixed nine scenarios, not this entire matrix.
 
-## Retained experiment
+SVG delegates definition acceptance to Core. Reuse a retained recognised definition for repeated
+renders; [Core's guide](../core/definition/runtime/index.md#reusing-definitions) owns the exact
+conditions. Unknown values still undergo complete validation and construction. Every render
+checks options and serialises a complete string; there is no SVG-owned definition or result cache.
 
-The sole candidate replaced sequential attribute replacements with one character traversal. It
-returns the original string without allocation when no escaping is required and appends only the
-segments surrounding an accepted escapable character otherwise. Character validation, entities,
-ordering, errors, and complete output bytes remain unchanged.
+Private option snapshots retain own-data checks and a null prototype. Point sequences compose
+each coordinate pair directly, preserving numeric order and output. Both paths still create
+temporary values; neither is allocation-free. [Render Runtime](render/runtime/index.md) owns
+their admission and serialisation responsibilities. CLI planning, HTML, process startup and
+filesystem publication are separate operations; see the
+[integrated reference](../../tooling/performance/index.md#integrated-consumer-observations).
 
-Three equivalent control and candidate reports produced:
+## Resource Reference
 
-| Scenario | Control | Candidate | Difference |
-| --- | ---: | ---: | ---: |
-| Core revalidation reference | 7,055 ns | 6,830 ns | 3.2% faster |
-| Minimal icon | 21,728 ns | 12,629 ns | 41.9% faster |
-| Every primitive | 98,342 ns | 55,209 ns | 43.9% faster |
-| Former product corpus | 38,653 ns | 22,486 ns | 41.8% faster |
-| Semantic accessibility | 23,722 ns | 15,121 ns | 36.3% faster |
-| Authorised overrides | 24,064 ns | 15,161 ns | 37.0% faster |
-| RTL mirroring | 21,675 ns | 13,460 ns | 37.9% faster |
-| Escaping pressure | 24,611 ns | 15,778 ns | 35.9% faster |
-| Dense point sequence | 136,798 ns | 129,800 ns | 5.1% faster |
+Three separate process observations render one 128-point definition 10,000 times without
+retaining each SVG. Sampled RSS spans 69.4-76.4 MiB, post-GC used heap is approximately 6.29 MiB
+and 83-89 GC events are observed. These describe the whole process, not a renderer memory budget.
 
-The target scenarios exceed the 10% acceptance threshold with no measured regression. Candidate
-profiles no longer expose attribute escaping as a material hotspot; strict Core revalidation
-becomes the dominant repository-owned family and remains intentionally unchanged.
-
-The retained implementation increases unminified emitted JavaScript by 966 bytes, from 26,349 to
-27,315 bytes. This 3.7% increase represents the explicit single-pass algorithm. Declaration bytes,
-module counts, exports, dependencies, and side-effect metadata remain unchanged.
-
-## Retained pressure snapshot
-
-A separate three-report reading of the retained implementation produced the following informative
-medians across report medians:
-
-| Scenario | Elapsed time | Non-negative heap growth |
-| --- | ---: | ---: |
-| Core revalidation reference | 6,923 ns | 679 bytes |
-| Minimal icon | 12,727 ns | 690 bytes |
-| Every primitive | 56,738 ns | 456 bytes |
-| Former product corpus | 23,305 ns | 1,540 bytes |
-| Semantic accessibility | 15,928 ns | 1,387 bytes |
-| Authorised overrides | 15,331 ns | 2,720 bytes |
-| RTL mirroring | 14,270 ns | 1,370 bytes |
-| Escaping pressure | 16,523 ns | 1,665 bytes |
-| Dense point sequence | 133,789 ns | 5,435 bytes |
-
-Heap growth is a pressure indicator, not an allocation counter. No memory claim or compatibility
-promise is inferred from these machine-specific values.
-
-## Distribution observation
-
-A separate recorded compiler inspection contained 22 JavaScript modules totalling 32,566 bytes
-and 22 declaration files totalling 9,388 bytes. This historical unminified observation is not a
-fixed package boundary or a claim about the current checkout. The command below reports current
-distribution counts and bytes; production format and dependencies belong to the
-[package boundary](index.md#boundary), not to benchmark measurements.
+A separate lifecycle retains 2,000 SVG strings: used heap reaches approximately 9.1 MiB and returns
+to 5.7 MiB after release, while the prepared definition remains reachable. RSS also includes V8
+capacity and other resident memory; it is not the size of live SVG strings. Not every resident
+page is attributed, and these finite observations establish neither exact allocations nor leak
+freedom. [Shared resource methodology](../../tooling/performance/index.md#processes-and-resources)
+owns measurement definitions and bounds. Resource instrumentation is not part of native latency.
 
 ## Reproduction
 
@@ -176,10 +97,9 @@ limits.
 
 ## Acceptance rules
 
-Correctness takes precedence over performance. A claim requires three equivalent control and
-candidate reports, at least 10% improvement in its target scenario, and no unrelated regression
-above 5% without an accepted trade-off. Distribution growth requires one concrete responsibility.
-Runtime, type, ABI, architecture, documentation, and workflow conformance remain authoritative.
+[Shared comparison rules](../../tooling/performance/index.md#comparison-limits) govern sampling,
+claim thresholds and accepted trade-offs. Runtime, type, ABI, architecture, documentation and
+workflow conformance remain authoritative.
 
 The measured package implementation must run unchanged: no benchmark-only caches, registries,
 pretrusted inputs, mutable memoisation, output streaming, weakened validation or private package

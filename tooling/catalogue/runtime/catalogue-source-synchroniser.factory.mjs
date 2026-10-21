@@ -66,7 +66,6 @@ export class CatalogueSourceSynchroniserFactory {
         serialiser,
         paths,
         keys,
-        facadeResolver,
         catalogueSourceGeneration.dynamicPath,
       ),
       paths,

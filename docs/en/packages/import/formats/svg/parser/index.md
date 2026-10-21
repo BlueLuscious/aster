@@ -21,6 +21,11 @@ standalone state. Doctypes, entity references, CDATA, arbitrary processing instr
 executable or embedded elements, external resources and foreign namespaces are rejected.
 Comments remain inert and cannot make apparent markup executable.
 
+Entity-reference detection traverses a frozen ordered view derived once from the shared XML
+delimiter policy. It skips inert lexical sections without caching source text or detection
+results. Skipping CDATA or a processing instruction during this scan does not permit that content:
+the complete parser still applies the subset and safety rules above.
+
 Only text matching the [shared SVG whitespace grammar](../shared/index.md) is ignorable between
 elements. Other character data, including Unicode spaces outside that grammar, produces a located
 blocking diagnostic.

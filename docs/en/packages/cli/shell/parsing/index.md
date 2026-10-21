@@ -32,7 +32,7 @@ Location is accepted only for absent or `cli` scope. The dispatcher removes `--j
 invocation. `HelpCommandLineParser` accepts every registered
 command name, including `review` and `version`, for command-specific help.
 
-No argument defaults to `help`. Unknown commands, duplicate singleton options, repeated `--json`,
+Omitting all arguments selects `help`. Unknown commands, duplicate singleton options, repeated `--json`,
 missing option values, and trailing unsupported tokens are rejected before programmatic command
 execution. The accepted grammar is documented by [CLI Shell](../index.md).
 

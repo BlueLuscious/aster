@@ -412,21 +412,59 @@ test("preserves exact inherited-name absence in packed loader maps", () => {
   assert.equal(executed.stdout, "");
 });
 
+test("loads canonical definitions without first loading their public facades", () => {
+  const executed = spawnSync(process.execPath, [
+    "--input-type=module",
+    "--eval",
+    [
+      'import assert from "node:assert/strict";',
+      'import { registerHooks } from "node:module";',
+      'const prefix = new URL("../", import.meta.resolve("@luscious-garden/aster-icons/dynamic")).href;',
+      "const loaded = new Set();",
+      "const hooks = registerHooks({ load(url, context, nextLoad) {",
+      "  const result = nextLoad(url, context);",
+      '  if (url.startsWith(prefix) && result.format === "module") loaded.add(url.slice(prefix.length));',
+      "  return result;",
+      "} });",
+      "try {",
+      '  const { AsterIconLoaders, AsterCollectionLoaders } = await import("@luscious-garden/aster-icons/dynamic");',
+      '  assert.deepEqual([...loaded].sort(), ["dynamic/index.js", "generated/dynamic/index.js"]);',
+      '  const camera = await AsterIconLoaders["aster/camera@outline"]();',
+      "  const amellus = await AsterCollectionLoaders.amellus();",
+      '  assert.ok(loaded.has("glyphs/c/camera/camera-outline.icon.js"));',
+      '  assert.ok(loaded.has("collections/a/amellus/amellus.collection.js"));',
+      '  assert.equal([...loaded].some((path) => path.startsWith("generated/facades/")), false);',
+      '  const { CameraOutline } = await import("@luscious-garden/aster-icons/camera/outline");',
+      '  const { CameraVariants } = await import("@luscious-garden/aster-icons/camera");',
+      '  const { Amellus } = await import("@luscious-garden/aster-icons/collections/amellus");',
+      "  assert.equal(camera, CameraOutline);",
+      "  assert.equal(CameraVariants.outline, camera);",
+      "  assert.equal(amellus, Amellus);",
+      "  assert.equal(amellus.icons.camera.outline, camera);",
+      "} finally { hooks.deregister(); }",
+    ].join("\n"),
+  ], { cwd: consumerRoot, encoding: "utf8" });
+
+  assertSuccessfulProcess(executed, "load packed canonical targets before public facades");
+  assert.equal(executed.stderr, "");
+  assert.equal(executed.stdout, "");
+});
+
 for (const { family, exportName, key, subpath } of [
   { family: "icon", exportName: "AsterIconLoaders", key: "aster/camera@outline", subpath: "camera/outline" },
   { family: "collection", exportName: "AsterCollectionLoaders", key: "amellus", subpath: "collections/amellus" },
 ]) {
   test(`preserves native ${family} dynamic-import rejection details`, async () => {
-    const facadePath = resolve(
+    const definitionPath = resolve(
       consumerRoot,
-      "node_modules/@luscious-garden/aster-icons/dist/generated/facades",
-      family === "icon" ? `icons/${subpath.split("/")[0]}/${subpath.split("/")[1]}.js` : `${subpath}.js`,
+      "node_modules/@luscious-garden/aster-icons/dist",
+      family === "icon" ? "glyphs/c/camera/camera-outline.icon.js" : "collections/a/amellus/amellus.collection.js",
     );
-    const original = await readFile(facadePath);
-    const missingUrl = pathToFileURL(await realpath(facadePath)).href;
+    const original = await readFile(definitionPath);
+    const missingUrl = pathToFileURL(await realpath(definitionPath)).href;
 
     try {
-      await unlink(facadePath);
+      await unlink(definitionPath);
       const executed = spawnSync(
         process.execPath,
         [
@@ -451,7 +489,7 @@ for (const { family, exportName, key, subpath } of [
         { cwd: consumerRoot, encoding: "utf8" },
       );
 
-      assertSuccessfulProcess(executed, `reject missing packed ${family} facade`);
+      assertSuccessfulProcess(executed, `reject missing packed ${family} definition`);
       assert.equal(executed.stderr, "");
       assert.deepEqual(JSON.parse(executed.stdout), {
         name: "Error",
@@ -459,7 +497,7 @@ for (const { family, exportName, key, subpath } of [
         url: missingUrl,
       });
     } finally {
-      await writeFile(facadePath, original);
+      await writeFile(definitionPath, original);
     }
   });
 }
