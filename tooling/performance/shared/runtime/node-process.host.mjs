@@ -49,7 +49,7 @@ export class NodeProcessHost {
 
   /**
    * @description Runs one trusted supplemental worker with finite time, output and reported-RSS budgets.
-   * @remarks Workers must await their non-detached children before normal exit. Timeout cleanup kills the live Windows tree or POSIX process group; this is not a sandbox for escaping or malicious programs. RSS messages are observer evidence, not an OS-enforced RSS limit. Historical execute remains unchanged.
+   * @remarks Workers must await their non-detached children before normal exit. Timeout cleanup kills the live Windows tree or POSIX process group; this is not a sandbox for escaping or malicious programs. RSS messages are observer evidence, not an OS-enforced RSS limit.
    * @param {{ executablePath: string, arguments: readonly string[], timeoutMilliseconds?: number, maximumOutputBytes?: number, maximumRssBytes?: number, exposeGc?: boolean }} request - Explicit file-based worker and bounded controls.
    * @returns {Promise<{ ok: boolean, reason: string, status: number | null, signal: string | null, elapsedNanoseconds: number, stdout: string, stderr: string, terminationError: string | null }>} Complete or aborted evidence with bounded partial streams.
    */

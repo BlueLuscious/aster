@@ -3,12 +3,12 @@ import { benchmarkCatalogueFixture } from "../constants/benchmark-catalogue-fixt
 import { benchmarkScaleFixture } from "../constants/benchmark-scale-fixture.constant.mjs";
 
 /**
- * @description Prepares fixed historical and explicitly scalable synthetic catalogues for cross-package measurements.
- * @remarks The historical corpus is independent from product artwork; supplemental scales carry their own dimensions and report identity.
+ * @description Prepares fixed and explicitly scalable synthetic catalogues for cross-package measurements.
+ * @remarks The fixed corpus is independent from product artwork; supplemental scales carry their own dimensions and report identity.
  */
 export class BenchmarkCatalogueFixtureFactory {
   /**
-   * @description Prepares a bounded synthetic catalogue without changing the historical fixed corpus.
+   * @description Prepares a bounded synthetic catalogue with explicit dimensions independent from the fixed corpus.
    * @param {import("../contracts/internal/benchmark-scale-options.contract.mjs").IBenchmarkScaleOptions} [options] - Independent scale and output axes.
    * @returns {import("../contracts/internal/benchmark-scaled-catalogue-fixture.contract.mjs").IBenchmarkScaledCatalogueFixture} Canonical references, authored inputs and actual counts.
    */

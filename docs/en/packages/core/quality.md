@@ -43,14 +43,10 @@ particular contract has no named external import. Their descriptions belong to t
 features rather than a duplicate public inventory here.
 
 The [definition runtime](definition/runtime/index.md#recognised-outputs) owns private recognition
-of exact constructed outputs. Unknown members still require complete reconstruction and the
-[collection retention contract](collection/index.md#runtime) still governs graph equivalence.
-The [measured matcher investigation](quality-baseline.md#attributed-investigation-outcome) did not
-justify replacing that fallback. Frozen-only shortcuts, public branding, logical-identity registries
-and mutable memoisation do not establish equivalent evidence. Correctness coverage of recognition
-does not by itself establish a performance improvement; the
-[recognition comparison](quality-baseline.md#canonical-output-recognition-comparison) owns measured
-gains and the accepted unknown-input costs.
+of exact constructed outputs. Unknown members require complete reconstruction, and the
+[collection retention contract](collection/index.md#runtime) governs graph equivalence. Correctness
+tests cover both paths independently of the
+[construction measurements](quality-baseline.md#current-construction-reference).
 
 No implemented workflow requires incremental membership mutation or definition instances with
 behaviour. Any API expansion must establish ownership, immutable return, ordering, duplicate and

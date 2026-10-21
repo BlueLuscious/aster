@@ -171,7 +171,7 @@ export class BenchmarkRunner {
   }
 
   /**
-   * @description Retains every supplemental observation without changing historical measure results.
+   * @description Retains every supplemental observation with its declared count, warm-up and sample evidence.
    * @param {import("../contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario} scenario - Prepared operation with a previously frozen count.
    * @returns {Promise<import("../contracts/internal/benchmark-observation.contract.mjs").IBenchmarkObservation>} Raw samples and their explicit methodology.
    */

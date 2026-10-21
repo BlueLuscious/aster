@@ -115,11 +115,9 @@ Shell type-only JavaScript emission is a compiler detail, not justification for 
 
 ## Comparison rules
 
-[Shared comparison limits](../../tooling/performance/index.md#comparison-limits) govern sampling
-and environmental interpretation. A CLI optimisation claim requires three equivalent baseline/
-candidate reports, at least 10% improvement in its target and no unrelated regression above 5%
-without an accepted trade-off. Security corrections may have an explicit cost; they are not
-optimisations merely because the structure is clearer.
+[Shared comparison rules](../../tooling/performance/index.md#comparison-limits) govern sampling,
+claim thresholds and accepted trade-offs. Security corrections may have an explicit cost; they
+are not optimisations merely because the structure is clearer.
 
 A comparison preserves workload and contract semantics, except for explicitly approved structured
 field changes. It checks diagnostics, ordering, SVG/HTML bytes, human streams/status, paths, native

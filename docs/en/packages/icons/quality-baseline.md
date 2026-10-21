@@ -79,7 +79,7 @@ that same consumer namespace is measured separately. Startup, request acquisitio
 verification also contribute to whole-worker time, not import-only time. There is no OS-cache
 eviction or scheduler, antivirus or thermal isolation. Resource and evaluation probes run separately.
 
-Representative initial-baseline medians on the same Windows host are:
+Representative static-import medians on the same Windows host are:
 
 | Consumer | Required definitions/selections | First import |
 | --- | --- | ---: |
@@ -90,8 +90,7 @@ Representative initial-baseline medians on the same Windows host are:
 | 1,000 glyph dictionaries | One treatment each | 2,640 ms |
 | 1,000 collections | 10,000 references to ten shared definitions | 5,241 ms |
 
-These static entrypoints retain identical compiled bytes and graph semantics after the loader
-change below. Cached consumer reimport medians across the matrix are approximately 0.02 to 0.06 ms;
+Cached consumer reimport medians across the matrix are approximately 0.02 to 0.06 ms;
 this reuses one namespace, not thousands of newly evaluated definitions. Separate calibrated
 workloads invoke already-loaded loader functions rather than count cached imports as fresh work.
 
@@ -101,44 +100,30 @@ evaluate the entry modules they actually request. Metadata and loader discovery 
 Icons modules and no Core modules or artwork. Their parsing and initialisation costs still grow
 with catalogue size.
 
-## Retained loader comparison
+## Dynamic Acquisition Reference
 
-Generated loaders import canonical modules directly, avoiding a public re-export facade on each
-requested path. Fourteen fresh-import comparisons, including separate map-only and mixed-path
-diagnostics, use three rotated baseline/identical-control/candidate rounds, with seven observations
-per label in each round. Inputs, paths, outputs and compiled dependencies are fixed; only the map's
-import destinations differ. All other product JavaScript and declarations are byte-identical.
+Generated loader functions import canonical modules directly. The
+[dynamic guide](dynamic/index.md#deferred-evaluation) owns deferred evaluation and public object
+identity; the public facades remain independent supported entrypoints.
 
-The median of the three round medians for requesting all 1,000 concrete definitions is:
+Three rotated matched rounds with seven fresh-process samples each give these current medians
+for importing the loader map and requesting all 1,000 concrete definitions:
 
-| Catalogue shape | Facade targets | Canonical targets | Evaluated Icons modules |
-| --- | ---: | ---: | ---: |
-| 1,000 glyphs, one treatment each | 3,004 ms | 2,265 ms | 2,004 -> 1,004 |
-| 100 glyphs, ten treatments each | 2,785 ms | 2,240 ms | 2,004 -> 1,004 |
+| Catalogue shape | First acquisition | Evaluated Icons modules |
+| --- | ---: | ---: |
+| 1,000 glyphs, one treatment each | 2,265 ms | 1,004 |
+| 100 glyphs, ten treatments each | 2,240 ms | 1,004 |
 
-The paired reductions are about 22% to 25% and 19% to 23%, respectively. Identical-control shifts in
-these comparisons reach about 4%; unchanged static-import controls also vary. CPU profiles place
-the main reduction in Node module/package resolution and filesystem metadata/open paths, not a
-new Core construction or rendering algorithm. Sampled profiles explain the avoided work, not the
-cause of every remaining timing fluctuation.
+These include Node module/package resolution, filesystem acquisition and definition evaluation,
+not rendering or search. Cached loader calls, map-only discovery and static imports are different
+workloads; module counts do not establish a universal speed or bundler benefit.
 
-For the actual product, invoking Camera's loader evaluates six rather than seven Icons modules;
-Amellus's loader evaluates 32 rather than 33. A consumer that subsequently requests the public
-leaf, dictionary and collection evaluates the same final 35-module set with either design. No
-general improvement is established for cached loader calls, map-only imports, single-definition
-startup or small CLI API list/export/review workflows. Their controls vary too; complete outputs
-and canonical references remain identical.
-
-Three separate matched resource observations per label for the 1,000-loader case give median
-sampled peak RSS of 99.0 -> 92.0 MiB and post-GC heap of 20.65 -> 16.45 MiB. The unchanged
-1,000-collection control retains approximately 26.54 MiB post-GC heap with either design.
-These observations retain module exports and do not prove leak freedom or application-wide
-memory savings. [Resource methodology](../../tooling/performance/index.md#processes-and-resources)
-owns their definitions and limits.
-
-The retained map adds 269 unminified bytes to the real distribution without changing its file
-count. Public facades/routes, validation, metadata, freezing and native rejection propagation
-remain intact. This is not a zero-cost or universal speed-up claim.
+Invoking the product Camera loader evaluates six Icons modules; invoking Amellus's evaluates 32.
+Following loader acquisition with public leaf, dictionary and collection imports retains their
+canonical references through the module cache. Separate resource observations for 1,000 loader
+requests record approximately 92.0 MiB sampled peak RSS and 16.45 MiB post-GC heap with exports
+retained. These whole-process values are not allocation counts or application memory budgets;
+the [resource methodology](../../tooling/performance/index.md#processes-and-resources) owns limits.
 
 ## Acquisition reference
 
@@ -160,8 +145,7 @@ identical archive hashes, and acquired distribution bytes must match the compile
 | 1,000 definitions, 1,000 collections sharing ten definitions | 258,045 bytes | 8,232 | 4,070 ms | 7,515 ms |
 
 Synthetic geometry and repeated metadata compress unusually well; these are not archive-size
-predictions for future artwork. No acquisition speed-up follows from the loader change: installed
-consumers still receive all files, regardless of how few they evaluate.
+predictions for future artwork. Installed consumers receive all files, regardless of how few they evaluate.
 
 The optional full 10,000-definition package does not provide native-import or acquisition figures:
 preparation exceeds its 120-second worker deadline. A separate 10,000-record metadata regression

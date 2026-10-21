@@ -1,4 +1,4 @@
-/** @description Bounded controls for supplemental measurements, separate from historical baselines. */
+/** @description Bounded controls for supplemental measurements, separate from fixed package baselines. */
 export const benchmarkComparison = Object.freeze({
   /** @description Supplemental observation and comparison envelope revision. */
   schemaVersion: 1,

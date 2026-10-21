@@ -31,7 +31,7 @@ without promising a particular bundler's tree-shaking result.
 | [Shared Runtime](shared/index.md) | Common data acceptance and deterministic Core errors. |
 | [Workflow](workflow.md) | Construction hand-offs and the security and trust boundary. |
 | [Quality](quality.md) | Runtime, type, ABI and consumer conformance evidence. |
-| [Quality Baseline](quality-baseline.md) | Package scenarios, historical measurements and comparison decisions. |
+| [Quality Baseline](quality-baseline.md) | Package scenarios, current measurements and comparison methodology. |
 | [Releases](releases/index.md) | Published versions and migrations. |
 
 The [package dependency graph](../index.md) owns ecosystem relationships; the

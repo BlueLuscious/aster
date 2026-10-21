@@ -16,7 +16,7 @@ CDATA, text, transforms and unknown semantics remain blocking.
 
 Well-formed XML is necessary but does not imply acceptance by this source subset. The complete
 markup from [SVG Render Result](../../../svg/render/index.md) is a rendering target, not a
-round-trip Import source: decorative `aria-hidden` and `focusable` were already unsupported, and
+round-trip Import source: decorative `aria-hidden` and `focusable` are unsupported, and
 the fixed `data-rendered-by` root attribute is also rejected with `ASTER-TECHNICAL-005`. Unknown
 `data-*` attributes remain blocking rather than silently discarded. Import does not broaden its
 editor-noise policy to accept renderer output.

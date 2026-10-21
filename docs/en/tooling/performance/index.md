@@ -43,21 +43,17 @@ operations, median high-resolution elapsed nanoseconds per operation, and median
 growth after explicit pre-sample collection. Package baselines may define scenario operation counts
 but cannot silently redefine those shared report meanings.
 
-`benchmarkCatalogueFixture` fixes the shared synthetic corpus at sixteen definitions. Changing its
-scale or construction semantics requires an explicit report schema revision because it invalidates
-direct historical comparison. Product icons and collections never serve as benchmark fixtures;
-ordinary catalogue growth therefore cannot alter Core, SVG, or CLI operation inputs.
+`benchmarkCatalogueFixture` fixes the shared synthetic operation corpus at sixteen definitions.
+Changing its scale or construction semantics requires an explicit report schema revision because
+it invalidates direct comparison. Product catalogue growth cannot alter these Core, SVG or CLI
+operation inputs. Native built-in import and command-evaluation scenarios deliberately inspect the
+real distribution; record its identity and membership separately from synthetic operation fixtures.
 
-Collection inputs now select explicit nested treatment maps while retaining the same concrete
-corpus and flat member order. Core schema six and CLI schema five mark this construction-boundary
-change; do not compare their collection-sensitive timings directly with older flat-map reports.
-SVG's measured concrete-definition inputs are unchanged. Historical reports retain their scope.
-
-Explicit treatments also lengthen emitted Import modules, CLI JSON and exported filenames. Their
-byte-weighted checksums can therefore change without a larger geometry corpus or more operations.
-Disclose that output-width boundary when comparing reports; identical checksum units do not imply
-identical output sizes. Icons schema two separately adds a named glyph-dictionary import scenario
-without redefining the isolated concrete-treatment scenario.
+Core schema six and CLI schema five use explicit nested treatment selections with a flat
+concrete-member order. Icons schema two includes separate glyph-dictionary and individual-treatment
+imports. Compare reports only when schema, workload signature, admission work and complete output
+agree; the same geometry or checksum units alone do not establish equivalent work. Record treatment
+identities and output widths in emitted Import modules, CLI JSON and exported filenames.
 
 ## Internal contracts
 
@@ -130,7 +126,7 @@ and package-specific acceptance rules. Shared tooling owns methodology and execu
 
 ## Supplemental Measurements
 
-Historical `measure()` results and package schema meanings remain separate from supplemental
+Fixed `measure()` results and package schema meanings remain separate from supplemental
 schema-one observations. The fixed sixteen-definition authority is unchanged. Supplemental
 capabilities are private APIs for workload owners, not published packages or a global scenario
 registry. They do not automatically run an extended timing matrix in CI.
@@ -334,7 +330,7 @@ instrumented resource/lifetime probes have independent windows. Holding an outpu
 is not the same workload as releasing it. Resource results include deliberately retained outputs
 and release stages, not allocation counts or a proof of leak freedom. Follow
 [Core's recognised-output contract](../../packages/core/definition/runtime/index.md#recognised-outputs)
-for reusable definitions and the [SVG resource reference](../../packages/svg/quality-baseline.md#scaled-rendering-and-private-intermediates)
+for reusable definitions and the [SVG resource reference](../../packages/svg/quality-baseline.md#resource-reference)
 for point-heavy rendering. Package guides remain the authorities for acceptance and output safety.
 
 ## Comparison limits
@@ -342,6 +338,18 @@ for point-heavy rendering. Package guides remain the authorities for acceptance 
 Timing and heap pressure vary with runtime revision, machine, power state, and background load.
 Reports are compared only under equivalent conditions and never replace correctness tests.
 Distribution byte counts are unminified compiler output, not bundle-size guarantees.
+
+An optimisation claim requires at least three matched baseline/candidate runs, a target median
+improvement of at least 10% and no unrelated median regression above 5% without an explicitly
+accepted trade-off. Check paired directions and identical-control variation before interpreting
+those thresholds. A demonstrated pathological scaling correction can instead use a deterministic
+fixture and attributed complete-consumer evidence. Correctness corrections need not be faster.
+
+Preserve diagnostics, ordering, isolation, validation, immutability and output/effect contracts
+unless their change is separately accepted. Explain emitted-size growth by a concrete responsibility.
+Heap-pressure claims follow the same comparison rule but must not be labelled exact allocations or
+retained memory. Resource and latency observations remain separate; neither a profile nor a timing
+threshold establishes causality by itself.
 
 The tooling remains outside package manifests and public APIs. Deterministic tests inject a fake
 clock, heap readings, and garbage-collection capability to verify exact aggregation. Distribution

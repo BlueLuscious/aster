@@ -1,5 +1,5 @@
 /**
- * @description Supplemental raw operation evidence, distinct from historical package reports.
+ * @description Supplemental raw operation evidence, distinct from fixed package reports.
  * @typedef {object} IBenchmarkObservation
  * @property {number} schemaVersion - Supplemental envelope revision.
  * @property {string} name - Complete workload identity.

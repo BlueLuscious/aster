@@ -39,15 +39,12 @@ fixtures, including SVG's test-only use of Icons.
 ## Retained design
 
 The [runtime composition](render/runtime/index.md) keeps contexts and intermediate values local
-to one call. The [escaping comparison](quality-baseline.md#retained-experiment) justifies the
-single-pass algorithm, not weakened Core acceptance, an SVG-owned trust shortcut, result caching
-or output streaming. Definition reuse belongs solely to the linked
-[Core acceptance contract](../core/definition/runtime/index.md#recognised-outputs); correctness
-evidence alone does not establish a performance improvement. The
-[acceptance comparison](quality-baseline.md#canonical-output-acceptance-comparison) measures complete
-rendering while preserving unknown-input validation and the renderer's option/error boundaries.
-The [scaled comparison](quality-baseline.md#scaled-rendering-and-private-intermediates) covers
-private option-snapshot construction and direct point-pair composition under the same guarantees.
+to one call. Escaping, private option capture and point composition preserve exact validation,
+ordering and output. Definition reuse belongs solely to the linked
+[Core acceptance contract](../core/definition/runtime/index.md#recognised-outputs); there is no
+SVG-owned trust shortcut or result cache. The
+[rendering reference](quality-baseline.md#current-rendering-reference) measures complete rendering,
+separately from correctness and conformance evidence.
 
 No implemented consumer requires a second public renderer operation. New batch, fragment, file,
 DOM or extension capabilities require their own ownership and failure contract under the

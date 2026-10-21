@@ -36,10 +36,6 @@ state and retention pressure; fixture freezing itself grants no trust. The
 [definition runtime](definition/runtime/index.md#recognised-outputs) owns exact-output recognition.
 The three path scenarios provide complexity-specific evidence and do not use product artwork.
 
-The canonical-output comparison below measures recognition with unchanged public workload calls,
-fixed corpus and report schema. Earlier comparisons retain their original input and implementation
-scope; their timings must not be reinterpreted as evidence for later behaviour.
-
 The complete sixteen-member scenarios revalidate a definition containing both `icons` and
 `members`. The authored dictionary scenarios derive `members` without validating a submitted
 sequence. Their different trust-boundary work makes them unsuitable for a direct per-member
@@ -49,282 +45,55 @@ the benchmark never times repeated property access as collection construction.
 Schema six marks grouped collection construction. See the shared
 [workload comparison limits](../../tooling/performance/index.md#structure).
 
-## Scaled construction and membership publication
+## Current Construction Reference
 
-On 20 October 2026, a Windows x64 comparison with Node `24.10.0` and TypeScript `5.9.3`
-compared source `feefb79` with ordinary writes into private prototype-free membership maps,
-followed by the existing final freezing. No validation, identity rule, recognition state or
-public contract changed.
+A Windows x64 reference uses Node `24.10.0`, V8 `13.6`, TypeScript `5.9.3` and ES2022 ESM.
+Values below are medians of three worker medians, each retaining seven samples with operation
+counts calibrated once before comparison. Preparation and complete-output fingerprints are
+outside timing; result-array construction and checksum consumption are inside. Filesystem caches,
+scheduling, thermals and antivirus are uncontrolled. These are local observations, not budgets.
 
-The exploratory matrix covered 1/10/100/1,000/10,000 definitions; canonical, mutable,
-shallow/structured/JSON copies and genuinely separate compatible Core outputs; empty and populated
-collections; 1/3/10 treatments per glyph; collection count and shared/disjoint membership; geometry
-at 16/64/256 nodes or 8/128/1,024 points; 1/1,024 label characters and 0/1/100/1,000 tags;
-submitted members and deliberate rejection. These are
-finite development strata, not public size limits or a Cartesian product. A 1,000-member mutable
-construction preflight completed in 13.0 ms with a conservative RSS-growth bound of 6.0 MiB,
-permitting the 10,000 tier. Resource probes remained separate from latency measurements.
-
-The retained comparison used 21 Core workloads and five cross-package consumers, three matched
-rounds, seven raw samples per observation, baseline-calibrated fixed counts and rotated variant
-and scenario order. Preparation and full output fingerprints stayed outside timing. A batch
-includes result-array creation and checksum consumption; it is not an isolated method-body cost.
-The following are medians of three report medians, not pooled percentiles or confidence intervals:
-
-| Complete construction workload | Baseline | Retained implementation | Difference |
-| --- | ---: | ---: | ---: |
-| One collection, 100 canonical definitions | 0.194 ms | 0.157 ms | 18.9% faster |
-| One collection, 1,000 canonical definitions | 2.086 ms | 1.657 ms | 20.6% faster |
-| One collection, 10,000 canonical definitions | 26.560 ms | 22.517 ms | 15.2% faster |
-| 1,000 collections, ten shared canonical definitions each | 23.534 ms | 19.245 ms | 18.2% faster |
-
-The last row constructs 10,000 membership references to ten selected definitions, not 10,000
-distinct definitions. Collection roots, metadata, groups and flat member arrays are rebuilt in
-every operation. Repeated reads or renders do not perform this construction.
-
-Separate CPU profiles located canonical construction pressure in membership-map construction and
-variant-property conversion; unknown geometry instead concentrated work in exact-field,
-descriptor and dense-array validation. A deterministic counter for 1,000 one-treatment groups
-confirmed `Object.defineProperty()` calls falling from 2,000 to zero. Validation and freezing
-counts stayed identical: 1,007 freezes for canonical leaves and 12,007 for mutable leaves.
-The output maps remain private until frozen, with the same null prototypes, enumerable closed
-data fields, ordering, references and duplicate diagnostics. The one-variable change and these
-counters identify the removed mechanism; profile percentages are not additive stage durations.
-Variant conversion and strict unknown-input validation remain unchanged.
-
-An initial matched observation showed a 7.9% increase for a single mutable definition. A separately
-declared 2,000-operation warm-up diagnostic reversed paired directions and gave a 1.4% lower
-median; the fixed mixed corpus did not establish a consistent general regression either.
-The definition-construction implementation is
-byte-identical, and these observations do not establish either a general mutable-input regression
-or an improvement. The precise cause of each timing fluctuation was not traced. Unchanged controls
-also varied materially, so do not turn small differences into claims about GC, JIT or scheduling.
-Six capped canonical microcases were retained as exploratory evidence and repeated as explicit
-1,000-batch workloads reaching the calibration target before interpretation.
-
-Nine fresh historical Core reports preserve schema six, all twelve scenario meanings and checksums.
-SVG rendering, Import adoption, CLI collection export and construction-to-render hand-off preserve
-their full outputs; no material whole-consumer gain is established. In 63 fresh real Amellus imports,
-median initial import time was 92.79 ms versus 92.78 ms, including Core; cached imports were separate.
-Filesystem caches were not evicted, and background scheduling, thermals and antivirus were not
-controlled. This evidence neither predicts other hosts nor replaces the Icons acquisition matrix.
-
-CPU/GC/RSS observations and sampled allocation stacks were collected separately. Sampling with ten
-retained collection outputs is not an exhaustive allocation count and may omit collected temporaries;
-no general memory reduction is claimed. Release diagnostics at 0/1,000/10,000 definitions observed
-only the deliberately retained definition after collection, still recognised by Core. This is not a
-GC deadline, a leak-freedom proof or a timing-sensitive test requirement.
-
-Core retains 91 JavaScript modules and 91 declarations. Total emitted bytes rise from 121,257 to
-121,508, including the ownership JSDoc explaining safe private map publication. Exports, dependencies,
-acceptance and declaration signatures remain unchanged. The
-[shared supplemental protocol](../../tooling/performance/index.md#supplemental-measurements)
-owns calibration, raw observations, controls and resource interpretation. Reproduce the scale axes
-with `BenchmarkCatalogueFixtureFactory.createScaled()` and explicit ownership inputs, then freeze
-baseline calibration before `BenchmarkRunner.observe()` and matched comparisons. The fixed command
-below remains the historical twelve-scenario runner, not an automatic execution of this scale matrix.
-
-## Canonical-output recognition comparison
-
-On 15 October 2026, fresh isolated builds of source revisions
-[`8a8e9ad`](https://github.com/BlueLuscious/aster/commit/8a8e9ad5a1ddd85b1af2bfb48cc57aa2c45fbd1b)
-and [`966225e`](https://github.com/BlueLuscious/aster/commit/966225eea453507af5bf7fa16497ebfa8413ed9c)
-were compared using Node `24.10.0`, TypeScript `5.9.3`, ES2022 ESM and Windows x64 `10.0.26200`
-on an AMD Ryzen 9 6900HX with sixteen logical processors. These are source comparisons, not
-measurements of named npm releases. Desktop power and background activity were not lab-controlled.
-
-Five matched control/candidate report pairs alternated execution order without concurrent
-verification. Both revisions used the existing [shared sampling method](../../tooling/performance/index.md#structure),
-scenario sizes and prepared inputs. Every report contributed; all checksums matched. Values are
-medians of five report medians, with their minimum/maximum, in ns per public operation.
-
-| Workload | Control median (range) | Recognition median (range) |
-| --- | ---: | ---: |
-| Mutable icon | 9,894 (9,637-10,108) | 10,702 (10,486-10,799) |
-| Canonical icon | 8,915 (8,501-9,045) | 17 (17-28) |
-| Straight path | 8,399 (7,877-8,543) | 9,268 (8,754-9,621) |
-| Curved path | 12,110 (11,551-12,954) | 12,388 (12,176-12,928) |
-| Compound path | 13,192 (12,841-14,437) | 13,818 (13,278-15,868) |
-| Empty collection | 1,964 (1,719-1,990) | 1,993 (1,829-2,071) |
-| Single canonical member | 13,276 (11,905-13,614) | 2,433 (2,294-2,954) |
-| Complete mutable collection, 16 | 360,002 (343,634-369,009) | 372,607 (366,348-378,741) |
-| Complete canonical collection, 16 | 413,789 (392,290-435,376) | 13,755 (12,590-13,968) |
-| Mutable dictionary, 26 | 289,378 (257,480-300,091) | 265,521 (256,873-273,347) |
-| Canonical dictionary, 26 | 352,853 (344,358-360,892) | 16,849 (14,105-17,326) |
-| Canonical dictionary, 256 | 3,459,116 (3,403,800-4,557,340) | 170,816 (157,960-183,520) |
-
-Canonical acceptance improved by 99.81%, consistently across all five pairs, exceeding both 10%
-and twice its 6.10% control spread. The nearly empty recognised-reference loop is JIT-sensitive,
-not a universal lookup-time promise. Complete and representative canonical collections improved
-by 96.68% and 95.22%; collection roots, aliases, duplicate detection and submitted-member checks
-still execute. [SVG's comparison](../svg/quality-baseline.md#canonical-output-acceptance-comparison)
-owns end-to-end rendering results rather than inferring them from this acceptance-only loop.
-
-### Unknown-input costs
-
-The retained design includes an explicitly accepted trade-off: fresh mutable construction was
-8.17% slower, approximately 0.81 microseconds per operation, with a regression in every pair.
-Straight-path construction was 10.35% slower in this runner; a separate matched diagnostic gave
-1.46%, showing sensitivity to call shape rather than proving that the original cost disappeared.
-Complete mutable collection construction rose 3.50%, within its 7.05% control spread.
-
-Supplemental loops reused the existing SVG minimal-circle and 128-point fixtures, with genuinely
-independent Core packages and JSON-decoded inputs prepared before timing. They used the same
-runner, with 2,000/500 Core operations per sample for minimal/dense geometry. These call shapes
-are compared within their own rows, not subtracted from the main runner's timings:
-
-| Supplemental Core input | Minimal control -> recognition | Dense control -> recognition |
-| --- | ---: | ---: |
-| Foreign output | 6,143 -> 7,336 ns | 77,814 -> 78,427 ns |
-| Prepared JSON data | 6,205 -> 6,580 ns | 76,172 -> 83,329 ns |
-
-Small foreign acceptance regressed in every pair, by 19.42% at the report-median level; this is
-about 1.19 microseconds, not a special foreign-copy fee. Both kinds of unknown input still undergo
-complete construction plus membership lookup and final-output registration. JSON controls had
-overlapping report ranges and mixed paired directions. Neither freezing nor a matching identity
-grants recognition. [Preparing an external definition](definition/runtime/index.md#preparing-external-definitions)
-can amortise construction only when the caller retains a result recognised by its consumer.
-
-### Distribution, heap and first use
-
-Core retained 88 JavaScript modules and 88 declarations. Emitted bytes rose from 65,970/46,892 to
-67,083/47,178 respectively, including comments. Public fields, exports, dependencies and side-effect
-metadata did not change. The concrete responsibility is private weak output membership and
-reference-based collection shortcuts, not a second validation or caching framework.
-
-Sampled heap growth was mixed: the representative canonical dictionary fell from 56,801 to
-13,229 bytes/op, while the large canonical dictionary rose from 87,763 to 180,272 and the complete
-mutable collection from 2,045 to 15,288. End-of-sample deltas do not count exact allocations or
-retained live memory; no general memory-reduction claim follows. The registry's weak lifetime
-is a separate [construction invariant](definition/runtime/index.md#recognised-outputs).
-
-Three alternating batches of seven fresh processes per case separated import, first operation
-and complete process time, without warm-up. First construction batch medians were 1.148 -> 1.197 ms;
-complete process medians were 101.968 -> 101.402 ms. Initial use was not established as a material
-improvement or regression. This measures fresh process/module use, not an OS cold-filesystem cache.
-
-The main table is reproducible with the [Core command](#reproduction) on matched builds of both
-source revisions. Unknown-input and first-use controls supplement that command; they are not new
-report fields, scenarios or CI thresholds. Preserve their preparation/timing separation when
-repeating them rather than treating the main command as a foreign-copy or startup measurement.
-
-## Grouped collection construction
-
-On 16 October 2026, three matched control/candidate report pairs alternated execution order on
-Windows x64 with Node `24.10.0`, TypeScript `5.9.3` and ES2022 ESM. The control was source
-`92dffff`; the candidate used required treatments and grouped membership. Both retained private
-canonical-output recognition and the same synthetic geometry and member counts.
-
-| Construction workload | Flat control, schema five | Grouped candidate, schema six |
-| --- | ---: | ---: |
-| One canonical member | 2,372 ns/op | 3,384 ns/op |
-| Complete canonical collection, 16 members | 12,644 ns/op | 29,957 ns/op |
-| Authored canonical dictionary, 26 members | 17,075 ns/op | 36,412 ns/op |
-| Authored canonical dictionary, 256 members | 169,532 ns/op | 359,420 ns/op |
-
-These are medians across report medians, not equivalent structural workloads or an isolated
-recognition comparison. Grouped construction validates and freezes treatment dictionaries,
-checks family consistency and canonical property names, and derives flat member order. Recognised
-leaves still avoid geometry reconstruction. Reuse constructed collections rather than rebuilding
-them for every render; these observations do not measure property access or rendering cost.
-Desktop background activity was not lab-controlled, and timings remain development evidence,
-not CI thresholds or hardware-independent guarantees.
-
-## Typed collection scaling
-
-Three reports captured on 24 September 2026 with Node `24.10.0` on Windows x64 produced these
-medians across report medians:
-
-| Scenario | Median elapsed time |
+| Complete construction workload | Median |
 | --- | ---: |
-| Empty authored collection | 1,875 ns per operation |
-| Representative mutable dictionary, 26 members | 248,329 ns per operation |
-| Representative canonical dictionary, 26 members | 314,361 ns per operation |
-| Large canonical dictionary, 256 members | 3,311,084 ns per operation |
+| One collection, 100 canonical definitions | 0.157 ms |
+| One collection, 1,000 canonical definitions | 1.657 ms |
+| One collection, 10,000 canonical definitions | 22.517 ms |
+| 1,000 collections, ten shared canonical definitions each | 19.245 ms |
 
-The large dictionary has approximately 9.85 times as many members and took approximately 10.5
-times as long in this comparison. This is bounded near-linear construction evidence for these
-fixed inputs, not a hardware-independent complexity or timing guarantee. Geometry complexity,
-metadata and input canonicality also affect validation cost. Reading a constructed collection's
-`members` remains a data-property access and performs no reconstruction.
+The last row constructs 10,000 membership references to ten distinct definitions. Roots,
+metadata, groups and flat member lists are rebuilt in each operation. These figures do not
+measure repeated member reads, rendering or fresh module imports.
 
-## Historical construction comparison
+Supplemental fixtures cover 1/10/100/1,000/10,000 definitions; canonical, mutable, shallow,
+structured and JSON copies; genuinely separate compatible Core outputs; empty/populated
+collections; 1/3/10 treatments; shared/disjoint selections; geometry and metadata width; and
+submitted-member rejection. These are finite development strata, not a Cartesian product or
+public size limits. Reproduce the axes with `BenchmarkCatalogueFixtureFactory.createScaled()`
+and explicit ownership inputs under the
+[supplemental protocol](../../tooling/performance/index.md#supplemental-measurements).
+The standard command below runs only the fixed twelve-scenario matrix.
 
-An earlier canonical-retention comparison used three baseline and three candidate reports under
-equivalent Node, operating-system, architecture, hardware, scenario and workspace conditions.
-These historical inputs predate the current structured-path and typed-collection scenarios.
-The median across report medians was:
+## Reuse and Input Ownership
 
-| Scenario | Hardened baseline | Retained candidate | Difference |
-| --- | ---: | ---: | ---: |
-| `core.icon.define` | 11,118 ns per operation | 11,540 ns per operation | 3.8% slower |
-| `core.collection.define` | 222,683 ns per operation | 197,876 ns per operation | 11.1% faster |
+Keep the result of `Icon.define()` and share it across repeated use. The
+[definition runtime](definition/runtime/index.md#reusing-definitions) owns exact-reference
+recognition and optional preparation of external definitions. A frozen copy, decoded JSON or
+another Core copy's output still requires full acceptance; equal logical identity grants no trust.
+Recognising a definition does not remove option handling, serialisation or host work downstream.
 
-The retained candidate removed a redundant dense-array pass, combined collection normalisation
-with duplicate detection, and replaced independent freezing inspection with canonical graph
-comparison. It also corrected retention of frozen but non-canonical input. Checksums and
-unrelated observable construction semantics remained unchanged.
+Construct and retain a collection rather than rebuilding its membership for each render.
+Revalidating a complete collection checks containers and any submitted member list even when its
+leaves are recognised. The [collection runtime](collection/index.md#runtime) owns reference
+retention, graph equivalence, ordering and duplicate checks. Reading an existing `members`
+property performs no reconstruction. A pre-authored collection pays construction at first module
+evaluation, not on each later property access.
 
-Heap observations did not meet the improvement threshold, so no memory reduction is claimed.
-The correction reduced constant traversal work; it established no scaling claim or CI threshold.
-
-The unminified baseline contained 72 JavaScript modules totalling 48,345 bytes and 72 declaration
-files totalling 33,535 bytes. The dedicated matcher candidate contained 73 JavaScript modules
-totalling 50,270 bytes and 73 declaration files totalling 34,366 bytes. These are historical
-comparison values, not current distribution counts or compatibility promises.
-
-## Investigation baseline
-
-The following schema-version-two findings used the former product pilot and remain historical
-investigation evidence; they are not directly comparable with current schema-version-six reports.
-Three complete reports captured under the same Node, operating-system, architecture, hardware,
-scenario, and workspace conditions produced these medians across report medians:
-
-| Scenario | Median elapsed time |
-| --- | ---: |
-| `core.icon.define.mutable` | 11,703 ns per operation |
-| `core.icon.define.canonical` | 10,156 ns per operation |
-| `core.collection.define.empty` | 1,749 ns per operation |
-| `core.collection.define.single-canonical` | 18,231 ns per operation |
-| `core.collection.define.complete-mutable` | 159,086 ns per operation |
-| `core.collection.define.complete-canonical` | 203,794 ns per operation |
-
-Canonical icon input is not intrinsically slower than equivalent mutable input in this matrix.
-The complete canonical collection is approximately 28% slower than its equivalent mutable-member
-variant, which demonstrates measurable canonical-retention pressure but does not identify the
-responsible method by itself. CPU attribution must separate reconstruction, duplicate detection,
-graph comparison, and collection freezing before an implementation experiment is accepted.
-
-Runtime suites remain the correctness authority for malformed values, numeric boundaries,
-canonical ordering, isolation, deep freezing, and deterministic failures. A benchmark never
-replaces a conformance test.
-
-## Attributed investigation outcome
-
-CPU profiles from four material scenarios across three runs each separated common strict
-inspection from canonical-retention work. Complete mutable and canonical collections both spend
-material time validating exact fields, property descriptors, and dense arrays. Only the canonical
-scenario materially exercises `CanonicalIconMatcher`, where recursive graph comparison accounted
-for a median 20.66% of self-time. Duplicate detection, identity-key construction, and freezing did
-not present independent material self-time.
-
-The selected experiment changed only matcher traversal. Three fresh control and three candidate
-reports produced these medians across report medians:
-
-| Scenario | Recursive control | Iterative candidate | Difference |
-| --- | ---: | ---: | ---: |
-| `core.icon.define.mutable` | 11,923 ns | 11,419 ns | 4.23% faster |
-| `core.icon.define.canonical` | 9,996 ns | 10,122 ns | 1.26% slower |
-| `core.collection.define.empty` | 1,736 ns | 1,769 ns | 1.90% slower |
-| `core.collection.define.single-canonical` | 17,865 ns | 17,656 ns | 1.17% faster |
-| `core.collection.define.complete-mutable` | 159,200 ns | 160,777 ns | 0.99% slower |
-| `core.collection.define.complete-canonical` | 208,472 ns | 212,604 ns | 1.98% slower |
-
-The candidate preserved the complete runtime, type, and ABI conformance surface, but it failed the
-10% target improvement rule and made the target scenario slower. Its lower observed heap pressure
-did not justify retaining additional traversal state when elapsed time remained the declared
-target. The implementation was restored exactly, so these results document a rejected mechanism
-rather than a distribution change or performance promise.
+Resource probes remain separate from native timing. A live imported definition is strongly held
+by its module; Core's weak recognition does not itself keep discarded definitions alive. Sampled
+heap growth is not an allocation count, and a finite release experiment cannot prove leak freedom.
+[Shared resource methodology](../../tooling/performance/index.md#processes-and-resources)
+defines RSS, heap and GC observations. Complete-program costs belong to the
+[integrated reference](../../tooling/performance/index.md#integrated-consumer-observations).
 
 ## Reproduction
 
@@ -342,23 +111,9 @@ heap-pressure interpretation and environmental comparison limits.
 
 ## Acceptance rules
 
-Correctness takes precedence over performance. A correction may proceed without a speed-up, but it
-must preserve every unrelated conformance guarantee.
-
-A performance claim is accepted only when:
-
-- the target scenario improves by at least 10% in the median across three separate command runs on
-  both the baseline and candidate revisions;
-- no unrelated scenario regresses by more than 5% without an explicit accepted trade-off;
-- a memory claim meets the same 10% median rule and is described as heap pressure rather than exact
-  allocations;
-- diagnostics, ordering, isolation, and deep immutability remain unchanged unless the change is
-  itself an accepted correction;
-- emitted-size changes are reported and any increase has a concrete responsibility rather than a
-  cosmetic abstraction.
-
-A demonstrated pathological scaling case may justify work without meeting a percentage threshold,
-provided a deterministic fixture exposes the scaling behaviour and the correction removes it.
+[Shared comparison rules](../../tooling/performance/index.md#comparison-limits) govern sampling,
+claim thresholds, accepted trade-offs and distribution growth. Core correctness, diagnostics,
+ordering, isolation and deep immutability remain authoritative.
 
 ## Tooling boundary
 
