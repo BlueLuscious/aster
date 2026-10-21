@@ -258,6 +258,49 @@ leak-freedom claim. Units follow the
 [Node process resource API](https://nodejs.org/download/release/v24.10.0/docs/api/process.html#processresourceusage).
 Profile/resource instrumentation must remain separate from uninstrumented latency comparisons.
 
+## Repository Pipeline Observations
+
+Private repository work is distinct from installed-package execution. Importing or rendering an
+icon does not run repository verifiers, generation, compilation or development tests.
+
+One Windows x64 reference uses Node 24.10.0, V8 13.6, TypeScript 5.9.3 and pnpm 10.28.1. The real
+graph contains 547 source modules, 116 canonical documents and 26 icons with one collection.
+Additional producer fixtures cover 100 and 1,000 definitions, generated no-drift/stale checks and
+single-facade repair. A separate 10,000-file traversal contains small JSON files, not compiled
+definitions. The [Icons scaling limits](../../packages/icons/quality-baseline.md#native-scaling-reference)
+apply to full-package compiler stress.
+
+| Boundary | Local elapsed reference | Observation scope |
+| --- | --- | --- |
+| Architecture verification | 775 ms | Fresh direct Node command, including parser loading. |
+| Documentation verification | 202 ms | Fresh direct Node command with live local-target checks. |
+| Catalogue verification | 502 ms | Fresh direct Node command with unchanged generated outputs. |
+| Lexical containment | 1.70 ms | One batch of 1,000 pairs: 25% equal, 25% child and 50% outside/sibling. |
+| Root build | 7.53 s | Normal `pnpm run build`, including generation, cleaning and compilation. |
+| Tooling typecheck | 2.31 s | Normal `pnpm run check:tooling-types`. |
+| Tooling tests | 19.49 s | Normal `pnpm run test:tooling`, including subprocess fixtures. |
+| Offline local-archive installation | 1.66 s | Fresh consumer directory, warm shared store and lifecycle scripts disabled. |
+| Offline frozen no-op installation | 452 ms | Already installed consumer; lockfile bytes remain unchanged. |
+
+Command and containment references are medians of three worker medians, each retaining seven
+samples. Pipeline references use three complete observations and characterise current costs;
+they are not matched speed-up evidence. Direct Node timings exclude pnpm startup. Filesystem and
+package-store caches are warm or uncontrolled, not flushed; these are not cold-disk measurements.
+Functional tests contain no wall-clock pass thresholds.
+
+Separate instrumented 1,000-source runs locate roughly 61% of architecture verification and 88%
+of document verification in filesystem acquisition. These windows include asynchronous scheduling,
+not just physical disk service. Exact-data replay isolates syntax/policy and path work without
+introducing a production cache. Native timings vary substantially even between identical source
+controls: a faster path primitive does not establish a faster whole command. Resource observations
+retain post-GC heap and RSS separately; they do not establish allocation counts or leak freedom.
+
+Syntax coverage, live target checks, deterministic output and effect safety are not performance
+options. Their owners are [Architecture](../architecture/index.md),
+[Documentation](../documentation/index.md), [Catalogue](../catalogue/index.md) and
+[Workspace](../workspace/index.md). Release observations use pure digest/snapshot operations and
+injected fixtures, never privileged publication or real notifications.
+
 ## Comparison limits
 
 Timing and heap pressure vary with runtime revision, machine, power state, and background load.
