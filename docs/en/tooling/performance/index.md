@@ -301,6 +301,42 @@ options. Their owners are [Architecture](../architecture/index.md),
 [Workspace](../workspace/index.md). Release observations use pure digest/snapshot operations and
 injected fixtures, never privileged publication or real notifications.
 
+## Integrated Consumer Observations
+
+Supplemental complete-program recipes compose Core construction, Import adoption, explicit
+collections, provider discovery, queries, rendering, export/Review and output presentation. A
+finite 19-workflow matrix covers 0/1/10/100/1,000 definitions, one/ten treatments, shared/disjoint
+selections, one/eight providers and canonical/cloned/foreign-Core inputs. A separate point-heavy
+cohort holds 100 definitions at 128 points each. These experiments do not add an automatic extended
+matrix to the baseline commands or CI.
+
+The Windows toolchain reference above retains seven samples in each of three rotated matched
+rounds, complete-output fingerprints and explicit provider-call counts. Current medians below
+include full JSON consumption; they are not isolated command or per-icon times. Output bytes
+describe that complete JSON evidence projection, not package size or filesystem-write volume.
+
+| Complete prepared workflow | Selected definitions / membership references | Output bytes | Local elapsed reference |
+| --- | --- | ---: | ---: |
+| Discover/query 1,000 definitions; export ten shared selections; Review the first; present JSON/human output | 100 distinct / 1,000 references | 3,025,558 | 278 ms |
+| Same command sequence with ten disjoint selections | 1,000 distinct / 1,000 references | 2,950,894 | 305 ms |
+| Export and Review/HTML for 100 prepared 128-point definitions | 100 distinct / 100 references | 2,090,695 | 17.9 ms |
+| Construct those definitions and collection, then export and Review/HTML | 100 distinct / 100 references | 2,090,695 | 29.3 ms |
+
+The first two recipes list icons, glyphs and collections, search, show one glyph and icon, export
+each selected collection and review the first. The dense recipes run export and Review only;
+their lower totals do not rank geometries against different command sequences. Definition counts,
+selected distinct values, membership references and output volume are separate workload axes.
+Authoring/adoption recipes also include host-owned provider-snapshot preparation: do not interpret
+their complete elapsed time as an Aster construction or parser-only cost.
+
+Fresh public imports, cached reimports, module acquisition, filesystem publication and separately
+instrumented resource/lifetime probes have independent windows. Holding an output for validation
+is not the same workload as releasing it. Resource results include deliberately retained outputs
+and release stages, not allocation counts or a proof of leak freedom. Follow
+[Core's recognised-output contract](../../packages/core/definition/runtime/index.md#recognised-outputs)
+for reusable definitions and the [SVG resource reference](../../packages/svg/quality-baseline.md#scaled-rendering-and-private-intermediates)
+for point-heavy rendering. Package guides remain the authorities for acceptance and output safety.
+
 ## Comparison limits
 
 Timing and heap pressure vary with runtime revision, machine, power state, and background load.

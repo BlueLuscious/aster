@@ -91,13 +91,24 @@ change by +0.7-0.8%, against +1.6-3.7% for unchanged controls. Import adoption f
 changes by -3.1% with mixed paired directions, not a conclusive gain. These include full-result
 checksums, but not fresh CLI process startup, filesystem publication or browser/bundler execution.
 
-A separate three-round 128-point resource check observes median sampled RSS of 76.3 -> 79.0 MB,
-with overlapping ranges of 73.6-79.2 and 74.2-80.2 MB. Paired increases are 0.6-2.7 MB; their exact
-resident-memory mechanism is not isolated. Post-GC heap remains approximately 6.59 MB in both,
-while median observed GC events fall from 121 to 89 per 10,000 renders. Sampled allocation stacks
-also lose the point-flattening arrays, but a general memory reduction does not follow. Heap/GC
-observations and allocation samples are not exact allocation counts, peak-memory guarantees or
-evidence of leak freedom.
+A current three-round resource reference renders one 128-point definition 10,000 times without
+retaining each SVG. Sampled RSS spans 69.4-76.4 MiB, post-GC used heap is approximately 6.29 MiB
+and 83-89 GC events are observed. These are process observations, not a renderer memory budget.
+
+A separate diagnostic lifecycle samples fixed render chunks and deliberately retains 2,000 SVG
+strings. Used heap reaches approximately 9.1 MiB with those outputs retained and returns to 5.7 MiB
+after release; the prepared definition remains reachable. Repeated render/release windows do not
+demonstrate unbounded live-heap growth, but cannot establish leak freedom.
+
+V8's reported physical new-space size grows during that lifecycle. A diagnostic
+`--max-semi-space-size=1` startup intervention constrains
+its physical new space to 2 MiB instead of the observed 16 MiB default lifecycle size and
+reduces process RSS. This establishes sensitivity to that capacity setting, not an exact RSS accounting:
+code, external memory and reported physical heap do not fully attribute the resident residual.
+Identical-source controls also vary. The diagnostic flag is not a recommended production setting;
+neither lower allocation nor a universal memory gain follows. The
+[shared resource methodology](../../tooling/performance/index.md#processes-and-resources)
+owns sampling and peak-memory limits.
 
 The compiled SVG boundary remains 22 JavaScript modules and 22 declarations, growing by 84 bytes
 in total (43,059 -> 43,143 bytes). Declaration signatures, exports and dependency metadata remain
