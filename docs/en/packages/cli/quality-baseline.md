@@ -110,7 +110,8 @@ guarantees.
 The 22 October 2026 source emits 198 JavaScript modules (356,253 bytes) and 142 declarations
 (144,197 bytes): 340 files, totalling 500,450 unminified bytes. It retains ESM, one public root,
 the private `aster` binary, `sideEffects: false`, Core/Icons/SVG runtime dependencies and Node
-`>=24.10.0 <25`.
+`>=24.10.0 <25`. These byte totals use an LF-source Review stylesheet; Git's CRLF conversion
+changes emitted template-literal bytes, not its evaluated CSS or serialised HTML.
 Shell type-only JavaScript emission is a compiler detail, not justification for a new build format.
 [Packed conformance](quality.md#conformance) verifies the acquired payload and declarations.
 

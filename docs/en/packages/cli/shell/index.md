@@ -45,6 +45,22 @@ directory is not configured, follow [pnpm setup](https://pnpm.io/10.x/cli/setup)
 terminal before retrying. Installing or updating the global CLI does not install or update a
 project's CLI, and installing a project CLI does not replace the global one.
 
+### Source checkout
+
+The [workspace setup](../../../../../README.md#development) builds source packages after frozen
+installation. On a first install, the local `aster` shim can be absent because its built target
+does not exist yet; building afterwards does not create that missing shim. From the repository
+root after setup, invoke the built workspace entrypoint directly:
+
+```sh
+node packages/cli/dist/shell/aster.js list glyphs
+node packages/cli/dist/shell/aster.js version --location
+```
+
+This does not depend on shell executable lookup. To use `pnpm exec aster` instead, run
+`pnpm install --frozen-lockfile` again after building to create the workspace binary links, then
+verify that `--location` points inside this checkout. No global installation is required.
+
 ### Executable selection
 
 [pnpm exec](https://pnpm.io/10.x/cli/exec) adds the project's `node_modules/.bin` to command lookup;
