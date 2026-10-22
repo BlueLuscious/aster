@@ -15,7 +15,7 @@ export const cliCommandEvaluation = Object.freeze({
     /** @description Workspace-relative Icons package root. */
     icons: "packages/icons",
   }),
-  /** @description Representative built-in catalogue workflows measured before lazy migration. */
+  /** @description Representative built-in catalogue workflows with attributed module evaluation. */
   scenarios: Object.freeze({
     /** @description Icon-list discovery workflow. */
     list: Object.freeze({

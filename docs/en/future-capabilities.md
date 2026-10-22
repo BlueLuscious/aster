@@ -23,7 +23,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P1` | [Consolidate shared project rules in Garden.](#garden-project-rules-review) | Verify CLI output conformance, then review reusable policies before further artwork expansion. |
+| 1 | `P1` | [Consolidate shared project rules in Garden.](#garden-project-rules-review) | Review accepted repository policies before further artwork expansion. |
 | 2 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
 | 3 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
 | 4 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
@@ -46,8 +46,8 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 Importance: **P1 - High**
 
-After verification of the current [CLI presentation](packages/cli/shell/presentation/index.md), consolidate accepted
-project rules into one canonical Garden-owned rules document before further artwork expansion.
+Consolidate accepted project rules, including current [CLI presentation](packages/cli/shell/presentation/index.md),
+into one canonical Garden-owned rules document before further artwork expansion.
 Use repository instructions, maintained policies and confirmed decisions from Aster as evidence,
 not as an automatic ecosystem-wide mandate. Confirm ambiguous or undocumented decisions instead
 of inventing rules from memory or one implementation.

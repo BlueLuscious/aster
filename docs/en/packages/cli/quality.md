@@ -14,9 +14,9 @@ execution, and the [baseline](quality-baseline.md) retains measured findings.
 | Command runtime tests | Invocation and context rejection, immutable descriptors/results, explicit providers and sanitised exceptions. |
 | Catalogue runtime tests | Provider-scoped glyph derivation, ordering, combined filters, search, ambiguity, empty intersections, membership consistency and zero-load metadata queries. |
 | Export and Review tests | Complete deterministic plans, path collisions, contained SVG failures, static offline HTML and authored-text escaping. |
-| Executable tests | Grammar, human/JSON/raw-SVG modes, byte-exact file redirection of both streams at statuses 0/1/2, deferred-format rejection, output options and ownership-gated review replacement. |
+| Executable tests | Grammar, human/JSON/raw-SVG modes, byte-exact file redirection of both streams at statuses 0/1/2, unsupported-option rejection, output options and ownership-gated review replacement. |
 | Diagnostic presentation tests | Explicit lookup/provider/selection/member/path roles, labelled Details indentation, retained evidence order, control representation and immutable structured/JSON equivalence. |
-| Successful presentation tests | Vertical member/tag/membership/treatment sequences, nested indentation, absent/empty fields, dependency/location grouping, control-bearing data and unchanged JSON/raw SVG. |
+| Successful presentation tests | Vertical member/tag/membership/treatment sequences, nested indentation, absent/empty fields, dependency/location grouping, control-bearing data, structured JSON fidelity and raw SVG passthrough. |
 | Installed-version tests | Nearest-project selection, direct roots, divergent dependency copies, optional absence, location comparison and atomic post-startup failures. |
 | ABI and packed-consumer tests | Exact root/binary mapping, inaccessible implementation subpaths, strict engines, exact-optional diagnostic declaration checks, custom-provider ownership and independent host equivalence. |
 | Output-host tests | Portable confinement, exclusive staging, existing/interrupted targets, cleanup, guarded replacement and rollback. |

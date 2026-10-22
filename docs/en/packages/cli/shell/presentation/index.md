@@ -26,7 +26,7 @@ Expected human failures retain stable diagnostic codes and messages with the
 [evidence presentation](#diagnostic-evidence) below. JSON mode writes the same structured command
 result to stdout and writes nothing to stderr. Presentation returns
 complete strings before the entrypoint performs process writes, so it cannot alter command
-behaviour or partially emit a result. Exact framing, headings and statuses belong to
+behaviour or partially emit a result. Stream framing and statuses belong to
 [Shell](../index.md#presentation); presenters never acquire version evidence themselves.
 
 ## Successful Output
@@ -55,11 +55,11 @@ Glyphs:
 Exact glyph show uses `Glyph:`, `Catalogue:` and a `Variants:` sequence of concrete summaries.
 [Catalogue](../../catalogue/index.md#discovery-semantics) owns discovery and identity semantics.
 
-Product and named-package versions remain compact. Dependency roots are indented beneath their
+Product and named-package versions are compact. Dependency roots are indented beneath their
 source heading, with direct dependencies or `(none)` indented one further level. Separate root
-groups and requested CLI-location evidence by one blank line. Location comparison wording and
-opt-in acquisition are unchanged by presentation. Help retains its command, description and usage
-hierarchy. Export/Review retain truthful compact publication summaries; single-artefact Export
+groups and requested CLI-location evidence by one blank line. The shell owns opt-in location
+acquisition; presentation only formats the supplied evidence. Help uses its command, description
+and usage hierarchy. Export/Review retain truthful compact publication summaries; single-artefact Export
 returns raw SVG rather than an indented sequence. Presentation does not change SVG or review HTML.
 
 ## Human Data Representation
@@ -70,7 +70,9 @@ another output line. This applies to display names, help data, versions, locatio
 paths and diagnostic messages/details. Ordinary printable text, Unicode and Windows path
 separators remain unchanged; structural line breaks remain real line breaks.
 
-This is display representation, not domain validation or a general Unicode-spoofing defence.
+For example, a display name containing a real line break is shown as `"Camera\nOutline"`;
+an ordinary `Camera Outline` name is not quoted. This is display representation, not domain
+validation or a general Unicode-spoofing defence.
 Structured results and compact JSON retain the original data. Raw SVG and generated HTML are
 not passed through human text escaping. Output is independent of terminal width, TTY detection,
 ANSI support and redirection; presentation never acquires additional capabilities.

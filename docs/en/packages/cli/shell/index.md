@@ -199,9 +199,8 @@ never enters `AsterCommandInvocationType`. JSON mode writes exactly one compact 
 document followed by one newline to stdout for both success and expected failure. It writes
 nothing to stderr and contains no ANSI styling or human table formatting.
 
-The initial result model contains no warning channel. The shell does not invent one outside the
-host-neutral command result; a future warning presentation requires an accepted structured result
-contract first.
+The command-result model has no warning channel. The shell presents only the success or failure
+supplied by that host-neutral result.
 
 ## Exit Status
 
