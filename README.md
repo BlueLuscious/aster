@@ -43,6 +43,8 @@ pnpm install --frozen-lockfile
 pnpm run verify
 ```
 
+For CLI commands from this checkout, follow the [source invocation guide](docs/en/packages/cli/shell/index.md#source-checkout).
+
 [Repository tooling](docs/en/tooling/index.md) owns contributor commands and verification boundaries.
 
 ## Licence

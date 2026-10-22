@@ -387,8 +387,14 @@ test("keeps export ambiguity independent from provider registration order", asyn
     subject: "icon",
     identity: "testing/shared@outline",
   } as const;
-  const first = await AsterCommands.execute(invocation, createContext([beta, alpha]));
-  const second = await AsterCommands.execute(invocation, createContext([alpha, beta]));
+  const first = await AsterCommands.execute(
+    invocation,
+    createContext([beta, alpha]),
+  );
+  const second = await AsterCommands.execute(
+    invocation,
+    createContext([alpha, beta]),
+  );
   const exactFirst = await AsterCommands.execute(
     { ...invocation, catalogue: "beta" },
     createContext([alpha, beta]),
@@ -405,7 +411,12 @@ test("keeps export ambiguity independent from provider registration order", asyn
 
   if (!first.ok) {
     assert.equal(first.diagnostic.code, "ASTER-CLI-005");
-    assert.deepEqual(first.diagnostic.related, ["alpha", "beta"]);
+    assert.deepEqual(first.diagnostic.details, {
+      kind: "ambiguity",
+      subject: "icon",
+      identity: "testing/shared@outline",
+      catalogues: ["alpha", "beta"],
+    });
   }
 
   if (exactFirst.ok && exactFirst.payload.kind === "export") {
@@ -477,8 +488,14 @@ test("translates SVG failures without exposing target messages or partial artefa
   if (!result.accepted) {
     assert.equal(result.diagnostic.code, "ASTER-CLI-007");
     assert.equal(result.diagnostic.category, "render-failure");
-    assert.deepEqual(result.diagnostic.related, ["testing/zeta-invalid-definition@outline.svg"]);
-    assert.doesNotMatch(result.diagnostic.message, /XML 1\.0|definition\.nodes/u);
+    assert.deepEqual(result.diagnostic.details, {
+      kind: "export-render",
+      path: "testing/zeta-invalid-definition@outline.svg",
+    });
+    assert.doesNotMatch(
+      result.diagnostic.message,
+      /XML 1\.0|definition\.nodes/u,
+    );
     assert.equal("value" in result, false);
   }
 });
@@ -501,7 +518,10 @@ test("preflights path collisions before attempting SVG rendering", () => {
   if (!result.accepted) {
     assert.equal(result.diagnostic.code, "ASTER-CLI-008");
     assert.equal(result.diagnostic.category, "export-conflict");
-    assert.deepEqual(result.diagnostic.related, ["testing/collision@outline.svg"]);
+    assert.deepEqual(result.diagnostic.details, {
+      kind: "path-conflict",
+      path: "testing/collision@outline.svg",
+    });
   }
 });
 

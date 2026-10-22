@@ -269,7 +269,10 @@ test("rediscovers mutable membership evidence on repeated public commands withou
   );
   const source = {
     icons: [zeta, alpha],
-    collections: [collectionRecord(first, firstMembers), collectionRecord(second, secondMembers)],
+    collections: [
+      collectionRecord(first, firstMembers),
+      collectionRecord(second, secondMembers),
+    ],
   };
   let discoveries = 0;
   let definitionLoads = 0;
@@ -293,7 +296,8 @@ test("rediscovers mutable membership evidence on repeated public commands withou
     productName: "Aster",
     productVersion: "0.0.0",
   };
-  const list = () => AsterCommands.execute({ command: "list", subject: "icons" }, context);
+  const list = () =>
+    AsterCommands.execute({ command: "list", subject: "icons" }, context);
 
   async function expectFailure(message: string) {
     const result = await list();
@@ -302,29 +306,41 @@ test("rediscovers mutable membership evidence on repeated public commands withou
       category: "catalogue-unavailable",
       code: "ASTER-CLI-006",
       message,
-      related: ["testing"],
+      details: { kind: "catalogue", catalogue: "testing" },
     });
   }
 
   const initial = await list();
   assert.ok(initial.ok && initial.payload.kind === "icon-list");
-  assert.deepEqual(initial.payload.icons.map((icon) => icon.identity), [alpha.identity, zeta.identity]);
+  assert.deepEqual(
+    initial.payload.icons.map((icon) => icon.identity),
+    [alpha.identity, zeta.identity],
+  );
 
   zetaMemberships.push(first);
   alphaMemberships.push(first);
-  await expectFailure("icon testing/zeta@outline claims unavailable membership testing/zeta");
+  await expectFailure(
+    "icon testing/zeta@outline claims unavailable membership testing/zeta",
+  );
 
   firstMembers.push(zeta.identity, alpha.identity);
   const linked = await list();
   assert.ok(linked.ok && linked.payload.kind === "icon-list");
-  assert.deepEqual(linked.payload.icons.map((icon) => icon.memberships), [[first], [first]]);
+  assert.deepEqual(
+    linked.payload.icons.map((icon) => icon.memberships),
+    [[first], [first]],
+  );
 
   zetaMemberships.length = 0;
-  await expectFailure("icon testing/zeta@outline omits collection membership testing/zeta");
+  await expectFailure(
+    "icon testing/zeta@outline omits collection membership testing/zeta",
+  );
 
   zetaMemberships.push(first);
   source.icons.shift();
-  await expectFailure("collection testing/zeta contains unavailable icon testing/zeta@outline");
+  await expectFailure(
+    "collection testing/zeta contains unavailable icon testing/zeta@outline",
+  );
 
   source.icons.length = 0;
   source.collections.length = 0;
@@ -335,15 +351,27 @@ test("rediscovers mutable membership evidence on repeated public commands withou
   zetaMemberships.push(second);
   secondMembers.push(zeta.identity);
   source.icons.push(zeta, alpha);
-  source.collections.push(collectionRecord(first, firstMembers), collectionRecord(second, secondMembers));
+  source.collections.push(
+    collectionRecord(first, firstMembers),
+    collectionRecord(second, secondMembers),
+  );
   const shared = await list();
   assert.ok(shared.ok && shared.payload.kind === "icon-list");
   assert.deepEqual(
     shared.payload.icons.map((icon) => [icon.identity, icon.memberships]),
-    [[alpha.identity, [first]], [zeta.identity, [second, first]]],
+    [
+      [alpha.identity, [first]],
+      [zeta.identity, [second, first]],
+    ],
   );
-  assert.deepEqual(initial.payload.icons.map((icon) => icon.memberships), [[], []]);
-  assert.deepEqual(linked.payload.icons.map((icon) => icon.memberships), [[first], [first]]);
+  assert.deepEqual(
+    initial.payload.icons.map((icon) => icon.memberships),
+    [[], []],
+  );
+  assert.deepEqual(
+    linked.payload.icons.map((icon) => icon.memberships),
+    [[first], [first]],
+  );
   assert.equal(discoveries, 7);
   assert.equal(definitionLoads, 0);
 });

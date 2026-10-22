@@ -143,7 +143,12 @@ test("resolves exact glyphs with provider disambiguation and no namespace fallba
   );
   assert.ok(!ambiguous.ok);
   assert.equal(ambiguous.diagnostic.code, "ASTER-CLI-005");
-  assert.deepEqual(ambiguous.diagnostic.related, ["alpha", "beta"]);
+  assert.deepEqual(ambiguous.diagnostic.details, {
+    kind: "ambiguity",
+    subject: "glyph",
+    identity: "aster/camera",
+    catalogues: ["alpha", "beta"],
+  });
   const selected = await AsterCommands.execute(
     {
       command: "show",
@@ -399,7 +404,7 @@ test("presents multiple treatments and empty glyph sequences without inventing f
   assert.ok(listed.ok && shown.ok && empty.ok);
   assert.equal(
     presenter.success(listed),
-    "Glyphs:\n  camera [sample] (2 variants: 2-tone, outline)",
+    "Glyphs:\n  camera [sample] (2 variants)\n    Variants:\n      2-tone\n      outline",
   );
   assert.equal(
     presenter.success(shown),
@@ -407,8 +412,12 @@ test("presents multiple treatments and empty glyph sequences without inventing f
       "Glyph: camera",
       "Catalogue: sample",
       "Variants:",
-      "  camera@2-tone [sample] - camera 2-tone (collections: none)",
-      "  camera@outline [sample] - camera outline (collections: none)",
+      "  camera@2-tone [sample] - camera 2-tone",
+      "    Collections:",
+      "      (none)",
+      "  camera@outline [sample] - camera outline",
+      "    Collections:",
+      "      (none)",
     ].join("\n"),
   );
   assert.equal(presenter.success(empty), "Glyphs:\n  (none)");

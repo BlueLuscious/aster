@@ -1,4 +1,5 @@
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
+import { asterCommandSubjects } from "../../command/constants/aster-command-subjects.constant.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
 import type { CatalogueDiscoveryIconRecord } from "../contracts/index.js";
@@ -26,7 +27,12 @@ export class CatalogueQueryScope {
    * @param identity - Optional exact provider identity.
    * @returns Selected immutable catalogue sequence or structured rejection.
    */
-  selectCatalogues<Catalogue extends Readonly<{ identity: string }>>(
+  selectCatalogues<
+    Catalogue extends Readonly<{
+      /** @description Accepted provider identity used for exact scope matching. */
+      identity: string;
+    }>,
+  >(
     catalogues: readonly Catalogue[],
     identity: string | undefined,
   ): TAcceptanceResult<readonly Catalogue[]> {
@@ -34,17 +40,23 @@ export class CatalogueQueryScope {
       return Object.freeze({ accepted: true, value: catalogues });
     }
 
-    const catalogue = catalogues.find((candidate) => candidate.identity === identity);
+    const catalogue = catalogues.find(
+      (candidate) => candidate.identity === identity,
+    );
 
     if (catalogue === undefined) {
       return Object.freeze({
         accepted: false,
-        diagnostic: this.#diagnostics.create(
-          commandDiagnosticSchema.categories.notFound,
-          commandDiagnosticSchema.codes.notFound,
-          `catalogue ${identity} was not found`,
-          [identity],
-        ),
+        diagnostic: this.#diagnostics.create({
+          category: commandDiagnosticSchema.categories.notFound,
+          code: commandDiagnosticSchema.codes.notFound,
+          message: `catalogue ${identity} was not found`,
+          details: {
+            kind: commandDiagnosticSchema.details.lookup,
+            subject: commandDiagnosticSchema.catalogueSubject,
+            identity,
+          },
+        }),
       });
     }
 
@@ -74,12 +86,16 @@ export class CatalogueQueryScope {
     if (!exists) {
       return Object.freeze({
         accepted: false,
-        diagnostic: this.#diagnostics.create(
-          commandDiagnosticSchema.categories.notFound,
-          commandDiagnosticSchema.codes.notFound,
-          `collection ${identity} was not found`,
-          [identity],
-        ),
+        diagnostic: this.#diagnostics.create({
+          category: commandDiagnosticSchema.categories.notFound,
+          code: commandDiagnosticSchema.codes.notFound,
+          message: `collection ${identity} was not found`,
+          details: {
+            kind: commandDiagnosticSchema.details.lookup,
+            subject: asterCommandSubjects.show.collection,
+            identity,
+          },
+        }),
       });
     }
 
@@ -96,19 +112,27 @@ export class CatalogueQueryScope {
     catalogues: readonly TAcceptedCatalogueDiscovery[],
     identity: string | undefined,
   ): TAcceptanceResult<string | undefined> {
-    if (identity === undefined || catalogues.some((catalogue) =>
-      catalogue.icons.some((record) => this.matchesGlyph(record, identity)))) {
+    if (
+      identity === undefined ||
+      catalogues.some((catalogue) =>
+        catalogue.icons.some((record) => this.matchesGlyph(record, identity)),
+      )
+    ) {
       return Object.freeze({ accepted: true, value: identity });
     }
 
     return Object.freeze({
       accepted: false,
-      diagnostic: this.#diagnostics.create(
-        commandDiagnosticSchema.categories.notFound,
-        commandDiagnosticSchema.codes.notFound,
-        `glyph ${identity} was not found`,
-        [identity],
-      ),
+      diagnostic: this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.notFound,
+        code: commandDiagnosticSchema.codes.notFound,
+        message: `glyph ${identity} was not found`,
+        details: {
+          kind: commandDiagnosticSchema.details.lookup,
+          subject: asterCommandSubjects.show.glyph,
+          identity,
+        },
+      }),
     });
   }
 

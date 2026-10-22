@@ -26,11 +26,11 @@ export class ShellDiagnosticFactory {
     return Object.freeze({
       ok: false,
       ...(error.command === undefined ? {} : { command: error.command }),
-      diagnostic: this.#diagnostics.create(
-        commandDiagnosticSchema.categories.usage,
-        commandDiagnosticSchema.codes.usage,
-        error.message,
-      ),
+      diagnostic: this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.usage,
+        code: commandDiagnosticSchema.codes.usage,
+        message: error.message,
+      }),
     });
   }
 
@@ -50,12 +50,16 @@ export class ShellDiagnosticFactory {
       command,
       diagnostic: this.#diagnostics.create(
         conflict
-          ? commandDiagnosticSchema.categories.outputConflict
-          : commandDiagnosticSchema.categories.outputFailure,
-        conflict
-          ? commandDiagnosticSchema.codes.outputConflict
-          : commandDiagnosticSchema.codes.outputFailure,
-        error.message,
+          ? {
+              category: commandDiagnosticSchema.categories.outputConflict,
+              code: commandDiagnosticSchema.codes.outputConflict,
+              message: error.message,
+            }
+          : {
+              category: commandDiagnosticSchema.categories.outputFailure,
+              code: commandDiagnosticSchema.codes.outputFailure,
+              message: error.message,
+            },
       ),
     });
   }
@@ -65,15 +69,17 @@ export class ShellDiagnosticFactory {
    * @param error - Project or executed-CLI package-version acquisition failure.
    * @returns Immutable version failure without native filesystem details.
    */
-  packageVersion(error: ProjectPackageVersionError | CliPackageVersionError): AsterCommandResultType {
+  packageVersion(
+    error: ProjectPackageVersionError | CliPackageVersionError,
+  ): AsterCommandResultType {
     return Object.freeze({
       ok: false,
       command: asterCommandNames.version,
-      diagnostic: this.#diagnostics.create(
-        commandDiagnosticSchema.categories.versionUnavailable,
-        commandDiagnosticSchema.codes.versionUnavailable,
-        error.message,
-      ),
+      diagnostic: this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.versionUnavailable,
+        code: commandDiagnosticSchema.codes.versionUnavailable,
+        message: error.message,
+      }),
     });
   }
 
@@ -84,11 +90,11 @@ export class ShellDiagnosticFactory {
   unexpected(): AsterCommandResultType {
     return Object.freeze({
       ok: false,
-      diagnostic: this.#diagnostics.create(
-        commandDiagnosticSchema.categories.executionFailure,
-        commandDiagnosticSchema.codes.executionFailure,
-        "standalone shell failed unexpectedly",
-      ),
+      diagnostic: this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.executionFailure,
+        code: commandDiagnosticSchema.codes.executionFailure,
+        message: "standalone shell failed unexpectedly",
+      }),
     });
   }
 }

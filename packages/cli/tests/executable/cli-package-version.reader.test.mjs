@@ -188,9 +188,9 @@ test("reports the executed CLI's complete Aster dependency view on request", asy
 
   assert.equal(all.stdout, [
     "Executed CLI dependencies:",
-    `@luscious-garden/aster-cli ${versions.cli}`,
-    `  @luscious-garden/aster-core ${versions.core}`,
-    `  @luscious-garden/aster-icons ${versions.icons}`,
+    `  @luscious-garden/aster-cli ${versions.cli}`,
+    `    @luscious-garden/aster-core ${versions.core}`,
+    `    @luscious-garden/aster-icons ${versions.icons}`,
     "",
   ].join("\n"));
   assert.equal(all.stderr, "");

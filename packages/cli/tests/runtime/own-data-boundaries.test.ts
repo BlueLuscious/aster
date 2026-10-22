@@ -192,29 +192,62 @@ test("keeps absent optional fields inert throughout complete command and present
     identity: { name: "camera", variant: "outline" },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [{ kind: "circle", cx: 12, cy: 12, radius: 5 }],
-    metadata: { displayName: "Camera", rtl: "preserve", deprecated: false, presentation: { defaults: {}, overrides: [] } },
+    metadata: {
+      displayName: "Camera",
+      rtl: "preserve",
+      deprecated: false,
+      presentation: { defaults: {}, overrides: [] },
+    },
   });
   const collection = Collection.define({
-    identity: { name: "sample" }, icons: { camera: { outline: icon } }, metadata: { displayName: "Sample" },
+    identity: { name: "sample" },
+    icons: { camera: { outline: icon } },
+    metadata: { displayName: "Sample" },
   });
   const context = {
-    productName: "Aster", productVersion: "0.0.0",
-    catalogues: [{
-      identity: "fixture",
-      async discover() {
-        return {
-          icons: [{ identity: icon.identity, metadata: { displayName: "Camera", rtl: "preserve" as const, deprecated: false }, memberships: [collection.identity] }],
-          collections: [{ identity: collection.identity, metadata: collection.metadata, memberIdentities: [icon.identity] }],
-        };
+    productName: "Aster",
+    productVersion: "0.0.0",
+    catalogues: [
+      {
+        identity: "fixture",
+        async discover() {
+          return {
+            icons: [
+              {
+                identity: icon.identity,
+                metadata: {
+                  displayName: "Camera",
+                  rtl: "preserve" as const,
+                  deprecated: false,
+                },
+                memberships: [collection.identity],
+              },
+            ],
+            collections: [
+              {
+                identity: collection.identity,
+                metadata: collection.metadata,
+                memberIdentities: [icon.identity],
+              },
+            ],
+          };
+        },
+        async loadIcon() {
+          return icon;
+        },
+        async loadCollection() {
+          return collection;
+        },
       },
-      async loadIcon() { return icon; },
-      async loadCollection() { return collection; },
-    }],
+    ],
   };
   const invocations: readonly AsterCommandInvocationType[] = [
-    { command: "help" }, { command: "version" },
-    { command: "list", subject: "icons" }, { command: "list", subject: "collections" },
-    { command: "list", subject: "glyphs" }, { command: "show", subject: "glyph", identity: "camera" },
+    { command: "help" },
+    { command: "version" },
+    { command: "list", subject: "icons" },
+    { command: "list", subject: "collections" },
+    { command: "list", subject: "glyphs" },
+    { command: "show", subject: "glyph", identity: "camera" },
     { command: "show", subject: "icon", identity: "camera@outline" },
     { command: "show", subject: "collection", identity: "sample" },
     { command: "search", query: "camera" },
@@ -230,7 +263,10 @@ test("keeps absent optional fields inert throughout complete command and present
     return {
       result,
       human: presenter.present(result, false),
-      html: result.ok && result.payload.kind === "review" ? documents.serialise(result.payload.plan) : undefined,
+      html:
+        result.ok && result.payload.kind === "review"
+          ? documents.serialise(result.payload.plan)
+          : undefined,
     };
   };
   const expected = [];
@@ -238,11 +274,39 @@ test("keeps absent optional fields inert throughout complete command and present
     expected.push(await execute(invocation));
   }
   for (const field of [
-    "namespace", "variant", "catalogue", "collection", "glyph", "tags", "searchTerms", "replacedBy",
-    "licence", "attribution", "description", "size", "title", "label", "colour", "fill", "stroke",
-    "strokeWidth", "direction", "scope", "dependencies", "location", "packageVersions",
-    "packageDependencies", "cliLocation", "options", "commandName", "output", "replace", "related",
-    "defaultSize", "minimumSize",
+    "namespace",
+    "variant",
+    "catalogue",
+    "collection",
+    "glyph",
+    "tags",
+    "searchTerms",
+    "replacedBy",
+    "licence",
+    "attribution",
+    "description",
+    "size",
+    "title",
+    "label",
+    "colour",
+    "fill",
+    "stroke",
+    "strokeWidth",
+    "direction",
+    "scope",
+    "dependencies",
+    "location",
+    "packageVersions",
+    "packageDependencies",
+    "cliLocation",
+    "options",
+    "commandName",
+    "output",
+    "replace",
+    "details",
+    "member",
+    "defaultSize",
+    "minimumSize",
   ]) {
     const previous = Object.getOwnPropertyDescriptor(Object.prototype, field);
     let reads = 0;
@@ -250,7 +314,10 @@ test("keeps absent optional fields inert throughout complete command and present
     try {
       Object.defineProperty(Object.prototype, field, {
         configurable: true,
-        get() { reads += 1; throw new Error(`Unexpected inherited ${field}`); },
+        get() {
+          reads += 1;
+          throw new Error(`Unexpected inherited ${field}`);
+        },
       });
       for (const invocation of invocations) {
         actual.push(await execute(invocation));
@@ -292,6 +359,64 @@ test("exposes member identities and rejects the former collection provider field
     assert.equal(rejected.ok, false);
     if (!rejected.ok) {
       assert.equal(rejected.diagnostic.category, "catalogue-unavailable");
+    }
+  }
+});
+
+test("does not acquire an inherited member while propagating a collection-wide definition failure", async () => {
+  const collection = Collection.define({
+    identity: { name: "empty" },
+    icons: {},
+    metadata: { displayName: "Actual" },
+  });
+  const provider: CatalogueProvider = {
+    identity: "fixture",
+    async discover() {
+      return {
+        icons: [],
+        collections: [
+          {
+            identity: collection.identity,
+            metadata: { displayName: "Different" },
+            memberIdentities: [],
+          },
+        ],
+      };
+    },
+    async loadIcon() {
+      return undefined;
+    },
+    async loadCollection() {
+      return collection;
+    },
+  };
+  const previous = Object.getOwnPropertyDescriptor(Object.prototype, "member");
+  let reads = 0;
+  try {
+    Object.defineProperty(Object.prototype, "member", {
+      configurable: true,
+      get() {
+        reads += 1;
+        throw new Error("Unexpected inherited member");
+      },
+    });
+    const result = await AsterCommands.execute(
+      { command: "export", subject: "collection", identity: "empty" },
+      { catalogues: [provider], productName: "Aster", productVersion: "0.0.0" },
+    );
+    assert.ok(!result.ok);
+    assert.equal(result.diagnostic.code, "ASTER-CLI-006");
+    assert.deepEqual(result.diagnostic.details, {
+      kind: "definition",
+      catalogue: "fixture",
+      selection: { kind: "collection", identity: "empty" },
+    });
+    assert.equal(reads, 0);
+  } finally {
+    if (previous === undefined) {
+      Reflect.deleteProperty(Object.prototype, "member");
+    } else {
+      Object.defineProperty(Object.prototype, "member", previous);
     }
   }
 });

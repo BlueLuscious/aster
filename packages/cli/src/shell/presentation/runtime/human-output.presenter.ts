@@ -1,13 +1,20 @@
 import { asterCommandPayloadKinds } from "../../../command/constants/aster-command-payload-kinds.constant.js";
 import { asterPackageVersionSources } from "../../../command/constants/aster-package-version-sources.constant.js";
 import { asterCliLocationStatuses } from "../../../command/constants/aster-cli-location-statuses.constant.js";
+import { commandDiagnosticSchema } from "../../../command/constants/command-diagnostic-schema.constant.js";
+import { asterCommandSubjects } from "../../../command/constants/aster-command-subjects.constant.js";
 import type { AsterCliLocationEvidence } from "../../../command/contracts/aster-cli-location-evidence.contract.js";
-import type { AsterCommandResultType } from "../../../command/types/index.js";
+import type {
+  AsterCommandDiagnosticDetailsType,
+  AsterCommandResultType,
+  AsterCommandShowSubjectType,
+} from "../../../command/types/index.js";
 import type { TExportOutputPublication } from "../../output/types/internal/export-output-publication.type.js";
 import type { TReviewOutputPublication } from "../../output/types/internal/review-output-publication.type.js";
 import { CatalogueHumanOutputPresenter } from "./catalogue-human-output.presenter.js";
 import { ExportHumanOutputPresenter } from "./export-human-output.presenter.js";
 import { HelpHumanOutputPresenter } from "./help-human-output.presenter.js";
+import { HumanTextFormatter } from "./human-text.formatter.js";
 import { ReviewHumanOutputPresenter } from "./review-human-output.presenter.js";
 
 /**
@@ -33,6 +40,11 @@ export class HumanOutputPresenter {
    * @description Review-plan presenter.
    */
   readonly #review = new ReviewHumanOutputPresenter();
+
+  /**
+   * @description Shared deterministic sequence and human-data formatter.
+   */
+  readonly #text = new HumanTextFormatter();
 
   /**
    * @description Renders truthful destination evidence after output publication handling.
@@ -67,9 +79,10 @@ export class HumanOutputPresenter {
     >,
   ): string {
     const payload = result.payload;
-    const location = Object.hasOwn(payload, "location") && "location" in payload
-      ? payload.location
-      : undefined;
+    const location =
+      Object.hasOwn(payload, "location") && "location" in payload
+        ? payload.location
+        : undefined;
 
     switch (payload.kind) {
       case asterCommandPayloadKinds.export:
@@ -89,13 +102,16 @@ export class HumanOutputPresenter {
         return this.#help.present(payload.descriptors);
       case asterCommandPayloadKinds.version:
         return [
-          `${payload.productName} ${payload.productVersion}`,
+          `${this.#text.value(payload.productName)} ${this.#text.value(payload.productVersion)}`,
           ...this.#locationLines(location),
         ].join("\n");
       case asterCommandPayloadKinds.packageVersions:
-        if (!Object.hasOwn(payload, "aggregate") || payload.aggregate !== true) {
+        if (
+          !Object.hasOwn(payload, "aggregate") ||
+          payload.aggregate !== true
+        ) {
           return [
-            `${payload.packages[0]?.name} ${payload.packages[0]?.version}`,
+            `${this.#text.value(String(payload.packages[0]?.name))} ${this.#text.value(String(payload.packages[0]?.version))}`,
             ...this.#locationLines(location),
           ].join("\n");
         }
@@ -104,7 +120,10 @@ export class HumanOutputPresenter {
           "Project Aster packages:",
           ...(payload.packages.length === 0
             ? ["  (none)"]
-            : payload.packages.map(({ name, version }) => `  ${name} ${version}`)),
+            : payload.packages.map(
+                ({ name, version }) =>
+                  `  ${this.#text.value(name)} ${this.#text.value(version)}`,
+              )),
         ].join("\n");
       case asterCommandPayloadKinds.packageDependencies:
         return [
@@ -114,13 +133,16 @@ export class HumanOutputPresenter {
           ...(payload.groups.length === 0
             ? ["  (none)"]
             : payload.groups.flatMap(({ root, dependencies }, index) => [
-              ...(index === 0 ? [] : [""]),
-              `${root.name} ${root.version}`,
-              ...(dependencies.length === 0
-                ? ["  (no Aster dependencies)"]
-                : dependencies.map(({ name, version }) => `  ${name} ${version}`)),
-            ])),
-          ...(location === undefined ? [] : ["", ...this.#locationLines(location)]),
+                ...(index === 0 ? [] : [""]),
+                `  ${this.#text.value(root.name)} ${this.#text.value(root.version)}`,
+                ...(dependencies.length === 0
+                  ? ["    (none)"]
+                  : dependencies.map(
+                      ({ name, version }) =>
+                        `    ${this.#text.value(name)} ${this.#text.value(version)}`,
+                    )),
+              ])),
+          ...this.#locationLines(location),
         ].join("\n");
     }
   }
@@ -128,26 +150,35 @@ export class HumanOutputPresenter {
   /**
    * @description Presents opt-in executed-CLI module and project comparison evidence.
    * @param location - Explicitly requested location evidence, when present.
-   * @returns Human location lines without a trailing newline.
+   * @returns Human location lines preceded by one blank separator, without a trailing newline.
    */
-  #locationLines(location: AsterCliLocationEvidence | undefined): readonly string[] {
+  #locationLines(
+    location: AsterCliLocationEvidence | undefined,
+  ): readonly string[] {
     if (location === undefined) {
       return [];
     }
 
     const comparison = {
       [asterCliLocationStatuses.same]: "same installation as the project CLI",
-      [asterCliLocationStatuses.different]: "different installation from the project CLI",
+      [asterCliLocationStatuses.different]:
+        "different installation from the project CLI",
       [asterCliLocationStatuses.absent]: "no directly installed project CLI",
       [asterCliLocationStatuses.noProject]: "no current project",
       [asterCliLocationStatuses.unavailable]: "comparison unavailable",
     }[location.projectCli];
 
-    return [`CLI module: ${location.entrypoint}`, `Project CLI: ${comparison}`];
+    return [
+      "",
+      `CLI module: ${this.#text.value(location.entrypoint)}`,
+      `Project CLI: ${comparison}`,
+    ];
   }
 
   /**
    * @description Renders one failed command result without a final newline.
+   * @remarks Supporting facts are labelled under Details using their explicit roles, never message
+   * wording. Controls are escaped without altering the structured diagnostic or its evidence order.
    * @param result - Structured immutable failed command result.
    * @returns Plain deterministic diagnostic text.
    */
@@ -160,12 +191,87 @@ export class HumanOutputPresenter {
       }
     >,
   ): string {
-    const related = Object.hasOwn(result.diagnostic, "related") ? result.diagnostic.related : undefined;
+    const diagnostic = result.diagnostic;
+    const details = Object.hasOwn(diagnostic, "details")
+      ? diagnostic.details
+      : undefined;
     return [
-      `[${result.diagnostic.code}] ${result.diagnostic.message}`,
-      ...(related === undefined || related.length === 0
+      `[${diagnostic.code}] ${this.#text.value(diagnostic.message)}`,
+      ...(details === undefined
         ? []
-        : [`Related: ${related.join(", ")}`]),
+        : [this.#text.sequence("Details", this.#detailLines(details))]),
     ].join("\n");
+  }
+
+  /**
+   * @description Presents accepted supporting facts using the labels owned by their semantic roles.
+   * @param details - Immutable producer-supplied facts with an explicit role discriminator.
+   * @returns Ordered detail lines before indentation beneath the Details heading.
+   */
+  #detailLines(details: AsterCommandDiagnosticDetailsType): readonly string[] {
+    switch (details.kind) {
+      case commandDiagnosticSchema.details.catalogues:
+        return this.#catalogueLines(details.catalogues);
+      case commandDiagnosticSchema.details.catalogue:
+        return [`Catalogue: ${this.#text.value(details.catalogue)}`];
+      case commandDiagnosticSchema.details.lookup:
+        return [
+          `${this.#subjectLabel(details.subject)}: ${this.#text.value(details.identity)}`,
+        ];
+      case commandDiagnosticSchema.details.ambiguity:
+        return [
+          `${this.#subjectLabel(details.subject)}: ${this.#text.value(details.identity)}`,
+          ...this.#catalogueLines(details.catalogues),
+        ];
+      case commandDiagnosticSchema.details.definition:
+        return [
+          `Catalogue: ${this.#text.value(details.catalogue)}`,
+          `${this.#subjectLabel(details.selection.kind)}: ${this.#text.value(details.selection.identity)}`,
+          ...(Object.hasOwn(details, "member") && details.member !== undefined
+            ? [`Member icon: ${this.#text.value(details.member)}`]
+            : []),
+        ];
+      case commandDiagnosticSchema.details.exportRender:
+      case commandDiagnosticSchema.details.pathConflict:
+        return [`Artefact path: ${this.#text.value(details.path)}`];
+      case commandDiagnosticSchema.details.reviewRender:
+        return [`Icon: ${this.#text.value(details.icon)}`];
+    }
+  }
+
+  /**
+   * @description Presents provider identities without deduplicating or sorting their evidence.
+   * @param catalogues - Ordered provider identities belonging to one diagnostic.
+   * @returns Heading and nested provider lines, with an explicit empty marker when appropriate.
+   */
+  #catalogueLines(catalogues: readonly string[]): readonly string[] {
+    return [
+      "Catalogues:",
+      ...(catalogues.length === 0
+        ? ["  (none)"]
+        : catalogues.map((catalogue) => `  ${this.#text.value(catalogue)}`)),
+    ];
+  }
+
+  /**
+   * @description Selects the human label for an explicitly identified lookup or selection family.
+   * @param subject - Accepted semantic subject, independent of a diagnostic's prose.
+   * @returns Stable singular human label.
+   */
+  #subjectLabel(
+    subject:
+      | AsterCommandShowSubjectType
+      | typeof commandDiagnosticSchema.catalogueSubject,
+  ): string {
+    switch (subject) {
+      case commandDiagnosticSchema.catalogueSubject:
+        return "Catalogue";
+      case asterCommandSubjects.show.icon:
+        return "Icon";
+      case asterCommandSubjects.show.glyph:
+        return "Glyph";
+      case asterCommandSubjects.show.collection:
+        return "Collection";
+    }
   }
 }

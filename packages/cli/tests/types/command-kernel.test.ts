@@ -222,6 +222,11 @@ const diagnostic: AsterCommandDiagnosticType = {
   code: "ASTER-CLI-004",
   category: "not-found",
   message: "icon was not found",
+  details: {
+    kind: "lookup",
+    subject: "icon",
+    identity: "testing/missing@outline",
+  },
 };
 
 const failure: AsterCommandResultType = {

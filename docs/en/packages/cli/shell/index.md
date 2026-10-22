@@ -45,6 +45,22 @@ directory is not configured, follow [pnpm setup](https://pnpm.io/10.x/cli/setup)
 terminal before retrying. Installing or updating the global CLI does not install or update a
 project's CLI, and installing a project CLI does not replace the global one.
 
+### Source checkout
+
+The [workspace setup](../../../../../README.md#development) builds source packages after frozen
+installation. On a first install, the local `aster` shim can be absent because its built target
+does not exist yet; building afterwards does not create that missing shim. From the repository
+root after setup, invoke the built workspace entrypoint directly:
+
+```sh
+node packages/cli/dist/shell/aster.js list glyphs
+node packages/cli/dist/shell/aster.js version --location
+```
+
+This does not depend on shell executable lookup. To use `pnpm exec aster` instead, run
+`pnpm install --frozen-lockfile` again after building to create the workspace binary links, then
+verify that `--location` points inside this checkout. No global installation is required.
+
 ### Executable selection
 
 [pnpm exec](https://pnpm.io/10.x/cli/exec) adds the project's `node_modules/.bin` to command lookup;
@@ -135,11 +151,11 @@ An aggregate human result keeps separate roots rather than flattening their depe
 
 ```text
 Project Aster package dependencies:
-@luscious-garden/aster-core 0.1.0
-  (no Aster dependencies)
-
-@luscious-garden/aster-icons 0.1.0
   @luscious-garden/aster-core 0.1.0
+    (none)
+
+  @luscious-garden/aster-icons 0.1.0
+    @luscious-garden/aster-core 0.1.0
 ```
 
 For example, these commands inspect different installations when an external CLI runs inside a
@@ -183,7 +199,10 @@ presentation and publication never inspect or enumerate definition modules.
 
 Human output is plain deterministic text with no terminal-width or mandatory ANSI behaviour.
 Successful human output is written to stdout. Expected human failures are written to stderr with
-their stable diagnostic code and any related values.
+their stable diagnostic code and explanation. [Shell presentation](presentation/index.md)
+owns successful-response layout and visible control representation;
+[diagnostic evidence](presentation/index.md#diagnostic-evidence) defines labelled `Details:` for the
+[structured diagnostic facts](../command/index.md#diagnostic-details), without mutating those data.
 
 Successful export publication writes only a committed destination and artefact-count summary. An
 empty exported collection writes an explicit non-publication summary because no output root is
@@ -196,9 +215,8 @@ never enters `AsterCommandInvocationType`. JSON mode writes exactly one compact 
 document followed by one newline to stdout for both success and expected failure. It writes
 nothing to stderr and contains no ANSI styling or human table formatting.
 
-The initial result model contains no warning channel. The shell does not invent one outside the
-host-neutral command result; a future warning presentation requires an accepted structured result
-contract first.
+The command-result model has no warning channel. The shell presents only the success or failure
+supplied by that host-neutral result.
 
 ## Exit Status
 

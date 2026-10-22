@@ -242,12 +242,15 @@ export class CatalogueDiscoveryRecordNormaliser {
   ): TAcceptanceResult<Value> {
     return Object.freeze({
       accepted: false,
-      diagnostic: this.#diagnostics.create(
-        commandDiagnosticSchema.categories.catalogueUnavailable,
-        commandDiagnosticSchema.codes.catalogueUnavailable,
+      diagnostic: this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.catalogueUnavailable,
+        code: commandDiagnosticSchema.codes.catalogueUnavailable,
         message,
-        [providerIdentity],
-      ),
+        details: {
+          kind: commandDiagnosticSchema.details.catalogue,
+          catalogue: providerIdentity,
+        },
+      }),
     });
   }
 
@@ -264,12 +267,15 @@ export class CatalogueDiscoveryRecordNormaliser {
   ): TAcceptanceResult<Value> {
     return Object.freeze({
       accepted: false,
-      diagnostic: this.#diagnostics.create(
-        commandDiagnosticSchema.categories.catalogueConflict,
-        commandDiagnosticSchema.codes.catalogueConflict,
+      diagnostic: this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.catalogueConflict,
+        code: commandDiagnosticSchema.codes.catalogueConflict,
         message,
-        [providerIdentity],
-      ),
+        details: {
+          kind: commandDiagnosticSchema.details.catalogue,
+          catalogue: providerIdentity,
+        },
+      }),
     });
   }
 }

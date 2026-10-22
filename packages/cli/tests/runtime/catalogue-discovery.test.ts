@@ -498,7 +498,12 @@ test("reports cross-provider ambiguity and supports exact provider filtering", a
 
   if (!ambiguous.ok) {
     assert.equal(ambiguous.diagnostic.code, "ASTER-CLI-005");
-    assert.deepEqual(ambiguous.diagnostic.related, ["alpha", "beta"]);
+    assert.deepEqual(ambiguous.diagnostic.details, {
+      kind: "ambiguity",
+      subject: "icon",
+      identity: "testing/shared@outline",
+      catalogues: ["alpha", "beta"],
+    });
   }
 
   if (exact.ok && exact.payload.kind === "icon-show") {

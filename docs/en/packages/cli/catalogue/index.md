@@ -107,29 +107,22 @@ available only on a complete definition.
 
 Glyph-only inputs to concrete show, Export or Review are usage failures, not implicit Outline
 selections. Invalid identities are `ASTER-CLI-001`; valid missing identities/treatments are `004`,
-and exact cross-provider ambiguity is `005`. Discovery duplicates and provider failures retain
-their existing conflict/unavailable diagnostics. All these metadata queries invoke no definition
-loader; [Shell](../shell/index.md#command-grammar) owns argv and presentation syntax.
+and exact cross-provider ambiguity is `005`. [Command diagnostics](../command/index.md#diagnostic-details)
+define supporting facts for lookup, ambiguity, conflict and unavailable-provider failures. These
+metadata queries invoke no definition loader; [Shell](../shell/index.md#command-grammar) owns argv
+and presentation syntax.
 
 <a id="explicit-treatment-migration"></a>
 
 ## Explicit identity selection
 
-Choose the subject according to the operation's intent:
-
-```sh
-aster show glyph aster/camera
-aster show icon aster/camera@outline
-```
-
-The first discovers available treatments; the second selects one concrete definition. Export and
-Review also require complete icon identities. [Icons](../../icons/glyphs/index.md) owns module
-paths, which use `/` rather than the CLI identity's `@` treatment separator.
+Use the subject and exact identity described by [discovery semantics](#discovery-semantics).
+[Icons](../../icons/glyphs/index.md) owns module paths, which use `/` rather than the CLI
+identity's `@` treatment separator.
 
 Provider authors must supply explicit treatments in icon records, exact loader identities,
 collection member identities and replacement metadata. Keep discovery metadata geometry-free;
-glyph results are derived from it and do not require another provider capability. Version,
-dependency and CLI-location queries keep their existing local source semantics.
+glyph results are derived from it and do not require another provider capability.
 The [source and registry boundary](../../../index.md#source-and-published-versions) explains
 availability; [versioned release notes](../releases/index.md) own changes and migrations.
 

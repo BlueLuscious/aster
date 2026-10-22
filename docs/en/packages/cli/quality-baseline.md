@@ -88,7 +88,7 @@ matter; these figures are not pure command-domain or storage-only costs.
 
 ## Lazy-integration evidence
 
-A 20 October 2026 Windows x64 observation using Node `24.10.0`, TypeScript `5.9.3` and native
+A 22 October 2026 Windows x64 observation using Node `24.10.0`, TypeScript `5.9.3` and native
 ES2022 ESM retains these sets across five fresh processes per workflow:
 
 | Workflow | Stable result | CLI modules | Icons modules |
@@ -107,9 +107,11 @@ guarantees.
 
 ## Distribution snapshot
 
-The same source emits 196 JavaScript modules (338,763 bytes) and 140 declarations (132,796 bytes):
-336 files, totalling 471,559 unminified bytes. It retains ESM, one public root, the private `aster`
-binary, `sideEffects: false`, Core/Icons/SVG runtime dependencies and Node `>=24.10.0 <25`.
+The 22 October 2026 source emits 198 JavaScript modules (356,253 bytes) and 142 declarations
+(144,197 bytes): 340 files, totalling 500,450 unminified bytes. It retains ESM, one public root,
+the private `aster` binary, `sideEffects: false`, Core/Icons/SVG runtime dependencies and Node
+`>=24.10.0 <25`. These byte totals use an LF-source Review stylesheet; Git's CRLF conversion
+changes emitted template-literal bytes, not its evaluated CSS or serialised HTML.
 Shell type-only JavaScript emission is a compiler detail, not justification for a new build format.
 [Packed conformance](quality.md#conformance) verifies the acquired payload and declarations.
 
