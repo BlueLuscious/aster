@@ -10,7 +10,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, relative, resolve } from "node:path";
+import { basename, join, relative, resolve } from "node:path";
 import process from "node:process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -402,7 +402,7 @@ test("renders standalone options and one collection as a JSON export plan", () =
 });
 
 test("delegates accepted presentation overrides to icon policy", () => {
-  const execution = run([
+  const args = [
     "export",
     "icon",
     representativeIdentity,
@@ -412,12 +412,29 @@ test("delegates accepted presentation overrides to icon policy", () => {
     "currentColor",
     "--stroke-width",
     "2",
-  ]);
+  ];
+  const execution = run(args);
+  const json = run([...args, "--json"]);
 
   assert.equal(execution.status, 1);
   assert.equal(execution.stdout, "");
-  assert.match(execution.stderr, /^\[ASTER-CLI-007\]/u);
+  const message = `icon ${representativePath} could not be rendered as SVG`;
+  assert.equal(
+    execution.stderr,
+    `[ASTER-CLI-007] ${message}\nDetails:\n  Artefact path: ${representativePath}\n`,
+  );
   assert.doesNotMatch(execution.stderr, /unknown option|requires a value/u);
+  assert.equal(json.status, 1);
+  assert.equal(json.stderr, "");
+  const failure = JSON.parse(json.stdout);
+  assert.equal(failure.ok, false);
+  assert.deepEqual(failure.diagnostic, {
+    category: "render-failure",
+    code: "ASTER-CLI-007",
+    message,
+    details: { kind: "export-render", path: representativePath },
+  });
+  assert.equal(json.stdout, `${JSON.stringify(failure)}\n`);
 });
 
 test("publishes icon and collection plans relative to the explicit process directory", () => {
@@ -658,6 +675,98 @@ test("writes raw icon SVG through ordinary stdout redirection", () => {
       // The descriptor was already closed after a successful spawn.
     }
     rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("preserves exact stdout, stderr and status when redirecting successful and failed responses", () => {
+  const temporaryRoot = resolve(tmpdir());
+  const root = mkdtempSync(
+    join(temporaryRoot, "aster-cli-response-redirection-"),
+  );
+  const owner = basename(root);
+  assert.equal(relative(temporaryRoot, root), owner);
+  writeFileSync(join(root, ".owner"), owner);
+  const cases = [
+    {
+      args: ["show", "collection", representativeCollectionIdentity],
+      status: 0,
+    },
+    {
+      args: ["show", "collection", representativeCollectionIdentity, "--json"],
+      status: 0,
+    },
+    { args: ["show", "icon", "testing/not-present@outline"], status: 1 },
+    {
+      args: ["show", "icon", "testing/not-present@outline", "--json"],
+      status: 1,
+    },
+    { args: ["unknown"], status: 2 },
+    { args: ["unknown", "--json"], status: 2 },
+  ];
+  try {
+    for (const [index, entry] of cases.entries()) {
+      const expected = run(entry.args, { cwd: root });
+      assert.equal(expected.status, entry.status);
+      const stdoutPath = join(root, `${index}.stdout`);
+      const stderrPath = join(root, `${index}.stderr`);
+      const stdout = openSync(stdoutPath, "w");
+      const stderr = openSync(stderrPath, "w");
+      let actual;
+      try {
+        actual = run(entry.args, {
+          cwd: root,
+          stdio: ["ignore", stdout, stderr],
+        });
+      } finally {
+        closeSync(stdout);
+        closeSync(stderr);
+      }
+      assert.ifError(actual.error);
+      assert.equal(actual.signal, null);
+      assert.equal(actual.status, entry.status);
+      const out = readFileSync(stdoutPath, "utf8");
+      const err = readFileSync(stderrPath, "utf8");
+      assert.equal(out, expected.stdout);
+      assert.equal(err, expected.stderr);
+      const text = out || err;
+      assert.equal(text.endsWith("\n"), true);
+      assert.equal(text.endsWith("\n\n"), false);
+      assert.doesNotMatch(text, /\u001b|\r|\t/u);
+      if (entry.args.includes("--json")) {
+        assert.equal(err, "");
+        assert.equal(out, `${JSON.stringify(JSON.parse(out))}\n`);
+      }
+    }
+  } finally {
+    assert.equal(relative(temporaryRoot, root), owner);
+    assert.equal(readFileSync(join(root, ".owner"), "utf8"), owner);
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects deferred JSON format flags with compact usage failures", () => {
+  for (const args of [
+    ["list", "icons", "--pretty", "--json"],
+    ["list", "icons", "--indent", "2", "--json"],
+    [
+      "--json",
+      "--pretty",
+      "show",
+      "collection",
+      representativeCollectionIdentity,
+    ],
+  ]) {
+    const result = run(args);
+    assert.equal(result.status, 2);
+    assert.equal(result.stderr, "");
+    const failure = JSON.parse(result.stdout);
+    assert.equal(failure.ok, false);
+    assert.equal(failure.diagnostic.code, "ASTER-CLI-001");
+    assert.equal(failure.diagnostic.category, "usage");
+    assert.equal(Object.hasOwn(failure, "payload"), false);
+    assert.equal(Object.hasOwn(failure.diagnostic, "details"), false);
+    assert.equal(Object.hasOwn(failure.diagnostic, "related"), false);
+    assert.equal(result.stdout, `${JSON.stringify(failure)}\n`);
   }
 });
 

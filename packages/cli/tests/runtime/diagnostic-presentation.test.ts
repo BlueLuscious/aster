@@ -3,6 +3,7 @@ import test from "node:test";
 import { AsterCommands } from "../../src/index.js";
 import type { CatalogueProvider } from "../../src/catalogue/contracts/index.js";
 import { CommandDiagnosticFactory } from "../../src/command/runtime/command-diagnostic.factory.js";
+import { commandDiagnosticSchema } from "../../src/command/constants/command-diagnostic-schema.constant.js";
 import { CommandResultFactory } from "../../src/command/runtime/command-result.factory.js";
 import type {
   AsterCommandDiagnosticType,
@@ -372,6 +373,14 @@ test("uses structured roles regardless of headline wording and preserves all eig
       ["  Artefact path: example/camera@outline.svg"],
     ],
   ];
+  assert.deepEqual(
+    new Set(
+      cases.flatMap(([input]) =>
+        input.details === undefined ? [] : [input.details.kind],
+      ),
+    ),
+    new Set(Object.values(commandDiagnosticSchema.details)),
+  );
   for (const [input, lines] of cases) {
     const diagnostic = new CommandDiagnosticFactory().create(input);
     assert.notEqual(diagnostic, input);
