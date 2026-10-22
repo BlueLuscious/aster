@@ -135,11 +135,11 @@ An aggregate human result keeps separate roots rather than flattening their depe
 
 ```text
 Project Aster package dependencies:
-@luscious-garden/aster-core 0.1.0
-  (no Aster dependencies)
-
-@luscious-garden/aster-icons 0.1.0
   @luscious-garden/aster-core 0.1.0
+    (none)
+
+  @luscious-garden/aster-icons 0.1.0
+    @luscious-garden/aster-core 0.1.0
 ```
 
 For example, these commands inspect different installations when an external CLI runs inside a
@@ -183,8 +183,9 @@ presentation and publication never inspect or enumerate definition modules.
 
 Human output is plain deterministic text with no terminal-width or mandatory ANSI behaviour.
 Successful human output is written to stdout. Expected human failures are written to stderr with
-their stable diagnostic code and explanation. [Diagnostic evidence](presentation/index.md#diagnostic-evidence)
-defines labelled `Details:` and safe human representation of the
+their stable diagnostic code and explanation. [Shell presentation](presentation/index.md)
+owns successful-response layout and visible control representation;
+[diagnostic evidence](presentation/index.md#diagnostic-evidence) defines labelled `Details:` for the
 [structured diagnostic facts](../command/index.md#diagnostic-details), without mutating those data.
 
 Successful export publication writes only a committed destination and artefact-count summary. An

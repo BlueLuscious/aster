@@ -320,7 +320,7 @@ test("groups direct project roots without flattening or inheriting development d
     ],
   });
   assert.deepEqual(await shell.execute(["version", "core", "--deps"]), {
-    stdout: `Project Aster package dependencies:\n${names.core} 0.1.1\n  (no Aster dependencies)\n`,
+    stdout: `Project Aster package dependencies:\n  ${names.core} 0.1.1\n    (none)\n`,
     stderr: "", exitCode: 0,
   });
   const svg = await shell.execute(["version", "svg", "--deps", "--json"]);

@@ -169,6 +169,24 @@ test("exposes version and review help through the standalone parser", () => {
   }
 });
 
+test("prints every discovered collection member on its own line without changing compact JSON", () => {
+  const args = ["show", "collection", representativeCollectionIdentity];
+  const human = run(args);
+  const json = run([...args, "--json"]);
+  assert.equal(human.status, 0);
+  assert.equal(human.stderr, "");
+  assert.equal(json.status, 0);
+  assert.equal(json.stderr, "");
+  const result = JSON.parse(json.stdout);
+  const identities = result.payload.collection.memberIdentities.map((identity) =>
+    `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}@${identity.variant}`,
+  );
+  assert.equal(human.stdout.slice(human.stdout.indexOf("Icons:\n")), [
+    "Icons:", ...identities.map((identity) => `  ${identity}`), "",
+  ].join("\n"));
+  assert.equal(json.stdout, `${JSON.stringify(result)}\n`);
+});
+
 test("discovers glyph families and explicit treatments through human and JSON executable output", () => {
   const glyphIdentity = representativeIdentity.split("@")[0];
   const listed = run(["list", "glyphs"]);
@@ -325,7 +343,7 @@ test("renders list, search, show, and version as deterministic human text", () =
     new RegExp(`^Icon: ${representativeIdentity}\\nCatalogue: aster`, "u"),
   );
   assert.ok(
-    shown.stdout.includes(`Collections: ${representativeMemberships.join(", ")}\n`),
+    shown.stdout.includes(`Collections:\n${representativeMemberships.map((identity) => `  ${identity}`).join("\n")}\n`),
   );
   assert.equal(version.stdout, `Aster ${packageVersion}\n`);
 

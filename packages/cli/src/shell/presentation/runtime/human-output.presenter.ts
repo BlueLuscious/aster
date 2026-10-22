@@ -79,9 +79,10 @@ export class HumanOutputPresenter {
     >,
   ): string {
     const payload = result.payload;
-    const location = Object.hasOwn(payload, "location") && "location" in payload
-      ? payload.location
-      : undefined;
+    const location =
+      Object.hasOwn(payload, "location") && "location" in payload
+        ? payload.location
+        : undefined;
 
     switch (payload.kind) {
       case asterCommandPayloadKinds.export:
@@ -101,13 +102,16 @@ export class HumanOutputPresenter {
         return this.#help.present(payload.descriptors);
       case asterCommandPayloadKinds.version:
         return [
-          `${payload.productName} ${payload.productVersion}`,
+          `${this.#text.value(payload.productName)} ${this.#text.value(payload.productVersion)}`,
           ...this.#locationLines(location),
         ].join("\n");
       case asterCommandPayloadKinds.packageVersions:
-        if (!Object.hasOwn(payload, "aggregate") || payload.aggregate !== true) {
+        if (
+          !Object.hasOwn(payload, "aggregate") ||
+          payload.aggregate !== true
+        ) {
           return [
-            `${payload.packages[0]?.name} ${payload.packages[0]?.version}`,
+            `${this.#text.value(String(payload.packages[0]?.name))} ${this.#text.value(String(payload.packages[0]?.version))}`,
             ...this.#locationLines(location),
           ].join("\n");
         }
@@ -116,7 +120,10 @@ export class HumanOutputPresenter {
           "Project Aster packages:",
           ...(payload.packages.length === 0
             ? ["  (none)"]
-            : payload.packages.map(({ name, version }) => `  ${name} ${version}`)),
+            : payload.packages.map(
+                ({ name, version }) =>
+                  `  ${this.#text.value(name)} ${this.#text.value(version)}`,
+              )),
         ].join("\n");
       case asterCommandPayloadKinds.packageDependencies:
         return [
@@ -126,13 +133,16 @@ export class HumanOutputPresenter {
           ...(payload.groups.length === 0
             ? ["  (none)"]
             : payload.groups.flatMap(({ root, dependencies }, index) => [
-              ...(index === 0 ? [] : [""]),
-              `${root.name} ${root.version}`,
-              ...(dependencies.length === 0
-                ? ["  (no Aster dependencies)"]
-                : dependencies.map(({ name, version }) => `  ${name} ${version}`)),
-            ])),
-          ...(location === undefined ? [] : ["", ...this.#locationLines(location)]),
+                ...(index === 0 ? [] : [""]),
+                `  ${this.#text.value(root.name)} ${this.#text.value(root.version)}`,
+                ...(dependencies.length === 0
+                  ? ["    (none)"]
+                  : dependencies.map(
+                      ({ name, version }) =>
+                        `    ${this.#text.value(name)} ${this.#text.value(version)}`,
+                    )),
+              ])),
+          ...this.#locationLines(location),
         ].join("\n");
     }
   }
@@ -140,22 +150,29 @@ export class HumanOutputPresenter {
   /**
    * @description Presents opt-in executed-CLI module and project comparison evidence.
    * @param location - Explicitly requested location evidence, when present.
-   * @returns Human location lines without a trailing newline.
+   * @returns Human location lines preceded by one blank separator, without a trailing newline.
    */
-  #locationLines(location: AsterCliLocationEvidence | undefined): readonly string[] {
+  #locationLines(
+    location: AsterCliLocationEvidence | undefined,
+  ): readonly string[] {
     if (location === undefined) {
       return [];
     }
 
     const comparison = {
       [asterCliLocationStatuses.same]: "same installation as the project CLI",
-      [asterCliLocationStatuses.different]: "different installation from the project CLI",
+      [asterCliLocationStatuses.different]:
+        "different installation from the project CLI",
       [asterCliLocationStatuses.absent]: "no directly installed project CLI",
       [asterCliLocationStatuses.noProject]: "no current project",
       [asterCliLocationStatuses.unavailable]: "comparison unavailable",
     }[location.projectCli];
 
-    return [`CLI module: ${location.entrypoint}`, `Project CLI: ${comparison}`];
+    return [
+      "",
+      `CLI module: ${this.#text.value(location.entrypoint)}`,
+      `Project CLI: ${comparison}`,
+    ];
   }
 
   /**

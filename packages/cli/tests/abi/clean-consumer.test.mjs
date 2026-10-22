@@ -1158,14 +1158,14 @@ test("keeps a packed external CLI separate from independent project roots and ne
     assertSuccessfulProcess(human, "present independent project dependency groups");
     assert.equal(human.stdout, [
       "Project Aster package dependencies:",
-      `${names.core} 0.2.4`,
-      "  (no Aster dependencies)",
+      `  ${names.core} 0.2.4`,
+      "    (none)",
       "",
-      `${names.icons} 0.3.1`,
-      `  ${names.core} 0.3.3`,
+      `  ${names.icons} 0.3.1`,
+      `    ${names.core} 0.3.3`,
       "",
-      `${names.svg} 0.4.5`,
-      `  ${names.core} 0.4.4`,
+      `  ${names.svg} 0.4.5`,
+      `    ${names.core} 0.4.4`,
       "",
     ].join("\n"));
 

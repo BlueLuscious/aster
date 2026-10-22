@@ -16,6 +16,7 @@ execution, and the [baseline](quality-baseline.md) retains measured findings.
 | Export and Review tests | Complete deterministic plans, path collisions, contained SVG failures, static offline HTML and authored-text escaping. |
 | Executable tests | Grammar, human/JSON/raw-SVG modes, streams, status, output options and ownership-gated review replacement. |
 | Diagnostic presentation tests | Explicit lookup/provider/selection/member/path roles, labelled Details indentation, retained evidence order, control representation and immutable structured/JSON equivalence. |
+| Successful presentation tests | Vertical member/tag/membership/treatment sequences, nested indentation, absent/empty fields, dependency/location grouping, control-bearing data and unchanged JSON/raw SVG. |
 | Installed-version tests | Nearest-project selection, direct roots, divergent dependency copies, optional absence, location comparison and atomic post-startup failures. |
 | ABI and packed-consumer tests | Exact root/binary mapping, inaccessible implementation subpaths, strict engines, declaration/dependency direction and independent host equivalence. |
 | Output-host tests | Portable confinement, exclusive staging, existing/interrupted targets, cleanup, guarded replacement and rollback. |

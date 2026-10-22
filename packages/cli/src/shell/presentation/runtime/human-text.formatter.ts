@@ -30,7 +30,7 @@ export class HumanTextFormatter {
   }
 
   /**
-   * @description Adds a stable heading and explicit empty-state text to result lines.
+   * @description Adds a stable heading and indents every line of each entry, including nested sequences.
    * @param heading - Human-readable result-family heading.
    * @param entries - Canonically ordered result lines.
    * @returns Deterministic multi-line sequence text.
@@ -40,8 +40,17 @@ export class HumanTextFormatter {
       `${heading}:`,
       ...(entries.length === 0
         ? ["  (none)"]
-        : entries.map((entry) => `  ${entry}`)),
+        : entries.map((entry) => this.indent(entry))),
     ].join("\n");
+  }
+
+  /**
+   * @description Indents a complete human-text entry by one two-space ownership level.
+   * @param entry - Structural text whose embedded lines retain their relative indentation.
+   * @returns Entry with one indentation level added to every line.
+   */
+  indent(entry: string): string {
+    return `  ${entry.replaceAll("\n", "\n  ")}`;
   }
 
   /**
