@@ -56,15 +56,9 @@ contains no render calls, not an accepted empty definition. Canonical, copied, J
 foreign-Core inputs retain their different admission work. The standard command below runs the
 fixed nine scenarios, not this entire matrix.
 
-SVG delegates definition acceptance to Core. Reuse a retained recognised definition for repeated
-renders; [Core's guide](../core/definition/runtime/index.md#reusing-definitions) owns the exact
-conditions. Unknown values still undergo complete validation and construction. Every render
-checks options and serialises a complete string; there is no SVG-owned definition or result cache.
-
-Private option snapshots retain own-data checks and a null prototype. Point sequences compose
-each coordinate pair directly, preserving numeric order and output. Both paths still create
-temporary values; neither is allocation-free. [Render Runtime](render/runtime/index.md) owns
-their admission and serialisation responsibilities. CLI planning, HTML, process startup and
+Every measured render includes the acceptance and complete serialisation described by
+[Render Runtime](render/runtime/index.md). [Core's reuse guide](../core/definition/runtime/index.md#reusing-definitions)
+explains how definition preparation affects that work. CLI planning, HTML, process startup and
 filesystem publication are separate operations; see the
 [integrated reference](../../tooling/performance/index.md#integrated-consumer-observations).
 
@@ -75,11 +69,10 @@ retaining each SVG. Sampled RSS spans 69.4-76.4 MiB, post-GC used heap is approx
 and 83-89 GC events are observed. These describe the whole process, not a renderer memory budget.
 
 A separate lifecycle retains 2,000 SVG strings: used heap reaches approximately 9.1 MiB and returns
-to 5.7 MiB after release, while the prepared definition remains reachable. RSS also includes V8
-capacity and other resident memory; it is not the size of live SVG strings. Not every resident
-page is attributed, and these finite observations establish neither exact allocations nor leak
-freedom. [Shared resource methodology](../../tooling/performance/index.md#processes-and-resources)
-owns measurement definitions and bounds. Resource instrumentation is not part of native latency.
+to 5.7 MiB after release, while the prepared definition remains reachable. The
+[shared resource methodology](../../tooling/performance/index.md#processes-and-resources)
+owns interpretation limits; these whole-process observations do not attribute every resident page
+to SVG strings. Resource instrumentation is separate from native latency.
 
 ## Reproduction
 
@@ -101,10 +94,9 @@ limits.
 claim thresholds and accepted trade-offs. Runtime, type, ABI, architecture, documentation and
 workflow conformance remain authoritative.
 
-The measured package implementation must run unchanged: no benchmark-only caches, registries,
-pretrusted inputs, mutable memoisation, output streaming, weakened validation or private package
-imports. Core's production recognition policy is part of the measured public operation, not a
-fixture-owned bypass. Raw reports and CPU profiles are disposable evidence and are not committed.
+Core's production recognition policy is part of the measured public operation, not a fixture-owned
+bypass. The [shared methodology](../../tooling/performance/index.md#processes-and-resources) owns
+resource/profile separation and disposable evidence.
 
 ## Tooling boundary
 

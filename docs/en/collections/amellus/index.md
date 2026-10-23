@@ -40,8 +40,7 @@ admission; unreviewed catalogue growth is not a maturity goal.
 
 The canonical collection module's explicit dictionary is the membership authority.
 [Icons Collections](../../packages/icons/collections/index.md) owns imports, aliases, ordered
-members and runtime costs. The collection identity is not an icon namespace: member definitions
-keep independent identities and can exist outside Amellus or join other collections.
+members and runtime costs.
 
 ## Provenance and acceptance evidence
 
@@ -75,17 +74,9 @@ workflow. The accepted review covered `16px`, `24px`, `32px` and `48px`; light, 
 transparent backgrounds; neutral and contrasting foregrounds; construction grids and view-box
 bounds.
 
-Reconstruct the review surface from a built workspace:
-
-```sh
-pnpm run build
-pnpm exec aster review collection amellus --output ./aster-review --replace
-```
-
-The generated directory is disposable evidence outside source control.
-[CLI Review](../../packages/cli/review/index.md) owns its composition and files; these written
-findings retain the human acceptance record, not a promise that regenerating HTML repeats that
-review automatically.
+The [CLI Review workflow](../../packages/cli/review/index.md#static-lifecycle) describes regeneration
+of technical evidence for the collection identity `amellus`. The findings below retain Amellus's
+human acceptance record; generating a new document does not repeat that curatorial review.
 
 The review accepted:
 

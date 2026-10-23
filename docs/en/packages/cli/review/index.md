@@ -94,7 +94,12 @@ Review is intentionally a finite command. It acquires accepted provider state, p
 publishes it when requested, and terminates without retaining a watcher, network server, browser
 process, or source compiler. `--watch` is therefore not part of the accepted grammar.
 
+Use [Shell installation and invocation](../shell/index.md#installation-and-invocation) for setup
+and executable selection, including the alternatives for a source checkout.
+
 The supported authoring loop is consequently explicit: build the catalogue package, run
 `aster review ... --replace`, and refresh or reopen the resulting `index.html`. The static workflow
 remains the complete review contract; [Future Capabilities](../../../future-capabilities.md)
 records the evidence required before persistent hosting is reconsidered.
+
+Generated review output is disposable technical evidence and should remain outside source control.
