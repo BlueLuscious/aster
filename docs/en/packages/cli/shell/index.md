@@ -49,17 +49,33 @@ project's CLI, and installing a project CLI does not replace the global one.
 
 The [workspace setup](../../../../../README.md#development) builds source packages after frozen
 installation. On a first install, the local `aster` shim can be absent because its built target
-does not exist yet; building afterwards does not create that missing shim. From the repository
-root after setup, invoke the built workspace entrypoint directly:
+does not exist yet; building afterwards does not create that missing shim. After setup, choose
+one of the following invocations from the repository root.
+
+**Direct built entrypoint**
+
+Use this form to select the checkout's CLI file explicitly, including when no local `aster` shim
+exists:
 
 ```sh
 node packages/cli/dist/shell/aster.js list glyphs
 node packages/cli/dist/shell/aster.js version --location
 ```
 
-This does not depend on shell executable lookup. To use `pnpm exec aster` instead, run
-`pnpm install --frozen-lockfile` again after building to create the workspace binary links, then
-verify that `--location` points inside this checkout. No global installation is required.
+**Workspace binary through pnpm**
+
+Use this form when the workspace binary is linked. If the link is missing, run
+`pnpm install --frozen-lockfile` again after building to create it. Verify that `--location`
+points inside this checkout before running other commands:
+
+```sh
+pnpm exec aster version --location
+pnpm exec aster list glyphs
+```
+
+Neither form requires a global installation. Both use built output, so rebuild after source
+changes. An independently installed CLI can resolve a different Icons catalogue; use this
+checkout's CLI when reviewing its current, potentially unpublished artwork.
 
 ### Executable selection
 

@@ -75,24 +75,14 @@ The standard command below runs only the fixed twelve-scenario matrix.
 
 ## Reuse and Input Ownership
 
-Keep the result of `Icon.define()` and share it across repeated use. The
-[definition runtime](definition/runtime/index.md#reusing-definitions) owns exact-reference
-recognition and optional preparation of external definitions. A frozen copy, decoded JSON or
-another Core copy's output still requires full acceptance; equal logical identity grants no trust.
-Recognising a definition does not remove option handling, serialisation or host work downstream.
+The [definition runtime](definition/runtime/index.md#recognised-outputs) owns recognised versus
+unknown input, including [reuse and external preparation](definition/runtime/index.md#reusing-definitions).
+The [collection runtime](collection/index.md#runtime) owns membership construction and revalidation.
+Keep those workloads distinct: repeated construction is not ordinary member access or a downstream
+render.
 
-Construct and retain a collection rather than rebuilding its membership for each render.
-Revalidating a complete collection checks containers and any submitted member list even when its
-leaves are recognised. The [collection runtime](collection/index.md#runtime) owns reference
-retention, graph equivalence, ordering and duplicate checks. Reading an existing `members`
-property performs no reconstruction. A pre-authored collection pays construction at first module
-evaluation, not on each later property access.
-
-Resource probes remain separate from native timing. A live imported definition is strongly held
-by its module; Core's weak recognition does not itself keep discarded definitions alive. Sampled
-heap growth is not an allocation count, and a finite release experiment cannot prove leak freedom.
-[Shared resource methodology](../../tooling/performance/index.md#processes-and-resources)
-defines RSS, heap and GC observations. Complete-program costs belong to the
+Resource observations follow the [shared methodology](../../tooling/performance/index.md#processes-and-resources).
+Complete-program costs belong to the
 [integrated reference](../../tooling/performance/index.md#integrated-consumer-observations).
 
 ## Reproduction

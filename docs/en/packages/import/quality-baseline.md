@@ -101,10 +101,8 @@ Profiles isolate entity scanning from dependency tokenisation and exact source l
 path validation, draft isolation, Core admission, provenance escaping and editable serialisation
 remain independent measured work rather than omitted stages.
 
-Resource probes report sampled/lifetime RSS, post-GC heap and observed GC events. RSS is not live
-JavaScript data, post-GC heap is not total allocation, and event counts depend on process history
-and V8's heap policy. Neither low post-GC growth nor a small event count proves absence of leaks.
-Instrumented time is not pooled with native latency or used to promise a particular memory saving.
+Resource probes follow the [shared RSS, heap and GC methodology](../../tooling/performance/index.md#processes-and-resources),
+separately from native latency.
 
 Separate probes of five 10,000-request adoptions record approximately 365 MiB process lifetime
 RSS high-water and 15.1 MiB post-GC heap. These values include prepared fixtures and earlier
