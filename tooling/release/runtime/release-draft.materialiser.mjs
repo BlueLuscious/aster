@@ -27,7 +27,7 @@ export class ReleaseDraftMaterialiser {
    * @param {string} approvedSha256 - Human-approved archive SHA-256.
    * @param {string} approvedIntentSha256 - Human-approved digest of title, body and other release fields.
    * @param {string} outputDirectory - Runner-local output directory.
-   * @returns {Promise<Readonly<{ tag: string, sourceCommit: string, archivePath: string }>>} Local draft inputs.
+   * @returns {Promise<Readonly<{ tag: string, sourceCommit: string, archivePath: string }>>} Approved `tag` and original `sourceCommit`, plus the verified local npm archive location in `archivePath`.
    */
   async materialise(
     value,

@@ -31,10 +31,9 @@ behaviour or partially emit a result. Stream framing and statuses belong to
 
 ## Successful Output
 
-Sequences use a heading and one entry per line, with two spaces per ownership level. Every line
-of a nested entry receives its enclosing indentation. An absent optional sequence or an empty
-array is shown as one indented `(none)`; the structured result retains their distinction.
-Preserve canonical result order and declared member order without truncation or hard wrapping.
+The adopted [Garden human-result rules](https://github.com/BlueLuscious/garden/blob/master/docs/en/project-rules.md#human-results)
+own sequence layout, indentation, empty-state representation and order preservation. Aster applies
+them through the presenters above, with the following product-owned labels and payload boundaries.
 
 Exact icon and collection details retain their identity, provider and display name, with vertical
 `Tags:`, `Collections:` or `Icons:` sequences as applicable. Collection members are concrete icon
@@ -64,25 +63,21 @@ returns raw SVG rather than an indented sequence. Presentation does not change S
 
 ## Human Data Representation
 
-Dynamic human values containing C0/C1 controls, DEL or Unicode line/paragraph separators are
-quoted with visible JSON-compatible escapes. A newline inside a value appears as `\n`, not as
-another output line. This applies to display names, help data, versions, location/destination
-paths and diagnostic messages/details. Ordinary printable text, Unicode and Windows path
-separators remain unchanged; structural line breaks remain real line breaks.
+`HumanTextFormatter` applies the shared
+[human-data representation](https://github.com/BlueLuscious/garden/blob/master/docs/en/project-rules.md#human-data-and-diagnostic-evidence)
+to display names, help data, versions, location/destination paths and diagnostic messages/details.
 
 For example, a display name containing a real line break is shown as `"Camera\nOutline"`;
-an ordinary `Camera Outline` name is not quoted. This is display representation, not domain
-validation or a general Unicode-spoofing defence.
+an ordinary `Camera Outline` name is not quoted. This formatter does not validate domain metadata.
 Structured results and compact JSON retain the original data. Raw SVG and generated HTML are
-not passed through human text escaping. Output is independent of terminal width, TTY detection,
-ANSI support and redirection; presentation never acquires additional capabilities.
+not passed through human text escaping. The shared rule does not extend shell capabilities.
 
 ## Diagnostic Evidence
 
 Human failures show the stable diagnostic code and explanation, followed by `Details:` only when
 the diagnostic carries supporting facts. The [command contract](../../command/index.md#diagnostic-details)
-owns the detail shapes and their code/category relationships. Human presentation uses their explicit
-roles, not message matching or array positions; these facts are not suggested matches.
+owns the detail shapes and their code/category relationships. Their presentation follows Garden's
+shared semantic-evidence rule and these Aster-owned labels.
 
 Fields use two spaces beneath `Details:`. Labels include `Catalogue:`, `Icon:`, `Glyph:`,
 `Collection:`, `Member icon:` and `Artefact path:` according to their role. Provider lists use

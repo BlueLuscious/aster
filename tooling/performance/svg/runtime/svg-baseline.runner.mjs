@@ -26,9 +26,9 @@ export class SvgBaselineRunner {
 
   /**
    * @description Creates one SVG baseline composition.
-   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Generic measurement authority.
+   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Canonical `BenchmarkRunner.measure()` and `methodology()` capabilities.
    * @param {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector} distributionInspector - Package distribution authority.
-   * @param {{ environment(): object }} host - Runtime environment authority.
+   * @param {{ environment(): object }} host - Canonical `NodeBenchmarkHost.environment()` capability.
    * @param {import("../contracts/internal/svg-baseline-fixtures.contract.mjs").ISvgBaselineFixtures} fixtures - Prepared public SVG scenario inputs.
    */
   constructor(benchmarkRunner, distributionInspector, host, fixtures) {

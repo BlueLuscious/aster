@@ -21,9 +21,9 @@ export class IconsBaselineRunner {
 
   /**
    * @description Creates one Icons distribution baseline composition.
-   * @param {{ measure(scenario: { name: string, specifier: string, packagePath: string }): object }} moduleImportRunner - Fresh import measurement authority.
+   * @param {{ measure(scenario: { name: string, specifier: string, packagePath: string }): object }} moduleImportRunner - Canonical `ModuleImportRunner.measure()` capability.
    * @param {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector} distributionInspector - Package distribution authority.
-   * @param {{ environment(): object }} host - Runtime environment authority.
+   * @param {{ environment(): object }} host - Canonical `NodeBenchmarkHost.environment()` capability.
    * @param {string} packagePath - Absolute measured package root.
    */
   constructor(moduleImportRunner, distributionInspector, host, packagePath) {

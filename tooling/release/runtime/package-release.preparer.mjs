@@ -47,7 +47,9 @@ export class PackageReleasePreparer {
    * @description Checks canonical notes, source, npm bytes and GitHub state for one package version.
    * @param {string} slug - Public package directory name.
    * @param {string} version - Exact published package version.
-   * @returns {Promise<Readonly<{ packageName: string, version: string, tag: string, title: string, body: string, sourceCommit: string, archiveName: string, archiveUrl: string, sha256: string, dependencies: Readonly<Record<string, string>>, ciUrl: string, releasePreflight: "authenticated" | "public", approvalSha256: string }>>} Reviewable release intent.
+   * @returns {Promise<Readonly<{ packageName: string, version: string, tag: string, title: string, body: string, sourceCommit: string, archiveName: string, archiveUrl: string, sha256: string, dependencies: Readonly<Record<string, string>>, ciUrl: string, releasePreflight: "authenticated" | "public", approvalSha256: string }>>} Intent identifying `packageName`/`version`, package `tag`, approved `title`/`body` and original `sourceCommit`.
+   * `archiveName`, `archiveUrl` and `sha256` identify npm bytes; `dependencies` retains approved runtime ranges.
+   * `ciUrl` records source verification, `releasePreflight` identifies its authenticated/public check, and `approvalSha256` binds the complete intent.
    */
   async prepare(slug, version) {
     if (!["core", "icons", "svg", "cli"].includes(slug)) {
@@ -242,7 +244,7 @@ export class PackageReleasePreparer {
    * @param {string} markdown - Canonical package version page.
    * @param {string} slug - Selected package.
    * @param {string} version - Selected version.
-   * @returns {{ title: string, body: string, sourceCommit: string, sha256: string }} Parsed notes.
+   * @returns {{ title: string, body: string, sourceCommit: string, sha256: string }} Canonical `title` and exact release `body`, original `sourceCommit` and approved archive `sha256`.
    */
   #parseNotes(markdown, slug, version) {
     const title = /^# (.+)\r?\n/u.exec(markdown)?.[1];

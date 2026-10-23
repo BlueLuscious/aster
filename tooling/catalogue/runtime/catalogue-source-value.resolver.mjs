@@ -276,7 +276,7 @@ export class CatalogueSourceValueResolver {
   /**
    * @description Acquires and parses one imported TypeScript source document once.
    * @param {string} sourcePath - Absolute imported source path.
-   * @returns {Promise<{ sourceFile: import("typescript").SourceFile }>} Parsed source document.
+   * @returns {Promise<{ sourceFile: import("typescript").SourceFile }>} Parsed document whose `sourceFile` is the cached TypeScript syntax tree.
    */
   async #document(sourcePath) {
     if (this.#documents.has(sourcePath)) {
@@ -350,7 +350,7 @@ export class CatalogueSourceValueResolver {
    * @param {string} sourcePath - Absolute source path used for failure context.
    * @param {import("typescript").SourceFile} sourceFile - Parsed source document.
    * @param {string} localName - Local import identifier.
-   * @returns {{ importedName: string, specifier: string } | undefined} Static named import binding.
+   * @returns {{ importedName: string, specifier: string } | undefined} Binding with the original export in `importedName` and its module location in `specifier`, or undefined when absent.
    */
   #importBinding(sourcePath, sourceFile, localName) {
     const bindings = [];

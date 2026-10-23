@@ -23,7 +23,7 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 
 | Order | Importance | Capability | Activation gate |
 | --- | --- | --- | --- |
-| 1 | `P1` | [Consolidate shared project rules in Garden.](#garden-project-rules-review) | Review accepted repository policies before further artwork expansion. |
+| 1 | `P1` | [Evaluate authored-source formatting verification.](#authored-source-formatting-verification) | Review the handwritten-source baseline and exclusions before approving a wider gate. |
 | 2 | `P2` | Consider published release history through the CLI. | The follow-up publication is complete and published package versions can be mapped reliably to release notes. |
 | 3 | `P1` | Deliver selective Icons acquisition. | Stable manifests and an accepted registry, integrity, ownership and update policy exist. |
 | 4 | `P1` | Host the retained Import boundary. | One real workflow needs acquisition, metadata review, diagnostics and persistence together. |
@@ -42,33 +42,15 @@ stated prerequisite and evidence even when it has a higher priority than unrelat
 | 17 | `P4` | Consider Garden documentation automation. | Repeated cross-repository drift proves that manually reviewed updates no longer scale. |
 | 18 | `P4` | Consider a reusable versioning library. | Several independent projects demonstrate shared versioning needs and justify predefined or customisable policies. |
 
-## Garden project rules review
+## Authored-source formatting verification
 
 Importance: **P1 - High**
 
-Consolidate accepted project rules, including current [CLI presentation](packages/cli/shell/presentation/index.md),
-into one canonical Garden-owned rules document before further artwork expansion.
-Use repository instructions, maintained policies and confirmed decisions from Aster as evidence,
-not as an automatic ecosystem-wide mandate. Confirm ambiguous or undocumented decisions instead
-of inventing rules from memory or one implementation.
-
-- Review structure, naming, contracts/types, responsibility/composition, inheritance, private state,
-  shared authorities, validation, safety, dependencies, generated ownership and lifecycle rules.
-- Review current-documentation ownership, README guidance, versioned changes/migrations,
-  pre-packaging readiness, British English, JSDoc, testing/fixtures, performance evidence, commits,
-  workflow permissions, human approval boundaries and verified plan closure.
-- Review source-formatting rules and their enforcement coverage. Record extending Aster's format
-  check to handwritten TypeScript, including indentation, as a follow-up; agree generated-file
-  boundaries and review the existing formatting baseline before enabling that broader gate.
-- Distinguish genuinely reusable ecosystem policies from Aster-specific artwork, identity, package,
-  legal and delivery decisions. Preserve justified project-local additions or overrides explicitly.
-- Inspect Garden's existing authorities before choosing the document location. Keep one general
-  owner with project links/additions rather than copying a complete rulebook into every repository.
-
-This is a bounded documentation/governance review, not another whole-project refactor, new verifier
-framework or automatic cross-repository synchronisation. Garden and each project retain their
-[independent authorities](project/index.md#ecosystem-authority); changes require separately reviewed
-work in the owning repository. Recording this opportunity neither writes to Garden nor starts it.
+Evaluate extending Aster's [formatting boundary](tooling/index.md#source-quality-boundaries) to
+handwritten TypeScript, including indentation. Review the existing baseline, agree fixture and
+generated-file exclusions, estimate the resulting changes and obtain approval before enabling
+the broader gate. Shared-rule adoption alone does not introduce this check or authorise a
+repository-wide mechanical rewrite.
 
 ## Coexisting API versions
 

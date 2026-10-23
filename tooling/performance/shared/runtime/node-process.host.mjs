@@ -21,7 +21,7 @@ export class NodeProcessHost {
   /**
    * @description Executes one fresh Node process and captures complete observable evidence.
    * @param {{ executablePath?: string, arguments: readonly string[] }} request - Fresh process request.
-   * @returns {{ elapsedNanoseconds: number, status: number | null, stdout: string, stderr: string }} Process evidence.
+   * @returns {{ elapsedNanoseconds: number, status: number | null, stdout: string, stderr: string }} Complete-process `elapsedNanoseconds`, nullable exit `status`, and captured UTF-8 `stdout` and `stderr`.
    */
   execute(request) {
     const arguments_ =
@@ -49,9 +49,12 @@ export class NodeProcessHost {
 
   /**
    * @description Runs one trusted supplemental worker with finite time, output and reported-RSS budgets.
-   * @remarks Workers must await their non-detached children before normal exit. Timeout cleanup kills the live Windows tree or POSIX process group; this is not a sandbox for escaping or malicious programs. RSS messages are observer evidence, not an OS-enforced RSS limit.
+   * @remarks Workers must await their non-detached children before normal exit. Timeout cleanup
+   * kills the live Windows tree or POSIX process group; this is not a sandbox for escaping or
+   * malicious programs. RSS messages are observer evidence, not an OS-enforced RSS limit.
+   * Budget-triggered termination keeps the first abort reason and retains only a bounded output prefix.
    * @param {{ executablePath: string, arguments: readonly string[], timeoutMilliseconds?: number, maximumOutputBytes?: number, maximumRssBytes?: number, exposeGc?: boolean }} request - Explicit file-based worker and bounded controls.
-   * @returns {Promise<{ ok: boolean, reason: string, status: number | null, signal: string | null, elapsedNanoseconds: number, stdout: string, stderr: string, terminationError: string | null }>} Complete or aborted evidence with bounded partial streams.
+   * @returns {Promise<{ ok: boolean, reason: string, status: number | null, signal: string | null, elapsedNanoseconds: number, stdout: string, stderr: string, terminationError: string | null }>} Outcome `ok` and `reason`, nullable exit `status`/`signal`, complete-process `elapsedNanoseconds`, bounded `stdout`/`stderr`, and nullable cleanup failure in `terminationError`.
    */
   async executeBounded(request) {
     const timeout =
@@ -121,11 +124,7 @@ export class NodeProcessHost {
       let reason = "exit";
       /** @type {Promise<string | null>} */
       let termination = Promise.resolve(null);
-      /**
-       * @description Stops a live owned process tree once, retaining the first abort reason.
-       * @param {string} cause - Explicit budget or protocol failure.
-       * @returns {void} Nothing.
-       */
+      /** @type {(cause: string) => void} */
       const stop = (cause) => {
         if (reason !== "exit") {
           return;
@@ -135,12 +134,7 @@ export class NodeProcessHost {
           termination = this.#terminate(child.pid);
         }
       };
-      /**
-       * @description Retains a bounded prefix and stops instead of buffering unbounded worker output.
-       * @param {Buffer[]} stream - Owned output chunk list.
-       * @param {Buffer} chunk - Exact received bytes.
-       * @returns {void} Nothing.
-       */
+      /** @type {(stream: Buffer[], chunk: Buffer) => void} */
       const append = (stream, chunk) => {
         const remaining = maximumOutput - bytes;
         if (remaining > 0) {

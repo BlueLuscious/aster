@@ -55,7 +55,7 @@ export class CatalogueSourceFacadeResolver {
    * @description Derives an emitted glyph or treatment wildcard target from the same facade layout.
    * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Icon source-family configuration.
    * @param {string | undefined} variant - Concrete treatment, or undefined for the glyph dictionary.
-   * @returns {Readonly<{types: string, import: string}>} Canonical declaration and native ESM export targets.
+   * @returns {Readonly<{types: string, import: string}>} Canonical targets: `types` locates declarations and `import` locates native ESM.
    */
   exportTarget(family, variant) {
     const source = this.#iconPath(family, "*", variant);

@@ -5,6 +5,10 @@ Status: **Accepted Baseline**
 The performance feature supplies development-only comparison evidence. It does not define product
 speed guarantees or CI thresholds.
 
+The adopted [Garden performance rules](https://github.com/BlueLuscious/garden/blob/master/docs/en/project-rules.md#performance-evidence)
+own shared evidence and interpretation policy. This guide owns Aster's private runners, fixtures,
+schemas, sampling controls, comparison thresholds and observed workloads.
+
 ## Structure
 
 Shared performance runtime classes own capabilities that apply to more than one package baseline.
@@ -328,9 +332,8 @@ for point-heavy rendering. Package guides remain the authorities for acceptance 
 
 ## Comparison limits
 
-Timing and heap pressure vary with runtime revision, machine, power state, and background load.
-Reports are compared only under equivalent conditions and never replace correctness tests.
-Distribution byte counts are unminified compiler output, not bundle-size guarantees.
+Apply Garden's shared comparison and resource-interpretation rules to these reports. Distribution
+byte counts are Aster's unminified compiler output, not bundle-size guarantees.
 
 An optimisation claim requires at least three matched baseline/candidate runs, a target median
 improvement of at least 10% and no unrelated median regression above 5% without an explicitly
@@ -338,11 +341,8 @@ accepted trade-off. Check paired directions and identical-control variation befo
 those thresholds. A demonstrated pathological scaling correction can instead use a deterministic
 fixture and attributed complete-consumer evidence. Correctness corrections need not be faster.
 
-Preserve diagnostics, ordering, isolation, validation, immutability and output/effect contracts
-unless their change is separately accepted. Explain emitted-size growth by a concrete responsibility.
-Heap-pressure claims follow the same comparison rule but must not be labelled exact allocations or
-retained memory. Resource and latency observations remain separate; neither a profile nor a timing
-threshold establishes causality by itself.
+Heap-pressure claims use the same Aster comparison thresholds, subject to Garden's distinction
+between pressure, allocations and retained memory. The thresholds do not establish causality.
 
 The tooling remains outside package manifests and public APIs. Deterministic tests inject a fake
 clock, heap readings, and garbage-collection capability to verify exact aggregation. Distribution

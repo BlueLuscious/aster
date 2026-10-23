@@ -51,7 +51,8 @@ export class PackageDistributionInspector {
   /**
    * @description Reads modules, declarations, exports, and side-effect metadata for one package.
    * @param {string} packagePath - Workspace-relative or absolute package root.
-   * @returns {Promise<{ files: number, bytes: number, moduleFiles: number, moduleBytes: number, declarationFiles: number, declarationBytes: number, exports: readonly string[], sideEffects: unknown, type: unknown, main: unknown, types: unknown, bin: unknown, engines: unknown, dependencies: unknown }>} Frozen distribution envelope with shallowly copied manifest records.
+   * @returns {Promise<{ files: number, bytes: number, moduleFiles: number, moduleBytes: number, declarationFiles: number, declarationBytes: number, exports: readonly string[], sideEffects: unknown, type: unknown, main: unknown, types: unknown, bin: unknown, engines: unknown, dependencies: unknown }>} Total `files`/`bytes`, JavaScript `moduleFiles`/`moduleBytes`, declaration `declarationFiles`/`declarationBytes` and public export keys in `exports`.
+   * `sideEffects`, `type`, `main`, `types`, `bin`, `engines` and `dependencies` retain the corresponding manifest values, with shallowly copied records.
    */
   async inspect(packagePath) {
     const packageRoot = this.#paths.resolve(packagePath);

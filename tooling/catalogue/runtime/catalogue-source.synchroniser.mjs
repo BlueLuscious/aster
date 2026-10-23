@@ -120,7 +120,7 @@ export class CatalogueSourceSynchroniser {
    * @description Computes every generated output and either verifies or writes its exact content.
    * @param {string} packageRoot - Absolute Icons package root.
    * @param {boolean} checkOnly - Whether drift must be reported without writing.
-   * @returns {Promise<{ changedPaths: readonly string[], outputCount: number }>} Immutable synchronisation result.
+   * @returns {Promise<{ changedPaths: readonly string[], outputCount: number }>} Result whose `changedPaths` lists package-relative source/export drift and `outputCount` counts generated files.
    */
   async synchronise(packageRoot, checkOnly) {
     const plan = await this.#plan(packageRoot);

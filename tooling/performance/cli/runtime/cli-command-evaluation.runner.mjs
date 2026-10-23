@@ -36,7 +36,8 @@ export class CliCommandEvaluationRunner {
    * @description Measures one configured workflow and rejects unstable result or module evidence.
    * @param {string} scenarioKey - Closed configured workflow key passed to the probe.
    * @param {{ name: string }} scenario - Expected stable scenario identity.
-   * @returns {{ name: string, result: string, samples: number, medianProcessNanoseconds: number, minimumProcessNanoseconds: number, maximumProcessNanoseconds: number, medianScenarioNanoseconds: number, minimumScenarioNanoseconds: number, maximumScenarioNanoseconds: number, evaluatedModuleCounts: Readonly<{ cli: number, icons: number }>, evaluatedModules: Readonly<{ cli: readonly string[], icons: readonly string[] }> }} Stable fresh-process command evidence.
+   * @returns {{ name: string, result: string, samples: number, medianProcessNanoseconds: number, minimumProcessNanoseconds: number, maximumProcessNanoseconds: number, medianScenarioNanoseconds: number, minimumScenarioNanoseconds: number, maximumScenarioNanoseconds: number, evaluatedModuleCounts: Readonly<{ cli: number, icons: number }>, evaluatedModules: Readonly<{ cli: readonly string[], icons: readonly string[] }> }} Scenario `name`, stable `result` and retained process `samples`; process and workflow nanosecond summaries remain separate.
+   * `evaluatedModules` retains package-relative paths by `cli` and `icons`; `evaluatedModuleCounts` counts each list.
    */
   measure(scenarioKey, scenario) {
     const processTimings = [];
@@ -105,7 +106,7 @@ export class CliCommandEvaluationRunner {
    * @description Parses and validates one serialised command probe response.
    * @param {string} output - Complete probe standard output.
    * @param {{ name: string }} scenario - Expected scenario identity.
-   * @returns {{ name: string, result: string, scenarioNanoseconds: number, evaluatedModules: Readonly<{ cli: readonly string[], icons: readonly string[] }> }} Validated probe evidence.
+   * @returns {{ name: string, result: string, scenarioNanoseconds: number, evaluatedModules: Readonly<{ cli: readonly string[], icons: readonly string[] }> }} Validated `CliCommandEvaluationProbe` evidence with its original result, workflow timing and package-owned module lists.
    */
   #parse(output, scenario) {
     let evidence;

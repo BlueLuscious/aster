@@ -76,8 +76,16 @@ export class ProjectPackageVersionReader {
    * @returns Found manifest path or an explicit unavailable-comparison outcome.
    */
   async probeDirectCli(): Promise<
-    | Readonly<{ kind: "found"; manifestPath: string }>
-    | Readonly<{ kind: "absent" | "no-project" | "unavailable" }>
+    | Readonly<{
+      /** @description Successful direct project-CLI comparison outcome. */
+      kind: "found";
+      /** @description Validated direct project-CLI manifest used for location comparison. */
+      manifestPath: string;
+    }>
+    | Readonly<{
+      /** @description Reason a direct project-CLI comparison could not be supplied. */
+      kind: "absent" | "no-project" | "unavailable";
+    }>
   > {
     try {
       const projectManifestPath = await this.#findProjectManifest();
@@ -256,7 +264,12 @@ export class ProjectPackageVersionReader {
   async #readInstalledPackage(
     expectedName: string,
     base: string,
-  ): Promise<Readonly<{ record: AsterInstalledPackageVersion; manifestPath: string }> | undefined> {
+  ): Promise<Readonly<{
+    /** @description Validated installed package version record. */
+    record: AsterInstalledPackageVersion;
+    /** @description Installed manifest used as the dependency-resolution base. */
+    manifestPath: string;
+  }> | undefined> {
     const path = this.#resolveInstalledManifestPath(expectedName, base);
 
     if (path === undefined) {

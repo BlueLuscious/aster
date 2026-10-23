@@ -57,7 +57,7 @@ export class BenchmarkRunner {
   /**
    * @description Measures one deterministic operation scenario after warm-up without suspending synchronous timing paths.
    * @param {import("../contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario} scenario - Scenario definition.
-   * @returns {Promise<{ name: string, operationsPerSample: number, medianNanosecondsPerOperation: number, minimumNanosecondsPerOperation: number, maximumNanosecondsPerOperation: number, medianHeapGrowthBytesPerOperation: number, checksum: number }>} Comparison summary.
+   * @returns {Promise<{ name: string, operationsPerSample: number, medianNanosecondsPerOperation: number, minimumNanosecondsPerOperation: number, maximumNanosecondsPerOperation: number, medianHeapGrowthBytesPerOperation: number, checksum: number }>} Scenario `name`, fixed `operationsPerSample`, median/minimum/maximum nanoseconds per operation, median non-negative heap growth per operation in bytes and the consumed output `checksum`.
    */
   async measure(scenario) {
     this.#host.assertAvailable();
@@ -109,7 +109,7 @@ export class BenchmarkRunner {
 
   /**
    * @description Describes the stable methodology owned by this runner.
-   * @returns {{ sampleCount: number, warmupOperations: number, timing: string, memory: string }} Immutable methodology summary.
+   * @returns {{ sampleCount: number, warmupOperations: number, timing: string, memory: string }} Controls with measured `sampleCount`, untimed `warmupOperations`, and explicit timing and memory qualifications in `timing` and `memory`.
    */
   methodology() {
     return Object.freeze({
@@ -124,7 +124,8 @@ export class BenchmarkRunner {
    * @description Calibrates an untouched baseline before freezing a supplemental comparison's count.
    * @remarks Run the pilot in a bounded process. An elapsed check cannot interrupt synchronous JavaScript.
    * @param {Pick<import("../contracts/internal/benchmark-scenario.contract.mjs").IBenchmarkScenario, "name" | "execute">} scenario - Prepared complete operation.
-   * @returns {Promise<{ operationsPerSample: number, warmupOperations: number, reachedTarget: boolean, trials: readonly Readonly<{ operations: number, elapsedNanoseconds: number, checksum: number }>[] }>} Retained calibration, including capped trials.
+   * @returns {Promise<{ operationsPerSample: number, warmupOperations: number, reachedTarget: boolean, trials: readonly Readonly<{ operations: number, elapsedNanoseconds: number, checksum: number }>[] }>} Frozen `operationsPerSample`, bounded `warmupOperations`, target-duration flag `reachedTarget` and ordered `trials`.
+   * Each trial retains its operation count, complete elapsed nanoseconds and consumed output checksum, including a final capped trial.
    */
   async calibrate(scenario) {
     this.#host.assertAvailable();

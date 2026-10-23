@@ -46,22 +46,30 @@ export const packageBoundaries = Object.freeze({
     "./collections": null,
     /** @description Metadata-only catalogue manifest entry. */
     "./manifest": Object.freeze({
+      /** @description Metadata manifest declaration target. */
       types: "./dist/manifest/index.d.ts",
+      /** @description Metadata manifest native ESM target. */
       import: "./dist/manifest/index.js",
     }),
     /** @description Asynchronous definition loader entry. */
     "./dynamic": Object.freeze({
+      /** @description Dynamic loader declaration target. */
       types: "./dist/dynamic/index.d.ts",
+      /** @description Dynamic loader native ESM target. */
       import: "./dist/dynamic/index.js",
     }),
     /** @description Generated per-collection facade family. */
     "./collections/*": Object.freeze({
+      /** @description Per-collection facade declaration pattern. */
       types: "./dist/generated/facades/collections/*.d.ts",
+      /** @description Per-collection facade native ESM pattern. */
       import: "./dist/generated/facades/collections/*.js",
     }),
-    /** @description Generated per-icon facade family. */
+    /** @description Generated per-glyph dictionary facade family. */
     "./*": Object.freeze({
+      /** @description Per-glyph dictionary declaration pattern. */
       types: "./dist/generated/facades/glyphs/*.d.ts",
+      /** @description Per-glyph dictionary native ESM pattern. */
       import: "./dist/generated/facades/glyphs/*.js",
     }),
   }),

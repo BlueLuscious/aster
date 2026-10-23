@@ -39,7 +39,7 @@ export class ReleaseDraftCreator {
    * @description Creates a new draft against the already approved Git tag without updating an existing Release.
    * @param {unknown} value - Approved release intent.
    * @param {Uint8Array} archive - npm-identical archive bytes.
-   * @returns {Promise<Readonly<{ id: number, uploadUrl: string }>>} Created draft identity and its upload endpoint.
+   * @returns {Promise<Readonly<{ id: number, uploadUrl: string }>>} Created GitHub Release identifier in `id` and asset upload endpoint in `uploadUrl`.
    */
   async createDraft(value, archive) {
     const intent = this.#intent(value, archive);
@@ -154,7 +154,7 @@ export class ReleaseDraftCreator {
    * @description Validates the immutable approval and exact archive bytes before any write.
    * @param {unknown} value - Untrusted release intent.
    * @param {Uint8Array} archive - Proposed archive bytes.
-   * @returns {{ tag: string, title: string, body: string, sourceCommit: string, archiveName: string, archiveUrl: string, sha256: string }} Validated approval fields.
+   * @returns {{ tag: string, title: string, body: string, sourceCommit: string, archiveName: string, archiveUrl: string, sha256: string }} Approved `tag`, `title` and `body`, original `sourceCommit`, and npm archive `archiveName`, `archiveUrl` and `sha256`.
    */
   #intent(value, archive) {
     const record = releaseRecordSnapshot(value, "release intent");

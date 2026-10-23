@@ -17,7 +17,7 @@ export class CliCommandEvaluationProbe {
   /**
    * @description Imports CLI, executes one configured workflow and records package-owned modules.
    * @param {string} scenarioKey - Closed configured workflow key.
-   * @returns {Promise<{ name: string, result: string, scenarioNanoseconds: number, evaluatedModules: Readonly<{ cli: readonly string[], icons: readonly string[] }> }>} Immutable workflow evaluation evidence.
+   * @returns {Promise<{ name: string, result: string, scenarioNanoseconds: number, evaluatedModules: Readonly<{ cli: readonly string[], icons: readonly string[] }> }>} Evidence with scenario `name`, stable result discriminator in `result`, workflow-only `scenarioNanoseconds`, and package-relative evaluated-module lists keyed by `cli` and `icons`.
    */
   async inspect(scenarioKey) {
     const scenarios = /** @type {Readonly<Record<string, { name: string, invocation: import("@luscious-garden/aster-cli").AsterCommandInvocationType }>>} */ (

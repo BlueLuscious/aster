@@ -17,7 +17,8 @@ export class ModuleImportProbe {
   /**
    * @description Imports distinct resolved modules without installing evaluation hooks, then measures cached reuse separately.
    * @param {readonly string[]} specifiers - Distinct public specifiers or absolute fixture URLs.
-   * @returns {Promise<{ instrumentation: false, resolved: readonly string[], firstImportNanoseconds: number, cachedImportNanoseconds: number, exports: readonly Readonly<{ names: readonly string[], signature: string }>[], cachedReferencesRetained: boolean }>} Native import evidence; no claim of a cold OS cache or complete dependency-module count.
+   * @returns {Promise<{ instrumentation: false, resolved: readonly string[], firstImportNanoseconds: number, cachedImportNanoseconds: number, exports: readonly Readonly<{ names: readonly string[], signature: string }>[], cachedReferencesRetained: boolean }>} Native evidence with `instrumentation: false`, distinct resolved module URLs, first/cached import nanoseconds and cached-reference identity status.
+   * Each `exports` entry retains export `names` and their deterministic `signature`; no cold OS cache or complete dependency-module count is claimed.
    */
   async inspectNative(specifiers) {
     if (
@@ -109,7 +110,7 @@ export class ModuleImportProbe {
    * package root.
    * @param {string} specifier - Public package specifier to import.
    * @param {string} packagePath - Absolute or process-relative package root.
-   * @returns {Promise<{ specifier: string, exports: readonly string[], evaluatedModules: readonly string[], importNanoseconds: number }>} Immutable import evidence.
+   * @returns {Promise<{ specifier: string, exports: readonly string[], evaluatedModules: readonly string[], importNanoseconds: number }>} Original `specifier`, sorted public `exports`, package-owned `evaluatedModules` and measured `importNanoseconds`.
    */
   async inspect(specifier, packagePath) {
     if (specifier.length === 0 || packagePath.length === 0) {

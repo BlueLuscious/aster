@@ -1,5 +1,6 @@
 /**
  * @description Immutable fresh-process command-evaluation protocol and representative workflows.
+ * @remarks Scenario invocations use the canonical `AsterCommandInvocationType` fields; the CLI contracts own their command, subject, identity, query and option semantics.
  */
 export const cliCommandEvaluation = Object.freeze({
   /** @description Process-global symbol key retaining disposable module evaluations. */

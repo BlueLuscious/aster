@@ -8,7 +8,7 @@ export class BenchmarkModuleFixtureFactory {
    * @param {import("../../shared/runtime/benchmark-workspace.mjs").BenchmarkWorkspace} workspace - Owned bounded publication capability.
    * @param {readonly import("@luscious-garden/aster-core").IconDefinition[]} icons - Canonical concrete synthetic definitions.
    * @param {string} coreModuleUrl - Explicit Core module URL shared by generated leaves.
-   * @returns {Promise<{ leaves: readonly string[], glyphs: readonly string[], definitions: number, distinctGlyphs: number }>} Distinct module URLs, without cached duplicates.
+   * @returns {Promise<{ leaves: readonly string[], glyphs: readonly string[], definitions: number, distinctGlyphs: number }>} Distinct URLs in `leaves` and `glyphs`, plus concrete-definition and glyph counts in `definitions` and `distinctGlyphs`.
    */
   async create(workspace, icons, coreModuleUrl) {
     if (new URL(coreModuleUrl).protocol !== "file:") {

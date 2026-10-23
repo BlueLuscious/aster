@@ -84,7 +84,7 @@ export class BenchmarkEvidence {
   /**
    * @description Captures exact physical bytes for an explicit finite source, dependency or artefact set.
    * @param {readonly string[]} paths - Explicit file paths, including lockfiles/manifests where relevant.
-   * @returns {Promise<readonly Readonly<{ path: string, physicalPath: string, bytes: number, sha256: string }>[]>} Sorted byte identities; not a hermetic dependency archive.
+   * @returns {Promise<readonly Readonly<{ path: string, physicalPath: string, bytes: number, sha256: string }>[]>} Sorted identities with requested `path`, resolved `physicalPath`, byte count in `bytes` and hexadecimal `sha256`; not a hermetic dependency archive.
    */
   async files(paths) {
     const entries = [];

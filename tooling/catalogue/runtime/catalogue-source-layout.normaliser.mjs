@@ -63,7 +63,7 @@ export class CatalogueSourceLayoutNormaliser {
    * @param {string} stem - Source filename without its role suffix.
    * @param {string} relativePath - Portable source path used for failure context.
    * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily} family - Source-family configuration.
-   * @returns {{ name: string, variant: string | undefined }} Nested logical identity.
+   * @returns {{ name: string, variant: string | undefined }} Nested identity: `name` is the glyph or collection slug; `variant` is the required icon treatment or undefined for a collection.
    */
   #normaliseNested(segments, stem, relativePath, family) {
     if (segments.length !== 3) {
