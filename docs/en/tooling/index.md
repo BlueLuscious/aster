@@ -86,6 +86,8 @@ mutating `format` command.
 braced control flow, strict equality and selected unsafe constructs. It does not repeat type
 analysis, dependency inspection or prose review. Generated catalogue sources, distribution output,
 dependency installations and parser fixtures are excluded.
+Symbol/file naming, comprehensive JSDoc and ordinary-comment policy are not enforced by that
+configuration. Their adoption is recorded separately at the [project boundary](../project/index.md#shared-rules-adoption).
 
 Prettier checks root and package manifests plus its own and ESLint's configuration. The Icons
 manifest is excluded from formatting because its mixed-manual export entries are maintained through
@@ -93,6 +95,7 @@ manifest is excluded from formatting because its mixed-manual export entries are
 architecture and distribution checks retaining their independent conformance roles.
 Authored source, documentation, lockfiles, generated artefacts and fixtures remain outside this
 formatting boundary. Widening it requires a separately reviewed migration, not a mechanical rewrite.
+In particular, authored TypeScript indentation is not currently checked by this command.
 
 ## Verification orchestration
 
