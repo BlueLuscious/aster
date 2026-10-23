@@ -31,7 +31,7 @@ export class CliColdStartRunner {
   /**
    * @description Measures one cold Node scenario and verifies its exact process contract.
    * @param {{ name: string, executablePath?: string, arguments: readonly string[], stdout: string }} scenario - Complete cold scenario.
-   * @returns {{ name: string, samples: number, medianNanoseconds: number, minimumNanoseconds: number, maximumNanoseconds: number, stdoutBytes: number }} Cold-start evidence.
+   * @returns {{ name: string, samples: number, medianNanoseconds: number, minimumNanoseconds: number, maximumNanoseconds: number, stdoutBytes: number }} Scenario `name`, process `samples`, median/minimum/maximum complete-process nanoseconds, and retained standard-output byte count in `stdoutBytes`.
    */
   measure(scenario) {
     const timings = [];

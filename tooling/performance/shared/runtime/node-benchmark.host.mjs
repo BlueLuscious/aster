@@ -38,7 +38,7 @@ export class NodeBenchmarkHost {
 
   /**
    * @description Describes the runtime environment that owns one comparison report.
-   * @returns {{ node: string, platform: string, architecture: string }} Runtime identity.
+   * @returns {{ node: string, platform: string, architecture: string }} Node version in `node`, operating-system identifier in `platform`, and process architecture in `architecture`.
    */
   environment() {
     return Object.freeze({

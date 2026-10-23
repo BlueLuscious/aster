@@ -5,9 +5,12 @@ import { setImmediate as settle } from "node:timers/promises";
 export class BenchmarkResourceObserver {
   /**
    * @description Observes CPU, sampled RSS, lifetime RSS high-water marks, post-GC heap and GC events.
-   * @remarks maxRSS is an OS lifetime high-water mark in KiB, not workload-local allocation. Sampling can miss transient RSS. Filesystem counters retain their OS units/support limitations. The conservative growth bound can include preparation peaks.
+   * @remarks maxRSS is an OS lifetime high-water mark in KiB, not workload-local allocation.
+   * Sampling can miss transient RSS. Filesystem counters retain their OS units/support limitations.
+   * The conservative growth bound can include preparation peaks. Samples retain the observed
+   * high-water mark and report worker RSS to the bounded parent when connected.
    * @param {() => unknown | Promise<unknown>} execute - Named complete resource workload, not an uninstrumented timing sample.
-   * @returns {Promise<{ value: unknown, resources: Readonly<Record<string, unknown>> }>} Workload value and explicitly qualified resource observations.
+   * @returns {Promise<{ value: unknown, resources: Readonly<Record<string, unknown>> }>} The exact workload result in `value` and instrumented counters in `resources`, with the ownership, units and limitations described above.
    */
   async measure(execute) {
     if (typeof globalThis.gc !== "function") {
@@ -29,10 +32,6 @@ export class BenchmarkResourceObserver {
     const memoryBefore = process.memoryUsage();
     const usageBefore = process.resourceUsage();
     let sampledPeakRssBytes = memoryBefore.rss;
-    /**
-     * @description Reports observed worker RSS to a bounded parent and retains the sampled high-water mark.
-     * @returns {void} Nothing.
-     */
     const sample = () => {
       const bytes = process.memoryUsage.rss();
       sampledPeakRssBytes = Math.max(sampledPeakRssBytes, bytes);

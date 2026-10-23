@@ -36,7 +36,8 @@ export class ModuleImportRunner {
   /**
    * @description Measures one public import and rejects unstable process or module evidence.
    * @param {{ name: string, specifier: string, packagePath: string }} scenario - Complete public import scenario.
-   * @returns {{ name: string, specifier: string, samples: number, medianProcessNanoseconds: number, minimumProcessNanoseconds: number, maximumProcessNanoseconds: number, medianImportNanoseconds: number, minimumImportNanoseconds: number, maximumImportNanoseconds: number, evaluatedModuleCount: number, evaluatedModules: readonly string[], exports: readonly string[] }} Stable fresh-import evidence.
+   * @returns {{ name: string, specifier: string, samples: number, medianProcessNanoseconds: number, minimumProcessNanoseconds: number, maximumProcessNanoseconds: number, medianImportNanoseconds: number, minimumImportNanoseconds: number, maximumImportNanoseconds: number, evaluatedModuleCount: number, evaluatedModules: readonly string[], exports: readonly string[] }} Scenario `name` and `specifier`, retained process `samples`, and separate complete-process/import-only nanosecond summaries.
+   * `evaluatedModuleCount` counts the retained `evaluatedModules`; `exports` retains the stable public export names.
    */
   measure(scenario) {
     const processTimings = [];
@@ -103,7 +104,7 @@ export class ModuleImportRunner {
    * @description Parses and validates one serialised probe response.
    * @param {string} output - Complete probe standard output.
    * @param {{ name: string, specifier: string }} scenario - Expected scenario identity.
-   * @returns {{ specifier: string, exports: readonly string[], evaluatedModules: readonly string[], importNanoseconds: number }} Validated probe evidence.
+   * @returns {{ specifier: string, exports: readonly string[], evaluatedModules: readonly string[], importNanoseconds: number }} Validated `ModuleImportProbe` evidence preserving its specifier, export names, evaluated module paths and import-only nanoseconds.
    */
   #parse(output, scenario) {
     let evidence;

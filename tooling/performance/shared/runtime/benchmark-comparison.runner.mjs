@@ -8,7 +8,9 @@ export class BenchmarkComparisonRunner {
   /**
    * @description Executes three matched rounds with invariant workload, output and sampling controls.
    * @param {Readonly<Record<string, () => Promise<import("../contracts/internal/benchmark-comparison-entry.contract.mjs").IBenchmarkComparisonEntry>>>} variants - Explicit baseline, byte-identical control and candidate capabilities.
-   * @returns {Promise<{ schemaVersion: number, complete: boolean, runs: readonly Readonly<{ round: number, variant: string, entry: import("../contracts/internal/benchmark-comparison-entry.contract.mjs").IBenchmarkComparisonEntry }>[], failure: Readonly<{ round: number, variant: string, message: string, partialEvidence: unknown }> | null }>} Complete or interrupted evidence, without timing-based pass thresholds.
+   * @returns {Promise<{ schemaVersion: number, complete: boolean, runs: readonly Readonly<{ round: number, variant: string, entry: import("../contracts/internal/benchmark-comparison-entry.contract.mjs").IBenchmarkComparisonEntry }>[], failure: Readonly<{ round: number, variant: string, message: string, partialEvidence: unknown }> | null }>} Envelope with format `schemaVersion`, success flag `complete`, ordered `runs` and nullable `failure`.
+   * Each run retains its zero-based `round`, variant name and canonical `IBenchmarkComparisonEntry`.
+   * A failure identifies its round and variant, explains `message` and retains available `partialEvidence`; timings are not pass thresholds.
    */
   async run(variants) {
     const runs = [];

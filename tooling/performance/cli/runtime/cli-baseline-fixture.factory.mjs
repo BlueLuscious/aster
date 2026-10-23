@@ -53,24 +53,21 @@ export class CliBaselineFixtureFactory {
     const provider = Object.freeze({
       identity: "fixture",
       /**
-       * @description Returns already acquired immutable fixture discovery metadata.
-       * @returns {Promise<import("@luscious-garden/aster-cli").CatalogueDiscovery>} Prepared catalogue discovery.
+       * @returns {Promise<import("@luscious-garden/aster-cli").CatalogueDiscovery>}
        */
       async discover() {
         return discovery;
       },
       /**
-       * @description Resolves one exact prepared icon definition.
-       * @param {import("@luscious-garden/aster-core").IconIdentity} identity - Selected icon identity.
-       * @returns {Promise<import("@luscious-garden/aster-core").IconDefinition | undefined>} Prepared definition or no value.
+       * @param {import("@luscious-garden/aster-core").IconIdentity} identity
+       * @returns {Promise<import("@luscious-garden/aster-core").IconDefinition | undefined>}
        */
       async loadIcon(identity) {
         return iconsByIdentity.get(identities.icon(identity));
       },
       /**
-       * @description Resolves one exact prepared collection definition.
-       * @param {import("@luscious-garden/aster-core").CollectionIdentity} identity - Selected collection identity.
-       * @returns {Promise<import("@luscious-garden/aster-core").CollectionDefinition | undefined>} Prepared definition or no value.
+       * @param {import("@luscious-garden/aster-core").CollectionIdentity} identity
+       * @returns {Promise<import("@luscious-garden/aster-core").CollectionDefinition | undefined>}
        */
       async loadCollection(identity) {
         return collectionsByIdentity.get(identities.collection(identity));

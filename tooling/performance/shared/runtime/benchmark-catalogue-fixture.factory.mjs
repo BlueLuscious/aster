@@ -252,7 +252,7 @@ export class BenchmarkCatalogueFixtureFactory {
    * @param {number} overlap - Initial definitions exposed by every provider.
    * @param {readonly import("@luscious-garden/aster-core").IconDefinition[]} icons - Canonical corpus.
    * @param {readonly import("@luscious-garden/aster-core").CollectionDefinition[]} collections - Explicit selections.
-   * @returns {import("@luscious-garden/aster-cli").CatalogueProvider & { recordCount: number }} Immutable prepared provider and actual record count.
+   * @returns {import("@luscious-garden/aster-cli").CatalogueProvider & { recordCount: number }} Canonical `CatalogueProvider` capabilities plus `recordCount`, the concrete definitions exposed by this provider including selected collection members.
    */
   #provider(index, count, overlap, icons, collections) {
     const localCollections = collections.filter(
@@ -317,24 +317,21 @@ export class BenchmarkCatalogueFixtureFactory {
       identity: `scale-provider-${index}`,
       recordCount: localIcons.length,
       /**
-       * @description Returns prepared metadata without loading artwork.
-       * @returns {Promise<import("@luscious-garden/aster-cli").CatalogueDiscovery>} Coherent discovery.
+       * @returns {Promise<import("@luscious-garden/aster-cli").CatalogueDiscovery>}
        */
       async discover() {
         return discovery;
       },
       /**
-       * @description Loads an exact prepared definition.
-       * @param {import("@luscious-garden/aster-core").IconIdentity} identity - Requested identity.
-       * @returns {Promise<import("@luscious-garden/aster-core").IconDefinition | undefined>} Exact match or absence.
+       * @param {import("@luscious-garden/aster-core").IconIdentity} identity
+       * @returns {Promise<import("@luscious-garden/aster-core").IconDefinition | undefined>}
        */
       async loadIcon(identity) {
         return byIcon.get(key(identity));
       },
       /**
-       * @description Loads an exact prepared collection.
-       * @param {import("@luscious-garden/aster-core").CollectionIdentity} identity - Requested identity.
-       * @returns {Promise<import("@luscious-garden/aster-core").CollectionDefinition | undefined>} Exact match or absence.
+       * @param {import("@luscious-garden/aster-core").CollectionIdentity} identity
+       * @returns {Promise<import("@luscious-garden/aster-core").CollectionDefinition | undefined>}
        */
       async loadCollection(identity) {
         return byCollection.get(key(identity));

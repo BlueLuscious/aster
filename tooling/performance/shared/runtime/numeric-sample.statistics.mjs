@@ -5,7 +5,7 @@ export class NumericSampleStatistics {
   /**
    * @description Summarises one non-empty numeric sample.
    * @param {readonly number[]} values - Numeric observations to order without mutation.
-   * @returns {{ median: number, minimum: number, maximum: number }} Sample summary.
+   * @returns {{ median: number, minimum: number, maximum: number }} Ordered-sample `minimum` and `maximum`; `median` is the middle value or the mean of the two middle values, in the input units.
    */
   summarise(values) {
     if (values.length === 0) {

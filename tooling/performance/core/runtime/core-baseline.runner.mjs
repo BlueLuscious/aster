@@ -29,9 +29,9 @@ export class CoreBaselineRunner {
 
   /**
    * @description Creates one Core baseline composition.
-   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Generic measurement authority.
+   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Canonical `BenchmarkRunner.measure()` and `methodology()` capabilities.
    * @param {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector} distributionInspector - Package distribution authority.
-   * @param {{ environment(): object }} host - Runtime environment authority.
+   * @param {{ environment(): object }} host - Canonical `NodeBenchmarkHost.environment()` capability.
    * @param {import("../contracts/internal/core-baseline-fixtures.contract.mjs").ICoreBaselineFixtures} fixtures - Prepared public Core scenario inputs.
    */
   constructor(benchmarkRunner, distributionInspector, host, fixtures) {

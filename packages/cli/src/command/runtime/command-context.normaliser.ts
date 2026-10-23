@@ -337,9 +337,11 @@ export class CommandContextNormaliser {
   }
 
   /**
-   * @description Determines whether a candidate satisfies the narrow catalogue-provider shape.
+   * @description Snapshots a candidate's data capabilities without invoking provider operations.
+   * @remarks Accepted operations are snapshotted and invoked with the original provider as receiver;
+   * their results still require strict downstream acceptance.
    * @param value - Candidate provider.
-   * @returns Whether the provider can be accepted without invoking it.
+   * @returns Accepted provider or no value when its capability shape is invalid.
    */
   #acceptProvider(value: unknown): CatalogueProvider | undefined {
     if (typeof value !== "object" || value === null || Array.isArray(value)) {
@@ -372,19 +374,10 @@ export class CommandContextNormaliser {
     return Object.freeze({
       identity,
 
-      /**
-       * @description Invokes snapshotted discovery with its original receiver.
-       * @returns Provider-owned discovery candidate for strict downstream acceptance.
-       */
       async discover(): Promise<CatalogueDiscovery> {
         return Reflect.apply(discover, value, []) as Promise<CatalogueDiscovery>;
       },
 
-      /**
-       * @description Invokes the snapshotted exact icon loader with its original receiver.
-       * @param selectedIdentity - Complete selected icon identity.
-       * @returns Provider-owned definition candidate or no value.
-       */
       async loadIcon(
         selectedIdentity: IconIdentity,
       ): Promise<IconDefinition | undefined> {
@@ -393,11 +386,6 @@ export class CommandContextNormaliser {
         >;
       },
 
-      /**
-       * @description Invokes the snapshotted exact collection loader with its original receiver.
-       * @param selectedIdentity - Complete selected collection identity.
-       * @returns Provider-owned definition candidate or no value.
-       */
       async loadCollection(
         selectedIdentity: CollectionIdentity,
       ): Promise<CollectionDefinition | undefined> {

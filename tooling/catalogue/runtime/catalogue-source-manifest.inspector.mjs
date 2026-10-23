@@ -192,7 +192,7 @@ export class CatalogueSourceManifestInspector {
    * @param {import("../contracts/internal/catalogue-source-identity.contract.mjs").ICatalogueSourceIdentity} identity - Path-owned canonical identity.
    * @param {string | undefined} namespace - Optional resolved namespace.
    * @param {"icon" | "collection"} familyKind - Semantic source-family discriminator.
-   * @returns {{ namespace?: string, name: string, variant?: string }} Frozen portable identity.
+   * @returns {{ namespace?: string, name: string, variant?: string }} Frozen identity: optional `namespace` identifies the producer, `name` is the canonical slug, and only icons have `variant`.
    */
   #identity(identity, namespace, familyKind) {
     if (namespace !== undefined && !this.#slugPattern.test(namespace)) {
@@ -216,7 +216,7 @@ export class CatalogueSourceManifestInspector {
    * @param {string} sourcePath - Absolute source path used for failure context.
    * @param {unknown} value - Resolved identity candidate.
    * @param {string} propertyName - Logical property name used for failure context.
-   * @returns {{ namespace?: string, name: string, variant: string }} Frozen complete icon identity.
+   * @returns {{ namespace?: string, name: string, variant: string }} Frozen identity using Core `IconIdentity` semantics, including a required treatment slug in `variant`.
    */
   #resolvedIconIdentity(sourcePath, value, propertyName) {
     const identity = typeof value === "object" && value !== null

@@ -54,12 +54,12 @@ export class CliBaselineRunner {
 
   /**
    * @description Creates one CLI baseline composition.
-   * @param {{ measure(scenario: object): Promise<object>, methodology(): object }} benchmarkRunner - Measurement authority configured for synchronous scenarios.
-   * @param {{ measure(scenario: object): Promise<object>, methodology(): object }} asynchronousBenchmarkRunner - Measurement authority configured for asynchronous scenarios.
-   * @param {{ measure(scenario: object): object }} coldStartRunner - Fresh-process measurement authority.
-   * @param {{ measure(scenarioKey: string, scenario: object): object }} commandEvaluationRunner - Real-command module evaluation authority.
+   * @param {{ measure(scenario: object): Promise<object>, methodology(): object }} benchmarkRunner - Synchronous configuration of the canonical `BenchmarkRunner.measure()` and `methodology()` capabilities.
+   * @param {{ measure(scenario: object): Promise<object>, methodology(): object }} asynchronousBenchmarkRunner - Asynchronous configuration of the same `BenchmarkRunner` measurement and methodology capabilities.
+   * @param {{ measure(scenario: object): object }} coldStartRunner - Canonical `CliColdStartRunner.measure()` capability for complete executable scenarios.
+   * @param {{ measure(scenarioKey: string, scenario: object): object }} commandEvaluationRunner - Canonical `CliCommandEvaluationRunner.measure()` capability for workflow evaluation evidence.
    * @param {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector} distributionInspector - Package distribution authority.
-   * @param {{ environment(): object }} host - Runtime environment authority.
+   * @param {{ environment(): object }} host - Canonical `NodeBenchmarkHost.environment()` capability.
    * @param {import("../contracts/internal/cli-baseline-fixtures.contract.mjs").ICliBaselineFixtures} fixtures - Prepared CLI inputs.
    * @param {string} executablePath - Absolute built executable path.
    */
