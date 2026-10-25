@@ -38,7 +38,6 @@ jobs:
       DISCORD_WEBHOOK: ${{ secrets.ASTER_DISCORD_WEBHOOK }}
 
     steps:
-      ### CONTINUOUS INTEGRATION ###
       - name: Continuous Integration Notification
         if: github.event_name == 'workflow_run'
         env:
@@ -105,7 +104,6 @@ jobs:
               -d @- \
               "$DISCORD_WEBHOOK"
 
-      ### PUSH COMMIT ###
       - name: Push Notification
         if: github.event_name == 'push' && github.event.created == false
         env:
@@ -160,7 +158,6 @@ jobs:
               -d @- \
               "$DISCORD_WEBHOOK"
 
-      ### BRANCH LIFECYCLE ###
       - name: Branch Lifecycle Notification
         if: >
           (github.event_name == 'push' && github.event.created == true) ||
@@ -214,7 +211,6 @@ jobs:
               -d @- \
               "$DISCORD_WEBHOOK"
 
-      ### PULL REQUEST ###
       - name: Pull Request Notification
         if: github.event_name == 'pull_request'
         env:

@@ -25,14 +25,14 @@ export const catalogueDiscoverySchema = Object.freeze({
   collectionFields: Object.freeze([
     "identity",
     "metadata",
-    "icons",
+    "memberIdentities",
     "searchTerms",
   ] as const),
   /** @description Required fields on a collection discovery record. */
   requiredCollectionFields: Object.freeze([
     "identity",
     "metadata",
-    "icons",
+    "memberIdentities",
   ] as const),
   /** @description Complete fields accepted on lightweight icon metadata. */
   iconMetadataFields: Object.freeze([

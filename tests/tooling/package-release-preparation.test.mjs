@@ -65,7 +65,7 @@ function fixture(overrides = {}) {
     ) {
       return Response.json({
         name: packageName,
-        version,
+        ...(overrides.omitRegistryVersion ? {} : { version }),
         dependencies,
         dist: {
           tarball: `https://registry.npmjs.org/@luscious-garden/aster-${slug}/-/aster-${slug}-${version}.tgz`,
@@ -169,6 +169,22 @@ test("prepares each public package without remote writes or credential leakage",
         .filter(({ url }) => url.startsWith("https://registry.npmjs.org/"))
         .every(({ headers }) => !Object.hasOwn(headers, "Authorization")),
     );
+  }
+});
+
+test("rejects registry metadata whose selected version exists only on the host prototype", async () => {
+  const { preparer, requests } = fixture({ omitRegistryVersion: true });
+  const previous = Object.getOwnPropertyDescriptor(Object.prototype, "version");
+  try {
+    Object.defineProperty(Object.prototype, "version", { configurable: true, value: version });
+    await assert.rejects(preparer.prepare("core", version), /npm metadata does not match/u);
+    assert.equal(requests.length, 1);
+  } finally {
+    if (previous === undefined) {
+      Reflect.deleteProperty(Object.prototype, "version");
+    } else {
+      Object.defineProperty(Object.prototype, "version", previous);
+    }
   }
 });
 

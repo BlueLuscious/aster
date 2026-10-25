@@ -2,6 +2,10 @@
 
 Status: **Accepted**
 
+Mutable shared filter state represents absent singleton options explicitly as own `undefined`
+values. Export option accumulation defines each supplied field as own data. Parsers and the shell
+do not acquire undeclared options, output roots or version flags from inherited host properties.
+
 The parsing subfeature adapts an explicit argv sequence into one immutable structured command
 invocation and shell-only presentation options. It does not read process state, execute commands,
 present results, or access the filesystem.
@@ -28,7 +32,7 @@ Location is accepted only for absent or `cli` scope. The dispatcher removes `--j
 invocation. `HelpCommandLineParser` accepts every registered
 command name, including `review` and `version`, for command-specific help.
 
-No argument defaults to `help`. Unknown commands, duplicate singleton options, repeated `--json`,
+Omitting all arguments selects `help`. Unknown commands, duplicate singleton options, repeated `--json`,
 missing option values, and trailing unsupported tokens are rejected before programmatic command
 execution. The accepted grammar is documented by [CLI Shell](../index.md).
 
@@ -39,7 +43,7 @@ execution. The accepted grammar is documented by [CLI Shell](../index.md).
 | `TParsedCommandLine` | Carries the host-neutral request plus shell-owned JSON, output-root, and replacement selections. |
 | `TParsedCommandInvocation` | Distinguishes parsed requests from command-validated export options. |
 | `TParsedExportCommandInvocation` | Carries export render tokens as raw strings until command validation. |
-| `TParsedCommandOptions` | Accumulates catalogue, collection, and repeated tag filters for discovery parsers before invocation construction. |
+| `TParsedCommandOptions` | Accumulates catalogue, collection, glyph and repeated tag filters before invocation construction; each parser limits which fields its form accepts. |
 | `TParsedExportCommandOptions` | Accumulates export filters, raw render tokens, accessibility text, and shell-owned output root before final validation. |
 
 The two option types are private mutable parser assembly values. `TParsedCommandLine` is their

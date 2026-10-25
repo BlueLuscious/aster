@@ -42,17 +42,21 @@ export class ReviewDocumentFactory {
 
     for (const selected of selection.icons) {
       try {
-        icons.push(Object.freeze({
-          identity: selected.definition.identity,
-          metadata: selected.definition.metadata,
-          viewBox: selected.definition.viewBox,
-          nodeCount: selected.definition.nodes.length,
-          primitiveKinds: Object.freeze([
-            ...new Set(selected.definition.nodes.map((node) => node.kind)),
-          ].sort((left, right) => this.#strings.compare(left, right))),
-          memberships: selected.memberships,
-          markup: Svg.render(selected.definition),
-        }));
+        icons.push(
+          Object.freeze({
+            identity: selected.definition.identity,
+            metadata: selected.definition.metadata,
+            viewBox: selected.definition.viewBox,
+            nodeCount: selected.definition.nodes.length,
+            primitiveKinds: Object.freeze(
+              [
+                ...new Set(selected.definition.nodes.map((node) => node.kind)),
+              ].sort((left, right) => this.#strings.compare(left, right)),
+            ),
+            memberships: selected.memberships,
+            markup: Svg.render(selected.definition),
+          }),
+        );
       } catch (error) {
         if (!(error instanceof SvgRenderError)) {
           throw error;
@@ -61,12 +65,15 @@ export class ReviewDocumentFactory {
         const identity = this.#identities.icon(selected.definition.identity);
         return Object.freeze({
           accepted: false,
-          diagnostic: this.#diagnostics.create(
-            commandDiagnosticSchema.categories.renderFailure,
-            commandDiagnosticSchema.codes.renderFailure,
-            `icon ${identity} could not be rendered for review`,
-            [identity],
-          ),
+          diagnostic: this.#diagnostics.create({
+            category: commandDiagnosticSchema.categories.renderFailure,
+            code: commandDiagnosticSchema.codes.renderFailure,
+            message: `icon ${identity} could not be rendered for review`,
+            details: {
+              kind: commandDiagnosticSchema.details.reviewRender,
+              icon: identity,
+            },
+          }),
         });
       }
     }

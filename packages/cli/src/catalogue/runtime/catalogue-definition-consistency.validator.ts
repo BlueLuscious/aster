@@ -11,6 +11,7 @@ import type {
   CatalogueIconMetadata,
 } from "../contracts/index.js";
 import { CatalogueIdentityFormatter } from "./catalogue-identity.formatter.js";
+import type { TCatalogueDefinitionFailure } from "../types/internal/catalogue-definition-failure.type.js";
 
 /**
  * @description Verifies agreement between accepted discovery records and loaded definitions.
@@ -45,24 +46,30 @@ export class CatalogueDefinitionConsistencyValidator {
    * @param record - Accepted metadata-only collection record.
    * @param icons - Accepted discovery records for every selected member.
    * @param definition - Isolated complete collection definition.
-   * @returns Deterministic failure message or no value when identity, metadata, and members agree.
+   * @returns Deterministic failure facts or no value when identity, metadata and members agree.
    */
   collection(
     record: CatalogueDiscoveryCollectionRecord,
     icons: readonly CatalogueDiscoveryIconRecord[],
     definition: CollectionDefinition,
-  ): string | undefined {
+  ): TCatalogueDefinitionFailure | undefined {
     const identity = this.#identities.collection(record.identity);
 
     if (this.#identities.collection(definition.identity) !== identity) {
-      return `collection ${identity} loader returned a mismatched identity`;
+      return Object.freeze({
+        message: `collection ${identity} loader returned a mismatched identity`,
+      });
     }
 
-    if (!this.#collectionMetadataMatches(record.metadata, definition.metadata)) {
-      return `collection ${identity} loader returned metadata inconsistent with discovery`;
+    if (
+      !this.#collectionMetadataMatches(record.metadata, definition.metadata)
+    ) {
+      return Object.freeze({
+        message: `collection ${identity} loader returned metadata inconsistent with discovery`,
+      });
     }
 
-    const discoveredMembers = record.icons.map((member) =>
+    const discoveredMembers = record.memberIdentities.map((member) =>
       this.#identities.icon(member),
     );
     const loadedMembers = definition.members.map((member) =>
@@ -73,33 +80,39 @@ export class CatalogueDefinitionConsistencyValidator {
     );
 
     if (
-      selectedMembers.length !== discoveredMembers.length
-      || selectedMembers.some((member) => !discoveredMembers.includes(member))
+      selectedMembers.length !== discoveredMembers.length ||
+      selectedMembers.some((member) => !discoveredMembers.includes(member))
     ) {
-      return `collection ${identity} discovery member evidence is inconsistent`;
+      return Object.freeze({
+        message: `collection ${identity} discovery member evidence is inconsistent`,
+      });
     }
 
     if (!this.#sequenceMatches(discoveredMembers, loadedMembers)) {
-      return `collection ${identity} loader returned members inconsistent with discovery`;
+      return Object.freeze({
+        message: `collection ${identity} loader returned members inconsistent with discovery`,
+      });
     }
 
-    const iconsByIdentity = new Map(icons.map((icon) => [
-      this.#identities.icon(icon.identity),
-      icon,
-    ]));
+    const iconsByIdentity = new Map(
+      icons.map((icon) => [this.#identities.icon(icon.identity), icon]),
+    );
 
     for (const member of definition.members) {
       const memberIdentity = this.#identities.icon(member.identity);
       const discovery = iconsByIdentity.get(memberIdentity);
 
       if (discovery === undefined) {
-        return `collection ${identity} loader returned unavailable member ${memberIdentity}`;
+        return Object.freeze({
+          message: `collection ${identity} loader returned unavailable member ${memberIdentity}`,
+          member: memberIdentity,
+        });
       }
 
       const failure = this.icon(discovery, member);
 
       if (failure !== undefined) {
-        return failure;
+        return Object.freeze({ message: failure, member: memberIdentity });
       }
     }
 
@@ -117,12 +130,12 @@ export class CatalogueDefinitionConsistencyValidator {
     loaded: IconMetadata,
   ): boolean {
     return discovery.displayName === loaded.displayName
-      && this.#sequenceMatches(discovery.tags, loaded.tags)
+      && this.#sequenceMatches((Object.hasOwn(discovery, "tags") ? discovery.tags : undefined), (Object.hasOwn(loaded, "tags") ? loaded.tags : undefined))
       && discovery.rtl === loaded.rtl
-      && discovery.licence === loaded.licence
-      && discovery.attribution === loaded.attribution
+      && (Object.hasOwn(discovery, "licence") ? discovery.licence : undefined) === (Object.hasOwn(loaded, "licence") ? loaded.licence : undefined)
+      && (Object.hasOwn(discovery, "attribution") ? discovery.attribution : undefined) === (Object.hasOwn(loaded, "attribution") ? loaded.attribution : undefined)
       && discovery.deprecated === loaded.deprecated
-      && this.#iconIdentityMatches(discovery.replacedBy, loaded.replacedBy);
+      && this.#iconIdentityMatches((Object.hasOwn(discovery, "replacedBy") ? discovery.replacedBy : undefined), (Object.hasOwn(loaded, "replacedBy") ? loaded.replacedBy : undefined));
   }
 
   /**
@@ -136,10 +149,10 @@ export class CatalogueDefinitionConsistencyValidator {
     loaded: CollectionMetadata,
   ): boolean {
     return discovery.displayName === loaded.displayName
-      && discovery.description === loaded.description
-      && this.#sequenceMatches(discovery.tags, loaded.tags)
-      && discovery.licence === loaded.licence
-      && discovery.attribution === loaded.attribution;
+      && (Object.hasOwn(discovery, "description") ? discovery.description : undefined) === (Object.hasOwn(loaded, "description") ? loaded.description : undefined)
+      && this.#sequenceMatches((Object.hasOwn(discovery, "tags") ? discovery.tags : undefined), (Object.hasOwn(loaded, "tags") ? loaded.tags : undefined))
+      && (Object.hasOwn(discovery, "licence") ? discovery.licence : undefined) === (Object.hasOwn(loaded, "licence") ? loaded.licence : undefined)
+      && (Object.hasOwn(discovery, "attribution") ? discovery.attribution : undefined) === (Object.hasOwn(loaded, "attribution") ? loaded.attribution : undefined);
   }
 
   /**

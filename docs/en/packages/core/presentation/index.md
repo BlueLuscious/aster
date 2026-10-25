@@ -63,8 +63,9 @@ portable node:
 | `fillOpacity` | `1` |
 | `strokeOpacity` | `1` |
 
-These values define portable rendering semantics, not a collection's visual personality. A
-collection or icon may resolve different defaults through `IconPresentationPolicy`.
+These values define portable rendering semantics, not a collection's visual personality.
+Curatorial defaults enter runtime through each icon's resolved `IconPresentationPolicy`;
+collection membership does not override that policy.
 
 ## Resolution precedence
 

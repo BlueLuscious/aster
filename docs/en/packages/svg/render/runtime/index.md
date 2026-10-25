@@ -11,7 +11,7 @@ implementation subpath and retains no definition, context or result between call
 | --- | --- | --- |
 | `SvgRenderer` | Coordinates definition acceptance, option normalisation and complete serialisation. | Owned by the frozen public `Svg` object. |
 | `SvgRenderOptionsNormaliser` | Captures closed option data and resolves its effects. | Produces `ISvgRenderContext`; uses Core policy and public vocabularies. |
-| `ISvgRenderContext` | Carries the isolated definition, viewport, colour context, presentation overrides, accessibility and direction for one call. | Immutable private contract consumed by `SvgMarkupSerialiser`. |
+| `ISvgRenderContext` | Carries the accepted immutable definition, viewport, colour context, presentation overrides, accessibility and direction for one call. | Immutable private contract consumed by `SvgMarkupSerialiser`. |
 | `SvgMarkupSerialiser` | Resolves node presentation and emits complete target markup. | Consumes only the accepted context; composes number, path and XML authorities. |
 | `SvgPathDataSerialiser` | Maps structured Core commands to expanded SVG path data. | Uses public Core discriminators and internal `svgPathCommandLetters`; performs no source parsing. |
 | `SvgNumberSerialiser` | Produces canonical locale-independent numeric spelling. | Shared by geometry, presentation and path serialisation. |
@@ -24,10 +24,17 @@ It neither copies their domain vocabularies nor imports private Core paths.
 
 ## Definition acceptance
 
-`SvgRenderer` first calls public `Icon.define()` to reconstruct and deeply freeze the complete
-portable graph. Static types and previously frozen input do not bypass that step.
+`SvgRenderer` first calls public `Icon.define()`. Core reuses an exact recognised output or fully
+validates and reconstructs unknown input, according to its
+[definition acceptance contract](../../../core/definition/runtime/index.md#recognised-outputs).
+Static types and freezing alone grant no bypass. SVG retains no definition or markup cache.
 [SVG Error](../../error/index.md) owns translation of Core failures during this stage; no other
 stage is inside the definition-translation catch boundary.
+
+Callers may retain a [prepared external definition](../../../core/definition/runtime/index.md#preparing-external-definitions)
+for repeated use. Recognition then depends on sharing the renderer's loaded Core copy; merely
+importing Core in the application does not prove that relationship. No preparation is required
+for compatible unknown values to remain admissible, and render options are still checked each time.
 
 ## Option acceptance
 
@@ -35,10 +42,16 @@ The normaliser accepts an omitted value or an ordinary/null-prototype record. It
 keys and descriptors, rejects unknown, symbolic, hidden or accessor fields, and captures accepted
 data values into a frozen local snapshot. Ordinary getters are not invoked. Value normalisation
 then reads that snapshot, not the caller's record; proxy reflection can still execute caller code.
+The snapshot has no prototype, so inherited setters cannot intercept capture. Only own option
+fields are present: inherited values do not supply omitted options.
 
 It validates numeric, paint, text, boolean and direction values, checks icon override authority
 and minimum size, and resolves one context. [Core Render Options](../../../core/render/index.md)
 owns portable semantics; [SVG Render Result](../index.md) owns the target representation.
+
+The private context represents absent colour, accessible name and title with explicit own
+`undefined` slots. Optional viewport hints and rectangle radii are read only when present as own
+definition fields. Freezing a definition does not turn inherited properties into accepted data.
 
 ## Serialisation
 

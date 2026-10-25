@@ -54,16 +54,22 @@ export class VersionCommandDefinition implements ICommandDefinition {
       throw new TypeError("Invalid version command invocation");
     }
 
-    if (invocation.location === true && context.cliLocation === undefined) {
+    const scopeValue = Object.hasOwn(invocation, "scope") ? invocation.scope : undefined;
+    const dependenciesValue = Object.hasOwn(invocation, "dependencies") ? invocation.dependencies : undefined;
+    const locationValue = Object.hasOwn(invocation, "location") ? invocation.location : undefined;
+
+    const cliLocation = Object.hasOwn(context, "cliLocation") ? context.cliLocation : undefined;
+
+    if (locationValue === true && cliLocation === undefined) {
       return this.#invalid("version location requires executed-CLI evidence");
     }
 
-    const location = invocation.location === true ? context.cliLocation : undefined;
+    const location = locationValue === true ? cliLocation : undefined;
 
-    if (invocation.dependencies === true) {
-      const cli = invocation.scope === undefined || invocation.scope === "cli";
+    if (dependenciesValue === true) {
+      const cli = scopeValue === undefined || scopeValue === "cli";
       const source = cli ? asterPackageVersionSources.cli : asterPackageVersionSources.project;
-      const evidence = context.packageDependencies;
+      const evidence = Object.hasOwn(context, "packageDependencies") ? context.packageDependencies : undefined;
 
       if (evidence?.source !== source || !this.#matchesGroups(invocation, evidence.groups, context)) {
         return this.#invalid(`version request requires complete ${source} dependency evidence`);
@@ -77,7 +83,7 @@ export class VersionCommandDefinition implements ICommandDefinition {
       }));
     }
 
-    if (invocation.scope === undefined) {
+    if (scopeValue === undefined) {
       return this.#results.success(asterCommandNames.version, Object.freeze({
         kind: asterCommandPayloadKinds.version,
         productName: context.productName,
@@ -86,7 +92,7 @@ export class VersionCommandDefinition implements ICommandDefinition {
       }));
     }
 
-    if (invocation.scope === "cli") {
+    if (scopeValue === "cli") {
       return this.#results.success(asterCommandNames.version, Object.freeze({
         kind: asterCommandPayloadKinds.packageVersions,
         source: asterPackageVersionSources.cli,
@@ -98,9 +104,9 @@ export class VersionCommandDefinition implements ICommandDefinition {
       }));
     }
 
-    const evidence = context.packageVersions;
-    const aggregate = invocation.scope === asterVersionScopes.all;
-    const expectedName = aggregate ? undefined : asterInstalledPackageNames[invocation.scope];
+    const evidence = Object.hasOwn(context, "packageVersions") ? context.packageVersions : undefined;
+    const aggregate = scopeValue === asterVersionScopes.all;
+    const expectedName = aggregate ? undefined : asterInstalledPackageNames[scopeValue];
     const packages = evidence?.packages.filter((entry) =>
       expectedName === undefined || entry.name === expectedName
     );
@@ -129,22 +135,30 @@ export class VersionCommandDefinition implements ICommandDefinition {
    * @returns Whether the supplied roots can satisfy this request without substitution.
    */
   #matchesGroups(
-    invocation: Extract<AsterCommandInvocationType, { command: typeof asterCommandNames.version }>,
+    invocation: Extract<
+      AsterCommandInvocationType,
+      {
+        /** @description Version invocation discriminator used for request narrowing. */
+        command: typeof asterCommandNames.version;
+      }
+    >,
     groups: readonly AsterPackageDependencyGroup[],
     context: AsterCommandContext,
   ): boolean {
-    if (invocation.scope === undefined || invocation.scope === "cli") {
+    const scopeValue = Object.hasOwn(invocation, "scope") ? invocation.scope : undefined;
+
+    if (scopeValue === undefined || scopeValue === "cli") {
       return groups.length === 1
         && groups[0]?.root.name === asterInstalledPackageNames.cli
         && groups[0].root.version === context.productVersion;
     }
 
-    if (invocation.scope === asterVersionScopes.all) {
+    if (scopeValue === asterVersionScopes.all) {
       return true;
     }
 
     return groups.length === 1
-      && groups[0]?.root.name === asterInstalledPackageNames[invocation.scope];
+      && groups[0]?.root.name === asterInstalledPackageNames[scopeValue];
   }
 
   /**
@@ -184,11 +198,11 @@ export class VersionCommandDefinition implements ICommandDefinition {
   #invalid(message: string): AsterCommandResultType {
     return this.#results.failure(
       asterCommandNames.version,
-      this.#diagnostics.create(
-        commandDiagnosticSchema.categories.usage,
-        commandDiagnosticSchema.codes.invalidContext,
+      this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.usage,
+        code: commandDiagnosticSchema.codes.invalidContext,
         message,
-      ),
+      }),
     );
   }
 }

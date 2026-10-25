@@ -46,7 +46,7 @@ export class DocumentationVerifier {
   /**
    * @description Verifies canonical documentation for one explicit workspace.
    * @param {string} workspaceRoot - Absolute repository root to verify.
-   * @returns {Promise<Readonly<{ issues: readonly string[], markdownFileCount: number }>>} Immutable verification result.
+   * @returns {Promise<Readonly<{ issues: readonly string[], markdownFileCount: number }>>} Result containing ordered failures in `issues` and the inspected canonical-document count in `markdownFileCount`.
    */
   async verify(workspaceRoot) {
     const issues = new DocumentationIssueCollector();

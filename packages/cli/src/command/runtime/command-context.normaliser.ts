@@ -49,17 +49,23 @@ export class CommandContextNormaliser {
    * @returns Accepted immutable context or structured rejection evidence.
    */
   normalise(value: unknown): TAcceptanceResult<AsterCommandContext> {
-    const record = this.#data.record(value, [
-      "catalogues",
-      "productName",
-      "productVersion",
-      "packageVersions",
-      "packageDependencies",
-      "cliLocation",
-    ], ["catalogues", "productName", "productVersion"]);
+    const record = this.#data.record(
+      value,
+      [
+        "catalogues",
+        "productName",
+        "productVersion",
+        "packageVersions",
+        "packageDependencies",
+        "cliLocation",
+      ],
+      ["catalogues", "productName", "productVersion"],
+    );
 
     if (record === undefined) {
-      return this.#invalid("expected product metadata, catalogues, and optional version evidence only");
+      return this.#invalid(
+        "expected product metadata, catalogues, and optional version evidence only",
+      );
     }
 
     const providerValues = this.#data.array(record.catalogues);
@@ -69,35 +75,51 @@ export class CommandContextNormaliser {
     }
 
     if (!this.#isNonEmptyString(record.productName)) {
-      return this.#invalid("expected context.productName to be a non-empty string");
+      return this.#invalid(
+        "expected context.productName to be a non-empty string",
+      );
     }
 
     if (!this.#isNonEmptyString(record.productVersion)) {
-      return this.#invalid("expected context.productVersion to be a non-empty string");
+      return this.#invalid(
+        "expected context.productVersion to be a non-empty string",
+      );
     }
 
-    const packageVersions = record.packageVersions === undefined
+    const packageVersions = !Object.hasOwn(record, "packageVersions")
       ? undefined
       : this.#acceptPackageVersions(record.packageVersions);
 
-    if (Object.hasOwn(record, "packageVersions") && packageVersions === undefined) {
-      return this.#invalid("expected context.packageVersions to contain a source and unique public package versions");
+    if (
+      Object.hasOwn(record, "packageVersions") &&
+      packageVersions === undefined
+    ) {
+      return this.#invalid(
+        "expected context.packageVersions to contain a source and unique public package versions",
+      );
     }
 
-    const packageDependencies = record.packageDependencies === undefined
+    const packageDependencies = !Object.hasOwn(record, "packageDependencies")
       ? undefined
       : this.#acceptPackageDependencies(record.packageDependencies);
 
-    if (Object.hasOwn(record, "packageDependencies") && packageDependencies === undefined) {
-      return this.#invalid("expected context.packageDependencies to contain valid root groups");
+    if (
+      Object.hasOwn(record, "packageDependencies") &&
+      packageDependencies === undefined
+    ) {
+      return this.#invalid(
+        "expected context.packageDependencies to contain valid root groups",
+      );
     }
 
-    const cliLocation = record.cliLocation === undefined
+    const cliLocation = !Object.hasOwn(record, "cliLocation")
       ? undefined
       : this.#acceptCliLocation(record.cliLocation);
 
     if (Object.hasOwn(record, "cliLocation") && cliLocation === undefined) {
-      return this.#invalid("expected context.cliLocation to identify the executed CLI");
+      return this.#invalid(
+        "expected context.cliLocation to identify the executed CLI",
+      );
     }
 
     const catalogues: CatalogueProvider[] = [];
@@ -119,12 +141,15 @@ export class CommandContextNormaliser {
     if (new Set(identities).size !== identities.length) {
       return Object.freeze({
         accepted: false,
-        diagnostic: this.#diagnostics.create(
-          commandDiagnosticSchema.categories.catalogueConflict,
-          commandDiagnosticSchema.codes.catalogueConflict,
-          "catalogue provider identities must be unique",
-          identities,
-        ),
+        diagnostic: this.#diagnostics.create({
+          category: commandDiagnosticSchema.categories.catalogueConflict,
+          code: commandDiagnosticSchema.codes.catalogueConflict,
+          message: "catalogue provider identities must be unique",
+          details: {
+            kind: commandDiagnosticSchema.details.catalogues,
+            catalogues: identities,
+          },
+        }),
       });
     }
 
@@ -149,11 +174,11 @@ export class CommandContextNormaliser {
   #invalid(message: string): TAcceptanceResult<AsterCommandContext> {
     return Object.freeze({
       accepted: false,
-      diagnostic: this.#diagnostics.create(
-        commandDiagnosticSchema.categories.usage,
-        commandDiagnosticSchema.codes.invalidContext,
+      diagnostic: this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.usage,
+        code: commandDiagnosticSchema.codes.invalidContext,
         message,
-      ),
+      }),
     });
   }
 
@@ -312,9 +337,11 @@ export class CommandContextNormaliser {
   }
 
   /**
-   * @description Determines whether a candidate satisfies the narrow catalogue-provider shape.
+   * @description Snapshots a candidate's data capabilities without invoking provider operations.
+   * @remarks Accepted operations are snapshotted and invoked with the original provider as receiver;
+   * their results still require strict downstream acceptance.
    * @param value - Candidate provider.
-   * @returns Whether the provider can be accepted without invoking it.
+   * @returns Accepted provider or no value when its capability shape is invalid.
    */
   #acceptProvider(value: unknown): CatalogueProvider | undefined {
     if (typeof value !== "object" || value === null || Array.isArray(value)) {
@@ -347,19 +374,10 @@ export class CommandContextNormaliser {
     return Object.freeze({
       identity,
 
-      /**
-       * @description Invokes snapshotted discovery with its original receiver.
-       * @returns Provider-owned discovery candidate for strict downstream acceptance.
-       */
       async discover(): Promise<CatalogueDiscovery> {
         return Reflect.apply(discover, value, []) as Promise<CatalogueDiscovery>;
       },
 
-      /**
-       * @description Invokes the snapshotted exact icon loader with its original receiver.
-       * @param selectedIdentity - Complete selected icon identity.
-       * @returns Provider-owned definition candidate or no value.
-       */
       async loadIcon(
         selectedIdentity: IconIdentity,
       ): Promise<IconDefinition | undefined> {
@@ -368,11 +386,6 @@ export class CommandContextNormaliser {
         >;
       },
 
-      /**
-       * @description Invokes the snapshotted exact collection loader with its original receiver.
-       * @param selectedIdentity - Complete selected collection identity.
-       * @returns Provider-owned definition candidate or no value.
-       */
       async loadCollection(
         selectedIdentity: CollectionIdentity,
       ): Promise<CollectionDefinition | undefined> {
@@ -408,7 +421,7 @@ export class CommandContextNormaliser {
       const descriptor = Object.getOwnPropertyDescriptor(owner, key);
 
       if (descriptor !== undefined) {
-        return "value" in descriptor
+        return Object.hasOwn(descriptor, "value")
           ? Object.freeze({ value: descriptor.value })
           : undefined;
       }

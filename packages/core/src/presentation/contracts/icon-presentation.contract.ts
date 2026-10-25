@@ -6,7 +6,7 @@ import type {
 } from "../types/index.js";
 
 /**
- * @description Explicit portable presentation retained by a node or collection default.
+ * @description Explicit portable presentation retained by a node or an icon's default policy.
  */
 export interface IconPresentation {
   /**

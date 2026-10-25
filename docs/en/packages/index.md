@@ -42,3 +42,5 @@ additional pages.
 Quality records own acceptance evidence, comparison baselines own measurements, and histories own
 release-specific facts. [Versioning](../project/versioning.md) governs compatibility across packages;
 [publication records](../project/publications/index.md) retain verification of distributed combinations.
+The [integrated performance reference](../tooling/performance/index.md#integrated-consumer-observations)
+distinguishes complete consumer workflows from isolated package operations and resource probes.

@@ -31,18 +31,42 @@ provided explicitly to the kernel and never registered globally.
 | `AsterVersionScopeType` | One installed package selector or the complete `all` scope. | Used by scoped version invocations and the private installed-manifest reader. |
 | `AsterPackageVersionSourceType` | Closed `project` or `cli` provenance of selected package roots. | Shared by package-version and dependency evidence. |
 | `AsterCliLocationStatusType` | Closed `same`, `different`, `absent`, `no-project`, or `unavailable` comparison outcome. | Used by `AsterCliLocationEvidence`, not inferred from version strings. |
-| `AsterCommandListSubjectType` | Closed subject union for `catalogues`, `collections`, and `icons`. | Derived from the list branch of the immutable command-subject authority. |
-| `AsterCommandShowSubjectType` | Closed subject union for `icon` and `collection`. | Derived from the show branch of the immutable command-subject authority. |
+| `AsterCommandListSubjectType` | Closed subject union for `catalogues`, `collections`, `glyphs` and `icons`. | Derived from the list branch of the immutable command-subject authority. |
+| `AsterCommandShowSubjectType` | Closed subject union for `glyph`, `icon` and `collection`. | Derived from the show branch; Export and Review retain their separate concrete-only subjects. |
 | `AsterCommandInvocationType` | Discriminated structured request union with command-specific subjects and filters. | Validated and isolated by the [Command Invocation](invocation/index.md) subfeature. |
 | `AsterCommandPayloadKindType` | Closed discriminator union for every current success payload. | Derived from the immutable payload-kind authority. |
 | `AsterCommandPayloadType` | Closed union of export, review, discovery, help, product version, package versions, and package dependencies. | Retains source-tagged version evidence and optional CLI location only when requested. |
 | `AsterCommandResultType` | Generic structured success or failure outcome. | Success defaults to `AsterCommandPayloadType`; failure retains `AsterCommandDiagnosticType`. |
-| `AsterCommandDiagnosticType` | Stable code, category, message, and optional related-value evidence. | Its categories and codes derive from one immutable runtime schema. |
+| `AsterCommandDiagnosticType` | Correlated stable code/category, deterministic message and applicable supporting details. | Uses `AsterCommandDiagnosticDetailsType`; both derive their closed vocabulary from the immutable diagnostic schema. |
+| `AsterCommandDiagnosticDetailsType` | Discriminated supporting facts with explicit provider, lookup, selection, member and artefact roles. | Required only by the diagnostic families described below; an individual icon selection cannot carry a failing collection member. |
 | `AsterCommandDiagnosticCodeType` | Closed stable diagnostic-code union. | Derived from the code branch of the immutable diagnostic schema. |
 | `AsterCommandDiagnosticCategoryType` | Closed stable diagnostic-category union. | Derived from the category branch of the immutable diagnostic schema. |
 
 The internal `TAcceptanceResult<Value>` carries either one canonical boundary value or one
 structured rejection without throwing an expected command error.
+
+## Diagnostic details
+
+Failures retain a stable `code`, its corresponding `category` and a deterministic `message`.
+Applicable families also carry `details` with an explicit `kind`; consumers discriminate these
+facts rather than interpret message wording. The internal factory copies retained containers and
+freezes them without freezing provider-owned inputs. It constructs typed accepted facts, not
+arbitrary external JSON. Native exception text is not supporting evidence.
+
+| Code | Detail kind | Supporting facts |
+| --- | --- | --- |
+| `ASTER-CLI-003` | `catalogues` or `catalogue` | Complete received provider identities, including repeated claims, or the responsible discovery provider. |
+| `ASTER-CLI-004` | `lookup` | Explicit `subject` (`catalogue`, `icon`, `glyph` or `collection`) and requested `identity`. |
+| `ASTER-CLI-005` | `ambiguity` | Requested `subject`/`identity` and at least two distinct candidate `catalogues` in canonical order. |
+| `ASTER-CLI-006` | `catalogue` or `definition` | Responsible provider; a definition failure also retains `selection.kind` (`icon` or `collection`) and `selection.identity`. Only a collection selection may carry a known failing `member` icon identity. |
+| `ASTER-CLI-007` | `export-render` or `review-render` | Logical artefact `path` for Export, or concrete `icon` identity for Review. |
+| `ASTER-CLI-008` | `path-conflict` | Logical artefact `path` claimed by multiple selected definitions. |
+
+Codes `001`, `002`, `009`, `010`, `011` and `999` have no additional accepted supporting facts
+and do not carry `details`. Optional member evidence remains absent for collection-wide failures.
+No identity, namespace, treatment or provider is inferred from a message or a position in an array.
+[Shell presentation](../shell/presentation/index.md#diagnostic-evidence) owns human labels and framing;
+JSON retains these structured facts unchanged.
 
 ## Invocation semantics
 
@@ -52,6 +76,11 @@ invalid subjects, non-canonical identities/filters and duplicate tags are usage 
 
 Search queries are trimmed and lowercased. Textual identity and tag acceptance follow the
 [shared CLI grammar](../shared/index.md).
+
+Glyph list/show use `glyph-list` (`glyphs`) and `glyph-show` (`glyph`) payloads containing
+`CatalogueGlyphResult`. The `glyph?: string` filter applies only to icon listing, not Search or
+other list subjects. [Catalogue semantics](../catalogue/index.md#discovery-semantics) owns exact
+family matching, supported filter combinations, ordering, empty results and ambiguity.
 
 Export accepts an exact icon or collection identity, an optional provider filter, and a closed
 portable option record. Icon export additionally accepts `label` and `title`. The complete export

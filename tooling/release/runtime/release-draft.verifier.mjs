@@ -1,3 +1,5 @@
+import { releaseRecordSnapshot } from "./release-record.snapshot.mjs";
+
 /**
  * @description Reads back a GitHub draft, its tag and its uploaded npm archive digest.
  */
@@ -36,7 +38,7 @@ export class ReleaseDraftVerifier {
     if (!Number.isSafeInteger(releaseId) || releaseId <= 0) {
       throw new Error("Draft verification requires a valid release ID.");
     }
-    const intent = this.#object(value, "release intent");
+    const intent = releaseRecordSnapshot(value, "release intent");
     const tag = this.#string(intent.tag, "approved tag");
     const sourceCommit = this.#string(
       intent.sourceCommit,
@@ -50,11 +52,11 @@ export class ReleaseDraftVerifier {
     );
     const sha256 = this.#string(intent.sha256, "approved SHA-256");
 
-    const reference = this.#object(
+    const reference = releaseRecordSnapshot(
       await this.#json(`${this.#githubApi}/git/ref/tags/${tag}`),
       "Git tag",
     );
-    const target = this.#object(reference.object, "Git tag target");
+    const target = releaseRecordSnapshot(reference.object, "Git tag target");
     if (
       reference.ref !== `refs/tags/${tag}` ||
       target.type !== "commit" ||
@@ -65,7 +67,7 @@ export class ReleaseDraftVerifier {
       );
     }
 
-    const release = this.#object(
+    const release = releaseRecordSnapshot(
       await this.#json(`${this.#githubApi}/releases/${releaseId}`),
       "GitHub draft",
     );
@@ -87,7 +89,7 @@ export class ReleaseDraftVerifier {
         "The GitHub draft must contain exactly one package archive.",
       );
     }
-    const asset = this.#object(assets[0], "draft asset");
+    const asset = releaseRecordSnapshot(assets[0], "draft asset");
     if (
       asset.name !== archiveName ||
       asset.state !== "uploaded" ||
@@ -122,19 +124,6 @@ export class ReleaseDraftVerifier {
       );
     }
     return response.json();
-  }
-
-  /**
-   * @description Requires an ordinary JSON object.
-   * @param {unknown} value - Untrusted value.
-   * @param {string} label - Diagnostic label.
-   * @returns {Record<string, unknown>} Object value.
-   */
-  #object(value, label) {
-    if (typeof value !== "object" || value === null || Array.isArray(value)) {
-      throw new Error(`Expected ${label} to be an object.`);
-    }
-    return Object.fromEntries(Object.entries(value));
   }
 
   /**

@@ -19,7 +19,12 @@ export class CommandLineOptionParser {
     accepted: readonly string[],
     command: AsterCommandNameType,
   ): TParsedCommandOptions {
-    const options: TParsedCommandOptions = { tags: [] };
+    const options: TParsedCommandOptions = {
+      catalogue: undefined,
+      collection: undefined,
+      glyph: undefined,
+      tags: [],
+    };
 
     for (let index = 0; index < tokens.length; index += 1) {
       const option = tokens[index];
@@ -53,6 +58,14 @@ export class CommandLineOptionParser {
         }
 
         options.catalogue = value;
+        continue;
+      }
+
+      if (option === commandLineTokens.options.glyph) {
+        if (options.glyph !== undefined) {
+          throw new CommandLineError("option --glyph cannot be repeated", command);
+        }
+        options.glyph = value;
         continue;
       }
 

@@ -25,9 +25,9 @@ export class ImportBaselineRunner {
 
   /**
    * @description Creates one Import baseline composition.
-   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Generic measurement authority.
+   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Canonical `BenchmarkRunner.measure()` and `methodology()` capabilities.
    * @param {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector} distributionInspector - Package distribution authority.
-   * @param {{ environment(): object }} host - Runtime environment authority.
+   * @param {{ environment(): object }} host - Canonical `NodeBenchmarkHost.environment()` capability.
    * @param {import("../contracts/internal/import-baseline-fixtures.contract.mjs").IImportBaselineFixtures} fixtures - Prepared public Import scenario inputs.
    */
   constructor(benchmarkRunner, distributionInspector, host, fixtures) {
@@ -97,7 +97,7 @@ export class ImportBaselineRunner {
    * @description Adapts one public Import operation to the generic repeated-scenario contract.
    * @param {{ readonly name: string, readonly operationsPerSample: number }} configuration - Stable scenario identity and operation count.
    * @param {() => import("@luscious-garden/aster-import").DiagnosticResultType<unknown>} operation - Public Import operation under measurement.
-   * @returns {{ readonly name: string, readonly operationsPerSample: number, execute(iterations: number): number }} Repeated benchmark scenario.
+   * @returns {{ readonly name: string, readonly operationsPerSample: number, execute(iterations: number): number }} Canonical `IBenchmarkScenario` capabilities: `name` identifies the workload, `operationsPerSample` fixes its count, and `execute(iterations)` returns the repeated-operation checksum.
    */
   #scenario(configuration, operation) {
     return Object.freeze({

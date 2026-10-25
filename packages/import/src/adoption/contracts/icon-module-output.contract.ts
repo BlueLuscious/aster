@@ -5,7 +5,7 @@ export interface IconModuleOutput {
   /**
    * @description Deterministic exported TypeScript identifier.
    */
-  readonly symbol: string;
+  readonly exportName: string;
 
   /**
    * @description Suggested relative source path following Aster icon naming.

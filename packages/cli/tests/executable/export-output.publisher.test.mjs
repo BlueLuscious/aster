@@ -118,7 +118,7 @@ test("publishes complete nested trees beside absent targets deterministically", 
 
   try {
     const publisher = fixturePublisher(new NodeOutputFileSystem());
-    const exportPlan = plan(["aster/camera.svg", "aster/ui/close.svg"]);
+    const exportPlan = plan(["aster/camera@outline.svg", "aster/ui/close.svg"]);
     const first = await publisher.publish(exportPlan, root, "nested/first");
     const second = await publisher.publish(exportPlan, root, "nested/second");
 
@@ -128,7 +128,7 @@ test("publishes complete nested trees beside absent targets deterministically", 
       committed: true,
     });
     assert.equal(
-      await readFile(resolve(root, "nested/first/aster/camera.svg"), "utf8"),
+      await readFile(resolve(root, "nested/first/aster/camera@outline.svg"), "utf8"),
       svg,
     );
     assert.equal(
@@ -136,7 +136,7 @@ test("publishes complete nested trees beside absent targets deterministically", 
       svg,
     );
     assert.equal(
-      await readFile(resolve(root, "nested/second/aster/camera.svg"), "utf8"),
+      await readFile(resolve(root, "nested/second/aster/camera@outline.svg"), "utf8"),
       svg,
     );
     assert.equal(first.artefactCount, second.artefactCount);

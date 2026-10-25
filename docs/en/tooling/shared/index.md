@@ -20,6 +20,12 @@ vocabulary.
 | `RepositoryDirectoryReader` | Reads sorted immediate directory membership from optional roots. | Architecture, Documentation. |
 | `RepositoryFileWalker` | Traverses optional directory trees deterministically with caller-owned file selection. | Architecture, Documentation, Performance. |
 
+`RepositoryJsonReader` gives every parsed object a null prototype, including nested records.
+Arrays retain their ordinary prototype, and JSON-owned keys such as `__proto__` remain data.
+The reader does not freeze values or validate feature-specific schemas; each consumer owns that
+validation. Its object representation prevents absent manifest/configuration fields from resolving
+through the host prototype.
+
 Filesystem-facing classes depend on the internal `IRepositoryFileSystem` capability rather than
 reading process state. It exposes existence, immediate entries, UTF-8 text acquisition, and file
 size without deletion or writing. Entry records use the internal `IRepositoryDirectoryEntry`
@@ -27,6 +33,12 @@ shape, composed from one name and one `TRepositoryEntryKind`, so shared runtime 
 depend on Node directory-entry objects.
 
 ## Boundaries
+
+`RepositoryPathResolver.contains()` delegates lexical normalisation to Node's relative-path
+operation, then rejects parent escapes and absolute cross-volume relations. It does not use raw
+string prefixes, retain resolved paths between calls, test existence or resolve symbolic links.
+Filesystem ownership and link checks remain the responsibility of the capability performing an
+effect; lexical containment alone is not a filesystem sandbox.
 
 Shared tooling does not expose deletion, writing, terminal output, process exit state, package
 policy, Markdown policy, or benchmark scenarios. Destructive cleanup remains owned by
@@ -38,6 +50,8 @@ contracts do not form part of an Aster package ABI.
 
 ## Tests
 
-Tests verify path containment, sibling/parent rejection, Windows cross-volume rejection,
-deterministic traversal, absent optional roots, strict JSON acquisition and malformed input.
+Tests verify lexical path containment against the native resolved-path expression, sibling/parent
+rejection, relative and empty inputs, current-directory changes, Windows volumes/UNC/device paths,
+POSIX distinctions and native invalid-argument errors. They also cover deterministic traversal,
+absent optional roots, strict JSON acquisition and malformed input.
 Feature fixtures verify the command behaviour built on these capabilities.

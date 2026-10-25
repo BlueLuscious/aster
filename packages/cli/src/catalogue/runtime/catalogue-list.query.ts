@@ -12,7 +12,7 @@ import { CatalogueQueryScope } from "./catalogue-query.scope.js";
 import { CatalogueResultFactory } from "./catalogue-result.factory.js";
 
 /**
- * @description Executes deterministic provider, collection, and icon listing.
+ * @description Executes deterministic provider, collection, glyph and concrete icon listing.
  */
 export class CatalogueListQuery {
   /**
@@ -59,13 +59,18 @@ export class CatalogueListQuery {
     >,
     context: AsterCommandContext,
   ): Promise<AsterCommandResultType> {
+    const tagsValue = Object.hasOwn(invocation, "tags") ? invocation.tags : undefined;
+    const glyphValue = Object.hasOwn(invocation, "glyph") ? invocation.glyph : undefined;
+    const collectionValue = Object.hasOwn(invocation, "collection") ? invocation.collection : undefined;
+    const catalogueValue = Object.hasOwn(invocation, "catalogue") ? invocation.catalogue : undefined;
+
     const loaded = await this.#loader.discover(context.catalogues);
 
     if (!loaded.accepted) {
       return this.#commandResults.failure(asterCommandNames.list, loaded.diagnostic);
     }
 
-    const selected = this.#scope.selectCatalogues(loaded.value, invocation.catalogue);
+    const selected = this.#scope.selectCatalogues(loaded.value, catalogueValue);
 
     if (!selected.accepted) {
       return this.#commandResults.failure(asterCommandNames.list, selected.diagnostic);
@@ -91,7 +96,19 @@ export class CatalogueListQuery {
       }));
     }
 
-    const collection = this.#scope.acceptCollection(selected.value, invocation.collection);
+    if (invocation.subject === asterCommandSubjects.list.glyphs) {
+      return this.#commandResults.success(asterCommandNames.list, Object.freeze({
+        kind: asterCommandPayloadKinds.glyphList,
+        glyphs: Object.freeze(selected.value.flatMap((catalogue) => this.#catalogueResults.glyphs(catalogue))),
+      }));
+    }
+
+    const glyph = this.#scope.acceptGlyph(selected.value, glyphValue);
+    if (!glyph.accepted) {
+      return this.#commandResults.failure(asterCommandNames.list, glyph.diagnostic);
+    }
+
+    const collection = this.#scope.acceptCollection(selected.value, collectionValue);
 
     if (!collection.accepted) {
       return this.#commandResults.failure(asterCommandNames.list, collection.diagnostic);
@@ -101,8 +118,9 @@ export class CatalogueListQuery {
       kind: asterCommandPayloadKinds.iconList,
       icons: Object.freeze(selected.value.flatMap((catalogue) =>
         catalogue.icons
-          .filter((record) => this.#scope.matchesCollection(record, invocation.collection))
-          .filter((record) => this.#scope.matchesTags(record.metadata.tags, invocation.tags))
+          .filter((record) => this.#scope.matchesGlyph(record, glyphValue))
+          .filter((record) => this.#scope.matchesCollection(record, collectionValue))
+          .filter((record) => this.#scope.matchesTags(Object.hasOwn(record.metadata, "tags") ? record.metadata.tags : undefined, tagsValue))
           .map((record) => this.#catalogueResults.icon(catalogue.identity, record)),
       )),
     }));

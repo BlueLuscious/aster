@@ -21,7 +21,7 @@ import { IconImportError } from "../../error/index.js";
 import { iconImportFormats } from "../../format/constants/icon-import-formats.constant.js";
 import { IconImportAdapterRegistry } from "../../format/runtime/icon-import-adapter.registry.js";
 import { IconImportSourceNormaliser } from "../../source/runtime/icon-import-source.normaliser.js";
-import { SourceIdNormaliser } from "../../source/runtime/source-id.normaliser.js";
+import { SourceIdValidator } from "../../source/runtime/source-id.validator.js";
 import { IconIdentityFormatter } from "../../shared/runtime/icon-identity.formatter.js";
 import { ImportValueValidator } from "../../shared/runtime/import-value.validator.js";
 import { IconAdoptionDiagnosticFactory } from "./icon-adoption-diagnostic.factory.js";
@@ -83,7 +83,7 @@ export class IconAdoptionService {
   /**
    * @description Logical source identifier authority for supplied draft provenance.
    */
-  readonly #sourceIdNormaliser = new SourceIdNormaliser();
+  readonly #sourceIdValidator = new SourceIdValidator();
 
   /**
    * @description Inspects one explicit source through its exact format adapter.
@@ -147,7 +147,7 @@ export class IconAdoptionService {
         "unsupported import format",
       );
     }
-    this.#sourceIdNormaliser.normalise(
+    this.#sourceIdValidator.validate(
       provenance.sourceId,
       "request.draft.provenance.sourceId",
     );
@@ -342,12 +342,12 @@ export class IconAdoptionService {
         diagnostics.push(this.#diagnosticFactory.duplicateIdentity(sourceId));
       }
 
-      if (symbols.has(entry.module.symbol)) {
+      if (symbols.has(entry.module.exportName)) {
         diagnostics.push(this.#diagnosticFactory.duplicateSymbol(sourceId));
       }
 
       identities.add(identity);
-      symbols.add(entry.module.symbol);
+      symbols.add(entry.module.exportName);
     }
   }
 

@@ -119,8 +119,11 @@ export class SvgMarkupSerialiser {
         return `<circle${this.#attribute("cx", this.#numberSerialiser.serialise(node.cx))}${this.#attribute("cy", this.#numberSerialiser.serialise(node.cy))}${this.#attribute("r", this.#numberSerialiser.serialise(node.radius))}${presentationAttributes}/>`;
       case iconNodeKinds.ellipse:
         return `<ellipse${this.#attribute("cx", this.#numberSerialiser.serialise(node.cx))}${this.#attribute("cy", this.#numberSerialiser.serialise(node.cy))}${this.#attribute("rx", this.#numberSerialiser.serialise(node.radiusX))}${this.#attribute("ry", this.#numberSerialiser.serialise(node.radiusY))}${presentationAttributes}/>`;
-      case iconNodeKinds.rectangle:
-        return `<rect${this.#attribute("x", this.#numberSerialiser.serialise(node.x))}${this.#attribute("y", this.#numberSerialiser.serialise(node.y))}${this.#attribute("width", this.#numberSerialiser.serialise(node.width))}${this.#attribute("height", this.#numberSerialiser.serialise(node.height))}${node.radiusX === undefined ? "" : this.#attribute("rx", this.#numberSerialiser.serialise(node.radiusX))}${node.radiusY === undefined ? "" : this.#attribute("ry", this.#numberSerialiser.serialise(node.radiusY))}${presentationAttributes}/>`;
+      case iconNodeKinds.rectangle: {
+        const radiusX = Object.hasOwn(node, "radiusX") ? node.radiusX : undefined;
+        const radiusY = Object.hasOwn(node, "radiusY") ? node.radiusY : undefined;
+        return `<rect${this.#attribute("x", this.#numberSerialiser.serialise(node.x))}${this.#attribute("y", this.#numberSerialiser.serialise(node.y))}${this.#attribute("width", this.#numberSerialiser.serialise(node.width))}${this.#attribute("height", this.#numberSerialiser.serialise(node.height))}${radiusX === undefined ? "" : this.#attribute("rx", this.#numberSerialiser.serialise(radiusX))}${radiusY === undefined ? "" : this.#attribute("ry", this.#numberSerialiser.serialise(radiusY))}${presentationAttributes}/>`;
+      }
       case iconNodeKinds.line:
         return `<line${this.#attribute("x1", this.#numberSerialiser.serialise(node.x1))}${this.#attribute("y1", this.#numberSerialiser.serialise(node.y1))}${this.#attribute("x2", this.#numberSerialiser.serialise(node.x2))}${this.#attribute("y2", this.#numberSerialiser.serialise(node.y2))}${presentationAttributes}/>`;
       case iconNodeKinds.polyline:
@@ -210,17 +213,17 @@ export class SvgMarkupSerialiser {
    */
   #points(points: readonly IconPoint[]): string {
     return points
-      .flatMap((point) => [
-        this.#numberSerialiser.serialise(point.x),
-        this.#numberSerialiser.serialise(point.y),
-      ])
+      .map(
+        (point) =>
+          `${this.#numberSerialiser.serialise(point.x)} ${this.#numberSerialiser.serialise(point.y)}`,
+      )
       .join(" ");
   }
 
   /**
    * @description Computes the accepted horizontal reflection matrix for RTL geometry.
    * @param context - Accepted render context containing definition direction policy.
-   * @returns Escaped matrix attribute with a canonical translation.
+   * @returns Matrix attribute value with a canonical translation.
    */
   #mirrorTransform(context: ISvgRenderContext): string {
     const { minX, width } = context.definition.viewBox;
@@ -258,6 +261,9 @@ export class SvgMarkupSerialiser {
 
   /**
    * @description Escapes accepted SVG attribute text.
+   * @remarks Escapes ampersand, less-than, greater-than and double-quote characters, and emits
+   * numeric references for tab, line feed and carriage return. Returns the original string
+   * when no replacement is needed; otherwise copies only the segments surrounding replacements.
    * @param value - Accepted unescaped attribute value.
    * @returns Escaped attribute text.
    */
@@ -269,25 +275,25 @@ export class SvgMarkupSerialiser {
       let replacement: string | undefined;
 
       switch (value.charCodeAt(index)) {
-        case 0x26: // &
+        case 0x26:
           replacement = "&amp;";
           break;
-        case 0x3c: // <
+        case 0x3c:
           replacement = "&lt;";
           break;
-        case 0x3e: // >
+        case 0x3e:
           replacement = "&gt;";
           break;
-        case 0x22: // "
+        case 0x22:
           replacement = "&quot;";
           break;
-        case 0x09: // Tab
+        case 0x09:
           replacement = "&#9;";
           break;
-        case 0x0a: // Line feed
+        case 0x0a:
           replacement = "&#10;";
           break;
-        case 0x0d: // Carriage return
+        case 0x0d:
           replacement = "&#13;";
           break;
       }

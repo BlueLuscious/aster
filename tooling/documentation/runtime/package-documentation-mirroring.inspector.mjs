@@ -29,7 +29,7 @@ export class PackageDocumentationMirroringInspector {
   /**
    * @description Compares source packages and their authored features with documentation.
    * @param {import("../types/internal/documentation-context.type.mjs").TDocumentationContext} context - Documentation verification context.
-   * @param {import("./documentation-issue.collector.mjs").DocumentationIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/documentation-issue-collector.contract.mjs").IDocumentationIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after package and authored feature membership is compared.
    */
   async inspect(context, issues) {
@@ -60,7 +60,7 @@ export class PackageDocumentationMirroringInspector {
    * @description Compares one package's authored feature roots with its feature documentation.
    * @param {import("../types/internal/documentation-context.type.mjs").TDocumentationContext} context - Documentation verification context.
    * @param {string} member - Workspace package directory name.
-   * @param {import("./documentation-issue.collector.mjs").DocumentationIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/documentation-issue-collector.contract.mjs").IDocumentationIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after feature membership is compared.
    */
   async #inspectFeatures(context, member, issues) {

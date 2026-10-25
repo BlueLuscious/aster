@@ -91,6 +91,10 @@ export class ReviewDocumentSerialiser {
    */
   #collection(document: AsterCollectionReviewDocument): string {
     const identity = this.#identities.collection(document.identity);
+    const description = Object.hasOwn(document.metadata, "description") ? document.metadata.description : undefined;
+    const licence = Object.hasOwn(document.metadata, "licence") ? document.metadata.licence : undefined;
+    const attribution = Object.hasOwn(document.metadata, "attribution") ? document.metadata.attribution : undefined;
+    const tags = Object.hasOwn(document.metadata, "tags") ? document.metadata.tags : undefined;
     const contactSheet = document.icons.length === 0
       ? '<p class="review-empty">This collection contains no icons.</p>'
       : `<div class="review-contact-sheet">${document.icons.map((icon) => this.#contactCard(icon)).join("")}</div>`;
@@ -109,12 +113,12 @@ export class ReviewDocumentSerialiser {
       '<dl class="review-summary">',
       this.#datum("Identity", identity),
       this.#datum("Display name", document.metadata.displayName),
-      this.#datum("Description", document.metadata.description ?? "Not provided"),
-      this.#datum("Licence", document.metadata.licence ?? "Not provided"),
-      this.#datum("Attribution", document.metadata.attribution ?? "Not provided"),
+      this.#datum("Description", description ?? "Not provided"),
+      this.#datum("Licence", licence ?? "Not provided"),
+      this.#datum("Attribution", attribution ?? "Not provided"),
       this.#datum("Member count", String(document.icons.length)),
       "</dl>",
-      this.#tags(document.metadata.tags),
+      this.#tags(tags),
       "</section>",
       '<section class="review-panel" id="contact-sheet" aria-labelledby="contact-sheet-heading">',
       '<h2 id="contact-sheet-heading">Contact sheet</h2>',
@@ -145,9 +149,15 @@ export class ReviewDocumentSerialiser {
     const heading = `h${headingLevel}`;
     const detailHeading = headingLevel === 2 ? "h3" : "h4";
     const viewBox = `${icon.viewBox.minX} ${icon.viewBox.minY} ${icon.viewBox.width} ${icon.viewBox.height}`;
-    const replacement = icon.metadata.replacedBy === undefined
+    const replacedBy = Object.hasOwn(icon.metadata, "replacedBy") ? icon.metadata.replacedBy : undefined;
+    const licence = Object.hasOwn(icon.metadata, "licence") ? icon.metadata.licence : undefined;
+    const attribution = Object.hasOwn(icon.metadata, "attribution") ? icon.metadata.attribution : undefined;
+    const tags = Object.hasOwn(icon.metadata, "tags") ? icon.metadata.tags : undefined;
+    const defaultSize = Object.hasOwn(icon.metadata.presentation, "defaultSize") ? icon.metadata.presentation.defaultSize : undefined;
+    const minimumSize = Object.hasOwn(icon.metadata.presentation, "minimumSize") ? icon.metadata.presentation.minimumSize : undefined;
+    const replacement = replacedBy === undefined
       ? "Not provided"
-      : this.#identities.icon(icon.metadata.replacedBy);
+      : this.#identities.icon(replacedBy);
     const memberships = icon.memberships.length === 0
       ? "Standalone icon"
       : icon.memberships.map((membership) => this.#identities.collection(membership)).join(", ");
@@ -166,10 +176,10 @@ export class ReviewDocumentSerialiser {
       this.#datum("Collections", memberships),
       this.#datum("Deprecated", icon.metadata.deprecated ? "Yes" : "No"),
       this.#datum("Replacement", replacement),
-      this.#datum("Licence", icon.metadata.licence ?? "Not provided"),
-      this.#datum("Attribution", icon.metadata.attribution ?? "Not provided"),
+      this.#datum("Licence", licence ?? "Not provided"),
+      this.#datum("Attribution", attribution ?? "Not provided"),
       "</dl>",
-      this.#tags(icon.metadata.tags),
+      this.#tags(tags),
       `<${detailHeading}>Representative palettes</${detailHeading}>`,
       `<div class="review-palettes">${reviewDocumentPresentation.palettes.map((palette) => `<figure class="review-swatch"><div class="review-canvas ${palette.className}">${icon.markup}</div><figcaption>${this.#html.text(palette.label)}: <code>${this.#html.text(palette.foreground)}</code> on <code>${this.#html.text(palette.background)}</code></figcaption></figure>`).join("")}</div>`,
       `<${detailHeading}>Size ladder</${detailHeading}>`,
@@ -181,7 +191,7 @@ export class ReviewDocumentSerialiser {
       '<div class="review-unavailable"><strong>Safe area</strong><p>No safe-area profile is retained by the portable definition, so this review does not invent one.</p></div>',
       "</div>",
       `<${detailHeading}>Presentation policy</${detailHeading}>`,
-      this.#presentation(icon.metadata.presentation.defaults, icon.metadata.presentation.overrides, icon.metadata.presentation.defaultSize, icon.metadata.presentation.minimumSize),
+      this.#presentation(icon.metadata.presentation.defaults, icon.metadata.presentation.overrides, defaultSize, minimumSize),
       "<details><summary>Rendered SVG markup</summary>",
       `<pre class="review-code"><code>${this.#html.text(icon.markup)}</code></pre>`,
       "</details>",

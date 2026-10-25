@@ -63,7 +63,7 @@ export class SvgBaselineFixtureFactory {
       corpusDefinitions: catalogue.icons,
       overrideDefinition: Icon.define({
         ...minimalDefinition,
-        identity: { namespace: "benchmark", name: "overrides" },
+        identity: { variant: "fixture", namespace: "benchmark", name: "overrides" },
         metadata: {
           ...minimalDefinition.metadata,
           displayName: "Benchmark Overrides",
@@ -75,7 +75,7 @@ export class SvgBaselineFixtureFactory {
       }),
       rtlDefinition: Icon.define({
         ...minimalDefinition,
-        identity: { namespace: "benchmark", name: "rtl-mirror" },
+        identity: { variant: "fixture", namespace: "benchmark", name: "rtl-mirror" },
         viewBox: { minX: -4, minY: 0, width: 24, height: 24 },
         metadata: {
           ...minimalDefinition.metadata,
@@ -85,7 +85,7 @@ export class SvgBaselineFixtureFactory {
       }),
       escapingDefinition: Icon.define({
         ...minimalDefinition,
-        identity: { namespace: "benchmark", name: "escaping" },
+        identity: { variant: "fixture", namespace: "benchmark", name: "escaping" },
         metadata: {
           ...minimalDefinition.metadata,
           displayName: "Benchmark Escaping",
@@ -131,7 +131,7 @@ export class SvgBaselineFixtureFactory {
    */
   #definition(name, nodes) {
     return Icon.define({
-      identity: { namespace: "benchmark", name },
+      identity: { variant: "fixture", namespace: "benchmark", name },
       viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
       nodes,
       metadata: {

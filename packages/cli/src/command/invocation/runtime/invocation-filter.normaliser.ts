@@ -43,6 +43,16 @@ export class InvocationFilterNormaliser {
   }
 
   /**
+   * @description Validates an optional exact glyph identity without a treatment.
+   * @param record - Accepted invocation record.
+   * @param field - Optional glyph filter field.
+   * @returns Whether the absent or present field is accepted.
+   */
+  glyph(record: Readonly<Record<string, unknown>>, field: string): boolean {
+    return !Object.hasOwn(record, field) || this.#identities.glyph(record[field]);
+  }
+
+  /**
    * @description Accepts optional unique canonical tags.
    * @param record - Accepted invocation record.
    * @returns Frozen tags, no value when absent, or null after rejection.

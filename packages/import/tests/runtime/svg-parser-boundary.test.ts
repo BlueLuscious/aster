@@ -19,7 +19,7 @@ function inspect(
   return IconImport.inspect({
     format: iconImportFormats.svg,
     sourceId: `parser/${name}.svg`,
-    identity: { namespace: "parser", name },
+    identity: { variant: "outline", namespace: "parser", name },
     content,
   });
 }

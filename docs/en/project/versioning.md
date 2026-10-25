@@ -80,6 +80,13 @@ as compatible capability, compatible correction or breaking change, naming the a
 or output. Add migration, deprecation, replacement or significant limitations only where useful;
 do not add empty sections or repeat the entire current feature guide. Link to that guide instead.
 
+Performance bullets require matched evidence against the actual preceding published version, not
+an intermediate source refactor. State the operation, scale/lifecycle, statistic and units; give
+the percentage and current absolute cost only where supported. Link to the
+[measurement methodology](../tooling/performance/index.md#comparison-limits) and disclose essential
+environment limits. If the released baseline or equivalent workload is unavailable, omit the
+claim until measured. Current guides retain present costs, not release-to-release comparisons.
+
 The [release preparer](../tooling/release/index.md) consumes the title and body of this page.
 Review the final wording before preparation; do not silently reformat approved historical bodies
 or change published notes through a documentation cleanup. Private source history is labelled

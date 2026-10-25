@@ -59,7 +59,7 @@ export class CatalogueSourceSyntaxInspector {
     const declaration = this.#exportedConstant(
       sourcePath,
       sourceFile,
-      identity.symbol,
+      identity.exportName,
     );
     const definition = this.#definitionObject(
       sourcePath,
@@ -352,15 +352,14 @@ export class CatalogueSourceSyntaxInspector {
       if (
         !ts.isPropertyAssignment(property)
         || !ts.isIdentifier(property.name)
-        || !ts.isIdentifier(property.initializer)
+        || !ts.isObjectLiteralExpression(property.initializer)
       ) {
         throw new CatalogueSourceError(
-          `${sourcePath} collection icons must use direct lower camel-case properties assigned to imported identifiers.`,
+          `${sourcePath} collection icons must use direct lower camel-case properties assigned to variant object literals.`,
         );
       }
 
       const alias = property.name.text;
-      const member = property.initializer.text;
 
       if (!this.#collectionIconAliasPattern.test(alias)) {
         throw new CatalogueSourceError(
@@ -374,23 +373,51 @@ export class CatalogueSourceSyntaxInspector {
         );
       }
 
-      if (members.has(member)) {
-        throw new CatalogueSourceError(
-          `${sourcePath} contains duplicate collection member ${member}.`,
-        );
-      }
-
-      const reference = imports.get(member);
-
-      if (reference === undefined) {
-        throw new CatalogueSourceError(
-          `${sourcePath} collection member ${member} must use a runtime named import.`,
-        );
-      }
-
       aliases.add(alias);
-      members.add(member);
-      references.push(Object.freeze({ alias, ...reference }));
+
+      if (property.initializer.properties.length === 0) {
+        throw new CatalogueSourceError(`${sourcePath} contains an empty variant group ${alias}.`);
+      }
+
+      const group = Object.create(null);
+
+      for (const treatment of property.initializer.properties) {
+        if (
+          !ts.isPropertyAssignment(treatment)
+          || (!ts.isIdentifier(treatment.name) && !ts.isStringLiteralLike(treatment.name))
+          || !ts.isIdentifier(treatment.initializer)
+        ) {
+          throw new CatalogueSourceError(
+            `${sourcePath} collection variants must use direct named properties assigned to imported identifiers.`,
+          );
+        }
+
+        const variantPropertyName = treatment.name.text;
+        const member = treatment.initializer.text;
+
+        if (Object.hasOwn(group, variantPropertyName)) {
+          throw new CatalogueSourceError(
+            `${sourcePath} contains duplicate variant property ${alias}.${variantPropertyName}.`,
+          );
+        }
+
+        if (members.has(member)) {
+          throw new CatalogueSourceError(`${sourcePath} contains duplicate collection member ${member}.`);
+        }
+
+        const reference = imports.get(member);
+
+        if (reference === undefined) {
+          throw new CatalogueSourceError(
+            `${sourcePath} collection member ${member} must use a runtime named import.`,
+          );
+        }
+
+        members.add(member);
+        group[variantPropertyName] = Object.freeze({ alias, variantPropertyName, ...reference });
+      }
+
+      references.push(...Object.values(group));
     }
 
     return Object.freeze(references);
@@ -400,7 +427,7 @@ export class CatalogueSourceSyntaxInspector {
    * @description Indexes static named imports by their local source identifier.
    * @param {string} sourcePath - Absolute source path used for failure context.
    * @param {import("typescript").SourceFile} sourceFile - Parsed TypeScript source.
-   * @returns {ReadonlyMap<string, Omit<import("../contracts/internal/catalogue-collection-member-reference.contract.mjs").ICatalogueCollectionMemberReference, "alias">>} Named import records before collection-local alias assignment.
+   * @returns {ReadonlyMap<string, Omit<import("../contracts/internal/catalogue-collection-member-reference.contract.mjs").ICatalogueCollectionMemberReference, "alias" | "variantPropertyName">>} Named import records before collection-local alias assignment.
    */
   #namedImports(sourcePath, sourceFile) {
     const imports = new Map();

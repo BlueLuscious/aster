@@ -198,7 +198,7 @@ test("returns usage failures for malformed invocations", async () => {
     { command: "remove" },
     { command: "export", subject: "icon", identity: "Camera" },
     { command: "export", subject: "collection", identity: "sample", options: { label: "Sample" } },
-    { command: "export", subject: "icon", identity: "aster/camera", options: { colour: "red" } },
+    { command: "export", subject: "icon", identity: "aster/camera@outline", options: { colour: "red" } },
     { command: "search" },
     { command: "search", query: "camera", tags: ["outline", "outline"] },
     { command: "show", subject: "icon", identity: "Camera" },

@@ -228,7 +228,7 @@ export class SvgParser implements ISvgParser {
             });
           }
 
-          if (location.duplicateAttributeName !== undefined) {
+          if (Object.hasOwn(location, "duplicateAttributeName")) {
             issues.push({
               kind: svgParsingIssueKinds.malformedDocument,
               startOffset: location.span.start.offset,

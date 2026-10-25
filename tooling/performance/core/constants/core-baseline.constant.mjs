@@ -3,7 +3,7 @@
  */
 export const coreBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
-  schemaVersion: 5,
+  schemaVersion: 6,
   /** @description Measured public package identity. */
   packageName: "@luscious-garden/aster-core",
   /** @description Workspace-relative measured package root. */
@@ -24,7 +24,7 @@ export const coreBaseline = Object.freeze({
       /** @description Public operations executed per sample. */
       operationsPerSample: 2_000,
     }),
-    /** @description Canonical icon reconstruction scenario. */
+    /** @description Public acceptance of prepared canonical icon outputs. */
     iconCanonical: Object.freeze({
       /** @description Stable report scenario identity. */
       name: "core.icon.define.canonical",

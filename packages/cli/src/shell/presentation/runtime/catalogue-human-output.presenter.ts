@@ -2,6 +2,7 @@ import { catalogueResultKinds } from "../../../catalogue/constants/catalogue-res
 import type {
   CatalogueCollectionResult,
   CatalogueIconResult,
+  CatalogueGlyphResult,
 } from "../../../catalogue/contracts/index.js";
 import { asterCommandPayloadKinds } from "../../../command/constants/aster-command-payload-kinds.constant.js";
 import type { TCataloguePayload } from "../types/internal/catalogue-payload.type.js";
@@ -32,15 +33,17 @@ export class CatalogueHumanOutputPresenter {
       case asterCommandPayloadKinds.catalogueList:
         return this.#text.sequence(
           "Catalogues",
-          payload.catalogues.map((catalogue) =>
-            `${catalogue.identity} (${this.#text.count(catalogue.iconCount, "icon")}, ${this.#text.count(catalogue.collectionCount, "collection")})`,
+          payload.catalogues.map(
+            (catalogue) =>
+              `${this.#text.value(catalogue.identity)} (${this.#text.count(catalogue.iconCount, "icon")}, ${this.#text.count(catalogue.collectionCount, "collection")})`,
           ),
         );
       case asterCommandPayloadKinds.collectionList:
         return this.#text.sequence(
           "Collections",
-          payload.collections.map((collection) =>
-            `${this.#identities.format(collection.identity)} [${collection.catalogue}] - ${collection.metadata.displayName} (${this.#text.count(collection.icons.length, "icon")})`,
+          payload.collections.map(
+            (collection) =>
+              `${this.#text.value(this.#identities.format(collection.identity))} [${this.#text.value(collection.catalogue)}] - ${this.#text.value(collection.metadata.displayName)} (${this.#text.count(collection.memberIdentities.length, "icon")})`,
           ),
         );
       case asterCommandPayloadKinds.iconList:
@@ -54,9 +57,23 @@ export class CatalogueHumanOutputPresenter {
           payload.results.map((entry) =>
             entry.kind === catalogueResultKinds.icon
               ? `icon: ${this.#iconSummary(entry)}`
-              : `collection: ${this.#identities.format(entry.identity)} [${entry.catalogue}] - ${entry.metadata.displayName}`,
+              : `collection: ${this.#text.value(this.#identities.format(entry.identity))} [${this.#text.value(entry.catalogue)}] - ${this.#text.value(entry.metadata.displayName)}`,
           ),
         );
+      case asterCommandPayloadKinds.glyphList:
+        return this.#text.sequence(
+          "Glyphs",
+          payload.glyphs.map((glyph) => this.#glyphSummary(glyph)),
+        );
+      case asterCommandPayloadKinds.glyphShow:
+        return [
+          `Glyph: ${this.#text.value(this.#identities.format(payload.glyph.identity))}`,
+          `Catalogue: ${this.#text.value(payload.glyph.catalogue)}`,
+          this.#text.sequence(
+            "Variants",
+            payload.glyph.variants.map((variant) => this.#iconSummary(variant)),
+          ),
+        ].join("\n");
       case asterCommandPayloadKinds.iconShow:
         return this.#iconDetails(payload.icon);
       case asterCommandPayloadKinds.collectionShow:
@@ -67,15 +84,20 @@ export class CatalogueHumanOutputPresenter {
   /**
    * @description Formats one icon result for list and search output.
    * @param icon - Structured catalogue icon result.
-   * @returns One deterministic icon summary line.
+   * @returns Identity summary with its explicit nested collection-membership sequence.
    */
   #iconSummary(icon: CatalogueIconResult): string {
-    const memberships = icon.memberships.length === 0
-      ? "none"
-      : icon.memberships
-          .map((identity) => this.#identities.format(identity))
-          .join(", ");
-    return `${this.#identities.format(icon.identity)} [${icon.catalogue}] - ${icon.metadata.displayName} (collections: ${memberships})`;
+    return [
+      `${this.#text.value(this.#identities.format(icon.identity))} [${this.#text.value(icon.catalogue)}] - ${this.#text.value(icon.metadata.displayName)}`,
+      this.#text.indent(
+        this.#text.sequence(
+          "Collections",
+          icon.memberships.map((identity) =>
+            this.#text.value(this.#identities.format(identity)),
+          ),
+        ),
+      ),
+    ].join("\n");
   }
 
   /**
@@ -84,19 +106,43 @@ export class CatalogueHumanOutputPresenter {
    * @returns Deterministic multi-line icon details.
    */
   #iconDetails(icon: CatalogueIconResult): string {
-    const tags = icon.metadata.tags?.join(", ") ?? "none";
-    const memberships = icon.memberships.length === 0
-      ? "none"
-      : icon.memberships
-          .map((identity) => this.#identities.format(identity))
-          .join(", ");
+    const tags =
+      (Object.hasOwn(icon.metadata, "tags") ? icon.metadata.tags : undefined) ??
+      [];
     return [
-      `Icon: ${this.#identities.format(icon.identity)}`,
-      `Catalogue: ${icon.catalogue}`,
-      `Display name: ${icon.metadata.displayName}`,
-      `Tags: ${tags}`,
-      `Collections: ${memberships}`,
+      `Icon: ${this.#text.value(this.#identities.format(icon.identity))}`,
+      `Catalogue: ${this.#text.value(icon.catalogue)}`,
+      `Display name: ${this.#text.value(icon.metadata.displayName)}`,
+      this.#text.sequence(
+        "Tags",
+        tags.map((tag) => this.#text.value(tag)),
+      ),
+      this.#text.sequence(
+        "Collections",
+        icon.memberships.map((identity) =>
+          this.#text.value(this.#identities.format(identity)),
+        ),
+      ),
       `Deprecated: ${icon.metadata.deprecated ? "yes" : "no"}`,
+    ].join("\n");
+  }
+
+  /**
+   * @description Summarises one glyph without inventing family-level icon metadata.
+   * @param glyph - Exact provider-scoped glyph result.
+   * @returns Family identity and count followed by its nested available-treatment sequence.
+   */
+  #glyphSummary(glyph: CatalogueGlyphResult): string {
+    return [
+      `${this.#text.value(this.#identities.format(glyph.identity))} [${this.#text.value(glyph.catalogue)}] (${this.#text.count(glyph.variants.length, "variant")})`,
+      this.#text.indent(
+        this.#text.sequence(
+          "Variants",
+          glyph.variants.map((variant) =>
+            this.#text.value(variant.identity.variant),
+          ),
+        ),
+      ),
     ].join("\n");
   }
 
@@ -106,18 +152,24 @@ export class CatalogueHumanOutputPresenter {
    * @returns Deterministic multi-line collection details.
    */
   #collectionDetails(collection: CatalogueCollectionResult): string {
-    const tags = collection.metadata.tags?.join(", ") ?? "none";
-    const icons = collection.icons.length === 0
-      ? "none"
-      : collection.icons
-          .map((identity) => this.#identities.format(identity))
-          .join(", ");
+    const tags =
+      (Object.hasOwn(collection.metadata, "tags")
+        ? collection.metadata.tags
+        : undefined) ?? [];
     return [
-      `Collection: ${this.#identities.format(collection.identity)}`,
-      `Catalogue: ${collection.catalogue}`,
-      `Display name: ${collection.metadata.displayName}`,
-      `Tags: ${tags}`,
-      `Icons: ${icons}`,
+      `Collection: ${this.#text.value(this.#identities.format(collection.identity))}`,
+      `Catalogue: ${this.#text.value(collection.catalogue)}`,
+      `Display name: ${this.#text.value(collection.metadata.displayName)}`,
+      this.#text.sequence(
+        "Tags",
+        tags.map((tag) => this.#text.value(tag)),
+      ),
+      this.#text.sequence(
+        "Icons",
+        collection.memberIdentities.map((identity) =>
+          this.#text.value(this.#identities.format(identity)),
+        ),
+      ),
     ].join("\n");
   }
 }

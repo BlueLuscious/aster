@@ -11,20 +11,27 @@ package-manager, framework, or plugin capability.
 | Authority | Responsibility |
 | --- | --- |
 | `cliIdentitySchema` | Defines the closed lowercase ASCII slug and textual identity separators used by command and catalogue input. |
-| `CanonicalIdentityValidator` | Validates provider, collection, and icon identity strings against the shared grammar. |
+| `CanonicalIdentityValidator` | Validates provider, glyph, collection and concrete icon strings against shared grammar without conflating their subject roles. |
 | `AsciiStringComparator` | Applies deterministic lexical ordering without locale dependence. |
 | `StructuredDataInspector` | Snapshots exact plain records and dense ordinary arrays without executing authored accessors. |
 
 Provider identities and tags are lowercase ASCII kebab-case slugs. Collection identities use
-`[namespace/]name`; icon identities also permit `@variant`. Every section follows the same slug
-grammar. These exact textual identities are not collection-local aliases or inferred namespaces.
+`[namespace/]name`, as do glyph identities; icon identities require `[namespace/]name@variant`.
+Every section follows the same slug grammar. These exact textual identities are not collection-local
+aliases or inferred namespaces.
 
 `StructuredDataInspector` accepts records whose prototype is either `Object.prototype` or `null`.
 Every accepted field must be an own enumerable data property from a caller-supplied closed set.
 Symbols, hidden fields, accessors, custom prototypes, unknown fields, sparse arrays, array
-subclasses, and authored array properties are rejected. Returned containers are shallow frozen
-snapshots; each owning normaliser remains responsible for validating and isolating nested domain
-values.
+subclasses, and authored array properties are rejected. Record snapshots have a null prototype;
+arrays retain the ordinary array prototype. Both are shallow frozen. Each owning normaliser remains
+responsible for validating nested values and constructing the ordinary public domain records.
+
+Descriptor admission requires an own `value` field, not an inherited claim on the descriptor.
+Record snapshots remove the fresh container's prototype before assigning accepted own fields,
+then freeze the snapshot. Capture never assigns through an inherited setter.
+Downstream queries, identity projections and presenters preserve optional-field absence rather
+than acquiring values from the host prototype; taking a shallow snapshot alone is not that guarantee.
 
 A Proxy receives no special trust. It can only cross a data boundary when every observed
 prototype, key, and descriptor satisfies the same closed invariants; thrown reflective traps are

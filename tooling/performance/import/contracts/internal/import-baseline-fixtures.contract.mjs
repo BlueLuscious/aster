@@ -11,7 +11,7 @@
  * @property {import("@luscious-garden/aster-import").IconAdoptionRequest} adoptionRequest - Single complete adoption input.
  * @property {readonly import("@luscious-garden/aster-import").IconAdoptionRequest[]} batchRequests - Distinct complete adoption inputs.
  * @property {readonly import("@luscious-garden/aster-import").IconAdoptionRequest[]} largeBatchRequests - Distinct complete adoption inputs at the large batch scale.
- * @property {{ readonly minimalSourceBytes: number, readonly editorSourceBytes: number, readonly rejectedSourceBytes: number, readonly mediumSourceBytes: number, readonly mediumSourceElements: number, readonly largeSourceBytes: number, readonly largeSourceElements: number, readonly batchSize: number, readonly largeBatchSize: number }} sizes - Explicit scenario fixture sizes.
+ * @property {{ readonly minimalSourceBytes: number, readonly editorSourceBytes: number, readonly rejectedSourceBytes: number, readonly mediumSourceBytes: number, readonly mediumSourceElements: number, readonly largeSourceBytes: number, readonly largeSourceElements: number, readonly batchSize: number, readonly largeBatchSize: number }} sizes - UTF-8 source byte counts in the `*SourceBytes` fields, authored medium/large element counts in `*SourceElements`, and request counts in `batchSize` and `largeBatchSize`.
  */
 
 export {};

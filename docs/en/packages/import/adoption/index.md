@@ -12,7 +12,7 @@ TypeScript. The [API](../api/index.md) composes the operations; the host owns re
 | `IconImportProvenance` | Exact `IconImportFormatType` and host-owned logical source identifier. |
 | `IconImportDefinitionRequest` | Pairs one draft with complete host-reviewed Core `IconMetadata`. |
 | `IconModuleEmissionRequest` | Pairs a Core `IconDefinition` with non-empty canonical logical `sourceIds`. |
-| `IconModuleOutput` | Deterministic exported symbol, suggested relative authored path and complete LF-terminated editable content. |
+| `IconModuleOutput` | Deterministic named export in `exportName`, suggested relative authored path in `suggestedPath` and complete LF-terminated editable `content`. |
 | `IconAdoptionRequest` | Combines an explicit `IconImportSourceType` with complete reviewed metadata. |
 | `IconAdoptionOutput` | Retains the successful draft, Core definition and editable module. |
 | `IconAdoptionBatchOutput` | Contains canonically ordered complete adoption entries, never partial success. |
@@ -37,9 +37,18 @@ Emission revalidates the definition through Core and uses deterministic JSON-com
 TypeScript literals. Path nodes contain structured commands rather than raw SVG `d` text.
 Source identifiers are informational provenance, not acquisition instructions.
 
+The emitted `exportName` includes the explicit treatment (`DiscOutline`), and the suggested editable
+path is `icons/disc/outline.icon.ts`. The host owns persistence and any move into another source
+layout; Import does not create directories or reserve catalogue membership.
+
 Output has no generated ownership marker, overwrite policy or rebuild lifecycle. Its only runtime
 dependency is Core. Once persisted, it is ordinary human-owned source; Import retains no relation
 that can regenerate or replace it.
+
+The definition's JSDoc records sorted, duplicate-free logical sources in
+`@remarks Initially adopted from: ...`. Comment terminators and documentation markup are escaped;
+the original source identifiers remain unchanged in provenance data. This informational text is
+editable, not a generated-file instruction or a request to reopen those sources.
 
 ## Atomic adoption
 

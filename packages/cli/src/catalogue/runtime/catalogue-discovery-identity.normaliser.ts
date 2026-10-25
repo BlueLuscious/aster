@@ -25,7 +25,7 @@ export class CatalogueDiscoveryIdentityNormaliser {
     const record = this.#data.record(
       value,
       catalogueDiscoverySchema.iconIdentityFields,
-      ["name"],
+      ["name", "variant"],
     );
 
     if (
@@ -35,10 +35,7 @@ export class CatalogueDiscoveryIdentityNormaliser {
         Object.hasOwn(record, "namespace")
         && !this.#identities.slug(record.namespace)
       )
-      || (
-        Object.hasOwn(record, "variant")
-        && !this.#identities.slug(record.variant)
-      )
+      || !this.#identities.slug(record.variant)
     ) {
       return undefined;
     }
@@ -48,9 +45,7 @@ export class CatalogueDiscoveryIdentityNormaliser {
         ? { namespace: record.namespace as string }
         : {}),
       name: record.name,
-      ...(Object.hasOwn(record, "variant")
-        ? { variant: record.variant as string }
-        : {}),
+      variant: record.variant,
     });
   }
 

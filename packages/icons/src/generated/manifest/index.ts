@@ -10,13 +10,14 @@ import type {
  * @description Complete immutable metadata-only index of distributed Aster icon definitions.
  */
 export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
-  Object.freeze({
-    key: "aster/arrow-down",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/arrow-down@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "arrow-down",
+      variant: "outline",
     }),
-    symbol: "ArrowDown",
+    exportName: "ArrowDownOutline",
     displayName: "Arrow Down",
     tags: Object.freeze(["arrow", "bottom", "down", "navigation"]),
     rtl: "preserve",
@@ -24,13 +25,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/arrow-left",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/arrow-left@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "arrow-left",
+      variant: "outline",
     }),
-    symbol: "ArrowLeft",
+    exportName: "ArrowLeftOutline",
     displayName: "Arrow Left",
     tags: Object.freeze(["arrow", "back", "left", "navigation", "previous"]),
     rtl: "mirror",
@@ -38,13 +40,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/arrow-right",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/arrow-right@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "arrow-right",
+      variant: "outline",
     }),
-    symbol: "ArrowRight",
+    exportName: "ArrowRightOutline",
     displayName: "Arrow Right",
     tags: Object.freeze(["arrow", "forward", "navigation", "next", "right"]),
     rtl: "mirror",
@@ -52,13 +55,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/arrow-up",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/arrow-up@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "arrow-up",
+      variant: "outline",
     }),
-    symbol: "ArrowUp",
+    exportName: "ArrowUpOutline",
     displayName: "Arrow Up",
     tags: Object.freeze(["arrow", "navigation", "top", "up"]),
     rtl: "preserve",
@@ -66,13 +70,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/bell",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/bell@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "bell",
+      variant: "outline",
     }),
-    symbol: "Bell",
+    exportName: "BellOutline",
     displayName: "Bell",
     tags: Object.freeze(["alert", "bell", "notification"]),
     rtl: "preserve",
@@ -80,13 +85,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/camera",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/camera@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "camera",
+      variant: "outline",
     }),
-    symbol: "Camera",
+    exportName: "CameraOutline",
     displayName: "Camera",
     tags: Object.freeze(["camera", "media", "photo", "photograph"]),
     rtl: "preserve",
@@ -94,13 +100,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/check",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/check@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "check",
+      variant: "outline",
     }),
-    symbol: "Check",
+    exportName: "CheckOutline",
     displayName: "Check",
     tags: Object.freeze(["check", "complete", "confirm", "done", "success"]),
     rtl: "preserve",
@@ -108,13 +115,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/close",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/close@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "close",
+      variant: "outline",
     }),
-    symbol: "Close",
+    exportName: "CloseOutline",
     displayName: "Close",
     tags: Object.freeze(["cancel", "close", "dismiss", "remove", "x"]),
     rtl: "preserve",
@@ -122,13 +130,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/cloud",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/cloud@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "cloud",
+      variant: "outline",
     }),
-    symbol: "Cloud",
+    exportName: "CloudOutline",
     displayName: "Cloud",
     tags: Object.freeze(["cloud", "remote", "storage"]),
     rtl: "preserve",
@@ -136,13 +145,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/download",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/download@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "download",
+      variant: "outline",
     }),
-    symbol: "Download",
+    exportName: "DownloadOutline",
     displayName: "Download",
     tags: Object.freeze(["download", "save", "transfer"]),
     rtl: "preserve",
@@ -150,13 +160,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/folder",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/folder@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "folder",
+      variant: "outline",
     }),
-    symbol: "Folder",
+    exportName: "FolderOutline",
     displayName: "Folder",
     tags: Object.freeze(["directory", "files", "folder"]),
     rtl: "preserve",
@@ -164,13 +175,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/heart",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/heart@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "heart",
+      variant: "outline",
     }),
-    symbol: "Heart",
+    exportName: "HeartOutline",
     displayName: "Heart",
     tags: Object.freeze(["favourite", "heart", "like", "love"]),
     rtl: "preserve",
@@ -178,13 +190,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/home",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/home@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "home",
+      variant: "outline",
     }),
-    symbol: "Home",
+    exportName: "HomeOutline",
     displayName: "Home",
     tags: Object.freeze(["home", "house", "navigation", "start"]),
     rtl: "preserve",
@@ -192,13 +205,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/info",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/info@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "info",
+      variant: "outline",
     }),
-    symbol: "Info",
+    exportName: "InfoOutline",
     displayName: "Info",
     tags: Object.freeze(["about", "help", "info", "information"]),
     rtl: "preserve",
@@ -206,13 +220,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/leaf",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/leaf@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "leaf",
+      variant: "outline",
     }),
-    symbol: "Leaf",
+    exportName: "LeafOutline",
     displayName: "Leaf",
     tags: Object.freeze(["environment", "leaf", "nature", "plant"]),
     rtl: "preserve",
@@ -220,13 +235,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/lock",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/lock@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "lock",
+      variant: "outline",
     }),
-    symbol: "Lock",
+    exportName: "LockOutline",
     displayName: "Lock",
     tags: Object.freeze(["lock", "privacy", "secure", "security"]),
     rtl: "preserve",
@@ -234,13 +250,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/mail",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/mail@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "mail",
+      variant: "outline",
     }),
-    symbol: "Mail",
+    exportName: "MailOutline",
     displayName: "Mail",
     tags: Object.freeze(["email", "envelope", "inbox", "mail", "message"]),
     rtl: "preserve",
@@ -248,13 +265,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/menu",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/menu@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "menu",
+      variant: "outline",
     }),
-    symbol: "Menu",
+    exportName: "MenuOutline",
     displayName: "Menu",
     tags: Object.freeze(["hamburger", "menu", "navigation"]),
     rtl: "preserve",
@@ -262,13 +280,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/pause",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/pause@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "pause",
+      variant: "outline",
     }),
-    symbol: "Pause",
+    exportName: "PauseOutline",
     displayName: "Pause",
     tags: Object.freeze(["hold", "media", "pause", "playback"]),
     rtl: "preserve",
@@ -276,13 +295,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/play",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/play@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "play",
+      variant: "outline",
     }),
-    symbol: "Play",
+    exportName: "PlayOutline",
     displayName: "Play",
     tags: Object.freeze(["media", "play", "playback", "start"]),
     rtl: "preserve",
@@ -290,13 +310,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/plus",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/plus@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "plus",
+      variant: "outline",
     }),
-    symbol: "Plus",
+    exportName: "PlusOutline",
     displayName: "Plus",
     tags: Object.freeze(["add", "create", "new", "plus"]),
     rtl: "preserve",
@@ -304,13 +325,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/search",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/search@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "search",
+      variant: "outline",
     }),
-    symbol: "Search",
+    exportName: "SearchOutline",
     displayName: "Search",
     tags: Object.freeze(["find", "lookup", "search"]),
     rtl: "preserve",
@@ -318,13 +340,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/settings",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/settings@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "settings",
+      variant: "outline",
     }),
-    symbol: "Settings",
+    exportName: "SettingsOutline",
     displayName: "Settings",
     tags: Object.freeze(["configuration", "preferences", "settings"]),
     rtl: "preserve",
@@ -332,13 +355,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/star",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/star@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "star",
+      variant: "outline",
     }),
-    symbol: "Star",
+    exportName: "StarOutline",
     displayName: "Star",
     tags: Object.freeze(["bookmark", "favourite", "featured", "rating", "star"]),
     rtl: "preserve",
@@ -346,13 +370,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/user",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/user@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "user",
+      variant: "outline",
     }),
-    symbol: "User",
+    exportName: "UserOutline",
     displayName: "User",
     tags: Object.freeze(["account", "person", "profile", "user"]),
     rtl: "preserve",
@@ -360,13 +385,14 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
     attribution: "BlueLuscious",
     deprecated: false,
   }),
-  Object.freeze({
-    key: "aster/warning",
+  Object.freeze<IconManifestEntry>({
+    key: "aster/warning@outline",
     identity: Object.freeze({
       namespace: "aster",
       name: "warning",
+      variant: "outline",
     }),
-    symbol: "Warning",
+    exportName: "WarningOutline",
     displayName: "Warning",
     tags: Object.freeze(["alert", "attention", "caution", "warning"]),
     rtl: "preserve",
@@ -380,12 +406,12 @@ export const AsterIconManifest: readonly IconManifestEntry[] = Object.freeze([
  * @description Complete immutable metadata-only index of distributed Aster collections.
  */
 export const AsterCollectionManifest: readonly CollectionManifestEntry[] = Object.freeze([
-  Object.freeze({
+  Object.freeze<CollectionManifestEntry>({
     key: "amellus",
     identity: Object.freeze({
       name: "amellus",
     }),
-    symbol: "Amellus",
+    exportName: "Amellus",
     metadata: Object.freeze({
       displayName: "Amellus",
       description: "Minimalist general-purpose outline icons for application interfaces.",
@@ -400,32 +426,32 @@ export const AsterCollectionManifest: readonly CollectionManifestEntry[] = Objec
       attribution: "BlueLuscious",
     }),
     members: Object.freeze([
-      "aster/arrow-left",
-      "aster/arrow-right",
-      "aster/arrow-up",
-      "aster/arrow-down",
-      "aster/home",
-      "aster/menu",
-      "aster/check",
-      "aster/close",
-      "aster/download",
-      "aster/plus",
-      "aster/search",
-      "aster/settings",
-      "aster/heart",
-      "aster/info",
-      "aster/lock",
-      "aster/star",
-      "aster/warning",
-      "aster/camera",
-      "aster/pause",
-      "aster/play",
-      "aster/bell",
-      "aster/mail",
-      "aster/cloud",
-      "aster/folder",
-      "aster/leaf",
-      "aster/user",
+      "aster/arrow-left@outline",
+      "aster/arrow-right@outline",
+      "aster/arrow-up@outline",
+      "aster/arrow-down@outline",
+      "aster/home@outline",
+      "aster/menu@outline",
+      "aster/check@outline",
+      "aster/close@outline",
+      "aster/download@outline",
+      "aster/plus@outline",
+      "aster/search@outline",
+      "aster/settings@outline",
+      "aster/heart@outline",
+      "aster/info@outline",
+      "aster/lock@outline",
+      "aster/star@outline",
+      "aster/warning@outline",
+      "aster/camera@outline",
+      "aster/pause@outline",
+      "aster/play@outline",
+      "aster/bell@outline",
+      "aster/mail@outline",
+      "aster/cloud@outline",
+      "aster/folder@outline",
+      "aster/leaf@outline",
+      "aster/user@outline",
     ]),
   }),
 ]);

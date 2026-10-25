@@ -10,7 +10,7 @@ export const svgBaseline = Object.freeze({
   packagePath: "packages/svg",
   /** @description Stable public scenario identities and sample sizes. */
   scenarios: Object.freeze({
-    /** @description Core reconstruction attribution scenario. */
+    /** @description Public Core acceptance attribution scenario. */
     coreRevalidation: Object.freeze({
       /** @description Stable report scenario identity. */
       name: "svg.reference.core-revalidation",

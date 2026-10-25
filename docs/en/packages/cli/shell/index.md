@@ -45,6 +45,38 @@ directory is not configured, follow [pnpm setup](https://pnpm.io/10.x/cli/setup)
 terminal before retrying. Installing or updating the global CLI does not install or update a
 project's CLI, and installing a project CLI does not replace the global one.
 
+### Source checkout
+
+The [workspace setup](../../../../../README.md#development) builds source packages after frozen
+installation. On a first install, the local `aster` shim can be absent because its built target
+does not exist yet; building afterwards does not create that missing shim. After setup, choose
+one of the following invocations from the repository root.
+
+**Direct built entrypoint**
+
+Use this form to select the checkout's CLI file explicitly, including when no local `aster` shim
+exists:
+
+```sh
+node packages/cli/dist/shell/aster.js list glyphs
+node packages/cli/dist/shell/aster.js version --location
+```
+
+**Workspace binary through pnpm**
+
+Use this form when the workspace binary is linked. If the link is missing, run
+`pnpm install --frozen-lockfile` again after building to create it. Verify that `--location`
+points inside this checkout before running other commands:
+
+```sh
+pnpm exec aster version --location
+pnpm exec aster list glyphs
+```
+
+Neither form requires a global installation. Both use built output, so rebuild after source
+changes. An independently installed CLI can resolve a different Icons catalogue; use this
+checkout's CLI when reviewing its current, potentially unpublished artwork.
+
 ### Executable selection
 
 [pnpm exec](https://pnpm.io/10.x/cli/exec) adds the project's `node_modules/.bin` to command lookup;
@@ -64,10 +96,12 @@ The implemented grammar is:
 ```text
 aster list catalogues
 aster list collections [--catalogue <provider>]
-aster list icons [--catalogue <provider>] [--collection <identity>] [--tag <tag>]...
+aster list glyphs [--catalogue <provider>]
+aster list icons [--catalogue <provider>] [--glyph <identity>] [--collection <identity>] [--tag <tag>]...
 aster search <query> [--catalogue <provider>] [--collection <identity>] [--tag <tag>]...
 aster show icon <identity> [--catalogue <provider>]
 aster show collection <identity> [--catalogue <provider>]
+aster show glyph <identity> [--catalogue <provider>]
 aster export icon <identity> [--catalogue <provider>] [render-options] [--output <root>]
 aster export collection <identity> [--catalogue <provider>] [render-options] --output <root>
 aster export icon <identity> [--catalogue <provider>] [render-options] --json
@@ -91,6 +125,12 @@ Invoking `aster` without arguments is equivalent to `aster help`. A query or acc
 containing spaces must be supplied as one quoted shell argument. `--tag` may be repeated; every
 export option and singleton filter may occur only once, and `--json` may not be repeated. Unknown,
 empty, incomplete, or extra arguments are usage failures.
+
+Glyph identities use `[namespace/]name`; concrete icon operations require
+`[namespace/]name@variant`. For example, `show glyph aster/camera` discovers treatments and
+`show icon aster/camera@outline` selects one concrete result. `--glyph` is a singleton accepted
+only by `list icons`; glyph listing/show accepts only `--catalogue` and presentation `--json`.
+[Catalogue semantics](../catalogue/index.md#discovery-semantics) owns matching and failure rules.
 
 Icon export without `--json` or `--output` writes one raw SVG document. JSON mode exposes the
 complete host-neutral plan for either subject. Collection export requires JSON or an output root.
@@ -127,11 +167,11 @@ An aggregate human result keeps separate roots rather than flattening their depe
 
 ```text
 Project Aster package dependencies:
-@luscious-garden/aster-core 0.1.0
-  (no Aster dependencies)
-
-@luscious-garden/aster-icons 0.1.0
   @luscious-garden/aster-core 0.1.0
+    (none)
+
+  @luscious-garden/aster-icons 0.1.0
+    @luscious-garden/aster-core 0.1.0
 ```
 
 For example, these commands inspect different installations when an external CLI runs inside a
@@ -175,7 +215,10 @@ presentation and publication never inspect or enumerate definition modules.
 
 Human output is plain deterministic text with no terminal-width or mandatory ANSI behaviour.
 Successful human output is written to stdout. Expected human failures are written to stderr with
-their stable diagnostic code and any related values.
+their stable diagnostic code and explanation. [Shell presentation](presentation/index.md)
+owns successful-response layout and visible control representation;
+[diagnostic evidence](presentation/index.md#diagnostic-evidence) defines labelled `Details:` for the
+[structured diagnostic facts](../command/index.md#diagnostic-details), without mutating those data.
 
 Successful export publication writes only a committed destination and artefact-count summary. An
 empty exported collection writes an explicit non-publication summary because no output root is
@@ -188,9 +231,8 @@ never enters `AsterCommandInvocationType`. JSON mode writes exactly one compact 
 document followed by one newline to stdout for both success and expected failure. It writes
 nothing to stderr and contains no ANSI styling or human table formatting.
 
-The initial result model contains no warning channel. The shell does not invent one outside the
-host-neutral command result; a future warning presentation requires an accepted structured result
-contract first.
+The command-result model has no warning channel. The shell presents only the success or failure
+supplied by that host-neutral result.
 
 ## Exit Status
 

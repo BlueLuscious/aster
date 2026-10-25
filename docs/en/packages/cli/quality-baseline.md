@@ -2,194 +2,128 @@
 
 Status: **Accepted**
 
-This document defines the evidence method used to compare `@luscious-garden/aster-cli` execution, startup, and
-distribution changes. It is not a product benchmark, a hardware-independent promise, or a CI
-performance threshold. Current package findings remain in [CLI Quality](quality.md).
-
-## Representative evidence
-
-The schema-version-four baseline prepares a fixed synthetic catalogue outside timed operations.
-Programmatic scenarios use the public package roots; shell parsing and presentation scenarios
-exercise the private built host directly without process or package-manager cost. Separate
-fresh-process scenarios instrument real built-in catalogue commands and attribute evaluated CLI
-and Icons distribution modules.
-
-| Workload | Pressure represented |
-| --- | --- |
-| Core revalidation reference | Portable definition reconstruction retained as a comparison workload. |
-| SVG rendering reference | Public rendering necessarily performed while constructing SVG export artefacts. |
-| Help and version | Invocation acceptance, context acceptance, dispatch, result construction, and freezing without catalogue acquisition. |
-| Prepared provider discovery | Asynchronous metadata-provider invocation without catalogue queries. |
-| Icon discovery | Discovery validation, membership validation, canonical ordering, and result freezing without definition reconstruction. |
-| Icon export | Exact catalogue selection, one SVG render, artefact planning, and result freezing. |
-| Collection export | Complete membership resolution, sixteen SVG renders, canonical path ordering, artefact planning, and result freezing. |
-| Collection review | Complete membership resolution, sixteen SVG renders, technical evidence planning, and result freezing. |
-| Shell parsing | Minimal help and complete collection-export argv adaptation without process acquisition. |
-| JSON presentation | Complete structured-result serialisation and stream planning without process writes. |
-| Cold Node control | Fresh Node startup without Aster module evaluation. |
-| Cold root import | Fresh Node startup plus programmatic root composition and module evaluation. |
-| Cold executable version | Fresh Node startup, private host acquisition, argv parsing, command execution, presentation, and process writes. |
-| Built-in catalogue command evaluation | Fresh Node startup, one real catalogue workflow, and exact CLI and Icons distribution-module evaluation. |
-
-Filesystem publication and package-manager startup are excluded from timing because they measure
-host and storage conditions rather than command-domain execution. Their behaviour remains covered
-by deterministic conformance tests.
-
-## Representative findings
-
-Three complete reports under Node `24.10.0` on Windows x64 produced these medians across report
-medians:
-
-| Scenario | Median elapsed time |
-| --- | ---: |
-| `cli.reference.core-revalidation` | 13,706 ns per operation |
-| `cli.reference.svg-render` | 22,639 ns per operation |
-| `cli.shell.parse-help` | 290 ns per operation |
-| `cli.shell.parse-collection-export` | 1,377 ns per operation |
-| `cli.shell.present-json` | 20,813 ns per operation |
-| `cli.command.help` | 4,357 ns per operation |
-| `cli.command.version` | 3,953 ns per operation |
-| `cli.catalogue.provider-load` | 20,370 ns per operation |
-| `cli.command.list-icons` | 467,887 ns per operation |
-| `cli.command.export-icon` | 569,496 ns per operation |
-| `cli.command.export-collection` | 1,098,570 ns per operation |
-| `cli.command.review-collection` | 911,430 ns per operation |
-| `cli.cold.node-control` | 43.74 ms per process |
-| `cli.cold.root-import` | 138.48 ms per process |
-| `cli.cold.executable-version` | 163.21 ms per process |
-
-These findings belong to schema version one, which used the former product catalogue, and are not
-directly comparable with schema-version-two reports. The parser, presenter dispatch, invocation
-acceptance, context acceptance, result construction, and
-provider adaptation do not expose an isolated material CLI-owned hotspot. Catalogue
-commands are dominated by strict portable-definition reconstruction and complete result isolation;
-Export and Review add public SVG rendering proportional to selected definitions. Review planning
-remains comparable to collection Export without adding a material isolated hotspot. Cold startup
-is dominated by fresh Node startup and ESM graph acquisition rather than command execution.
-
-## Published-candidate installed-version cold-start check
-
-One local Windows x64 check under Node `24.10.0` measured the built executable in alternating
-fresh-process rounds, discarding the first and taking the median of ten samples per form:
-
-| Form | Median elapsed time |
-| --- | ---: |
-| Node control | 43.51 ms |
-| `aster version` | 215.05 ms |
-| `aster version core` | 219.33 ms |
-| `aster version --all` | 217.87 ms |
-
-The `rc.2` named and aggregate requests resolved from the executed CLI installation. They
-showed no material cold-start difference from plain version in that run. This one-off check is
-not a new performance baseline or CI threshold. The earlier
-163.21 ms executable-version median above predates other CLI changes and cannot isolate this
-feature's before-and-after cost. Exact packed-consumer correctness remains the acceptance
-evidence; a performance optimisation still requires the comparison rules below.
-
-The corrected project-version source was measured separately in eight fresh Node processes per
-form after one warm-up, using the built executable on local Windows x64. Indicative medians were:
-
-| Form | Median elapsed time |
-| --- | ---: |
-| `aster version` | 212.7 ms |
-| `aster version core` | 222.3 ms |
-| `aster version --all` | 226.6 ms |
-| `aster version core --deps` | 222.1 ms |
-| `aster version cli --deps` | 219.2 ms |
-| `aster version --all --deps` | 225.9 ms |
-| `aster version --location` | 224.6 ms |
-| `aster version cli --deps --location` | 225.9 ms |
-
-Fresh Node startup dominates these small differences. This second local check does not compare
-equivalent installations or hardware with the earlier candidate and is not a CI threshold.
-
-No runtime optimisation was retained from that investigation. Caching accepted snapshots,
-retaining mutable memoisation, trusting canonical object provenance, bundling private modules, or
-weakening reconstruction would change correctness or distribution boundaries without evidence of
-a safe CLI-owned mechanism.
-
-## Lazy-integration evidence
-
-The schema-version-three control executed each representative built-in workflow in five fresh
-processes before provider migration:
-
-| Workflow | Stable result | CLI modules | Icons modules |
-| --- | --- | ---: | ---: |
-| `list icons` | `success:icon-list` | 62 | 58 |
-| `search camera` | `success:search` | 62 | 58 |
-| `show icon aster/camera` | `success:icon-show` | 62 | 58 |
-| `export icon aster/camera` | `success:export` | 62 | 58 |
-| `review icon aster/camera` | `success:review` | 62 | 58 |
-
-The control Icons set includes its dynamic entry point and generated loader map, all 26 icon facades and
-definitions, the Amellus collection facade and definition, and both authoring authorities. This
-is the accepted pre-migration control.
-
-Schema version four retains the same five fresh-process probes after manifest-backed discovery and
-exact command migration:
-
-| Workflow | Stable result | CLI modules | Icons modules |
-| --- | --- | ---: | ---: |
-| `list icons` | `success:icon-list` | 68 | 2 |
-| `search camera` | `success:search` | 68 | 2 |
-| `show icon aster/camera` | `success:icon-show` | 68 | 2 |
-| `export icon aster/camera` | `success:export` | 68 | 9 |
-| `review icon aster/camera` | `success:review` | 68 | 9 |
-
-The two discovery modules are `manifest/index.js` and `generated/manifest/index.js`. No icon
-facade, glyph definition, collection definition, authoring authority, or dynamic-loader module is
-evaluated by list, search, or show. Export and Review evaluate the manifest pair, dynamic-loader
-entry points, the exact camera facade and definition, its two authoring authorities and the
-shared artwork-licence authority. Their nine-module result replaces the immediately preceding
-60-module eager bridge evidence without
-changing command output. Exact evaluated module sets, rather than elapsed time, remain the
-deterministic comparison authority.
-
-## Distribution evidence
-
-The historical schema-version-four native ES2022 ESM measurement contained 294 files and
-385,535 unminified bytes:
-
-- 170 JavaScript modules totalling 270,283 bytes;
-- 124 declaration files totalling 115,252 bytes;
-- one public root export;
-- one private `aster` binary mapping;
-- `sideEffects: false`;
-- exact Core, Icons, and SVG runtime dependencies;
-- the declared Node `>=24.10.0 <25` executable range.
-
-[Package conformance](quality.md) checks packed installations and the linked executable.
-Empty JavaScript modules for shell type-only sources are an observed TypeScript emission detail;
-their removal alone does not justify bundling or another distribution format.
+This page owns the evidence method and a dated source snapshot for CLI execution, startup and
+distribution. It is not a hardware-independent promise or CI timing threshold.
+[CLI Quality](quality.md) owns correctness evidence.
 
 ## Reproduction
 
-Run:
-
 ```sh
-pnpm benchmark:cli
+pnpm run benchmark:cli
 ```
 
-The command builds Core, Icons, SVG, and CLI, then runs Node with explicit garbage-collection
-access. It prints schema-version-four JSON and writes no artefact. Reports include environment,
-synchronous and asynchronous operation samples, heap-pressure indicators, deterministic
-checksums, cold-process samples, built-in command module sets, emitted files and bytes, exports,
-side effects, engine range, binary mapping, and dependencies.
+The command builds Core, Icons, SVG and CLI, then runs the schema-five report with explicit
+garbage-collection access. It prints JSON without writing product artefacts.
+[Performance Tooling](../../tooling/performance/index.md) owns shared sampling and composition.
 
-Heap growth is a pressure indicator rather than an allocation counter. Processor state, background
-load, storage, antivirus software, runtime revision, and operating system can affect measurements.
-Reports are comparable only under equivalent conditions.
+## Representative evidence
+
+The runner prepares a fixed synthetic catalogue outside timed operations. Programmatic scenarios
+use public package roots; shell parsing and JSON presentation run without process acquisition.
+Separate fresh processes measure native startup and real built-in command evaluation.
+
+| Workload | Responsibility measured |
+| --- | --- |
+| Core and SVG references | Reused canonical definition recognition and SVG rendering controls. |
+| Help and version | Invocation/context acceptance, dispatch and immutable result construction. |
+| Prepared provider discovery | Provider invocation without catalogue normalisation. |
+| Icon listing | Discovery validation, membership consistency, ordering and projection. |
+| Icon/collection export | Exact selection, SVG rendering and artefact planning; the collection fixture contains sixteen definitions. |
+| Collection review | Exact selection, sixteen SVG renders and technical evidence planning. |
+| Shell parsing and JSON presentation | Argv adaptation and serialisation without process or filesystem effects. |
+| Cold controls and command evaluation | Node startup, root/executable acquisition and exact CLI/Icons module sets. |
+
+Filesystem publication and package-manager startup are excluded from command-domain timing.
+Owned publication observations are separate from deterministic conformance tests and do not
+constitute storage-speed guarantees.
+
+## Scaled command evidence
+
+Supplemental observations on 20 October 2026 use Windows x64, Node `24.10.0`, V8
+`13.6.233.10-node.28` and native ES2022 ESM. Each value is the median of three worker medians,
+each retaining seven samples with baseline-calibrated operation counts and bounded warm-up.
+Workers use `--expose-gc` and a 2 GiB old-space ceiling. Fixture construction, pre-sample GC and
+complete result hashing are outside timing; awaited command execution and result consumption
+are inside. Filesystem caches, scheduling, thermals and antivirus are not isolated.
+
+These are measured current costs, not guaranteed API latency. `D` counts definitions, `C`
+collections and `R` selected membership references. The collection-list rows use the same ten
+definitions in every collection, with 1,000 total available definitions; shared references
+must not be reported as distinct definitions.
+
+| Complete operation | Workload | Median |
+| --- | --- | ---: |
+| List icons | D = 1,000; C = 1; R = 10 | 5.53 ms |
+| List collections | D = 1,000; C = 10; R = 100 | 5.54 ms |
+| List collections | D = 1,000; C = 100; R = 1,000 | 10.82 ms |
+| List collections | D = 1,000; C = 1,000; R = 10,000 | 51.95 ms |
+| Export collection plan | D = 1,000; C = 1; R = 1,000 | 32.29 ms |
+| Review collection plan | D = 1,000; C = 1; R = 1,000 | 32.28 ms |
+
+Plans retain SVG markup; their times exclude presentation and filesystem publication. Separate
+prepared-result measurements observe JSON/human formatting and static HTML serialisation, not
+another discovery or command execution. Output width, geometry and the selected member count
+remain independent costs. Fresh executable acquisition is separate from repeated API execution;
+these figures do not describe starting `pnpm exec` or a Node process.
+
+Every catalogue command validates fresh discovery before filtering. A provider or collection
+filter is not permission to skip validation of other supplied providers. The
+[membership runtime](catalogue/runtime/index.md) owns the inspection-local index and error order;
+there is no persistent discovery cache. Repeated commands therefore pay for fresh metadata
+admission even when providers return the same objects.
+
+Three separate resource observations of ten complete collection-list commands at D = 1,000,
+C = 1,000 and R = 10,000 record sampled peak RSS of 135.8-136.3 MiB and post-GC heap of
+12.16-12.18 MiB, with the prepared fixture still live. Sampling can miss transient peaks;
+heap deltas and GC events do not count allocations or prove leak freedom. These are process
+observations, not the size of the temporary membership index or portable memory budgets.
+
+Separate local observations retain seven complete planning-and-publication samples in each of
+three passes. Publishing 1,000 one-primitive SVG files takes a median of approximately 665 ms;
+planning and publishing the corresponding single-file static Review takes approximately 71 ms.
+These include staging and the commit rename beneath fresh owned temporary targets, but exclude
+post-timing content verification and cleanup. Existing-target refusal, owned Review replacement
+and absence of abandoned stages are checked separately. File volume and the local filesystem
+matter; these figures are not pure command-domain or storage-only costs.
+
+## Lazy-integration evidence
+
+A 22 October 2026 Windows x64 observation using Node `24.10.0`, TypeScript `5.9.3` and native
+ES2022 ESM retains these sets across five fresh processes per workflow:
+
+| Workflow | Stable result | CLI modules | Icons modules |
+| --- | --- | ---: | ---: |
+| `list icons` | `success:icon-list` | 74 | 2 |
+| `search camera` | `success:search` | 74 | 2 |
+| `show icon aster/camera@outline` | `success:icon-show` | 74 | 2 |
+| `export icon aster/camera@outline` | `success:export` | 74 | 8 |
+| `review icon aster/camera@outline` | `success:review` | 74 | 8 |
+
+Discovery evaluates only the Icons manifest pair, without artwork, facades or dynamic loaders.
+Exact Export/Review additionally evaluate the dynamic entry/map, one canonical definition
+and its shared authoring authorities, without a public facade. Root import itself evaluates no
+Icons modules. Module counts describe this snapshot, not permanent budgets or bundler tree-shaking
+guarantees.
+
+## Distribution snapshot
+
+The 22 October 2026 source emits 198 JavaScript modules (356,253 bytes) and 142 declarations
+(144,197 bytes): 340 files, totalling 500,450 unminified bytes. It retains ESM, one public root,
+the private `aster` binary, `sideEffects: false`, Core/Icons/SVG runtime dependencies and Node
+`>=24.10.0 <25`. These byte totals use an LF-source Review stylesheet; Git's CRLF conversion
+changes emitted template-literal bytes, not its evaluated CSS or serialised HTML.
+Shell type-only JavaScript emission is a compiler detail, not justification for a new build format.
+[Packed conformance](quality.md#conformance) verifies the acquired payload and declarations.
 
 ## Comparison rules
 
-[Performance Tooling](../../tooling/performance/index.md#comparison-limits) owns shared sampling
-and environmental comparison limits. A CLI performance claim requires three equivalent control
-and candidate reports, at least 10% improvement in the target scenario and no unrelated regression
-above 5% without an accepted trade-off. Distribution growth requires a concrete responsibility.
-A CLI comparison must preserve structured results,
-diagnostics, ordering, SVG bytes, streams, statuses, paths, lazy loading and package ABI.
-Package-manager startup, installation, temporary-consumer copying and filesystem publication
-must not enter command-domain timing accidentally.
+[Shared comparison rules](../../tooling/performance/index.md#comparison-limits) govern sampling,
+claim thresholds and accepted trade-offs. Security corrections may have an explicit cost; they
+are not optimisations merely because the structure is clearer.
 
-The tooling owner also documents runner composition; this page owns CLI workloads, historical
-findings and interpretation. Raw reports are disposable local evidence, not committed artefacts.
+A comparison preserves workload and contract semantics, except for explicitly approved structured
+field changes. It checks diagnostics, ordering, SVG/HTML bytes, human streams/status, paths, native
+module sets and package ABI separately. Retain paired variation and outliers rather than claiming
+equivalence from aggregate medians. Heap growth is a pressure indicator, not an allocation count.
+Raw reports are disposable local evidence; this page does not preserve retired command forms,
+obsolete distribution snapshots or incomparable historical timing tables.

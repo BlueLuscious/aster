@@ -47,7 +47,7 @@ Importance: **P2 - Conditional**
 
 The package's own Semantic Versioning identity already versions its exported APIs under the
 [project versioning policy](project/versioning.md). Separate API versions such as `v1` and `v2`
-inside one package are not required for the published `0.1.0` baseline.
+inside one package are not required by the supported single-version API.
 
 Consider versioned entrypoints or explicitly selected compatibility implementations only when a
 real consumer needs incompatible API contracts simultaneously within one installed package and
@@ -64,7 +64,7 @@ or negotiation boundary and do not establish a need for coexisting package APIs.
 
 Importance: **P2 - Conditional**
 
-After the reviewed follow-up publication, consider an explicit remote command such as
+Consider an explicit remote command such as
 `aster releases [core|icons|svg|cli]` for published package versions and their release details.
 It must not change the meaning or offline behaviour of local `aster version` requests.
 
@@ -317,8 +317,8 @@ registries, or combining contributor tooling with the user-facing multi-ecosyste
 Importance: **P2 - Conditional**
 
 The [publication procedure](project/publication.md#distribution-channels) owns the accepted
-distribution channels. Published `0.1.0` uses npm alone; an additional GitHub Packages registry
-is optional and does not justify a speculative repository transfer or package rename.
+distribution channels. An additional GitHub Packages registry is optional and does not justify
+a speculative repository transfer or package rename.
 
 Reconsider it only when a concrete consumer needs GitHub-hosted dependency installation rather
 than a release page or downloadable archive. Before acceptance, verify the GitHub account or

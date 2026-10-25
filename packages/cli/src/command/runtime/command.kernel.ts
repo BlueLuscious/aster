@@ -126,10 +126,7 @@ export class CommandKernel implements AsterCommandSet {
       const acceptedContext = this.#contexts.normalise(context);
 
       if (!acceptedContext.accepted) {
-        return this.#results.failure(
-          command,
-          acceptedContext.diagnostic,
-        );
+        return this.#results.failure(command, acceptedContext.diagnostic);
       }
 
       const definition = this.#definitions.get(command);
@@ -137,11 +134,11 @@ export class CommandKernel implements AsterCommandSet {
       if (definition === undefined) {
         return this.#results.failure(
           command,
-          this.#diagnostics.create(
-            commandDiagnosticSchema.categories.usage,
-            commandDiagnosticSchema.codes.usage,
-            `command ${command} is not registered`,
-          ),
+          this.#diagnostics.create({
+            category: commandDiagnosticSchema.categories.usage,
+            code: commandDiagnosticSchema.codes.usage,
+            message: `command ${command} is not registered`,
+          }),
         );
       }
 
@@ -152,11 +149,11 @@ export class CommandKernel implements AsterCommandSet {
     } catch {
       return this.#results.failure(
         command,
-        this.#diagnostics.create(
-          commandDiagnosticSchema.categories.executionFailure,
-          commandDiagnosticSchema.codes.executionFailure,
-          "command execution failed unexpectedly",
-        ),
+        this.#diagnostics.create({
+          category: commandDiagnosticSchema.categories.executionFailure,
+          code: commandDiagnosticSchema.codes.executionFailure,
+          message: "command execution failed unexpectedly",
+        }),
       );
     }
   }
@@ -212,7 +209,7 @@ export class CommandKernel implements AsterCommandSet {
       return undefined;
     }
 
-    if (descriptor === undefined || !("value" in descriptor)) {
+    if (descriptor === undefined || !Object.hasOwn(descriptor, "value")) {
       return undefined;
     }
 

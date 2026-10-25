@@ -1,6 +1,6 @@
 {
   "name": "@luscious-garden/aster-core",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Portable icon definitions and render-neutral contracts for Aster.",
   "type": "module",
   "author": "BlueLuscious",

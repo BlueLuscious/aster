@@ -73,9 +73,7 @@ export class ExportInvocationNormaliser implements ICommandInvocationNormaliser 
       : this.#identities.collection(record.identity);
 
     if (!validIdentity) {
-      return this.#rejections.invalid(
-        `expected a canonical ${record.subject} identity`,
-      );
+      return this.#rejections.invalidIdentity(record.subject);
     }
 
     if (
@@ -88,7 +86,7 @@ export class ExportInvocationNormaliser implements ICommandInvocationNormaliser 
     }
 
     const options = this.#options.normalise(
-      record.options,
+      Object.hasOwn(record, "options") ? record.options : undefined,
       Object.hasOwn(record, "options"),
       record.subject === asterCommandSubjects.export.icon,
     );

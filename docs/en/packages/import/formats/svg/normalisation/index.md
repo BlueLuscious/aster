@@ -14,6 +14,9 @@ Its private `TSvgPathNormalisationState` tracks the current absolute point, cont
 eligible cubic or quadratic control point during one path traversal. Relative coordinates and
 smooth controls use that state before the normaliser emits immutable Core commands; it is not
 retained in the resulting draft or definition.
+Absent reflection controls remain explicit own values throughout traversal; resetting a curve
+cannot reveal inherited controls. Presentation uses a private prototype-free working dictionary
+before copying validated fields into portable nodes, without invoking inherited setters.
 
 Finite SVG operands can overflow when relative coordinates or reflected smooth controls become
 absolute. A failed expansion produces the stable invalid-path diagnostic at the authored `d`

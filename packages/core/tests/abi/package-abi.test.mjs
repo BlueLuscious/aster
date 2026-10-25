@@ -1,8 +1,9 @@
 import assert from "node:assert/strict";
-import { readdir, readFile } from "node:fs/promises";
+import { copyFile, cp, mkdir, mkdtemp, readdir, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import test from "node:test";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
@@ -26,6 +27,7 @@ async function collectFiles(root, extension) {
 function createDefinitionInput() {
   return {
     identity: {
+      variant: "outline",
       namespace: "minimal",
       name: "camera",
     },
@@ -74,7 +76,9 @@ test("exposes the exact immutable root value surface", async () => {
     "iconTechnicalPresentation",
   ]);
   assert.deepEqual(Object.keys(packageModule.Collection), ["define"]);
-  assert.deepEqual(Object.keys(packageModule.Icon), ["define"]);
+  assert.deepEqual(Object.keys(packageModule.Icon), ["define", "variantPropertyName"]);
+  assert.equal(Object.hasOwn(packageModule.Icon, "variantProperty"), false);
+  assert.equal(packageModule.Icon.variantPropertyName("filled-dotted"), "filledDotted");
   assert.ok(Object.isFrozen(packageModule.Collection));
   assert.ok(Object.isFrozen(packageModule.Icon));
   assert.ok(Object.isFrozen(packageModule.iconDirections));
@@ -119,6 +123,63 @@ test("constructs isolated definitions without a catalogue registry", async () =>
   assert.notEqual(first, second);
   assert.deepEqual(first, second);
   assert.ok(Object.isFrozen(first));
+});
+
+test("keeps recognition local while accepting a genuinely independent Core copy", async () => {
+  const local = await import("@luscious-garden/aster-core");
+  const temporaryRoot = await mkdtemp(resolve(tmpdir(), "aster-core-recognition-"));
+
+  try {
+    const copiedRoot = resolve(temporaryRoot, "node_modules/@luscious-garden/aster-core");
+    await mkdir(copiedRoot, { recursive: true });
+    await copyFile(resolve(packageRoot, "package.json"), resolve(copiedRoot, "package.json"));
+    await cp(resolve(packageRoot, "dist"), resolve(copiedRoot, "dist"), { recursive: true });
+    const manifest = JSON.parse(await readFile(resolve(copiedRoot, "package.json"), "utf8"));
+    const foreign = await import(pathToFileURL(resolve(copiedRoot, manifest.exports["."].import)).href);
+
+    assert.notEqual(local.Icon, foreign.Icon);
+    assert.notEqual(local.IconDefinitionError, foreign.IconDefinitionError);
+    const foreignDefinition = foreign.Icon.define(createDefinitionInput());
+    assert.equal(foreign.Icon.define(foreignDefinition), foreignDefinition);
+
+    const accepted = local.Icon.define(foreignDefinition);
+    assert.notEqual(accepted, foreignDefinition);
+    assert.deepEqual(accepted, foreignDefinition);
+    assert.equal(local.Icon.define(accepted), accepted);
+    assert.notEqual(local.Icon.define(foreignDefinition), accepted);
+    assert.notEqual(foreign.Icon.define(accepted), accepted);
+
+    const retained = local.Collection.define({
+      identity: { name: "foreign-member" },
+      icons: { selected: { outline: foreignDefinition } },
+      metadata: { displayName: "Foreign Member" },
+    });
+    assert.equal(retained.icons.selected.outline, foreignDefinition);
+    assert.equal(retained.members[0], foreignDefinition);
+    assert.notEqual(local.Icon.define(retained.members[0]), foreignDefinition);
+    const revalidated = local.Collection.define(retained);
+    assert.notEqual(revalidated, retained);
+    assert.equal(revalidated.members[0], foreignDefinition);
+
+    const decoded = JSON.parse(JSON.stringify(foreignDefinition));
+    const recovered = local.Icon.define(decoded);
+    assert.notEqual(recovered, decoded);
+    assert.deepEqual(recovered, accepted);
+    assert.equal(local.Icon.define(recovered), recovered);
+
+    const invalid = Object.freeze({
+      ...foreignDefinition,
+      viewBox: Object.freeze({ ...foreignDefinition.viewBox, width: 0 }),
+    });
+    assert.throws(() => local.Icon.define(invalid), local.IconDefinitionError);
+    assert.throws(() => local.Collection.define({
+      identity: { name: "invalid-foreign-member" },
+      icons: { selected: { outline: invalid } },
+      metadata: { displayName: "Invalid Foreign Member" },
+    }), local.IconDefinitionError);
+  } finally {
+    await rm(temporaryRoot, { recursive: true, force: true });
+  }
 });
 
 test("rejects implementation subpaths through package exports", async () => {

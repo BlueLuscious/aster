@@ -61,10 +61,10 @@ test("exposes Amellus through every collection-neutral CLI workflow", async () =
   assert.equal(shown.payload.collection.identity.name, "amellus");
   assert.deepEqual(shown.payload.collection.metadata, Amellus.metadata);
   assert.deepEqual(
-    shown.payload.collection.icons,
+    shown.payload.collection.memberIdentities,
     Amellus.members.map(({ identity }) => identity),
   );
-  assert.equal(shown.payload.collection.icons.length, Amellus.members.length);
+  assert.equal(shown.payload.collection.memberIdentities.length, Amellus.members.length);
   assert.equal(JSON.stringify(shown.payload).includes("data-rendered-by"), false);
   assert.equal(exported.payload.plan.artefacts.length, Amellus.members.length);
   assert.equal(reviewed.payload.plan.document.kind, "collection");

@@ -1,4 +1,4 @@
-import type { AsterCommandShowSubjectType } from "../../../command/types/index.js";
+import type { asterCommandSubjects } from "../../../command/constants/aster-command-subjects.constant.js";
 import type {
   CatalogueDiscoveryCollectionRecord,
   CatalogueDiscoveryIconRecord,
@@ -12,7 +12,7 @@ export type TCatalogueDiscoverySelection = Readonly<{
   catalogue: string;
 
   /** @description Selected portable value family. */
-  subject: AsterCommandShowSubjectType;
+  subject: (typeof asterCommandSubjects.export)[keyof typeof asterCommandSubjects.export];
 
   /** @description Canonical textual identity requested by the caller. */
   identity: string;

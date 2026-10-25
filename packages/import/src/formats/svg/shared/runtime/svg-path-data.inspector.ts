@@ -170,6 +170,8 @@ export class SvgPathDataInspector {
 
   /**
    * @description Tokenises path data while rejecting unsupported characters and comma placement.
+   * @remarks Arc flags may touch each other and the following coordinate. Each flag consumes
+   * exactly one digit even when the number-token expression matches a longer sequence.
    * @param value - Exact authored path value.
    * @returns Command and finite-number tokens, or `undefined` for malformed text.
    */
@@ -185,7 +187,6 @@ export class SvgPathDataInspector {
       const arcFlag =
         activeCommand === svgPathCommands.arc &&
         (operandIndex % 7 === 3 || operandIndex % 7 === 4);
-      // Arc flags may touch each other and the following coordinate.
       const raw = arcFlag && /^[01]/u.test(match[0])
         ? match[0].slice(0, 1)
         : match[0];

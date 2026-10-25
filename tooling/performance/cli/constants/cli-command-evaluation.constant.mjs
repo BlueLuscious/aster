@@ -1,5 +1,6 @@
 /**
  * @description Immutable fresh-process command-evaluation protocol and representative workflows.
+ * @remarks Scenario invocations use the canonical `AsterCommandInvocationType` fields; the CLI contracts own their command, subject, identity, query and option semantics.
  */
 export const cliCommandEvaluation = Object.freeze({
   /** @description Process-global symbol key retaining disposable module evaluations. */
@@ -15,7 +16,7 @@ export const cliCommandEvaluation = Object.freeze({
     /** @description Workspace-relative Icons package root. */
     icons: "packages/icons",
   }),
-  /** @description Representative built-in catalogue workflows measured before lazy migration. */
+  /** @description Representative built-in catalogue workflows with attributed module evaluation. */
   scenarios: Object.freeze({
     /** @description Icon-list discovery workflow. */
     list: Object.freeze({
@@ -39,7 +40,7 @@ export const cliCommandEvaluation = Object.freeze({
       invocation: Object.freeze({
         command: "show",
         subject: "icon",
-        identity: "aster/camera",
+        identity: "aster/camera@outline",
       }),
     }),
     /** @description Exact icon SVG export-planning workflow. */
@@ -50,7 +51,7 @@ export const cliCommandEvaluation = Object.freeze({
       invocation: Object.freeze({
         command: "export",
         subject: "icon",
-        identity: "aster/camera",
+        identity: "aster/camera@outline",
         options: Object.freeze({}),
       }),
     }),
@@ -62,7 +63,7 @@ export const cliCommandEvaluation = Object.freeze({
       invocation: Object.freeze({
         command: "review",
         subject: "icon",
-        identity: "aster/camera",
+        identity: "aster/camera@outline",
       }),
     }),
   }),

@@ -18,10 +18,10 @@ export class ExportHumanOutputPresenter {
    */
   plan(plan: AsterExportPlan): string {
     return plan.artefacts.length === 1
-      ? plan.artefacts[0]?.content ?? ""
+      ? (plan.artefacts[0]?.content ?? "")
       : this.#text.sequence(
           "SVG artefacts",
-          plan.artefacts.map((artefact) => artefact.path),
+          plan.artefacts.map((artefact) => this.#text.value(artefact.path)),
         );
   }
 
@@ -32,9 +32,9 @@ export class ExportHumanOutputPresenter {
    */
   publication(publication: TExportOutputPublication): string {
     if (!publication.committed) {
-      return `No SVG artefacts were published; output root was not created: ${publication.targetRoot}`;
+      return `No SVG artefacts were published; output root was not created: ${this.#text.value(publication.targetRoot)}`;
     }
 
-    return `Exported ${this.#text.count(publication.artefactCount, "SVG artefact")} to ${publication.targetRoot}`;
+    return `Exported ${this.#text.count(publication.artefactCount, "SVG artefact")} to ${this.#text.value(publication.targetRoot)}`;
   }
 }

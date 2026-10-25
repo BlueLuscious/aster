@@ -150,7 +150,10 @@ export class CatalogueDefinitionResolver {
     try {
       definition = Collection.define(candidate);
     } catch {
-      return this.#unavailable(selection, "selected collection definition is invalid");
+      return this.#unavailable(
+        selection,
+        "selected collection definition is invalid",
+      );
     }
 
     const failure = this.#consistency.collection(
@@ -160,13 +163,19 @@ export class CatalogueDefinitionResolver {
     );
 
     if (failure !== undefined) {
-      return this.#unavailable(selection, failure);
+      return this.#unavailable(
+        selection,
+        failure.message,
+        Object.hasOwn(failure, "member") ? failure.member : undefined,
+      );
     }
 
-    const definitionsByIdentity = new Map(definition.members.map((icon) => [
-      this.#identities.icon(icon.identity),
-      icon,
-    ]));
+    const definitionsByIdentity = new Map(
+      definition.members.map((icon) => [
+        this.#identities.icon(icon.identity),
+        icon,
+      ]),
+    );
     const icons: TCatalogueSelectedIcon[] = [];
 
     for (const icon of selection.icons) {
@@ -178,13 +187,16 @@ export class CatalogueDefinitionResolver {
         return this.#unavailable(
           selection,
           "selected collection definition omitted a discovered member",
+          this.#identities.icon(icon.identity),
         );
       }
 
-      icons.push(Object.freeze({
-        definition: memberDefinition,
-        memberships: icon.memberships,
-      }));
+      icons.push(
+        Object.freeze({
+          definition: memberDefinition,
+          memberships: icon.memberships,
+        }),
+      );
     }
 
     return Object.freeze({
@@ -203,21 +215,41 @@ export class CatalogueDefinitionResolver {
    * @description Creates one sanitised exact-resolution failure.
    * @param selection - Accepted selection that could not be resolved.
    * @param message - Stable Aster-owned explanation.
+   * @param member - Accepted failing collection member when the boundary can identify it.
    * @returns Immutable rejected definition-resolution result.
    * @typeParam Value - Accepted value family prevented by provider failure.
    */
   #unavailable<Value>(
     selection: TCatalogueDiscoverySelection,
     message: string,
+    member?: string,
   ): TAcceptanceResult<Value> {
     return Object.freeze({
       accepted: false,
-      diagnostic: this.#diagnostics.create(
-        commandDiagnosticSchema.categories.catalogueUnavailable,
-        commandDiagnosticSchema.codes.catalogueUnavailable,
+      diagnostic: this.#diagnostics.create({
+        category: commandDiagnosticSchema.categories.catalogueUnavailable,
+        code: commandDiagnosticSchema.codes.catalogueUnavailable,
         message,
-        [selection.catalogue, selection.identity],
-      ),
+        details:
+          selection.subject === asterCommandSubjects.show.icon
+            ? {
+                kind: commandDiagnosticSchema.details.definition,
+                catalogue: selection.catalogue,
+                selection: {
+                  kind: selection.subject,
+                  identity: selection.identity,
+                },
+              }
+            : {
+                kind: commandDiagnosticSchema.details.definition,
+                catalogue: selection.catalogue,
+                selection: {
+                  kind: selection.subject,
+                  identity: selection.identity,
+                },
+                ...(member === undefined ? {} : { member }),
+              },
+      }),
     });
   }
 }

@@ -18,6 +18,7 @@ import type {
 
 const camera = Icon.define({
   identity: {
+    variant: "outline",
     namespace: "minimal",
     name: "camera",
   },
@@ -61,6 +62,7 @@ const cameraStippled = Icon.define({
 const externalCamera = Icon.define({
   ...camera,
   identity: {
+    variant: "outline",
     namespace: "external",
     name: "camera",
   },
@@ -69,7 +71,7 @@ const collection = Collection.define({
   identity: {
     name: "minimal",
   },
-  icons: { camera },
+  icons: { camera: { outline: camera } },
   metadata: {
     displayName: "Minimal",
     tags: ["interface-icons"],
@@ -80,9 +82,9 @@ const cameraCollection = Collection.define({
     name: "cameras",
   },
   icons: {
-    camera,
-    cameraStippled,
-    externalCamera,
+    camera: { outline: camera },
+    cameraStippled: { stippled: cameraStippled },
+    externalCamera: { outline: externalCamera },
   },
   metadata: {
     displayName: "Cameras",
@@ -113,54 +115,56 @@ const authoredCamera = {
 } satisfies IconDefinition;
 const authoredCollection = Collection.define({
   identity: { name: "authored" },
-  icons: { camera: authoredCamera },
+  icons: { camera: { outline: authoredCamera } },
   metadata: { displayName: "Authored" },
 });
 const literalCollection = Collection.define({
   identity: { name: "literal" },
   icons: {
     camera: {
-      ...authoredCamera,
-      metadata: {
-        ...authoredCamera.metadata,
-        displayName: "  Authored Camera  " as const,
+      outline: {
+        ...authoredCamera,
+        metadata: {
+          ...authoredCamera.metadata,
+          displayName: "  Authored Camera  " as const,
+        },
       },
     },
   },
   metadata: { displayName: "Literal" },
 });
-const optionalIcons: { camera?: IconDefinition } = {};
+const optionalIcons: { camera?: { outline: IconDefinition } } = {};
 const optionalCollection = Collection.define({
   identity: { name: "optional" },
   icons: optionalIcons,
   metadata: { displayName: "Optional" },
 });
-const optionalCamera: IconDefinition | undefined = optionalCollection.icons.camera;
+const optionalCamera: IconDefinition | undefined = optionalCollection.icons.camera?.outline;
 // @ts-expect-error An optional authored alias cannot become a required canonical alias.
-const requiredCamera: IconDefinition = optionalCollection.icons.camera;
+const requiredCamera: IconDefinition = optionalCollection.icons.camera.outline;
 // @ts-expect-error Canonical icon nodes are readonly even when authored nodes are mutable.
-authoredCollection.icons.camera.nodes.push({ kind: "circle", cx: 6, cy: 6, radius: 2 });
+authoredCollection.icons.camera.outline.nodes.push({ kind: "circle", cx: 6, cy: 6, radius: 2 });
 // @ts-expect-error Canonical icon metadata is readonly even when authored metadata is mutable.
-authoredCollection.icons.camera.metadata.displayName = "Changed";
+authoredCollection.icons.camera.outline.metadata.displayName = "Changed";
 // @ts-expect-error Canonical icon identity is readonly even when authored identity is mutable.
-authoredCollection.icons.camera.identity.name = "changed";
+authoredCollection.icons.camera.outline.identity.name = "changed";
 // @ts-expect-error Canonical view box fields are readonly even when authored fields are mutable.
-authoredCollection.icons.camera.viewBox.width = 48;
+authoredCollection.icons.camera.outline.viewBox.width = 48;
 // @ts-expect-error Canonical presentation policy is readonly even when authored arrays are mutable.
-authoredCollection.icons.camera.metadata.presentation.overrides.push("stroke");
+authoredCollection.icons.camera.outline.metadata.presentation.overrides.push("stroke");
 // @ts-expect-error Canonical metadata does not retain an authored literal changed by normalisation.
-const authoredLiteral: "  Authored Camera  " = literalCollection.icons.camera.metadata.displayName;
+const authoredLiteral: "  Authored Camera  " = literalCollection.icons.camera.outline.metadata.displayName;
 // @ts-expect-error Canonical member values retain exact collection aliases, not arbitrary keys.
-authoredCollection.icons.search;
+authoredCollection.icons.search.outline;
 const acceptedCollection: CollectionDefinition = collection;
 const revalidatedCollection = Collection.define(collection);
-const acceptedCollectionInput: CollectionDefinitionInput<{ camera: IconDefinition }> = {
+const acceptedCollectionInput: CollectionDefinitionInput<{ camera: { outline: IconDefinition } }> = {
   identity: collection.identity,
   icons: collection.icons,
   metadata: collection.metadata,
 };
-const exactCamera: IconDefinition = collection.icons.camera;
-const revalidatedCamera: IconDefinition = revalidatedCollection.icons.camera;
+const exactCamera: IconDefinition = collection.icons.camera.outline;
+const revalidatedCamera: IconDefinition = revalidatedCollection.icons.camera.outline;
 const orderedCamera: IconDefinition | undefined = collection.members[0];
 // @ts-expect-error Canonical icon geometry cannot be extended after construction.
 camera.nodes.push({ kind: "circle", cx: 6, cy: 6, radius: 2 });
@@ -179,9 +183,9 @@ type EmptyCollectionAlias = keyof typeof emptyCollection.icons;
 type AssertNever<Value extends never> = Value;
 type EmptyCollectionHasNoAliases = AssertNever<EmptyCollectionAlias>;
 // @ts-expect-error Concrete collection aliases reject unknown property access.
-collection.icons.search;
+collection.icons.search.outline;
 // @ts-expect-error Canonical collection alias maps are readonly.
-collection.icons.camera = camera;
+collection.icons.camera.outline = camera;
 // @ts-expect-error Concrete collection aliases reject unknown keys.
 const unknownAlias: keyof typeof collection.icons = "search";
 const pathKind: typeof iconNodeKinds.path = "path";

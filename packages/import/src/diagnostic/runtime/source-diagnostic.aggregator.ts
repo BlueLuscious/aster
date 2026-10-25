@@ -67,7 +67,7 @@ export class SourceDiagnosticAggregator {
    * @returns Start offset, or negative one for whole-source context.
    */
   #spanStart(diagnostic: SourceDiagnostic): number {
-    return diagnostic.span?.start.offset ?? -1;
+    return Object.hasOwn(diagnostic, "span") ? diagnostic.span?.start.offset ?? -1 : -1;
   }
 
   /**
@@ -76,7 +76,7 @@ export class SourceDiagnosticAggregator {
    * @returns End offset, or negative one for whole-source context.
    */
   #spanEnd(diagnostic: SourceDiagnostic): number {
-    return diagnostic.span?.end.offset ?? -1;
+    return Object.hasOwn(diagnostic, "span") ? diagnostic.span?.end.offset ?? -1 : -1;
   }
 
   /**

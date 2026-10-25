@@ -14,18 +14,21 @@ import {
   AsterIconLoaders,
 } from "@luscious-garden/aster-icons/dynamic";
 
-const camera = await AsterIconLoaders["aster/camera"]?.();
+const camera = await AsterIconLoaders["aster/camera@outline"]?.();
 const amellus = await AsterCollectionLoaders.amellus?.();
 ```
 
-Icon keys use `[<namespace>/]<name>[@<variant>]`; collection keys use
+Icon keys use `[<namespace>/]<name>@<variant>`; collection keys use
 `[<namespace>/]<name>`. Own keys match their manifest family exactly.
+Icon loaders resolve concrete treatments, never glyph dictionaries: `aster/camera` has no icon
+loader and no implicit Outline selection. [Glyph dictionaries](../glyphs/index.md#glyph-dictionaries)
+are separate eager imports, not additional loader entries.
 
 ## Contracts
 
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
-| `IconDefinitionLoader` | Zero-argument function returning `Promise<IconDefinition>`. | Resolves the canonical object from one direct icon subpath. |
+| `IconDefinitionLoader` | Zero-argument function returning `Promise<IconDefinition>`. | Resolves the same canonical object exposed by its individual icon subpath. |
 | `CollectionDefinitionLoader` | Zero-argument function returning `Promise<CollectionDefinition>`. | Resolves one collection and its declared member graph. |
 | `IconDefinitionLoaderMap` | Readonly string-indexed icon entry model with explicit `undefined` absence. | Describes `AsterIconLoaders` using `IconDefinitionLoader`. |
 | `CollectionDefinitionLoaderMap` | Readonly string-indexed collection entry model with explicit `undefined` absence. | Describes `AsterCollectionLoaders` using `CollectionDefinitionLoader`. |
@@ -42,7 +45,7 @@ Both maps have a null prototype. Any string that is not an own canonical key res
 `__proto__`. Optional invocation is safe for a string supplied at runtime:
 
 ```ts
-const key: string = "aster/camera";
+const key: string = "aster/camera@outline";
 const definition = await AsterIconLoaders[key]?.();
 ```
 
@@ -58,10 +61,12 @@ automatically retain the null prototype.
 ## Deferred evaluation
 
 Importing the dynamic subpath evaluates its entrypoint and generated map, not complete
-definitions. Invoking one icon loader evaluates its facade, definition and shared authorities;
-invoking a collection loader evaluates that collection's complete declared member graph.
+definitions. Invoking one icon loader evaluates its canonical definition and shared authorities,
+without loading its public re-export facade. Invoking a collection loader evaluates its canonical
+collection and complete declared member graph. Importing a public facade afterwards still returns
+the same object through the ordinary module cache.
 
-[Catalogue Source Tooling](../../../tooling/catalogue/index.md) generates facade targets and
+[Catalogue Source Tooling](../../../tooling/catalogue/index.md) generates canonical module targets and
 canonical keys together with the manifest. It owns additions, removals and consistency checks;
 physical source paths remain private.
 

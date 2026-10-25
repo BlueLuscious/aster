@@ -15,7 +15,7 @@ before timing begins, while every complete markup result enters a deterministic 
 
 | Workload | Pressure represented |
 | --- | --- |
-| Core revalidation reference | Public reconstruction necessarily performed at the start of every SVG render. |
+| Core revalidation reference | Public Core acceptance invoked at the start of every SVG render. |
 | Minimal icon | Fixed option, presentation, node, escaping, and complete-document cost. |
 | Every primitive | Node dispatch, complete presentation, geometry attributes, and document composition. |
 | Fixed corpus | Round-robin rendering across sixteen canonical synthetic definitions. |
@@ -23,92 +23,56 @@ before timing begins, while every complete markup result enters a deterministic 
 | Authorised overrides | Complete option normalisation and presentation override precedence. |
 | RTL mirroring | Direction policy, translation, title ordering, and generated group composition. |
 | Escaping pressure | XML validation and replacement-heavy attribute and text values. |
-| Dense point sequence | Core point reconstruction, coordinate conversion, flattening, and large markup composition. |
+| Dense point sequence | Definition acceptance, coordinate conversion, flattening and large markup composition. |
 
-The Core reference is attribution evidence rather than an SVG product operation. It never grants
-SVG permission to bypass revalidation or trust canonical object provenance.
+The Core reference is attribution evidence rather than an SVG product operation. It grants no
+SVG-owned bypass: [Core](../core/definition/runtime/index.md#recognised-outputs) decides whether
+to recognise an output or fully reconstruct unknown data. Recognised and unknown inputs must be
+measured separately.
 
-## Initial evidence and attribution
+## Current Rendering Reference
 
-The following schema-version-one findings used the former product corpus and remain historical
-investigation evidence; they are not directly comparable with schema-version-two reports. Three
-complete reports under Node `24.10.0` on Windows x64 produced these medians across report medians:
+A Windows x64 reference uses Node `24.10.0`, V8 `13.6`, TypeScript `5.9.3` and pnpm `10.28.1`.
+Each value is the median of three worker medians with seven samples, baseline-calibrated fixed
+counts and equal complete-output fingerprints. Definitions/options are prepared outside timing;
+the complete SVG enters checksum consumption. Filesystem caches, scheduling, thermals and
+antivirus are uncontrolled. The
+[supplemental protocol](../../tooling/performance/index.md#supplemental-measurements)
+owns sampling; these are local costs, not CI thresholds or universal latency guarantees.
 
-| Scenario | Initial median |
+| Complete operation | Median |
 | --- | ---: |
-| `svg.reference.core-revalidation` | 7,055 ns |
-| `svg.render.minimal` | 21,728 ns |
-| `svg.render.primitives` | 98,342 ns |
-| `svg.render.corpus` | 38,653 ns |
-| `svg.render.semantic` | 23,722 ns |
-| `svg.render.overrides` | 24,064 ns |
-| `svg.render.rtl-mirror` | 21,675 ns |
-| `svg.render.escaping` | 24,611 ns |
-| `svg.render.point-sequence` | 136,798 ns |
+| Authorised overrides | 6.366 us/render |
+| Polyline, 8 points | 7.084 us/render |
+| Polyline, 128 points | 44.990 us/render |
+| Polyline, 1,024 points | 309.624 us/render |
+| Polygon, 128 points | 41.521 us/render |
+| Foreign-Core polyline, 128 points | 141.880 us/render |
+| 10,000 simple canonical definitions | 51.055 ms/batch |
 
-Three CPU profiles attributed 33.71% of repository self-time to repeated attribute escaping.
-`SvgMarkupSerialiser.#attributeText` traversed every value through six sequential `replaceAll()`
-operations even when no character required replacement. Core exact-field inspection was the next
-largest family; option normalisation, presentation resolution, node dispatch, point flattening,
-XML validation, freezing, and individual composition methods did not expose another isolated SVG
-hotspot of comparable magnitude.
+The supplemental matrix varies 0/1/10/100/1,000/10,000-definition batches, 16/64/256 nodes,
+8/128/1,024 points or cubic segments, text width and option shape independently. An empty batch
+contains no render calls, not an accepted empty definition. Canonical, copied, JSON and
+foreign-Core inputs retain their different admission work. The standard command below runs the
+fixed nine scenarios, not this entire matrix.
 
-## Retained experiment
+Every measured render includes the acceptance and complete serialisation described by
+[Render Runtime](render/runtime/index.md). [Core's reuse guide](../core/definition/runtime/index.md#reusing-definitions)
+explains how definition preparation affects that work. CLI planning, HTML, process startup and
+filesystem publication are separate operations; see the
+[integrated reference](../../tooling/performance/index.md#integrated-consumer-observations).
 
-The sole candidate replaced sequential attribute replacements with one character traversal. It
-returns the original string without allocation when no escaping is required and appends only the
-segments surrounding an accepted escapable character otherwise. Character validation, entities,
-ordering, errors, and complete output bytes remain unchanged.
+## Resource Reference
 
-Three equivalent control and candidate reports produced:
+Three separate process observations render one 128-point definition 10,000 times without
+retaining each SVG. Sampled RSS spans 69.4-76.4 MiB, post-GC used heap is approximately 6.29 MiB
+and 83-89 GC events are observed. These describe the whole process, not a renderer memory budget.
 
-| Scenario | Control | Candidate | Difference |
-| --- | ---: | ---: | ---: |
-| Core revalidation reference | 7,055 ns | 6,830 ns | 3.2% faster |
-| Minimal icon | 21,728 ns | 12,629 ns | 41.9% faster |
-| Every primitive | 98,342 ns | 55,209 ns | 43.9% faster |
-| Former product corpus | 38,653 ns | 22,486 ns | 41.8% faster |
-| Semantic accessibility | 23,722 ns | 15,121 ns | 36.3% faster |
-| Authorised overrides | 24,064 ns | 15,161 ns | 37.0% faster |
-| RTL mirroring | 21,675 ns | 13,460 ns | 37.9% faster |
-| Escaping pressure | 24,611 ns | 15,778 ns | 35.9% faster |
-| Dense point sequence | 136,798 ns | 129,800 ns | 5.1% faster |
-
-The target scenarios exceed the 10% acceptance threshold with no measured regression. Candidate
-profiles no longer expose attribute escaping as a material hotspot; strict Core revalidation
-becomes the dominant repository-owned family and remains intentionally unchanged.
-
-The retained implementation increases unminified emitted JavaScript by 966 bytes, from 26,349 to
-27,315 bytes. This 3.7% increase represents the explicit single-pass algorithm. Declaration bytes,
-module counts, exports, dependencies, and side-effect metadata remain unchanged.
-
-## Retained pressure snapshot
-
-A separate three-report reading of the retained implementation produced the following informative
-medians across report medians:
-
-| Scenario | Elapsed time | Non-negative heap growth |
-| --- | ---: | ---: |
-| Core revalidation reference | 6,923 ns | 679 bytes |
-| Minimal icon | 12,727 ns | 690 bytes |
-| Every primitive | 56,738 ns | 456 bytes |
-| Former product corpus | 23,305 ns | 1,540 bytes |
-| Semantic accessibility | 15,928 ns | 1,387 bytes |
-| Authorised overrides | 15,331 ns | 2,720 bytes |
-| RTL mirroring | 14,270 ns | 1,370 bytes |
-| Escaping pressure | 16,523 ns | 1,665 bytes |
-| Dense point sequence | 133,789 ns | 5,435 bytes |
-
-Heap growth is a pressure indicator, not an allocation counter. No memory claim or compatibility
-promise is inferred from these machine-specific values.
-
-## Distribution observation
-
-A separate recorded compiler inspection contained 22 JavaScript modules totalling 32,566 bytes
-and 22 declaration files totalling 9,388 bytes. This historical unminified observation is not a
-fixed package boundary or a claim about the current checkout. The command below reports current
-distribution counts and bytes; production format and dependencies belong to the
-[package boundary](index.md#boundary), not to benchmark measurements.
+A separate lifecycle retains 2,000 SVG strings: used heap reaches approximately 9.1 MiB and returns
+to 5.7 MiB after release, while the prepared definition remains reachable. The
+[shared resource methodology](../../tooling/performance/index.md#processes-and-resources)
+owns interpretation limits; these whole-process observations do not attribute every resident page
+to SVG strings. Resource instrumentation is separate from native latency.
 
 ## Reproduction
 
@@ -126,14 +90,13 @@ limits.
 
 ## Acceptance rules
 
-Correctness takes precedence over performance. A claim requires three equivalent control and
-candidate reports, at least 10% improvement in its target scenario, and no unrelated regression
-above 5% without an accepted trade-off. Distribution growth requires one concrete responsibility.
-Runtime, type, ABI, architecture, documentation, and workflow conformance remain authoritative.
+[Shared comparison rules](../../tooling/performance/index.md#comparison-limits) govern sampling,
+claim thresholds and accepted trade-offs. Runtime, type, ABI, architecture, documentation and
+workflow conformance remain authoritative.
 
-Caches, registries, mutable memoisation, pretrusted definitions, output streaming, weakened
-validation, and private package imports are never benchmark shortcuts. Raw reports and CPU profiles
-are machine-specific disposable evidence and are not committed.
+Core's production recognition policy is part of the measured public operation, not a fixture-owned
+bypass. The [shared methodology](../../tooling/performance/index.md#processes-and-resources) owns
+resource/profile separation and disposable evidence.
 
 ## Tooling boundary
 

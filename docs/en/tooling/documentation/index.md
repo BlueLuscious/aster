@@ -62,6 +62,10 @@ Root inspectors implement the internal `IDocumentationInspector` contract. Per-d
 implement `ICanonicalDocumentPolicy`, allowing the document inspector to retain policy order for
 each document rather than regrouping findings by policy.
 
+Both contracts depend on the write-only `IDocumentationIssueCollector` capability rather than a
+runtime class. `DocumentationIssueCollector` implements it while the verifier retains state and
+snapshot ownership. Documentation and architecture keep separate domain-owned collectors.
+
 | Inspector or policy | Responsibility |
 | --- | --- |
 | `DocumentationHierarchyInspector` | Requires canonical documentation entry points. |

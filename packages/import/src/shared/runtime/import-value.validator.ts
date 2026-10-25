@@ -216,7 +216,7 @@ export class ImportValueValidator {
     if (
       descriptor === undefined ||
       !descriptor.enumerable ||
-      !("value" in descriptor)
+      !Object.hasOwn(descriptor, "value")
     ) {
       throw new IconImportError(path, "expected an enumerable data field");
     }

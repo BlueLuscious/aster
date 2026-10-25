@@ -31,11 +31,12 @@ export class CatalogueSourceSerialiser {
    * @returns {string} Complete deterministic TypeScript re-export facade.
    */
   facade(outputPath, module) {
-    return `${this.#header}export { ${module.symbol} } from "${this.#moduleSpecifier(outputPath, module.relativePath)}";\n`;
+    return `${this.#header}export { ${module.exportName} } from "${this.#moduleSpecifier(outputPath, module.relativePath)}";\n`;
   }
 
   /**
    * @description Serialises complete metadata-only icon and collection manifests.
+   * @remarks Explicit manifest-record type arguments bound array element inference independently of catalogue size.
    * @param {readonly import("../contracts/internal/catalogue-icon-manifest-record.contract.mjs").ICatalogueIconManifestRecord[]} icons - Canonically ordered icon manifest records.
    * @param {readonly import("../contracts/internal/catalogue-collection-manifest-record.contract.mjs").ICatalogueCollectionManifestRecord[]} collections - Canonically ordered collection manifest records.
    * @returns {string} Complete deterministic TypeScript manifest module.
@@ -52,8 +53,8 @@ export class CatalogueSourceSerialiser {
   /**
    * @description Serialises exact asynchronous icon and collection loader maps.
    * @param {string} outputPath - Package-relative generated dynamic-loader path.
-   * @param {readonly { key: string, symbol: string, facadePath: string }[]} icons - Canonically ordered icon loader records.
-   * @param {readonly { key: string, symbol: string, facadePath: string }[]} collections - Canonically ordered collection loader records.
+   * @param {readonly { key: string, exportName: string, definitionPath: string }[]} icons - Canonically ordered icon loader records with package-relative canonical paths.
+   * @param {readonly { key: string, exportName: string, definitionPath: string }[]} collections - Canonically ordered collection loader records with package-relative canonical paths.
    * @returns {string} Complete deterministic TypeScript dynamic-loader module.
    */
   dynamic(outputPath, icons, collections) {
@@ -66,10 +67,28 @@ export class CatalogueSourceSerialiser {
   }
 
   /**
+   * @description Serialises one exact immutable dictionary referencing its canonical treatments.
+   * @param {string} outputPath - Package-relative generated glyph facade path.
+   * @param {string} exportName - Sole exported dictionary symbol.
+   * @param {readonly { propertyName: string, module: import("../contracts/internal/catalogue-source-module.contract.mjs").ICatalogueSourceModule }[]} entries - Collision-free canonical treatment references.
+   * @returns {string} Complete deterministic TypeScript dictionary module.
+   */
+  glyph(outputPath, exportName, entries) {
+    const imports = entries.map(({ module }) =>
+      `import { ${module.exportName} } from "${this.#moduleSpecifier(outputPath, module.relativePath)}";`,
+    );
+    const properties = entries.map(({ propertyName, module }) =>
+      `  /** @description Canonical ${module.variant} treatment. */\n  ${JSON.stringify(propertyName)}: ${module.exportName},`,
+    );
+
+    return `${this.#header}${imports.join("\n")}\n\n/**\n * @description Exact canonical treatments before immutable dictionary publication.\n */\nconst variants = {\n${properties.join("\n")}\n};\nObject.setPrototypeOf(variants, null);\n\n/**\n * @description Immutable dictionary of the glyph's distributed treatments without a default.\n * @remarks Importing this module evaluates every listed treatment; individual subpaths stay isolated.\n */\nexport const ${exportName} = Object.freeze(variants);\n`;
+  }
+
+  /**
    * @description Serialises one typed prototype-free immutable definition-loader map.
    * @param {string} outputPath - Package-relative generated dynamic-loader path.
    * @param {import("../contracts/internal/catalogue-source-family.contract.mjs").ICatalogueSourceFamily["kind"]} familyKind - Semantic loader family.
-   * @param {readonly { key: string, symbol: string, facadePath: string }[]} records - Canonically ordered validated loader records.
+   * @param {readonly { key: string, exportName: string, definitionPath: string }[]} records - Canonically ordered validated loader records.
    * @returns {string} Deterministic typed construction, prototype removal and immutable export.
    */
   #loaderMap(outputPath, familyKind, records) {
@@ -83,15 +102,15 @@ export class CatalogueSourceSerialiser {
   }
 
   /**
-   * @description Serialises one frozen loader targeting a generated public definition facade.
+   * @description Serialises one frozen loader targeting its canonical definition module.
    * @param {string} outputPath - Package-relative generated dynamic-loader path.
-   * @param {{ key: string, symbol: string, facadePath: string }} record - Validated loader record.
+   * @param {{ key: string, exportName: string, definitionPath: string }} record - Validated loader record with a package-relative canonical path.
    * @returns {string} Deterministic TypeScript loader property.
    */
   #loaderRecord(outputPath, record) {
-    const specifier = this.#moduleSpecifier(outputPath, record.facadePath);
+    const specifier = this.#moduleSpecifier(outputPath, record.definitionPath);
 
-    return `  ${JSON.stringify(record.key)}: Object.freeze(\n    () => import(${JSON.stringify(specifier)}).then(({ ${record.symbol} }) => ${record.symbol}),\n  ),`;
+    return `  ${JSON.stringify(record.key)}: Object.freeze(\n    () => import(${JSON.stringify(specifier)}).then(({ ${record.exportName} }) => ${record.exportName}),\n  ),`;
   }
 
   /**
@@ -103,7 +122,7 @@ export class CatalogueSourceSerialiser {
     const fields = [
       `  key: ${JSON.stringify(record.key)},`,
       `  identity: ${this.#identity(record.identity, 2)},`,
-      `  symbol: ${JSON.stringify(record.symbol)},`,
+      `  exportName: ${JSON.stringify(record.exportName)},`,
       `  displayName: ${JSON.stringify(record.displayName)},`,
       ...(record.tags === undefined
         ? []
@@ -121,7 +140,7 @@ export class CatalogueSourceSerialiser {
         : [`  replacedBy: ${this.#identity(record.replacedBy, 2)},`]),
     ];
 
-    return `  Object.freeze({\n${fields.map((field) => `  ${field}`).join("\n")}\n  }),`;
+    return `  Object.freeze<IconManifestEntry>({\n${fields.map((field) => `  ${field}`).join("\n")}\n  }),`;
   }
 
   /**
@@ -147,7 +166,7 @@ export class CatalogueSourceSerialiser {
     ];
     const metadata = `Object.freeze({\n${metadataFields.map((field) => `      ${field}`).join("\n")}\n    })`;
 
-    return `  Object.freeze({\n    key: ${JSON.stringify(record.key)},\n    identity: ${this.#identity(record.identity, 2)},\n    symbol: ${JSON.stringify(record.symbol)},\n    metadata: ${metadata},\n    members: ${this.#stringArray(record.members, 2)},\n  }),`;
+    return `  Object.freeze<CollectionManifestEntry>({\n    key: ${JSON.stringify(record.key)},\n    identity: ${this.#identity(record.identity, 2)},\n    exportName: ${JSON.stringify(record.exportName)},\n    metadata: ${metadata},\n    members: ${this.#stringArray(record.members, 2)},\n  }),`;
   }
 
   /**
@@ -159,11 +178,11 @@ export class CatalogueSourceSerialiser {
   #identity(identity, indentation) {
     const prefix = "  ".repeat(indentation);
     const fields = [
-      ...(identity.namespace === undefined
+      ...(!Object.hasOwn(identity, "namespace") || identity.namespace === undefined
         ? []
         : [`namespace: ${JSON.stringify(identity.namespace)},`]),
       `name: ${JSON.stringify(identity.name)},`,
-      ...(identity.variant === undefined
+      ...(!Object.hasOwn(identity, "variant") || identity.variant === undefined
         ? []
         : [`variant: ${JSON.stringify(identity.variant)},`]),
     ];

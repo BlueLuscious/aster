@@ -1,4 +1,5 @@
 import { Buffer } from "node:buffer";
+import { BenchmarkConfigurationValidator } from "../../shared/runtime/benchmark-configuration.validator.mjs";
 
 /**
  * @description Measures fresh-process CLI startup without package-manager bootstrap cost.
@@ -20,9 +21,7 @@ export class CliColdStartRunner {
    * @param {number} [sampleCount] - Number of retained process samples.
    */
   constructor(processHost, statistics, sampleCount = 7) {
-    if (!Number.isSafeInteger(sampleCount) || sampleCount <= 0) {
-      throw new TypeError("sampleCount must be a positive safe integer.");
-    }
+    new BenchmarkConfigurationValidator().positiveInteger(sampleCount, "sampleCount");
 
     this.#processHost = processHost;
     this.#statistics = statistics;
@@ -32,7 +31,7 @@ export class CliColdStartRunner {
   /**
    * @description Measures one cold Node scenario and verifies its exact process contract.
    * @param {{ name: string, executablePath?: string, arguments: readonly string[], stdout: string }} scenario - Complete cold scenario.
-   * @returns {{ name: string, samples: number, medianNanoseconds: number, minimumNanoseconds: number, maximumNanoseconds: number, stdoutBytes: number }} Cold-start evidence.
+   * @returns {{ name: string, samples: number, medianNanoseconds: number, minimumNanoseconds: number, maximumNanoseconds: number, stdoutBytes: number }} Scenario `name`, process `samples`, median/minimum/maximum complete-process nanoseconds, and retained standard-output byte count in `stdoutBytes`.
    */
   measure(scenario) {
     const timings = [];

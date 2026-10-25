@@ -1,3 +1,4 @@
+import { Icon } from "@luscious-garden/aster-core";
 import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family-kinds.constant.mjs";
 import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
@@ -37,6 +38,7 @@ export class CatalogueSourceRelationshipInspector {
 
     for (const collection of collectionModules) {
       const memberPaths = new Set();
+      const groups = new Map();
 
       for (const reference of collection.memberReferences) {
         if (
@@ -67,11 +69,27 @@ export class CatalogueSourceRelationshipInspector {
           );
         }
 
-        if (reference.importedSymbol !== target.symbol) {
+        if (reference.importedSymbol !== target.exportName) {
           throw new CatalogueSourceError(
-            `${collection.sourcePath} must import ${target.symbol} from ${reference.moduleSpecifier}.`,
+            `${collection.sourcePath} must import ${target.exportName} from ${reference.moduleSpecifier}.`,
           );
         }
+
+        const identity = target.manifest.identity;
+        if (!("variant" in identity) || Icon.variantPropertyName(identity.variant) !== reference.variantPropertyName) {
+          throw new CatalogueSourceError(
+            `${collection.sourcePath} collection variant ${reference.alias}.${reference.variantPropertyName} must match the canonical variant property.`,
+          );
+        }
+        const namespace = Object.hasOwn(identity, "namespace") ? identity.namespace : undefined;
+        const glyph = JSON.stringify([namespace, identity.name]);
+        const existing = groups.get(reference.alias);
+        if (existing !== undefined && existing !== glyph) {
+          throw new CatalogueSourceError(
+            `${collection.sourcePath} collection variant group ${reference.alias} must contain the same glyph.`,
+          );
+        }
+        groups.set(reference.alias, glyph);
 
         memberPaths.add(targetPath);
       }

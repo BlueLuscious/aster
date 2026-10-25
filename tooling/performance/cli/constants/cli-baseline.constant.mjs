@@ -14,7 +14,7 @@ if (typeof cliVersion !== "string" || cliVersion.length === 0) {
  */
 export const cliBaseline = Object.freeze({
   /** @description Serialisable report schema revision. */
-  schemaVersion: 4,
+  schemaVersion: 5,
   /** @description Measured public package identity. */
   packageName: "@luscious-garden/aster-cli",
   /** @description Workspace-relative measured package root. */

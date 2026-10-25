@@ -25,7 +25,7 @@ if (rawExportOptions.direction !== undefined) {
 const parsed = new CommandLineParser().parse([
   "export",
   "icon",
-  "aster/camera",
+  "aster/camera@outline",
   "--colour",
   "red",
 ]);

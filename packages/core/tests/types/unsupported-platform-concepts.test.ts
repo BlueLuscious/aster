@@ -42,10 +42,10 @@ const catalogueMetadata: IconDefinition["metadata"] = {
   aliases: ["find-me"],
 };
 
-// @ts-expect-error Exact optional fields do not accept explicit undefined.
-const invalidOptionalIdentity: IconDefinition["identity"] = {
+const invalidTreatmentIdentity: IconDefinition["identity"] = {
   namespace: "minimal",
   name: "camera",
+  // @ts-expect-error Concrete identities require an explicit treatment.
   variant: undefined,
 };
 
@@ -57,5 +57,5 @@ void resourcePaint;
 void variantOption;
 void eventOption;
 void catalogueMetadata;
-void invalidOptionalIdentity;
+void invalidTreatmentIdentity;
 void hostNode;

@@ -28,7 +28,7 @@ const catalogueSourceSynchroniser = new CatalogueSourceSynchroniserFactory().cre
  * @description Synchronises generated Icons catalogue sources for one explicit package root.
  * @param {string} packageRoot - Absolute or relative Icons package root.
  * @param {boolean} checkOnly - Whether to report drift without writing.
- * @returns {Promise<{ changedPaths: readonly string[], outputCount: number }>} Immutable synchronisation result.
+ * @returns {Promise<{ changedPaths: readonly string[], outputCount: number }>} Result documented by `CatalogueSourceSynchroniser.synchronise()`, without altering its paths or output count.
  */
 export async function synchroniseIconsCatalogue(packageRoot, checkOnly = false) {
   return catalogueSourceSynchroniser.synchronise(

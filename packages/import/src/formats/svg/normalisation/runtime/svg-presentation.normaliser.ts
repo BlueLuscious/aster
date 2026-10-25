@@ -33,6 +33,8 @@ export class SvgPresentationNormaliser {
 
   /**
    * @description Resolves one element's accepted presentation over its inherited values.
+   * @remarks The private working dictionary has no prototype, so authored fields cannot invoke
+   * inherited setters. Its validated fields are copied into portable nodes by the primitive normaliser.
    * @param element - Safe validated syntax element.
    * @param inherited - Presentation inherited from structural ancestors.
    * @returns Frozen canonical portable presentation.
@@ -41,7 +43,8 @@ export class SvgPresentationNormaliser {
     element: ISvgSyntaxElement,
     inherited: IconPresentation,
   ): IconPresentation {
-    const presentation: Record<string, unknown> = { ...inherited };
+    const presentation: Record<string, unknown> = Object.create(null);
+    Object.assign(presentation, inherited);
 
     for (const attribute of element.attributes) {
       const schema = this.#schema(attribute.localName);

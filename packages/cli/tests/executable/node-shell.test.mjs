@@ -10,10 +10,11 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { basename, join, relative, resolve } from "node:path";
 import process from "node:process";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { NodeShell } from "../../dist/shell/runtime/node-shell.js";
 import {
   AsterCollectionLoaders,
   AsterIconLoaders,
@@ -65,11 +66,7 @@ const representativeIdentity = `${
   representativeIcon.identity.namespace === undefined
     ? ""
     : `${representativeIcon.identity.namespace}/`
-}${representativeName}${
-  representativeIcon.identity.variant === undefined
-    ? ""
-    : `@${representativeIcon.identity.variant}`
-}`;
+}${representativeName}@${representativeIcon.identity.variant}`;
 const representativeDisplayName = representativeIcon.metadata.displayName;
 const representativePath = `${representativeIdentity}.svg`;
 const representativeMemberships = asterCollectionDefinitions
@@ -99,6 +96,49 @@ function run(arguments_, options = {}) {
   });
 }
 
+test("does not acquire publication or version intent from inherited host fields", async () => {
+  const root = mkdtempSync(join(tmpdir(), "aster-cli-shell-inherited-"));
+  try {
+    const shell = new NodeShell("Aster", packageVersion, root, new URL("../../dist/shell/aster.js", import.meta.url));
+    const cases = [
+      ["version", "--json"],
+      ["export", "icon", representativeIdentity, "--json"],
+      ["review", "collection", representativeCollectionIdentity, "--json"],
+    ];
+    const expected = [];
+    for (const arguments_ of cases) {
+      const result = await shell.execute(arguments_);
+      assert.equal(result.exitCode, 0);
+      expected.push(result);
+    }
+    for (const field of ["output", "replace", "scope", "dependencies", "location"]) {
+      const previous = Object.getOwnPropertyDescriptor(Object.prototype, field);
+      let reads = 0;
+      const actual = [];
+      try {
+        Object.defineProperty(Object.prototype, field, {
+          configurable: true,
+          get() { reads += 1; throw new Error(`Unexpected inherited ${field}`); },
+        });
+        for (const arguments_ of cases) {
+          actual.push(await shell.execute(arguments_));
+        }
+      } finally {
+        if (previous === undefined) {
+          Reflect.deleteProperty(Object.prototype, field);
+        } else {
+          Object.defineProperty(Object.prototype, field, previous);
+        }
+      }
+      assert.equal(reads, 0, field);
+      assert.deepEqual(actual, expected, field);
+    }
+  } finally {
+    assert.match(relative(resolve(tmpdir()), resolve(root)), /^aster-cli-shell-inherited-[^\\/]+$/u);
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
 test("renders default and selected human help without loading shell state", () => {
   const complete = run([]);
   const selected = run(["help", "show"]);
@@ -127,6 +167,103 @@ test("exposes version and review help through the standalone parser", () => {
       assert.match(result.stdout, /aster version cli \[--deps\] \[--location\]/u);
     }
   }
+});
+
+test("prints every discovered collection member on its own line without changing compact JSON", () => {
+  const args = ["show", "collection", representativeCollectionIdentity];
+  const human = run(args);
+  const json = run([...args, "--json"]);
+  assert.equal(human.status, 0);
+  assert.equal(human.stderr, "");
+  assert.equal(json.status, 0);
+  assert.equal(json.stderr, "");
+  const result = JSON.parse(json.stdout);
+  const identities = result.payload.collection.memberIdentities.map((identity) =>
+    `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}@${identity.variant}`,
+  );
+  assert.equal(human.stdout.slice(human.stdout.indexOf("Icons:\n")), [
+    "Icons:", ...identities.map((identity) => `  ${identity}`), "",
+  ].join("\n"));
+  assert.equal(json.stdout, `${JSON.stringify(result)}\n`);
+});
+
+test("discovers glyph families and explicit treatments through human and JSON executable output", () => {
+  const glyphIdentity = representativeIdentity.split("@")[0];
+  const listed = run(["list", "glyphs"]);
+  assert.equal(listed.status, 0);
+  assert.equal(listed.stderr, "");
+  assert.match(listed.stdout, /^Glyphs:\n/u);
+  assert.ok(listed.stdout.includes(`${glyphIdentity} [aster] (`));
+  const shown = run(["show", "glyph", glyphIdentity]);
+  assert.equal(shown.status, 0);
+  assert.equal(shown.stderr, "");
+  assert.ok(shown.stdout.startsWith(`Glyph: ${glyphIdentity}\nCatalogue: aster\nVariants:\n`));
+  assert.ok(shown.stdout.includes(`  ${representativeIdentity} [aster] - ${representativeDisplayName}`));
+  const family = run(["show", "glyph", glyphIdentity, "--catalogue", "aster", "--json"]);
+  const filtered = run(["list", "icons", "--glyph", glyphIdentity, "--json"]);
+  const listJson = run(["list", "glyphs", "--json"]);
+  for (const result of [family, filtered, listJson]) {
+    assert.equal(result.status, 0);
+    assert.equal(result.stderr, "");
+    assert.ok(result.stdout.endsWith("\n"));
+  }
+  const glyph = JSON.parse(family.stdout).payload.glyph;
+  assert.equal(JSON.parse(family.stdout).payload.kind, "glyph-show");
+  assert.deepEqual(JSON.parse(filtered.stdout).payload.icons, glyph.variants);
+  assert.deepEqual(JSON.parse(listJson.stdout).payload.glyphs.find((entry) =>
+    entry.identity.name === glyph.identity.name && entry.identity.namespace === glyph.identity.namespace), glyph);
+  const absent = run(["list", "icons", "--glyph", glyphIdentity, "--tag", "nonexistent-fixture-tag"]);
+  assert.equal(absent.status, 0);
+  assert.equal(absent.stderr, "");
+  assert.equal(absent.stdout, "Icons:\n  (none)\n");
+});
+
+test("rejects unsupported glyph argv forms without falling back to a concrete treatment", () => {
+  for (const argv of [
+    ["list", "glyphs", "--tag", "camera"],
+    ["list", "glyphs", "--collection", "amellus"],
+    ["list", "glyphs", "--glyph", "aster/camera"],
+    ["list", "collections", "--glyph", "aster/camera"],
+    ["list", "catalogues", "--glyph", "aster/camera"],
+    ["search", "camera", "--glyph", "aster/camera"],
+    ["list", "icons", "--glyph"],
+    ["list", "icons", "--glyph", "aster/camera", "--glyph", "aster/camera"],
+    ["list", "glyphs", "--catalogue", "aster", "--catalogue", "aster"],
+    ["show", "glyph"], ["show", "glyph", "aster/camera", "extra"],
+    ["show", "glyph", "aster/camera", "--collection", "amellus"],
+    ["show", "glyph", "aster/camera@outline"], ["show", "glyph", "aster/camera/outline"],
+    ["list", "icons", "--glyph", "aster/camera@outline"],
+    ["export", "glyph", "aster/camera"], ["review", "glyph", "aster/camera"],
+    ...["show", "export", "review"].map((command) => [command, "icon", "aster/camera"]),
+  ]) {
+    const result = run([...argv, "--json"]);
+    assert.equal(result.status, 2, argv.join(" "));
+    assert.equal(result.stderr, "");
+    const value = JSON.parse(result.stdout);
+    assert.equal(value.ok, false);
+    assert.equal(value.diagnostic.code, "ASTER-CLI-001");
+    if (argv[1] === "icon") {assert.match(value.diagnostic.message, /name@variant.*show glyph/u);}
+  }
+  for (const argv of [
+    ["show", "glyph", "aster/absent"], ["show", "glyph", "camera"],
+    ["list", "icons", "--glyph", "aster/absent", "--tag", "nothing"],
+    ["list", "glyphs", "--catalogue", "absent"], ["show", "icon", "aster/camera@absent"],
+  ]) {
+    const result = run([...argv, "--json"]);
+    assert.equal(result.status, 1, argv.join(" "));
+    assert.equal(result.stderr, "");
+    assert.equal(JSON.parse(result.stdout).diagnostic.code, "ASTER-CLI-004");
+  }
+});
+
+test("describes glyph grammar through command-specific help", () => {
+  const list = run(["help", "list"]);
+  const show = run(["help", "show"]);
+  assert.equal(list.status, 0);
+  assert.equal(show.status, 0);
+  assert.match(list.stdout, /aster list glyphs \[--catalogue <provider>\]/u);
+  assert.match(list.stdout, /aster list icons.*\[--glyph <identity>\]/u);
+  assert.match(show.stdout, /aster show glyph <identity>/u);
 });
 
 test("keeps the executable CLI version distinct from named package queries", () => {
@@ -206,7 +343,7 @@ test("renders list, search, show, and version as deterministic human text", () =
     new RegExp(`^Icon: ${representativeIdentity}\\nCatalogue: aster`, "u"),
   );
   assert.ok(
-    shown.stdout.includes(`Collections: ${representativeMemberships.join(", ")}\n`),
+    shown.stdout.includes(`Collections:\n${representativeMemberships.map((identity) => `  ${identity}`).join("\n")}\n`),
   );
   assert.equal(version.stdout, `Aster ${packageVersion}\n`);
 
@@ -265,7 +402,7 @@ test("renders standalone options and one collection as a JSON export plan", () =
 });
 
 test("delegates accepted presentation overrides to icon policy", () => {
-  const execution = run([
+  const args = [
     "export",
     "icon",
     representativeIdentity,
@@ -275,12 +412,29 @@ test("delegates accepted presentation overrides to icon policy", () => {
     "currentColor",
     "--stroke-width",
     "2",
-  ]);
+  ];
+  const execution = run(args);
+  const json = run([...args, "--json"]);
 
   assert.equal(execution.status, 1);
   assert.equal(execution.stdout, "");
-  assert.match(execution.stderr, /^\[ASTER-CLI-007\]/u);
+  const message = `icon ${representativePath} could not be rendered as SVG`;
+  assert.equal(
+    execution.stderr,
+    `[ASTER-CLI-007] ${message}\nDetails:\n  Artefact path: ${representativePath}\n`,
+  );
   assert.doesNotMatch(execution.stderr, /unknown option|requires a value/u);
+  assert.equal(json.status, 1);
+  assert.equal(json.stderr, "");
+  const failure = JSON.parse(json.stdout);
+  assert.equal(failure.ok, false);
+  assert.deepEqual(failure.diagnostic, {
+    category: "render-failure",
+    code: "ASTER-CLI-007",
+    message,
+    details: { kind: "export-render", path: representativePath },
+  });
+  assert.equal(json.stdout, `${JSON.stringify(failure)}\n`);
 });
 
 test("publishes icon and collection plans relative to the explicit process directory", () => {
@@ -524,6 +678,98 @@ test("writes raw icon SVG through ordinary stdout redirection", () => {
   }
 });
 
+test("preserves exact stdout, stderr and status when redirecting successful and failed responses", () => {
+  const temporaryRoot = resolve(tmpdir());
+  const root = mkdtempSync(
+    join(temporaryRoot, "aster-cli-response-redirection-"),
+  );
+  const owner = basename(root);
+  assert.equal(relative(temporaryRoot, root), owner);
+  writeFileSync(join(root, ".owner"), owner);
+  const cases = [
+    {
+      args: ["show", "collection", representativeCollectionIdentity],
+      status: 0,
+    },
+    {
+      args: ["show", "collection", representativeCollectionIdentity, "--json"],
+      status: 0,
+    },
+    { args: ["show", "icon", "testing/not-present@outline"], status: 1 },
+    {
+      args: ["show", "icon", "testing/not-present@outline", "--json"],
+      status: 1,
+    },
+    { args: ["unknown"], status: 2 },
+    { args: ["unknown", "--json"], status: 2 },
+  ];
+  try {
+    for (const [index, entry] of cases.entries()) {
+      const expected = run(entry.args, { cwd: root });
+      assert.equal(expected.status, entry.status);
+      const stdoutPath = join(root, `${index}.stdout`);
+      const stderrPath = join(root, `${index}.stderr`);
+      const stdout = openSync(stdoutPath, "w");
+      const stderr = openSync(stderrPath, "w");
+      let actual;
+      try {
+        actual = run(entry.args, {
+          cwd: root,
+          stdio: ["ignore", stdout, stderr],
+        });
+      } finally {
+        closeSync(stdout);
+        closeSync(stderr);
+      }
+      assert.ifError(actual.error);
+      assert.equal(actual.signal, null);
+      assert.equal(actual.status, entry.status);
+      const out = readFileSync(stdoutPath, "utf8");
+      const err = readFileSync(stderrPath, "utf8");
+      assert.equal(out, expected.stdout);
+      assert.equal(err, expected.stderr);
+      const text = out || err;
+      assert.equal(text.endsWith("\n"), true);
+      assert.equal(text.endsWith("\n\n"), false);
+      assert.doesNotMatch(text, /\u001b|\r|\t/u);
+      if (entry.args.includes("--json")) {
+        assert.equal(err, "");
+        assert.equal(out, `${JSON.stringify(JSON.parse(out))}\n`);
+      }
+    }
+  } finally {
+    assert.equal(relative(temporaryRoot, root), owner);
+    assert.equal(readFileSync(join(root, ".owner"), "utf8"), owner);
+    rmSync(root, { recursive: true, force: true });
+  }
+});
+
+test("rejects deferred JSON format flags with compact usage failures", () => {
+  for (const args of [
+    ["list", "icons", "--pretty", "--json"],
+    ["list", "icons", "--indent", "2", "--json"],
+    [
+      "--json",
+      "--pretty",
+      "show",
+      "collection",
+      representativeCollectionIdentity,
+    ],
+  ]) {
+    const result = run(args);
+    assert.equal(result.status, 2);
+    assert.equal(result.stderr, "");
+    const failure = JSON.parse(result.stdout);
+    assert.equal(failure.ok, false);
+    assert.equal(failure.diagnostic.code, "ASTER-CLI-001");
+    assert.equal(failure.diagnostic.category, "usage");
+    assert.equal(Object.hasOwn(failure, "payload"), false);
+    assert.equal(Object.hasOwn(failure.diagnostic, "details"), false);
+    assert.equal(Object.hasOwn(failure.diagnostic, "related"), false);
+    assert.equal(result.stdout, `${JSON.stringify(failure)}\n`);
+  }
+});
+
 test("emits one stable JSON success document without terminal styling", () => {
   const first = run(["list", "icons", "--tag", representativeTag, "--json"]);
   const second = run(["--json", "list", "icons", "--tag", representativeTag]);
@@ -545,11 +791,15 @@ test("emits one stable JSON success document without terminal styling", () => {
 
 test("maps human usage and lookup failures to stderr and documented status", () => {
   const usage = run(["list", "icons", "--catalogue"]);
-  const missing = run(["show", "icon", "aster/missing"]);
+  const untreated = run(["show", "icon", "aster/camera"]);
+  const missing = run(["show", "icon", "aster/missing@outline"]);
 
   assert.equal(usage.status, 2);
   assert.equal(usage.stdout, "");
   assert.match(usage.stderr, /^\[ASTER-CLI-001\]/u);
+  assert.equal(untreated.status, 2);
+  assert.equal(untreated.stdout, "");
+  assert.match(untreated.stderr, /^\[ASTER-CLI-001\]/u);
   assert.equal(missing.status, 1);
   assert.equal(missing.stdout, "");
   assert.match(missing.stderr, /^\[ASTER-CLI-004\]/u);
@@ -570,6 +820,81 @@ test("maps expected JSON failures to stdout only", () => {
   assert.equal(missing.status, 1);
   assert.equal(missing.stderr, "");
   assert.equal(JSON.parse(missing.stdout).diagnostic.category, "not-found");
+});
+
+test("labels exact lookup details in human stderr and retains the typed compact JSON evidence", () => {
+  const cases = [
+    [
+      ["show", "icon", "missing@outline"],
+      "identity",
+      "missing@outline",
+      "icon",
+      "Icon",
+    ],
+    [
+      ["show", "icon", "aster/missing@outline"],
+      "identity",
+      "aster/missing@outline",
+      "icon",
+      "Icon",
+    ],
+    [
+      ["show", "glyph", "aster/missing"],
+      "identity",
+      "aster/missing",
+      "glyph",
+      "Glyph",
+    ],
+    [
+      ["show", "collection", "missing"],
+      "identity",
+      "missing",
+      "collection",
+      "Collection",
+    ],
+    [
+      ["list", "icons", "--catalogue", "missing"],
+      "catalogue",
+      "missing",
+      "catalogue",
+      "Catalogue",
+    ],
+    [
+      ["list", "icons", "--collection", "missing"],
+      "collection",
+      "missing",
+      "collection",
+      "Collection",
+    ],
+    [
+      ["list", "icons", "--glyph", "aster/missing"],
+      "glyph",
+      "aster/missing",
+      "glyph",
+      "Glyph",
+    ],
+  ];
+  for (const [args, family, value, subject, label] of cases) {
+    const message = `${family} ${value} was not found`;
+    const human = run(args);
+    const json = run([...args, "--json"]);
+    assert.equal(human.status, 1);
+    assert.equal(human.stdout, "");
+    assert.equal(
+      human.stderr,
+      `[ASTER-CLI-004] ${message}\nDetails:\n  ${label}: ${value}\n`,
+    );
+    assert.equal(json.status, 1);
+    assert.equal(json.stderr, "");
+    const result = JSON.parse(json.stdout);
+    assert.deepEqual(result.diagnostic, {
+      category: "not-found",
+      code: "ASTER-CLI-004",
+      message,
+      details: { kind: "lookup", subject, identity: value },
+    });
+    assert.equal(json.stdout, `${JSON.stringify(result)}\n`);
+  }
 });
 
 test("rejects repeated, unknown, and extra shell arguments", () => {
@@ -671,7 +996,10 @@ test("rejects repeated, unknown, and extra shell arguments", () => {
   assert.equal(invalidPaint.status, 2);
   assert.equal(invalidDirection.status, 2);
   assert.equal(JSON.parse(invalidPaint.stdout).diagnostic.category, "usage");
-  assert.equal(JSON.parse(invalidDirection.stdout).diagnostic.category, "usage");
+  assert.equal(
+    JSON.parse(invalidDirection.stdout).diagnostic.category,
+    "usage",
+  );
   assert.equal(repeatedReplace.status, 2);
   assert.equal(replaceJson.status, 2);
 });

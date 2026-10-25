@@ -36,12 +36,18 @@ combination of direction and policy; targets own its output representation.
 
 | Class | Responsibility | Relations |
 | --- | --- | --- |
-| `IconMetadataNormaliser` | Validates resolved display, unique canonical tags, direction, licensing, deprecation, and replacement data before cloning and freezing it. | Composes `IconIdentityNormaliser` and `IconPresentationPolicyNormaliser`. |
+| `IconMetadataNormaliser` | Validates resolved display, unique canonical tags, direction, licensing, deprecation, and replacement data before cloning and freezing it. | Composes `IconIdentityNormaliser`, `MetadataTagSequenceNormaliser` and `IconPresentationPolicyNormaliser`. |
+| `MetadataTagSequenceNormaliser` | Trims and validates intrinsic tag slugs, rejects canonical duplicates and freezes an isolated ordered sequence. | Shared with `CollectionMetadataNormaliser`; callers supply their own diagnostic paths. |
+
+Replacement identities follow the same required treatment rules as
+[definition identities](../definition/index.md#identity-rules).
 
 Attribution requires an effective licence. A replacement requires deprecated metadata and must
 not equal the complete identity of the definition being constructed. Core can compare the owning
 definition with its replacement, but collection-wide replacement availability and cycle checks
 remain generation-boundary responsibilities.
+Only own namespace fields participate in that comparison: an absent namespace is not read through
+the object's prototype and remains distinct from every explicit namespace.
 
 Portable metadata is independent from source provenance, filenames, package layout and collection
 membership. Importers and catalogues may retain their own evidence around a definition, but they

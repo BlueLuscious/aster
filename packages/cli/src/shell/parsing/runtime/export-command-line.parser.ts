@@ -51,7 +51,10 @@ export class ExportCommandLineParser implements ICommandLineCommandParser {
 
     const parsed = this.#options.parse(tokens.slice(3), subject);
 
-    if (json && parsed.output !== undefined) {
+    const output = Object.hasOwn(parsed, "output") ? parsed.output : undefined;
+    const catalogue = Object.hasOwn(parsed, "catalogue") ? parsed.catalogue : undefined;
+
+    if (json && output !== undefined) {
       throw new CommandLineError(
         "options --json and --output cannot be combined",
         this.command,
@@ -61,7 +64,7 @@ export class ExportCommandLineParser implements ICommandLineCommandParser {
     if (
       subject === commandLineTokens.subjects.collection
       && !json
-      && parsed.output === undefined
+      && output === undefined
     ) {
       throw new CommandLineError(
         "collection export requires --json or --output",
@@ -70,33 +73,33 @@ export class ExportCommandLineParser implements ICommandLineCommandParser {
     }
 
     const options = Object.freeze({
-      ...(parsed.size === undefined ? {} : { size: parsed.size }),
-      ...(parsed.colour === undefined ? {} : { colour: parsed.colour }),
-      ...(parsed.fill === undefined ? {} : { fill: parsed.fill }),
-      ...(parsed.stroke === undefined ? {} : { stroke: parsed.stroke }),
-      ...(parsed.strokeWidth === undefined
+      ...(!Object.hasOwn(parsed, "size") || parsed.size === undefined ? {} : { size: parsed.size }),
+      ...(!Object.hasOwn(parsed, "colour") || parsed.colour === undefined ? {} : { colour: parsed.colour }),
+      ...(!Object.hasOwn(parsed, "fill") || parsed.fill === undefined ? {} : { fill: parsed.fill }),
+      ...(!Object.hasOwn(parsed, "stroke") || parsed.stroke === undefined ? {} : { stroke: parsed.stroke }),
+      ...(!Object.hasOwn(parsed, "strokeWidth") || parsed.strokeWidth === undefined
         ? {}
         : { strokeWidth: parsed.strokeWidth }),
-      ...(parsed.direction === undefined
+      ...(!Object.hasOwn(parsed, "direction") || parsed.direction === undefined
         ? {}
         : { direction: parsed.direction }),
-      ...(parsed.label === undefined ? {} : { label: parsed.label }),
-      ...(parsed.title === undefined ? {} : { title: parsed.title }),
+      ...(!Object.hasOwn(parsed, "label") || parsed.label === undefined ? {} : { label: parsed.label }),
+      ...(!Object.hasOwn(parsed, "title") || parsed.title === undefined ? {} : { title: parsed.title }),
     });
     const invocation: TParsedExportCommandInvocation = {
       command: this.command,
       subject,
       identity,
-      ...(parsed.catalogue === undefined
+      ...(catalogue === undefined
         ? {}
-        : { catalogue: parsed.catalogue }),
+        : { catalogue: catalogue }),
       ...(Object.keys(options).length === 0 ? {} : { options }),
     };
 
     return Object.freeze({
       invocation: Object.freeze(invocation),
       json,
-      ...(parsed.output === undefined ? {} : { output: parsed.output }),
+      ...(output === undefined ? {} : { output: output }),
     });
   }
 }

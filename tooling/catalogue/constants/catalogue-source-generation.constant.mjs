@@ -8,6 +8,8 @@ export const catalogueSourceGeneration = Object.freeze({
   command: "pnpm --dir packages/icons run generate:catalogue",
   /** @description Argument selecting read-only synchronisation verification. */
   checkArgument: "--check",
+  /** @description Portable identity-section grammar used by static source inspection. */
+  slugPatternSource: String.raw`^[a-z0-9]+(?:-[a-z0-9]+)*$`,
   /** @description Exclusively owned root containing generated public definition facades. */
   facadeRoot: "src/generated/facades",
   /** @description Generated metadata-only distribution manifest path. */

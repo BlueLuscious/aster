@@ -34,12 +34,13 @@ export class RepositoryPathResolver {
 
   /**
    * @description Determines whether one resolved target is equal to or contained by a root.
+   * @remarks Node's relative operation resolves both inputs before producing the boundary relation; raw path prefixes do not establish containment.
    * @param {string} root - Candidate ancestor path.
    * @param {string} target - Candidate descendant path.
    * @returns {boolean} Whether the target remains inside the root boundary.
    */
   contains(root, target) {
-    const relation = relative(resolve(root), resolve(target));
+    const relation = relative(root, target);
 
     return relation === "" || (
       !isAbsolute(relation) && relation !== ".." && !relation.startsWith(`..${sep}`)

@@ -33,7 +33,7 @@ const presentation = Object.freeze({
 
 function createIcon(name: string, displayName = name): IconDefinition {
   return Icon.define({
-    identity: { namespace: "testing", name },
+    identity: { variant: "outline", namespace: "testing", name },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [
       {
@@ -85,7 +85,7 @@ function createCollection(
     identity: { namespace: "testing", name },
     icons: Object.fromEntries(icons.map((icon, index) => [
       `icon${index + 1}`,
-      icon,
+      { [Icon.variantPropertyName(icon.identity.variant)]: icon },
     ])),
     metadata: {
       displayName: name,
@@ -117,7 +117,7 @@ const representativeCollection = createCollection(
   "representatives",
   [representativeIcon],
 );
-const representativeIdentity = "testing/representative";
+const representativeIdentity = "testing/representative@outline";
 const representativeContext = createContext([createProvider("testing", {
   icons: [{
     definition: representativeIcon,
@@ -193,7 +193,7 @@ test("loads only the exact icon or collection required by review", async () => {
     collections: [{ definition: collection }],
   }, {
     onLoadIcon: (identity) => iconLoads.push(
-      `${identity.namespace}/${identity.name}`,
+      `${identity.namespace}/${identity.name}@${identity.variant}`,
     ),
     onLoadCollection: (identity) => collectionLoads.push(
       `${identity.namespace}/${identity.name}`,
@@ -203,7 +203,7 @@ test("loads only the exact icon or collection required by review", async () => {
   const icon = await AsterCommands.execute({
     command: "review",
     subject: "icon",
-    identity: "testing/alpha",
+    identity: "testing/alpha@outline",
   }, acceptedContext);
   const reviewedCollection = await AsterCommands.execute({
     command: "review",
@@ -213,7 +213,7 @@ test("loads only the exact icon or collection required by review", async () => {
 
   assert.equal(icon.ok, true);
   assert.equal(reviewedCollection.ok, true);
-  assert.deepEqual(iconLoads, ["testing/alpha"]);
+  assert.deepEqual(iconLoads, ["testing/alpha@outline"]);
   assert.deepEqual(collectionLoads, ["testing/reviewable"]);
 
   if (
@@ -294,22 +294,23 @@ test("retains exact missing, ambiguous, and explicit-provider selection semantic
     createProvider("alpha", fixture),
     createProvider("beta", fixture),
   ]);
-  const missing = await AsterCommands.execute({
-    command: "review",
-    subject: "icon",
-    identity: "testing/missing",
-  }, context);
-  const ambiguous = await AsterCommands.execute({
-    command: "review",
-    subject: "icon",
-    identity: "testing/shared",
-  }, context);
-  const exact = await AsterCommands.execute({
-    command: "review",
-    subject: "icon",
-    identity: "testing/shared",
-    catalogue: "beta",
-  }, context);
+  const missing = await AsterCommands.execute(
+    { command: "review", subject: "icon", identity: "testing/missing@outline" },
+    context,
+  );
+  const ambiguous = await AsterCommands.execute(
+    { command: "review", subject: "icon", identity: "testing/shared@outline" },
+    context,
+  );
+  const exact = await AsterCommands.execute(
+    {
+      command: "review",
+      subject: "icon",
+      identity: "testing/shared@outline",
+      catalogue: "beta",
+    },
+    context,
+  );
 
   assert.equal(missing.ok, false);
   assert.equal(ambiguous.ok, false);
@@ -318,7 +319,12 @@ test("retains exact missing, ambiguous, and explicit-provider selection semantic
   if (!missing.ok && !ambiguous.ok) {
     assert.equal(missing.diagnostic.code, "ASTER-CLI-004");
     assert.equal(ambiguous.diagnostic.code, "ASTER-CLI-005");
-    assert.deepEqual(ambiguous.diagnostic.related, ["alpha", "beta"]);
+    assert.deepEqual(ambiguous.diagnostic.details, {
+      kind: "ambiguity",
+      subject: "icon",
+      identity: "testing/shared@outline",
+      catalogues: ["alpha", "beta"],
+    });
   }
 
   if (exact.ok && exact.payload.kind === "review") {
@@ -331,25 +337,34 @@ test("contains SVG failures and malformed review invocations", async () => {
   const selection: TCatalogueSelection = Object.freeze({
     catalogue: "testing",
     subject: "icon",
-    identity: "testing/invalid",
+    identity: "testing/invalid@outline",
     icons: Object.freeze([
       Object.freeze({ definition: invalid, memberships: Object.freeze([]) }),
     ]),
   });
   const failed = new ReviewDocumentFactory().create(selection);
-  const malformed = await AsterCommands.execute({
-    command: "review",
-    subject: "icons",
-    identity: "testing/invalid",
-  } as never, representativeContext);
+  const malformed = await AsterCommands.execute(
+    {
+      command: "review",
+      subject: "icons",
+      identity: "testing/invalid@outline",
+    } as never,
+    representativeContext,
+  );
 
   assert.equal(failed.accepted, false);
   assert.equal(malformed.ok, false);
 
   if (!failed.accepted && !malformed.ok) {
     assert.equal(failed.diagnostic.code, "ASTER-CLI-007");
-    assert.deepEqual(failed.diagnostic.related, ["testing/invalid"]);
-    assert.doesNotMatch(failed.diagnostic.message, /XML 1\.0|definition\.nodes/u);
+    assert.deepEqual(failed.diagnostic.details, {
+      kind: "review-render",
+      icon: "testing/invalid@outline",
+    });
+    assert.doesNotMatch(
+      failed.diagnostic.message,
+      /XML 1\.0|definition\.nodes/u,
+    );
     assert.equal(malformed.diagnostic.code, "ASTER-CLI-001");
   }
 });

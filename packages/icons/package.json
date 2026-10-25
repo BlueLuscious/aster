@@ -1,6 +1,6 @@
 {
   "name": "@luscious-garden/aster-icons",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Canonical portable Aster icon and collection definitions.",
   "type": "module",
   "author": "BlueLuscious",
@@ -30,9 +30,13 @@
       "types": "./dist/generated/facades/collections/*.d.ts",
       "import": "./dist/generated/facades/collections/*.js"
     },
+    "./*/outline": {
+      "types": "./dist/generated/facades/icons/*/outline.d.ts",
+      "import": "./dist/generated/facades/icons/*/outline.js"
+    },
     "./*": {
-      "types": "./dist/generated/facades/icons/*.d.ts",
-      "import": "./dist/generated/facades/icons/*.js"
+      "types": "./dist/generated/facades/glyphs/*.d.ts",
+      "import": "./dist/generated/facades/glyphs/*.js"
     }
   },
   "publishConfig": {

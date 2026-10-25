@@ -29,7 +29,7 @@ export class DocumentationHierarchyInspector {
   /**
    * @description Inspects every required canonical documentation entry.
    * @param {import("../types/internal/documentation-context.type.mjs").TDocumentationContext} context - Documentation verification context.
-   * @param {import("./documentation-issue.collector.mjs").DocumentationIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/documentation-issue-collector.contract.mjs").IDocumentationIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after every required entry is inspected.
    */
   async inspect(context, issues) {

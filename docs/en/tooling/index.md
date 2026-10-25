@@ -30,7 +30,7 @@ and shared development versions. [pnpm-lock.yaml](../../../pnpm-lock.yaml) owns 
 
 | Development dependency | Responsibility |
 | --- | --- |
-| TypeScript | Compiles packages and type tests; parses catalogue source during synchronisation. |
+| TypeScript | Compiles packages and type tests; parses catalogue sources and architecture module references. |
 | `tsx` | Adapts TypeScript tests to Node's built-in runner. |
 | `@types/node` | Types tests and tooling, not portable production compilation. |
 | ESLint and `typescript-eslint` | Enforce focused authored-source rules. |
@@ -58,7 +58,7 @@ source boundary and receive package type, ABI and clean-consumer verification.
 | `pnpm build` | Build applicable packages in dependency order. |
 | `pnpm check` | Run catalogue drift, type, architecture, documentation, lint and formatting checks. |
 | `pnpm check:architecture` | Run the [architecture verifier](architecture/index.md). |
-| `pnpm check:catalogue` | Check [catalogue output](catalogue/index.md) without writing. |
+| `pnpm check:catalogue` | Build Core, then check [catalogue output](catalogue/index.md) without regenerating Icons. |
 | `pnpm check:docs` | Run the [documentation verifier](documentation/index.md). |
 | `pnpm check:types` | Build and type-check applicable packages, then type-check tooling. |
 | `pnpm check:tooling-types` | Type-check authored tooling independently. |
@@ -86,11 +86,16 @@ mutating `format` command.
 braced control flow, strict equality and selected unsafe constructs. It does not repeat type
 analysis, dependency inspection or prose review. Generated catalogue sources, distribution output,
 dependency installations and parser fixtures are excluded.
+Symbol/file naming, comprehensive JSDoc and ordinary-comment policy are not enforced by that
+configuration. Their adoption is recorded separately at the [project boundary](../project/index.md#shared-rules-adoption).
 
 Prettier checks root and package manifests plus its own and ESLint's configuration. The Icons
-manifest is excluded because catalogue synchronisation owns its export entries and serialisation.
+manifest is excluded from formatting because its mixed-manual export entries are maintained through
+[catalogue tooling's narrow ownership](catalogue/index.md#mixed-package-manifest-ownership), with
+architecture and distribution checks retaining their independent conformance roles.
 Authored source, documentation, lockfiles, generated artefacts and fixtures remain outside this
 formatting boundary. Widening it requires a separately reviewed migration, not a mechanical rewrite.
+In particular, authored TypeScript indentation is not currently checked by this command.
 
 ## Verification orchestration
 
@@ -105,6 +110,10 @@ remain deliberate isolation costs.
 
 [CI](../../../.github/workflows/ci.yaml) runs the complete gate independently on Ubuntu and Windows.
 A successful job on one platform does not substitute for the other.
+
+Root automation tests protect gate ordering, independently buildable distribution suites and
+workflow authority boundaries. These source-level checks complement the executable tooling and
+package suites; they do not execute GitHub Actions or replace either CI platform.
 
 ## Implementation boundary
 

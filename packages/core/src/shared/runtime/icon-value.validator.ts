@@ -1,7 +1,9 @@
 import { IconDefinitionError } from "./icon-definition.error.js";
 
 /**
- * @description Cohesive primitive assertions shared by Core normalisers.
+ * @description Validates authored primitives and containers, canonicalising accepted text and numbers.
+ * @remarks Primitive canonicalisation stays at this shared acceptance boundary; domain construction,
+ * cloning and freezing belong to the consuming normalisers.
  */
 export class IconValueValidator {
   /**
@@ -84,7 +86,7 @@ export class IconValueValidator {
     if (
       descriptor === undefined ||
       !descriptor.enumerable ||
-      !("value" in descriptor)
+      !Object.hasOwn(descriptor, "value")
     ) {
       throw new IconDefinitionError(path, "expected an enumerable data field");
     }
@@ -99,11 +101,13 @@ export class IconValueValidator {
    * @returns Trimmed non-empty text.
    */
   text(value: unknown, path: string): string {
-    if (typeof value !== "string" || value.trim().length === 0) {
+    const text = typeof value === "string" ? value.trim() : undefined;
+
+    if (text === undefined || text.length === 0) {
       throw new IconDefinitionError(path, "expected non-empty text");
     }
 
-    return value.trim();
+    return text;
   }
 
   /**

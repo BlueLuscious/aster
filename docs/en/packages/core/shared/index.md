@@ -2,7 +2,7 @@
 
 Status: **Accepted**
 
-The shared feature owns primitive authored-value assertions and deterministic Core contract
+The shared feature owns primitive authored-value acceptance and deterministic Core contract
 failures used by normalisers across package features. It contains no portable domain vocabulary,
 host authority, parser behaviour, registry, or mutable global state.
 
@@ -10,8 +10,8 @@ host authority, parser behaviour, registry, or mutable global state.
 
 | Class | Responsibility | Relations |
 | --- | --- | --- |
-| `CanonicalSlugNormaliser` | Validates stable ASCII lowercase `kebab-case` domain slugs. | Shared by icon, collection, and intrinsic-tag normalisers. |
-| `IconValueValidator` | Provides plain-object, exact data-field, text, number, boolean, opacity, and dense-array assertions. | Used only by internal Core normalisers. |
+| `CanonicalSlugValidator` | Accepts stable ASCII lowercase `kebab-case` domain slugs unchanged through `validate()`. | Shared by icon, collection, and intrinsic-tag normalisers; callers own any preceding text adaptation. |
+| `IconValueValidator` | Validates plain objects, exact data fields, text, numbers, booleans, opacity and dense arrays; canonicalises accepted primitive text and numbers. | Used only by internal Core normalisers. |
 | `IconDefinitionError` | Represents deterministic invalid-definition failures with code `ASTER-CORE-001` and a logical object path. | Raised by validators and normalisers; exported only through the package root. |
 
 ## Data acceptance

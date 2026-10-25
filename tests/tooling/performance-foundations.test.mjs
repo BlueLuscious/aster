@@ -12,6 +12,7 @@ import { CliBaselineFixtureFactory } from "../../tooling/performance/cli/runtime
 import { CliBaselineRunner } from "../../tooling/performance/cli/runtime/cli-baseline.runner.mjs";
 import { CliColdStartRunner } from "../../tooling/performance/cli/runtime/cli-cold-start.runner.mjs";
 import { CliCommandEvaluationRunner } from "../../tooling/performance/cli/runtime/cli-command-evaluation.runner.mjs";
+import { CliCommandEvaluationProbe } from "../../tooling/performance/cli/runtime/cli-command-evaluation.probe.mjs";
 import { coreBaseline } from "../../tooling/performance/core/constants/core-baseline.constant.mjs";
 import { CoreBaselineFixtureFactory } from "../../tooling/performance/core/runtime/core-baseline-fixture.factory.mjs";
 import { CoreBaselineRunner } from "../../tooling/performance/core/runtime/core-baseline.runner.mjs";
@@ -35,6 +36,26 @@ import { NodeRepositoryFileSystem } from "../../tooling/shared/runtime/node-repo
 import { RepositoryFileWalker } from "../../tooling/shared/runtime/repository-file.walker.mjs";
 import { RepositoryJsonReader } from "../../tooling/shared/runtime/repository-json.reader.mjs";
 import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
+
+test("uses the same sample-count guard for fresh-process runner families", () => {
+  const processHost = { execute() { throw new Error("No process should start during configuration validation."); } };
+  const statistics = new NumericSampleStatistics();
+  for (const count of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    for (const construct of [
+      () => new CliColdStartRunner(processHost, statistics, count),
+      () => new CliCommandEvaluationRunner(processHost, statistics, "unused", count),
+      () => new ModuleImportRunner(processHost, statistics, "unused", count),
+    ]) {
+      assert.throws(construct, { name: "TypeError", message: "sampleCount must be a positive safe integer." });
+    }
+  }
+});
+
+test("rejects inherited names before acquiring command-evaluation probe effects", async () => {
+  for (const name of ["constructor", "toString", "unknown"]) {
+    await assert.rejects(new CliCommandEvaluationProbe().inspect(name), /Unknown CLI command evaluation scenario/u);
+  }
+});
 
 test("keeps structural performance contracts free of runtime exports", async () => {
   const contractRoot = resolve("tooling/performance");
@@ -94,11 +115,14 @@ test("prepares distinct mutable and canonical Core benchmark fixtures", () => {
   assert.notEqual(fixtures.mutableIcons[0], fixtures.canonicalIcons[0]);
   assert.deepEqual(fixtures.mutableIcons, fixtures.canonicalIcons);
   assert.equal(Object.isFrozen(fixtures.mutableCollection), false);
-  assert.deepEqual(fixtures.mutableCollection, fixtures.canonicalCollection);
+  assert.deepEqual(fixtures.mutableCollection, structuredClone(fixtures.canonicalCollection));
+  assert.equal(Object.getPrototypeOf(fixtures.canonicalCollection.icons), null);
+  assert.ok(Object.values(fixtures.canonicalCollection.icons)
+    .every(group => Object.getPrototypeOf(group) === null && Object.isFrozen(group)));
   assert.equal(Object.keys(fixtures.emptyCollection.icons).length, 0);
   assert.equal(Object.keys(fixtures.singleCanonicalCollection.icons).length, 1);
   assert.equal(
-    fixtures.singleCanonicalCollection.icons.fixture1,
+    fixtures.singleCanonicalCollection.icons.fixture1.fixture,
     fixtures.canonicalIcons[0],
   );
   assert.equal(
@@ -118,27 +142,27 @@ test("prepares distinct mutable and canonical Core benchmark fixtures", () => {
     fixtures.representativeCanonicalCollection,
   );
   assert.notEqual(
-    fixtures.representativeMutableCollection.icons.scale1,
-    fixtures.representativeCanonicalCollection.icons.scale1,
+    fixtures.representativeMutableCollection.icons.scale1.fixture,
+    fixtures.representativeCanonicalCollection.icons.scale1.fixture,
   );
   assert.equal(
-    fixtures.representativeCanonicalCollection.icons.scale1,
-    fixtures.largeCanonicalCollection.icons.scale1,
+    fixtures.representativeCanonicalCollection.icons.scale1.fixture,
+    fixtures.largeCanonicalCollection.icons.scale1.fixture,
   );
   assert.equal(
-    new Set(Object.values(fixtures.largeCanonicalCollection.icons)
+    new Set(Object.values(fixtures.largeCanonicalCollection.icons).flatMap(Object.values)
       .map((icon) => icon.identity.name)).size,
     coreBaseline.collectionSizes.large,
   );
   const large = Collection.define(fixtures.largeCanonicalCollection);
-  const authoredIcons = Object.values(fixtures.largeCanonicalCollection.icons);
+  const authoredIcons = Object.values(fixtures.largeCanonicalCollection.icons).flatMap(Object.values);
 
   assert.equal(large.members.length, authoredIcons.length);
   assert.equal(Object.getOwnPropertyDescriptor(large, "members")?.value, large.members);
   assert.ok(Object.isFrozen(large.members));
   assert.ok(large.members.every((icon, index) =>
     icon === authoredIcons[index]
-    && icon === large.icons[`scale${index + 1}`]
+    && icon === large.icons[`scale${index + 1}`].fixture
   ));
   assert.equal(fixtures.straightPath.nodes[0]?.commands.length, 2);
   assert.equal(fixtures.curvedPath.nodes[0]?.commands.length, 4);
@@ -178,7 +202,7 @@ test("runs the complete Core scenario matrix through public values", async () =>
 
   assert.ok(Object.isFrozen(report));
   assert.ok(Object.isFrozen(report.scenarios));
-  assert.equal(report.schemaVersion, 5);
+  assert.equal(report.schemaVersion, 6);
   assert.deepEqual(
     measured.map((scenario) => scenario.name),
     Object.values(coreBaseline.scenarios).map((scenario) => scenario.name),
@@ -461,7 +485,7 @@ test("prepares immutable CLI benchmark fixtures", () => {
   assert.ok(Object.isFrozen(fixtures.context));
   assert.ok(Object.isFrozen(fixtures.invocations));
   assert.ok(Object.isFrozen(fixtures.arguments));
-  assert.equal(fixtures.invocations.exportIcon.identity, "benchmark/fixture-01");
+  assert.equal(fixtures.invocations.exportIcon.identity, "benchmark/fixture-01@fixture");
   assert.equal(fixtures.invocations.reviewCollection.identity, "benchmark");
   assert.equal(fixtures.context.catalogues[0]?.identity, "fixture");
 });
@@ -538,7 +562,7 @@ test("runs the complete CLI scenario matrix through explicit runners", async () 
   assert.ok(Object.isFrozen(report.asyncScenarios));
   assert.ok(Object.isFrozen(report.evaluationScenarios));
   assert.ok(Object.isFrozen(report.coldScenarios));
-  assert.equal(report.schemaVersion, 4);
+  assert.equal(report.schemaVersion, 5);
   assert.deepEqual(
     synchronous.map((scenario) => scenario.name),
     Object.values(cliBaseline.scenarios).map((scenario) => scenario.name),
@@ -768,8 +792,18 @@ test("runs the complete Icons distribution scenario matrix", async () => {
 
   assert.ok(Object.isFrozen(report));
   assert.ok(Object.isFrozen(report.imports));
-  assert.equal(report.schemaVersion, 1);
+  assert.equal(report.schemaVersion, 2);
   assert.equal(report.package, "@luscious-garden/aster-icons");
+  assert.deepEqual(
+    measured.map(({ name, specifier }) => [name, specifier]),
+    [
+      ["icons.import.isolated-icon", "@luscious-garden/aster-icons/camera/outline"],
+      ["icons.import.glyph-dictionary", "@luscious-garden/aster-icons/camera"],
+      ["icons.import.isolated-collection", "@luscious-garden/aster-icons/collections/amellus"],
+      ["icons.import.manifest", "@luscious-garden/aster-icons/manifest"],
+      ["icons.import.dynamic", "@luscious-garden/aster-icons/dynamic"],
+    ],
+  );
   assert.deepEqual(
     measured.map(({ name, specifier }) => ({ name, specifier })),
     Object.values(iconsBaseline.scenarios),

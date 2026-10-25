@@ -1,4 +1,4 @@
-﻿import assert from "node:assert/strict";
+import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
@@ -35,6 +35,7 @@ const presentation = Object.freeze({
 
 test("exposes immutable catalogue result discriminators", () => {
   assert.deepEqual(catalogueResultKinds, {
+    glyph: "glyph",
     icon: "icon",
     collection: "collection",
   });
@@ -46,7 +47,7 @@ function createIcon(
   tags: readonly string[] = ["testing"],
 ): IconDefinition {
   return Icon.define({
-    identity: { namespace: "testing", name },
+    identity: { variant: "outline", namespace: "testing", name },
     viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
     nodes: [{
       kind: "path",
@@ -76,7 +77,7 @@ function createCollection(
     identity: { namespace: "testing", name },
     icons: Object.fromEntries(icons.map((icon, index) => [
       `icon${index + 1}`,
-      icon,
+      { [Icon.variantPropertyName(icon.identity.variant)]: icon },
     ])),
     metadata: {
       displayName: name,
@@ -207,7 +208,7 @@ test("executes every discovery workflow without invoking definition loaders", as
     { command: "list", subject: "collections" },
     { command: "list", subject: "icons" },
     { command: "search", query: "metadata" },
-    { command: "show", subject: "icon", identity: "testing/metadata-only" },
+    { command: "show", subject: "icon", identity: "testing/metadata-only@outline" },
     { command: "show", subject: "collection", identity: "testing/metadata-only" },
   ] as const;
 
@@ -224,7 +225,7 @@ test("executes every discovery workflow without invoking definition loaders", as
 test("isolates mutable discovery records before exposing command results", async () => {
   const source = {
     icons: [{
-      identity: { namespace: "testing", name: "mutable" },
+      identity: { variant: "outline", namespace: "testing", name: "mutable" },
       metadata: {
         displayName: "Mutable",
         tags: ["mutable"],
@@ -248,7 +249,7 @@ test("isolates mutable discovery records before exposing command results", async
     },
   };
   const result = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "testing/mutable" },
+    { command: "show", subject: "icon", identity: "testing/mutable@outline" },
     createContext([provider]),
   );
 
@@ -268,7 +269,7 @@ test("isolates mutable discovery records before exposing command results", async
 test("isolates nested collection discovery membership from provider mutation", async () => {
   const source = {
     icons: [{
-      identity: { namespace: "testing", name: "member" },
+      identity: { variant: "outline", namespace: "testing", name: "member" },
       metadata: {
         displayName: "Member",
         rtl: "preserve",
@@ -279,7 +280,7 @@ test("isolates nested collection discovery membership from provider mutation", a
     collections: [{
       identity: { namespace: "testing", name: "mutable" },
       metadata: { displayName: "Mutable", tags: ["original"] },
-      icons: [{ namespace: "testing", name: "member" }],
+      memberIdentities: [{ namespace: "testing", name: "member", variant: "outline" }],
     }],
   };
   const provider: CatalogueProvider = {
@@ -300,12 +301,12 @@ test("isolates nested collection discovery membership from provider mutation", a
     context,
   );
   const iconResult = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "testing/member" },
+    { command: "show", subject: "icon", identity: "testing/member@outline" },
     context,
   );
 
   source.collections[0]!.metadata.tags.push("changed");
-  source.collections[0]!.icons[0]!.name = "changed";
+  source.collections[0]!.memberIdentities[0]!.name = "changed";
   source.icons[0]!.memberships[0]!.name = "changed";
 
   assert.equal(result.ok, true);
@@ -313,12 +314,12 @@ test("isolates nested collection discovery membership from provider mutation", a
 
   if (result.ok && result.payload.kind === "collection-show") {
     assert.deepEqual(result.payload.collection.metadata.tags, ["original"]);
-    assert.deepEqual(result.payload.collection.icons, [
-      { namespace: "testing", name: "member" },
+    assert.deepEqual(result.payload.collection.memberIdentities, [
+      { namespace: "testing", name: "member", variant: "outline" },
     ]);
     assert.ok(Object.isFrozen(result.payload.collection.metadata.tags));
-    assert.ok(Object.isFrozen(result.payload.collection.icons));
-    assert.ok(Object.isFrozen(result.payload.collection.icons[0]));
+    assert.ok(Object.isFrozen(result.payload.collection.memberIdentities));
+    assert.ok(Object.isFrozen(result.payload.collection.memberIdentities[0]));
   }
 
   if (iconResult.ok && iconResult.payload.kind === "icon-show") {
@@ -378,7 +379,7 @@ test("discovers an explicitly provided empty collection", async () => {
 
   if (result.ok && result.payload.kind === "collection-list") {
     assert.equal(result.payload.collections.length, 1);
-    assert.deepEqual(result.payload.collections[0]?.icons, []);
+    assert.deepEqual(result.payload.collections[0]?.memberIdentities, []);
   }
 });
 
@@ -402,7 +403,7 @@ test("retains one icon identity across multiple collection memberships", async (
     context,
   );
   const shown = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "testing/shared" },
+    { command: "show", subject: "icon", identity: "testing/shared@outline" },
     context,
   );
 
@@ -479,14 +480,14 @@ test("reports cross-provider ambiguity and supports exact provider filtering", a
     createProvider("beta", fixture),
   ]);
   const ambiguous = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "testing/shared" },
+    { command: "show", subject: "icon", identity: "testing/shared@outline" },
     context,
   );
   const exact = await AsterCommands.execute(
     {
       command: "show",
       subject: "icon",
-      identity: "testing/shared",
+      identity: "testing/shared@outline",
       catalogue: "beta",
     },
     context,
@@ -497,7 +498,12 @@ test("reports cross-provider ambiguity and supports exact provider filtering", a
 
   if (!ambiguous.ok) {
     assert.equal(ambiguous.diagnostic.code, "ASTER-CLI-005");
-    assert.deepEqual(ambiguous.diagnostic.related, ["alpha", "beta"]);
+    assert.deepEqual(ambiguous.diagnostic.details, {
+      kind: "ambiguity",
+      subject: "icon",
+      identity: "testing/shared@outline",
+      catalogues: ["alpha", "beta"],
+    });
   }
 
   if (exact.ok && exact.payload.kind === "icon-show") {
@@ -526,7 +532,7 @@ test("rejects conflicting and inconsistent provider discoveries", async () => {
     async discover() {
       return {
         icons: [{
-          identity: { namespace: "testing", name: "presentation" },
+          identity: { variant: "outline", namespace: "testing", name: "presentation" },
           metadata: {
             displayName: "Presentation",
             rtl: "preserve",
@@ -555,7 +561,7 @@ test("rejects conflicting and inconsistent provider discoveries", async () => {
     createContext([missingCollectionProvider]),
   );
   const leakedPresentation = await AsterCommands.execute(
-    { command: "show", subject: "icon", identity: "testing/presentation" },
+    { command: "show", subject: "icon", identity: "testing/presentation@outline" },
     createContext([presentationProvider]),
   );
 

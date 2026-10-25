@@ -99,6 +99,32 @@ test("ignores unrelated and non-runtime manifests", async (context) => {
   assert.equal((await reader.readDependencies()).dependencies.length, 2);
 });
 
+test("does not acquire installed dependencies from the host prototype", async (context) => {
+  const fixture = await createFixture();
+  context.after(() => removeFixture(fixture.root));
+  await writeFile(manifestPath(fixture.root, "cli"), JSON.stringify({
+    name: "@luscious-garden/aster-cli", version: versions.cli,
+  }), "utf8");
+  const previous = Object.getOwnPropertyDescriptor(Object.prototype, "dependencies");
+  let result;
+  let reads = 0;
+  try {
+    Object.defineProperty(Object.prototype, "dependencies", {
+      configurable: true,
+      get() { reads += 1; return { "@luscious-garden/aster-core": "*" }; },
+    });
+    result = await new CliPackageVersionReader(fixture.base).readDependencies();
+  } finally {
+    if (previous === undefined) {
+      Reflect.deleteProperty(Object.prototype, "dependencies");
+    } else {
+      Object.defineProperty(Object.prototype, "dependencies", previous);
+    }
+  }
+  assert.deepEqual(result.dependencies, []);
+  assert.equal(reads, 0);
+});
+
 test("reads package metadata without loading a closed root export", async (context) => {
   const fixture = await createFixture();
   context.after(() => removeFixture(fixture.root));
@@ -162,9 +188,9 @@ test("reports the executed CLI's complete Aster dependency view on request", asy
 
   assert.equal(all.stdout, [
     "Executed CLI dependencies:",
-    `@luscious-garden/aster-cli ${versions.cli}`,
-    `  @luscious-garden/aster-core ${versions.core}`,
-    `  @luscious-garden/aster-icons ${versions.icons}`,
+    `  @luscious-garden/aster-cli ${versions.cli}`,
+    `    @luscious-garden/aster-core ${versions.core}`,
+    `    @luscious-garden/aster-icons ${versions.icons}`,
     "",
   ].join("\n"));
   assert.equal(all.stderr, "");

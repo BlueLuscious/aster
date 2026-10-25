@@ -26,7 +26,7 @@ export class SvgValidationDiagnosticFactory {
       code: details.code,
       message: details.message,
       sourceId: issue.sourceId,
-      ...("span" in issue && issue.span !== undefined
+      ...(Object.hasOwn(issue, "span") && issue.span !== undefined
         ? { span: issue.span }
         : {}),
     });

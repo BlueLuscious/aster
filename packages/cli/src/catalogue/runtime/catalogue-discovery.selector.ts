@@ -1,14 +1,16 @@
 import { asterCommandSubjects } from "../../command/constants/aster-command-subjects.constant.js";
 import { commandDiagnosticSchema } from "../../command/constants/command-diagnostic-schema.constant.js";
 import type { AsterCommandContext } from "../../command/contracts/index.js";
+import type { AsterCommandShowSubjectType } from "../../command/types/aster-command-show-subject.type.js";
 import { CommandDiagnosticFactory } from "../../command/runtime/command-diagnostic.factory.js";
-import type { AsterCommandShowSubjectType } from "../../command/types/index.js";
+import type { CatalogueGlyphResult } from "../contracts/index.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
 import type { TAcceptedCatalogueDiscovery } from "../types/internal/accepted-catalogue-discovery.type.js";
 import type { TCatalogueDiscoverySelection } from "../types/internal/catalogue-discovery-selection.type.js";
 import { CatalogueIdentityFormatter } from "./catalogue-identity.formatter.js";
 import { CatalogueLoader } from "./catalogue.loader.js";
 import { CatalogueQueryScope } from "./catalogue-query.scope.js";
+import { CatalogueResultFactory } from "./catalogue-result.factory.js";
 
 /**
  * @description Resolves exact discovery metadata before any complete definition is loaded.
@@ -25,6 +27,9 @@ export class CatalogueDiscoverySelector {
 
   /** @description Immutable diagnostic constructor for selection failures. */
   readonly #diagnostics = new CommandDiagnosticFactory();
+
+  /** @description Accepted metadata projection shared by glyph list and exact lookup. */
+  readonly #results = new CatalogueResultFactory();
 
   /**
    * @description Creates one selector using the explicit shared discovery loader.
@@ -43,51 +48,126 @@ export class CatalogueDiscoverySelector {
    * @returns One immutable discovery selection or deterministic lookup failure.
    */
   async select(
-    subject: AsterCommandShowSubjectType,
+    subject: TCatalogueDiscoverySelection["subject"],
     identity: string,
     catalogue: string | undefined,
     context: AsterCommandContext,
   ): Promise<TAcceptanceResult<TCatalogueDiscoverySelection>> {
-    const discovered = await this.#loader.discover(context.catalogues);
-
-    if (!discovered.accepted) {
-      return discovered;
-    }
-
-    const scoped = this.#scope.selectCatalogues(discovered.value, catalogue);
+    const scoped = await this.#discover(catalogue, context);
 
     if (!scoped.accepted) {
       return scoped;
     }
 
-    const candidates = subject === asterCommandSubjects.show.icon
-      ? this.#icons(scoped.value, identity)
-      : this.#collections(scoped.value, identity);
+    const candidates =
+      subject === asterCommandSubjects.show.icon
+        ? this.#icons(scoped.value, identity)
+        : this.#collections(scoped.value, identity);
 
+    return this.#one(candidates, subject, identity);
+  }
+
+  /**
+   * @description Resolves one provider-scoped glyph using accepted metadata only.
+   * @param identity - Exact canonical glyph key without a treatment.
+   * @param catalogue - Optional exact provider filter.
+   * @param context - Accepted discovery capabilities.
+   * @returns One immutable glyph or the existing not-found/ambiguity evidence.
+   */
+  async selectGlyph(
+    identity: string,
+    catalogue: string | undefined,
+    context: AsterCommandContext,
+  ): Promise<TAcceptanceResult<CatalogueGlyphResult>> {
+    const scoped = await this.#discover(catalogue, context);
+    if (!scoped.accepted) {
+      return scoped;
+    }
+
+    const candidates = scoped.value.flatMap((provider) =>
+      this.#results
+        .glyphs(provider)
+        .filter((glyph) => this.#identities.glyph(glyph.identity) === identity),
+    );
+    return this.#one(candidates, asterCommandSubjects.show.glyph, identity);
+  }
+
+  /**
+   * @description Applies shared acceptance and exact provider scope before record selection.
+   * @param catalogue - Optional provider identity.
+   * @param context - Accepted discovery capabilities.
+   * @returns Ordered accepted scope or sanitised discovery/filter failure.
+   */
+  async #discover(
+    catalogue: string | undefined,
+    context: AsterCommandContext,
+  ): Promise<TAcceptanceResult<readonly TAcceptedCatalogueDiscovery[]>> {
+    const discovered = await this.#loader.discover(context.catalogues);
+    return discovered.accepted
+      ? this.#scope.selectCatalogues(discovered.value, catalogue)
+      : discovered;
+  }
+
+  /**
+   * @description Accepts exactly one provider-owned candidate without silently merging duplicates.
+   * @typeParam Value - Metadata selection or glyph carrying provider provenance.
+   * @param candidates - Canonically ordered matching provider results.
+   * @param subject - Explicit requested family retained independently of failure wording.
+   * @param identity - Exact requested identity used in failure evidence.
+   * @returns One result or the existing not-found/ambiguity diagnostic.
+   */
+  #one<
+    Value extends Readonly<{
+      /** @description Provider owning the candidate. */
+      catalogue: string;
+    }>,
+  >(
+    candidates: readonly Value[],
+    subject: AsterCommandShowSubjectType,
+    identity: string,
+  ): TAcceptanceResult<Value> {
     const candidate = candidates[0];
 
     if (candidate === undefined) {
-      return this.#failure(
-        commandDiagnosticSchema.categories.notFound,
-        commandDiagnosticSchema.codes.notFound,
-        `identity ${identity} was not found`,
-        [identity],
-      );
+      return Object.freeze({
+        accepted: false,
+        diagnostic: this.#diagnostics.create({
+          category: commandDiagnosticSchema.categories.notFound,
+          code: commandDiagnosticSchema.codes.notFound,
+          message: `identity ${identity} was not found`,
+          details: {
+            kind: commandDiagnosticSchema.details.lookup,
+            subject,
+            identity,
+          },
+        }),
+      });
     }
 
-    if (candidates.length > 1) {
-      return this.#failure(
-        commandDiagnosticSchema.categories.ambiguous,
-        commandDiagnosticSchema.codes.ambiguous,
-        `identity ${identity} is available from multiple catalogues`,
-        candidates.map((candidate) => candidate.catalogue),
-      );
+    const second = candidates[1];
+
+    if (second !== undefined) {
+      return Object.freeze({
+        accepted: false,
+        diagnostic: this.#diagnostics.create({
+          category: commandDiagnosticSchema.categories.ambiguous,
+          code: commandDiagnosticSchema.codes.ambiguous,
+          message: `identity ${identity} is available from multiple catalogues`,
+          details: {
+            kind: commandDiagnosticSchema.details.ambiguity,
+            subject,
+            identity,
+            catalogues: [
+              candidate.catalogue,
+              second.catalogue,
+              ...candidates.slice(2).map((entry) => entry.catalogue),
+            ],
+          },
+        }),
+      });
     }
 
-    return Object.freeze({
-      accepted: true,
-      value: candidate,
-    });
+    return Object.freeze({ accepted: true, value: candidate });
   }
 
   /**
@@ -124,7 +204,7 @@ export class CatalogueDiscoverySelector {
     return Object.freeze(catalogues.flatMap((catalogue) => catalogue.collections
       .filter((record) => this.#identities.collection(record.identity) === identity)
       .map((record) => {
-        const memberIdentities = new Set(record.icons.map((icon) =>
+        const memberIdentities = new Set(record.memberIdentities.map((icon) =>
           this.#identities.icon(icon),
         ));
 
@@ -138,25 +218,5 @@ export class CatalogueDiscoverySelector {
           )),
         });
       })));
-  }
-
-  /**
-   * @description Creates one deterministic rejected discovery selection.
-   * @param category - Stable command diagnostic category.
-   * @param code - Stable command diagnostic code.
-   * @param message - Deterministic failure explanation.
-   * @param related - Canonically ordered related values.
-   * @returns Immutable rejected acceptance result.
-   */
-  #failure(
-    category: "not-found" | "ambiguous",
-    code: "ASTER-CLI-004" | "ASTER-CLI-005",
-    message: string,
-    related: readonly string[],
-  ): TAcceptanceResult<TCatalogueDiscoverySelection> {
-    return Object.freeze({
-      accepted: false,
-      diagnostic: this.#diagnostics.create(category, code, message, related),
-    });
   }
 }

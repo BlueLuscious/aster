@@ -1,4 +1,7 @@
 import { packageBoundaries } from "../constants/package-boundaries.constant.mjs";
+import { catalogueSourceGeneration } from "../../catalogue/constants/catalogue-source-generation.constant.mjs";
+import { catalogueSourceFamilyKinds } from "../../catalogue/constants/catalogue-source-family-kinds.constant.mjs";
+import { CatalogueSourceFacadeResolver } from "../../catalogue/runtime/catalogue-source-facade.resolver.mjs";
 
 /**
  * @description Enforces public Icons dependencies, scalable exports, and portable compiler
@@ -24,7 +27,7 @@ export class IconsPackagePolicy {
    * @param {import("../types/internal/workspace-package-record.type.mjs").TWorkspacePackageRecord} record - Acquired Icons package record.
    * @param {Record<string, unknown>} dependencies - Combined production dependencies.
    * @param {ReadonlySet<string>} workspaceDependencies - Direct workspace dependencies.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after Icons policy is inspected.
    */
   async inspect(record, dependencies, workspaceDependencies, issues) {
@@ -50,9 +53,20 @@ export class IconsPackagePolicy {
       issues.add("@luscious-garden/aster-icons must declare package.json#sideEffects as false");
     }
 
+    const exports = record.manifest.exports;
+    const iconFamily = catalogueSourceGeneration.families.find(({kind}) => kind === catalogueSourceFamilyKinds.icon);
+    const facades = new CatalogueSourceFacadeResolver();
+    const isObject = typeof exports === "object" && exports !== null && !Array.isArray(exports);
+    const entries = isObject ? Object.entries(exports) : [];
+    const treatments = entries.filter(([key]) => key.startsWith("./*/"));
+    const fixed = Object.fromEntries(entries.filter(([key]) => !key.startsWith("./*/")));
     if (
-      JSON.stringify(record.manifest.exports) !==
-      JSON.stringify(packageBoundaries.iconsExports)
+      !isObject || !iconFamily || treatments.length === 0
+      || JSON.stringify(fixed) !== JSON.stringify(packageBoundaries.iconsExports)
+      || treatments.some(([key, target]) =>
+        !new RegExp(catalogueSourceGeneration.slugPatternSource, "u").test(key.slice(4))
+        || JSON.stringify(target) !== JSON.stringify(facades.exportTarget(iconFamily, key.slice(4))),
+      )
     ) {
       issues.add(
         "@luscious-garden/aster-icons must expose only the accepted scalable package exports",

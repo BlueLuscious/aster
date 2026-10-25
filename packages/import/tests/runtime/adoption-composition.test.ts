@@ -23,7 +23,7 @@ function request(namespace: string, name: string): IconAdoptionRequest {
     source: {
       format: iconImportFormats.svg,
       sourceId: `composition/${namespace}/${name}.svg`,
-      identity: { namespace, name },
+      identity: { variant: "outline", namespace, name },
       content:
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/></svg>',
     },

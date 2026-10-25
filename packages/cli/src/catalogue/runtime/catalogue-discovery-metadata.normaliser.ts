@@ -187,8 +187,7 @@ export class CatalogueDiscoveryMetadataNormaliser {
    * @returns Canonical text or no value after rejection.
    */
   #text(value: unknown): string | undefined {
-    return typeof value === "string" && value.trim().length > 0
-      ? value.trim()
-      : undefined;
+    const text = typeof value === "string" ? value.trim() : undefined;
+    return text === undefined || text.length === 0 ? undefined : text;
   }
 }

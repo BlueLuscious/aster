@@ -35,7 +35,7 @@
     "build": "pnpm --recursive --if-present run build",
     "check": "pnpm run check:catalogue && pnpm run check:types && pnpm run check:architecture && pnpm run check:docs && pnpm run lint && pnpm run format:check",
     "check:architecture": "node tooling/architecture/check-architecture.mjs",
-    "check:catalogue": "pnpm --dir packages/icons run check:catalogue",
+    "check:catalogue": "pnpm --filter @luscious-garden/aster-core run build && pnpm --dir packages/icons run check:catalogue",
     "check:docs": "node tooling/documentation/check-documentation.mjs",
     "check:types": "pnpm run build && pnpm --recursive --if-present run check:types && pnpm run check:tooling-types",
     "check:tooling-types": "tsc -p tsconfig.tooling.json",

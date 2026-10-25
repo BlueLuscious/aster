@@ -50,6 +50,32 @@ async function install(root, selector, version, extras = {}) {
   return path;
 }
 
+test("does not acquire project dependency sections from the host prototype", async (context) => {
+  const fixture = await createFixture(context);
+  await writeProject(fixture.project, {});
+  await install(fixture.project, "core", "0.1.0");
+  for (const field of ["dependencies", "devDependencies", "optionalDependencies"]) {
+    const previous = Object.getOwnPropertyDescriptor(Object.prototype, field);
+    let result;
+    let reads = 0;
+    try {
+      Object.defineProperty(Object.prototype, field, {
+        configurable: true,
+        get() { reads += 1; return { [names.core]: "*" }; },
+      });
+      result = await new ProjectPackageVersionReader(fixture.project).read("all");
+    } finally {
+      if (previous === undefined) {
+        Reflect.deleteProperty(Object.prototype, field);
+      } else {
+        Object.defineProperty(Object.prototype, field, previous);
+      }
+    }
+    assert.deepEqual(result, [], field);
+    assert.equal(reads, 0, field);
+  }
+});
+
 test("keeps project versions distinct from the executed CLI dependencies", async (context) => {
   const fixture = await createFixture(context);
   await writeProject(fixture.project, { dependencies: { [names.icons]: "0.1.0-rc.1" } });
@@ -294,7 +320,7 @@ test("groups direct project roots without flattening or inheriting development d
     ],
   });
   assert.deepEqual(await shell.execute(["version", "core", "--deps"]), {
-    stdout: `Project Aster package dependencies:\n${names.core} 0.1.1\n  (no Aster dependencies)\n`,
+    stdout: `Project Aster package dependencies:\n  ${names.core} 0.1.1\n    (none)\n`,
     stderr: "", exitCode: 0,
   });
   const svg = await shell.execute(["version", "svg", "--deps", "--json"]);

@@ -38,7 +38,7 @@ export class WorkspaceArchitectureInspector {
   /**
    * @description Inspects compiler baseline and equivalent workspace membership authorities.
    * @param {string} workspaceRoot - Absolute repository root.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {Promise<void>} Completion after root workspace policy is inspected.
    */
   async inspect(workspaceRoot, issues) {
@@ -46,7 +46,7 @@ export class WorkspaceArchitectureInspector {
       this.#paths.resolve(workspaceRoot, repositoryArchitecturePaths.workspaceConfiguration),
     );
     const options = /** @type {Record<string, unknown>} */ (
-      configuration.compilerOptions ?? {}
+      configuration.compilerOptions ?? Object.create(null)
     );
 
     for (const [name, expected] of Object.entries(compilerBaseline)) {

@@ -7,24 +7,24 @@ Membership is explicit authoring, not inferred from the package manifest or sour
 
 ## Consumer access
 
-See the [export-naming migration](#export-naming-migration) for version availability and
-upgrading earlier imports.
+Collection exports expose explicitly selected treatment definitions:
 
 ```ts
 import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
 
-const camera = Amellus.icons.camera;
-const arrowLeft = Amellus.icons.arrowLeft;
+const camera = Amellus.icons.camera.outline;
+const arrowLeft = Amellus.icons.arrowLeft.outline;
 const orderedIcons = Amellus.members;
 ```
 
-Known aliases retain exact readonly TypeScript keys. `members` is a frozen ordered list containing
-the same canonical objects as `icons`. Ordinary array operations produce consumer values, not a
+Known aliases and treatment selections retain exact readonly TypeScript keys. `members` is a
+flat frozen ordered list containing the same canonical leaf objects as `icons`.
+Ordinary array operations produce consumer values, not a
 collection query API. [Core Collection](../../core/collection/index.md) owns alias validation,
 generic output, ordering, duplicate rejection and canonical reference retention.
 
 The import evaluates the selected collection and every declared member. Accessing one alias does
-not make it lazy; use `@luscious-garden/aster-icons/camera` when the collection is unnecessary.
+not make it lazy; use `@luscious-garden/aster-icons/camera/outline` when the collection is unnecessary.
 There is no bare collection-family aggregate.
 
 ## Membership authority
@@ -52,29 +52,11 @@ complete member graph. These are distribution projections, not alternative membe
 module conventions and synchronisation;
 [Quality](../quality.md) owns conformance.
 
-## Export-naming migration
+<a id="export-naming-migration"></a>
 
-**Breaking change published in [0.2.0](../releases/0.2.0.md).** Collection
-value exports no longer carry the role suffix. Published Icons `0.1.0` and its candidates
-retain their original exports; the [published history](../releases/index.md#published) owns
-publication evidence.
+## Export names
 
-Keep the public subpath and replace the named import and its references:
-
-```ts
-// Before
-import { AmellusCollection } from "@luscious-garden/aster-icons/collections/amellus";
-
-// After
-import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
-```
-
-The old export is absent, with no compatibility alias. The Amellus
-`CollectionManifestEntry.symbol` also changes from `"AmellusCollection"` to `"Amellus"`;
-manifest-driven consumers must use the record's symbol, not append a suffix to its key.
-
-The `amellus` identity and loader key, public route, readonly icon aliases, member order, metadata,
-immutability and direct/loader object identity are unchanged. Core's `Collection.define` and
-collection contracts keep their domain names. This is a breaking export and manifest change
-under the [versioning policy](../../../project/versioning.md#compatibility-before-10), not a
-compatible patch or a change to collection membership.
+Collection subpaths expose their canonical named export, such as `Amellus`. The
+[manifest](../manifest/index.md) records that identifier in `CollectionManifestEntry.exportName`;
+consumers use it directly rather than appending a suffix to the collection key.
+[Versioned release notes](../releases/index.md#published) own published changes and migrations.

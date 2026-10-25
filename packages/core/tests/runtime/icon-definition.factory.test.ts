@@ -1,10 +1,45 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+import { Icon } from "../../src/index.js";
 import { IconDefinitionFactory } from "../../src/definition/runtime/icon-definition.factory.js";
 import { IconDefinitionError } from "../../src/shared/runtime/icon-definition.error.js";
 
 const definitionFactory = new IconDefinitionFactory();
+
+test("requires an explicit treatment without inferring a default", () => {
+  const input = createInput();
+  const { variant, ...glyph } = input.identity;
+  void variant;
+  expectDefinitionError({ ...input, identity: glyph }, "definition.identity.variant");
+
+  for (const invalid of [undefined, "", " ", "Outline", "filled--dotted"]) {
+    expectDefinitionError(
+      { ...input, identity: { ...glyph, variant: invalid } },
+      "definition.identity.variant",
+    );
+  }
+
+  for (const treatment of ["outline", "filled-stippled", "2-tone", "01", "constructor"]) {
+    const accepted = definitionFactory.create({
+      ...input,
+      identity: { ...glyph, variant: treatment },
+    });
+    assert.equal(accepted.identity.variant, treatment);
+  }
+});
+
+test("requires an explicit treatment on replacement identities", () => {
+  const input = createInput();
+  expectDefinitionError({
+    ...input,
+    metadata: {
+      ...input.metadata,
+      deprecated: true,
+      replacedBy: { name: "replacement" },
+    },
+  }, "definition.metadata.replacedBy.variant");
+});
 
 function createInput() {
   return {
@@ -175,13 +210,92 @@ test("deeply freezes retained data and isolates caller-owned input", () => {
   assertDeeplyFrozen(accepted);
 });
 
-test("constructs repeated identity without retaining a registry", () => {
+test("constructs equal fresh inputs without interning their logical identity", () => {
   const first = definitionFactory.create(createInput());
   const second = definitionFactory.create(createInput());
 
   assert.notEqual(first, second);
   assert.notEqual(first.identity, second.identity);
   assert.deepEqual(first.identity, second.identity);
+});
+
+test("reuses canonical outputs across factory instances and the public Icon API", () => {
+  const accepted = definitionFactory.create(createInput());
+  const otherFactory = new IconDefinitionFactory();
+
+  assert.equal(definitionFactory.create(accepted), accepted);
+  assert.equal(otherFactory.create(accepted), accepted);
+  assert.equal(Icon.define(accepted), accepted);
+  assert.equal(definitionFactory.create(Icon.define(accepted)), accepted);
+  assert.deepEqual(Object.keys(accepted), ["identity", "viewBox", "nodes", "metadata"]);
+  assert.deepEqual(Object.getOwnPropertySymbols(accepted), []);
+  assertDeeplyFrozen(accepted);
+});
+
+test("never recognises original inputs after successful or failed construction", () => {
+  const input = createInput();
+  input.metadata.displayName = " ";
+  expectDefinitionError(input, "definition.metadata.displayName");
+
+  input.metadata.displayName = "Recovered";
+  const first = definitionFactory.create(input);
+  const second = definitionFactory.create(input);
+
+  assert.notEqual(first, input);
+  assert.notEqual(second, input);
+  assert.notEqual(first, second);
+  assert.equal(definitionFactory.create(first), first);
+  input.viewBox.width = 0;
+  expectDefinitionError(input, "definition.viewBox.width");
+  assert.equal(first.viewBox.width, 24);
+});
+
+test("reconstructs JSON and frozen copies without adopting their references", () => {
+  const accepted = definitionFactory.create(createInput());
+  const decoded: unknown = JSON.parse(JSON.stringify(accepted));
+  const frozenCopy = Object.freeze({ ...accepted });
+
+  for (const input of [decoded, frozenCopy]) {
+    const first = definitionFactory.create(input);
+    const second = definitionFactory.create(input);
+
+    assert.notEqual(first, input);
+    assert.notEqual(first, second);
+    assert.deepEqual(first, accepted);
+    assert.equal(definitionFactory.create(first), first);
+    assertDeeplyFrozen(first);
+  }
+});
+
+test("does not confuse freezing or proxy wrappers with recognised outputs", () => {
+  const shallow = Object.freeze(createInput());
+  const isolated = definitionFactory.create(shallow);
+  assert.notEqual(isolated, shallow);
+  assert.notEqual(isolated.nodes, shallow.nodes);
+  assertDeeplyFrozen(isolated);
+  shallow.viewBox.width = 0;
+  expectDefinitionError(shallow, "definition.viewBox.width");
+  assert.equal(isolated.viewBox.width, 24);
+
+  const accepted = definitionFactory.create(createInput());
+  const invalid = Object.freeze({
+    ...accepted,
+    viewBox: Object.freeze({ ...accepted.viewBox, width: 0 }),
+  });
+  expectDefinitionError(invalid, "definition.viewBox.width");
+
+  const wrapped = new Proxy(accepted, {});
+  const reconstructed = definitionFactory.create(wrapped);
+  assert.notEqual(reconstructed, wrapped);
+  assert.deepEqual(reconstructed, accepted);
+
+  const failure = new Error("Canonical wrapper reflection failed.");
+  const throwing = new Proxy(accepted, {
+    getPrototypeOf() {
+      throw failure;
+    },
+  });
+  assert.throws(() => definitionFactory.create(throwing), (error) => error === failure);
 });
 
 test("rejects unsupported fields and malformed local values", () => {

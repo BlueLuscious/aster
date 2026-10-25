@@ -30,7 +30,7 @@ import {
 const source = {
   format: iconImportFormats.svg,
   sourceId: "icons/check.svg",
-  identity: { namespace: "aster", name: "check" },
+  identity: { variant: "outline", namespace: "aster", name: "check" },
   content: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 12h16" /></svg>',
 } satisfies IconImportSourceType;
 
@@ -72,6 +72,12 @@ const knownDiagnosticCode: DiagnosticCodeType = "ASTER-SAFETY-001";
 // @ts-expect-error Unknown diagnostic codes are outside the closed public vocabulary.
 const unknownDiagnosticCode: DiagnosticCodeType = "ASTER-SAFETY-999";
 const error: typeof IconImportError = IconImportError;
+
+declare const moduleOutput: IconModuleOutput;
+const exportName: string = moduleOutput.exportName;
+// @ts-expect-error Editable module output exposes only the precise export-name field.
+void moduleOutput.symbol;
+void exportName;
 
 void inspected;
 void outputs;

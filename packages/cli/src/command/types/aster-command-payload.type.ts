@@ -1,6 +1,7 @@
 import type {
   CatalogueCollectionResult,
   CatalogueIconResult,
+  CatalogueGlyphResult,
   CatalogueProviderResult,
 } from "../../catalogue/contracts/index.js";
 import type { asterCommandPayloadKinds } from "../constants/aster-command-payload-kinds.constant.js";
@@ -16,6 +17,20 @@ import type { AsterReviewPlan } from "../../review/contracts/index.js";
  * @description Closed immutable success payload union returned by the initial command family.
  */
 export type AsterCommandPayloadType =
+  | Readonly<{
+      /** @description Discriminator for provider-scoped glyph listing. */
+      kind: typeof asterCommandPayloadKinds.glyphList;
+
+      /** @description Canonically ordered glyph families without loaded definitions. */
+      glyphs: readonly CatalogueGlyphResult[];
+    }>
+  | Readonly<{
+      /** @description Discriminator for one exact glyph lookup. */
+      kind: typeof asterCommandPayloadKinds.glyphShow;
+
+      /** @description Exact provider-scoped glyph with its concrete treatment metadata. */
+      glyph: CatalogueGlyphResult;
+    }>
   | Readonly<{
       /**
        * @description Discriminator for one complete headless export plan.

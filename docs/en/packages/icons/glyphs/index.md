@@ -9,8 +9,8 @@ collection-owned state.
 ## Direct imports
 
 ```ts
-import { ArrowLeft } from "@luscious-garden/aster-icons/arrow-left";
-import { Search } from "@luscious-garden/aster-icons/search";
+import { ArrowLeftOutline } from "@luscious-garden/aster-icons/arrow-left/outline";
+import { SearchOutline } from "@luscious-garden/aster-icons/search/outline";
 ```
 
 A direct import evaluates its minimal generated facade, the selected definition and applicable
@@ -18,10 +18,49 @@ shared authoring authorities, not sibling icons or a collection. The physical
 `src/glyphs/` layout remains private; [Catalogue Source Tooling](../../../tooling/catalogue/index.md#source-convention)
 owns filename, symbol and public-path validation.
 
-Renditions share a base name and add `identity.variant`. For example, an authored
+Every definition declares `identity.variant`; the existing artwork explicitly uses `outline`.
+Renditions of one glyph share its namespace and name. For example, an authored
 `camera@stippled` rendition under namespace `aster` would export `CameraStippled` through
 `@luscious-garden/aster-icons/camera/stippled`. A different concept such as `camera-retro`
-remains a separate name. These are naming examples, not currently distributed variants.
+remains a separate name. Stippled is a naming example, not currently distributed artwork.
+
+## Glyph dictionaries
+
+```ts
+import { CameraVariants } from "@luscious-garden/aster-icons/camera";
+
+const definition = CameraVariants.outline;
+```
+
+The glyph subpath exports only its `<PascalName>Variants` dictionary, not individual definitions.
+It eagerly evaluates every distributed treatment of that glyph and references the same canonical
+objects as individual imports, collection selections and loaders. Prefer `/camera/outline` when
+only that treatment is required; tree shaking is not a native ESM evaluation guarantee.
+
+Dictionaries are frozen, prototype-free own-data maps with exact readonly treatment keys.
+The current `CameraVariants` contains only `outline`: no Filled, Dotted or other treatment is
+invented. A dictionary is not an `IconDefinition` and cannot be rendered directly. There is no
+`default`, fallback, compatibility export or implicit selection. An absent runtime key returns
+`undefined`, including inherited Object names unless an actual treatment owns that property.
+Use static operations such as `Object.keys(dictionary)` rather than inherited methods.
+
+Treatment slugs remain kebab-case in identities and paths; their dictionary properties use
+[`Icon.variantPropertyName()`](../../core/api/index.md#usage), so `filled-dotted` would become
+`filledDotted`. Native property enumeration applies, including numeric-index ordering. Tooling
+rejects ambiguous properties, module bindings or glyph paths before writing any output; glyphs
+from different namespaces cannot be merged behind one public name.
+
+<a id="explicit-treatment-migration"></a>
+
+## Identity and selection
+
+Identities and loader keys name concrete treatments, such as `aster/camera@outline`.
+Collections select those definitions explicitly; [Core identity](../../core/definition/index.md#identity-rules)
+and [membership](../../core/collection/index.md#aliases-and-ordered-members) own the portable rules.
+[Import source](../../import/source/index.md) owns acquired identities, while
+[CLI catalogue](../../cli/catalogue/index.md) owns glyph and concrete-icon requests.
+The [source and registry boundary](../../../index.md#source-and-published-versions) explains version
+availability; [versioned release notes](../releases/index.md) own changes and migrations.
 
 ## Definition ownership
 

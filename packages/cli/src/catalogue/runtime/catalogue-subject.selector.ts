@@ -1,5 +1,4 @@
 import type { AsterCommandContext } from "../../command/contracts/index.js";
-import type { AsterCommandShowSubjectType } from "../../command/types/index.js";
 import type { TAcceptanceResult } from "../../command/types/internal/acceptance-result.type.js";
 import type { TCatalogueSelection } from "../types/internal/catalogue-selection.type.js";
 import { CatalogueDefinitionResolver } from "./catalogue-definition.resolver.js";
@@ -37,7 +36,7 @@ export class CatalogueSubjectSelector {
    * @returns One immutable complete selection or deterministic lookup or provider failure.
    */
   async select(
-    subject: AsterCommandShowSubjectType,
+    subject: TCatalogueSelection["subject"],
     identity: string,
     catalogue: string | undefined,
     context: AsterCommandContext,

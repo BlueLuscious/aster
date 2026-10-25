@@ -76,8 +76,16 @@ export class ProjectPackageVersionReader {
    * @returns Found manifest path or an explicit unavailable-comparison outcome.
    */
   async probeDirectCli(): Promise<
-    | Readonly<{ kind: "found"; manifestPath: string }>
-    | Readonly<{ kind: "absent" | "no-project" | "unavailable" }>
+    | Readonly<{
+      /** @description Successful direct project-CLI comparison outcome. */
+      kind: "found";
+      /** @description Validated direct project-CLI manifest used for location comparison. */
+      manifestPath: string;
+    }>
+    | Readonly<{
+      /** @description Reason a direct project-CLI comparison could not be supplied. */
+      kind: "absent" | "no-project" | "unavailable";
+    }>
   > {
     try {
       const projectManifestPath = await this.#findProjectManifest();
@@ -100,7 +108,7 @@ export class ProjectPackageVersionReader {
         return Object.freeze({ kind: "absent" });
       }
 
-      await this.#manifests.version(manifestPath, name);
+      await this.#manifests.readVersionRecord(manifestPath, name);
       return Object.freeze({ kind: "found", manifestPath });
     } catch {
       return Object.freeze({ kind: "unavailable" });
@@ -217,7 +225,7 @@ export class ProjectPackageVersionReader {
     const declarations = new Map<string, boolean>();
 
     for (const field of ["dependencies", "devDependencies", "optionalDependencies"] as const) {
-      const section = manifest[field];
+      const section = Object.hasOwn(manifest, field) ? manifest[field] : undefined;
 
       if (section === undefined) {
         continue;
@@ -256,7 +264,12 @@ export class ProjectPackageVersionReader {
   async #readInstalledPackage(
     expectedName: string,
     base: string,
-  ): Promise<Readonly<{ record: AsterInstalledPackageVersion; manifestPath: string }> | undefined> {
+  ): Promise<Readonly<{
+    /** @description Validated installed package version record. */
+    record: AsterInstalledPackageVersion;
+    /** @description Installed manifest used as the dependency-resolution base. */
+    manifestPath: string;
+  }> | undefined> {
     const path = this.#resolveInstalledManifestPath(expectedName, base);
 
     if (path === undefined) {
@@ -264,7 +277,7 @@ export class ProjectPackageVersionReader {
     }
 
     try {
-      const record = await this.#manifests.version(path, expectedName);
+      const record = await this.#manifests.readVersionRecord(path, expectedName);
       return Object.freeze({ record, manifestPath: path });
     } catch {
       throw new ProjectPackageVersionError(`Invalid installed manifest for ${expectedName}`);

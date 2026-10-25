@@ -5,12 +5,15 @@ export type TParsedCommandOptions = {
   /**
    * @description Optional exact catalogue-provider filter.
    */
-  catalogue?: string;
+  catalogue: string | undefined;
 
   /**
    * @description Optional exact collection-identity filter.
    */
-  collection?: string;
+  collection: string | undefined;
+
+  /** @description Optional exact glyph identity filter for icon listing. */
+  glyph: string | undefined;
 
   /**
    * @description Repeated intrinsic-tag filters in received order.

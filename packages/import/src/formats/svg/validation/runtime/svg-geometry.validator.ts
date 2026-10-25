@@ -50,6 +50,7 @@ export class SvgGeometryValidator {
 
   /**
    * @description Validates one complete safe parser document hierarchy.
+   * @remarks Elements are visited in source order so diagnostics and retained geometry counts follow the hierarchy.
    * @param sourceId - Canonical logical SVG source identifier.
    * @param root - Sole safe SVG syntax root.
    * @returns Blocking diagnostics and retained geometry counts.
@@ -62,11 +63,6 @@ export class SvgGeometryValidator {
     let primitiveCount = 0;
     let pathCommandCount = 0;
 
-    /**
-     * @description Visits one safe syntax element and its children in exact source order.
-     * @param element - Current located safe syntax element.
-     * @returns Nothing.
-     */
     const visit = (element: ISvgSyntaxElement): void => {
       const presentation = this.#presentationValidator.inspect(
         sourceId,

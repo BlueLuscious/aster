@@ -8,7 +8,7 @@ markup. It is a target renderer, not an icon catalogue, source importer or DOM a
 ## Boundary
 
 The frozen `Svg` object renders one explicitly supplied definition and optional render options.
-Each synchronous call revalidates the definition through Core and returns one complete string or
+Each synchronous call accepts the definition through Core and returns one complete string or
 throws. No definition, render context or output survives as package-owned state between calls.
 
 SVG depends only on the public Core root. It emits native ES2022 ESM with `sideEffects: false`;
@@ -29,7 +29,7 @@ authority; hosts own any subsequent use of the string.
 | [Error](error/index.md) | Stable failure shape, definition-error translation and exception provenance. |
 | [Workflow](workflow.md) | Input-to-output hand-offs and consumer responsibilities. |
 | [Quality](quality.md) | Runtime, type, ABI and workflow conformance evidence. |
-| [Quality Baseline](quality-baseline.md) | Package scenarios, historical measurements and retained experiments. |
+| [Quality Baseline](quality-baseline.md) | Package scenarios, current measurements and comparison methodology. |
 | [Releases](releases/index.md) | Published versions and output migrations. |
 
 The [package dependency graph](../index.md) owns ecosystem relationships. The

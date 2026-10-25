@@ -20,19 +20,15 @@ export class WorkspaceDependencyGraph {
 
   /**
    * @description Reports dependency cycles into the supplied issue collector.
-   * @param {import("./architecture-issue.collector.mjs").ArchitectureIssueCollector} issues - Ordered issue collector.
+   * @remarks Depth-first traversal reports back edges in the active dependency path and skips completed packages.
+   * @param {import("../contracts/internal/architecture-issue-collector.contract.mjs").IArchitectureIssueCollector} issues - Ordered issue collector.
    * @returns {void} Completion after every package has been traversed.
    */
   inspectCycles(issues) {
     const visited = new Set();
     const active = new Set();
 
-    /**
-     * @description Visits one package and reports a dependency back edge.
-     * @param {string} name - Workspace package being visited.
-     * @param {readonly string[]} trail - Dependency path leading to the package.
-     * @returns {void} This traversal updates local graph state and the issue collector.
-     */
+    /** @type {(name: string, trail: readonly string[]) => void} */
     const visit = (name, trail) => {
       if (active.has(name)) {
         issues.add(`Workspace production dependency cycle: ${[...trail, name].join(" -> ")}`);

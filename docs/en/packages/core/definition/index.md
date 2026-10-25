@@ -6,21 +6,25 @@ The definition feature composes identity, coordinate space, ordered nodes, and r
 into one render-neutral icon value.
 
 Its implemented [immutable construction flow](runtime/index.md) validates authored objects without
-retaining a catalogue or identity registry.
+retaining a catalogue or logical-identity registry.
 
 ## Contracts
 
 | Contract | Responsibility | Relations |
 | --- | --- | --- |
-| `IconIdentity` | Carries an optional canonical namespace, required icon name, and optional variant. | Used by `IconDefinition`, optional metadata replacement relationships, and Import source descriptors. |
+| `IconGlyphIdentity` | Identifies a glyph through its required name and optional namespace, without selecting a treatment. | Extended by `IconIdentity`; not interchangeable with a collection identity or a renderable definition. |
+| `IconIdentity` | Extends glyph identity with a required treatment slug. | Used by `IconDefinition`, optional metadata replacement relationships, and Import source descriptors. |
 | `IconViewBox` | Carries finite minimum coordinates and positive logical dimensions. | Owns the coordinate system used by every node and is reused by Import validation evidence. |
 | `IconDefinition` | Carries one complete serialisable icon value. | Composes `IconIdentity`, `IconViewBox`, `IconNodeType`, and `IconMetadata`. |
+| `IconVariantMap` | Maps explicit treatment properties to concrete definitions of a glyph. | Used by `CollectionIconMap`; family and property agreement are runtime invariants, not guarantees of the string index signature. |
 
 ## Identity rules
 
 Namespace, icon, and variant slugs are ASCII lowercase `kebab-case`. Namespace identifies a
 producer or collision domain independently of collection membership and may be omitted. The
-optional variant forms part of logical identity; it is not presentation state or a render option.
+required variant forms part of logical identity; it is not presentation state or a render option.
+Core accepts an open treatment vocabulary, including composed and digit-led slugs such as
+`filled-dotted` and `2-tone`. Missing treatments are rejected, never inferred as `outline`.
 
 Collection membership never enters `IconIdentity`. One icon can therefore exist standalone or be
 retained by multiple independent collections without changing identity.
@@ -28,6 +32,10 @@ retained by multiple independent collections without changing identity.
 The type surface represents slugs as strings because TypeScript cannot express the complete naming
 grammar without a runtime boundary. Construction validates those strings before accepting a
 definition.
+
+Metadata replacement identities use the same required treatment and optional namespace rules.
+The complete [API example](../api/index.md#usage) demonstrates construction; the
+[collection contract](../collection/index.md#aliases-and-ordered-members) owns explicit membership.
 
 ## Definition rules
 

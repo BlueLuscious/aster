@@ -1,14 +1,57 @@
 import assert from "node:assert/strict";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
+import { fileURLToPath } from "node:url";
 
 import { NodeRepositoryFileSystem } from "../../tooling/shared/runtime/node-repository-file-system.mjs";
 import { RepositoryDirectoryReader } from "../../tooling/shared/runtime/repository-directory.reader.mjs";
 import { RepositoryFileWalker } from "../../tooling/shared/runtime/repository-file.walker.mjs";
 import { RepositoryJsonReader } from "../../tooling/shared/runtime/repository-json.reader.mjs";
 import { RepositoryPathResolver } from "../../tooling/shared/runtime/repository-path.resolver.mjs";
+
+test("keeps every tooling contract and type independent from runtime classes", async () => {
+  const visit = async (directory) => {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const path = join(directory, entry.name);
+      if (entry.isDirectory()) {
+        await visit(path);
+      } else if (entry.name.endsWith(".contract.mjs") || entry.name.endsWith(".type.mjs")) {
+        assert.doesNotMatch(await readFile(path, "utf8"), /(?:import\(["']|from\s+["'])[^"'\n]*\/runtime\//u, path);
+      }
+    }
+  };
+  await visit(fileURLToPath(new URL("../../tooling", import.meta.url)));
+});
+
+test("keeps parsed repository JSON independent from inherited fields at every object level", async () => {
+  const reader = new RepositoryJsonReader({
+    async readText() { return '{"nested":{},"items":[{}],"__proto__":{"marker":"own"}}'; },
+  });
+  const previous = Object.getOwnPropertyDescriptor(Object.prototype, "undeclared");
+  let reads = 0;
+  try {
+    Object.defineProperty(Object.prototype, "undeclared", {
+      configurable: true,
+      get() { reads += 1; return "inherited"; },
+    });
+    const record = await reader.read("fixture.json");
+    for (const value of [record, record.nested, record.items[0], record.__proto__]) {
+      assert.equal(Object.getPrototypeOf(value), null);
+      assert.equal(value.undeclared, undefined);
+    }
+    assert.equal(Object.hasOwn(record, "__proto__"), true);
+    assert.equal(record.__proto__.marker, "own");
+    assert.equal(reads, 0);
+  } finally {
+    if (previous === undefined) {
+      Reflect.deleteProperty(Object.prototype, "undeclared");
+    } else {
+      Object.defineProperty(Object.prototype, "undeclared", previous);
+    }
+  }
+});
 
 test("resolves containment without accepting sibling or parent paths", () => {
   const paths = new RepositoryPathResolver();
@@ -67,7 +110,9 @@ test("reads strict JSON objects and rejects malformed or non-object input", asyn
     await writeFile(malformedPath, '{"name":}\n', "utf8");
     await writeFile(arrayPath, "[]\n", "utf8");
 
-    assert.deepEqual(await json.read(validPath), { name: "aster" });
+    const record = await json.read(validPath);
+    assert.equal(Object.getPrototypeOf(record), null);
+    assert.deepEqual({ ...record }, { name: "aster" });
     await assert.rejects(json.read(malformedPath), SyntaxError);
     await assert.rejects(json.read(arrayPath), /must contain an object/u);
   } finally {

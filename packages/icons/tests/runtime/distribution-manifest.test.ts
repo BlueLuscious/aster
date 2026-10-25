@@ -20,7 +20,7 @@ import {
  * @returns Canonical manifest key.
  */
 function iconKey(identity: IconIdentity): string {
-  return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}${identity.variant === undefined ? "" : `@${identity.variant}`}`;
+  return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}@${identity.variant}`;
 }
 
 /**
@@ -63,11 +63,7 @@ test("publishes exact metadata-only icon and collection records", async () => {
       return {
         key: iconKey(definition.identity),
         identity: definition.identity,
-        symbol: `${symbolSegment(definition.identity.name)}${
-          definition.identity.variant === undefined
-            ? ""
-            : symbolSegment(definition.identity.variant)
-        }`,
+        exportName: `${symbolSegment(definition.identity.name)}${symbolSegment(definition.identity.variant)}`,
         displayName: metadata.displayName,
         ...(metadata.tags === undefined ? {} : { tags: metadata.tags }),
         rtl: metadata.rtl,
@@ -93,7 +89,7 @@ test("publishes exact metadata-only icon and collection records", async () => {
           ? ""
           : `${definition.identity.namespace}/`}${definition.identity.name}`,
         identity: definition.identity,
-        symbol: symbolSegment(definition.identity.name),
+        exportName: symbolSegment(definition.identity.name),
         metadata: definition.metadata,
         members: definition.members.map((icon) => iconKey(icon.identity)),
       };
@@ -104,12 +100,16 @@ test("publishes exact metadata-only icon and collection records", async () => {
   assert.deepEqual(AsterCollectionManifest, collections);
 
   for (const entry of AsterIconManifest) {
+    assert.equal(Object.hasOwn(entry, "exportName"), true);
+    assert.equal(Object.hasOwn(entry, "symbol"), false);
     assert.equal(Object.hasOwn(entry, "nodes"), false);
     assert.equal(Object.hasOwn(entry, "viewBox"), false);
     assert.equal(Object.hasOwn(entry, "presentation"), false);
   }
 
   for (const entry of AsterCollectionManifest) {
+    assert.equal(Object.hasOwn(entry, "exportName"), true);
+    assert.equal(Object.hasOwn(entry, "symbol"), false);
     assert.equal(Object.hasOwn(entry, "icons"), false);
   }
 });

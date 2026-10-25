@@ -25,6 +25,7 @@ function extractModuleSpecifiers(source) {
 function createDefinitionInput() {
   return {
     identity: {
+      variant: "outline",
       namespace: "conformance",
       name: "circle",
     },

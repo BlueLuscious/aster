@@ -33,7 +33,7 @@ function fixture(overrides = {}) {
       return Response.json({
         id: overrides.releaseId ?? 42,
         tag_name: intent.tag,
-        draft: overrides.draft ?? true,
+        ...(overrides.omitDraft ? {} : { draft: overrides.draft ?? true }),
         prerelease: false,
         name: intent.title,
         body: intent.body,
@@ -71,6 +71,21 @@ test("reads back an exact unpublished draft and its npm-identical asset", async 
     requests[1],
     "https://api.github.com/repos/BlueLuscious/aster/releases/42",
   );
+});
+
+test("does not certify draft classification inherited from the host prototype", async () => {
+  const { verifier } = fixture({ omitDraft: true });
+  const previous = Object.getOwnPropertyDescriptor(Object.prototype, "draft");
+  try {
+    Object.defineProperty(Object.prototype, "draft", { configurable: true, value: true });
+    await assert.rejects(verifier.verify(intent, 42), /classification, title or notes differ/u);
+  } finally {
+    if (previous === undefined) {
+      Reflect.deleteProperty(Object.prototype, "draft");
+    } else {
+      Object.defineProperty(Object.prototype, "draft", previous);
+    }
+  }
 });
 
 test("rejects wrong tag target, publication state or uploaded digest", async () => {

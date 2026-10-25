@@ -49,7 +49,7 @@ export function createCatalogueProvider(
     collections: Object.freeze(fixture.collections.map((record) => Object.freeze({
       identity: record.definition.identity,
       metadata: record.definition.metadata,
-      icons: Object.freeze(record.definition.members.map((icon) => icon.identity)),
+      memberIdentities: Object.freeze(record.definition.members.map((icon) => icon.identity)),
       ...(record.searchTerms === undefined
         ? {}
         : { searchTerms: record.searchTerms }),
@@ -102,7 +102,7 @@ function discoveryMetadata(
  * @returns Canonical textual identity.
  */
 function iconIdentity(identity: IconIdentity): string {
-  return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}${identity.variant === undefined ? "" : `@${identity.variant}`}`;
+  return `${identity.namespace === undefined ? "" : `${identity.namespace}/`}${identity.name}@${identity.variant}`;
 }
 
 /**

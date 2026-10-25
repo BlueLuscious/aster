@@ -11,13 +11,10 @@ export class ExportPathFormatter {
    * @returns Canonical namespace, name, variant, and extension path.
    */
   icon(identity: IconIdentity): string {
-    const namespace = identity.namespace === undefined
+    const namespace = !Object.hasOwn(identity, "namespace") || identity.namespace === undefined
       ? ""
       : `${identity.namespace}/`;
-    const variant = identity.variant === undefined
-      ? ""
-      : `@${identity.variant}`;
-    return `${namespace}${identity.name}${variant}${svgExportArtefactSchema.extension}`;
+    return `${namespace}${identity.name}@${identity.variant}${svgExportArtefactSchema.extension}`;
   }
 }
 

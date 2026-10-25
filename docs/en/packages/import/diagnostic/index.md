@@ -28,6 +28,8 @@ has a span only when the producer has a trustworthy locus.
 Private `diagnosticCodePolicy` assigns exactly one category and severity to each code. Factories
 complete occurrence evidence from that authority rather than letting producers select policies.
 Single-line messages and canonical related-source ordering make equivalent evidence deterministic.
+Required evidence must be an own data property. Inherited optional spans or related contexts are
+ignored during construction and ordering, so prototype state cannot supply diagnostic evidence.
 
 Each producer constructs and freezes a diagnostic once. Aggregation deduplicates and orders those
 values without rebuilding them. Private supporting types are:

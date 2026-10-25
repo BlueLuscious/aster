@@ -2,7 +2,7 @@ import type { IconDefinition } from "../../definition/contracts/index.js";
 
 /**
  * @description Determines whether authored frozen data exactly matches a canonical icon graph.
- * @remarks The authored value must first pass complete `IconDefinitionFactory` reconstruction;
+ * @remarks The authored value must first pass the `IconDefinitionFactory` acceptance boundary;
  * this matcher proves retention equivalence and never replaces semantic validation.
  */
 export class CanonicalIconMatcher {

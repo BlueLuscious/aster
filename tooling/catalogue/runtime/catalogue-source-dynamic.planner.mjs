@@ -13,9 +13,6 @@ export class CatalogueSourceDynamicPlanner {
   /** @description Shared canonical distribution-key serialiser. */
   #keys;
 
-  /** @description Generated public facade path authority. */
-  #facades;
-
   /** @description Package-relative generated dynamic-loader output path. */
   #dynamicPath;
 
@@ -24,14 +21,12 @@ export class CatalogueSourceDynamicPlanner {
    * @param {import("./catalogue-source.serialiser.mjs").CatalogueSourceSerialiser} serialiser - Generated source serialiser.
    * @param {import("../../shared/runtime/repository-path.resolver.mjs").RepositoryPathResolver} paths - Repository path capability.
    * @param {import("./catalogue-source-key.serialiser.mjs").CatalogueSourceKeySerialiser} keys - Canonical distribution-key serialiser.
-   * @param {import("./catalogue-source-facade.resolver.mjs").CatalogueSourceFacadeResolver} facades - Generated facade path authority.
    * @param {string} dynamicPath - Package-relative generated dynamic-loader output path.
    */
-  constructor(serialiser, paths, keys, facades, dynamicPath) {
+  constructor(serialiser, paths, keys, dynamicPath) {
     this.#serialiser = serialiser;
     this.#paths = paths;
     this.#keys = keys;
-    this.#facades = facades;
     this.#dynamicPath = dynamicPath;
   }
 
@@ -42,9 +37,9 @@ export class CatalogueSourceDynamicPlanner {
    * @returns {import("../contracts/internal/catalogue-source-output.contract.mjs").ICatalogueSourceOutput} Generated dynamic-loader output.
    */
   plan(packageRoot, inspections) {
-    /** @type {{ key: string, symbol: string, facadePath: string }[]} */
+    /** @type {{ key: string, exportName: string, definitionPath: string }[]} */
     const icons = [];
-    /** @type {{ key: string, symbol: string, facadePath: string }[]} */
+    /** @type {{ key: string, exportName: string, definitionPath: string }[]} */
     const collections = [];
 
     for (const { family, modules } of inspections) {
@@ -55,8 +50,8 @@ export class CatalogueSourceDynamicPlanner {
       for (const module of modules) {
         records.push(Object.freeze({
           key: this.#keys.serialise(family.kind, module.manifest.identity),
-          symbol: module.symbol,
-          facadePath: this.#facades.path(family, module),
+          exportName: module.exportName,
+          definitionPath: module.relativePath,
         }));
       }
     }

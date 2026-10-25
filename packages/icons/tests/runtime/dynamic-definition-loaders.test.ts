@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { Icon } from "@luscious-garden/aster-core";
 
 import {
   AsterCollectionLoaders,
@@ -77,10 +78,35 @@ test("loads every exact icon and collection definition asynchronously", async ()
     assert.deepEqual(definition.identity, entry.identity);
     assert.deepEqual(
       definition.members.map(({ identity }) =>
-        `${identity.namespace}/${identity.name}${identity.variant === undefined ? "" : `@${identity.variant}`}`
+        `${identity.namespace}/${identity.name}@${identity.variant}`
       ),
       entry.members,
     );
     assert.equal(await loader(), definition);
+  }
+});
+
+test("retains canonical leaves across concurrent icon and collection loads", async () => {
+  const requests = Object.entries(AsterIconLoaders).map(async ([key, loader]) => {
+    assert.ok(loader);
+    const [first, second] = await Promise.all([loader(), loader()]);
+    assert.equal(first, second, key);
+    assert.equal(Icon.define(first), first, key);
+    return [key, first] as const;
+  });
+  const [entries, collections] = await Promise.all([
+    Promise.all(requests),
+    Promise.all(Object.values(AsterCollectionLoaders).map(async (loader) => {
+      assert.ok(loader);
+      const [first, second] = await Promise.all([loader(), loader()]);
+      assert.equal(first, second);
+      return first;
+    })),
+  ]);
+  const definitions = new Set(entries.map(([, definition]) => definition));
+  for (const collection of collections) {
+    for (const definition of collection.members) {
+      assert.ok(definitions.has(definition));
+    }
   }
 });

@@ -4,6 +4,7 @@ import { catalogueSourceGeneration } from "../constants/catalogue-source-generat
 import { CatalogueSourceFacadePlanner } from "./catalogue-source-facade.planner.mjs";
 import { CatalogueSourceFacadeResolver } from "./catalogue-source-facade.resolver.mjs";
 import { CatalogueSourceDynamicPlanner } from "./catalogue-source-dynamic.planner.mjs";
+import { CatalogueSourceExportsPlanner } from "./catalogue-source-exports.planner.mjs";
 import { CatalogueSourceKeySerialiser } from "./catalogue-source-key.serialiser.mjs";
 import { CatalogueSourceLayoutNormaliser } from "./catalogue-source-layout.normaliser.mjs";
 import { CatalogueSourceManifestInspector } from "./catalogue-source-manifest.inspector.mjs";
@@ -32,6 +33,7 @@ export class CatalogueSourceSynchroniserFactory {
       catalogueSourceGeneration.command,
     );
     const facadeResolver = new CatalogueSourceFacadeResolver();
+    const layouts = new CatalogueSourceLayoutNormaliser();
     const keys = new CatalogueSourceKeySerialiser();
 
     return new CatalogueSourceSynchroniser(
@@ -40,7 +42,7 @@ export class CatalogueSourceSynchroniserFactory {
         fileSystem,
         files,
         paths,
-        new CatalogueSourceLayoutNormaliser(),
+        layouts,
         new CatalogueSourceSyntaxInspector(
           new CatalogueSourceManifestInspector(
             new CatalogueSourceValueResolver(fileSystem, paths),
@@ -52,6 +54,7 @@ export class CatalogueSourceSynchroniserFactory {
         paths,
         facadeResolver,
         catalogueSourceGeneration.reservedIconNames,
+        layouts,
       ),
       new CatalogueSourceManifestPlanner(
         serialiser,
@@ -63,7 +66,6 @@ export class CatalogueSourceSynchroniserFactory {
         serialiser,
         paths,
         keys,
-        facadeResolver,
         catalogueSourceGeneration.dynamicPath,
       ),
       paths,
@@ -71,6 +73,7 @@ export class CatalogueSourceSynchroniserFactory {
       files,
       catalogueSourceGeneration.families,
       catalogueSourceGeneration.facadeRoot,
+      new CatalogueSourceExportsPlanner(fileSystem, paths, facadeResolver),
     );
   }
 }

@@ -26,9 +26,9 @@ export class SvgBaselineRunner {
 
   /**
    * @description Creates one SVG baseline composition.
-   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Generic measurement authority.
+   * @param {{ measure(scenario: { name: string, operationsPerSample: number, execute(iterations: number): number | PromiseLike<number> }): Promise<object>, methodology(): object }} benchmarkRunner - Canonical `BenchmarkRunner.measure()` and `methodology()` capabilities.
    * @param {import("../../shared/contracts/internal/package-distribution-inspector.contract.mjs").IPackageDistributionInspector} distributionInspector - Package distribution authority.
-   * @param {{ environment(): object }} host - Runtime environment authority.
+   * @param {{ environment(): object }} host - Canonical `NodeBenchmarkHost.environment()` capability.
    * @param {import("../contracts/internal/svg-baseline-fixtures.contract.mjs").ISvgBaselineFixtures} fixtures - Prepared public SVG scenario inputs.
    */
   constructor(benchmarkRunner, distributionInspector, host, fixtures) {
@@ -130,9 +130,9 @@ export class SvgBaselineRunner {
   }
 
   /**
-   * @description Measures the public Core reconstruction necessarily performed by SVG rendering.
+   * @description Measures the public Core acceptance invoked by SVG rendering.
    * @param {number} iterations - Number of public API operations to execute.
-   * @returns {number} Deterministic checksum consuming reconstructed definitions.
+   * @returns {number} Deterministic checksum consuming accepted definitions.
    */
   #revalidate(iterations) {
     let checksum = 0;

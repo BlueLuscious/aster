@@ -66,18 +66,13 @@ export class SvgImportDraftFactory {
 
   /**
    * @description Flattens structural syntax into portable nodes in paint order.
+   * @remarks Structural descendants inherit their ancestors' portable presentation before primitive normalisation.
    * @param root - Safe validated SVG root.
    * @returns Ordered frozen portable geometry.
    */
   #nodes(root: ISvgSyntaxElement): readonly IconNodeType[] {
     const nodes: IconNodeType[] = [];
 
-    /**
-     * @description Visits one element with inherited portable presentation.
-     * @param element - Current safe source element.
-     * @param inherited - Presentation inherited from structural ancestors.
-     * @returns Nothing.
-     */
     const visit = (
       element: ISvgSyntaxElement,
       inherited: IconPresentation,

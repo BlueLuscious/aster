@@ -1,12 +1,16 @@
 import ts from "typescript";
 
 import { catalogueSourceFamilyKinds } from "../constants/catalogue-source-family-kinds.constant.mjs";
+import { catalogueSourceGeneration } from "../constants/catalogue-source-generation.constant.mjs";
 import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
 /**
  * @description Extracts validated metadata-only distribution data from canonical definition syntax.
  */
 export class CatalogueSourceManifestInspector {
+  /** @description Portable namespace/name/treatment grammar shared by static inspection. */
+  #slugPattern = new RegExp(catalogueSourceGeneration.slugPatternSource, "u");
+
   /** @description Static TypeScript data resolution capability. */
   #values;
 
@@ -63,11 +67,15 @@ export class CatalogueSourceManifestInspector {
    * @description Extracts one icon manifest datum from accepted definition metadata.
    * @param {string} sourcePath - Absolute canonical icon source path.
    * @param {import("typescript").SourceFile} sourceFile - Parsed canonical source document.
-   * @param {{ namespace?: string, name: string, variant?: string }} identity - Complete portable icon identity.
+   * @param {{ namespace?: string, name: string, variant?: string }} identity - Shared source identity whose icon treatment is checked before use.
    * @param {import("typescript").ObjectLiteralExpression} metadata - Direct icon metadata object.
    * @returns {Promise<import("../contracts/internal/catalogue-icon-manifest-data.contract.mjs").ICatalogueIconManifestData>} Frozen icon manifest data.
    */
   async #icon(sourcePath, sourceFile, identity, metadata) {
+    if (identity.variant === undefined) {
+      throw new CatalogueSourceError(`${sourcePath} requires an explicit icon variant.`);
+    }
+
     const displayName = await this.#requiredStringProperty(
       sourcePath,
       sourceFile,
@@ -116,7 +124,7 @@ export class CatalogueSourceManifestInspector {
       : this.#resolvedIconIdentity(sourcePath, replacedByValue, "replacedBy");
 
     return Object.freeze({
-      identity,
+      identity: Object.freeze({ ...identity, variant: identity.variant }),
       displayName,
       tags,
       rtl,
@@ -184,9 +192,15 @@ export class CatalogueSourceManifestInspector {
    * @param {import("../contracts/internal/catalogue-source-identity.contract.mjs").ICatalogueSourceIdentity} identity - Path-owned canonical identity.
    * @param {string | undefined} namespace - Optional resolved namespace.
    * @param {"icon" | "collection"} familyKind - Semantic source-family discriminator.
-   * @returns {{ namespace?: string, name: string, variant?: string }} Frozen portable identity.
+   * @returns {{ namespace?: string, name: string, variant?: string }} Frozen identity: optional `namespace` identifies the producer, `name` is the canonical slug, and only icons have `variant`.
    */
   #identity(identity, namespace, familyKind) {
+    if (namespace !== undefined && !this.#slugPattern.test(namespace)) {
+      throw new CatalogueSourceError(
+        `Canonical ${familyKind} ${identity.name} requires a canonical namespace slug.`,
+      );
+    }
+
     return Object.freeze({
       ...(namespace === undefined ? {} : { namespace }),
       name: identity.name,
@@ -202,7 +216,7 @@ export class CatalogueSourceManifestInspector {
    * @param {string} sourcePath - Absolute source path used for failure context.
    * @param {unknown} value - Resolved identity candidate.
    * @param {string} propertyName - Logical property name used for failure context.
-   * @returns {{ namespace?: string, name: string, variant?: string }} Frozen complete icon identity.
+   * @returns {{ namespace?: string, name: string, variant: string }} Frozen identity using Core `IconIdentity` semantics, including a required treatment slug in `variant`.
    */
   #resolvedIconIdentity(sourcePath, value, propertyName) {
     const identity = typeof value === "object" && value !== null
@@ -212,8 +226,12 @@ export class CatalogueSourceManifestInspector {
     if (
       identity === undefined
       || typeof identity.name !== "string"
-      || (identity.namespace !== undefined && typeof identity.namespace !== "string")
-      || (identity.variant !== undefined && typeof identity.variant !== "string")
+      || !this.#slugPattern.test(identity.name)
+      || (identity.namespace !== undefined && (
+        typeof identity.namespace !== "string" || !this.#slugPattern.test(identity.namespace)
+      ))
+      || typeof identity.variant !== "string"
+      || !this.#slugPattern.test(identity.variant)
     ) {
       throw new CatalogueSourceError(
         `${sourcePath} must resolve ${propertyName} to one icon identity.`,
@@ -223,7 +241,7 @@ export class CatalogueSourceManifestInspector {
     return Object.freeze({
       ...(identity.namespace === undefined ? {} : { namespace: identity.namespace }),
       name: identity.name,
-      ...(identity.variant === undefined ? {} : { variant: identity.variant }),
+      variant: identity.variant,
     });
   }
 
