@@ -10,6 +10,7 @@ record.
 
 | Publication (UTC) | Published combination |
 | --- | --- |
+| [26 October 2026](2026-10-26.md) | Core, SVG and CLI 0.2.0; Icons 0.3.0. |
 | [12 October 2026](2026-10-12.md) | Core, SVG and CLI 0.1.1; Icons 0.2.0. |
 | [8 October 2026](2026-10-08.md) | Core, Icons, SVG and CLI 0.1.0. |
 | [7 October 2026](2026-10-07.md) | CLI rc.3 with unchanged Core, Icons and SVG rc.2. |
