@@ -5,7 +5,7 @@ publication evidence. Prepared notes are not npm publications or GitHub Releases
 
 ## Published
 
-- [0.2.0](0.2.0.md)
+- [0.2.0](0.2.0.md) ([GitHub Release](https://github.com/BlueLuscious/aster/releases/tag/cli/v0.2.0))
 - [0.1.1](0.1.1.md) ([GitHub Release](https://github.com/BlueLuscious/aster/releases/tag/cli/v0.1.1))
 - [0.1.0](0.1.0.md) ([GitHub Release](https://github.com/BlueLuscious/aster/releases/tag/cli/v0.1.0))
 - [0.1.0-rc.3](0.1.0-rc.3.md)
