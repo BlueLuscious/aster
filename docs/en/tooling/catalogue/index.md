@@ -99,6 +99,9 @@ need not be globally unique.
 | `CatalogueSourceExportsPlanner` | Derives treatment export patterns from validated inspections and plans a text-preserving edit of the reserved package-manifest entries. |
 | `CatalogueSourceKeySerialiser` | Shares canonical key formation between generated integrations. |
 | `CatalogueSourceSynchroniser`, `CatalogueSourceSerialiser` | Complete immutable inspection and output planning, then publish changed outputs. |
+| `CatalogueIconRemovalSource` | Acquires physically contained, no-follow exact preimages and hypothetical read-only source views for removal previews. |
+| `CatalogueIconRemovalEditor` | Locates membership/import deletions through TypeScript syntax; rejects unsupported uses and ambiguous comment ownership without reprinting sources. |
+| `CatalogueIconRemovalPlanner`, `CatalogueIconRemovalCommand` | Derive and present the complete immutable removal proposal, generated postimages, review notices and fingerprint; no application authority. |
 
 The synchroniser snapshots source-family descriptors and excluded-directory lists at construction.
 Injected filesystem, inspector and planner capabilities remain borrowed. Static document/value
@@ -156,6 +159,43 @@ Generated specifiers use portable relative paths and LF text. The
 [Icons workflow](../../packages/icons/workflow.md) owns consumer-facing distribution and membership
 semantics; [manifest](../../packages/icons/manifest/index.md) and
 [dynamic](../../packages/icons/dynamic/index.md) guides own their public contracts.
+
+## Explicit removal preview
+
+With Core already built, inspect the consequences of removing one concrete canonical icon:
+
+```sh
+pnpm --dir packages/icons run remove:icon aster/camera@filled
+```
+
+The private command requires the exact `[namespace/]name@variant` identity. Namespace absence is
+not shorthand for `aster`, and a treatment is mandatory. This is not a public `aster` command.
+
+Preview writes no source, generated output, plan file, backup or lock. It shows the entire-file
+removal, exact collection deletion spans, aliases becoming empty, changed generated/export paths
+and the existing build's emitted-output boundary. Original UTF-8 text, BOM and line endings are
+retained in its internal preimages; offsets are UTF-16 positions, with terminal controls escaped
+only in displayed text. A deterministic SHA-256 fingerprint binds the proposal to its acquired
+inputs and directory inventories. Changing an input requires a fresh preview.
+
+The source graph and generated projections must already be valid and drift-free. Missing sources,
+unrelated dangling members, unsafe/linked paths, interrupted publication evidence, additional
+binding uses and ambiguous comment ownership block planning instead of triggering source repair.
+The finite edit grammar remains the [source convention](#source-convention). A final treatment
+can remove its empty alias or glyph projection, but a collection declaration is preserved and
+the canonical icon family cannot become empty. Empty collections still need their own curatorial
+and test-policy review; portable validity is not collection admission.
+
+Authored Icons source dependencies are inspected statically without executing modules. Literal
+review references in `packages/`, `tooling/`, `tests/`, `docs/` and root README are reported, never
+edited. Generated, dependency and emitted-output trees are excluded; this search does not prove
+computed references or external consumers absent. Tests, documentation and provenance remain
+human-owned. The existing generator calculates hypothetical projections through an in-memory view;
+there is no parallel facade or metadata emitter.
+
+Application is not implemented: `--apply` fails without planning or writes. Remove source and
+memberships manually when needed, following the [ordinary workflow](#workflow), then build and
+verify. Normal generation and checking remain strict and never mutate authored memberships.
 
 ## Publication safety
 

@@ -66,6 +66,10 @@ Removing or renaming an alias, changing order or altering membership requires
 [compatibility review](../../project/versioning.md). New package artwork is not automatically
 added to existing collections.
 
+Before manually removing a definition, the private
+[removal preview](../../tooling/catalogue/index.md#explicit-removal-preview) shows its collection
+edits, generated effects and references requiring review. Preview does not apply the removal.
+
 ## Build and verification
 
 ```sh

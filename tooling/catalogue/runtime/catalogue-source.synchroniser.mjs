@@ -123,8 +123,7 @@ export class CatalogueSourceSynchroniser {
    * @returns {Promise<{ changedPaths: readonly string[], outputCount: number }>} Result whose `changedPaths` lists package-relative source/export drift and `outputCount` counts generated files.
    */
   async synchronise(packageRoot, checkOnly) {
-    const plan = await this.#plan(packageRoot);
-    this.#validateOwnership(packageRoot, plan);
+    const plan = await this.plan(packageRoot);
     const { outputs, directories } = plan;
     const outputChanges = await this.#changedOutputs(outputs);
     const directoryChanges = [];
@@ -181,7 +180,7 @@ export class CatalogueSourceSynchroniser {
    * @param {string} packageRoot - Absolute Icons package root.
    * @returns {Promise<import("../contracts/internal/catalogue-source-plan.contract.mjs").ICatalogueSourcePlan>} Complete generated output plan.
    */
-  async #plan(packageRoot) {
+  async plan(packageRoot) {
     const outputs = [];
     const inspections = [];
 
@@ -197,7 +196,7 @@ export class CatalogueSourceSynchroniser {
     outputs.push(this.#manifest.plan(packageRoot, inspections));
     outputs.push(this.#dynamic.plan(packageRoot, inspections));
 
-    return Object.freeze({
+    const plan = Object.freeze({
       outputs: Object.freeze(outputs),
       directories: Object.freeze([
         Object.freeze({
@@ -207,6 +206,8 @@ export class CatalogueSourceSynchroniser {
       ]),
       packageEdit: await this.#exports.plan(packageRoot, inspections),
     });
+    this.#validateOwnership(packageRoot, plan);
+    return plan;
   }
 
   /**
