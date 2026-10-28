@@ -99,6 +99,11 @@ need not be globally unique.
 | `CatalogueSourceExportsPlanner` | Derives treatment export patterns from validated inspections and plans a text-preserving edit of the reserved package-manifest entries. |
 | `CatalogueSourceKeySerialiser` | Shares canonical key formation between generated integrations. |
 | `CatalogueSourceSynchroniser`, `CatalogueSourceSerialiser` | Complete immutable inspection and output planning, then publish changed outputs. |
+| `CatalogueIconRemovalSource` | Acquires physically contained, no-follow exact preimages and hypothetical read-only source views for removal previews. |
+| `CatalogueIconRemovalEditor` | Locates membership/import deletions through TypeScript syntax; rejects unsupported uses and ambiguous comment ownership without reprinting sources. |
+| `CatalogueIconRemovalPlanner`, `CatalogueIconRemovalCommand` | Derive and present the complete immutable removal proposal, generated postimages, review notices and fingerprint; application requires an explicit matching token. |
+| `CatalogueIconRemovalApplicator`, `CatalogueIconRemovalSession` | Coordinate no-clobber source publication, independent recovery copies, graph acceptance and verified producer/build completion. |
+| `NodeCatalogueIconRemovalBuild` | Invoke the existing Icons build through the current pnpm host, without a command shell or dependency installation. |
 
 The synchroniser snapshots source-family descriptors and excluded-directory lists at construction.
 Injected filesystem, inspector and planner capabilities remain borrowed. Static document/value
@@ -156,6 +161,96 @@ Generated specifiers use portable relative paths and LF text. The
 [Icons workflow](../../packages/icons/workflow.md) owns consumer-facing distribution and membership
 semantics; [manifest](../../packages/icons/manifest/index.md) and
 [dynamic](../../packages/icons/dynamic/index.md) guides own their public contracts.
+
+## Explicit removal preview
+
+With Core already built, inspect the consequences of removing one concrete canonical icon:
+
+```sh
+pnpm --dir packages/icons run remove:icon aster/camera@filled
+```
+
+From the workspace root, `pnpm --filter @luscious-garden/aster-icons run remove:icon
+aster/camera@filled` invokes the same private script.
+
+The private command requires the exact `[namespace/]name@variant` identity. Namespace absence is
+not shorthand for `aster`, and a treatment is mandatory. This is not a public `aster` command.
+
+Preview writes no source, generated output, plan file, backup or lock. It shows the entire-file
+removal, exact collection deletion spans, aliases becoming empty, changed generated/export paths
+and the existing build's emitted-output boundary. Original UTF-8 text, BOM and line endings are
+retained in its internal preimages; offsets are UTF-16 positions, with terminal controls escaped
+only in displayed text. A deterministic SHA-256 fingerprint binds the proposal to its acquired
+inputs and directory inventories. Changing an input requires a fresh preview.
+The acquired review scope includes files beyond the selected icon, so an unrelated edit within
+that scope can also invalidate the fingerprint. It is not a reusable authorisation token.
+
+The source graph and generated projections must already be valid and drift-free. Missing sources,
+unrelated dangling members, unsafe/linked paths, interrupted publication evidence, additional
+binding uses and ambiguous comment ownership block planning instead of triggering source repair.
+The finite edit grammar remains the [source convention](#source-convention). A final treatment
+can remove its empty alias or glyph projection, but a collection declaration is preserved and
+the canonical icon family cannot become empty. Empty collections still need their own curatorial
+and test-policy review; portable validity is not collection admission.
+
+Authored Icons source dependencies are inspected statically without executing modules. Literal
+review references in `packages/`, `tooling/`, `tests/`, `docs/` and root README are reported, never
+edited. Generated, dependency and emitted-output trees are excluded; this search does not prove
+computed references or external consumers absent. Tests, documentation and provenance remain
+human-owned. The existing generator calculates hypothetical projections through an in-memory view;
+there is no parallel facade or metadata emitter.
+
+### Apply and recovery
+
+Review the entire preview, then supply its exact fingerprint:
+
+```sh
+pnpm --dir packages/icons run remove:icon aster/camera@filled --apply <fingerprint>
+```
+
+Application replans and presents the current proposal. A stale fingerprint fails before creating
+evidence or changing sources. Acquired inputs, directory inventories, absent paths and physical
+write boundaries are rechecked; each source displacement and publication has additional exact
+preimage checks. Run in an exclusive contributor session: the cooperative marker excludes other
+removal invocations, not arbitrary editors, builds or already-open file handles.
+
+The operation prepares independent complete source copies and recovery records in a unique
+`.aster-icon-removal-*` directory beside the package manifest, with an exclusive
+`.aster-icon-removal.lock` marker. It edits the planned collections, quarantines the selected
+definition last and statically validates the resulting graph. The existing Icons build then
+regenerates projections, cleans `dist` and compiles TypeScript. Core must already be built and
+pnpm's script host must be available; nothing is installed. Final checks require exact planned
+outputs, zero catalogue drift, retained emitted modules and no stale removed modules.
+
+Before source acceptance, failure attempts reverse-order restoration only where the current
+target still matches the operation's own postimage or is absent. Competing edits/destinations are
+never replaced. After source acceptance, a producer, compiler or final-check failure leaves those
+valid applied sources in place and reports generated/emitted verification as incomplete. This is
+not an atomic transaction across sources and distribution. A cleanup failure after verification
+is reported separately from incomplete distribution.
+
+Success removes only the operation's exact owned evidence. Failure output distinguishes restored,
+applied, not-applied and pending-recovery source paths and identifies retained originals/records.
+Inspect those records and current source before manual repair; do not blindly copy originals over
+newer edits. Preserve unresolved evidence, repair/rebuild through the ordinary owners and verify
+the resulting graph/distribution before explicitly removing the exact resolved recovery entries.
+An interrupted marker or recovery directory blocks another removal; there is no automatic resume
+or evidence sweep. No test, guide, provenance record, shared authoring profile or empty collection
+declaration is deleted. Normal generation/checking stay strict and never edit authored membership.
+
+### Private cost boundary
+
+Planning inspects the complete canonical graph, generated projections and disclosed reference
+scope. Application repeats exact physical/input checks, guards generated/emitted trees and retains
+source recovery evidence before invoking the complete Icons build. Its work therefore grows with
+catalogue size, filesystem latency and collection fan-out, not only with the removed file's size.
+Fingerprint calculation binds the reviewed proposal; physical acquisition and verification remain
+separate required work.
+
+These are contributor-operation costs, not work performed when consumers import a definition,
+load a dictionary or render an icon. Ordinary generation does not acquire removal planning,
+fingerprints, source edits or recovery effects. No timing guarantee or automatic source repair is
+implied by successful functional verification.
 
 ## Publication safety
 
@@ -230,5 +325,18 @@ directory rollback after a real rename failure and successful retry. A generated
 retains valid own `constructor` loaders in both families
 and verifies inherited-name absence. Package and CLI tests verify isolated imports, discovery,
 identity and ordering.
+Removal conformance additionally checks exact BOM/line-ending retention and native/offline packed
+consumers before and after multi-collection and final-glyph removal, including missing runtime
+entrypoints, absent dictionary/member declaration properties and preserved canonical references.
+Run that suite independently with its Core prerequisite:
+
+```sh
+pnpm --filter @luscious-garden/aster-core run build
+node --test --test-isolation=none tests/tooling/catalogue-icon-removal.test.mjs
+```
+
+The suite builds its synthetic Icons distributions and installs only local archives into owned
+temporary consumers with offline acquisition and lifecycle scripts disabled. It does not remove
+real artwork or install dependencies into the checkout.
 Emitted disposable-process tests also prove multi-treatment evaluation isolation, eager glyph
 loading, metadata-only imports, exact numeric/own-shadowing keys and shared canonical leaf objects.

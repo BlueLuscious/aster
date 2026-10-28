@@ -64,6 +64,7 @@
     "check:types": "tsc -p tsconfig.json --noEmit",
     "clean": "node ../../tooling/workspace/clean-package-output.mjs dist",
     "generate:catalogue": "node ../../tooling/catalogue/synchronise-icons-catalogue.mjs",
+    "remove:icon": "node ../../tooling/catalogue/remove-icon.mjs",
     "test": "pnpm run generate:catalogue && pnpm run test:types && pnpm run test:runtime && pnpm run test:abi",
     "test:abi": "pnpm run build && node --test --test-isolation=none tests/abi/*.test.mjs",
     "test:runtime": "tsx --test --test-isolation=none tests/runtime/*.test.ts",

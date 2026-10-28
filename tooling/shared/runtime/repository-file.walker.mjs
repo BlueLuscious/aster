@@ -6,7 +6,7 @@ import { repositoryEntryKinds } from "../constants/repository-entry-kinds.consta
 export class RepositoryFileWalker {
   /**
    * @description Repository filesystem used to traverse directory entries.
-   * @type {import("../contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem}
+   * @type {Pick<import("../contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem, "exists" | "entries">}
    */
   #fileSystem;
 
@@ -18,7 +18,7 @@ export class RepositoryFileWalker {
 
   /**
    * @description Creates a deterministic repository file walker.
-   * @param {import("../contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem} fileSystem - Directory acquisition capability.
+   * @param {Pick<import("../contracts/internal/repository-file-system.contract.mjs").IRepositoryFileSystem, "exists" | "entries">} fileSystem - Directory acquisition capability.
    * @param {import("./repository-path.resolver.mjs").RepositoryPathResolver} paths - Path composition capability.
    */
   constructor(fileSystem, paths) {
