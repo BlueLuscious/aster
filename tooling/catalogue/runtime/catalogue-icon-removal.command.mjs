@@ -2,46 +2,51 @@ import { catalogueIconRemoval } from "../constants/catalogue-icon-removal.consta
 import { CatalogueSourceError } from "./catalogue-source.error.mjs";
 
 /**
- * @description Adapts private read-only removal planning to finite process output.
+ * @description Adapts private removal previews and explicit reviewed application to process output.
  */
 export class CatalogueIconRemovalCommand {
   /** @description Borrowed read-only planning capability. */
   #planner;
   /** @description Borrowed process arguments, streams and exit state. */
   #process;
+  /** @description Optional explicit application authority, unused by previews. */
+  #applicator;
 
   /**
-   * @description Creates a private preview command without application authority.
+   * @description Creates a private command with separately borrowed planning/application capabilities.
    * @param {{ plan(selector: string): Promise<import("../contracts/internal/catalogue-icon-removal-plan.contract.mjs").ICatalogueIconRemovalPlan> }} planner - Read-only planner.
    * @param {{ argv: string[], stdout: { write(text: string): unknown }, stderr: { write(text: string): unknown }, exitCode?: string | number | null | undefined }} processHost - Explicit process capability.
+   * @param {{ apply(plan: import("../contracts/internal/catalogue-icon-removal-plan.contract.mjs").ICatalogueIconRemovalPlan, fingerprint: string): Promise<void> }} [applicator] - Explicit write operation.
    */
-  constructor(planner, processHost) {
+  constructor(planner, processHost, applicator) {
     this.#planner = planner;
     this.#process = processHost;
+    this.#applicator = applicator;
   }
 
   /**
-   * @description Executes exactly one preview or reports unsupported invocation without planning.
+   * @description Executes one preview or one exact-token application, rejecting unsupported arguments first.
    * @returns {Promise<void>} Completion after finite output or failure reporting.
    */
   async run() {
     const arguments_ = this.#process.argv.slice(2);
-    if (arguments_.includes("--apply")) {
-      this.#process.stderr.write("Icon removal application is not implemented; this command is preview-only.\n");
-      this.#process.exitCode = 1;
-      return;
-    }
     const selector = arguments_[0];
-    if (arguments_.length !== 1 || selector === undefined || selector.startsWith("-")) {
-      this.#process.stderr.write(`Usage: ${catalogueIconRemoval.command} <[namespace/]name@variant>\n`);
+    const apply = arguments_.length === 3 && arguments_[1] === "--apply" && /^[a-f0-9]{64}$/u.test(arguments_[2] ?? "");
+    if ((arguments_.length !== 1 && !apply) || selector === undefined || selector.startsWith("-") || (apply && this.#applicator === undefined)) {
+      this.#process.stderr.write(`Usage: ${catalogueIconRemoval.command} <[namespace/]name@variant> [--apply <fingerprint>]\n`);
       this.#process.exitCode = 1;
       return;
     }
     try {
       const plan = await this.#planner.plan(selector);
       this.#process.stdout.write(this.#format(plan));
+      if (apply && this.#applicator !== undefined) {
+        await this.#applicator.apply(plan, /** @type {string} */ (arguments_[2]));
+        this.#process.stdout.write("Icon removal applied; sources, generated outputs and emitted distribution verified. Owned recovery evidence cleaned.\n");
+      }
     } catch (error) {
-      this.#process.stderr.write(`Icon removal preview failed: ${this.#text(error instanceof CatalogueSourceError ? error.message : "Input acquisition or inspection failed.")}\n`);
+      const message = error instanceof CatalogueSourceError ? error.message : "Input acquisition or inspection failed.";
+      this.#process.stderr.write(`Icon removal ${apply ? "application" : "preview"} failed:\n${message.split("\n").map((line) => this.#text(line)).join("\n")}\n`);
       this.#process.exitCode = 1;
     }
   }
@@ -88,7 +93,8 @@ export class CatalogueIconRemovalCommand {
     lines.push(
       "Reference search: literal identities, export names, canonical filenames and public leaf routes in packages/tooling/tests/docs and README.md.",
       "Generated/dependency/output trees are excluded; computed and external references are not proven absent.",
-      "No tests, documentation, provenance or artwork have been changed. Application is not implemented.",
+      "No files have been changed by this preview. Tests, documentation and provenance require manual review.",
+      `Apply exactly this proposal: ${catalogueIconRemoval.command} ${this.#text(plan.identity)} --apply ${plan.fingerprint}`,
     );
     return `${lines.join("\n")}\n`;
   }

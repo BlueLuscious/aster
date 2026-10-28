@@ -2,13 +2,18 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { spawnSync } from "node:child_process";
 import { mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile, lstat, unlink, link, symlink } from "node:fs/promises";
+import * as nodeFileSystem from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import test from "node:test";
 
 import { CatalogueIconRemovalCommand } from "../../tooling/catalogue/runtime/catalogue-icon-removal.command.mjs";
 import { CatalogueIconRemovalPlanner } from "../../tooling/catalogue/runtime/catalogue-icon-removal.planner.mjs";
 import { CatalogueIconRemovalSource } from "../../tooling/catalogue/runtime/catalogue-icon-removal-source.mjs";
+import { CatalogueIconRemovalApplicator } from "../../tooling/catalogue/runtime/catalogue-icon-removal.applicator.mjs";
+import { CatalogueIconRemovalSession } from "../../tooling/catalogue/runtime/catalogue-icon-removal-session.mjs";
+import { NodeCatalogueIconRemovalBuild } from "../../tooling/catalogue/runtime/node-catalogue-icon-removal-build.mjs";
 import { synchroniseIconsCatalogue } from "../../tooling/catalogue/synchronise-icons-catalogue.mjs";
 
 const collectionPath = "packages/icons/src/collections/s/sample/sample.collection.ts";
@@ -102,6 +107,40 @@ function frozen(value) {
     assert.equal(Object.isFrozen(value), true);
     Object.values(value).forEach(frozen);
   }
+}
+
+// This build double exercises the real producer; a separate integration compiles real modules.
+function applicationBuild(root, regenerate) {
+  return {
+    async prepare() {},
+    async run() {
+      await regenerate();
+      const session = new CatalogueIconRemovalSession(root);
+      await session.guardTree("packages/icons/dist");
+      await rm(join(root, "packages/icons/dist"), { recursive: true, force: true });
+      const emit = async (directory) => {
+        for (const entry of await readdir(join(root, directory), { withFileTypes: true })) {
+          const path = `${directory}/${entry.name}`;
+          if (entry.isDirectory()) {
+            await emit(path);
+          } else if (entry.name.endsWith(".ts")) {
+            for (const extension of [".js", ".d.ts"]) {
+              await write(root, path.replace("packages/icons/src/", "packages/icons/dist/").replace(/\.ts$/u, extension), "export {};\n");
+            }
+          }
+        }
+      };
+      await emit("packages/icons/src");
+    },
+  };
+}
+
+async function recoveryEntries(root) {
+  return (await readdir(join(root, "packages/icons"))).filter((name) => name.startsWith(".aster-icon-removal"));
+}
+
+function application(root, regenerate, effects = nodeFileSystem) {
+  return new CatalogueIconRemovalApplicator(root, applicationBuild(root, regenerate), () => new CatalogueIconRemovalSession(root, effects));
 }
 
 test("previews exact collection edits and generated postimages without any file/content/mtime change", async (t) => {
@@ -363,7 +402,7 @@ test("formats every preview effect and notice while refusing application or unkn
   await new CatalogueIconRemovalCommand({ plan: async () => plan }, host).run();
   assert.deepEqual(stderr, []);
   const output = stdout.join("");
-  for (const text of [plan.fingerprint, alphaFilled, collectionPath, "docs/consumer.md:1", "@@ UTF-16", "Generated/export changes:", "Application is not implemented."]) {
+  for (const text of [plan.fingerprint, alphaFilled, collectionPath, "docs/consumer.md:1", "@@ UTF-16", "Generated/export changes:", "Apply exactly this proposal:"]) {
     assert.equal(output.includes(text), true, text);
   }
   for (const arguments_ of [[], [plan.identity, "extra"], ["--force"], [plan.identity, "--apply", plan.fingerprint]]) {
@@ -375,12 +414,12 @@ test("formats every preview effect and notice while refusing application or unkn
   }
 });
 
-test("the actual private entrypoint refuses --apply before any removal work", () => {
+test("the actual private entrypoint refuses a nonexistent exact identity before any removal work", () => {
   const result = spawnSync(process.execPath, [resolve("tooling/catalogue/remove-icon.mjs"), "fixture/alpha-icon@filled", "--apply", "0".repeat(64)], { encoding: "utf8" });
   assert.equal(result.error, undefined);
   assert.equal(result.status, 1);
   assert.equal(result.stdout, "");
-  assert.match(result.stderr, /preview-only/u);
+  assert.match(result.stderr, /not found for removal/u);
 });
 
 test("virtual absence and replacements never become physical input state", async (t) => {
@@ -404,4 +443,419 @@ test("selects an explicitly anonymous identity without treating it as the namesp
   await regenerate();
   assert.equal((await planner.plan("beta@outline")).removalPath, betaOutline);
   await assert.rejects(planner.plan("fixture/beta@outline"), /not found/u);
+});
+
+test("applies exact multi-collection edits and cleans recovery evidence only after output verification", async (t) => {
+  const { root, regenerate, planner } = await fixture(t);
+  await write(root, "packages/icons/src/collections/s/second/second.collection.ts", collection("second", "Second"));
+  await write(root, "docs/review.md", "Keep AlphaIconFilled as historical evidence.\n");
+  await regenerate();
+  await applicationBuild(root, regenerate).run();
+  const before = await fingerprintTree(root);
+  const plan = await planner.plan("fixture/alpha-icon@filled");
+  await application(root, regenerate).apply(plan, plan.fingerprint);
+  await assert.rejects(readFile(join(root, alphaFilled)), { code: "ENOENT" });
+  for (const edit of plan.edits) {
+    assert.equal(await readFile(join(root, edit.path), "utf8"), edit.after);
+  }
+  for (const input of plan.inputs.filter((input) => !plan.edits.some((edit) => edit.path === input.path) && input.path !== plan.removalPath && !plan.generatedPaths.includes(input.path))) {
+    assert.equal(await readFile(join(root, input.path), "utf8"), input.content, input.path);
+    if (!input.path.includes("/generated/")) {
+      assert.equal((await lstat(join(root, input.path))).mtimeMs, before[join(root, input.path)].mtime, input.path);
+    }
+  }
+  assert.equal((await synchroniseIconsCatalogue(join(root, "packages/icons"), true)).changedPaths.length, 0);
+  assert.deepEqual(await recoveryEntries(root), []);
+});
+
+test("applies independent last-glyph removal and preserves empty collection declarations", async (t) => {
+  for (const selector of ["fixture/beta@outline", "fixture/alpha-icon@filled"]) {
+    await t.test(selector, async (t) => {
+      const { root, regenerate, planner } = await fixture(t);
+      if (selector.endsWith("@filled")) {
+        await write(root, collectionPath, collection().replace(/^import \{ AlphaIconOutline \}[^\n]*\n/mu, "").replace("outline: AlphaIconOutline, ", ""));
+        await regenerate();
+      }
+      const plan = await planner.plan(selector);
+      await application(root, regenerate).apply(plan, plan.fingerprint);
+      assert.match(await readFile(join(root, collectionPath), "utf8"), /Collection.define/u);
+      assert.deepEqual(await recoveryEntries(root), []);
+    });
+  }
+});
+
+test("rejects stale token, preimage, inventory and absence before any canonical write", async (t) => {
+  for (const change of ["token", "preimage", "inventory", "absence"]) {
+    await t.test(change, async (t) => {
+      const { root, regenerate, planner } = await fixture(t);
+      const plan = await planner.plan("fixture/alpha-icon@filled");
+      if (change === "preimage") {
+        await write(root, collectionPath, collection() + "\n");
+      } else if (change === "inventory") {
+        await write(root, "packages/icons/src/new.ts", "export {};\n");
+      } else if (change === "absence") {
+        const path = plan.absentPaths[0];
+        assert.notEqual(path, undefined);
+        await write(root, path, "new competing file");
+      }
+      const before = await fingerprintTree(root);
+      await assert.rejects(application(root, regenerate).apply(plan, change === "token" ? "0".repeat(64) : plan.fingerprint), /fingerprint|changed|appeared/u);
+      assert.deepEqual(await fingerprintTree(root), before);
+      assert.deepEqual(await recoveryEntries(root), []);
+    });
+  }
+});
+
+test("guards source and dist links/hardlinks before source mutation", async (t) => {
+  for (const kind of ["source-hardlink", "dist-junction", "dist-hardlink"]) {
+    await t.test(kind, async (t) => {
+      const { root, regenerate, planner } = await fixture(t);
+      const plan = await planner.plan("fixture/alpha-icon@filled");
+      await write(root, "outside/retain.txt", "never touch");
+      if (kind === "source-hardlink") {
+        await link(join(root, alphaFilled), join(root, "outside/copy.ts"));
+      } else if (kind === "dist-junction") {
+        await symlink(join(root, "outside"), join(root, "packages/icons/dist"), process.platform === "win32" ? "junction" : "dir");
+      } else {
+        await mkdir(join(root, "packages/icons/dist"));
+        await link(join(root, "outside/retain.txt"), join(root, "packages/icons/dist/copied.txt"));
+      }
+      await assert.rejects(application(root, regenerate).apply(plan, plan.fingerprint), /linked|Linked|changed/u);
+      assert.equal(await readFile(join(root, "outside/retain.txt"), "utf8"), "never touch");
+      assert.equal(await readFile(join(root, collectionPath), "utf8"), collection());
+      assert.deepEqual(await recoveryEntries(root), []);
+    });
+  }
+});
+
+test("preparation failures never mutate canonical sources", async (t) => {
+  for (const operation of ["lock", "mkdir", "original", "prepared", "probe", "record"]) {
+    await t.test(operation, async (t) => {
+      const { root, regenerate, planner } = await fixture(t);
+      const plan = await planner.plan("fixture/alpha-icon@filled");
+      const effects = {
+        ...nodeFileSystem,
+        async writeFile(path, ...args) {
+          if ((operation === "lock" && path.endsWith(".lock")) || (operation === "original" && path.endsWith(".original")) || (operation === "prepared" && path.endsWith(".prepared")) || (operation === "record" && path.endsWith("record-0.json"))) {
+            throw new Error(`injected ${operation}`);
+          }
+          return writeFile(path, ...args);
+        },
+        async mkdir(...args) {
+          if (operation === "mkdir") {
+            throw new Error("injected mkdir");
+          }
+          return mkdir(...args);
+        },
+        async link(...args) {
+          if (operation === "probe") {
+            throw new Error("injected probe");
+          }
+          return link(...args);
+        },
+      };
+      await assert.rejects(application(root, regenerate, effects).apply(plan, plan.fingerprint), new RegExp(`injected ${operation}`, "u"));
+      assert.equal(await readFile(join(root, collectionPath), "utf8"), collection());
+      assert.equal(await readFile(join(root, alphaFilled), "utf8"), icon("alpha-icon", "filled", "AlphaIconFilled"));
+    });
+  }
+});
+
+test("source publication failures restore exact displaced bytes in reverse order", async (t) => {
+  for (const operation of ["first-rename", "publication", "quarantine", "after-quarantine"]) {
+    await t.test(operation, async (t) => {
+      const { root, regenerate, planner } = await fixture(t);
+      const plan = await planner.plan("fixture/alpha-icon@filled");
+      let triggered = false;
+      const effects = {
+        ...nodeFileSystem,
+        async rename(from, to) {
+          if (!triggered && ((operation === "first-rename" && from.endsWith(".collection.ts")) || (operation === "quarantine" && from.endsWith(".icon.ts")))) {
+            triggered = true;
+            throw new Error(`injected ${operation}`);
+          }
+          return nodeFileSystem.rename(from, to);
+        },
+        async link(from, to) {
+          if (!triggered && operation === "publication" && to.endsWith(".collection.ts")) {
+            triggered = true;
+            throw new Error("injected publication");
+          }
+          return link(from, to);
+        },
+        async writeFile(path, ...args) {
+          if (!triggered && operation === "after-quarantine" && path.endsWith("record-4.json")) {
+            triggered = true;
+            throw new Error("injected after-quarantine");
+          }
+          return writeFile(path, ...args);
+        },
+      };
+      await assert.rejects(application(root, regenerate, effects).apply(plan, plan.fingerprint), /injected/u);
+      assert.equal(triggered, true);
+      assert.equal(await readFile(join(root, collectionPath), "utf8"), collection());
+      assert.equal(await readFile(join(root, alphaFilled), "utf8"), icon("alpha-icon", "filled", "AlphaIconFilled"));
+      assert.equal((await synchroniseIconsCatalogue(join(root, "packages/icons"), true)).changedPaths.length, 0);
+    });
+  }
+});
+
+test("preserves competing publication and rollback destinations with complete originals", async (t) => {
+  for (const conflict of ["publish", "edited-postimage", "restore", "displaced-preimage"]) {
+    await t.test(conflict, async (t) => {
+      const { root, regenerate, planner } = await fixture(t);
+      const plan = await planner.plan("fixture/alpha-icon@filled");
+      let triggered = false;
+      const effects = {
+        ...nodeFileSystem,
+        async rename(from, to) {
+          if (!triggered && conflict === "displaced-preimage" && from.endsWith(".collection.ts")) {
+            triggered = true;
+            await writeFile(from, "new maintainer preimage");
+          }
+          if (!triggered && ["edited-postimage", "restore"].includes(conflict) && from.endsWith(".icon.ts")) {
+            triggered = true;
+            if (conflict === "edited-postimage") {
+              await write(root, collectionPath, "new maintainer postimage");
+            }
+            throw new Error("stop before quarantine");
+          }
+          return nodeFileSystem.rename(from, to);
+        },
+        async link(from, to) {
+          if (!triggered && conflict === "publish" && to.endsWith(".collection.ts")) {
+            triggered = true;
+            await writeFile(to, "competing publisher");
+          } else if (conflict === "restore" && from.endsWith(".displaced") && to.endsWith(".collection.ts")) {
+            await writeFile(to, "competing restorer");
+          }
+          return link(from, to);
+        },
+      };
+      await assert.rejects(application(root, regenerate, effects).apply(plan, plan.fingerprint), /Recovery directory:/u);
+      const expected = { publish: "competing publisher", "edited-postimage": "new maintainer postimage", restore: "competing restorer", "displaced-preimage": "new maintainer preimage" }[conflict];
+      assert.equal(await readFile(join(root, collectionPath), "utf8"), expected);
+      const evidence = (await recoveryEntries(root)).find((name) => name !== ".aster-icon-removal.lock");
+      assert.equal(await readFile(join(root, "packages/icons", evidence, "0.original"), "utf8"), collection());
+      await assert.rejects(planner.plan(plan.identity), /interrupted/u);
+    });
+  }
+});
+
+test("accepted sources remain applied on generation, compilation or final-check failure", async (t) => {
+  for (const stage of ["generation", "build", "postimage", "emitted"]) {
+    await t.test(stage, async (t) => {
+      const { root, regenerate, planner } = await fixture(t);
+      const plan = await planner.plan("fixture/alpha-icon@filled");
+      const build = applicationBuild(root, regenerate);
+      const failing = {
+        async prepare() {},
+        async run() {
+          if (stage === "generation") {
+            throw new Error("injected generation failure");
+          }
+          await build.run();
+          if (stage === "build") {
+            throw new Error("injected build failure");
+          }
+          if (stage === "postimage") {
+            const output = plan.outputs.find((output) => output.content !== undefined && output.path.endsWith(".ts"));
+            await write(root, output.path, "modified generated output\n");
+          } else if (stage === "emitted") {
+            await write(root, alphaFilled.replace("/src/", "/dist/").replace(/\.ts$/u, ".js"), "stale emitted file\n");
+          }
+        },
+      };
+      await assert.rejects(new CatalogueIconRemovalApplicator(root, failing).apply(plan, plan.fingerprint), /Sources accepted: yes; generated\/emitted verification is incomplete/u);
+      assert.equal(await readFile(join(root, collectionPath), "utf8"), plan.edits[0].after);
+      await assert.rejects(readFile(join(root, alphaFilled)), { code: "ENOENT" });
+      assert.equal((await recoveryEntries(root)).length, 2);
+    });
+  }
+});
+
+test("command application replans, presents the proposal, and invokes only an explicit matching-token capability", async (t) => {
+  const { planner } = await fixture(t);
+  const plan = await planner.plan("fixture/alpha-icon@filled");
+  const output = [];
+  const host = { argv: ["node", "remove", plan.identity, "--apply", plan.fingerprint], stdout: { write: (text) => output.push(text) }, stderr: { write() { assert.fail("Unexpected stderr"); } } };
+  let applied = 0;
+  await new CatalogueIconRemovalCommand({ async plan(identity) { assert.equal(identity, plan.identity); return plan; } }, host, {
+    async apply(received, token) {
+      assert.equal(received, plan);
+      assert.equal(token, plan.fingerprint);
+      assert.match(output.join(""), /Icon removal preview/u);
+      applied++;
+    },
+  }).run();
+  assert.equal(applied, 1);
+  assert.match(output.join(""), /Icon removal applied/u);
+});
+
+test("partial writes, publication cleanup, rollback errors and cleanup conflicts retain truthful evidence", async (t) => {
+  for (const boundary of ["partial-original", "published-unlink", "rollback-link", "cleanup-unlink", "unknown-evidence", "source-check", "completed-rename-error"]) {
+    await t.test(boundary, async (t) => {
+      const { root, regenerate, planner } = await fixture(t);
+      const plan = await planner.plan("fixture/alpha-icon@filled");
+      let triggered = false;
+      const effects = {
+        ...nodeFileSystem,
+        async writeFile(path, ...args) {
+          if (!triggered && boundary === "partial-original" && path.endsWith("0.original")) {
+            triggered = true;
+            await writeFile(path, "partial");
+            throw new Error("injected partial original");
+          }
+          return writeFile(path, ...args);
+        },
+        async rename(from, to) {
+          if (boundary === "rollback-link" && from.endsWith(".icon.ts")) {
+            throw new Error("injected quarantine");
+          }
+          await nodeFileSystem.rename(from, to);
+          if (!triggered && boundary === "completed-rename-error" && from.endsWith(".collection.ts")) {
+            triggered = true;
+            throw new Error("injected error after completed rename");
+          }
+          if (!triggered && boundary === "unknown-evidence" && from.endsWith(".collection.ts")) {
+            triggered = true;
+            await writeFile(join(dirname(to), "user.txt"), "preserve unrelated evidence");
+          }
+        },
+        async link(from, to) {
+          if (boundary === "rollback-link" && from.endsWith(".displaced") && to.endsWith(".collection.ts")) {
+            triggered = true;
+            throw new Error("injected rollback link");
+          }
+          return link(from, to);
+        },
+        async unlink(path) {
+          if (!triggered && ((boundary === "published-unlink" && path.endsWith("0.prepared")) || (boundary === "cleanup-unlink" && path.endsWith("0.original")))) {
+            triggered = true;
+            throw new Error(`injected ${boundary}`);
+          }
+          await unlink(path);
+          if (!triggered && boundary === "source-check" && path.endsWith("0.prepared")) {
+            triggered = true;
+            await write(root, "packages/icons/src/extra.ts", "export {};\n");
+          }
+        },
+      };
+      let message = "";
+      await assert.rejects(application(root, regenerate, effects).apply(plan, plan.fingerprint), (error) => {
+        message = error.message;
+        return /Recovery directory:/u.test(message);
+      });
+      assert.equal(triggered, true);
+      const evidence = (await recoveryEntries(root)).find((name) => name !== ".aster-icon-removal.lock");
+      if (boundary === "unknown-evidence") {
+        assert.equal(await readFile(join(root, "packages/icons", evidence, "user.txt"), "utf8"), "preserve unrelated evidence");
+      }
+      if (["cleanup-unlink", "unknown-evidence"].includes(boundary)) {
+        assert.match(message, /distribution verified; evidence cleanup incomplete/u);
+        await assert.rejects(readFile(join(root, alphaFilled)), { code: "ENOENT" });
+      } else if (boundary === "source-check") {
+        assert.equal(await readFile(join(root, collectionPath), "utf8"), collection());
+        assert.equal(await readFile(join(root, "packages/icons/src/extra.ts"), "utf8"), "export {};\n");
+      } else if (boundary === "completed-rename-error") {
+        assert.equal(await readFile(join(root, collectionPath), "utf8"), collection());
+        assert.match(message, /Restored:/u);
+      }
+    });
+  }
+});
+
+test("cooperative marker conflicts and replaced recovery directories do not grant writes elsewhere", async (t) => {
+  for (const boundary of ["existing-lock", "changed-lock", "recovery-junction"]) {
+    await t.test(boundary, async (t) => {
+      const { root, regenerate, planner } = await fixture(t);
+      const plan = await planner.plan("fixture/alpha-icon@filled");
+      const lock = join(root, "packages/icons/.aster-icon-removal.lock");
+      await write(root, "outside/retain.txt", "protected external data");
+      if (boundary === "existing-lock") {
+        await writeFile(lock, "another removal owns this marker");
+      }
+      const effects = {
+        ...nodeFileSystem,
+        async writeFile(path, ...args) {
+          await writeFile(path, ...args);
+          if (boundary === "changed-lock" && path.endsWith("record-1.json")) {
+            await writeFile(lock, "changed marker; do not delete");
+          }
+        },
+        async mkdir(path, ...args) {
+          await mkdir(path, ...args);
+          if (boundary === "recovery-junction") {
+            await nodeFileSystem.rename(path, path + "-original");
+            await symlink(join(root, "outside"), path, process.platform === "win32" ? "junction" : "dir");
+          }
+        },
+      };
+      await assert.rejects(application(root, regenerate, effects).apply(plan, plan.fingerprint), /interrupted|preimage changed|linked|non-regular/u);
+      assert.equal(await readFile(join(root, collectionPath), "utf8"), collection());
+      assert.equal(await readFile(join(root, "outside/retain.txt"), "utf8"), "protected external data");
+      assert.deepEqual(await readdir(join(root, "outside")), ["retain.txt"]);
+      if (boundary !== "recovery-junction") {
+        assert.equal(await readFile(lock, "utf8"), boundary === "existing-lock" ? "another removal owns this marker" : "changed marker; do not delete");
+      }
+    });
+  }
+});
+
+test("uses the existing pnpm build host and real TypeScript compilation in an owned checkout", async (t) => {
+  const { root, regenerate, planner } = await fixture(t);
+  const realRoot = resolve(".");
+  const actualRunner = process.env.npm_execpath ?? join(dirname(process.execPath), "node_modules/pnpm/bin/pnpm.cjs");
+  // The fake pnpm entry delegates to the real host; no package installation is needed.
+  const runner = join(root, "pnpm-host.cjs");
+  await writeFile(runner, `require(${JSON.stringify(actualRunner)});\n`);
+  await write(root, "packages/core/dist/index.js", "export {};\n");
+  await write(root, "packages/core/dist/index.d.ts", "export {};\n");
+  for (const path of [alphaOutline, alphaFilled, betaOutline]) {
+    const text = await readFile(join(root, path), "utf8");
+    await write(root, path, text.replace('rtl: "preserve",', 'rtl: "preserve", presentation: { defaults: { fill: "currentColor" }, overrides: [] },'));
+  }
+  for (const family of ["dynamic", "manifest"]) {
+    const directory = `packages/icons/src/${family}/contracts`;
+    for (const name of await readdir(join(realRoot, directory))) {
+      await write(root, `${directory}/${name}`, await readFile(join(realRoot, directory, name), "utf8"));
+    }
+  }
+  await write(root, "tsconfig.base.json", JSON.stringify({ compilerOptions: {
+    target: "ES2022", module: "ESNext", moduleResolution: "Bundler", declaration: true, strict: true, skipLibCheck: true,
+    paths: { "@luscious-garden/aster-core": [join(realRoot, "packages/core/dist/index.d.ts")] },
+  } }));
+  await write(root, "packages/icons/tsconfig.json", JSON.stringify({ extends: "../../tsconfig.base.json", compilerOptions: { rootDir: "src", outDir: "dist" }, include: ["src/**/*.ts"] }));
+  const producer = pathToFileURL(join(realRoot, "tooling/catalogue/synchronise-icons-catalogue.mjs")).href;
+  const compiler = join(realRoot, "node_modules/typescript/bin/tsc");
+  await write(root, "build.mjs", `import { synchroniseIconsCatalogue } from ${JSON.stringify(producer)};
+import { spawnSync } from "node:child_process";
+import { rm } from "node:fs/promises";
+await synchroniseIconsCatalogue(process.cwd());
+await rm("dist", { recursive: true, force: true });
+const result = spawnSync(process.execPath, [${JSON.stringify(compiler)}, "-p", "tsconfig.json"], { stdio: "inherit" });
+process.exitCode = result.status ?? 1;
+`);
+  const packagePath = join(root, "packages/icons/package.json");
+  const manifest = JSON.parse(await readFile(packagePath, "utf8"));
+  manifest.scripts = { build: "node ../../build.mjs" };
+  await writeFile(packagePath, JSON.stringify(manifest, null, 2) + "\n");
+  await regenerate();
+  const previousRunner = process.env.npm_execpath;
+  process.env.npm_execpath = runner;
+  const build = new NodeCatalogueIconRemovalBuild(root);
+  if (previousRunner === undefined) {
+    delete process.env.npm_execpath;
+  } else {
+    process.env.npm_execpath = previousRunner;
+  }
+  await build.prepare();
+  await build.run();
+  const plan = await planner.plan("fixture/alpha-icon@filled");
+  await new CatalogueIconRemovalApplicator(root, build).apply(plan, plan.fingerprint);
+  const outline = join(root, "packages/icons/dist/glyphs/a/alpha-icon/alpha-icon-outline.icon.js");
+  assert.match(await readFile(outline, "utf8"), /AlphaIconOutline/u);
+  const dictionary = await readFile(join(root, "packages/icons/dist/generated/facades/glyphs/alpha-icon.js"), "utf8");
+  assert.doesNotMatch(dictionary, /Filled/u);
+  assert.deepEqual(await recoveryEntries(root), []);
 });

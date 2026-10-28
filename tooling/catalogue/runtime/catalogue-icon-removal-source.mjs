@@ -27,13 +27,17 @@ export class CatalogueIconRemovalSource {
    * @type {Set<string>}
    */
   #absent = new Set();
+  /** @description Exact live application evidence excluded only by its owning session. */
+  #ownedEntries;
 
   /**
    * @description Creates an independent read-only acquisition lifecycle.
    * @param {string} workspaceRoot - Explicit workspace containing the Icons package.
+   * @param {readonly string[]} [ownedEntries] - Exact session-owned evidence paths, never a wildcard exclusion.
    */
-  constructor(workspaceRoot) {
+  constructor(workspaceRoot, ownedEntries = []) {
     this.#root = resolve(workspaceRoot);
+    this.#ownedEntries = new Set(ownedEntries.map((path) => this.#contained(path)));
   }
 
   /**
@@ -73,7 +77,7 @@ export class CatalogueIconRemovalSource {
         if (target === removed) {
           return false;
         }
-        const status = await this.#status(target);
+        const status = await this.status(target);
         if (status === undefined) {
           this.#absent.add(target);
         }
@@ -111,7 +115,7 @@ export class CatalogueIconRemovalSource {
    */
   async files(relativeRoot, accepts) {
     const root = this.#contained(resolve(this.#root, relativeRoot));
-    const status = await this.#status(root);
+    const status = await this.status(root);
     if (status === undefined) {
       this.#absent.add(root);
       return Object.freeze([]);
@@ -168,7 +172,7 @@ export class CatalogueIconRemovalSource {
    */
   async verify() {
     for (const [path, expected] of this.#texts) {
-      await this.#status(path);
+      await this.status(path);
       if (await this.#decode(path) !== expected) {
         throw new CatalogueSourceError(`Input changed during removal preview: ${this.display(path)}`);
       }
@@ -179,7 +183,7 @@ export class CatalogueIconRemovalSource {
       }
     }
     for (const path of this.#absent) {
-      if (await this.#status(path) !== undefined) {
+      if (await this.status(path) !== undefined) {
         throw new CatalogueSourceError(`Absent input appeared during removal preview: ${this.display(path)}`);
       }
     }
@@ -204,7 +208,7 @@ export class CatalogueIconRemovalSource {
    * @param {string} path - Contained candidate path.
    * @returns {Promise<import("node:fs").Stats | undefined>} Existing accepted status, or genuine absence.
    */
-  async #status(path) {
+  async status(path) {
     const target = this.#contained(path);
     let current = this.#root;
     const segments = relative(this.#root, target).split(sep).filter(Boolean);
@@ -258,7 +262,7 @@ export class CatalogueIconRemovalSource {
     if (cached !== undefined) {
       return cached;
     }
-    const status = await this.#status(path);
+    const status = await this.status(path);
     if (status === undefined) {
       throw Object.assign(new CatalogueSourceError(`Missing removal input: ${this.display(path)}`), { code: "ENOENT" });
     }
@@ -276,13 +280,13 @@ export class CatalogueIconRemovalSource {
    * @returns {Promise<readonly import("../../shared/contracts/internal/repository-directory-entry.contract.mjs").IRepositoryDirectoryEntry[]>} Accepted directory entries.
    */
   async #readEntries(path) {
-    const status = await this.#status(path);
+    const status = await this.status(path);
     if (!status?.isDirectory()) {
       throw new CatalogueSourceError(`Removal input must be a directory: ${this.display(path)}`);
     }
     const entries = (await readdir(path, { withFileTypes: true })).sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
     const names = new Set();
-    return Object.freeze(entries.map((entry) => {
+    return Object.freeze(entries.filter((entry) => !this.#ownedEntries.has(resolve(path, entry.name))).map((entry) => {
       if (names.has(entry.name.toLowerCase()) || entry.name === catalogueIconRemoval.lockName || entry.name.includes(catalogueIconRemoval.stageMarker)) {
         throw new CatalogueSourceError(`Ambiguous or interrupted removal entry: ${this.display(resolve(path, entry.name))}`);
       }

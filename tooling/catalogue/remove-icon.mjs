@@ -4,10 +4,16 @@ import { fileURLToPath } from "node:url";
 
 import { CatalogueIconRemovalCommand } from "./runtime/catalogue-icon-removal.command.mjs";
 import { CatalogueIconRemovalPlanner } from "./runtime/catalogue-icon-removal.planner.mjs";
+import { CatalogueIconRemovalApplicator } from "./runtime/catalogue-icon-removal.applicator.mjs";
+import { NodeCatalogueIconRemovalBuild } from "./runtime/node-catalogue-icon-removal-build.mjs";
 
 /** @description Explicit workspace boundary relative to this private command. */
 const workspaceRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 
 if (process.argv[1] !== undefined && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  await new CatalogueIconRemovalCommand(new CatalogueIconRemovalPlanner(workspaceRoot), process).run();
+  await new CatalogueIconRemovalCommand(
+    new CatalogueIconRemovalPlanner(workspaceRoot),
+    process,
+    new CatalogueIconRemovalApplicator(workspaceRoot, new NodeCatalogueIconRemovalBuild(workspaceRoot)),
+  ).run();
 }

@@ -101,7 +101,9 @@ need not be globally unique.
 | `CatalogueSourceSynchroniser`, `CatalogueSourceSerialiser` | Complete immutable inspection and output planning, then publish changed outputs. |
 | `CatalogueIconRemovalSource` | Acquires physically contained, no-follow exact preimages and hypothetical read-only source views for removal previews. |
 | `CatalogueIconRemovalEditor` | Locates membership/import deletions through TypeScript syntax; rejects unsupported uses and ambiguous comment ownership without reprinting sources. |
-| `CatalogueIconRemovalPlanner`, `CatalogueIconRemovalCommand` | Derive and present the complete immutable removal proposal, generated postimages, review notices and fingerprint; no application authority. |
+| `CatalogueIconRemovalPlanner`, `CatalogueIconRemovalCommand` | Derive and present the complete immutable removal proposal, generated postimages, review notices and fingerprint; application requires an explicit matching token. |
+| `CatalogueIconRemovalApplicator`, `CatalogueIconRemovalSession` | Coordinate no-clobber source publication, independent recovery copies, graph acceptance and verified producer/build completion. |
+| `NodeCatalogueIconRemovalBuild` | Invoke the existing Icons build through the current pnpm host, without a command shell or dependency installation. |
 
 The synchroniser snapshots source-family descriptors and excluded-directory lists at construction.
 Injected filesystem, inspector and planner capabilities remain borrowed. Static document/value
@@ -168,6 +170,9 @@ With Core already built, inspect the consequences of removing one concrete canon
 pnpm --dir packages/icons run remove:icon aster/camera@filled
 ```
 
+From the workspace root, `pnpm --filter @luscious-garden/aster-icons run remove:icon
+aster/camera@filled` invokes the same private script.
+
 The private command requires the exact `[namespace/]name@variant` identity. Namespace absence is
 not shorthand for `aster`, and a treatment is mandatory. This is not a public `aster` command.
 
@@ -193,9 +198,43 @@ computed references or external consumers absent. Tests, documentation and prove
 human-owned. The existing generator calculates hypothetical projections through an in-memory view;
 there is no parallel facade or metadata emitter.
 
-Application is not implemented: `--apply` fails without planning or writes. Remove source and
-memberships manually when needed, following the [ordinary workflow](#workflow), then build and
-verify. Normal generation and checking remain strict and never mutate authored memberships.
+### Apply and recovery
+
+Review the entire preview, then supply its exact fingerprint:
+
+```sh
+pnpm --dir packages/icons run remove:icon aster/camera@filled --apply <fingerprint>
+```
+
+Application replans and presents the current proposal. A stale fingerprint fails before creating
+evidence or changing sources. Acquired inputs, directory inventories, absent paths and physical
+write boundaries are rechecked; each source displacement and publication has additional exact
+preimage checks. Run in an exclusive contributor session: the cooperative marker excludes other
+removal invocations, not arbitrary editors, builds or already-open file handles.
+
+The operation prepares independent complete source copies and recovery records in a unique
+`.aster-icon-removal-*` directory beside the package manifest, with an exclusive
+`.aster-icon-removal.lock` marker. It edits the planned collections, quarantines the selected
+definition last and statically validates the resulting graph. The existing Icons build then
+regenerates projections, cleans `dist` and compiles TypeScript. Core must already be built and
+pnpm's script host must be available; nothing is installed. Final checks require exact planned
+outputs, zero catalogue drift, retained emitted modules and no stale removed modules.
+
+Before source acceptance, failure attempts reverse-order restoration only where the current
+target still matches the operation's own postimage or is absent. Competing edits/destinations are
+never replaced. After source acceptance, a producer, compiler or final-check failure leaves those
+valid applied sources in place and reports generated/emitted verification as incomplete. This is
+not an atomic transaction across sources and distribution. A cleanup failure after verification
+is reported separately from incomplete distribution.
+
+Success removes only the operation's exact owned evidence. Failure output distinguishes restored,
+applied, not-applied and pending-recovery source paths and identifies retained originals/records.
+Inspect those records and current source before manual repair; do not blindly copy originals over
+newer edits. Preserve unresolved evidence, repair/rebuild through the ordinary owners and verify
+the resulting graph/distribution before explicitly removing the exact resolved recovery entries.
+An interrupted marker or recovery directory blocks another removal; there is no automatic resume
+or evidence sweep. No test, guide, provenance record, shared authoring profile or empty collection
+declaration is deleted. Normal generation/checking stay strict and never edit authored membership.
 
 ## Publication safety
 
