@@ -20,26 +20,51 @@ export const amellusIconAuthoringProfile = Object.freeze({
     /** @description Height of the canonical coordinate system. */
     height: 24,
   }) satisfies IconViewBox,
-  /** @description Presentation and size policy authored into each Amellus icon definition. */
-  presentation: Object.freeze({
-    /** @description Default portable presentation inherited by authored icon nodes. */
-    defaults: Object.freeze({
-      /** @description Default paint applied to node interiors. */
-      fill: "none",
-      /** @description Default stroke resolved from the consumer's current colour. */
-      stroke: "currentColor",
-      /** @description Default stroke width in canonical icon coordinates. */
-      strokeWidth: 1.5,
-      /** @description Default shape used at the ends of open strokes. */
-      strokeLineCap: "round",
-      /** @description Default shape used where stroke segments meet. */
-      strokeLineJoin: "round",
-    }),
-    /** @description Ordered presentation overrides accepted from consumers. */
-    overrides: Object.freeze([]),
-    /** @description Preferred consumer-facing size for Amellus artwork. */
-    defaultSize: 24,
-    /** @description Smallest consumer-facing size recommended for Amellus artwork. */
-    minimumSize: 16,
-  }) satisfies IconPresentationPolicy,
+  /** @description Presentation and size policies selected explicitly by Amellus treatment. */
+  presentations: Object.freeze({
+    /** @description Outline presentation retaining unfilled interiors and rounded strokes. */
+    outline: Object.freeze({
+      /** @description Default portable presentation inherited by authored icon nodes. */
+      defaults: Object.freeze({
+        /** @description Default paint applied to node interiors. */
+        fill: "none",
+        /** @description Default stroke resolved from the consumer's current colour. */
+        stroke: "currentColor",
+        /** @description Default stroke width in canonical icon coordinates. */
+        strokeWidth: 1.5,
+        /** @description Default shape used at the ends of open strokes. */
+        strokeLineCap: "round",
+        /** @description Default shape used where stroke segments meet. */
+        strokeLineJoin: "round",
+      }),
+      /** @description Ordered presentation overrides accepted from consumers. */
+      overrides: Object.freeze([]),
+      /** @description Preferred consumer-facing size for Amellus artwork. */
+      defaultSize: 24,
+      /** @description Smallest consumer-facing size recommended for Amellus artwork. */
+      minimumSize: 16,
+    }) satisfies IconPresentationPolicy,
+    /** @description Filled presentation retaining the reference contour's rounded stroke weight. */
+    filled: Object.freeze({
+      /** @description Default portable presentation inherited by authored icon nodes. */
+      defaults: Object.freeze({
+        /** @description Default interior paint resolved from the consumer's current colour. */
+        fill: "currentColor",
+        /** @description Default stroke resolved from the consumer's current colour. */
+        stroke: "currentColor",
+        /** @description Default stroke width in canonical icon coordinates. */
+        strokeWidth: 1.5,
+        /** @description Default shape used at the ends of open strokes. */
+        strokeLineCap: "round",
+        /** @description Default shape used where stroke segments meet. */
+        strokeLineJoin: "round",
+      }),
+      /** @description Ordered presentation overrides accepted from consumers. */
+      overrides: Object.freeze([]),
+      /** @description Preferred consumer-facing size for Amellus artwork. */
+      defaultSize: 24,
+      /** @description Smallest consumer-facing size recommended for Amellus artwork. */
+      minimumSize: 16,
+    }) satisfies IconPresentationPolicy,
+  }),
 });

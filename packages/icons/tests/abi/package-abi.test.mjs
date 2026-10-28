@@ -357,6 +357,9 @@ test("retains exact public-import evaluation sets in fresh processes", async () 
     "authoring/constants/aster-artwork-licence.constant.js",
     "authoring/constants/aster-original-icon-authorship.constant.js",
   ];
+  const cameraPaths = AsterIconManifest
+    .filter(({ identity }) => identity.name === "camera")
+    .map(({ identity }) => iconDistributionPath(`camera/${identity.variant}`));
 
   for (const { subpath, exports, modules } of [
     {
@@ -367,8 +370,17 @@ test("retains exact public-import evaluation sets in fresh processes", async () 
     {
       subpath: "camera",
       exports: ["CameraVariants"],
-      modules: [...authoringModules, "generated/facades/glyphs/camera.js", iconDistributionPath("camera/outline")],
+      modules: [...authoringModules, "generated/facades/glyphs/camera.js", ...cameraPaths],
     },
+    ...["filled", "dotted", "beaded"].map((variant) => ({
+      subpath: `camera/${variant}`,
+      exports: [`Camera${variant[0].toUpperCase()}${variant.slice(1)}`],
+      modules: [
+        ...authoringModules.filter((path) => variant === "filled" || !path.includes("amellus-icon-authoring-profile")),
+        `generated/facades/icons/camera/${variant}.js`,
+        iconDistributionPath(`camera/${variant}`),
+      ],
+    })),
     {
       subpath: "collections/amellus",
       exports: ["Amellus"],
@@ -437,11 +449,14 @@ test("keeps every per-icon module isolated from sibling definitions", async () =
     );
     const specifiers = extractModuleSpecifiers(source);
 
-    assert.deepEqual(specifiers.sort(), [
-      "../../../authoring/constants/amellus-icon-authoring-profile.constant.js",
+    const expected = [
       "../../../authoring/constants/aster-original-icon-authorship.constant.js",
       "@luscious-garden/aster-core",
-    ]);
+    ];
+    if (subpath !== "camera/dotted" && subpath !== "camera/beaded") {
+      expected.push("../../../authoring/constants/amellus-icon-authoring-profile.constant.js");
+    }
+    assert.deepEqual(specifiers.sort(), expected.sort());
     assert.doesNotMatch(source, /(?:icons\/index|manifest|catalogue|registry)/gu);
   }
 });

@@ -984,7 +984,8 @@ test("rejects obsolete packed inputs while revalidating explicit JSON definition
     "  icons: { camera: CameraOutline },",
     "}), IconDefinitionError);",
     'assert.equal(Object.hasOwn(CameraVariants, "default"), false);',
-    'assert.equal(Object.hasOwn(CameraVariants, "filled"), false);',
+    'assert.equal(Object.hasOwn(CameraVariants, "filled"), true);',
+    'assert.equal(Object.hasOwn(CameraVariants, "stippled"), false);',
   ].join("\n"));
 
   assertSuccessfulProcess(executed, "reject obsolete packed contracts");

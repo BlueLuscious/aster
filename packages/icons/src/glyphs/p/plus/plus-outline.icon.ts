@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster plus icon.
+ * @description Canonical portable Outline definition for the Aster plus glyph.
  */
 export const PlusOutline = Icon.define({
   identity: {
@@ -21,10 +21,10 @@ export const PlusOutline = Icon.define({
     { kind: "line", x1: 4, y1: 12, x2: 20, y2: 12 },
   ],
   metadata: {
-    displayName: "Plus",
+    displayName: "Plus Outline",
     tags: ["add", "create", "new", "plus"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

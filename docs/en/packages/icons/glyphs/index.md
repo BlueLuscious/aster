@@ -18,7 +18,7 @@ shared authoring authorities, not sibling icons or a collection. The physical
 `src/glyphs/` layout remains private; [Catalogue Source Tooling](../../../tooling/catalogue/index.md#source-convention)
 owns filename, symbol and public-path validation.
 
-Every definition declares `identity.variant`; the existing artwork explicitly uses `outline`.
+Every definition declares `identity.variant` explicitly.
 Renditions of one glyph share its namespace and name. For example, an authored
 `camera@stippled` rendition under namespace `aster` would export `CameraStippled` through
 `@luscious-garden/aster-icons/camera/stippled`. A different concept such as `camera-retro`
@@ -38,8 +38,8 @@ objects as individual imports, collection selections and loaders. Prefer `/camer
 only that treatment is required; tree shaking is not a native ESM evaluation guarantee.
 
 Dictionaries are frozen, prototype-free own-data maps with exact readonly treatment keys.
-The current `CameraVariants` contains only `outline`: no Filled, Dotted or other treatment is
-invented. A dictionary is not an `IconDefinition` and cannot be rendered directly. There is no
+`CameraVariants` contains `outline`, `filled`, `dotted` and `beaded`. A dictionary is not an
+`IconDefinition` and cannot be rendered directly. There is no
 `default`, fallback, compatibility export or implicit selection. An absent runtime key returns
 `undefined`, including inherited Object names unless an actual treatment owns that property.
 Use static operations such as `Object.keys(dictionary)` rather than inherited methods.
@@ -73,11 +73,31 @@ Intrinsic search tags belong to the icon. Collection aliases and categories, pro
 review notes and computed metrics remain outside its portable definition. An icon can stand alone
 or join multiple collections without gaining reverse membership or being decorated by them.
 
-The current definitions are curated in [Amellus](../../../collections/amellus/index.md).
-Its [inventory](../../../collections/amellus/inventory.md) owns the concept list, semantic order,
-search vocabulary and construction coverage; its
+The current catalogue includes [Amellus](../../../collections/amellus/index.md) and independent
+Camera Dotted/Beaded treatments. Amellus's [inventory](../../../collections/amellus/inventory.md)
+owns the concept list, semantic order, search vocabulary and construction coverage; its
 [visual contract](../../../collections/amellus/design-contract.md) owns collection-specific
 acceptance. Package discovery does not itself grant membership.
+
+## Camera treatments
+
+All four treatments are original Aster artwork by BlueLuscious under the
+[artwork terms](../index.md#rights-boundary). Outline is the geometric reference. Filled retains
+its body and complementary lens bounds; Dotted and Beaded use the same 66 native-circle centres
+curated against that reference, with uniform diameters of `1` and `1.5` respectively. Their static
+coordinates preserve symmetry and balanced spacing without running a geometry solver on import.
+
+Only Outline and Filled belong to Amellus. The point treatments carry no minimum-size promise;
+review them at the intended display size, particularly where antialiasing weakens dots or bead
+joins at small sizes. Larger previews do not establish small-size legibility.
+
+Use `/camera/filled`, `/camera/dotted` or `/camera/beaded` for an isolated treatment, each with its
+corresponding `CameraFilled`, `CameraDotted` or `CameraBeaded` export. The dictionary includes all
+four regardless of collection membership.
+
+The point treatments remain larger rendering workloads despite their simple native geometry.
+[Measurement interpretation](../quality-baseline.md#interpretation) distinguishes representation
+from execution cost; primitive count alone is not an optimisation claim.
 
 ## Discovery and source maintenance
 

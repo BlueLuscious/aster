@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster play icon.
+ * @description Canonical portable Outline definition for the Aster play glyph.
  */
 export const PlayOutline = Icon.define({
   identity: {
@@ -27,10 +27,10 @@ export const PlayOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Play",
+    displayName: "Play Outline",
     tags: ["media", "play", "playback", "start"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

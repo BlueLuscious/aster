@@ -27,9 +27,9 @@ manifest records and loaders project those sources; they are not editable author
 | `@luscious-garden/aster-icons/dynamic` | Deferred resolution by canonical key; [Dynamic Loaders](dynamic/index.md). |
 
 The package root and bare `/collections` aggregate are explicitly blocked. Generated and physical
-implementation subpaths are not public. The current corpus declares every existing treatment as
-`outline`. Routes and dictionary keys exist only for authored glyphs and treatments; export
-patterns do not create missing artwork.
+implementation subpaths are not public. [Glyphs](glyphs/index.md) owns the available treatments and
+their collection boundaries. Routes and dictionary keys exist only for authored glyphs and
+treatments; export patterns do not create missing artwork.
 
 ## Rights boundary
 

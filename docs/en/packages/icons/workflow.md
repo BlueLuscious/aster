@@ -26,14 +26,15 @@ symbols, reserved names, static grammar and source-to-public-path mapping.
 
 ## Add or correct artwork
 
-1. Choose the independent canonical identity and create or edit its `.icon.ts` module.
+1. Choose the independent canonical identity and create or edit its `.icon.ts` module. Establish
+   or consult the glyph's [reference variant](authoring/index.md#glyph-reference-and-treatment-derivation).
 2. Call public `Icon.define()` with complete portable data, composing applicable
    [authorship and visual inputs](authoring/index.md).
 3. Establish provenance and effective artwork rights under the
    [collection's acceptance policy](../../collections/index.md) and
    [legal authorities](index.md#rights-boundary).
-4. Import the definition into each intended collection and assign an explicit alias in its
-   ordered `icons` dictionary.
+4. For separately approved collection membership, import the definition into each intended
+   collection and assign an explicit alias in its ordered `icons` dictionary.
 5. Build, inspect the generated projections, run automated checks and review the derived artwork.
 
 Omitting membership leaves a valid standalone definition. Correct geometry in the canonical
@@ -43,8 +44,8 @@ Do not author a parallel list or import that generated dictionary into a canonic
 keep selecting named canonical treatment definitions explicitly.
 
 A rendition uses the same icon name with a distinct `identity.variant`; a different concept
-uses a separate name. Existing definitions explicitly declare `outline`; other treatments appear
-only when their canonical sources exist. The enforced naming/layout
+uses a separate name. Every definition explicitly declares its treatment; distributed treatments
+appear only when their canonical sources exist. The enforced naming/layout
 examples belong to [Catalogue Source Tooling](../../tooling/catalogue/index.md#source-convention).
 
 ## Add or change a collection

@@ -69,7 +69,7 @@ lifecycle. Publication remains separate under the
 
 ## Static visual acceptance
 
-The complete inventory passed static visual review through the canonical catalogue and SVG
+The Outline inventory passed static visual review through the canonical catalogue and SVG
 workflow. The accepted review covered `16px`, `24px`, `32px` and `48px`; light, dark and
 transparent backgrounds; neutral and contrasting foregrounds; construction grids and view-box
 bounds.
@@ -91,3 +91,9 @@ The review accepted:
 
 No collection-level exception or canonical geometry correction was required by that review.
 Changes to artwork or rendering require renewed technical and curatorial evidence.
+
+Camera Filled is accepted as the complementary treatment of canonical Camera Outline. It retains
+the same body contour and painted bounds, with a solid lens disc matching Outline's inner opening
+and a negative ring matching its lens stroke. The pair uses the same `24px` default and `16px`
+minimum guidance, half-unit construction grid and unchanged complexity thresholds. Its deliberate
+filled mass is compatible with Amellus's minimalist character; Dotted and Beaded are not admitted.

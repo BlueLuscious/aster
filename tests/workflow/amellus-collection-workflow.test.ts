@@ -2,14 +2,23 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { AsterCatalogue, AsterCommands } from "@luscious-garden/aster-cli";
+import type { IconIdentity } from "@luscious-garden/aster-core";
 import { Amellus } from "@luscious-garden/aster-icons/collections/amellus";
-import { AsterIconManifest } from "@luscious-garden/aster-icons/manifest";
 
 const commandContext = Object.freeze({
   catalogues: Object.freeze([AsterCatalogue]),
   productName: "Aster",
   productVersion: "0.0.0",
 });
+
+/**
+ * @description Identifies one concrete treatment for cross-package membership comparisons.
+ * @param identity - Complete portable icon identity.
+ * @returns Concrete canonical key.
+ */
+function iconKey(identity: IconIdentity): string {
+  return `${identity.namespace}/${identity.name}@${identity.variant}`;
+}
 
 test("exposes Amellus through every collection-neutral CLI workflow", async () => {
   assert.equal(await AsterCatalogue.loadCollection(Amellus.identity), Amellus);
@@ -51,12 +60,12 @@ test("exposes Amellus through every collection-neutral CLI workflow", async () =
   }
 
   assert.deepEqual(
-    listed.payload.icons.map((result) => result.identity.name).sort(),
-    AsterIconManifest.map(({ identity }) => identity.name).sort(),
+    listed.payload.icons.map(({ identity }) => iconKey(identity)).sort(),
+    Amellus.members.map(({ identity }) => iconKey(identity)).sort(),
   );
   assert.deepEqual(
-    searched.payload.results.map((result) => result.identity.name),
-    ["camera"],
+    searched.payload.results.map(({ identity }) => iconKey(identity)),
+    ["aster/camera@filled", "aster/camera@outline"],
   );
   assert.equal(shown.payload.collection.identity.name, "amellus");
   assert.deepEqual(shown.payload.collection.metadata, Amellus.metadata);

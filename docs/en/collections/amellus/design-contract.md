@@ -2,15 +2,16 @@
 
 Status: **Accepted**
 
-This contract defines the visual language for the first Amellus inventory. It governs collection
+This contract defines the visual language for the Amellus inventory. It governs collection
 membership rather than all Aster icons: an independently authored icon may exist outside Amellus
 or follow another collection's accepted language.
 
 ## Character
 
-Amellus uses a restrained geometric outline language for common application interfaces. Forms
-must remain calm, direct and recognisable at small sizes. Geometry provides the construction
-baseline, while documented optical correction may take precedence over mathematical centring.
+Amellus uses a restrained geometric language with Outline and Filled treatments for common
+application interfaces. Forms must remain calm, direct and recognisable at small sizes. Geometry
+provides the construction baseline, while documented optical correction may take precedence over
+mathematical centring.
 
 The collection favours familiar metaphors, low detail and consistent negative space. It excludes
 decorative embellishment, pictorial perspective, shading and collection-specific branding.
@@ -35,30 +36,33 @@ flat forms. All visible geometry must remain inside the view box after stroke ex
 
 ## Presentation
 
-Every initial Amellus icon uses one scalable outline weight:
+Each member selects its treatment's presentation explicitly:
 
-```ts
-{
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.5,
-  strokeLineCap: "round",
-  strokeLineJoin: "round",
-}
-```
+| Property | Outline | Filled |
+| --- | --- | --- |
+| `fill` | `none` | `currentColor` |
+| `stroke` | `currentColor` | `currentColor` |
+| `strokeWidth` | `1.5` | `1.5` |
+| `strokeLineCap` | `round` | `round` |
+| `strokeLineJoin` | `round` | `round` |
+
+Filled retains the reference contour's construction weight while introducing solid masses and
+deliberate negative space. It is independently authored geometry, not an Outline render override.
+Treatment coverage is selective; admitting one Filled definition does not require other glyphs
+to acquire that treatment.
 
 The following policies apply:
 
 - `currentColor` is the only authored visible paint, allowing the host to provide colour without
   coupling definitions to a target renderer;
-- filled, duotone, shaded and multi-weight forms are excluded from the initial collection;
+- dotted, beaded, duotone, shaded and multi-weight forms are excluded from the collection;
 - node-specific presentation is excluded unless a later reviewed exception proves it necessary;
-- fill, stroke and stroke-width overrides are not granted by the initial collection;
+- fill, stroke and stroke-width overrides are not granted by the collection;
 - stroke scales with the view box and is never defined as a constant device-pixel width;
 - `nonzero` remains the implicit fill rule where closed geometry requires a technical default.
 
 These rules are implemented by the internal
-[Amellus authoring profile](../../packages/icons/authoring/index.md#amellus-visual-input), not
+[Amellus authoring presentations](../../packages/icons/authoring/index.md#amellus-visual-input), not
 applied by collection membership. They use the
 [Core presentation contract](../../packages/core/presentation/index.md) and render deterministically
 through SVG. The external spellings `currentColor` and `color` remain unchanged
@@ -83,10 +87,11 @@ default; one shallow depth cue is accepted only when a flat form would be ambigu
 
 ### Spacing and detail
 
-Distinct contours should normally retain at least `1.5` logical units of clear separation before
-stroke expansion. Detached marks and short segments must remain visibly associated with their
-subject at `16px`. A gap that closes, a mark that resembles noise or two contours that merge at
-that size requires simplification or rejection.
+Outline contours should normally retain at least `1.5` logical units of clear separation before
+stroke expansion. Filled masses and cut-outs must retain usable negative space after painting;
+their stroke-inclusive bounds must agree with the glyph reference. Detached marks and short
+segments must remain visibly associated with their subject at `16px`. A gap that closes, a mark
+that resembles noise or two contours that merge at that size requires simplification or rejection.
 
 An icon should use no more than `16` geometry primitives or `64` explicit path commands. These are
 review thresholds, not permission to consume the full budget. The simplest recognisable geometry
@@ -95,7 +100,7 @@ is preferred, and repeated pressure against either threshold requires reconsider
 ## Display sizes
 
 The canonical display size is `24px`; the accepted minimum is `16px`. The same scalable definition
-must remain recognisable at both sizes. Amellus does not initially support size-specific geometry,
+must remain recognisable at both sizes. Amellus does not support size-specific geometry,
 and a candidate that requires it is removed or deferred rather than silently admitting
 size-specific artwork.
 
@@ -110,7 +115,7 @@ Icons preserve authored geometry unless their meaning represents logical horizon
 roles follow explicit rendering direction. Their names describe canonical authored geometry;
 mirroring does not create another identity.
 
-All other initial icons use `preserve`. Amellus accepts no initial `manual` icon because no
+All other members use `preserve`. Amellus accepts no `manual` icon because no
 candidate requires a separately authored RTL definition. Vertical movement, text-independent
 status and object orientation must not mirror merely because the surrounding interface is RTL.
 
@@ -129,6 +134,6 @@ those remain human review responsibilities. An accepted exception must also reco
 applicable conformance checks rather than bypassing them silently. The accepted human findings
 are recorded in the [collection overview](index.md#static-visual-acceptance).
 
-The representative stress set is defined in the [initial inventory](inventory.md). It covers
+The representative stress set is defined in the [inventory](inventory.md). It covers
 curves, diagonals, symmetry, enclosures, detached details and mixed primitives, and remains the
 required evidence whenever the accepted visual language changes.

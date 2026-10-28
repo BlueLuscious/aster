@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster leaf icon.
+ * @description Canonical portable Outline definition for the Aster leaf glyph.
  */
 export const LeafOutline = Icon.define({
   identity: {
@@ -68,10 +68,10 @@ export const LeafOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Leaf",
+    displayName: "Leaf Outline",
     tags: ["environment", "leaf", "nature", "plant"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

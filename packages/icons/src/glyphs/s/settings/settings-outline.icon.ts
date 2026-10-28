@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster settings icon.
+ * @description Canonical portable Outline definition for the Aster settings glyph.
  */
 export const SettingsOutline = Icon.define({
   identity: {
@@ -29,10 +29,10 @@ export const SettingsOutline = Icon.define({
     { kind: "line", x1: 7, y1: 17, x2: 5.5, y2: 18.5 },
   ],
   metadata: {
-    displayName: "Settings",
+    displayName: "Settings Outline",
     tags: ["configuration", "preferences", "settings"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

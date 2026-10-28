@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster cloud icon.
+ * @description Canonical portable Outline definition for the Aster cloud glyph.
  */
 export const CloudOutline = Icon.define({
   identity: {
@@ -57,10 +57,10 @@ export const CloudOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Cloud",
+    displayName: "Cloud Outline",
     tags: ["cloud", "remote", "storage"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

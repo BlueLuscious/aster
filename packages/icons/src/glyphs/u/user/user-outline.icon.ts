@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster user icon.
+ * @description Canonical portable Outline definition for the Aster user glyph.
  */
 export const UserOutline = Icon.define({
   identity: {
@@ -44,10 +44,10 @@ export const UserOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "User",
+    displayName: "User Outline",
     tags: ["account", "person", "profile", "user"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

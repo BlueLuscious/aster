@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster star icon.
+ * @description Canonical portable Outline definition for the Aster star glyph.
  */
 export const StarOutline = Icon.define({
   identity: {
@@ -34,10 +34,10 @@ export const StarOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Star",
+    displayName: "Star Outline",
     tags: ["bookmark", "favourite", "featured", "rating", "star"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

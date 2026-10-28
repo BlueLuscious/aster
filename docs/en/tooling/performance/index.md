@@ -263,8 +263,9 @@ Profile/resource instrumentation must remain separate from uninstrumented latenc
 Private repository work is distinct from installed-package execution. Importing or rendering an
 icon does not run repository verifiers, generation, compilation or development tests.
 
-One Windows x64 reference uses Node 24.10.0, V8 13.6, TypeScript 5.9.3 and pnpm 10.28.1. The real
-graph contains 547 source modules, 116 canonical documents and 26 icons with one collection.
+One Windows x64 reference uses Node 24.10.0, V8 13.6, TypeScript 5.9.3 and pnpm 10.28.1. These
+are workload-specific observations, not a live source/document/catalogue inventory. Current
+emitted Icons counts belong to the [Icons source snapshot](../../packages/icons/quality-baseline.md#source-snapshot).
 Additional producer fixtures cover 100 and 1,000 definitions, generated no-drift/stale checks and
 single-facade repair. A separate 10,000-file traversal contains small JSON files, not compiled
 definitions. The [Icons scaling limits](../../packages/icons/quality-baseline.md#native-scaling-reference)
@@ -283,7 +284,7 @@ apply to full-package compiler stress.
 | Offline frozen no-op installation | 452 ms | Already installed consumer; lockfile bytes remain unchanged. |
 
 Command and containment references are medians of three worker medians, each retaining seven
-samples. Pipeline references use three complete observations and characterise current costs;
+samples. Pipeline references use three complete observations and characterise the measured workload;
 they are not matched speed-up evidence. Direct Node timings exclude pnpm startup. Filesystem and
 package-store caches are warm or uncontrolled, not flushed; these are not cold-disk measurements.
 Functional tests contain no wall-clock pass thresholds.

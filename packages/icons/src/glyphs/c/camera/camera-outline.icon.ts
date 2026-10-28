@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster camera icon.
+ * @description Canonical portable Outline definition for the Aster camera glyph.
  */
 export const CameraOutline = Icon.define({
   identity: {
@@ -63,10 +63,10 @@ export const CameraOutline = Icon.define({
     { kind: "circle", cx: 12, cy: 13, radius: 3.5 },
   ],
   metadata: {
-    displayName: "Camera",
+    displayName: "Camera Outline",
     tags: ["camera", "media", "photo", "photograph"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

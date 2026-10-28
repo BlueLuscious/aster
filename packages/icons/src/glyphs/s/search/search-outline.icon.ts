@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster search icon.
+ * @description Canonical portable Outline definition for the Aster search glyph.
  */
 export const SearchOutline = Icon.define({
   identity: {
@@ -21,10 +21,10 @@ export const SearchOutline = Icon.define({
     { kind: "line", x1: 15, y1: 15, x2: 21, y2: 21 },
   ],
   metadata: {
-    displayName: "Search",
+    displayName: "Search Outline",
     tags: ["find", "lookup", "search"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

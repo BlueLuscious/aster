@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster warning icon.
+ * @description Canonical portable Outline definition for the Aster warning glyph.
  */
 export const WarningOutline = Icon.define({
   identity: {
@@ -29,10 +29,10 @@ export const WarningOutline = Icon.define({
     { kind: "circle", cx: 12, cy: 18, radius: 0.5 },
   ],
   metadata: {
-    displayName: "Warning",
+    displayName: "Warning Outline",
     tags: ["alert", "attention", "caution", "warning"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

@@ -16,11 +16,18 @@ test("keeps original authorship separate from Amellus visual policy", () => {
     licence: asterArtworkLicence,
     attribution: "BlueLuscious",
   });
-  assert.deepEqual(amellusIconAuthoringProfile, {
-    viewBox: { minX: 0, minY: 0, width: 24, height: 24 },
-    presentation: {
+  assert.deepEqual(amellusIconAuthoringProfile.viewBox, {
+    minX: 0, minY: 0, width: 24, height: 24,
+  });
+  assert.deepEqual(Object.keys(amellusIconAuthoringProfile.presentations), [
+    "outline", "filled",
+  ]);
+  for (const [variant, presentation] of Object.entries(
+    amellusIconAuthoringProfile.presentations,
+  )) {
+    assert.deepEqual(presentation, {
       defaults: {
-        fill: "none",
+        fill: variant === "outline" ? "none" : "currentColor",
         stroke: "currentColor",
         strokeWidth: 1.5,
         strokeLineCap: "round",
@@ -29,14 +36,15 @@ test("keeps original authorship separate from Amellus visual policy", () => {
       overrides: [],
       defaultSize: 24,
       minimumSize: 16,
-    },
-  });
+    });
+    assert.ok(Object.isFrozen(presentation));
+    assert.ok(Object.isFrozen(presentation.defaults));
+    assert.ok(Object.isFrozen(presentation.overrides));
+  }
   assert.ok(Object.isFrozen(asterOriginalIconAuthorship));
   assert.ok(Object.isFrozen(amellusIconAuthoringProfile));
   assert.ok(Object.isFrozen(amellusIconAuthoringProfile.viewBox));
-  assert.ok(Object.isFrozen(amellusIconAuthoringProfile.presentation));
-  assert.ok(Object.isFrozen(amellusIconAuthoringProfile.presentation.defaults));
-  assert.ok(Object.isFrozen(amellusIconAuthoringProfile.presentation.overrides));
+  assert.ok(Object.isFrozen(amellusIconAuthoringProfile.presentations));
 });
 
 test("allows original Aster artwork to use another visual profile", () => {
@@ -72,7 +80,7 @@ test("allows original Aster artwork to use another visual profile", () => {
   assert.notDeepEqual(definition.viewBox, amellusIconAuthoringProfile.viewBox);
   assert.notDeepEqual(
     definition.metadata.presentation,
-    amellusIconAuthoringProfile.presentation,
+    amellusIconAuthoringProfile.presentations.outline,
   );
 });
 
@@ -84,7 +92,7 @@ test("allows independently owned artwork to provide its own authorship", () => {
     metadata: {
       displayName: "Authorship fixture",
       rtl: "preserve",
-      presentation: amellusIconAuthoringProfile.presentation,
+      presentation: amellusIconAuthoringProfile.presentations.outline,
       licence: "CC0-1.0",
       attribution: "External Author",
       deprecated: false,

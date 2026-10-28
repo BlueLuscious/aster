@@ -30,32 +30,32 @@ necessary dependencies. Neither value is a renderer or search benchmark.
 
 ## Source snapshot
 
-A 20 October 2026 Windows x64 observation using Node `24.10.0`, TypeScript `5.9.3` and native
+A 28 October 2026 Windows x64 observation using Node `24.10.0`, TypeScript `5.9.3` and native
 ES2022 ESM gives these evaluation sets:
 
 | Public subpath | Named exports | Evaluated Icons modules |
 | --- | --- | ---: |
 | `/camera/outline` | `CameraOutline` | 5 |
-| `/camera` | `CameraVariants` | 5 |
-| `/collections/amellus` | `Amellus` | 31 |
+| `/camera` | `CameraVariants` | 8 |
+| `/collections/amellus` | `Amellus` | 32 |
 | `/manifest` | `AsterCollectionManifest`, `AsterIconManifest` | 2 |
 | `/dynamic` | `AsterCollectionLoaders`, `AsterIconLoaders` | 2 |
 
-The Camera entries evaluate distinct facades but the same single Outline definition and three
-shared authoring authorities. Equal counts do not mean equal module sets or prove that a larger
-dictionary evaluates only one treatment. Compiled multi-treatment fixtures provide that separate
-[isolation evidence](quality.md#source-synchronisation-evidence).
+The individual Camera entry evaluates its facade, Outline definition and three shared authoring
+authorities. Its dictionary evaluates another facade and all four accepted Camera definitions;
+it does not make treatment selection lazy. Fresh-process [isolation evidence](quality.md#evidence-coverage)
+also checks the Filled, Dotted and Beaded individual entrypoints.
 
-Amellus evaluates its facade, collection, three authoring authorities and 26 explicitly retained
+Amellus evaluates its facade, collection, three authoring authorities and 27 explicitly retained
 members. Metadata discovery evaluates only `manifest/index.js` and `generated/manifest/index.js`;
 loader-map discovery evaluates only `dynamic/index.js` and `generated/dynamic/index.js`. Neither
 evaluates artwork until a definition is requested.
 
 The same source snapshot emits:
 
-- 95 JavaScript modules, totalling 91,096 unminified bytes;
-- 95 declarations, totalling 28,334 bytes;
-- 190 emitted files, totalling 119,430 bytes;
+- 101 JavaScript modules, totalling 110,065 unminified bytes;
+- 101 declarations, totalling 31,291 bytes;
+- 202 emitted files, totalling 141,356 bytes;
 - ESM, `sideEffects: false` and Core as the only runtime dependency.
 
 The package root and bare collection aggregate remain blocked. Snapshot counts and bytes are not
@@ -118,7 +118,6 @@ These include Node module/package resolution, filesystem acquisition and definit
 not rendering or search. Cached loader calls, map-only discovery and static imports are different
 workloads; module counts do not establish a universal speed or bundler benefit.
 
-Invoking the product Camera loader evaluates six Icons modules; invoking Amellus's evaluates 32.
 Following loader acquisition with public leaf, dictionary and collection imports retains their
 canonical references through the module cache. Separate resource observations for 1,000 loader
 requests record approximately 92.0 MiB sampled peak RSS and 16.45 MiB post-GC heap with exports
@@ -140,7 +139,6 @@ identical archive hashes, and acquired distribution bytes must match the compile
 
 | Catalogue | Icons archive | Installed Icons files | Pack median | Offline install median |
 | --- | ---: | ---: | ---: | ---: |
-| Product: 26 definitions, one collection | 18,983 bytes | 194 | 622 ms | 902 ms |
 | 1,000 definitions, 100 collections | 193,179 bytes | 6,432 | 4,599 ms | 7,731 ms |
 | 1,000 definitions, 1,000 collections sharing ten definitions | 258,045 bytes | 8,232 | 4,070 ms | 7,515 ms |
 
@@ -157,6 +155,11 @@ compiler probes also require the external memory safeguards described in the sha
 Exact evaluated module sets establish isolation; elapsed time is supporting evidence influenced
 by startup, host state and instrumentation. No timing optimisation follows from module counts
 alone, and native ESM observations do not guarantee bundler tree shaking.
+
+Native primitives can clarify geometry without reducing the number of painted elements, output
+size or rendering work. Use representative workloads instead of deriving a speed claim from node
+or path counts. [SVG Quality Baseline](../svg/quality-baseline.md) owns renderer measurements;
+[Core recognition](../core/definition/runtime/index.md#recognised-outputs) owns definition reuse.
 
 [Catalogue Source Tooling](../../tooling/catalogue/index.md) owns build-time checking and repair.
 Those operations do not run when an installed consumer imports or renders an icon. Changes to

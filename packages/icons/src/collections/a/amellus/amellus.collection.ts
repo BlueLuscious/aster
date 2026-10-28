@@ -5,6 +5,7 @@ import { ArrowLeftOutline } from "../../../glyphs/a/arrow-left/arrow-left-outlin
 import { ArrowRightOutline } from "../../../glyphs/a/arrow-right/arrow-right-outline.icon.js";
 import { ArrowUpOutline } from "../../../glyphs/a/arrow-up/arrow-up-outline.icon.js";
 import { BellOutline } from "../../../glyphs/b/bell/bell-outline.icon.js";
+import { CameraFilled } from "../../../glyphs/c/camera/camera-filled.icon.js";
 import { CameraOutline } from "../../../glyphs/c/camera/camera-outline.icon.js";
 import { CheckOutline } from "../../../glyphs/c/check/check-outline.icon.js";
 import { CloseOutline } from "../../../glyphs/c/close/close-outline.icon.js";
@@ -52,7 +53,7 @@ export const Amellus = Collection.define({
     lock: { outline: LockOutline },
     star: { outline: StarOutline },
     warning: { outline: WarningOutline },
-    camera: { outline: CameraOutline },
+    camera: { outline: CameraOutline, filled: CameraFilled },
     pause: { outline: PauseOutline },
     play: { outline: PlayOutline },
     bell: { outline: BellOutline },
@@ -64,9 +65,10 @@ export const Amellus = Collection.define({
   },
   metadata: {
     displayName: "Amellus",
-    description: "Minimalist general-purpose outline icons for application interfaces.",
+    description: "Minimalist general-purpose icons for application interfaces.",
     tags: [
       "application-icons",
+      "filled-icons",
       "general-purpose",
       "interface-icons",
       "minimalist",
