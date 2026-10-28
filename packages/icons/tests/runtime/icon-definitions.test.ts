@@ -92,9 +92,11 @@ test("composes original authorship and visual policy for Amellus members", () =>
       asterOriginalIconAuthorship.namespace,
     );
     assert.deepEqual(definition.viewBox, amellusIconAuthoringProfile.viewBox);
+    const variant = definition.identity.variant;
+    assert.ok(variant === "outline" || variant === "filled");
     assert.deepEqual(
       definition.metadata.presentation,
-      amellusIconAuthoringProfile.presentation,
+      amellusIconAuthoringProfile.presentations[variant],
     );
     assert.equal(
       definition.metadata.licence,
@@ -148,6 +150,22 @@ test("composes original authorship and visual policy for Amellus members", () =>
       ?.metadata.rtl,
     "mirror",
   );
+});
+
+test("names every distributed definition with its explicit treatment", () => {
+  assert.ok(iconDefinitions.length > 0);
+
+  for (const { identity, metadata } of iconDefinitions) {
+    const treatment = identity.variant
+      .split("-")
+      .map((part) => `${part[0]?.toUpperCase()}${part.slice(1)}`)
+      .join(" ");
+
+    assert.ok(
+      metadata.displayName.endsWith(` ${treatment}`),
+      `${identity.name}@${identity.variant} needs its treatment in the display name`,
+    );
+  }
 });
 
 test("keeps collection membership within the independent icon loaders", () => {

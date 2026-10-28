@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster pause icon.
+ * @description Canonical portable Outline definition for the Aster pause glyph.
  */
 export const PauseOutline = Icon.define({
   identity: {
@@ -21,10 +21,10 @@ export const PauseOutline = Icon.define({
     { kind: "line", x1: 16, y1: 5, x2: 16, y2: 19 },
   ],
   metadata: {
-    displayName: "Pause",
+    displayName: "Pause Outline",
     tags: ["hold", "media", "pause", "playback"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

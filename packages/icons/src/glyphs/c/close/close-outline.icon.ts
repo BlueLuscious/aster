@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster close icon.
+ * @description Canonical portable Outline definition for the Aster close glyph.
  */
 export const CloseOutline = Icon.define({
   identity: {
@@ -21,10 +21,10 @@ export const CloseOutline = Icon.define({
     { kind: "line", x1: 19, y1: 5, x2: 5, y2: 19 },
   ],
   metadata: {
-    displayName: "Close",
+    displayName: "Close Outline",
     tags: ["cancel", "close", "dismiss", "remove", "x"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

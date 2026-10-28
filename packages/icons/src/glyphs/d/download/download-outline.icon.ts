@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster download icon.
+ * @description Canonical portable Outline definition for the Aster download glyph.
  */
 export const DownloadOutline = Icon.define({
   identity: {
@@ -29,10 +29,10 @@ export const DownloadOutline = Icon.define({
     { kind: "line", x1: 5, y1: 20, x2: 19, y2: 20 },
   ],
   metadata: {
-    displayName: "Download",
+    displayName: "Download Outline",
     tags: ["download", "save", "transfer"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

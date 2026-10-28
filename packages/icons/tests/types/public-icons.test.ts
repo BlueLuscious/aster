@@ -37,11 +37,19 @@ import {
 const directDefinition: IconDefinition = ArrowLeftOutline;
 const glyphVariants: IconVariantMap = CameraVariants;
 const glyphDefinition: IconDefinition = CameraVariants.outline;
+const filledDefinition: IconDefinition = CameraVariants.filled;
+const dottedDefinition: IconDefinition = CameraVariants.dotted;
+const beadedDefinition: IconDefinition = CameraVariants.beaded;
+const amellusFilled: IconDefinition = Amellus.icons.camera.filled;
 
 // @ts-expect-error A glyph dictionary is not a concrete definition.
 const invalidGlyph: IconDefinition = CameraVariants;
 // @ts-expect-error Generated glyphs preserve exact distributed treatment keys.
-CameraVariants.filled;
+CameraVariants.stippled;
+// @ts-expect-error Independent treatments are not selected by Amellus.
+Amellus.icons.camera.dotted;
+// @ts-expect-error Independent treatments are not selected by Amellus.
+Amellus.icons.camera.beaded;
 // @ts-expect-error Glyph dictionaries have no implicit default.
 CameraVariants.default;
 // @ts-expect-error Generated glyph dictionaries are readonly.
@@ -112,6 +120,10 @@ AsterCollectionLoaders.changed = collectionLoader;
 void directDefinition;
 void glyphVariants;
 void glyphDefinition;
+void filledDefinition;
+void dottedDefinition;
+void beadedDefinition;
+void amellusFilled;
 void invalidGlyph;
 void Camera;
 void CameraOutline;

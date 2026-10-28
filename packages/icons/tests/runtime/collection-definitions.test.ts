@@ -30,9 +30,10 @@ test("derives ordered Amellus membership from its source-owned aliases", () => {
   assert.equal(new Set(Amellus.members).size, definitions.length);
   assert.deepEqual(Amellus.metadata, {
     displayName: "Amellus",
-    description: "Minimalist general-purpose outline icons for application interfaces.",
+    description: "Minimalist general-purpose icons for application interfaces.",
     tags: [
       "application-icons",
+      "filled-icons",
       "general-purpose",
       "interface-icons",
       "minimalist",

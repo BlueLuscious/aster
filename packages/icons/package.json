@@ -30,6 +30,18 @@
       "types": "./dist/generated/facades/collections/*.d.ts",
       "import": "./dist/generated/facades/collections/*.js"
     },
+    "./*/beaded": {
+      "types": "./dist/generated/facades/icons/*/beaded.d.ts",
+      "import": "./dist/generated/facades/icons/*/beaded.js"
+    },
+    "./*/dotted": {
+      "types": "./dist/generated/facades/icons/*/dotted.d.ts",
+      "import": "./dist/generated/facades/icons/*/dotted.js"
+    },
+    "./*/filled": {
+      "types": "./dist/generated/facades/icons/*/filled.d.ts",
+      "import": "./dist/generated/facades/icons/*/filled.js"
+    },
     "./*/outline": {
       "types": "./dist/generated/facades/icons/*/outline.d.ts",
       "import": "./dist/generated/facades/icons/*/outline.js"

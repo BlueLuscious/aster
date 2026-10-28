@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster arrow-up icon.
+ * @description Canonical portable Outline definition for the Aster arrow-up glyph.
  */
 export const ArrowUpOutline = Icon.define({
   identity: {
@@ -28,10 +28,10 @@ export const ArrowUpOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Arrow Up",
+    displayName: "Arrow Up Outline",
     tags: ["arrow", "navigation", "top", "up"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster check icon.
+ * @description Canonical portable Outline definition for the Aster check glyph.
  */
 export const CheckOutline = Icon.define({
   identity: {
@@ -27,10 +27,10 @@ export const CheckOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Check",
+    displayName: "Check Outline",
     tags: ["check", "complete", "confirm", "done", "success"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

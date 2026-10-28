@@ -11,7 +11,8 @@ public Icons surface. [Feature guides](index.md) own behaviour;
 | Evidence | Guarantees exercised | Behaviour authority |
 | --- | --- | --- |
 | Authoring-authority suite | Frozen independent authorship/profile inputs, alternate visual families and artwork rights retained under differently licensed curation. | [Authoring](authoring/index.md). |
-| Amellus definition suite | Profile agreement, half-unit geometry grid, primitive/command budgets, absence of node paint exceptions, frozen definitions and horizontal-arrow RTL policy. | [Amellus Visual Contract](../../collections/amellus/design-contract.md). |
+| Definition suite | Explicit treatment display names; Amellus profile agreement, half-unit geometry grid, primitive/command budgets, absence of node paint exceptions, frozen definitions and horizontal-arrow RTL policy. | [Authoring](authoring/index.md) and [Amellus Visual Contract](../../collections/amellus/design-contract.md). |
+| Camera treatment suite | Complementary Outline/Filled body and lens bounds, exact dictionary/loader/collection selections, uniform native circles, shared point centres, symmetry, corner counts and spacing/overlap bounds. | [Camera treatments](glyphs/index.md#camera-treatments). |
 | Collection suite | Sole canonical export, facade/loader object identity, source-derived alias/member agreement, metadata and independent additional/reduced collections. | [Collections](collections/index.md) and [Core Collection](../core/collection/index.md). |
 | Manifest suite | Exact metadata projection, canonical ordering, deep freezing, no embedded geometry, non-empty source families and effective artwork rights. | [Manifest](manifest/index.md). |
 | Loader suite | Own key sets matching manifests, frozen functions, concurrent resolution retaining canonical leaves, and inherited-name absence. | [Dynamic Loaders](dynamic/index.md#arbitrary-key-access). |

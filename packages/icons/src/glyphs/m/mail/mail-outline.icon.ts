@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster mail icon.
+ * @description Canonical portable Outline definition for the Aster mail glyph.
  */
 export const MailOutline = Icon.define({
   identity: {
@@ -36,10 +36,10 @@ export const MailOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Mail",
+    displayName: "Mail Outline",
     tags: ["email", "envelope", "inbox", "mail", "message"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

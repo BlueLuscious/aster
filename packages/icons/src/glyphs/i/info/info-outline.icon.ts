@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster info icon.
+ * @description Canonical portable Outline definition for the Aster info glyph.
  */
 export const InfoOutline = Icon.define({
   identity: {
@@ -22,10 +22,10 @@ export const InfoOutline = Icon.define({
     { kind: "line", x1: 12, y1: 11, x2: 12, y2: 17 },
   ],
   metadata: {
-    displayName: "Info",
+    displayName: "Info Outline",
     tags: ["about", "help", "info", "information"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

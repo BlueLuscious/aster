@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster menu icon.
+ * @description Canonical portable Outline definition for the Aster menu glyph.
  */
 export const MenuOutline = Icon.define({
   identity: {
@@ -22,10 +22,10 @@ export const MenuOutline = Icon.define({
     { kind: "line", x1: 4, y1: 18, x2: 20, y2: 18 },
   ],
   metadata: {
-    displayName: "Menu",
+    displayName: "Menu Outline",
     tags: ["hamburger", "menu", "navigation"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

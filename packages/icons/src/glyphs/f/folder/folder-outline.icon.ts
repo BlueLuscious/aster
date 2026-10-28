@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster folder icon.
+ * @description Canonical portable Outline definition for the Aster folder glyph.
  */
 export const FolderOutline = Icon.define({
   identity: {
@@ -60,10 +60,10 @@ export const FolderOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Folder",
+    displayName: "Folder Outline",
     tags: ["directory", "files", "folder"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

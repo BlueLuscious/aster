@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster lock icon.
+ * @description Canonical portable Outline definition for the Aster lock glyph.
  */
 export const LockOutline = Icon.define({
   identity: {
@@ -46,10 +46,10 @@ export const LockOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Lock",
+    displayName: "Lock Outline",
     tags: ["lock", "privacy", "secure", "security"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

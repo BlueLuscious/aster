@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster arrow-left icon.
+ * @description Canonical portable Outline definition for the Aster arrow-left glyph.
  */
 export const ArrowLeftOutline = Icon.define({
   identity: {
@@ -28,10 +28,10 @@ export const ArrowLeftOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Arrow Left",
+    displayName: "Arrow Left Outline",
     tags: ["arrow", "back", "left", "navigation", "previous"],
     rtl: "mirror",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

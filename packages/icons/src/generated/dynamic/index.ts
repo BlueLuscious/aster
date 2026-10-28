@@ -26,6 +26,15 @@ const iconLoaders: IconDefinitionLoaderMap = {
   "aster/bell@outline": Object.freeze(
     () => import("../../glyphs/b/bell/bell-outline.icon.js").then(({ BellOutline }) => BellOutline),
   ),
+  "aster/camera@beaded": Object.freeze(
+    () => import("../../glyphs/c/camera/camera-beaded.icon.js").then(({ CameraBeaded }) => CameraBeaded),
+  ),
+  "aster/camera@dotted": Object.freeze(
+    () => import("../../glyphs/c/camera/camera-dotted.icon.js").then(({ CameraDotted }) => CameraDotted),
+  ),
+  "aster/camera@filled": Object.freeze(
+    () => import("../../glyphs/c/camera/camera-filled.icon.js").then(({ CameraFilled }) => CameraFilled),
+  ),
   "aster/camera@outline": Object.freeze(
     () => import("../../glyphs/c/camera/camera-outline.icon.js").then(({ CameraOutline }) => CameraOutline),
   ),

@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster heart icon.
+ * @description Canonical portable Outline definition for the Aster heart glyph.
  */
 export const HeartOutline = Icon.define({
   identity: {
@@ -80,10 +80,10 @@ export const HeartOutline = Icon.define({
     },
   ],
   metadata: {
-    displayName: "Heart",
+    displayName: "Heart Outline",
     tags: ["favourite", "heart", "like", "love"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

@@ -7,7 +7,7 @@ import {
 } from "../../../authoring/constants/aster-original-icon-authorship.constant.js";
 
 /**
- * @description Canonical portable definition for the Aster bell icon.
+ * @description Canonical portable Outline definition for the Aster bell glyph.
  */
 export const BellOutline = Icon.define({
   identity: {
@@ -41,10 +41,10 @@ export const BellOutline = Icon.define({
     { kind: "line", x1: 10, y1: 20, x2: 14, y2: 20 },
   ],
   metadata: {
-    displayName: "Bell",
+    displayName: "Bell Outline",
     tags: ["alert", "bell", "notification"],
     rtl: "preserve",
-    presentation: amellusIconAuthoringProfile.presentation,
+    presentation: amellusIconAuthoringProfile.presentations.outline,
     licence: asterOriginalIconAuthorship.licence,
     attribution: asterOriginalIconAuthorship.attribution,
     deprecated: false,

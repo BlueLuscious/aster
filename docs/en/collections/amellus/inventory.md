@@ -1,12 +1,13 @@
-# Amellus Initial Inventory
+# Amellus Inventory
 
 Status: **Accepted**
 
-The initial Amellus inventory contains twenty-six deliberately bounded application concepts. Every
-concept has an independent canonical definition: seventeen remain primitive-first, while nine use
-structured absolute path commands where curves, compound contours or rounded enclosures make the
-geometry clearer. These construction choices provide visual stress coverage; the inventory does
-not impose that geometry on other collections or restore raw SVG path strings to authoring.
+The Amellus inventory contains twenty-six deliberately bounded application concepts and twenty-seven
+concrete definitions. Its Outline selection includes seventeen primitive-first definitions and nine
+using structured absolute path commands; Camera also selects a two-node Filled definition with a
+compound enclosure and circular lens. These construction choices provide visual stress coverage;
+the inventory does not impose that geometry on other collections or restore raw SVG path strings
+to authoring.
 
 `Amellus` retains the complete inventory in the semantic order below. Membership does
 not alter icon identity, metadata or availability through independent icon distribution.
@@ -14,8 +15,9 @@ This page owns semantic selection and review coverage. The
 [canonical collection module](../../../../packages/icons/src/collections/a/amellus/amellus.collection.ts)
 owns actual membership; [Glyphs](../../packages/icons/glyphs/index.md) owns independent imports.
 
-Every current selection is an explicit `outline` treatment in namespace `aster`. The table names
-glyphs, not complete loader or CLI identities; for example, `camera` selects `aster/camera@outline`.
+Every glyph selects `outline` in namespace `aster`; `camera` also selects `filled`. Its independently
+distributed Dotted and Beaded treatments are not collection members. The table names glyphs, not
+complete loader or CLI identities: Camera's members are `aster/camera@outline` and `aster/camera@filled`.
 
 ## Concepts
 
