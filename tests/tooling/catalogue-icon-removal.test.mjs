@@ -802,7 +802,7 @@ test("cooperative marker conflicts and replaced recovery directories do not gran
   }
 });
 
-test("uses the existing pnpm build host and real TypeScript compilation in an owned checkout", async (t) => {
+async function compilableFixture(t) {
   const { root, regenerate, planner } = await fixture(t);
   const realRoot = resolve(".");
   const actualRunner = process.env.npm_execpath ?? join(dirname(process.execPath), "node_modules/pnpm/bin/pnpm.cjs");
@@ -820,6 +820,7 @@ test("uses the existing pnpm build host and real TypeScript compilation in an ow
     for (const name of await readdir(join(realRoot, directory))) {
       await write(root, `${directory}/${name}`, await readFile(join(realRoot, directory, name), "utf8"));
     }
+    await write(root, `packages/icons/src/${family}/index.ts`, await readFile(join(realRoot, `packages/icons/src/${family}/index.ts`), "utf8"));
   }
   await write(root, "tsconfig.base.json", JSON.stringify({ compilerOptions: {
     target: "ES2022", module: "ESNext", moduleResolution: "Bundler", declaration: true, strict: true, skipLibCheck: true,
@@ -838,6 +839,15 @@ process.exitCode = result.status ?? 1;
 `);
   const packagePath = join(root, "packages/icons/package.json");
   const manifest = JSON.parse(await readFile(packagePath, "utf8"));
+  manifest.name = "@luscious-garden/aster-icons";
+  manifest.version = "0.0.0-removal-fixture";
+  manifest.private = false;
+  manifest.files = ["dist"];
+  manifest.dependencies = { "@luscious-garden/aster-core": JSON.parse(await readFile(join(realRoot, "packages/core/package.json"), "utf8")).version };
+  for (const family of ["dynamic", "manifest"]) {
+    manifest.exports[`./${family}`] = { types: `./dist/${family}/index.d.ts`, import: `./dist/${family}/index.js` };
+  }
+  manifest.exports["./collections/*"] = { types: "./dist/generated/facades/collections/*.d.ts", import: "./dist/generated/facades/collections/*.js" };
   manifest.scripts = { build: "node ../../build.mjs" };
   await writeFile(packagePath, JSON.stringify(manifest, null, 2) + "\n");
   await regenerate();
@@ -849,6 +859,11 @@ process.exitCode = result.status ?? 1;
   } else {
     process.env.npm_execpath = previousRunner;
   }
+  return { root, regenerate, planner, build, runner, compiler };
+}
+
+test("uses the existing pnpm build host and real TypeScript compilation in an owned checkout", async (t) => {
+  const { root, planner, build } = await compilableFixture(t);
   await build.prepare();
   await build.run();
   const plan = await planner.plan("fixture/alpha-icon@filled");
@@ -858,4 +873,165 @@ process.exitCode = result.status ?? 1;
   const dictionary = await readFile(join(root, "packages/icons/dist/generated/facades/glyphs/alpha-icon.js"), "utf8");
   assert.doesNotMatch(dictionary, /Filled/u);
   assert.deepEqual(await recoveryEntries(root), []);
+});
+
+test("applies BOM/CRLF alias edits without rewriting retained authored text", async (t) => {
+  const { root, regenerate, planner } = await fixture(t);
+  const before = "\uFEFF" + collection().replaceAll('"', "'").replace("import { AlphaIconFilled }", "import { AlphaIconFilled as Selected }").replace("filled: AlphaIconFilled", "filled: Selected").replaceAll("\n", "\r\n");
+  await write(root, collectionPath, before);
+  await regenerate();
+  const plan = await planner.plan("fixture/alpha-icon@filled");
+  await application(root, regenerate).apply(plan, plan.fingerprint);
+  assert.equal(await readFile(join(root, collectionPath), "utf8"), plan.edits[0].after);
+  assert.equal(plan.edits[0].after.startsWith("\uFEFF"), true);
+  assert.equal(plan.edits[0].after.replaceAll("\r\n", "").includes("\n"), false);
+  assert.match(plan.edits[0].after, /description: 'Untouched metadata\.'/u);
+});
+
+test("rejects malformed apply arguments before acquiring a proposal or application authority", async () => {
+  for (const args of [
+    ["fixture/a@outline", "--apply"],
+    ["fixture/a@outline", "--apply", "short"],
+    ["fixture/a@outline", "--apply", "F".repeat(64)],
+    ["fixture/a@outline", "--apply", "0".repeat(64), "extra"],
+    ["fixture/a@outline", "--force"],
+  ]) {
+    const host = { argv: ["node", "remove", ...args], stdout: { write() { assert.fail("Unexpected proposal"); } }, stderr: { write(text) { assert.match(text, /^Usage:/u); } }, exitCode: 0 };
+    await new CatalogueIconRemovalCommand({ async plan() { assert.fail("Unexpected planning"); } }, host, { async apply() { assert.fail("Unexpected application"); } }).run();
+    assert.equal(host.exitCode, 1);
+  }
+});
+
+test("reports success only after real application and rejects a stale token without changing the fixture", async (t) => {
+  const { root, regenerate, planner } = await fixture(t);
+  const applicator = application(root, regenerate);
+  const output = [];
+  const errors = [];
+  const host = {
+    argv: ["node", "remove", "fixture/alpha-icon@filled"],
+    stdout: { write(text) { output.push(text); } },
+    stderr: { write(text) { errors.push(text); } },
+    exitCode: 0,
+  };
+  await new CatalogueIconRemovalCommand(planner, host, applicator).run();
+  assert.equal(host.exitCode, 0);
+  assert.deepEqual(errors, []);
+  const fingerprint = /Fingerprint: ([a-f0-9]{64})/u.exec(output.join(""))[1];
+  const before = await fingerprintTree(root);
+  host.argv.push("--apply", "0".repeat(64));
+  output.length = 0;
+  await new CatalogueIconRemovalCommand(planner, host, applicator).run();
+  assert.equal(host.exitCode, 1);
+  assert.match(errors.join(""), /application failed:[\s\S]*fingerprint does not match/u);
+  assert.doesNotMatch(output.join(""), /Icon removal applied/u);
+  assert.deepEqual(await fingerprintTree(root), before);
+  host.argv[4] = fingerprint;
+  host.exitCode = 0;
+  output.length = 0;
+  errors.length = 0;
+  await new CatalogueIconRemovalCommand(planner, host, applicator).run();
+  assert.equal(host.exitCode, 0);
+  assert.deepEqual(errors, []);
+  assert.match(output.join(""), /Icon removal applied; sources, generated outputs and emitted distribution verified/u);
+  await assert.rejects(readFile(join(root, alphaFilled)), { code: "ENOENT" });
+  assert.deepEqual(await recoveryEntries(root), []);
+});
+
+test("retains native and offline packed consumers across multi-collection and final-glyph removal", async (t) => {
+  const { root, regenerate, planner, build, runner, compiler } = await compilableFixture(t);
+  const second = "packages/icons/src/collections/s/second/second.collection.ts";
+  await write(root, second, collection("second", "Second").replace("alphaIcon:", "alternate:"));
+  await regenerate();
+  await build.prepare();
+  await build.run();
+  const run = (args, cwd = root) => {
+    const result = spawnSync(process.execPath, [runner, ...args], { cwd, encoding: "utf8", windowsHide: true });
+    assert.equal(result.error, undefined);
+    assert.equal(result.status, 0, result.stdout + result.stderr);
+    return result;
+  };
+  const archives = join(root, "archives");
+  await mkdir(archives);
+  const coreArchive = JSON.parse(run(["--dir", resolve("packages/core"), "pack", "--pack-destination", archives, "--json"]).stdout).filename;
+  const coreSpec = pathToFileURL(resolve(archives, coreArchive)).href;
+  await write(root, "package.json", JSON.stringify({ private: true, type: "module", dependencies: { "@luscious-garden/aster-core": coreSpec } }));
+  run(["--dir", root, "install", "--offline", "--ignore-scripts", "--frozen-lockfile=false"]);
+  const removed = [];
+  const inspect = (packed) => `
+import assert from "node:assert/strict";
+const removed = ${JSON.stringify(removed)};
+const prefix = ${JSON.stringify(packed ? "@luscious-garden/aster-icons/" : pathToFileURL(join(root, "packages/icons/dist/")).href)};
+const load = (publicPath, directPath) => import(prefix + (${packed} ? publicPath : directPath));
+const { AsterIconManifest, AsterCollectionManifest } = await load("manifest", "manifest/index.js");
+const { AsterIconLoaders, AsterCollectionLoaders } = await load("dynamic", "dynamic/index.js");
+const { AlphaIconVariants } = await load("alpha-icon", "generated/facades/glyphs/alpha-icon.js");
+const { AlphaIconOutline } = await load("alpha-icon/outline", "generated/facades/icons/alpha-icon/outline.js");
+assert.equal(AlphaIconVariants.outline, AlphaIconOutline);
+assert.equal(AsterIconManifest.length, 3 - removed.length);
+assert.equal(Object.isFrozen(AlphaIconVariants), true);
+assert.equal(Object.getPrototypeOf(AlphaIconVariants), null);
+for (const entry of AsterIconManifest) assert.deepEqual((await AsterIconLoaders[entry.key]()).identity, entry.identity);
+for (const entry of AsterCollectionManifest) {
+  const collection = await AsterCollectionLoaders[entry.key]();
+  assert.deepEqual(collection.members.map((icon) => icon.identity.namespace + "/" + icon.identity.name + "@" + icon.identity.variant), entry.members);
+  assert.equal(collection.members[0], AlphaIconOutline);
+  assert.equal(collection.metadata.description, "Untouched metadata.");
+}
+for (const key of removed) {
+  assert.equal(AsterIconManifest.some((entry) => entry.key === key), false);
+  assert.equal(Object.hasOwn(AsterIconLoaders, key), false);
+  const [name, variant] = key.slice("fixture/".length).split("@");
+  await assert.rejects(load(name + "/" + variant, "generated/facades/icons/" + name + "/" + variant + ".js"), { code: "ERR_MODULE_NOT_FOUND" });
+  if (name === "beta") await assert.rejects(load("beta", "generated/facades/glyphs/beta.js"), { code: "ERR_MODULE_NOT_FOUND" });
+}
+assert.equal(Object.hasOwn(AlphaIconVariants, "filled"), !removed.includes("fixture/alpha-icon@filled"));
+`;
+  for (let stage = 0; stage < 3; stage++) {
+    const native = spawnSync(process.execPath, ["--input-type=module", "--eval", inspect(false)], { cwd: root, encoding: "utf8" });
+    assert.equal(native.error, undefined);
+    assert.equal(native.status, 0, native.stderr);
+    const iconsArchive = JSON.parse(run(["--dir", join(root, "packages/icons"), "pack", "--pack-destination", archives, "--json"]).stdout).filename;
+    const consumer = join(root, `consumer-${stage}`);
+    const specs = { "@luscious-garden/aster-core": coreSpec, "@luscious-garden/aster-icons": pathToFileURL(resolve(archives, iconsArchive)).href };
+    await write(root, `consumer-${stage}/package.json`, JSON.stringify({ private: true, type: "module", dependencies: specs, pnpm: { overrides: specs } }));
+    run(["--dir", consumer, "install", "--offline", "--ignore-scripts", "--frozen-lockfile=false"]);
+    const packed = spawnSync(process.execPath, ["--input-type=module", "--eval", inspect(true)], { cwd: consumer, encoding: "utf8" });
+    assert.equal(packed.error, undefined);
+    assert.equal(packed.status, 0, packed.stderr);
+    const source = [
+      'import { AlphaIconVariants } from "@luscious-garden/aster-icons/alpha-icon";',
+      'import { Sample } from "@luscious-garden/aster-icons/collections/sample";',
+      'import type { IconDefinition } from "@luscious-garden/aster-core";',
+      "const retained: IconDefinition = AlphaIconVariants.outline;",
+      "const selected: IconDefinition = Sample.icons.alphaIcon.outline;",
+      ...(stage >= 1 ? [
+        "// @ts-expect-error Removed treatments do not remain in the dictionary type.",
+        "AlphaIconVariants.filled;",
+        "// @ts-expect-error Removed membership does not remain in the collection type.",
+        "Sample.icons.alphaIcon.filled;",
+        "// @ts-expect-error Removed public leaves have no declarations.",
+        'import type { AlphaIconFilled } from "@luscious-garden/aster-icons/alpha-icon/filled";',
+      ] : []),
+      ...(stage === 2 ? [
+        "// @ts-expect-error A removed final-glyph dictionary has no declarations.",
+        'import type { BetaVariants } from "@luscious-garden/aster-icons/beta";',
+      ] : []),
+      "void [retained, selected];",
+    ].join("\n");
+    await write(root, `consumer-${stage}/consumer.ts`, source);
+    const types = spawnSync(process.execPath, [compiler, "--noEmit", "--strict", "--skipLibCheck", "--target", "ES2022", "--module", "ESNext", "--moduleResolution", "Bundler", join(consumer, "consumer.ts")], { cwd: consumer, encoding: "utf8" });
+    assert.equal(types.error, undefined);
+    assert.equal(types.status, 0, types.stdout + types.stderr);
+    const installed = join(consumer, "node_modules/@luscious-garden/aster-icons");
+    await assert.rejects(lstat(join(installed, "src")), { code: "ENOENT" });
+    assert.deepEqual(await recoveryEntries(root), []);
+    if (stage < 2) {
+      const selector = stage === 0 ? "fixture/alpha-icon@filled" : "fixture/beta@outline";
+      const plan = await planner.plan(selector);
+      assert.equal(plan.edits.length, stage === 0 ? 2 : 0);
+      await new CatalogueIconRemovalApplicator(root, build).apply(plan, plan.fingerprint);
+      removed.push(selector);
+      assert.equal((await synchroniseIconsCatalogue(join(root, "packages/icons"), true)).changedPaths.length, 0);
+    }
+  }
 });

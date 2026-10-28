@@ -182,6 +182,8 @@ and the existing build's emitted-output boundary. Original UTF-8 text, BOM and l
 retained in its internal preimages; offsets are UTF-16 positions, with terminal controls escaped
 only in displayed text. A deterministic SHA-256 fingerprint binds the proposal to its acquired
 inputs and directory inventories. Changing an input requires a fresh preview.
+The acquired review scope includes files beyond the selected icon, so an unrelated edit within
+that scope can also invalidate the fingerprint. It is not a reusable authorisation token.
 
 The source graph and generated projections must already be valid and drift-free. Missing sources,
 unrelated dangling members, unsafe/linked paths, interrupted publication evidence, additional
@@ -235,6 +237,20 @@ the resulting graph/distribution before explicitly removing the exact resolved r
 An interrupted marker or recovery directory blocks another removal; there is no automatic resume
 or evidence sweep. No test, guide, provenance record, shared authoring profile or empty collection
 declaration is deleted. Normal generation/checking stay strict and never edit authored membership.
+
+### Private cost boundary
+
+Planning inspects the complete canonical graph, generated projections and disclosed reference
+scope. Application repeats exact physical/input checks, guards generated/emitted trees and retains
+source recovery evidence before invoking the complete Icons build. Its work therefore grows with
+catalogue size, filesystem latency and collection fan-out, not only with the removed file's size.
+Fingerprint calculation binds the reviewed proposal; physical acquisition and verification remain
+separate required work.
+
+These are contributor-operation costs, not work performed when consumers import a definition,
+load a dictionary or render an icon. Ordinary generation does not acquire removal planning,
+fingerprints, source edits or recovery effects. No timing guarantee or automatic source repair is
+implied by successful functional verification.
 
 ## Publication safety
 
@@ -309,5 +325,18 @@ directory rollback after a real rename failure and successful retry. A generated
 retains valid own `constructor` loaders in both families
 and verifies inherited-name absence. Package and CLI tests verify isolated imports, discovery,
 identity and ordering.
+Removal conformance additionally checks exact BOM/line-ending retention and native/offline packed
+consumers before and after multi-collection and final-glyph removal, including missing runtime
+entrypoints, absent dictionary/member declaration properties and preserved canonical references.
+Run that suite independently with its Core prerequisite:
+
+```sh
+pnpm --filter @luscious-garden/aster-core run build
+node --test --test-isolation=none tests/tooling/catalogue-icon-removal.test.mjs
+```
+
+The suite builds its synthetic Icons distributions and installs only local archives into owned
+temporary consumers with offline acquisition and lifecycle scripts disabled. It does not remove
+real artwork or install dependencies into the checkout.
 Emitted disposable-process tests also prove multi-treatment evaluation isolation, eager glyph
 loading, metadata-only imports, exact numeric/own-shadowing keys and shared canonical leaf objects.
