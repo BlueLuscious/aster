@@ -95,6 +95,10 @@ Use `/camera/filled`, `/camera/dotted` or `/camera/beaded` for an isolated treat
 corresponding `CameraFilled`, `CameraDotted` or `CameraBeaded` export. The dictionary includes all
 four regardless of collection membership.
 
+The point treatments remain larger rendering workloads despite their simple native geometry.
+[Measurement interpretation](../quality-baseline.md#interpretation) distinguishes representation
+from execution cost; primitive count alone is not an optimisation claim.
+
 ## Discovery and source maintenance
 
 [Manifest](../manifest/index.md) exposes searchable records without evaluating artwork.

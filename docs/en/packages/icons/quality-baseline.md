@@ -156,6 +156,11 @@ Exact evaluated module sets establish isolation; elapsed time is supporting evid
 by startup, host state and instrumentation. No timing optimisation follows from module counts
 alone, and native ESM observations do not guarantee bundler tree shaking.
 
+Native primitives can clarify geometry without reducing the number of painted elements, output
+size or rendering work. Use representative workloads instead of deriving a speed claim from node
+or path counts. [SVG Quality Baseline](../svg/quality-baseline.md) owns renderer measurements;
+[Core recognition](../core/definition/runtime/index.md#recognised-outputs) owns definition reuse.
+
 [Catalogue Source Tooling](../../tooling/catalogue/index.md) owns build-time checking and repair.
 Those operations do not run when an installed consumer imports or renders an icon. Changes to
 private generation and changes to consumer evaluation must be measured separately.

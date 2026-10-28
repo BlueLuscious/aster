@@ -54,6 +54,9 @@ require them. Amellus's current semantic inventory and human findings remain
 SVG corpus tests render every distributed icon. CLI and repository workflow tests discover real
 catalogue values, compare export artefacts with direct public rendering and exercise Amellus's
 catalogue workflow with canonical provider references, exact metadata and ordered member identities.
+The Camera workflow checks all four treatments through metadata-only glyph/icon discovery,
+selective memberships, exact Export/Review markup and deterministic size/colour rendering.
+It keeps independent point treatments discoverable without adding them to Amellus's review.
 These tests establish interoperability, not renderer, CLI or filesystem
 authority inside Icons.
 

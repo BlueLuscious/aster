@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  Icon,
   iconTechnicalPresentation,
   type IconDefinition,
 } from "@luscious-garden/aster-core";
@@ -136,8 +137,6 @@ test("composes original authorship and visual policy for Amellus members", () =>
         `${definition.identity.name} contains off-grid value ${value}`,
       );
     }
-
-    assertDeeplyFrozen(definition);
   }
 
   assert.equal(
@@ -150,6 +149,15 @@ test("composes original authorship and visual policy for Amellus members", () =>
       ?.metadata.rtl,
     "mirror",
   );
+});
+
+test("keeps every distributed definition canonical and deeply frozen", () => {
+  assert.ok(iconDefinitions.length > 0);
+
+  for (const definition of iconDefinitions) {
+    assert.equal(Icon.define(definition), definition);
+    assertDeeplyFrozen(definition);
+  }
 });
 
 test("names every distributed definition with its explicit treatment", () => {
